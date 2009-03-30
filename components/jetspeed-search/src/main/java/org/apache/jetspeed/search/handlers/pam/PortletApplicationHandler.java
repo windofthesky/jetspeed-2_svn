@@ -35,10 +35,9 @@ import org.apache.jetspeed.util.JetspeedLocale;
 public class PortletApplicationHandler extends AbstractObjectHandler
 {
     private static final String KEY_PREFIX = "PortletApplication::";
-    private static final String ID = "ID";
     
     {
-        fields.add(ID);        
+        fields.add(ParsedObject.ID);        
     }
 
     /** 
@@ -64,7 +63,7 @@ public class PortletApplicationHandler extends AbstractObjectHandler
 	        result.setClassName(pa.getClass().getName());
 	        
 	        MultiHashMap fieldMap = new MultiHashMap();
-	        fieldMap.put(ID, pa.getName());
+	        fieldMap.put(ParsedObject.ID, pa.getName());
 	        
 	        Collection fields = pa.getMetadata().getFields();
 	        for (Iterator fieldIter = fields.iterator(); fieldIter.hasNext();)

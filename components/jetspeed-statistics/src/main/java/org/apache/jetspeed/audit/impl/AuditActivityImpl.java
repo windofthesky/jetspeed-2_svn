@@ -96,6 +96,15 @@ public class AuditActivityImpl extends PersistenceBrokerDaoSupport implements Au
         }
     }
     
+    public void logAdminRegistryActivity(String adminUser, String ipAddress, String activity, String description)
+    {
+        if (enabled)
+        {
+            logAdminActivity(adminUser, ipAddress, "", activity, description, AuditActivity.CAT_ADMIN_REGISTRY_MAINTENANCE, "", "", "");
+        }        
+    }
+    
+    
     protected void logAdminActivity(String adminName, String ipAddress, String targetUser, String activity, String description, String category, String name, String beforeValue, String afterValue)
     {
         Connection con = null;

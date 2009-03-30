@@ -38,11 +38,10 @@ import org.apache.jetspeed.om.portlet.DisplayName;
 public class PortletDefinitionHandler extends AbstractObjectHandler
 {
     private static final String KEY_PREFIX = "PortletDefinition::";
-    private static final String ID = "ID";
     private static final String PORTLET_APPLICATION = "portlet_application";
     
     {
-        fields.add(ID);
+        fields.add(ParsedObject.ID);
         fields.add(PORTLET_APPLICATION);
     }
 
@@ -70,7 +69,7 @@ public class PortletDefinitionHandler extends AbstractObjectHandler
             
             //TODO: this is common to PAs as well, possible refactor
             MultiHashMap fieldMap = new MultiHashMap();
-            fieldMap.put(ID, pd.getPortletName());
+            fieldMap.put(ParsedObject.ID, pd.getPortletName());
             
             PortletApplication pa = (PortletApplication)pd.getApplication();
             fieldMap.put(PORTLET_APPLICATION, pa.getName()); 

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -412,8 +413,9 @@ public class SearchEngineImpl implements SearchEngine
         }
         catch (ParseException e)
         {
-            //logger.info("Failed to parse query " + query);
-            return null;
+            List<ParsedObject> resultList = new ArrayList<ParsedObject>();
+            SearchResults results = new SearchResultsImpl(resultList);
+            return results;            
         }
         
         try
@@ -422,12 +424,13 @@ public class SearchEngineImpl implements SearchEngine
         }
         catch (IOException e)
         {
-           //logger.error("Error while peforming search.", e);
-           return null;
+            List<ParsedObject> resultList = new ArrayList<ParsedObject>();
+            SearchResults results = new SearchResultsImpl(resultList);
+            return results;            
         }
 
         int hitNum = hits.length();
-        ArrayList resultList = new ArrayList(hitNum);
+        List<ParsedObject> resultList = new ArrayList<ParsedObject>(hitNum);
         for(int i=0; i<hitNum; i++)
         {
             ParsedObject result = new BaseParsedObject();
