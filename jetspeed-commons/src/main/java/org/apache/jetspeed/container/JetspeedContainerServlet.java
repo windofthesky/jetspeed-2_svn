@@ -322,7 +322,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 destroyPortlet = true;
             }
             
-            if (PortletWindow.Action.ACTION.equals(window.getAction()))
+            if (!PortletWindow.Action.ACTION.equals(window.getAction()))
             {
                 ServletContext context = getServletContext();
                 context.log(JCS + "Error rendering portlet \"" + window.getPortletDefinition().getUniqueName() + "\": " + t.toString(), t);
