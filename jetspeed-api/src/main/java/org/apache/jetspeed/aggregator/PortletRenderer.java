@@ -118,13 +118,12 @@ public interface PortletRenderer
      * Set title of portlet window. 
      * 
      * @param portletWindow
-     * @param fragment
      * @param request
      * @param response
      * @param dispatcher
      * @param isCacheTitle
      */
-    public void addTitleToHeader( PortletWindow portletWindow, ContentFragment fragment, 
+    public void addTitleToHeader( PortletWindow portletWindow, 
                                   HttpServletRequest request, HttpServletResponse response, 
                                   ContentDispatcherCtrl dispatcher, boolean isCacheTitle );
 

@@ -62,7 +62,6 @@ public class RenderingJobImpl implements RenderingJob
     
     protected PortletContainer container = null;
     protected PortletRenderer renderer = null;
-    protected ContentFragment fragment = null;
     protected RequestContext requestContext = null;
     protected PortletTrackingManager portletTracking = null;
 
@@ -85,7 +84,6 @@ public class RenderingJobImpl implements RenderingJob
                             PortletRenderer renderer,
                             PortletDefinition portletDefinition,
                             PortletContent portletContent, 
-                            ContentFragment fragment, 
                             ContentDispatcherCtrl dispatcher,
                             HttpServletRequest request, 
                             HttpServletResponse response, 
@@ -100,7 +98,6 @@ public class RenderingJobImpl implements RenderingJob
         this.portletTracking = renderer.getPortletTrackingManager();        
         this.statistics = statistics;
         this.portletDefinition = portletDefinition;
-        this.fragment = fragment;
         this.dispatcher = dispatcher;
         this.request = request;
         this.response = response;
@@ -152,7 +149,7 @@ public class RenderingJobImpl implements RenderingJob
             }
 
             // A little baby hack to make sure the worker thread has PortletContent to write too.
-            fragment.setPortletContent(portletContent);
+            this.window.getFragment().setPortletContent(portletContent);
             execute();                     
         }
         finally
@@ -164,7 +161,7 @@ public class RenderingJobImpl implements RenderingJob
             parallel = false;
             synchronized (portletContent)
             {
-               if (log.isDebugEnabled()) log.debug("Notifying completion of rendering job for fragment " + fragment.getId());                
+               if (log.isDebugEnabled()) log.debug("Notifying completion of rendering job for portlet window " + this.window.getId());                
                portletContent.notifyAll();
             }
         }
@@ -180,7 +177,8 @@ public class RenderingJobImpl implements RenderingJob
     public void execute()
     {
         long start = System.currentTimeMillis();
-        PortletWindow curWindow = this.window;
+        ContentFragment fragment = this.window.getFragment();
+        
         try
         {
             if (log.isDebugEnabled()) log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
@@ -191,11 +189,11 @@ public class RenderingJobImpl implements RenderingJob
             if (t instanceof UnavailableException)
             {
                 // no need to dump a full stack trace to the log
-                log.error("Error rendering portlet OID " + curWindow.getId() + ": " + t.toString());
+                log.error("Error rendering portlet OID " + this.window.getId() + ": " + t.toString());
             }
             else
             {
-                log.error("Error rendering portlet OID " + curWindow.getId(), t);
+                log.error("Error rendering portlet OID " + this.window.getId(), t);
             }
             fragment.overrideRenderedContent(t.getMessage());
         }
@@ -205,7 +203,7 @@ public class RenderingJobImpl implements RenderingJob
             {
                 if (parallel)
                 {
-                    this.renderer.addTitleToHeader(curWindow, fragment,
+                    this.renderer.addTitleToHeader(this.window, 
                                                    this.request, this.response,
                                                    this.dispatcher, this.contentIsCached);
                 }
@@ -222,12 +220,12 @@ public class RenderingJobImpl implements RenderingJob
                     if (exceededTimeout)
                     {
                         // took too long to render
-                        log.info("Portlet Exceeded timeout: " + curWindow.getPortletDefinition().getPortletName() + " for window " + curWindow.getId());
-                        portletTracking.incrementRenderTimeoutCount(curWindow);
+                        log.info("Portlet Exceeded timeout: " + this.window.getPortletDefinition().getPortletName() + " for window " + this.window.getId());
+                        portletTracking.incrementRenderTimeoutCount(this.window);
                     }
                     else
                     {
-                        portletTracking.success(curWindow);
+                        portletTracking.success(this.window);
                     }
                 }
             }
@@ -291,7 +289,7 @@ public class RenderingJobImpl implements RenderingJob
 
     public ContentFragment getFragment()
     {
-        return this.fragment;
+        return this.window.getFragment();
     }
 
     public RequestContext getRequestContext()
