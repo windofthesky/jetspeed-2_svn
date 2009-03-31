@@ -671,6 +671,8 @@ public class JetspeedRequestContext implements RequestContext
         PortletWindow window = portletWindows.get(windowId);
         if (window == null)
         {
+            // ensure RootContentFragment is initialized
+            getPage().getRootContentFragment(); 
             ContentFragment fragment = getPage().getContentFragmentById(windowId);
             if (fragment == null)
             {
