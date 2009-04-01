@@ -19,9 +19,9 @@ package org.apache.jetspeed.cache;
 import java.io.NotSerializableException;
 import java.io.PrintWriter;
 import java.security.Principal;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.ehcache.Cache;
@@ -400,7 +400,7 @@ public class TestContentCache extends TestCase
         }
 
 
-        public Collection<Element> getHeadElements()
+        public Map<String, Element> getHeadElements()
         {
             // TODO Auto-generated method stub
             return null;

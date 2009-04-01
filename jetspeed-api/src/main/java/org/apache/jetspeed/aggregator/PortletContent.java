@@ -18,7 +18,7 @@ package org.apache.jetspeed.aggregator;
 
 import java.io.NotSerializableException;
 import java.io.PrintWriter;
-import java.util.Collection;
+import java.util.Map;
 
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.w3c.dom.Element;
@@ -132,11 +132,11 @@ public interface PortletContent
     void addHeadElement(Element element, String keyHint) throws NotSerializableException;
     
     /**
-     * Retrieves header element list to be contributed to the page.
+     * Retrieves header element map to be contributed to the page.
      * 
-     * @return List with head element items
+     * @return
      */
-    Collection<Element> getHeadElements(); 
+    Map<String, Element> getHeadElements(); 
     
     void reset();
     

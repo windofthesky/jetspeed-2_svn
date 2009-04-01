@@ -18,7 +18,9 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +36,7 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.container.PortletWindow;
+import org.w3c.dom.Element;
 
 /**
  * Asynchronous Page Aggregator builds the content required to render a 
@@ -59,19 +62,24 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
      */
     public void build( RequestContext context ) throws JetspeedException, IOException
     {
-        ContentPage page = context.getPage();        
+        ContentPage page = context.getPage();
+        
         if (null == page)
         {
             throw new JetspeedException("Failed to find PSML Pin ContentPageAggregator.build");
         }
+        
         ContentFragment root = page.getRootContentFragment();
+        
         if (root == null)
         {
             throw new JetspeedException("No root ContentFragment found in ContentPage");
         }
+        
         // handle maximized state
         NavigationalState nav = context.getPortalURL().getNavigationalState();
         PortletWindow window = nav.getMaximizedWindow();
+        
         if (null != window)
         {
             renderMaximizedWindow(context, page, root, window);
@@ -79,14 +87,20 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
         else
         {
             aggregateAndRender(root, context, page, true, null, null, null);
-        }        
-        //dispatcher.include(root);
+        }
+        
+        // accumulate all the head contributions from the rendered contents
+        aggregateHeadElements(root, context, null);
+        
+        // write all rendered content
         context.getResponse().getWriter().write(root.getRenderedContent());
+        
         if (null != window)
         {
             window.removeAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
             window.removeAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
         }
+        
         releaseBuffers(root, context);                
     }
 
@@ -192,4 +206,35 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
         
         renderer.renderNow(f, context);
     }
+    
+    protected void aggregateHeadElements( ContentFragment f, RequestContext context, Map<String, Element> headElements )
+    {
+        boolean isRoot = (headElements == null);
+        
+        if (headElements == null)
+        {
+            headElements = new HashMap<String, Element>();
+        }
+        
+        List<ContentFragment> contentFragments = (List<ContentFragment>) f.getContentFragments();
+        
+        if (contentFragments != null && !contentFragments.isEmpty())
+        {
+            for (ContentFragment child : contentFragments)
+            {
+                if (!"hidden".equals(f.getState()))
+                {
+                    aggregateHeadElements(child, context, headElements);
+                }
+            }
+        }
+        
+        headElements.putAll(f.getPortletContent().getHeadElements());
+
+        if (isRoot)
+        {
+            context.getRequest().setAttribute(PortalReservedParameters.MARKUP_HEAD_ELEMENTS_ATTRIBUTE, headElements);
+        }
+    }
+
 }

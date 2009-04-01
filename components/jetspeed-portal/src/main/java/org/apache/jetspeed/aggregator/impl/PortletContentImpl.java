@@ -20,7 +20,6 @@ import java.io.CharArrayWriter;
 import java.io.NotSerializableException;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -223,16 +222,20 @@ public class PortletContentImpl implements PortletContent
         this.headElements.put(keyHint, element);
     }
 
-    public Collection<Element> getHeadElements()
+    public Map<String, Element> getHeadElements()
     {
+        Map<String, Element> headElemMap = null;
+        
         if (this.headElements != null) 
         {
-            return this.headElements.values();
+            headElemMap = this.headElements;
         } 
         else 
         {
-            return Collections.emptyList();
+            headElemMap = Collections.emptyMap();
         }
+        
+        return headElemMap;
     }
     
 }
