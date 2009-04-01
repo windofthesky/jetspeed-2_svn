@@ -152,9 +152,7 @@ public class DOMUtils
         try
         {
             xmlWriter = new XMLWriter(writer, outputFormat);
-            xmlWriter.write(element);
-            xmlWriter.flush();
-            xmlWriter.close();
+            writeElement(xmlWriter, element);
         }
         catch (IOException e)
         {
@@ -169,6 +167,13 @@ public class DOMUtils
         
         stringified = writer.toString();
         return stringified;
+    }
+    
+    public static void writeElement(XMLWriter xmlWriter, org.dom4j.Element element) throws IOException
+    {
+        xmlWriter.write(element);
+        xmlWriter.flush();
+        xmlWriter.close();
     }
     
 }

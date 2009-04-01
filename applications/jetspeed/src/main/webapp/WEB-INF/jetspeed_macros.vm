@@ -76,8 +76,13 @@
 
 #* Adds additional style sheets and java script from portlets *#
 #macro (includeHeaderResource)
- #acquireHeaderResource()
+#acquireHeaderResource()
 $resourceHeader.getContent()
+#set($headElements = $request.getAttribute("org.apache.jetspeed.markup.head.elements"))
+#foreach($headElement in $headElements)
+#set($headElemHtml = $jetspeed.getElementHtmlString($headElement))
+$headElemHtml
+#end
 #end
 
 #* Adds additional style sheets and java script from portlets - desktop version *#
@@ -153,9 +158,9 @@ $resourceHeader.getContent()
 #set($_pages = $site.getMenu("pages").elements)
 <div id="pages-menu" class="menu">#foreach($_page in $_pages)
 #if($_page.isSelected($site))
-	#set($_cssClass = "link page-link selected")
+    #set($_cssClass = "link page-link selected")
 #else
-	#set($_cssClass = "link page-link")
+    #set($_cssClass = "link page-link")
 #end
 <a href="portal${_page.url}" class="$!{_cssClass}" title="${_page.getTitle($preferedLocale)}">$_page.getTitle($preferedLocale)</a><span class="separator"></span>#end  
 </div>

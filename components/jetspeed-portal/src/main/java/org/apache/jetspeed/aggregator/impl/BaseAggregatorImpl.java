@@ -16,7 +16,9 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +29,7 @@ import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
+import org.w3c.dom.Element;
 
 /**
  * Share common code for all aggregators 
@@ -89,8 +92,8 @@ public abstract class BaseAggregatorImpl
         try
         {
             renderer.renderNow(window.getFragment(), context);
-            renderer.renderNow(layoutContentFragment, context);              
-            
+            aggregateHeadElements(window.getFragment(), context, null);
+            renderer.renderNow(layoutContentFragment, context);
         }
         catch (Exception e)
         {
@@ -98,4 +101,52 @@ public abstract class BaseAggregatorImpl
             window.getFragment().overrideRenderedContent("Sorry, but we were unable access the requested portlet. Send the following message to your portal admin:  "+  e.getMessage());
         }
     }
+
+    /**
+     * <p>
+     * aggregateHeadElements
+     * </p>
+     * Aggregates all contributed head elements from each content fragment into a map
+     * and store it into a specific request attribute.
+     * 
+     * @param f
+     * @param context
+     * @param headElements
+     */
+    protected void aggregateHeadElements( ContentFragment f, RequestContext context, Map<String, Element> headElements )
+    {
+        boolean isRoot = (headElements == null);
+        
+        if (headElements == null)
+        {
+            headElements = new HashMap<String, Element>();
+        }
+        
+        List<ContentFragment> contentFragments = (List<ContentFragment>) f.getContentFragments();
+        
+        if (contentFragments != null && !contentFragments.isEmpty())
+        {
+            for (ContentFragment child : contentFragments)
+            {
+                if (!"hidden".equals(f.getState()))
+                {
+                    aggregateHeadElements(child, context, headElements);
+                }
+            }
+        }
+
+        PortletContent portletContent = f.getPortletContent();
+
+        // root fragment's portlet content can be null
+        if (portletContent != null)
+        {
+            headElements.putAll(portletContent.getHeadElements());
+        }
+
+        if (isRoot)
+        {
+            context.getRequest().setAttribute(PortalReservedParameters.MARKUP_HEAD_ELEMENTS_ATTRIBUTE, headElements);
+        }
+    }
+    
 }

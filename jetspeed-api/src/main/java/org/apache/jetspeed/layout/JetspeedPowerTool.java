@@ -23,11 +23,12 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.container.PortletWindow;
+import org.w3c.dom.Element;
 
 /**
  * JetspeedPowerTool
@@ -237,4 +238,7 @@ public interface JetspeedPowerTool
     String getPageBasePath();    
     
     String renderPortletWindow(String windowId, String portletId);
+    
+    String getElementHtmlString(Element element);
+    
 }

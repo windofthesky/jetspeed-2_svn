@@ -18,9 +18,7 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,14 +27,12 @@ import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletAccessDeniedException;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.RenderingJob;
-import org.apache.jetspeed.aggregator.impl.BaseAggregatorImpl;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.PortletWindow;
-import org.w3c.dom.Element;
 
 /**
  * Asynchronous Page Aggregator builds the content required to render a 
@@ -88,9 +84,6 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
         {
             aggregateAndRender(root, context, page, true, null, null, null);
         }
-        
-        // accumulate all the head contributions from the rendered contents
-        aggregateHeadElements(root, context, null);
         
         // write all rendered content
         context.getResponse().getWriter().write(root.getRenderedContent());
@@ -202,39 +195,12 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
         if (log.isDebugEnabled())
         {
             log.debug("Rendering portlet fragment: [[name, " + f.getName() + "], [id, " + f.getId() + "]]");
-        }        
+        }
+        
+        // accumulate all the head contributions from the rendered contents
+        aggregateHeadElements(f, context, null);   
         
         renderer.renderNow(f, context);
     }
     
-    protected void aggregateHeadElements( ContentFragment f, RequestContext context, Map<String, Element> headElements )
-    {
-        boolean isRoot = (headElements == null);
-        
-        if (headElements == null)
-        {
-            headElements = new HashMap<String, Element>();
-        }
-        
-        List<ContentFragment> contentFragments = (List<ContentFragment>) f.getContentFragments();
-        
-        if (contentFragments != null && !contentFragments.isEmpty())
-        {
-            for (ContentFragment child : contentFragments)
-            {
-                if (!"hidden".equals(f.getState()))
-                {
-                    aggregateHeadElements(child, context, headElements);
-                }
-            }
-        }
-        
-        headElements.putAll(f.getPortletContent().getHeadElements());
-
-        if (isRoot)
-        {
-            context.getRequest().setAttribute(PortalReservedParameters.MARKUP_HEAD_ELEMENTS_ATTRIBUTE, headElements);
-        }
-    }
-
 }

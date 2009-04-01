@@ -17,9 +17,7 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PageAggregator;
@@ -30,7 +28,6 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
-import org.w3c.dom.Element;
 
 /**
  * ContentPageAggregator builds the content required to render a page of portlets.
@@ -77,11 +74,8 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
         }
         else
         {
-            aggregateAndRender(root, context, page);
+            aggregateAndRender(root, context, page, true);
         }
-        
-        // accumulate all the head contributions from the rendered contents
-        aggregateHeadElements(root, context, null);
         
         // write all rendered content
         context.getResponse().getWriter().write(root.getRenderedContent());
@@ -95,7 +89,7 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
         releaseBuffers(root, context);        
     }
 
-    protected void aggregateAndRender( ContentFragment f, RequestContext context, ContentPage page )
+    protected void aggregateAndRender( ContentFragment f, RequestContext context, ContentPage page, boolean isRoot )
     {
         List<ContentFragment> contentFragments = (List<ContentFragment>) f.getContentFragments();
         
@@ -105,41 +99,18 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
             {
                 if (!"hidden".equals(f.getState()))
                 {
-                    aggregateAndRender(child, context, page);
+                    aggregateAndRender(child, context, page, false);
                 }
             }
+        }
+        
+        if (isRoot)
+        {
+            // accumulate all the head contributions from the rendered contents
+            aggregateHeadElements(f, context, null);   
         }
         
         renderer.renderNow(f, context);
     }
     
-    protected void aggregateHeadElements( ContentFragment f, RequestContext context, Map<String, Element> headElements )
-    {
-        boolean isRoot = (headElements == null);
-        
-        if (headElements == null)
-        {
-            headElements = new HashMap<String, Element>();
-        }
-        
-        List<ContentFragment> contentFragments = (List<ContentFragment>) f.getContentFragments();
-        
-        if (contentFragments != null && !contentFragments.isEmpty())
-        {
-            for (ContentFragment child : contentFragments)
-            {
-                if (!"hidden".equals(f.getState()))
-                {
-                    aggregateHeadElements(child, context, headElements);
-                }
-            }
-        }
-        
-        headElements.putAll(f.getPortletContent().getHeadElements());
-
-        if (isRoot)
-        {
-            context.getRequest().setAttribute(PortalReservedParameters.MARKUP_HEAD_ELEMENTS_ATTRIBUTE, headElements);
-        }
-    }
 }
