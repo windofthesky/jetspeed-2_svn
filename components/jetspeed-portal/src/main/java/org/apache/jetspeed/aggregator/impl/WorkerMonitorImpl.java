@@ -19,7 +19,6 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.security.AccessControlContext;
 import java.security.AccessController;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -29,7 +28,6 @@ import java.util.Collections;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.RenderingJob;
-import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.WorkerMonitor;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.util.Queue;
@@ -83,7 +81,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
     protected int maxJobsPerWorker = 10;
 
     /** Stack containing currently idle workers */
-    protected Stack workers = new Stack();
+    protected Stack<WorkerImpl> workers = new Stack<WorkerImpl>();
 
     /** The thread group used to group all worker threads */
     protected ThreadGroup tg = new ThreadGroup("Workers");
@@ -92,7 +90,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
     protected Queue queue;
 
     /** Workers to be monitored for timeout checking */
-    protected List workersMonitored = Collections.synchronizedList(new LinkedList());
+    protected List<WorkerImpl> workersMonitored = Collections.synchronizedList(new LinkedList<WorkerImpl>());
 
     /** Renering Job Timeout monitor */
     protected RenderingJobTimeoutMonitor jobMonitor = null;
@@ -109,9 +107,10 @@ public class WorkerMonitorImpl implements WorkerMonitor
     public void stop()
     {    
     	if (jobMonitor != null)
+    	{
     		jobMonitor.endThread();
+    	}
     	jobMonitor = null;
-    	
     }
 
     /**
@@ -135,7 +134,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
 
             for (int i = 0; i < wCount; ++i)
             {
-                Worker worker = new WorkerImpl(this, this.tg, "WORKER_" + (++sCount));
+                WorkerImpl worker = new WorkerImpl(this, this.tg, "WORKER_" + (++sCount));
                 worker.start();
                 workers.push(worker);
             }
@@ -147,7 +146,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
      *
      * @return a Worker from the idle pool or null if non available
      */
-    protected Worker getWorker()
+    protected WorkerImpl getWorker()
     {
         synchronized(this.workers)
         {
@@ -161,7 +160,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
                 return null;
             }
 
-            return (Worker)workers.pop();
+            return workers.pop();
         }
     }
 
@@ -173,7 +172,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
      */
     public void process(RenderingJob job)
     {
-        Worker worker = this.getWorker();
+        WorkerImpl worker = this.getWorker();
 
         AccessControlContext context = AccessController.getContext();
         job.setWorkerAttribute(ACCESS_CONTROL_CONTEXT_WORKER_ATTR, context);
@@ -190,7 +189,8 @@ public class WorkerMonitorImpl implements WorkerMonitor
                 {
                     worker.setJob(job, context);
 
-                    if (job.getTimeout() > 0) {
+                    if (job.getTimeout() > 0)
+                    {
                         workersMonitored.add(worker);
                     }
 
@@ -209,13 +209,12 @@ public class WorkerMonitorImpl implements WorkerMonitor
      * Wait for all rendering jobs in the collection to finish successfully or otherwise. 
      * @param renderingJobs the Collection of rendering job objects to wait for.
      */
-    public void waitForRenderingJobs(List renderingJobs)
+    public void waitForRenderingJobs(List<RenderingJob> renderingJobs)
     {
         try 
         {
-            for (Iterator iter = renderingJobs.iterator(); iter.hasNext(); )
+            for (RenderingJob job : renderingJobs)
             {
-                RenderingJob job = (RenderingJob) iter.next();
                 PortletContent portletContent = job.getPortletContent();
                 
                 synchronized (portletContent) 
@@ -237,7 +236,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
      * Put back the worker in the idle queue unless there are pending jobs and
      * worker can still be committed to a new job before being released.
      */
-    protected void release(Worker worker)
+    protected void release(WorkerImpl worker)
     {
         // if worker can still proces some jobs assign the first
         // backlog job to this worker, else reset job count and put
@@ -268,15 +267,13 @@ public class WorkerMonitorImpl implements WorkerMonitor
                 }
             }
             
-            if (job == null)
-            {
-                worker.setJob(null);
-                worker.resetJobCount();
-                runningJobs--;
-            }
+            worker.setJob(null);
+            worker.resetJobCount();
+            runningJobs--;
         }
 
-        if (jobTimeout > 0) {
+        if (jobTimeout > 0)
+        {
             workersMonitored.remove(worker);
         }
 
@@ -305,15 +302,17 @@ public class WorkerMonitorImpl implements WorkerMonitor
         return this.tg.activeCount();
     }
     
-    class RenderingJobTimeoutMonitor extends Thread {
-
+    class RenderingJobTimeoutMonitor extends Thread
+    {
         long interval = 1000;
         boolean shouldRun = true;
         
-        RenderingJobTimeoutMonitor(long interval) {
+        RenderingJobTimeoutMonitor(long interval)
+        {
             super("RenderingJobTimeoutMonitor");
 
-            if (interval > 0) {
+            if (interval > 0)
+            {
                 this.interval = interval;
             }
         }
@@ -329,21 +328,22 @@ public class WorkerMonitorImpl implements WorkerMonitor
         	this.interrupt();
         }
         
-        public void run() {
-            while (shouldRun) {
+        public void run()
+        {
+            while (shouldRun)
+            {
                 try 
                 {
                     // Because a timeout worker can be removed 
                     // in the workersMonitored collection during iterating,
                     // copy timeout workers in the following collection to kill later.
 
-                    List timeoutWorkers = new ArrayList();
+                    List<WorkerImpl> timeoutWorkers = new ArrayList<WorkerImpl>();
 
                     synchronized (workersMonitored) 
                     {
-                        for (Iterator it = workersMonitored.iterator(); it.hasNext(); )
+                        for (WorkerImpl worker : workersMonitored)
                         {
-                            WorkerImpl worker = (WorkerImpl) it.next();
                             RenderingJob job = (RenderingJob) worker.getJob();
                             
                             if ((null != job) && (job.isTimeout()))
@@ -354,9 +354,8 @@ public class WorkerMonitorImpl implements WorkerMonitor
                     }
 
                     // Now, we can kill the timeout worker(s).
-                    for (Iterator it = timeoutWorkers.iterator(); it.hasNext(); )
+                    for (WorkerImpl worker : timeoutWorkers)
                     {
-                        WorkerImpl worker = (WorkerImpl) it.next();
                         RenderingJob job = (RenderingJob) worker.getJob();
 
                         // If the job is just completed, then do not kill the worker.
@@ -385,9 +384,12 @@ public class WorkerMonitorImpl implements WorkerMonitor
             }
         }
 
-        public void killJob(WorkerImpl worker, RenderingJob job) {
-            try {
-                if (log.isWarnEnabled()) {
+        public void killJob(WorkerImpl worker, RenderingJob job)
+        {
+            try
+            {
+                if (log.isWarnEnabled())
+                {
                     PortletWindow window = job.getWindow();
                     PortletWindowID windowId = (null != window ? window.getId() : null);
                     log.warn("Portlet Rendering job to be interrupted by timeout (" + job.getTimeout() + "ms): " + windowId.getStringId());
@@ -397,16 +399,17 @@ public class WorkerMonitorImpl implements WorkerMonitor
                 
                 synchronized (content)
                 {
-                    if (!content.isComplete()) {
+                    if (!content.isComplete())
+                    {
                         worker.interrupt();
                         content.wait();
                     }
                 }
                 
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
                 log.error("Exceptiong during job killing.", e);
             }
         }
-
     }
 }

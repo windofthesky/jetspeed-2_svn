@@ -228,4 +228,10 @@ public class MockPortletWindow implements PortletWindow
         // TODO Auto-generated method stub
         return null;
     }
+
+    public boolean isValid()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

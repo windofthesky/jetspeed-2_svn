@@ -20,7 +20,6 @@ package org.apache.jetspeed.container.impl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.pluto.container.PortletActionResponseContext;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletEventResponseContext;
@@ -36,13 +35,6 @@ import org.apache.pluto.container.PortletWindow;
  */
 public class PortletRequestContextServiceImpl implements PortletRequestContextService
 {
-    private DynamicTitleService titleService;
-    
-    public PortletRequestContextServiceImpl(DynamicTitleService titleService)
-    {
-        this.titleService = titleService;
-    }
-    
     public PortletRequestContext getPortletActionRequestContext(PortletContainer container, HttpServletRequest containerRequest,
                                                                 HttpServletResponse containerResponse, PortletWindow window)
     {
@@ -81,7 +73,7 @@ public class PortletRequestContextServiceImpl implements PortletRequestContextSe
                                                                         HttpServletResponse containerResponse,
                                                                         PortletWindow window)
     {
-        return new PortletRenderResponseContextImpl(container, containerRequest, containerResponse, (org.apache.jetspeed.container.PortletWindow)window, titleService);
+        return new PortletRenderResponseContextImpl(container, containerRequest, containerResponse, (org.apache.jetspeed.container.PortletWindow)window);
     }
 
     public PortletResourceRequestContext getPortletResourceRequestContext(PortletContainer container,

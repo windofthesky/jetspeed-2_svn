@@ -117,12 +117,6 @@ public class MockRenderJob  implements RenderingJob
         return null;
     }
 
-    public ContentDispatcherCtrl getDispatcher()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public int getExpirationCache()
     {
         // TODO Auto-generated method stub

@@ -19,10 +19,12 @@ package org.apache.jetspeed.aggregator.impl;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletAggregator;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
@@ -38,10 +40,17 @@ import org.apache.jetspeed.request.RequestContext;
 public class PortletAggregatorImpl implements PortletAggregator
 {
     private PortletRenderer renderer;
+    private boolean titleInHeader;
 
     public PortletAggregatorImpl(PortletRenderer renderer) 
     {
+        this(renderer, false);
+    }
+
+    public PortletAggregatorImpl(PortletRenderer renderer, boolean titleInHeader) 
+    {
         this.renderer = renderer;
+        this.titleInHeader = titleInHeader;
     }
 
     /* (non-Javadoc)
@@ -60,8 +69,8 @@ public class PortletAggregatorImpl implements PortletAggregator
         {
             return;
         }        
-        Fragment fragment = context.getPage().getFragmentById(entity);
-        if (fragment == null) 
+        PortletWindow window = context.resolvePortletWindow(entity);
+        if (window == null) 
         {        
             String name = context.getRequestParameter(PortalReservedParameters.PORTLET);
             if (name == null)
@@ -72,18 +81,26 @@ public class PortletAggregatorImpl implements PortletAggregator
             {
                 return;
             }
-            fragment = new PortletAggregatorFragmentImpl(entity);        
+            Fragment fragment = new PortletAggregatorFragmentImpl(entity);        
             fragment.setType(Fragment.PORTLET);
             fragment.setName(name);
+            window = context.getPortletWindow(new ContentFragmentImpl(fragment, new HashMap(), true));
+            if (window.isValid())
+            {
+                context.registerInstantlyCreatedPortletWindow(window);
+            }
         }
-        ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());
+        ContentFragment contentFragment = window.getFragment();
         renderer.renderNow(contentFragment, context);
+        if (titleInHeader && contentFragment.getPortletContent() != null)
+        {            
+            context.getResponse().setHeader( "JS_PORTLET_TITLE", StringEscapeUtils.escapeHtml( contentFragment.getPortletContent().getTitle() ) );
+        }
         context.getResponse().getWriter().write(contentFragment.getRenderedContent());
         PortletContent content = contentFragment.getPortletContent();
-        if (content.getExpiration() == 0)
+        if (content != null && content.getExpiration() == 0)
         {
             contentFragment.getPortletContent().release();
         }        
     }
-    
 }

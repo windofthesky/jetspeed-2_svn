@@ -18,14 +18,13 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
+import org.apache.jetspeed.aggregator.PortletAccessDeniedException;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.impl.BaseAggregatorImpl;
@@ -92,46 +91,54 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
     }
 
     protected void aggregateAndRender(ContentFragment f, RequestContext context, ContentPage page, boolean isRoot,
-                                      List sequentialJobs, List parallelJobs, List layoutFragments)
-            throws FailedToRenderFragmentException
+                                      List<RenderingJob> sequentialJobs, List<RenderingJob> parallelJobs, List<ContentFragment> layoutFragments)
     {
         // First Pass, kick off async render threads for all portlets on page 
         // Store portlet rendering jobs in the list to wait later.
         // Store layout fragment in the list to render later.
         if (sequentialJobs == null) 
         {
-            sequentialJobs = new ArrayList();
+            sequentialJobs = new ArrayList<RenderingJob>();
         }
         if (parallelJobs == null) 
         {
-            parallelJobs = new ArrayList();
+            parallelJobs = new ArrayList<RenderingJob>();
         }        
         if (layoutFragments == null)
         {
-            layoutFragments = new ArrayList();
+            layoutFragments = new ArrayList<ContentFragment>();
         }
 
-        if (f.getContentFragments() != null && f.getContentFragments().size() > 0)
+        if (f.getContentFragments() != null)
         {
-            Iterator children = f.getContentFragments().iterator();
-            while (children.hasNext())
+            for (ContentFragment child : (List<ContentFragment>)f.getContentFragments())
             {
-                ContentFragment child = (ContentFragment) children.next();
                 if (!"hidden".equals(f.getState()))
                 {
                     if (child.getType().equals(ContentFragment.PORTLET))
                     {
-                        // create and store the portlet rendering job into the jobs lists.
-                        RenderingJob job = renderer.createRenderingJob(child, context);
-
-                        // The returned job can be null for some reason, such as invalid portlet entity.
-                        if (job != null) 
+                        try
                         {
-                            if (job.getTimeout() > 0)
-                                parallelJobs.add(job);
-                            else
-                                sequentialJobs.add(job);
+                            // create and store the portlet rendering job into the jobs lists.
+                            RenderingJob job = renderer.createRenderingJob(child, context);
+
+                            // The returned job can be null for some reason, such as invalid portlet entity.
+                            if (job != null) 
+                            {
+                                if (job.getTimeout() > 0)
+                                {
+                                    parallelJobs.add(job);
+                                }
+                                else
+                                {
+                                    sequentialJobs.add(job);
+                                }
+                            }
                         }
+                        catch (PortletAccessDeniedException e)
+                        {
+                            child.overrideRenderedContent(e.getLocalizedMessage());                        
+                        }        
                     }
                     else
                     {
@@ -157,18 +164,14 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
         }
         
         // kick off the parallel rendering jobs
-        Iterator iter = parallelJobs.iterator();
-        while (iter.hasNext())
+        for (RenderingJob job : parallelJobs)
         {
-            RenderingJob job = (RenderingJob) iter.next();
             renderer.processRenderingJob(job);
         }
 
         // kick off the sequential rendering jobs
-        iter = sequentialJobs.iterator();
-        while (iter.hasNext())
+        for (RenderingJob job : sequentialJobs)
         {
-            RenderingJob job = (RenderingJob) iter.next();
             renderer.processRenderingJob(job);
         }
 
@@ -176,10 +179,8 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
         renderer.waitForRenderingJobs(parallelJobs);
         
         // render layout fragments.
-        iter = layoutFragments.iterator();
-        while (iter.hasNext()) 
+        for (ContentFragment child : layoutFragments)
         {
-            ContentFragment child = (ContentFragment) iter.next();
             renderer.renderNow(child, context);
         }
         

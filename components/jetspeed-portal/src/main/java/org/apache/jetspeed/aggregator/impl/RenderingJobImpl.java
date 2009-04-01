@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
@@ -68,8 +67,6 @@ public class RenderingJobImpl implements RenderingJob
     protected PortletDefinition portletDefinition;
     protected PortletContent portletContent;
     protected PortalStatistics statistics;
-    protected ContentDispatcherCtrl dispatcher;
-    protected boolean contentIsCached;
     
     protected int expirationCache = 0;
     
@@ -84,52 +81,51 @@ public class RenderingJobImpl implements RenderingJob
                             PortletRenderer renderer,
                             PortletDefinition portletDefinition,
                             PortletContent portletContent, 
-                            ContentDispatcherCtrl dispatcher,
                             HttpServletRequest request, 
                             HttpServletResponse response, 
                             RequestContext requestContext, 
                             PortletWindow window,
                             PortalStatistics statistics,
-                            int expirationCache,
-                            boolean contentIsCached)
+                            int expirationCache)
     {
         this.container = container;
         this.renderer = renderer;
         this.portletTracking = renderer.getPortletTrackingManager();        
         this.statistics = statistics;
         this.portletDefinition = portletDefinition;
-        this.dispatcher = dispatcher;
         this.request = request;
         this.response = response;
         this.requestContext = requestContext; 
         this.window = window;
         this.portletContent = portletContent; 
         this.expirationCache = expirationCache;
-        this.contentIsCached = contentIsCached;
     }
 
     /**
      * Sets portlet timout in milliseconds.
      */
-    public void setTimeout(long timeout) {
+    public void setTimeout(long timeout)
+    {
         this.timeout = timeout;
     }
 
     /**
      * Gets portlet timout in milliseconds.
      */
-    public long getTimeout() {
+    public long getTimeout()
+    {
         return this.timeout;
     }
 
     /**
      * Checks if the portlet rendering is timeout
      */
-    public boolean isTimeout() {
-        if ((this.timeout > 0) && (this.startTimeMillis > 0)) {
+    public boolean isTimeout()
+    {
+        if ((this.timeout > 0) && (this.startTimeMillis > 0))
+        {
             return (System.currentTimeMillis() - this.startTimeMillis > this.timeout);
         }
-
         return false;
     }
 
@@ -148,7 +144,6 @@ public class RenderingJobImpl implements RenderingJob
                 this.startTimeMillis = System.currentTimeMillis();
             }
 
-            // A little baby hack to make sure the worker thread has PortletContent to write too.
             this.window.getFragment().setPortletContent(portletContent);
             execute();                     
         }
@@ -181,7 +176,10 @@ public class RenderingJobImpl implements RenderingJob
         
         try
         {
-            if (log.isDebugEnabled()) log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
+            if (log.isDebugEnabled())
+            {
+                log.debug("Rendering OID "+this.window.getId()+" "+ this.request +" "+this.response);
+            }
             container.doRender(this.window, this.request, this.response);               
         }
         catch (Throwable t)
@@ -201,13 +199,6 @@ public class RenderingJobImpl implements RenderingJob
         {
             try
             {
-                if (parallel)
-                {
-                    this.renderer.addTitleToHeader(this.window, 
-                                                   this.request, this.response,
-                                                   this.dispatcher, this.contentIsCached);
-                }
-                
                 if (fragment.getType().equals(Fragment.PORTLET))
                 {
                     long end = System.currentTimeMillis();
@@ -302,16 +293,6 @@ public class RenderingJobImpl implements RenderingJob
         return this.expirationCache;
     }
 
-    public ContentDispatcherCtrl getDispatcher()
-    {
-        return this.dispatcher;
-    }
-
-    public boolean isContentCached() 
-    {
-        return this.contentIsCached;
-    }
-    
     public void setWorkerAttribute(String name, Object value)
     {
         if (this.workerAttributes == null)

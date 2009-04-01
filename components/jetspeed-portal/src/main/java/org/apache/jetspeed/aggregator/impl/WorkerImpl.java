@@ -51,7 +51,7 @@ public class WorkerImpl extends Thread implements Worker
     private int jobCount = 0;
 
     /** Job to process */
-    private Runnable job = null;
+    Runnable job = null;
 
     /** Context to process job within */
     private AccessControlContext context = null;
@@ -168,7 +168,7 @@ public class WorkerImpl extends Thread implements Worker
                 }
                 if (subject != null)
                 {
-                    JSSubject.doAsPrivileged(subject, new PrivilegedAction()
+                    JSSubject.doAsPrivileged(subject, new PrivilegedAction<Object>()
                         {
                             public Object run()
                             {

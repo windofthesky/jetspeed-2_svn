@@ -22,11 +22,9 @@ import java.security.AccessController;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,7 +65,7 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
     protected boolean jobWorksMonitorEnabled = true;
     
     /** Rendering job works to be monitored for timeout checking */
-    protected Map jobWorksMonitored = Collections.synchronizedMap(new HashMap());
+    protected Map<WorkItem,RenderingJobCommonjWork> jobWorksMonitored = Collections.synchronizedMap(new HashMap<WorkItem,RenderingJobCommonjWork>());
     
     public CommonjWorkerMonitorImpl(WorkManager workManager)
     {
@@ -148,15 +146,14 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
      * Wait for all rendering jobs in the collection to finish successfully or otherwise. 
      * @param renderingJobs the Collection of rendering job objects to wait for.
      */
-    public void waitForRenderingJobs(List renderingJobs)
+    public void waitForRenderingJobs(List<RenderingJob> renderingJobs)
     {
         if (this.jobWorksMonitorEnabled)
         {
             try 
             {
-                for (Iterator iter = renderingJobs.iterator(); iter.hasNext(); )
+                for (RenderingJob job : renderingJobs)
                 {
-                    RenderingJob job = (RenderingJob) iter.next();
                     PortletContent portletContent = job.getPortletContent();
                     
                     synchronized (portletContent) 
@@ -187,7 +184,7 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
                     
                     synchronized (lock)
                     {
-                        WorkItem monitorWorkItem = this.workManager.schedule(monitoringWork, this);
+                        this.workManager.schedule(monitoringWork, this);
                         lock.wait();
                     }
                 }
@@ -218,13 +215,19 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
     public void workAccepted(WorkEvent we)
     {
         WorkItem workItem = we.getWorkItem();
-        if (log.isDebugEnabled()) log.debug("[CommonjWorkMonitorImpl] workAccepted: " + workItem);
+        if (log.isDebugEnabled())
+        {
+            log.debug("[CommonjWorkMonitorImpl] workAccepted: " + workItem);
+        }
     }
 
     public void workRejected(WorkEvent we)
     {
         WorkItem workItem = we.getWorkItem();
-        if (log.isDebugEnabled()) log.debug("[CommonjWorkMonitorImpl] workRejected: " + workItem);
+        if (log.isDebugEnabled())
+        {
+            log.debug("[CommonjWorkMonitorImpl] workRejected: " + workItem);
+        }
         
         if (this.jobWorksMonitorEnabled)
         {
@@ -235,13 +238,19 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
     public void workStarted(WorkEvent we)
     {
         WorkItem workItem = we.getWorkItem();
-        if (log.isDebugEnabled()) log.debug("[CommonjWorkMonitorImpl] workStarted: " + workItem);
+        if (log.isDebugEnabled())
+        {
+            log.debug("[CommonjWorkMonitorImpl] workStarted: " + workItem);
+        }
     }
 
     public void workCompleted(WorkEvent we)
     {
         WorkItem workItem = we.getWorkItem();
-        if (log.isDebugEnabled()) log.debug("[CommonjWorkMonitorImpl] workCompleted: " + workItem);
+        if (log.isDebugEnabled())
+        {
+            log.debug("[CommonjWorkMonitorImpl] workCompleted: " + workItem);
+        }
         
         if (this.jobWorksMonitorEnabled)
         {
@@ -293,12 +302,12 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
     {
         
         protected Object lock;
-        protected List renderingJobs;
+        protected List<RenderingJob> renderingJobs;
 
-        public MonitoringJobCommonjWork(Object lock, List jobs)
+        public MonitoringJobCommonjWork(Object lock, List<RenderingJob> jobs)
         {
             this.lock = lock;
-            this.renderingJobs = new ArrayList(jobs);
+            this.renderingJobs = new ArrayList<RenderingJob>(jobs);
         }
         
         public boolean isDaemon()
@@ -312,9 +321,9 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
             {
                 while (!this.renderingJobs.isEmpty())
                 {
-                    for (Iterator it = this.renderingJobs.iterator(); it.hasNext(); )
+                    for (Iterator<RenderingJob> it = this.renderingJobs.iterator(); it.hasNext(); )
                     {
-                        RenderingJob job = (RenderingJob) it.next();
+                        RenderingJob job = it.next();
                         WorkItem workItem = (WorkItem) job.getWorkerAttribute(COMMONJ_WORK_ITEM_ATTR);
                         int status = WorkEvent.WORK_ACCEPTED;
                         
@@ -337,7 +346,8 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
                                 {
                                     synchronized (content)
                                     {
-                                        if (!content.isComplete()) {
+                                        if (!content.isComplete())
+                                        {
                                             worker.interrupt();
                                             content.wait();
                                         }
@@ -411,16 +421,16 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
         	this.interrupt();
         }
         
-        public void run() {
-            while (shouldRun) {
+        public void run()
+        {
+            while (shouldRun)
+            {
                 try 
                 {
-                    List timeoutJobWorks = new ArrayList();
-                    Collection jobWorks = Arrays.asList(jobWorksMonitored.values().toArray());
+                    List<RenderingJobCommonjWork> timeoutJobWorks = new ArrayList<RenderingJobCommonjWork>();
                     
-                    for (Iterator it = jobWorks.iterator(); it.hasNext(); )
+                    for (RenderingJobCommonjWork jobWork : jobWorksMonitored.values() )
                     {
-                        RenderingJobCommonjWork jobWork = (RenderingJobCommonjWork) it.next();
                         RenderingJob job = jobWork.getRenderingJob();
                         
                         if (job.isTimeout())
@@ -430,9 +440,8 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
                     }
                     
                     // Now, we can kill the timeout worker(s).
-                    for (Iterator it = timeoutJobWorks.iterator(); it.hasNext(); )
+                    for (RenderingJobCommonjWork jobWork : timeoutJobWorks )
                     {
-                        RenderingJobCommonjWork jobWork = (RenderingJobCommonjWork) it.next();
                         RenderingJob job = jobWork.getRenderingJob();
 
                         // If the job is just completed, then do not kill the worker.
@@ -461,11 +470,14 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
             }
         }
         
-        public void killJobWork(RenderingJobCommonjWork jobWork) {
+        public void killJobWork(RenderingJobCommonjWork jobWork)
+        {
             RenderingJob job = jobWork.getRenderingJob();
             
-            try {
-                if (log.isWarnEnabled()) {
+            try
+            {
+                if (log.isWarnEnabled())
+                {
                     PortletWindow window = job.getWindow();
                     log.warn("Portlet Rendering job to be interrupted by timeout (" + job.getTimeout() + "ms)" + (window != null ? ": "+window.getId().getStringId() : ""));
                 }
@@ -477,15 +489,20 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
                 {
                     synchronized (content)
                     {
-                        if (!content.isComplete()) {
+                        if (!content.isComplete())
+                        {
                             worker.interrupt();
                             content.wait();
                         }
                     }
                 }
-            } catch (Exception e) {
+            } 
+            catch (Exception e)
+            {
                 log.error("Exceptiong during job killing.", e);
-            } finally {
+            } 
+            finally 
+            {
                 WorkItem workItem = (WorkItem) job.getWorkerAttribute(COMMONJ_WORK_ITEM_ATTR);
                 
                 if (workItem != null)
@@ -494,7 +511,5 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
                 }
             }
         }
-        
     }
-    
 }

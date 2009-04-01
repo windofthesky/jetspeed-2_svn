@@ -220,7 +220,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                 else
                 {
                     PortletWindow maximizedWindow = context.resolvePortletWindow(pageState.maximizedWindowId);
-                    if ( maximizedWindow == null )
+                    if (maximizedWindow == null || !maximizedWindow.isValid())
                     {
                         // gone: remove sessionState
                         pageState.windowStates.remove(pageState.maximizedWindowId);

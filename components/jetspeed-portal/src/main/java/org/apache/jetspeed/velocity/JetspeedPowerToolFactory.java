@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.layout.JetspeedPowerTool;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.services.title.DynamicTitleService;
 
 public class JetspeedPowerToolFactory implements org.apache.jetspeed.layout.JetspeedPowerToolFactory
 {
@@ -36,19 +35,17 @@ public class JetspeedPowerToolFactory implements org.apache.jetspeed.layout.Jets
     
     private Class jptClass;
     private Constructor constructor;
-    private DynamicTitleService titleService;
     
     /* Allows us to render portlets and other fragments */
     private PortletRenderer renderer;
     
-    public JetspeedPowerToolFactory(String jptClassName, DynamicTitleService titleService, PortletRenderer renderer)
+    public JetspeedPowerToolFactory(String jptClassName, PortletRenderer renderer)
     throws ClassNotFoundException, NoSuchMethodException
     {
         jptClass = Thread.currentThread().getContextClassLoader().loadClass(jptClassName);
         constructor =
             jptClass.getConstructor(
-                new Class[] {RequestContext.class, PortletConfig.class, RenderRequest.class, RenderResponse.class, DynamicTitleService.class, PortletRenderer.class});        
-        this.titleService = titleService;
+                new Class[] {RequestContext.class, PortletConfig.class, RenderRequest.class, RenderResponse.class, PortletRenderer.class});        
         this.renderer = renderer;
     }
        
@@ -57,7 +54,7 @@ public class JetspeedPowerToolFactory implements org.apache.jetspeed.layout.Jets
     {
         try
         {
-        	Object [] initArgs = { requestContext, portletConfig, renderRequest, renderResponse, this.titleService, this.renderer };
+        	Object [] initArgs = { requestContext, portletConfig, renderRequest, renderResponse, this.renderer };
             return (JetspeedPowerTool)constructor.newInstance(initArgs);
         }
         catch (Exception e)

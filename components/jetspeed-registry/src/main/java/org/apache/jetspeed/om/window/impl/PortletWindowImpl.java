@@ -69,6 +69,15 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
     private transient PortletRequestContext portletRequestContext;
     private transient PortletResponse portletResponse;
     private transient PortletInstance portletInstance;
+
+    private boolean valid;
+    
+    public PortletWindowImpl(RequestContext requestContext, ContentFragment fragment)
+    {
+        this.requestContext = requestContext;
+        this.fragment = fragment;
+        this.id = fragment.getId();
+    }
     
     public PortletWindowImpl(RequestContext requestContext, ContentFragment fragment, PortletDefinition pd)
     {
@@ -76,6 +85,12 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
         this.id = fragment.getId();
         this.fragment = fragment;
         this.pd = pd;
+        this.valid = true;
+    }
+    
+    public boolean isValid()
+    {
+        return valid;
     }
 
     public String getWindowId()
@@ -143,12 +158,12 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
 
     public PortletMode getPortletMode()
     {
-        return requestContext.getPortalURL().getNavigationalState().getMode(this);
+        return valid ? requestContext.getPortalURL().getNavigationalState().getMode(this) : PortletMode.VIEW;
     }
 
     public WindowState getWindowState()
     {
-        return requestContext.getPortalURL().getNavigationalState().getState(this);
+        return valid ? requestContext.getPortalURL().getNavigationalState().getState(this) : WindowState.NORMAL;
     }
 
     public Map<String,Object> getAttributes()
@@ -225,6 +240,10 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
                                    PortletRequest portletRequest, PortletResponse portletResponse, 
                                    PortletInstance portletInstance)
     {
+        if (!valid)
+        {
+            throw new IllegalStateException("Invalid window "+getId()+" should not have been invoked");
+        }
         this.action = action;
         this.portletRequest = portletRequest;
         this.portletResponseContext = portletResponseContext;

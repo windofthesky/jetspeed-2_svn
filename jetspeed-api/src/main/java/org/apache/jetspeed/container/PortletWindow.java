@@ -36,6 +36,7 @@ import org.apache.pluto.container.PortletResponseContext;
  */
 public interface PortletWindow extends org.apache.pluto.container.PortletWindow, Serializable
 {
+    boolean isValid();
     PortletWindowID getId();
     String getWindowId();
     String getPortletEntityId();

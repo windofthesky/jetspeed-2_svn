@@ -204,7 +204,7 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
         try
         {
             boolean desktopRequestNotAjax = false;
-            if ( parameters.containsKey(JetspeedDesktop.DESKTOP_REQUEST_NOT_AJAX_PARAMETER) )
+            if ( parameters != null && parameters.containsKey(JetspeedDesktop.DESKTOP_REQUEST_NOT_AJAX_PARAMETER) )
             {
             	desktopRequestNotAjax = true;
             	parameters.remove(JetspeedDesktop.DESKTOP_REQUEST_NOT_AJAX_PARAMETER);

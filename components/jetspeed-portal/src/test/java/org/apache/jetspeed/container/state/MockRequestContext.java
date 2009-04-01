@@ -26,7 +26,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
@@ -85,15 +84,6 @@ public class MockRequestContext implements RequestContext
      * @see org.apache.jetspeed.request.RequestContext#getConfig()
      */
     public ServletConfig getConfig()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.request.RequestContext#getContentDispatcher()
-     */
-    public ContentDispatcher getContentDispatcher()
     {
         // TODO Auto-generated method stub
         return null;
@@ -359,14 +349,6 @@ public class MockRequestContext implements RequestContext
      * @see org.apache.jetspeed.request.RequestContext#setCharacterEncoding(java.lang.String)
      */
     public void setCharacterEncoding(String enc)
-    {
-        // TODO Auto-generated method stub
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.request.RequestContext#setContentDispatcher(org.apache.jetspeed.aggregator.ContentDispatcher)
-     */
-    public void setContentDispatcher(ContentDispatcher dispatcher)
     {
         // TODO Auto-generated method stub
     }

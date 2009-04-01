@@ -29,9 +29,10 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.aggregator.impl.PortletAggregatorFragmentImpl;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.ContainerConstants;
@@ -66,6 +67,8 @@ import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
  */
 public class JetspeedRequestContext implements RequestContext
 {
+    protected final static Log log = LogFactory.getLog(JetspeedRequestContext.class);
+    
     private static final String ACTION_ERROR_ATTR = "org.apache.jetspeed.action.error:";
     private static final String INSTANT_WINDOWS_SESSION_KEY = "org.apache.jetspeed.instant.windows";
     
@@ -81,7 +84,6 @@ public class JetspeedRequestContext implements RequestContext
     private PortletDefinition portletDefinition;
     private Subject subject;
     private Locale locale;
-    private ContentDispatcher dispatcher;
     private Pipeline pipeline;
 
     private CapabilityMap capabilityMap;
@@ -195,16 +197,6 @@ public class JetspeedRequestContext implements RequestContext
     public void setPortletDefinition( PortletDefinition portletDefinition )
     {
         this.portletDefinition = portletDefinition;
-    }
-
-    public ContentDispatcher getContentDispatcher()
-    {
-        return dispatcher;
-    }
-
-    public void setContentDispatcher( ContentDispatcher dispatcher )
-    {
-        this.dispatcher = dispatcher;
     }
 
     /**
@@ -609,6 +601,10 @@ public class JetspeedRequestContext implements RequestContext
     
     public void setCurrentPortletWindow(PortletWindow window)
     {
+        if (window != null && !window.isValid())
+        {
+            throw new IllegalStateException("Invalid window: "+window.getId()+" should not be invoked");
+        }
         currentWindow.set(window);
     }
     
@@ -626,12 +622,15 @@ public class JetspeedRequestContext implements RequestContext
             if (pd != null)
             {
                 window = new PortletWindowImpl(this, fragment, pd);
-                portletWindows.put(window.getWindowId(), window);
             }
             else
             {
+                // invalid window: create one anyway so that this error condition is only "recorded" once for this request
+                window = new PortletWindowImpl(this, fragment);
                 fragment.overrideRenderedContent("Failed to retrieve Portlet Definition for " + fragment.getName());
+                log.error(fragment.getOverriddenContent());
             }
+            portletWindows.put(window.getWindowId(), window);
         }
         return window;
     }
@@ -689,6 +688,10 @@ public class JetspeedRequestContext implements RequestContext
     @SuppressWarnings("unchecked")
     public void registerInstantlyCreatedPortletWindow(PortletWindow portletWindow)
     {
+        if (!portletWindow.isValid())
+        {
+            throw new IllegalStateException("Invalid window "+portletWindow.getId()+" should not be registered");
+        }
         HttpSession session = getRequest().getSession(true);
         synchronized (session)
         {

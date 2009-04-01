@@ -60,7 +60,6 @@ limitations under the License.
     <bean id="org.apache.pluto.container.PortletRequestContextService"
           class="org.apache.jetspeed.container.impl.PortletRequestContextServiceImpl">
       <meta key="j2:cat" value="default" />
-      <constructor-arg><ref bean="DynamicTitleService"/></constructor-arg>   
     </bean>
     
     <bean id="org.apache.pluto.container.FilterManagerService"

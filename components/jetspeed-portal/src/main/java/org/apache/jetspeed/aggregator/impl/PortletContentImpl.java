@@ -49,11 +49,6 @@ public class PortletContentImpl implements PortletContent
         init();
     }
 
-    PortletContentImpl(PortletRenderer renderer, ContentCacheKey cacheKey, int expiration)
-    {
-        this(renderer, cacheKey, expiration,"no title");
-    }
-   
     public PrintWriter getWriter()
     {
         return writer;

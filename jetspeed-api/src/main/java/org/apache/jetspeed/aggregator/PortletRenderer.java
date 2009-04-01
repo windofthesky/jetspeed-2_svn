@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * <h4>PortletRendererService<br />
@@ -41,57 +40,36 @@ public interface PortletRenderer
     /**
         Render the specified Page fragment.
         Result is returned in the PortletResponse.
-     * @throws FailedToRenderFragmentException
-     * @throws UnknownPortletDefinitionException
-     * @throws PortletAccessDeniedException
      */
-    public void renderNow(ContentFragment fragment, RequestContext request) ;
+    public void renderNow(ContentFragment fragment, RequestContext request);
 
     /**
      * Render the specified Page fragment in a separate Thread from the current (rendering) Thread
      * Result is returned in the PortletResponse.
-     * @throws FailedToRenderFragmentException
-     * @throws UnknownPortletDefinitionException
-     * @throws PortletAccessDeniedException
     */
-    public void renderNow(ContentFragment fragment, RequestContext request, boolean spawned) ;
-
+    public void renderNow(ContentFragment fragment, RequestContext request, boolean spawned);
 
     /**
         Render the specified Page fragment.
         Result is returned in the PortletResponse.
-     * @throws FailedToRenderFragmentException
-     * @throws UnknownPortletDefinitionException
-     * @throws PortletAccessDeniedException
      */
-    public void renderNow(ContentFragment fragment, HttpServletRequest request, HttpServletResponse response) ;
-
-    /** 
-     * 
-     * Render the specified Page fragment.
-     * The method returns before rendering is complete, rendered content can be
-     * accessed through the ContentDispatcher
-     * @return the asynchronous portlet rendering job to synchronize
-     * @deprecated
-     */
-    public RenderingJob render(ContentFragment fragment, RequestContext request);
+    public void renderNow(ContentFragment fragment, HttpServletRequest request, HttpServletResponse response);
 
     /** 
      * 
      * Create a rendering job for the specified Page fragment.
      * The method returns a rendering job which should be passed to 'processRenderingJob(RenderingJob job)' method.
      * @return portlet rendering job to pass to render(RenderingJob job) method
-     * @throws UnknownPortletDefinitionException
      * @throws PortletAccessDeniedException
      */
-    public RenderingJob createRenderingJob(ContentFragment fragment, RequestContext request);
+    public RenderingJob createRenderingJob(ContentFragment fragment, RequestContext request)
+    throws PortletAccessDeniedException;
 
     /** 
      * 
      * Render the specified rendering job.
      * The method returns before rendering is complete when the job is processed in parallel mode.
      * When the job is not parallel mode, it returns after rendering is complete.
-     * @throws FailedToRenderFragmentException
      */
     public void processRenderingJob(RenderingJob job);
         
@@ -99,13 +77,8 @@ public interface PortletRenderer
      * Wait for all rendering jobs in the collection to finish successfully or otherwise. 
      * @param renderingJobs the Collection of rendering job objects to wait for.
      */
-    public void waitForRenderingJobs(List renderingJobs);
+    public void waitForRenderingJobs(List<RenderingJob> renderingJobs);
     
-    /**
-     * Retrieve the ContentDispatcher for the specified request
-     */
-    public ContentDispatcher getDispatcher(RequestContext request, boolean isParallel);
-
     /**
      * Notify that content completed by worker jobs 
      * So that renderer can update its state
@@ -113,19 +86,6 @@ public interface PortletRenderer
      * @param content
      */
     public void notifyContentComplete(PortletContent content);
-
-    /**
-     * Set title of portlet window. 
-     * 
-     * @param portletWindow
-     * @param request
-     * @param response
-     * @param dispatcher
-     * @param isCacheTitle
-     */
-    public void addTitleToHeader( PortletWindow portletWindow, 
-                                  HttpServletRequest request, HttpServletResponse response, 
-                                  ContentDispatcherCtrl dispatcher, boolean isCacheTitle );
 
     PortletTrackingManager getPortletTrackingManager();
     

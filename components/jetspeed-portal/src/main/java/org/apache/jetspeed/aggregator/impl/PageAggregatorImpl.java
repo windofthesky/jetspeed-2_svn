@@ -17,10 +17,9 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.List;
 
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.impl.BaseAggregatorImpl;
@@ -83,14 +82,11 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
     }
 
     protected void aggregateAndRender( ContentFragment f, RequestContext context, ContentPage page )
-            throws FailedToRenderFragmentException
     {
         if (f.getContentFragments() != null && f.getContentFragments().size() > 0)
         {
-            Iterator children = f.getContentFragments().iterator();
-            while (children.hasNext())
+            for (ContentFragment child : (List<ContentFragment>)f.getContentFragments())
             {
-                ContentFragment child = (ContentFragment) children.next();
                 if (!"hidden".equals(f.getState()))
                 {
                     aggregateAndRender(child, context, page);

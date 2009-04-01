@@ -31,7 +31,6 @@ import org.apache.pluto.container.PortletRenderResponseContext;
 import org.apache.pluto.container.util.PrintWriterServletOutputStream;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.container.PortletWindow;
-import org.apache.jetspeed.services.title.DynamicTitleService;
 
 /**
  * @version $Id$
@@ -43,14 +42,12 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
     private boolean committed;
     private PortletContent portletContent;
     private OutputStream outputStream;
-    private DynamicTitleService titleService;
     
     public PortletRenderResponseContextImpl(PortletContainer container, HttpServletRequest containerRequest,
-                                            HttpServletResponse containerResponse, PortletWindow window, DynamicTitleService titleService)
+                                            HttpServletResponse containerResponse, PortletWindow window)
     {
         super(container, containerRequest, containerResponse, window);
         this.portletContent = window.getFragment().getPortletContent();
-        this.titleService = titleService;
     }
 
     public void flushBuffer() throws IOException
@@ -126,7 +123,6 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
         if (!isClosed())
         {
             portletContent.setTitle(title);
-            titleService.setDynamicTitle(getPortletWindow(), getContainerRequest(), title);
         }
     } 
 }

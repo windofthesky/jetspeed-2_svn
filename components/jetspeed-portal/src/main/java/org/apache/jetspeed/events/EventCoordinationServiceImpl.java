@@ -222,7 +222,7 @@ public class EventCoordinationServiceImpl implements JetspeedEventCoordinationSe
             }
         }
         PortletWindow portletWindow = rc.getPortletWindow(fragment.getId());
-        if (portletWindow == null)
+        if (portletWindow == null || !portletWindow.isValid())
             return eventTargets;
 
         PortletDefinition portlet = portletWindow.getPortletDefinition();

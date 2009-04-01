@@ -58,10 +58,6 @@ public interface RenderingJob extends Runnable
 
     int getExpirationCache();
 
-    ContentDispatcherCtrl getDispatcher();
-
-    boolean isContentCached();
-    
     void setWorkerAttribute(String name, Object value);
     
     Object getWorkerAttribute(String name);

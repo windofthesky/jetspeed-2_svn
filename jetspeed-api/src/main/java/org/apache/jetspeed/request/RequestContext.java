@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.ContentDispatcher;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -119,20 +118,6 @@ public interface RequestContext
      * @param page The target page
      */
     public void setPage(ContentPage page);
-
-    /**
-     * Gets the content dispatcher for this request
-     *
-     * @return ContentDispatcher
-     */
-    public ContentDispatcher getContentDispatcher();
-
-    /**
-     * Sets the content dispatcher for this request
-     *
-     * @param dispatcher The ContentDispatcher to use for this request
-     */
-    public void setContentDispatcher(ContentDispatcher dispatcher);
 
     /**
      * Set the capabilityMap. Used by the CapabilityValve

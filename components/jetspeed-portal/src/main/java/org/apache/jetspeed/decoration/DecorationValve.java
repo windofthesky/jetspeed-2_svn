@@ -332,7 +332,7 @@ public class DecorationValve extends AbstractValve implements Valve
     {
         boolean fragmentSupportsActions = false;
         PortletWindow window = requestContext.getPortletWindow(fragment); 
-        if (window == null)
+        if (!window.isValid())
         {
             return fragmentSupportsActions; // allow nothing
         }

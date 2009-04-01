@@ -26,7 +26,7 @@ limitations under the License.
   <title>Public Content</title>
 
   <fragment id="public.content.1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="public.content.2" type="portlet" name="demo::ContentViewer"/>
+    <fragment id="public.content.2" type="portlet" name="j2-admin::ContentViewer"/>
   </fragment>
 
 </page>

@@ -153,9 +153,9 @@ public class ChangePortletAction
             	}
             	//pageActionAccess.
             	PortletWindow window = requestContext.getPortletWindow(fragment);
-            	if (window == null)
+            	if (!window.isValid())
             	{
-            	    throw new Exception("Portlet Window creation failed for fragment: "+ fragment.getId() + ", " + fragment.getName());
+            	    throw new Exception("Failed to retrieve Portlet Definition for: "+ fragment.getId() + ", " + fragment.getName());
             	}
             	PortletMode currentMode = requestContext.getPortalURL().getNavigationalState().getMode( window );
             	WindowState currentState = requestContext.getPortalURL().getNavigationalState().getState( window );

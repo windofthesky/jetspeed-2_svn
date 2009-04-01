@@ -58,11 +58,8 @@
     <constructor-arg index="0">
       <value>org.apache.jetspeed.velocity.JetspeedPowerToolImpl</value>
     </constructor-arg>
-    <constructor-arg index="1">
-      <ref bean="DynamicTitleService" />
-    </constructor-arg>
     <!-- Added so we can render portlets in JPT -->
-    <constructor-arg index="2">
+    <constructor-arg index="1">
       <ref bean="org.apache.jetspeed.aggregator.PortletRenderer" />
     </constructor-arg>
   </bean>
@@ -120,11 +117,6 @@
     <constructor-arg>
       <value type="boolean">true</value>
     </constructor-arg>
-  </bean>
-
-  <bean id="org.apache.pluto.services.title.DynamicTitleService" name="DynamicTitleService"
-    class="org.apache.jetspeed.services.title.DynamicTitleServiceImpl">
-    <meta key="j2:cat" value="default" />
   </bean>
 
 </beans>

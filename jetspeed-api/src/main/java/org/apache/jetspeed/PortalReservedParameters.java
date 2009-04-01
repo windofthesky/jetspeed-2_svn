@@ -53,8 +53,6 @@ public interface PortalReservedParameters
     public static final String PREFERED_LOCALE_ATTRIBUTE = "org.apache.jetspeed.prefered.locale";
     public static final String PREFERED_CHARACTERENCODING_ATTRIBUTE = "org.apache.jetspeed.prefered.characterencoding";
     public static final String PORTLET_CONTENT_ATTRIBUTE = "org.apache.jetspeed.PortletContent";
-    public static final String CONTENT_DISPATCHER_ATTRIBUTE = "org.apache.jetspeed.ContentDispatcher";
-    public static final String OVERRIDE_PORTLET_TITLE_ATTR = "org.apache.jetspeed.portlet.title";
     public static final String HEADER_RESOURCE_ATTRIBUTE = "org.apache.jetspeed.headerresource";
     public static final String HEADER_CONFIGURATION_ATTRIBUTE = "org.apache.jetspeed.headerconfiguration";
     public static final String HEADER_NAMED_RESOURCE_ATTRIBUTE = "org.apache.jetspeed.headernamedresource";

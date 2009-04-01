@@ -18,37 +18,30 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.ContentDispatcher;
-import org.apache.jetspeed.aggregator.ContentDispatcherCtrl;
-import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PortletAccessDeniedException;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.aggregator.RenderingJob;
-import org.apache.jetspeed.aggregator.UnknownPortletDefinitionException;
 import org.apache.jetspeed.aggregator.WorkerMonitor;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedCache;
-import org.apache.jetspeed.container.window.FailedToCreateWindowException;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
-import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.jetspeed.container.PortletWindow;
@@ -73,7 +66,6 @@ public class PortletRendererImpl implements PortletRenderer
     protected WorkerMonitor workMonitor;
     protected PortletContainer container;
     protected PortalStatistics statistics;
-    protected DynamicTitleService addTitleService;
 
     protected PortletTrackingManager portletTracking;
     
@@ -95,59 +87,32 @@ public class PortletRendererImpl implements PortletRenderer
     /**
      * OutOfService Cache
      */
-    protected boolean overrideTitles = false;
     public static final String OUT_OF_SERVICE_MESSAGE = "Portlet is not responding and has been taken out of service.";
     
     public PortletRendererImpl(PortletContainer container, 
                                WorkerMonitor workMonitor,
                                PortalStatistics statistics,
-                               DynamicTitleService addTitleService,
                                PortletTrackingManager portletTracking,
                                boolean checkSecurityConstraints,
                                SecurityAccessController accessController,
-                               JetspeedCache portletContentCache,
-                               boolean overrideTitles)
+                               JetspeedCache portletContentCache)
     {
         this.container = container;
         this.workMonitor = workMonitor;
         this.statistics = statistics;
-        this.addTitleService = addTitleService;
         this.portletTracking = portletTracking;
         this.checkSecurityConstraints = checkSecurityConstraints;
         this.accessController = accessController;
         this.portletContentCache = portletContentCache;
-        this.overrideTitles = overrideTitles;
-    }
-
-    public PortletRendererImpl(PortletContainer container, 
-            WorkerMonitor workMonitor,
-            PortalStatistics statistics,
-            DynamicTitleService addTitleService,
-            PortletTrackingManager portletTracking,
-            boolean checkSecurityConstraints,
-            SecurityAccessController accessController,
-            JetspeedCache portletContentCache)
-    {
-        this(container, workMonitor, statistics, 
-             addTitleService, portletTracking, checkSecurityConstraints,
-             accessController, portletContentCache, false);
-    }
-    
-    public PortletRendererImpl(PortletContainer container, 
-                               WorkerMonitor workMonitor,
-                               PortalStatistics statistics,
-                               DynamicTitleService addTitleService)
-    {
-        this(container, workMonitor, statistics, null, null, false, null, null, true);
     }
 
     public PortletRendererImpl(PortletContainer container, 
                                WorkerMonitor workMonitor,
                                PortalStatistics statistics)
     {
-        this( container, workMonitor, statistics, null );
+        this(container, workMonitor, statistics, null, false, null, null);
     }
-    
+
     public PortletRendererImpl(PortletContainer container, 
                                WorkerMonitor workMonitor)
     {
@@ -167,10 +132,6 @@ public class PortletRendererImpl implements PortletRenderer
     /**
      * Render the specified Page fragment. Result is returned in the
      * PortletResponse.
-     * 
-     * @throws FailedToRenderFragmentException
-     * @throws FailedToRetrievePortletWindow
-     * @throws UnknownPortletDefinitionException
      */
     public void renderNow( ContentFragment fragment, RequestContext requestContext )
     {
@@ -182,52 +143,23 @@ public class PortletRendererImpl implements PortletRenderer
      */
     public void renderNow( ContentFragment fragment, RequestContext requestContext, boolean spawned )
     {
-        HttpServletRequest servletRequest =null;
-        HttpServletResponse servletResponse = null;
-        ContentDispatcherCtrl dispatcher = null;    
-        boolean contentIsCached = false;
         try
         {
-            PortletWindow portletWindow = getPortletWindow(fragment, requestContext);
-            PortletDefinition portletDefinition = portletWindow.getPortletDefinition();           
-            if (checkSecurityConstraints && !checkSecurityConstraint(portletDefinition, fragment))
+            RenderingJob rJob = createRenderingJob(fragment, requestContext);
+            if (rJob != null)
             {
-                throw new PortletAccessDeniedException("Access Denied.");
+                if (spawned)
+                {
+                    ArrayList<RenderingJob> jobs = new ArrayList<RenderingJob>();
+                    jobs.add(rJob);
+                    processRenderingJob(rJob, true);
+                    waitForRenderingJobs(jobs);
+                }
+                else
+                {
+                    rJob.execute();
+                }
             }
-            if (portletTracking.isOutOfService(portletWindow))
-            {
-                log.info("Taking portlet out of service: " + portletDefinition.getUniqueName() + " for window " + portletWindow.getId());
-                portletWindow.getFragment().overrideRenderedContent(OUT_OF_SERVICE_MESSAGE);
-                return;
-            }
-            long timeoutMetadata = this.getTimeoutOnJob(portletDefinition);
-            portletTracking.setExpiration(portletWindow, timeoutMetadata);            
-            int expirationCache = getExpirationCache(portletDefinition);
-            if (expirationCache != 0)
-            {
-                if (retrieveCachedContent(requestContext, portletWindow, expirationCache, portletDefinition))
-                    return;
-                contentIsCached = true;
-            }
-            dispatcher = createDispatcher(requestContext, portletWindow.getFragment(), expirationCache);
-            servletRequest = requestContext.getRequest();
-            servletResponse = requestContext.getResponse();
-            RenderingJob rJob = 
-                buildRenderingJob(portletWindow, servletRequest, servletResponse,
-                                  requestContext, spawned, portletDefinition, dispatcher, null, 
-                                  expirationCache, contentIsCached, timeoutMetadata);
-            if (spawned)
-            {
-                ArrayList<RenderingJob> jobs = new ArrayList<RenderingJob>();
-                jobs.add(rJob);
-                processRenderingJob(rJob, true);
-                waitForRenderingJobs(jobs);
-            }
-            else
-            {
-                rJob.execute();
-            }
-            addTitleToHeader( portletWindow, servletRequest, servletResponse, dispatcher, contentIsCached);
         }
         catch (PortletAccessDeniedException e)
         {
@@ -236,20 +168,15 @@ public class PortletRendererImpl implements PortletRenderer
         catch (Exception e)
         {
             fragment.overrideRenderedContent(e.getLocalizedMessage());
-            log.error(e.toString(), e);
+            log.error(e);
         }
     }
 
     /**
      * Render the specified Page fragment. Result is returned in the
      * PortletResponse.
-     * 
-     * @throws FailedToRenderFragmentException
-     * @throws FailedToRetrievePortletWindow
-     * @throws UnknownPortletDefinitionException
-     * @throws PortletAccessDeniedException
      */
-    public void renderNow( ContentFragment fragment, HttpServletRequest request, HttpServletResponse response )          
+    public void renderNow( ContentFragment fragment, HttpServletRequest request, HttpServletResponse response )
     {
         RequestContext requestContext = (RequestContext) request
                 .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
@@ -258,38 +185,8 @@ public class PortletRendererImpl implements PortletRenderer
     
     protected int getExpirationCache(PortletDefinition portletDefinition)
     {
-        if (portletDefinition == null)
-            return 0;
-        return portletDefinition.getExpirationCache();
+        return portletDefinition == null ? 0 : portletDefinition.getExpirationCache();
     }
-    
-    /**
-     * Render the specified Page fragment. The method returns before rendering
-     * is complete, rendered content can be accessed through the Content Dispatcher
-     * 
-     * @return the asynchronous portlet rendering job to synchronize
-     */
-    public RenderingJob render( ContentFragment fragment, RequestContext requestContext )
-    {
-        RenderingJob job = null;
-
-        try
-        {
-            job = createRenderingJob(fragment, requestContext);
-        }
-        catch (Exception e)
-        {
-            log.error("render() failed: " + e.toString(), e);
-            fragment.overrideRenderedContent(e.getLocalizedMessage());            
-        }
-
-        if (job != null)
-        {
-            processRenderingJob(job, true);
-        }
-
-        return job;
-    }       
     
     /** 
      * 
@@ -297,15 +194,18 @@ public class PortletRendererImpl implements PortletRenderer
      * The method returns a rendering job which should be passed to 'processRenderingJob(RenderingJob job)' method.
      * @return portlet rendering job to pass to render(RenderingJob job) method
      * @throws RuntimeException
-     * @throws PortletAccessDeniedException
      */
     public RenderingJob createRenderingJob(ContentFragment fragment, RequestContext requestContext)
+    throws PortletAccessDeniedException
     {
         RenderingJob job = null;
-        boolean contentIsCached = false;       
         try
         {
-            PortletWindow portletWindow = getPortletWindow(fragment, requestContext);
+            PortletWindow portletWindow = requestContext.getPortletWindow(fragment);
+            if (!portletWindow.isValid())
+            {
+                return null;
+            }
             PortletDefinition portletDefinition = portletWindow.getPortletDefinition();     
 
             long timeoutMetadata = this.getTimeoutOnJob(portletDefinition);
@@ -317,6 +217,7 @@ public class PortletRendererImpl implements PortletRenderer
             }
             if (portletTracking.isOutOfService(portletWindow))
             {
+                log.info("Taking portlet out of service: " + portletDefinition.getUniqueName() + " for window " + portletWindow.getId());
                 fragment.overrideRenderedContent(OUT_OF_SERVICE_MESSAGE);
                 return null;
             }
@@ -324,15 +225,16 @@ public class PortletRendererImpl implements PortletRenderer
             if (expirationCache != 0)
             {
                 portletTracking.setExpiration(portletWindow, expirationCache);
-                contentIsCached = retrieveCachedContent(requestContext, portletWindow, 
-                                                        expirationCache, portletDefinition);
-                if (contentIsCached)
+                if (retrieveCachedContent(requestContext, portletWindow, expirationCache, portletDefinition))
                 {
                     return null;
                 }
             }
-            job = buildRenderingJob( portletWindow, requestContext, true, 
-                                     portletDefinition, null, contentIsCached, timeoutMetadata );
+            job = buildRenderingJob( portletWindow, requestContext, true, portletDefinition, timeoutMetadata );
+        }
+        catch (PortletAccessDeniedException pade)
+        {
+            throw pade;
         }
         catch (Exception e)
         {
@@ -347,7 +249,6 @@ public class PortletRendererImpl implements PortletRenderer
      * Render the specified rendering job.
      * The method returns before rendering is complete when the job is processed in parallel mode.
      * When it is not parallel mode, it returns after rendering is complete.
-     * @throws FailedToRenderFragmentException
      */
     public void processRenderingJob(RenderingJob job)
     {
@@ -365,9 +266,6 @@ public class PortletRendererImpl implements PortletRenderer
             else
             {
                 job.execute();
-                addTitleToHeader(job.getWindow(), 
-                                 job.getRequest(), job.getResponse(), job.getDispatcher(), 
-                                 job.isContentCached());                
             }
         }
         catch (Exception e1)
@@ -381,7 +279,7 @@ public class PortletRendererImpl implements PortletRenderer
      * Wait for all rendering jobs in the collection to finish successfully or otherwise. 
      * @param renderingJobs the Collection of rendering job objects to wait for.
      */
-    public void waitForRenderingJobs(List renderingJobs)
+    public void waitForRenderingJobs(List<RenderingJob> renderingJobs)
     {
         this.workMonitor.waitForRenderingJobs(renderingJobs);
     }
@@ -405,80 +303,41 @@ public class PortletRendererImpl implements PortletRenderer
         {
             PortletContent portletContent = (PortletContent)cachedElement.getContent();            
             fragment.setPortletContent(portletContent);
-            ContentDispatcherCtrl dispatcher = new ContentDispatcherImpl(portletContent);
-            HttpServletRequest servletRequest = requestContext.getRequest();
-
-            this.addTitleService.setDynamicTitle(portletWindow, servletRequest, dispatcher.getPortletContent(fragment).getTitle());
             return true;
         }        
         return false;
     }
     
-    public ContentDispatcherCtrl createDispatcher(RequestContext request, ContentFragment fragment, int expirationCache)
+    protected PortletContent createPortletContent(RequestContext request, PortletWindow portletWindow, int expirationCache)
     {
-        ContentCacheKey cacheKey = portletContentCache.createCacheKey(request, fragment.getId());                
-        PortletContent content = new PortletContentImpl(this, cacheKey, expirationCache);
-        ContentDispatcherCtrl dispatcher = new ContentDispatcherImpl(content); 
-        return dispatcher;
-    }
-    
-    /**
-     * Retrieve the ContentDispatcher for the specified request
-     */
-    public ContentDispatcher getDispatcher( RequestContext request, boolean isParallel )
-    {
-        return request.getContentDispatcher();
-    }
-
-    protected PortletWindow getPortletWindow( ContentFragment fragment, RequestContext requestContext ) throws FailedToCreateWindowException
-    {
-        PortletWindow portletWindow = requestContext.getPortletWindow(fragment);
-
-        if (portletWindow == null)
+        ContentCacheKey cacheKey = portletContentCache.createCacheKey(request, portletWindow.getFragment().getId());
+        String title = portletWindow.getFragment().getTitle();            
+        if (title == null)
         {
-            throw new FailedToCreateWindowException("Portlet Window creation failed for fragment: "
-                                                    + fragment.getId() + ", " + fragment.getName());
+            title = request.getPreferedLanguage(portletWindow.getPortletDefinition()).getTitle();
         }
-        return portletWindow;
+        if (title == null)
+        {
+            title = portletWindow.getPortletDefinition().getPortletName();
+        }
+        return new PortletContentImpl(this, cacheKey, expirationCache, title);
     }
     
-
     protected RenderingJob buildRenderingJob( PortletWindow portletWindow, 
                                               RequestContext requestContext, boolean isParallel,
                                               PortletDefinition portletDefinition, 
-                                              PortletContent portletContent, boolean contentIsCached, long timeoutMetadata)
-        throws PortletAccessDeniedException        
+                                              long timeoutMetadata)
     {
         int expirationCache = getExpirationCache(portletDefinition);
-        ContentDispatcherCtrl dispatcher = createDispatcher(requestContext, portletWindow.getFragment(), expirationCache);
-        HttpServletRequest request = requestContext.getRequest();
-        HttpServletResponse response = requestContext.getResponse();
+        PortletContent portletContent= createPortletContent(requestContext, portletWindow, expirationCache);
 
-        return buildRenderingJob( portletWindow, request, response,
-                                  requestContext, isParallel,
-                                  portletDefinition, dispatcher,
-                                  portletContent, expirationCache, contentIsCached, timeoutMetadata );        
-    }
-
-    protected RenderingJob buildRenderingJob( PortletWindow portletWindow, 
-                                              HttpServletRequest request, HttpServletResponse response, 
-                                              RequestContext requestContext, boolean isParallel,
-                                              PortletDefinition portletDefinition, 
-                                              ContentDispatcherCtrl dispatcher, 
-                                              PortletContent portletContent, 
-                                              int expirationCache, boolean contentIsCached, long timeoutMetadata)
-   {    
         RenderingJob rJob = null;
                
-        if (portletContent == null)
-        {
-            portletContent = dispatcher.getPortletContent(portletWindow.getFragment());
-            portletWindow.getFragment().setPortletContent(portletContent);
-        }
+        portletWindow.getFragment().setPortletContent(portletContent);
         
-        rJob = new RenderingJobImpl(container, this, portletDefinition, portletContent, dispatcher,
-                                    request, response, requestContext, portletWindow, 
-                                    statistics, expirationCache, contentIsCached );
+        rJob = new RenderingJobImpl(container, this, portletDefinition, portletContent,
+                                    requestContext.getRequest(), requestContext.getResponse(), requestContext, portletWindow, 
+                                    statistics, expirationCache);
         
         if (isParallel)
         {
@@ -491,7 +350,7 @@ public class PortletRendererImpl implements PortletRenderer
     protected long getTimeoutOnJob(PortletDefinition portletDefinition)
     {
         long timeoutMetadata = 0;
-        Collection timeoutFields = null;
+        Collection<LocalizedField> timeoutFields = null;
 
         if (portletDefinition != null)
         {
@@ -500,12 +359,8 @@ public class PortletRendererImpl implements PortletRenderer
 
         if (timeoutFields != null) 
         {
-            Iterator it = timeoutFields.iterator();
-
-            if (it.hasNext()) 
+            for (LocalizedField timeoutField : timeoutFields)
             {
-                LocalizedField timeoutField = (LocalizedField) timeoutFields.iterator().next();
-
                 try 
                 {
                     timeoutMetadata = Long.parseLong(timeoutField.getValue());
@@ -532,58 +387,9 @@ public class PortletRendererImpl implements PortletRenderer
         }        
     }
     
-    public void addTitleToHeader( PortletWindow portletWindow, 
-                                  HttpServletRequest request, HttpServletResponse response, 
-                                  ContentDispatcherCtrl dispatcher, boolean isCacheTitle )
-    {
-        ContentFragment fragment = portletWindow.getFragment();
-        
-        if (overrideTitles)
-        {
-            try
-            {
-                String title = fragment.getTitle();
-
-                if ( title == null )
-                {
-                    title = addTitleService.getDynamicTitle( portletWindow, request );
-                }
-
-                response.setHeader( "JS_PORTLET_TITLE", StringEscapeUtils.escapeHtml( title ) );
-                dispatcher.getPortletContent(fragment).setTitle(title);          
-            }
-            catch (Exception e)
-            {
-                log.error("Unable to reteive portlet title: " + e.getMessage(), e);
-            }
-        }
-        else
-        {
-            String title = null;
-
-            if (isCacheTitle)
-            {
-                title = fragment.getTitle();
-
-                if ( title == null )
-                {
-                    title = addTitleService.getDynamicTitle(portletWindow, request);
-                }
-
-                dispatcher.getPortletContent(fragment).setTitle(title);
-            }
-
-            if (title == null)
-            {
-                title = addTitleService.getDynamicTitle(portletWindow, request);
-                dispatcher.getPortletContent(fragment).setTitle(title);                
-            }
-        }
-    }
-    
     protected boolean checkSecurityConstraint(PortletDefinition portlet, ContentFragment fragment)
     {
-        if (fragment.getType().equals(ContentFragment.PORTLET))
+        if (fragment.getType().equals(Fragment.PORTLET))
         {
             if (accessController != null)
             {
@@ -612,7 +418,9 @@ public class PortletRendererImpl implements PortletRenderer
     public void notifyContentComplete(PortletContent content)
     {
         if (content.getExpiration() != 0)
+        {
             addToCache(content);
+        }
     }
     
     public PortletTrackingManager getPortletTrackingManager()

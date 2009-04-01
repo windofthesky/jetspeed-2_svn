@@ -47,7 +47,10 @@
     class="org.apache.jetspeed.aggregator.impl.PortletAggregatorImpl">
     <meta key="j2:cat" value="default" />
     <constructor-arg>
-      <ref bean="org.apache.jetspeed.aggregator.PortletRendererWithTitleHeader" />
+      <ref bean="org.apache.jetspeed.aggregator.PortletRenderer" />
+    </constructor-arg>
+    <constructor-arg type="boolean">
+      <value>true</value>
     </constructor-arg>
   </bean>
 
@@ -65,9 +68,6 @@
       <ref bean="PortalStatistics" />
     </constructor-arg>
     <constructor-arg>
-      <ref bean="org.apache.pluto.services.title.DynamicTitleService" />
-    </constructor-arg>
-    <constructor-arg>
       <ref bean="org.apache.jetspeed.aggregator.PortletTrackingManager" />
     </constructor-arg>
     <!-- flag indicating whether to check jetspeed-portlet.xml security constraints
@@ -81,42 +81,6 @@
     </constructor-arg>
     <constructor-arg>
       <ref bean="portletContentCache" />
-    </constructor-arg>
-  </bean>
-
-  <!-- Portlet Renderer w/title in http response header -->
-  <bean id="org.apache.jetspeed.aggregator.PortletRendererWithTitleHeader"
-    class="org.apache.jetspeed.aggregator.impl.PortletRendererImpl" init-method="start" destroy-method="stop">
-    <meta key="j2:cat" value="default" />
-    <constructor-arg>
-      <ref bean="org.apache.pluto.PortletContainer" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.aggregator.WorkerMonitor" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="PortalStatistics" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="org.apache.pluto.services.title.DynamicTitleService" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.aggregator.PortletTrackingManager" />
-    </constructor-arg>
-    <!-- flag indicating whether to check jetspeed-portlet.xml security constraints
-      before rendering a portlet. If security check fails, do not display portlet content
-    -->
-    <constructor-arg type="boolean">
-      <value>true</value>
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="org.apache.jetspeed.security.SecurityAccessController" />
-    </constructor-arg>
-    <constructor-arg>
-      <ref bean="portletContentCache" />
-    </constructor-arg>
-    <constructor-arg type="boolean">
-      <value>true</value>
     </constructor-arg>
   </bean>
 

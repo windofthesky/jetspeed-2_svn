@@ -71,5 +71,5 @@ public interface WorkerMonitor
      * Wait for all rendering jobs in the collection to finish successfully or otherwise. 
      * @param renderingJobs the Collection of rendering job objects to wait for.
      */
-    public void waitForRenderingJobs(List renderingJobs);
+    public void waitForRenderingJobs(List<RenderingJob> renderingJobs);
 }

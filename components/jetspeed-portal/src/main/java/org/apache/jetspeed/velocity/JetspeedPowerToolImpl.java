@@ -45,7 +45,6 @@ import org.apache.jetspeed.aggregator.impl.PortletAggregatorFragmentImpl;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.BasePortalURL;
-import org.apache.jetspeed.container.window.FailedToCreateWindowException;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
@@ -55,7 +54,6 @@ import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.Path;
 import org.apache.velocity.context.Context;
@@ -123,17 +121,14 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
 
     protected Context velocityContext;
 
-    private DynamicTitleService titleService;
-    
     private BasePortalURL baseUrlAccess;
     
     private PortletRenderer renderer;
 
-    public JetspeedPowerToolImpl(RequestContext requestContext, PortletConfig portletConfig, RenderRequest renderRequest, RenderResponse renderResponse, DynamicTitleService titleService,PortletRenderer renderer) throws Exception
+    public JetspeedPowerToolImpl(RequestContext requestContext, PortletConfig portletConfig, RenderRequest renderRequest, RenderResponse renderResponse, PortletRenderer renderer) throws Exception
     {
         HttpServletRequest request = requestContext.getRequest();
         this.requestContext = requestContext;
-        this.titleService = titleService;
         try
         {
             baseUrlAccess = (BasePortalURL) getComponent("BasePortalURL");
@@ -188,12 +183,19 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     {
         try
         {
-            return getRequestContext().getPortalURL().getNavigationalState().getState(getPortletWindow(getCurrentFragment()));
+            PortletWindow window = getPortletWindow(getCurrentFragment());
+            if (!window.isValid())
+            {
+                // return a sensible default value to allow a mimimum level of processing to continue
+                return WindowState.NORMAL;
+            }
+            return getRequestContext().getPortalURL().getNavigationalState().getState(window);
         }
         catch (Exception e)
         {
             handleError(e, e.toString(), getCurrentFragment());
-            return null;
+            // return a sensible default value to allow a mimimum level of processing to continue
+            return WindowState.NORMAL;
         }
     }
 
@@ -207,12 +209,19 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     {
         try
         {
-            return getRequestContext().getPortalURL().getNavigationalState().getMappedState(getPortletWindow(getCurrentFragment()));
+            PortletWindow window = getPortletWindow(getCurrentFragment());
+            if (!window.isValid())
+            {
+                // return a sensible default value to allow a mimimum level of processing to continue
+                return WindowState.NORMAL;
+            }
+            return getRequestContext().getPortalURL().getNavigationalState().getMappedState(window);
         }
         catch (Exception e)
         {
             handleError(e, e.toString(), getCurrentFragment());
-            return null;
+            // return a sensible default value to allow a mimimum level of processing to continue
+            return WindowState.NORMAL;
         }
     }
 
@@ -226,12 +235,19 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     {
         try
         {
-            return getRequestContext().getPortalURL().getNavigationalState().getMode(getPortletWindow(getCurrentFragment()));
+            PortletWindow window = getPortletWindow(getCurrentFragment());
+            if (!window.isValid())
+            {
+                // return a sensible default value to allow a mimimum level of processing to continue
+                return PortletMode.VIEW;
+            }
+            return getRequestContext().getPortalURL().getNavigationalState().getMode(window);
         }
         catch (Exception e)
         {
             handleError(e, e.toString(), getCurrentFragment());
-            return null;
+            // return a sensible default value to allow a mimimum level of processing to continue
+            return PortletMode.VIEW;
         }
     }
 
@@ -245,12 +261,19 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     {
         try
         {
-            return getRequestContext().getPortalURL().getNavigationalState().getMappedMode(getPortletWindow(getCurrentFragment()));
+            PortletWindow window = getPortletWindow(getCurrentFragment());
+            if (!window.isValid())
+            {
+                // return a sensible default value to allow a mimimum level of processing to continue
+                return PortletMode.VIEW;
+            }
+            return getRequestContext().getPortalURL().getNavigationalState().getMappedMode(window);
         }
         catch (Exception e)
         {
             handleError(e, e.toString(), getCurrentFragment());
-            return null;
+            // return a sensible default value to allow a mimimum level of processing to continue
+            return PortletMode.VIEW;
         }
     }
 
@@ -334,12 +357,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
      */
     public PortletWindow getPortletWindow(ContentFragment f) throws Exception
     {
-        PortletWindow window = getRequestContext().getPortletWindow(f);
-        if (window == null)
-        {
-            throw new FailedToCreateWindowException("Portlet Window creation failed for fragment: "+ f.getId() + ", " + f.getName());
-        }
-        return window;
+        return getRequestContext().getPortletWindow(f);
     }
     
     /**
@@ -433,7 +451,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
             directError.write("Error occured process includeTemplate(): " + e.toString() + "\n\n");
             e.printStackTrace(directError);
             directError.close();
-            return null;
+            return "";
         }
     }
 
@@ -450,7 +468,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
             directError.write("Error occured process includeDecoration(): " + e.toString() + "\n\n");
             e.printStackTrace(directError);
             directError.close();
-            return null;
+            return "";
         }
     }
 
@@ -480,7 +498,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         catch (Exception e)
         {
             renderResponse.getWriter().write(e.toString());
-            return null;
+            return "";
         }
 
     }
@@ -609,7 +627,6 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         catch (TemplateLocatorException e)
         {
             log.error("Unable to locate template: " + path, e);
-//            System.out.println("Unable to locate template: " + path);
             throw e;
         }
     }
@@ -622,18 +639,18 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
      * @param e
      * @param msg
      */
+    @SuppressWarnings("unchecked")
     protected void handleError(Exception e, String msg, ContentFragment fragment)
     {
         log.error(msg, e);
 
-        Set exceptions = (Set) renderRequest.getAttribute(FRAGMENT_PROCESSING_ERROR_PREFIX + fragment.getId());
+        Set<Exception> exceptions = (Set<Exception>) renderRequest.getAttribute(FRAGMENT_PROCESSING_ERROR_PREFIX + fragment.getId());
         if (exceptions == null)
         {
-            exceptions = new HashSet();
+            exceptions = new HashSet<Exception>();
             setAttribute(FRAGMENT_PROCESSING_ERROR_PREFIX + fragment.getId(), exceptions);
         }
         exceptions.add(e);
-
     }
 
     /**
@@ -677,26 +694,22 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     public String getTitle(ContentFragment f)
     {
         String title = null;
-
         if (f != null)
         {
             title = f.getTitle();
-        }
-
-        if (title == null)
-        {
-            try
+            if (title == null && f.getPortletContent() != null)
             {
-
-                return titleService.getDynamicTitle(getPortletWindow(f), getRequestContext().getRequest());
+                title = f.getPortletContent().getTitle();
             }
-            catch (Exception e)
+            else
             {
-                log.error("Unable to reteive portlet title: " + e.getMessage(), e);
-                return "Title Error: " + e.getMessage();
+                title = f.getName();
+                if (title != null && title.indexOf("::") > -1)
+                {
+                    title = title.substring(title.indexOf("::")+2);
+                }
             }
         }
-
         return title;
     }
 
@@ -805,9 +818,13 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
                 fragment.setName(portletId);
                 ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap(), true);
                 window = getPortletWindow(contentFragment);
-                context.registerInstantlyCreatedPortletWindow(window);
-                renderer.renderNow(window.getFragment(), context, true);
-                return window.getFragment().getRenderedContent();
+                if (window.isValid())
+                {
+                    context.registerInstantlyCreatedPortletWindow(window);
+                    renderer.renderNow(window.getFragment(), context, true);
+                    return window.getFragment().getRenderedContent();
+                }
+                return "";
             }
             else
             {

@@ -29,7 +29,6 @@ import javax.portlet.Portlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.jetspeed.aggregator.FailedToRenderFragmentException;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
@@ -1072,7 +1071,6 @@ public class HeaderAggregatorImpl implements PageAggregator
     }
 
     protected boolean aggregateAndRender( ContentFragment fragment, RequestContext context, ContentPage page )
-            throws FailedToRenderFragmentException
     {
         boolean atLeastOneHasHeaderPhase = false;
         boolean hasHeaderPhase = false;
@@ -1107,7 +1105,7 @@ public class HeaderAggregatorImpl implements PageAggregator
             if ( !fragment.getType().equals( ContentFragment.LAYOUT ) )
             {
                 PortletWindow portletWindow = context.getPortletWindow( fragment );
-                if (portletWindow != null)
+                if (portletWindow.isValid())
                 {
                     PortletDefinition pd = portletWindow.getPortletDefinition();
                     if ( getPortletFactory().isPortletApplicationRegistered((PortletApplication)pd.getApplication() ) )
