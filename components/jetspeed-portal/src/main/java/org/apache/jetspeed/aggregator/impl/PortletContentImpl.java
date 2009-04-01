@@ -17,11 +17,19 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.io.CharArrayWriter;
+import java.io.NotSerializableException;
 import java.io.PrintWriter;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.cache.ContentCacheKey;
+import org.apache.jetspeed.util.DOMUtils;
+import org.w3c.dom.Element;
 
 
 public class PortletContentImpl implements PortletContent
@@ -34,6 +42,7 @@ public class PortletContentImpl implements PortletContent
     private String title;
     private String contentType;
     private PortletRenderer renderer = null;
+    private Map<String, Element> headElements = null;
     
     PortletContentImpl()
     {
@@ -176,4 +185,54 @@ public class PortletContentImpl implements PortletContent
             cw.reset();
         }
     }
+
+    public void addHeadElement(Element element, String keyHint) throws NotSerializableException
+    {
+        if (this.headElements == null)
+        {
+            this.headElements = new HashMap<String, Element>();
+        }
+
+        if (element == null)
+        {
+            if (keyHint != null)
+            {
+                this.headElements.remove(keyHint);
+            }
+            
+            return;
+        }
+        
+        if (!(element instanceof Serializable))
+        {
+            throw new NotSerializableException("The element is not serializable.");
+        }
+        
+        if (keyHint == null)
+        {
+            if (element instanceof org.dom4j.Element) 
+            {
+                keyHint = DOMUtils.stringifyElement((org.dom4j.Element) element);
+            }
+            else
+            {
+                keyHint = DOMUtils.stringifyElement(element);
+            }
+        }
+
+        this.headElements.put(keyHint, element);
+    }
+
+    public Collection<Element> getHeadElements()
+    {
+        if (this.headElements != null) 
+        {
+            return this.headElements.values();
+        } 
+        else 
+        {
+            return Collections.emptyList();
+        }
+    }
+    
 }

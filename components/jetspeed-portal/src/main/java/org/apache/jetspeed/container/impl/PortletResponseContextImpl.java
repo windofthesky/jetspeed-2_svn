@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.providers.ResourceURLProviderImpl;
 import org.apache.jetspeed.request.JetspeedRequestContext;
+import org.apache.jetspeed.util.DOMUtils;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletResponseContext;
 import org.apache.pluto.container.ResourceURLProvider;
@@ -102,8 +103,7 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
     
     public Element createElement(String tagName) throws DOMException
     {
-        // TODO: create DOM element in a more optimized way.
-        return null;
+        return DOMUtils.createSerializableElement(tagName);
     }
 
     public void close()

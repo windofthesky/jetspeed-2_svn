@@ -16,8 +16,10 @@
  */
 package org.apache.jetspeed.cache;
 
+import java.io.NotSerializableException;
 import java.io.PrintWriter;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import org.apache.jetspeed.cache.impl.EhCacheConfigResource;
 import org.apache.jetspeed.cache.impl.EhPortletContentCacheImpl;
 import org.apache.jetspeed.cache.impl.JetspeedCacheKeyGenerator;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
+import org.w3c.dom.Element;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -387,6 +390,20 @@ public class TestContentCache extends TestCase
         {
             // TODO Auto-generated method stub
             
+        }
+
+
+        public void addHeadElement(Element element, String keyHint) throws NotSerializableException
+        {
+            // TODO Auto-generated method stub
+            
+        }
+
+
+        public Collection<Element> getHeadElements()
+        {
+            // TODO Auto-generated method stub
+            return null;
         }
     }
         

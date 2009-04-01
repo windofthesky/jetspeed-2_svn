@@ -811,14 +811,13 @@
         <version>${ehcache.version}</version>
       </dependency>
 
-      <!-- defining dom4j (which is included by commons-configuration) just to be able to exclude
+      <!-- defining dom4j just to be able to exclude
         isorelax, msv and relaxngDatatype
       -->
       <dependency>
         <groupId>dom4j</groupId>
         <artifactId>dom4j</artifactId>
-        <optional>true</optional>
-        <version>[1.4,)</version>
+        <version>1.6.1</version>
         <exclusions>
           <exclusion>
             <groupId>isorelax</groupId>

@@ -18,19 +18,24 @@
 package org.apache.jetspeed.container.impl;
 
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.Collection;
 
+import javax.portlet.MimeResponse;
 import javax.portlet.PortletMode;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.aggregator.PortletContent;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.util.DOMUtils;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletRenderResponseContext;
 import org.apache.pluto.container.util.PrintWriterServletOutputStream;
-import org.apache.jetspeed.aggregator.PortletContent;
-import org.apache.jetspeed.container.PortletWindow;
+import org.w3c.dom.Element;
 
 /**
  * @version $Id$
@@ -124,5 +129,52 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
         {
             portletContent.setTitle(title);
         }
-    } 
+    }
+    
+    @Override
+    public void addProperty(String key, Element element)
+    {
+        if (MimeResponse.MARKUP_HEAD_ELEMENT.equals(key))
+        {
+            Element headElement = null;
+            
+            if (element instanceof Serializable)
+            {
+                headElement = element;
+            }
+            else
+            {
+                headElement = DOMUtils.convertToSerializableElement(element);
+            }
+            
+            try
+            {
+                // ID attribute of element is used as keyHint for the head element if available.
+                this.portletContent.addHeadElement(headElement, getIdAttribute(element));
+            }
+            catch (NotSerializableException e)
+            {
+            }
+        }
+        else
+        {
+            super.addProperty(key, element);
+        }
+    }
+    
+    private String getIdAttribute(Element element)
+    {
+        String value = null;
+        
+        if (element.hasAttribute("ID"))
+            value = element.getAttribute("ID");
+        else if (element.hasAttribute("id"))
+            value = element.getAttribute("id");
+        else if (element.hasAttribute("Id"))
+            value = element.getAttribute("Id");
+        else if (element.hasAttribute("iD"))
+            value = element.getAttribute("iD");
+        
+        return value;
+    }
 }
