@@ -21,12 +21,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.pluto.container.PortletContainer;
-import org.apache.pluto.container.PortletResponseContext;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.providers.ResourceURLProviderImpl;
 import org.apache.jetspeed.request.JetspeedRequestContext;
+import org.apache.pluto.container.PortletContainer;
+import org.apache.pluto.container.PortletResponseContext;
 import org.apache.pluto.container.ResourceURLProvider;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -97,6 +98,12 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
             containerResponse.addHeader(key, value);
             // TODO: consider if these should be "transported" from ActionResponse to EventRequest?
         }
+    }
+    
+    public Element createElement(String tagName) throws DOMException
+    {
+        // TODO: create DOM element in a more optimized way.
+        return null;
     }
 
     public void close()
