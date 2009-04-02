@@ -20,6 +20,7 @@ import javax.portlet.PortletContext;
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.portals.bridges.common.ServletContextProvider;
 
 /**
  * This interface defines the Jetspeed specific methods added on the Portlet Context.
@@ -32,4 +33,5 @@ public interface JetspeedPortletContext extends PortletContext
 {
     PortletApplication getApplicationDefinition(); 
     ServletContext getServletContext();
+    ServletContextProvider getServletContextProvider();
 }

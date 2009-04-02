@@ -23,7 +23,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.portals.bridges.common.ServletContextProvider;
 
@@ -37,16 +36,16 @@ public class ServletContextProviderImpl implements ServletContextProvider
 {
     public ServletContext getServletContext(GenericPortlet portlet) 
     {
-        return ((JetspeedPortletContext)portlet.getPortletContext()).getServletContext();
+        return ((JetspeedPortletContext)portlet.getPortletContext()).getServletContextProvider().getServletContext(portlet);
     }
 
     public HttpServletRequest getHttpServletRequest(GenericPortlet portlet, PortletRequest request) 
     {
-        return Jetspeed.getCurrentRequestContext().getCurrentPortletWindow().getPortletRequestContext().getServletRequest();
+        return ((JetspeedPortletContext)portlet.getPortletContext()).getServletContextProvider().getHttpServletRequest(portlet, request);
     }
 
     public HttpServletResponse getHttpServletResponse(GenericPortlet portlet, PortletResponse response) 
     {
-        return Jetspeed.getCurrentRequestContext().getCurrentPortletWindow().getPortletRequestContext().getServletResponse();
+        return ((JetspeedPortletContext)portlet.getPortletContext()).getServletContextProvider().getHttpServletResponse(portlet, response);
     }
 }

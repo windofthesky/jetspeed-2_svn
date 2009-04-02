@@ -20,6 +20,7 @@ package org.apache.jetspeed.container.impl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.pluto.container.PortletActionResponseContext;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletEventResponseContext;
@@ -73,6 +74,12 @@ public class PortletRequestContextServiceImpl implements PortletRequestContextSe
                                                                         HttpServletResponse containerResponse,
                                                                         PortletWindow window)
     {
+        if (((org.apache.jetspeed.container.PortletWindow)window).getAttribute(PortalReservedParameters.PORTLET_CONTAINER_INVOKER_USE_FORWARD) != null)
+        {
+            // the only reason why USING FORWARD during RENDER is for supporting the PortletResourceURLFactory extension for Portlet API 1.0
+            // see also the ResourceValveImpl
+            return new PortletResourceResponseContextImpl(container, containerRequest, containerResponse, (org.apache.jetspeed.container.PortletWindow)window);
+        }
         return new PortletRenderResponseContextImpl(container, containerRequest, containerResponse, (org.apache.jetspeed.container.PortletWindow)window);
     }
 

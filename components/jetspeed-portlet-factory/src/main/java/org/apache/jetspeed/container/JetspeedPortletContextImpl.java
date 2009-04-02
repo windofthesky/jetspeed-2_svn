@@ -27,6 +27,7 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.pluto.container.impl.PortletContextImpl;
+import org.apache.portals.bridges.common.ServletContextProvider;
 
 /**
  * Implements the Portlet API Portlet Context class
@@ -83,5 +84,10 @@ public class JetspeedPortletContextImpl extends PortletContextImpl implements Je
     public PortletApplication getApplicationDefinition()
     {
         return (PortletApplication)portletApp;
+    }
+    
+    public ServletContextProvider getServletContextProvider()
+    {
+        return JetspeedServletContextProviderImpl.getInstance();
     }
 }
