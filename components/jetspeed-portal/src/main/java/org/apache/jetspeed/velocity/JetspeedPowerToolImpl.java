@@ -18,7 +18,6 @@ package org.apache.jetspeed.velocity;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.security.Principal;
 import java.util.HashMap;
@@ -59,9 +58,6 @@ import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.DOMUtils;
 import org.apache.jetspeed.util.Path;
 import org.apache.velocity.context.Context;
-import org.dom4j.io.HTMLWriter;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
 import org.w3c.dom.Element;
 
 /**
@@ -101,8 +97,6 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
 
     protected static final String COLUMN_SIZES = "columnSizes";
     
-    protected static final OutputFormat DEFAULT_ELEMENT_HTML_OUTPUT_FORMAT = OutputFormat.createPrettyPrint();
-
     protected RenderRequest renderRequest;
 
     protected RenderResponse renderResponse;
@@ -848,35 +842,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
 
     public String getElementHtmlString(Element element)
     {
-        String html = null;
-        StringWriter writer = new StringWriter(80);
-        XMLWriter xmlWriter = null;
-
-        if (element instanceof org.dom4j.Element)
-        {
-            try
-            {
-                xmlWriter = new HTMLWriter(writer, DEFAULT_ELEMENT_HTML_OUTPUT_FORMAT);
-                DOMUtils.writeElement(xmlWriter, (org.dom4j.Element) element);
-                html = writer.toString();
-            }
-            catch (IOException e)
-            {
-            }
-            finally
-            {
-                if (xmlWriter != null)
-                {
-                    try { xmlWriter.close(); } catch (IOException ce) { }
-                }
-            }
-        }
-        else
-        {
-            html = DOMUtils.stringifyElement(element);
-        }
-        
-        return html;
+        return DOMUtils.stringifyElementToHtml(element);
     }
     
 }

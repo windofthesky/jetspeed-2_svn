@@ -3953,6 +3953,15 @@ jetspeed.om.PortletCL.prototype =
     },
     notifySuccess: function( /* String */ portletContent, /* String */ requestUrl, /* Portlet */ portlet, http )
     {
+        var headElementsContent = null;
+        var offset = (portletContent ? portletContent.indexOf("</JS_PORTLET_HEAD_ELEMENTS>") : -1);
+        if (offset != -1) {
+            offset += "</JS_PORTLET_HEAD_ELEMENTS>".length;
+            headElementsContent = portletContent.substring(0, offset);
+            portletContent = portletContent.substring(offset);
+            //dojo.debug("headElementsContent: " + headElementsContent);
+        }
+        // TODO: aggregate head elements content into the current page.
         var portletTitle = null;
         if ( http != null )
         {

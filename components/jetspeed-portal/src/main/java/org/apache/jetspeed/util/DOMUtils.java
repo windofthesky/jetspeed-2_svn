@@ -23,9 +23,11 @@ import org.dom4j.dom.DOMCDATA;
 import org.dom4j.dom.DOMComment;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.dom.DOMText;
+import org.dom4j.io.HTMLWriter;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -36,6 +38,12 @@ public class DOMUtils
     public static final int DEFAULT_ELEMENT_STRINGIFYING_BUFFER_SIZE = 80;
     public static final int DEFAULT_INDENT = 0;
     public static final String DEFAULT_INDENT_WITH = "\t";
+    public static final OutputFormat DEFAULT_HTML_OUTPUT_FORMAT = OutputFormat.createPrettyPrint();
+    
+    static
+    {
+        DEFAULT_HTML_OUTPUT_FORMAT.setExpandEmptyElements(true);
+    }
     
     private DOMUtils()
     {
@@ -152,7 +160,9 @@ public class DOMUtils
         try
         {
             xmlWriter = new XMLWriter(writer, outputFormat);
-            writeElement(xmlWriter, element);
+            xmlWriter.write(element);
+            xmlWriter.flush();
+            xmlWriter.close();
         }
         catch (IOException e)
         {
@@ -169,11 +179,40 @@ public class DOMUtils
         return stringified;
     }
     
-    public static void writeElement(XMLWriter xmlWriter, org.dom4j.Element element) throws IOException
+    public static String stringifyElementToHtml(Element element)
     {
-        xmlWriter.write(element);
-        xmlWriter.flush();
-        xmlWriter.close();
+        String html = null;
+
+        if (element instanceof org.dom4j.Element)
+        {
+            StringWriter writer = new StringWriter(DEFAULT_ELEMENT_STRINGIFYING_BUFFER_SIZE);
+            XMLWriter xmlWriter = null;
+            
+            try
+            {
+                xmlWriter = new HTMLWriter(writer, DEFAULT_HTML_OUTPUT_FORMAT);
+                xmlWriter.write(element);
+                xmlWriter.flush();
+                xmlWriter.close();
+                html = writer.toString();
+            }
+            catch (IOException e)
+            {
+            }
+            finally
+            {
+                if (xmlWriter != null)
+                {
+                    try { xmlWriter.close(); } catch (IOException ce) { }
+                }
+            }
+        }
+        else
+        {
+            html = stringifyElement(element);
+        }
+        
+        return html;
     }
     
 }

@@ -17,7 +17,9 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -30,6 +32,8 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.DOMUtils;
+import org.w3c.dom.Element;
 
 /**
  * PortletAggregator builds the content required to render a single portlet.
@@ -61,46 +65,79 @@ public class PortletAggregatorImpl implements PortletAggregator
         // construct Fragment for rendering use with
         // appropriate id to match portlet entity
         String entity = context.getRequestParameter(PortalReservedParameters.PORTLET_ENTITY);
+        
         if (entity == null)
         {
             entity = (String)context.getAttribute(PortalReservedParameters.PORTLET_ENTITY);
         }
+        
         if (entity == null)
         {
             return;
-        }        
+        }
+        
         PortletWindow window = context.resolvePortletWindow(entity);
+        
         if (window == null) 
         {        
             String name = context.getRequestParameter(PortalReservedParameters.PORTLET);
+            
             if (name == null)
             {
                 name = (String)context.getAttribute(PortalReservedParameters.PORTLET);
             }
+            
             if (name == null)
             {
                 return;
             }
+            
             Fragment fragment = new PortletAggregatorFragmentImpl(entity);        
             fragment.setType(Fragment.PORTLET);
             fragment.setName(name);
             window = context.getPortletWindow(new ContentFragmentImpl(fragment, new HashMap(), true));
+            
             if (window.isValid())
             {
                 context.registerInstantlyCreatedPortletWindow(window);
             }
         }
+        
         ContentFragment contentFragment = window.getFragment();
         renderer.renderNow(contentFragment, context);
+        
         if (titleInHeader && contentFragment.getPortletContent() != null)
         {            
             context.getResponse().setHeader( "JS_PORTLET_TITLE", StringEscapeUtils.escapeHtml( contentFragment.getPortletContent().getTitle() ) );
         }
+
+        writeHeadElements(context, window);
         context.getResponse().getWriter().write(contentFragment.getRenderedContent());
         PortletContent content = contentFragment.getPortletContent();
+        
         if (content != null && content.getExpiration() == 0)
         {
             contentFragment.getPortletContent().release();
         }        
     }
+    
+    protected void writeHeadElements(RequestContext context, PortletWindow window) throws IOException
+    {
+        Map<String, Element> headElements = window.getFragment().getPortletContent().getHeadElements();
+        PrintWriter out = context.getResponse().getWriter();
+
+        out.println("<JS_PORTLET_HEAD_ELEMENTS>");
+        
+        if (!headElements.isEmpty())
+        {
+            
+            for (Element element : headElements.values())
+            {
+                out.println(DOMUtils.stringifyElementToHtml(element));
+            }
+        }
+        
+        out.print("</JS_PORTLET_HEAD_ELEMENTS>");
+    }
+    
 }
