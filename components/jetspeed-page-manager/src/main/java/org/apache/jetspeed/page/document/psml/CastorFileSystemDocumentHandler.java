@@ -47,11 +47,10 @@ import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.Serializer;
-import org.apache.xml.serialize.XMLSerializer;
 import org.castor.mapping.BindingType;
 import org.castor.mapping.MappingUnmarshaller;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.mapping.MappingLoader;
@@ -119,10 +118,9 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         verifyPath(documentRootDir);
         this.fileCache = fileCache;
         this.fileCache.addListener(this);
-        this.format = new OutputFormat();
-        format.setIndenting(true);
-        format.setIndent(4);
-        format.setEncoding(PSML_DOCUMENT_ENCODING);
+        this.format = new OutputFormat("    ", true, PSML_DOCUMENT_ENCODING);
+        this.format.setXHTML(true);
+        this.format.setExpandEmptyElements(false);
         
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser = factory.newSAXParser();
@@ -234,8 +232,8 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             // polymorphic collection to strip artifical <menu-element>
             // tags enabling Castor XML binding; see JETSPEED-INF/castor/page-mapping.xml
             writer = new OutputStreamWriter(new FileOutputStream(f), PSML_DOCUMENT_ENCODING);
-            Serializer serializer = new XMLSerializer(writer, this.format);
-            final ContentHandler handler = serializer.asContentHandler();
+            XMLWriter xmlWriter = new XMLWriter(writer, this.format);
+            final ContentHandler handler = xmlWriter;
             
             Marshaller marshaller = new Marshaller(new ContentHandler()
                 {

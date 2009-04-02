@@ -73,10 +73,6 @@
             <artifactId>castor</artifactId>
         </dependency>
         <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-        </dependency>
-        <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
         </dependency>
@@ -93,6 +89,11 @@
         <dependency>
             <groupId>${pom.groupId}</groupId>
             <artifactId>jetspeed-id-generator</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
