@@ -130,15 +130,14 @@ public class SecurityValveImpl extends AbstractSecurityValve implements Security
                     subject = JetspeedSubjectFactory.createSubject(userMgr.newTransientUser(userPrincipal.getName()), null, null, null);
                 }
             }       
-            
-            // create a new statistics *user* session
-            if (statistics != null)
-            {
+        }    
+        if(statistics!=null && request.getSessionAttribute(IP_ADDRESS)==null)
+        {
+                //create a new statistics *user* session
                 statistics.logUserLogin(request, 0);
-            }
-            // put IP address in session for logout
-            request.setSessionAttribute(IP_ADDRESS, request.getRequest().getRemoteAddr());            
-        }               
+                request.setSessionAttribute(IP_ADDRESS, request.getRequest().getRemoteAddr());
+                // put IP address in session for logout
+        }
         return subject;
     }
             
