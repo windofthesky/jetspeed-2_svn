@@ -31,6 +31,7 @@ dojo.require( "dojo.lang.*" );
 dojo.require( "dojo.event.*" );
 dojo.require( "dojo.io.*" );
 dojo.require( "dojo.uri.Uri" );
+dojo.require( "dojo.xml.Parse" );
 dojo.require( "dojo.widget.*" );
 dojo.require( "jetspeed.common" );
 
@@ -215,6 +216,7 @@ jetspeed.initializeDesktop = function()
     var jsDebug = jsObj.debug;
     var djObj = dojo;
 
+    jsObj.getHead();   // sets jetspeed.docHead
     jsObj.getBody();   // sets jetspeed.docBody
 
     jsObj.ui.initCssObj();
@@ -468,6 +470,91 @@ jetspeed.updatePageEnd = function()
     }
 }
 
+jetspeed.createHeadElement = function( elem )
+{
+    var headElem = document.createElement(elem.tagName);
+    
+    for ( var attr in elem[elem.tagName] )
+    {
+        var value = elem[elem.tagName].nodeRef.getAttribute(attr);
+        if ( value )
+        {
+            headElem.setAttribute( attr, value );
+        }
+    }
+    
+    return headElem;
+}
+
+jetspeed.contributeHeadElements = function( headElements )
+{
+    var jsObj = jetspeed;
+
+    // supports head contributions with script, link and style tags
+    
+    if ( headElements.script ) 
+    {
+        for ( var i = 0; i < headElements.script.length; i++ )
+        {
+            var script = headElements.script[i];
+            var scriptElem = jetspeed.createHeadElement( script );
+            
+            // if there's id attribute, then don't append element if there already exists.
+            if ( !scriptElem.id || !document.getElementById( scriptElem.id ) )
+            {
+                if ( jsObj.UAie )
+                {
+                    scriptElem.text = script.value;
+                }
+                else
+                {
+                    scriptElem.appendChild(document.createTextNode(script.value));
+                }
+            
+                jsObj.getHead().appendChild(scriptElem);
+            }
+        }
+    }
+    
+    if ( headElements.link )
+    {
+        for ( var i = 0; i < headElements.link.length; i++ )
+        {
+            var link = headElements.link[i];
+            var linkElem = jetspeed.createHeadElement( link );
+            
+            // if there's id attribute, then don't append element if there already exists.
+            if ( !linkElem.id || !document.getElementById( linkElem.id ) )
+            {
+                jsObj.getHead().appendChild(linkElem);
+            }
+        }
+    }
+    
+    if ( headElements.style )
+    {
+        for ( var i = 0; i < headElements.style.length; i++ )
+        {
+            var style = headElements.style[i];
+            var styleElem = jetspeed.createHeadElement( style );
+            
+            // if there's id attribute, then don't append element if there already exists.
+            if ( !styleElem.id || !document.getElementById( styleElem.id ) )
+            {
+                if ( jsObj.UAie )
+                {
+                    styleElem.styleSheet.cssText = style.value;
+                }
+                else
+                {
+                    styleElem.appendChild(document.createTextNode(style.value));
+                }
+            
+                jsObj.getHead().appendChild(styleElem);
+            }
+        }
+    }
+}
 
 // jetspeed.doRender
 
@@ -489,7 +576,6 @@ jetspeed.doRender = function( bindArgs, portletEntityId )
         targetPortlet.retrieveContent( null, bindArgs );
     }
 };
-
 
 // jetspeed.doAction
 
@@ -3954,14 +4040,16 @@ jetspeed.om.PortletCL.prototype =
     notifySuccess: function( /* String */ portletContent, /* String */ requestUrl, /* Portlet */ portlet, http )
     {
         var headElementsContent = null;
-        var offset = (portletContent ? portletContent.indexOf("</JS_PORTLET_HEAD_ELEMENTS>") : -1);
-        if (offset != -1) {
+        var offset = ( portletContent ? portletContent.indexOf("</JS_PORTLET_HEAD_ELEMENTS>") : -1 );
+        if ( offset != -1 ) 
+        {
             offset += "</JS_PORTLET_HEAD_ELEMENTS>".length;
-            headElementsContent = portletContent.substring(0, offset);
-            portletContent = portletContent.substring(offset);
-            //dojo.debug("headElementsContent: " + headElementsContent);
+            headElementsContent = portletContent.substring( 0, offset );
+            portletContent = portletContent.substring( offset );
+            var parser = new dojo.xml.Parse();
+            var headElements = parser.parseElement( dojo.dom.createDocumentFromText( headElementsContent ).documentElement );
+            jetspeed.contributeHeadElements( headElements );
         }
-        // TODO: aggregate head elements content into the current page.
         var portletTitle = null;
         if ( http != null )
         {

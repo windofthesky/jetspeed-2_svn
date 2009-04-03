@@ -179,6 +179,14 @@ jetspeed.callPageLoaded = function()
 	}
 };
 
+jetspeed.getHead = function()
+{
+    var jsObj = jetspeed;
+    if ( jsObj.docHead == null )
+        jsObj.docHead = document.head || document.getElementsByTagName( "head" )[0];
+    return jsObj.docHead;
+};
+
 jetspeed.getBody = function()
 {
     var jsObj = jetspeed;
