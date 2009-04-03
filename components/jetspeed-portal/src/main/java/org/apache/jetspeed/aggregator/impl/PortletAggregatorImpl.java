@@ -19,7 +19,7 @@ package org.apache.jetspeed.aggregator.impl;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -33,6 +33,7 @@ import org.apache.jetspeed.om.page.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.DOMUtils;
+import org.apache.jetspeed.util.KeyValue;
 import org.w3c.dom.Element;
 
 /**
@@ -123,17 +124,16 @@ public class PortletAggregatorImpl implements PortletAggregator
     
     protected void writeHeadElements(RequestContext context, PortletWindow window) throws IOException
     {
-        Map<String, Element> headElements = window.getFragment().getPortletContent().getHeadElements();
+        List<KeyValue<String, Element>> headElements = window.getHeadElements();
         PrintWriter out = context.getResponse().getWriter();
 
         out.println("<JS_PORTLET_HEAD_ELEMENTS>");
         
         if (!headElements.isEmpty())
         {
-            
-            for (Element element : headElements.values())
+            for (KeyValue<String, Element> kvPair : headElements)
             {
-                out.println(DOMUtils.stringifyElementToHtml(element));
+                out.println(DOMUtils.stringifyElementToHtml(kvPair.getValue()));
             }
         }
         

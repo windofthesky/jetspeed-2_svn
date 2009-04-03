@@ -490,6 +490,7 @@ jetspeed.contributeHeadElements = function( headElements )
 {
     var jsObj = jetspeed;
 
+    // TODO: add insertion ordering feature...
     // supports head contributions with script, link and style tags
     
     if ( headElements.script ) 

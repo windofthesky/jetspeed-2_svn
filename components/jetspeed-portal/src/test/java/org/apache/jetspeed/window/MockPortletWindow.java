@@ -17,6 +17,7 @@
 
 package org.apache.jetspeed.window;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletMode;
@@ -30,9 +31,11 @@ import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.KeyValue;
 import org.apache.pluto.container.PortletEntity;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.pluto.container.PortletResponseContext;
+import org.w3c.dom.Element;
 
 /**
  * @version $Id$
@@ -233,5 +236,11 @@ public class MockPortletWindow implements PortletWindow
     {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    public List<KeyValue<String, Element>> getHeadElements()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

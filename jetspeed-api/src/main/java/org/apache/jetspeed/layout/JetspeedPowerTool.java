@@ -28,6 +28,7 @@ import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.util.KeyValue;
 import org.w3c.dom.Element;
 
 /**
@@ -239,6 +240,27 @@ public interface JetspeedPowerTool
     
     String renderPortletWindow(String windowId, String portletId);
     
+    /**
+     * Returns stringified one from the element
+     * 
+     * @param element
+     * @return
+     */
     String getElementHtmlString(Element element);
+    
+    /**
+     * Returns all the contributed head elements from the fragment and its child fragments.
+     * @param f
+     * @return
+     * @throws Exception
+     */
+    List<KeyValue<String, Element>> getHeadElements(ContentFragment f) throws Exception;;
+
+    /**
+     * Returns all the contributed head elements from the current fragment and its child fragments.
+     * @return
+     * @throws Exception
+     */
+    List<KeyValue<String, Element>> getHeadElements() throws Exception;;
     
 }

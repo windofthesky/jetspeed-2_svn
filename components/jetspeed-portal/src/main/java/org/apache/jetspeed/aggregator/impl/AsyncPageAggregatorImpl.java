@@ -197,9 +197,6 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
             log.debug("Rendering portlet fragment: [[name, " + f.getName() + "], [id, " + f.getId() + "]]");
         }
         
-        // accumulate all the head contributions from the rendered contents
-        aggregateHeadElements(f, context, null);   
-        
         renderer.renderNow(f, context);
     }
     

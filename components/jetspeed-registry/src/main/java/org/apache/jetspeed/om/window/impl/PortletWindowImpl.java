@@ -18,6 +18,7 @@ package org.apache.jetspeed.om.window.impl;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletMode;
@@ -25,16 +26,20 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.WindowState;
 
+import org.apache.commons.collections.list.TreeList;
+import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.RenderTrackable;
-import org.apache.pluto.container.PortletEntity;
-import org.apache.pluto.container.PortletRequestContext;
-import org.apache.pluto.container.PortletResponseContext;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.PortletWindowID;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.KeyValue;
+import org.apache.pluto.container.PortletEntity;
+import org.apache.pluto.container.PortletRequestContext;
+import org.apache.pluto.container.PortletResponseContext;
+import org.w3c.dom.Element;
 
 /**
  * <P>
@@ -69,6 +74,7 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
     private transient PortletRequestContext portletRequestContext;
     private transient PortletResponse portletResponse;
     private transient PortletInstance portletInstance;
+    private transient List<KeyValue<String, Element>> headElements;
 
     private boolean valid;
     
@@ -291,4 +297,73 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
     {
         return portletInstance;
     }
+
+    @SuppressWarnings("unchecked")
+    public List<KeyValue<String, Element>> getHeadElements()
+    {
+        if (headElements == null)
+        {
+            // org.apache.commons.collections.list.TreeList is well-optimized for
+            // fast insertions at any index in the list.
+            // Refer to description in the javadoc for details.
+            headElements = new TreeList();
+            aggregateHeadElements(getFragment(), headElements);
+        }
+        
+        return headElements;
+    }
+    
+    private static void aggregateHeadElements( ContentFragment f, List<KeyValue<String, Element>> aggregatedHeadElements )
+    {
+        // TODO: Question: Does the aggregation order direction (top-down or bottom-up) need to be configurable?
+        
+        List<ContentFragment> contentFragments = (List<ContentFragment>) f.getContentFragments();
+        
+        if (contentFragments != null && !contentFragments.isEmpty())
+        {
+            for (ContentFragment child : contentFragments)
+            {
+                if (!"hidden".equals(f.getState()))
+                {
+                    aggregateHeadElements(child, aggregatedHeadElements);
+                }
+            }
+        }
+
+        PortletContent portletContent = f.getPortletContent();
+        
+        // portletContent can be null if this method is invoked before the portlet window starts rendering
+        if (portletContent != null)
+        {
+            // Brief explanation on head element aggregation algorithm (Thanks to Ate for the brilliant ideas!):
+            // - Precondition: start from the zero as insertion index.
+            // - Rule1: if there already exists an element with the key, 
+            //              set the insertion index to the matching index + 1.
+            // - Rule2: if there's no existing element with the key, 
+            //              insert the element at the current insertion index 
+            //              and increase the insertion index.
+            
+            List<KeyValue<String, Element>> contentHeadElements = f.getPortletContent().getHeadElements();
+            
+            if (!contentHeadElements.isEmpty())
+            {
+                int insertionIndex = 0;
+                
+                for (KeyValue<String, Element> kvPair : contentHeadElements)
+                {
+                    int offset = aggregatedHeadElements.indexOf(kvPair);
+                    
+                    if (offset != -1)
+                    {
+                        insertionIndex = offset + 1;
+                    }
+                    else
+                    {
+                        aggregatedHeadElements.add(insertionIndex++, kvPair);
+                    }
+                }
+            }
+        }
+    }
+
 }

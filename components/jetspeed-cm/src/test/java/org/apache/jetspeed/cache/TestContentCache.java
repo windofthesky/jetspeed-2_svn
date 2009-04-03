@@ -21,7 +21,6 @@ import java.io.PrintWriter;
 import java.security.Principal;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.TestCase;
 import net.sf.ehcache.Cache;
@@ -32,6 +31,7 @@ import org.apache.jetspeed.cache.impl.EhCacheConfigResource;
 import org.apache.jetspeed.cache.impl.EhPortletContentCacheImpl;
 import org.apache.jetspeed.cache.impl.JetspeedCacheKeyGenerator;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
+import org.apache.jetspeed.util.KeyValue;
 import org.w3c.dom.Element;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -400,7 +400,7 @@ public class TestContentCache extends TestCase
         }
 
 
-        public Map<String, Element> getHeadElements()
+        public List<KeyValue<String, Element>> getHeadElements()
         {
             // TODO Auto-generated method stub
             return null;

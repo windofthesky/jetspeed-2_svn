@@ -18,6 +18,7 @@
 package org.apache.jetspeed.container;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
@@ -27,8 +28,10 @@ import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.KeyValue;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.pluto.container.PortletResponseContext;
+import org.w3c.dom.Element;
 
 /**
  * @version $Id$
@@ -36,6 +39,7 @@ import org.apache.pluto.container.PortletResponseContext;
  */
 public interface PortletWindow extends org.apache.pluto.container.PortletWindow, Serializable
 {
+    
     boolean isValid();
     PortletWindowID getId();
     String getWindowId();
@@ -60,4 +64,16 @@ public interface PortletWindow extends org.apache.pluto.container.PortletWindow,
     PortletRequestContext getPortletRequestContext();
     PortletResponseContext getPortletResponseContext();
     PortletInstance getPortletInstance();
+    
+    /**
+     * Returns all the contributed head elements which were aggregated from this window content
+     * and all the child window contents.
+     * <P>
+     * The head elements are sorted by the insertion order.
+     * </P>
+     * 
+     * @return
+     */
+    List<KeyValue<String, Element>> getHeadElements();
+    
 }

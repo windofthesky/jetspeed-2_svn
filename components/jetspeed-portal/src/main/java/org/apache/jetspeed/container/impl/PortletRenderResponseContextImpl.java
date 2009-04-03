@@ -138,13 +138,18 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
         {
             Element headElement = null;
             
-            if (element instanceof Serializable)
+            // Note that element can be null.
+            // According to the SPEC, the property with this key can be removed with null element.
+            if (element != null)
             {
-                headElement = element;
-            }
-            else
-            {
-                headElement = DOMUtils.convertToSerializableElement(element);
+                if (element instanceof Serializable)
+                {
+                    headElement = element;
+                }
+                else
+                {
+                    headElement = DOMUtils.convertToSerializableElement(element);
+                }
             }
             
             try
@@ -166,14 +171,17 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
     {
         String value = null;
         
-        if (element.hasAttribute("ID"))
-            value = element.getAttribute("ID");
-        else if (element.hasAttribute("id"))
-            value = element.getAttribute("id");
-        else if (element.hasAttribute("Id"))
-            value = element.getAttribute("Id");
-        else if (element.hasAttribute("iD"))
-            value = element.getAttribute("iD");
+        if (element != null)
+        {
+            if (element.hasAttribute("id"))
+                value = element.getAttribute("id");
+            else if (element.hasAttribute("ID"))
+                value = element.getAttribute("ID");
+            else if (element.hasAttribute("Id"))
+                value = element.getAttribute("Id");
+            else if (element.hasAttribute("iD"))
+                value = element.getAttribute("iD");
+        }
         
         return value;
     }

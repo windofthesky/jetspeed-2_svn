@@ -21,13 +21,15 @@ import java.io.NotSerializableException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+import org.apache.commons.collections.list.TreeList;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.util.DOMUtils;
+import org.apache.jetspeed.util.DefaultKeyValue;
+import org.apache.jetspeed.util.KeyValue;
 import org.w3c.dom.Element;
 
 
@@ -35,13 +37,18 @@ public class PortletContentImpl implements PortletContent
 {
     private CharArrayWriter cw;
     private PrintWriter writer;
-    private boolean complete = false;
+    private boolean complete;
     private ContentCacheKey cacheKey;
-    private int expiration = 0;
+    private int expiration;
     private String title;
     private String contentType;
-    private PortletRenderer renderer = null;
-    private Map<String, Element> headElements = null;
+    private PortletRenderer renderer;
+    
+    /**
+     * The list container for all contributed head elements from this portlet content.
+     * Because the insertion order might be important for web development, this container should be list instead of map.
+     */
+    private List<KeyValue<String, Element>> headElements;
     
     PortletContentImpl()
     {
@@ -185,18 +192,29 @@ public class PortletContentImpl implements PortletContent
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void addHeadElement(Element element, String keyHint) throws NotSerializableException
     {
         if (this.headElements == null)
         {
-            this.headElements = new HashMap<String, Element>();
+            // org.apache.commons.collections.list.TreeList is well-optimized for
+            // fast insertions at any index in the list.
+            // Refer to description in the javadoc for details.
+            this.headElements = new TreeList();
         }
 
         if (element == null)
         {
             if (keyHint != null)
             {
-                this.headElements.remove(keyHint);
+                KeyValue<String, Element> kvPair = new DefaultKeyValue(keyHint, null, true);
+                this.headElements.remove(kvPair);
+            }
+            else
+            {
+                // If element is null and keyHint is null, remove all head elements.
+                // This is complying with the portlet spec.
+                this.headElements.clear();
             }
             
             return;
@@ -209,6 +227,10 @@ public class PortletContentImpl implements PortletContent
         
         if (keyHint == null)
         {
+            // If element is dom4j's element, then we can use dom4j's serializer.
+            // Meanwhile, the element can be a serializable one which is not from dom4j.
+            // In the case, serialize the element to a string as a keyHint.
+            
             if (element instanceof org.dom4j.Element) 
             {
                 keyHint = DOMUtils.stringifyElement((org.dom4j.Element) element);
@@ -219,23 +241,28 @@ public class PortletContentImpl implements PortletContent
             }
         }
 
-        this.headElements.put(keyHint, element);
+        KeyValue<String, Element> kvPair = new DefaultKeyValue(keyHint, element, true);
+        
+        if (!this.headElements.contains(kvPair))
+        {
+            this.headElements.add(kvPair);
+        }
     }
 
-    public Map<String, Element> getHeadElements()
+    public List<KeyValue<String, Element>> getHeadElements()
     {
-        Map<String, Element> headElemMap = null;
+        List<KeyValue<String, Element>> headElems = null;
         
         if (this.headElements != null) 
         {
-            headElemMap = this.headElements;
+            headElems = this.headElements;
         } 
         else 
         {
-            headElemMap = Collections.emptyMap();
+            headElems = Collections.emptyList();
         }
         
-        return headElemMap;
+        return headElems;
     }
     
 }

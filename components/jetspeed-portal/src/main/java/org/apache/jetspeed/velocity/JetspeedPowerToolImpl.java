@@ -56,6 +56,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.DOMUtils;
+import org.apache.jetspeed.util.KeyValue;
 import org.apache.jetspeed.util.Path;
 import org.apache.velocity.context.Context;
 import org.w3c.dom.Element;
@@ -843,6 +844,16 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     public String getElementHtmlString(Element element)
     {
         return DOMUtils.stringifyElementToHtml(element);
+    }
+
+    public List<KeyValue<String, Element>> getHeadElements(ContentFragment f) throws Exception
+    {
+        return getPortletWindow(f).getHeadElements();
+    }
+
+    public List<KeyValue<String, Element>> getHeadElements() throws Exception
+    {
+        return getHeadElements(getCurrentFragment());
     }
     
 }

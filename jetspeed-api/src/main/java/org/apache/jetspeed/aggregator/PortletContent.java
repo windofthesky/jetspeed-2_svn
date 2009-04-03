@@ -18,9 +18,10 @@ package org.apache.jetspeed.aggregator;
 
 import java.io.NotSerializableException;
 import java.io.PrintWriter;
-import java.util.Map;
+import java.util.List;
 
 import org.apache.jetspeed.cache.ContentCacheKey;
+import org.apache.jetspeed.util.KeyValue;
 import org.w3c.dom.Element;
 
 /**
@@ -132,11 +133,12 @@ public interface PortletContent
     void addHeadElement(Element element, String keyHint) throws NotSerializableException;
     
     /**
-     * Retrieves header element map to be contributed to the page.
+     * Retrieves header element key value pairs to be contributed to the page.
+     * Because the insertion order might be important for web development, it should be list instead of map.
      * 
      * @return
      */
-    Map<String, Element> getHeadElements(); 
+    List<KeyValue<String, Element>> getHeadElements(); 
     
     void reset();
     

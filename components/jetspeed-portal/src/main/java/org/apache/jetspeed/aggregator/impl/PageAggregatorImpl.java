@@ -74,7 +74,7 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
         }
         else
         {
-            aggregateAndRender(root, context, page, true);
+            aggregateAndRender(root, context, page);
         }
         
         // write all rendered content
@@ -89,9 +89,10 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
         releaseBuffers(root, context);        
     }
 
-    protected void aggregateAndRender( ContentFragment f, RequestContext context, ContentPage page, boolean isRoot )
+    @SuppressWarnings("unchecked")
+    protected void aggregateAndRender( ContentFragment f, RequestContext context, ContentPage page )
     {
-        List<ContentFragment> contentFragments = (List<ContentFragment>) f.getContentFragments();
+        List<ContentFragment> contentFragments = f.getContentFragments();
         
         if (contentFragments != null && !contentFragments.isEmpty())
         {
@@ -99,15 +100,9 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
             {
                 if (!"hidden".equals(f.getState()))
                 {
-                    aggregateAndRender(child, context, page, false);
+                    aggregateAndRender(child, context, page);
                 }
             }
-        }
-        
-        if (isRoot)
-        {
-            // accumulate all the head contributions from the rendered contents
-            aggregateHeadElements(f, context, null);   
         }
         
         renderer.renderNow(f, context);

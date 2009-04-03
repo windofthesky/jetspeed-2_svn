@@ -58,7 +58,6 @@ public interface PortalReservedParameters
     public static final String HEADER_NAMED_RESOURCE_ATTRIBUTE = "org.apache.jetspeed.headernamedresource";
     public static final String HEADER_NAMED_RESOURCE_ADDED_FRAGMENTS_ATTRIBUTE = "org.apache.jetspeed.headernamedresourceaddedfragments";
     public static final String HEADER_NAMED_RESOURCE_REGISTRY_ATTRIBUTE = "org.apache.jetspeed.headernamedresourceregistry";
-    public static final String MARKUP_HEAD_ELEMENTS_ATTRIBUTE = "org.apache.jetspeed.markup.head.elements";
     public static final String PATH_ATTRIBUTE = "org.apache.jetspeed.Path";
     public static final String PARAMETER_ALREADY_DECODED_ATTRIBUTE = "org.apache.jetspeed.parameterAlreadyDecoded";
     public static final String RESOVLER_CACHE_ATTR = "org.apache.jetspeed.resovler.cache";

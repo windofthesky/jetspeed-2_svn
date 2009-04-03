@@ -78,9 +78,9 @@
 #macro (includeHeaderResource)
 #acquireHeaderResource()
 $resourceHeader.getContent()
-#set($headElements = $request.getAttribute("org.apache.jetspeed.markup.head.elements"))
-#foreach($headElement in $headElements)
-#set($headElemHtml = $jetspeed.getElementHtmlString($headElement))
+#set($headElements = $jetspeed.headElements)
+#foreach($kvPair in $headElements)
+#set($headElemHtml = $jetspeed.getElementHtmlString($kvPair.value))
 $headElemHtml
 #end
 #end
