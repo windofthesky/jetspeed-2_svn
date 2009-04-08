@@ -167,7 +167,7 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
         statistics.logUserLogin(request, elapsedTime);
 
         assertEquals("number of users incorrect", 1, statistics
-                .getNumberOfCurrentUsers());
+                .getNumberOfLoggedInUsers());
 
         List l = statistics.getListOfLoggedInUsers();
         assertNotNull("list returned is null", l);
@@ -181,7 +181,7 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
         statistics.forceFlush();
 
         assertEquals("number of users incorrect", statistics
-                .getNumberOfCurrentUsers(), 0);
+                .getNumberOfLoggedInUsers(), 0);
 
         int x = 1;
         int pages = this.countPages();
@@ -214,7 +214,7 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
             statistics.logPageAccess(request, "401", elapsedTime);
             statistics.logUserLogin(request, elapsedTime);
             assertEquals("number of users incorrect", 1, statistics
-                    .getNumberOfCurrentUsers());
+                    .getNumberOfLoggedInUsers());
             List l = statistics.getListOfLoggedInUsers();
             assertNotNull("list returned is null", l);
             assertEquals("wrong number of users in list", 1, l.size());
@@ -234,7 +234,7 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
         statistics.forceFlush();
 
         assertEquals("number of users incorrect", statistics
-                .getNumberOfCurrentUsers(), 0);
+                .getNumberOfLoggedInUsers(), 0);
 
         int pages = this.countPages();
         int users = this.countUsers();

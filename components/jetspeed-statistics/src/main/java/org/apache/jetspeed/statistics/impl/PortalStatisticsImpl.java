@@ -551,14 +551,6 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
     }
 
-    /**
-     * @see org.apache.jetspeed.statistics.PortalStatistics#getNumberOfCurrentUsers()
-     */
-    public int getNumberOfCurrentUsers()
-    {
-        return currentUserCount;
-    }
-
     protected Date getStartDateFromPeriod(String period, Date end)
     {
         GregorianCalendar gcEnd = new GregorianCalendar();

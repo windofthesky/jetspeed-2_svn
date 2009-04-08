@@ -139,11 +139,6 @@ public interface PortalStatistics
     public void logUserLogin(RequestContext request, long msElapsedLoginTime);
 
     /**
-     * @return returns the current number of logged in users
-     */
-    public int getNumberOfCurrentUsers();
-
-    /**
      * force the database loggers to flush out
      */
     public void forceFlush();
@@ -156,6 +151,9 @@ public interface PortalStatistics
     public AggregateStatistics queryStatistics(StatisticsQueryCriteria criteria)
             throws InvalidCriteriaException;
 
+    /**
+     * @return returns the current number of logged in users
+     */
     public int getNumberOfLoggedInUsers();
 
     public List getListOfLoggedInUsers();
