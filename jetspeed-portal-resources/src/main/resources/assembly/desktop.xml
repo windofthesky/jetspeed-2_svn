@@ -59,11 +59,10 @@
   <bean id="DesktopPluto" class="org.apache.jetspeed.container.DesktopPortletContainerImpl">
     <meta key="j2:cat" value="default" />
     <constructor-arg index='0'><value>${portal.name}</value></constructor-arg>
-    <constructor-arg index='1'><ref bean="org.apache.pluto.services.RequiredPlutoServices"/></constructor-arg>
-    <constructor-arg index='2'><ref bean="org.apache.pluto.services.OptionalPlutoServices"/></constructor-arg>	    
-    <constructor-arg index='3'><value>/desktop</value></constructor-arg>
-    <constructor-arg index='4'><value>/action</value></constructor-arg>
-    <constructor-arg index='5'><value>/portlet</value></constructor-arg>
+    <constructor-arg index='1'><ref bean="org.apache.pluto.services.PlutoServices"/></constructor-arg>
+    <constructor-arg index='2'><value>/desktop</value></constructor-arg>
+    <constructor-arg index='3'><value>/action</value></constructor-arg>
+    <constructor-arg index='4'><value>/portlet</value></constructor-arg>
   </bean>
 
   <!-- Jetspeed 2's wrapper around Desktop Pluto container -->

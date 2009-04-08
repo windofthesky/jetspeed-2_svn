@@ -25,11 +25,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pluto.container.OptionalContainerServices;
+import org.apache.pluto.container.ContainerServices;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletContainerException;
 import org.apache.pluto.container.PortletWindow;
-import org.apache.pluto.container.RequiredContainerServices;
 
 /**
  * Portlet Container Wrapper to secure access to portlet container.
@@ -105,14 +104,9 @@ public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
         return this.containerId;
     }
 
-    public OptionalContainerServices getOptionalContainerServices()
+    public ContainerServices getContainerServices()
     {
-        return pluto.getOptionalContainerServices();
-    }
-
-    public RequiredContainerServices getRequiredContainerServices()
-    {
-        return pluto.getRequiredContainerServices();
+        return pluto.getContainerServices();
     }
 
     public boolean isInitialized()

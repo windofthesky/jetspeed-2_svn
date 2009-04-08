@@ -22,43 +22,89 @@ import javax.ccpp.Attribute;
 import javax.ccpp.Component;
 import javax.ccpp.Profile;
 import javax.ccpp.ProfileDescription;
+import javax.portlet.PortalContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.pluto.container.CCPPProfileService;
+import org.apache.pluto.container.EventCoordinationService;
+import org.apache.pluto.container.FilterManagerService;
 import org.apache.pluto.container.NamespaceMapper;
-import org.apache.pluto.container.OptionalContainerServices;
 import org.apache.pluto.container.PortletEnvironmentService;
 import org.apache.pluto.container.PortletInvokerService;
 import org.apache.pluto.container.PortletPreferencesService;
+import org.apache.pluto.container.PortletRequestContextService;
+import org.apache.pluto.container.PortletURLListenerService;
+import org.apache.pluto.container.ContainerServices;
 import org.apache.pluto.container.UserInfoService;
 
 /**
- * Service accessor for all Pluto *optional* container services
+ * Service accessor for all Pluto *required* container services and callbacks
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class JetspeedOptionalPlutoServices implements OptionalContainerServices
+public class JetspeedPlutoServices implements ContainerServices
 {
+    private PortalContext portalContext;
+    private EventCoordinationService eventCoordinationService;
+    private PortletRequestContextService portletRequestContextService;
+    private FilterManagerService filterManagerService;
+    private PortletURLListenerService portletURLListenerService;
     protected NamespaceMapper namespaceMapper;
     protected PortletEnvironmentService environmentService;
     protected UserInfoService userInfoService;
     protected PortletInvokerService invokerService;
     protected PortletPreferencesService preferencesService;
     private CCPPProfileService profileService = new DummyCCPPProfileServiceImpl();
-    
-    public JetspeedOptionalPlutoServices(NamespaceMapper namespaceMapper,
-            PortletEnvironmentService environmentService,
-            UserInfoService userInfoService,
-            PortletInvokerService invokerService, PortletPreferencesService preferencesService)
+
+    public JetspeedPlutoServices(PortalContext portalContext, 
+                                 EventCoordinationService eventCoordinationService,
+                                 PortletRequestContextService portletRequestContextService,
+                                 FilterManagerService filterManagerService,
+                                 PortletURLListenerService portletURLListenerService,
+                                 NamespaceMapper namespaceMapper,
+                                 PortletEnvironmentService environmentService,
+                                 UserInfoService userInfoService,
+                                 PortletInvokerService invokerService, 
+                                 PortletPreferencesService preferencesService)
     {
+        this.portalContext = portalContext;
+        this.eventCoordinationService = eventCoordinationService;
+        this.portletRequestContextService = portletRequestContextService;
+        this.filterManagerService = filterManagerService;
+        this.portletURLListenerService = portletURLListenerService;
         this.namespaceMapper = namespaceMapper;
         this.environmentService = environmentService;
         this.userInfoService = userInfoService;
         this.invokerService = invokerService;
         this.preferencesService = preferencesService;
     }
-    
+
+    public PortalContext getPortalContext()
+    {
+        return this.portalContext;
+    }
+
+    public EventCoordinationService getEventCoordinationService()
+    {
+        return this.eventCoordinationService;
+    }
+
+    public FilterManagerService getFilterManagerService()
+    {
+        return this.filterManagerService;
+    }
+
+    public PortletRequestContextService getPortletRequestContextService()
+    {
+        return this.portletRequestContextService;
+    }
+
+    public PortletURLListenerService getPortletURLListenerService()
+    {
+        return this.portletURLListenerService;
+    }
+
     public CCPPProfileService getCCPPProfileService()
     {
         return this.profileService;
@@ -158,7 +204,5 @@ public class JetspeedOptionalPlutoServices implements OptionalContainerServices
         {
             return null;
         }
-
     }
-    
 }

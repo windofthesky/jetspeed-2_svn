@@ -22,9 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.desktop.JetspeedDesktop;
-import org.apache.pluto.container.OptionalContainerServices;
-import org.apache.pluto.container.PortletContainer;
-import org.apache.pluto.container.RequiredContainerServices;
+import org.apache.pluto.container.ContainerServices;
 import org.apache.pluto.container.impl.PortletContainerImpl;
 
 /**
@@ -36,17 +34,17 @@ import org.apache.pluto.container.impl.PortletContainerImpl;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class DesktopPortletContainerImpl extends PortletContainerImpl implements PortletContainer
+public class DesktopPortletContainerImpl extends PortletContainerImpl
 {
     private String desktopPipelinePath = null;
     private String desktopActionPipelinePath = null;
     private String desktopRenderPipelinePath = null;
     
     public DesktopPortletContainerImpl(String containerName,
-            RequiredContainerServices requiredServices, OptionalContainerServices optionalServices, 
+            ContainerServices containerServices, 
             String desktopPipelinePath, String desktopActionPipelinePath, String desktopRenderPipelinePath)
     {
-        super(containerName, requiredServices, optionalServices);
+        super(containerName, containerServices);
         if ( desktopPipelinePath == null || desktopPipelinePath.length() == 0 )
             desktopPipelinePath = JetspeedDesktop.DEFAULT_DESKTOP_PIPELINE_PATH;
         if ( desktopPipelinePath.charAt( 0 ) != '/' )
@@ -106,7 +104,7 @@ public class DesktopPortletContainerImpl extends PortletContainerImpl implements
             location = location.replaceAll( this.desktopRenderPipelinePath, this.desktopPipelinePath);
             redirectResponse.sendRedirect(location);
         }
-        System.out.println("+++ >>>> DESKTOP REDIRECT: location is " + location);        
+//        System.out.println("+++ >>>> DESKTOP REDIRECT: location is " + location);        
     }
     
 }

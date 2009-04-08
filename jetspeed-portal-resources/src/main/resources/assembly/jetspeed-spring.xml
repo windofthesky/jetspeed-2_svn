@@ -83,8 +83,7 @@
   <bean id="Pluto" class="org.apache.pluto.container.impl.PortletContainerImpl">
     <meta key="j2:cat" value="default" />
     <constructor-arg><value>${portal.name}</value></constructor-arg>
-    <constructor-arg><ref bean="org.apache.pluto.services.RequiredPlutoServices"/></constructor-arg>
-    <constructor-arg><ref bean="org.apache.pluto.services.OptionalPlutoServices"/></constructor-arg>        
+    <constructor-arg><ref bean="org.apache.pluto.services.PlutoServices"/></constructor-arg>
   </bean>
 
   <!-- Jetspeed 2's wrapper around Pluto -->

@@ -21,24 +21,24 @@ limitations under the License.
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
     <!-- ====================================================== -->
-    <!-- Declare Pluto Service Accessors, Required              -->
+    <!-- Declare Pluto Service Accessors                        -->
     <!-- ====================================================== -->
 
-    <bean id="org.apache.pluto.services.RequiredPlutoServices"
-          class="org.apache.jetspeed.container.services.JetspeedRequiredPlutoServices">
+    <bean id="org.apache.pluto.services.PlutoServices"
+          class="org.apache.jetspeed.container.services.JetspeedPlutoServices">
       <meta key="j2:cat" value="default" />          
       <constructor-arg><ref bean="PortalContext"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.services.EventCoordinationService"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.container.PortletRequestContextService"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.container.FilterManagerService"/></constructor-arg>
       <constructor-arg><ref bean="org.apache.pluto.container.PortletURLListenerService"/></constructor-arg>
+      <constructor-arg><ref bean="org.apache.pluto.services.NamespaceMapper"/></constructor-arg>
+      <constructor-arg><ref bean="org.apache.pluto.services.PortletEnvironmentService"/></constructor-arg>
+      <constructor-arg><ref bean="org.apache.pluto.services.UserInfoService"/></constructor-arg>            
+      <constructor-arg><ref bean="org.apache.pluto.services.PortletInvokerService"/></constructor-arg>            
+      <constructor-arg><ref bean="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider"/></constructor-arg>
     </bean>
     
-    <bean id="org.apache.pluto.services.CCPPProfileService"
-          class="org.apache.pluto.container.driver.impl.DummyCCPPProfileServiceImpl">
-      <meta key="j2:cat" value="default" />       
-    </bean>
-
     <bean id='org.apache.jetspeed.events.PortletEventQueue'
           class='org.apache.jetspeed.events.PortletEventQueueImpl'>
       <meta key="j2:cat" value="default" />          
@@ -72,21 +72,6 @@ limitations under the License.
           class="org.apache.jetspeed.container.services.JetspeedPortletURLListenerService">
       <meta key="j2:cat" value="default" />       
       <constructor-arg><ref bean="portletFactory" /></constructor-arg>
-    </bean>
-    
-
-    <!-- ====================================================== -->
-    <!-- Declare Pluto Service Accessors, Optional              -->
-    <!-- ====================================================== -->
-
-    <bean id="org.apache.pluto.services.OptionalPlutoServices"
-          class="org.apache.jetspeed.container.services.JetspeedOptionalPlutoServices">
-      <meta key="j2:cat" value="default" />          
-      <constructor-arg><ref bean="org.apache.pluto.services.NamespaceMapper"/></constructor-arg>
-      <constructor-arg><ref bean="org.apache.pluto.services.PortletEnvironmentService"/></constructor-arg>
-      <constructor-arg><ref bean="org.apache.pluto.services.UserInfoService"/></constructor-arg>            
-      <constructor-arg><ref bean="org.apache.pluto.services.PortletInvokerService"/></constructor-arg>            
-      <constructor-arg><ref bean="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider"/></constructor-arg>
     </bean>
     
     <bean id="org.apache.pluto.services.NamespaceMapper"
