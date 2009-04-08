@@ -16,6 +16,14 @@
  */
 package org.apache.jetspeed.container.services;
 
+import java.util.Set;
+
+import javax.ccpp.Attribute;
+import javax.ccpp.Component;
+import javax.ccpp.Profile;
+import javax.ccpp.ProfileDescription;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.pluto.container.CCPPProfileService;
 import org.apache.pluto.container.NamespaceMapper;
 import org.apache.pluto.container.OptionalContainerServices;
@@ -23,7 +31,6 @@ import org.apache.pluto.container.PortletEnvironmentService;
 import org.apache.pluto.container.PortletInvokerService;
 import org.apache.pluto.container.PortletPreferencesService;
 import org.apache.pluto.container.UserInfoService;
-import org.apache.pluto.container.driver.impl.DummyCCPPProfileServiceImpl;
 
 /**
  * Service accessor for all Pluto *optional* container services
@@ -81,4 +88,77 @@ public class JetspeedOptionalPlutoServices implements OptionalContainerServices
     {
         return userInfoService;
     }
+    
+    class DummyCCPPProfileServiceImpl implements CCPPProfileService 
+    {
+
+        /* (non-Javadoc)
+         * @see org.apache.pluto.spi.CCPPProfileService#getCCPPProfile()
+         */
+        public Profile getCCPPProfile(HttpServletRequest httpServletRequest) 
+        {
+            return new DummyProfile();
+            // FIXME: Here we have to return a "real" javax.ccpp.Profile
+        }
+
+    }
+
+    // FIXME: Here we have to return a "real" javax.ccpp.Profile    
+    class DummyProfile implements Profile
+    {
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see javax.ccpp.Profile#getAttribute(java.lang.String)
+         */
+        public Attribute getAttribute(String arg0)
+        {
+            return null;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see javax.ccpp.Profile#getAttributes()
+         */
+        @SuppressWarnings("unchecked")
+        public Set getAttributes()
+        {
+            return null;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see javax.ccpp.Profile#getComponent(java.lang.String)
+         */
+        public Component getComponent(String arg0)
+        {
+            return null;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see javax.ccpp.Profile#getComponents()
+         */
+        @SuppressWarnings("unchecked")
+        public Set getComponents()
+        {
+            return null;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see javax.ccpp.Profile#getDescription()
+         */
+        public ProfileDescription getDescription()
+        {
+            return null;
+        }
+
+    }
+    
 }
