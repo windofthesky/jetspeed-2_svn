@@ -92,7 +92,7 @@ public class JetspeedLocale
         }
         String country = "";
         String variant = "";
-        String[] localeArray = lang.split("[-|_]");
+        String[] localeArray = lang.split("[-|_,]");
         for (int i = 0; i < localeArray.length; i++)
         {
             if (i == 0)
