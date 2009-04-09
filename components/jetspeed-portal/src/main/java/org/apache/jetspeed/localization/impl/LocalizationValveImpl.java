@@ -19,7 +19,6 @@ package org.apache.jetspeed.localization.impl;
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.security.auth.Subject;
 
@@ -34,7 +33,6 @@ import org.apache.jetspeed.pipeline.valve.LocalizationValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAttribute;
-import org.apache.jetspeed.security.SecurityAttributeType;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
@@ -117,8 +115,7 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
                                 && userMgr.userExists(userPrincipal.getName()))
                         {
                             User user = userMgr.getUser(userPrincipal.getName());
-                            Map<String, SecurityAttribute> sa = user.getSecurityAttributes().getAttributeMap(SecurityAttributeType.JETSPEED_CATEGORY);
-                            SecurityAttribute attrib = sa.get(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
+                            SecurityAttribute attrib = user.getSecurityAttributes().getAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
                             if (attrib != null)
                             {
                                 String localeString = attrib.getStringValue();
@@ -153,10 +150,10 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
         
         if (locale == null)
         {
-            Enumeration preferedLocales = request.getRequest().getLocales();
+            Enumeration<Locale> preferedLocales = request.getRequest().getLocales();
             while (preferedLocales.hasMoreElements() && locale == null)
             {
-                locale = (Locale) preferedLocales.nextElement();
+                locale = preferedLocales.nextElement();
             }
         }
 
