@@ -16,12 +16,14 @@
  */
 package org.apache.jetspeed.page.document.proxy;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Collections;
 
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
@@ -59,7 +61,17 @@ public abstract class NodeProxy extends SiteViewProxy
      * path - view path
      */
     private String path;
+    
+    /**
+     * url - view url
+     */
+    private String url;
 
+    /**
+     * urlEncoding - the name of a character encoding to be used in encoding path component name.
+     */
+    private String urlEncoding = "ISO-8859-1";;
+    
     /**
      * hidden - hidden status of this or parent node
      */
@@ -103,23 +115,41 @@ public abstract class NodeProxy extends SiteViewProxy
     {
         super(view, locatorName);
         this.parent = parent;
+        
         if ((parent != null) && (name != null))
         {
             NodeProxy parentProxy = getNodeProxy(parent);
+            
             String parentPath = parentProxy.getPath();
+            String parentUrl = parentProxy.getUrl();
+            String urlEncodedName = name;
+            
+            try
+            {
+                urlEncodedName = URLEncoder.encode(name, urlEncoding);
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                // do nothing. just use the plain name instead.
+            }
+
             if (parentPath.endsWith(Folder.PATH_SEPARATOR))
             {
                 this.path = parentPath + name;
+                this.url = parentUrl + urlEncodedName;
             }
             else
             {
                 this.path = parentPath + Folder.PATH_SEPARATOR + name;
+                this.url = parentUrl + Folder.PATH_SEPARATOR + urlEncodedName;
             }
+            
             this.hidden = (hidden || parentProxy.isHidden());
         }
         else
         {
             this.path = Folder.PATH_SEPARATOR;
+            this.url = Folder.PATH_SEPARATOR;
             this.hidden = hidden;
         }
     }
@@ -161,7 +191,7 @@ public abstract class NodeProxy extends SiteViewProxy
      */
     public String getUrl()
     {
-        return path;
+        return url;
     }
 
     /**
