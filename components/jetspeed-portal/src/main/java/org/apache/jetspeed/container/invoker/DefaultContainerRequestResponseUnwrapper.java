@@ -16,15 +16,11 @@
  */
 package org.apache.jetspeed.container.invoker;
 
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.jetspeed.Jetspeed;
 
 /**
  * DefaultContainerRequestResponseUnwrapper implements ContainerRequestResponseUnwrapper
@@ -35,16 +31,6 @@ import org.apache.jetspeed.Jetspeed;
  */
 public class DefaultContainerRequestResponseUnwrapper implements ContainerRequestResponseUnwrapper
 {
-    public ServletRequest unwrapPortletRequest(PortletRequest portletRequest)
-    {
-        return unwrapContainerRequest(Jetspeed.getCurrentRequestContext().getCurrentPortletWindow().getPortletRequestContext().getContainerRequest());
-    }
-    
-    public ServletResponse unwrapPortletResponse(PortletResponse portletResponse)
-    {
-        return unwrapContainerResponse(Jetspeed.getCurrentRequestContext().getCurrentPortletWindow().getPortletRequestContext().getContainerResponse());
-    }
-    
     public ServletRequest unwrapContainerRequest(HttpServletRequest containerRequest)
     {
         ServletRequest request = containerRequest;

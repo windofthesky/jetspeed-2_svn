@@ -111,7 +111,7 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
                        PortletWindow.Action action, FilterManager filter)
             throws PortletException, IOException
     {
-        if (PortletWindow.Action.NOOP == action)
+        if (PortletWindow.Action.ACTION != action && PortletWindow.Action.RENDER != action)
         {
             return;
         }
@@ -150,7 +150,7 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
 
                 portletInstance.processAction(actionRequest, actionResponse);
             }
-            if (PortletWindow.Action.RENDER == action)
+            else // if (PortletWindow.Action.RENDER == action)
             {
                 RenderRequest renderRequest = (RenderRequest) portletRequest;
                 RenderResponse renderResponse = (RenderResponse) portletResponse;

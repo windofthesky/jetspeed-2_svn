@@ -335,7 +335,7 @@ public class PortletRendererImpl implements PortletRenderer
                
         portletWindow.getFragment().setPortletContent(portletContent);
         
-        rJob = new RenderingJobImpl(container, this, portletDefinition, portletContent,
+        rJob = new RenderingJobImpl(container, this, portletDefinition,
                                     requestContext.getRequest(), requestContext.getResponse(), requestContext, portletWindow, 
                                     statistics, expirationCache);
         

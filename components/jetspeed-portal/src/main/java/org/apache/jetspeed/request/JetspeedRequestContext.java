@@ -618,51 +618,18 @@ public class JetspeedRequestContext implements RequestContext
         PortletWindow window = portletWindows.get(fragment.getId());
         if (window == null)
         {
-            PortletDefinition pd = rcc.getPortletRegistry().getPortletDefinitionByUniqueName(fragment.getName());
-            if (pd != null)
-            {
-                window = new PortletWindowImpl(this, fragment, pd);
-            }
-            else
-            {
-                // invalid window: create one anyway so that this error condition is only "recorded" once for this request
-                window = new PortletWindowImpl(this, fragment);
-                fragment.overrideRenderedContent("Failed to retrieve Portlet Definition for " + fragment.getName());
-                log.error(fragment.getOverriddenContent());
-            }
-            portletWindows.put(window.getWindowId(), window);
+            window = createPortletWindow(fragment);
         }
         return window;
     }
     
-    @SuppressWarnings("unchecked")
-    public PortletWindow getInstantlyCreatedPortletWindow(String windowId)
+    public synchronized PortletWindow getInstantlyCreatedPortletWindow(String windowId, String portletUniqueName)
     {
-        PortletWindow window = null;
-        HttpSession session = getRequest().getSession();
-        if (session != null)
+        if (portletWindows.get(windowId) != null)
         {
-            synchronized (session)
-            {
-                Map<String,Map<String,String>> pages = (Map<String,Map<String,String>>)session.getAttribute(INSTANT_WINDOWS_SESSION_KEY);
-                if (pages != null)
-                {
-                    Map<String,String> instantWindows = pages.get(getPage().getId());
-                    if (instantWindows != null)
-                    {
-                        String portletId = instantWindows.get(windowId);
-                        if (portletId != null)
-                        {
-                            Fragment fragment = new PortletAggregatorFragmentImpl(windowId);
-                            fragment.setType(Fragment.PORTLET);
-                            fragment.setName(portletId);
-                            window = getPortletWindow(new ContentFragmentImpl(fragment, new HashMap(), true));
-                        }
-                    }
-                }
-            }
+            throw new IllegalArgumentException("PortletWindow "+windowId+" already exists");
         }
-        return window;
+        return getInstantlyCreatedPortletWindow(windowId, portletUniqueName, true);
     }
     
     public PortletWindow resolvePortletWindow(String windowId)
@@ -675,11 +642,102 @@ public class JetspeedRequestContext implements RequestContext
             ContentFragment fragment = getPage().getContentFragmentById(windowId);
             if (fragment == null)
             {
-                window = getInstantlyCreatedPortletWindow(windowId);
+                window = getInstantlyCreatedPortletWindow(windowId, null, false);
             }
             else
             {
-                window = getPortletWindow(fragment);
+                window = createPortletWindow(fragment);
+            }
+        }
+        return window;
+    }
+    
+    private PortletWindow createPortletWindow(ContentFragment fragment)
+    {
+        PortletWindow window = null;
+        PortletDefinition pd = rcc.getPortletRegistry().getPortletDefinitionByUniqueName(fragment.getName());
+        if (pd != null)
+        {
+            window = new PortletWindowImpl(this, fragment, pd);
+        }
+        else
+        {
+            // invalid window: create one anyway so that this error condition is only "recorded" once for this request
+            window = new PortletWindowImpl(this, fragment);
+            fragment.overrideRenderedContent("Failed to retrieve Portlet Definition for " + fragment.getName());
+            log.error(fragment.getOverriddenContent());
+        }
+        portletWindows.put(window.getWindowId(), window);
+        return window;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private PortletWindow getInstantlyCreatedPortletWindow(String windowId, String portletUniqueName, boolean register)
+    {        
+        boolean registered = false;
+        HttpSession session = getRequest().getSession();
+        if (session != null)
+        {
+            synchronized (session)
+            {
+                Map<String,Map<String,String>> pages = (Map<String,Map<String,String>>)session.getAttribute(INSTANT_WINDOWS_SESSION_KEY);
+                if (pages != null)
+                {
+                    Map<String,String> instantWindows = pages.get(getPage().getId());
+                    if (instantWindows != null)
+                    {
+                        String uniqueName = instantWindows.get(windowId);
+                        if (uniqueName != null)
+                        {
+                            if (portletUniqueName != null)
+                            {
+                                if (!portletUniqueName.equals(uniqueName))
+                                {
+                                    // odd condition but store new value of portletUniqueName in session
+                                    instantWindows.put(windowId, portletUniqueName);
+                                }
+                            }
+                            else
+                            {
+                                portletUniqueName = uniqueName;
+                            }
+                            registered = true;
+                        }                        
+                    }
+                }
+            }
+        }
+        PortletWindow window = null;
+        if (portletUniqueName != null)
+        {
+            Fragment fragment = new PortletAggregatorFragmentImpl(windowId);
+            fragment.setType(Fragment.PORTLET);
+            fragment.setName(portletUniqueName);
+            window = createPortletWindow(new ContentFragmentImpl(fragment, new HashMap(), true));
+            
+            if (register && !registered && window.isValid())
+            {
+                if (session == null)
+                {
+                    session = getRequest().getSession(true);
+                }
+                synchronized (session)
+                {
+                    Map<String,Map<String,String>> pages = (Map<String,Map<String,String>>)session.getAttribute(INSTANT_WINDOWS_SESSION_KEY);            
+                    if (pages == null)
+                    {
+                        pages = new HashMap<String,Map<String,String>>();
+                        session.setAttribute(INSTANT_WINDOWS_SESSION_KEY, pages);
+                    }
+                    String pageId = getPage().getId();
+                    Map<String,String> instantWindows = pages.get(pageId);
+                    if (instantWindows == null)
+                    {
+                        instantWindows = new HashMap<String,String>();
+                        pages.put(pageId, instantWindows);
+                    }
+                    instantWindows.put(windowId, portletUniqueName);
+                }
             }
         }
         return window;

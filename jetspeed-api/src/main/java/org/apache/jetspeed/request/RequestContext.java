@@ -207,10 +207,10 @@ public interface RequestContext
 
     public PortletWindow getPortletWindow(String windowId);
     public PortletWindow getPortletWindow(ContentFragment fragment);
-    public PortletWindow getInstantlyCreatedPortletWindow(String windowId);
+    public PortletWindow getInstantlyCreatedPortletWindow(String windowId, String portletUniqueName);
     public PortletWindow resolvePortletWindow(String windowId);
-    public void registerInstantlyCreatedPortletWindow(PortletWindow portletWindow);
     public PortletWindow getCurrentPortletWindow();
+    public void setCurrentPortletWindow(PortletWindow window);
     
     /**
      * Gets the subject associated with the authorized entity.

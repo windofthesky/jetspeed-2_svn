@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -41,7 +40,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletRenderer;
-import org.apache.jetspeed.aggregator.impl.PortletAggregatorFragmentImpl;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.BasePortalURL;
@@ -50,8 +48,6 @@ import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.ContentFragmentImpl;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.ArgUtil;
@@ -808,30 +804,33 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         }
     }
     
-    public String renderPortletWindow(String windowId, String portletId)
+    public String renderPortletWindow(String windowId, String portletUniqueName)
     {
-        RequestContext context = getRequestContext();
-        PortletWindow window = context.getPortletWindow(windowId);
         try
         {
-            if (window == null)
+            if (windowId == null || portletUniqueName == null)
             {
-                PortletAggregatorFragmentImpl fragment = new PortletAggregatorFragmentImpl(windowId);
-                fragment.setType(Fragment.PORTLET);
-                fragment.setName(portletId);
-                ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap(), true);
-                window = getPortletWindow(contentFragment);
-                if (window.isValid())
+                throw new IllegalArgumentException("Parameter windowId and portletUniqueName are both required");
+            }
+            RequestContext context = getRequestContext();
+            PortletWindow window = context.getInstantlyCreatedPortletWindow(windowId, portletUniqueName);
+            if (window.isValid())
+            {
+                PortletWindow currentPortletWindow = context.getCurrentPortletWindow();
+                try
                 {
-                    context.registerInstantlyCreatedPortletWindow(window);
-                    renderer.renderNow(window.getFragment(), context, true);
+                    context.setCurrentPortletWindow(window);
+                    renderer.renderNow(window.getFragment(), context);
                     return window.getFragment().getRenderedContent();
                 }
-                return "";
+                finally
+                {
+                    context.setCurrentPortletWindow(currentPortletWindow);
+                }
             }
             else
             {
-                throw new IllegalArgumentException("PortletWindow "+windowId+" already exists on this page");
+                return "";
             }
         }
         catch (Exception e)

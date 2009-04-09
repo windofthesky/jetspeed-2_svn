@@ -51,38 +51,36 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  **/
-public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletWindowID, RenderTrackable, Serializable
+public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletWindowID, RenderTrackable
 {
     private static final long serialVersionUID = 6578938580906866201L;
     
     private String id;
-    private transient ContentFragment fragment;
-    private transient Map<String, Object> attributes;
+    private ContentFragment fragment;
+    private Map<String, Object> attributes;
     
-    protected transient int timeoutCount = 0;
-    protected transient long expiration = 0;
+    protected int timeoutCount = 0;
+    protected long expiration = 0;
     
-    private transient PortletDefinition pd;
+    private PortletDefinition pd;
     
-    private transient RequestContext requestContext;
+    private RequestContext requestContext;
     
     // PortletWindow invocation state
     
-    private transient Action action;
-    private transient PortletRequest portletRequest;
-    private transient PortletResponseContext portletResponseContext;
-    private transient PortletRequestContext portletRequestContext;
-    private transient PortletResponse portletResponse;
-    private transient PortletInstance portletInstance;
-    private transient List<KeyValue<String, Element>> headElements;
+    private Action action;
+    private PortletRequest portletRequest;
+    private PortletResponseContext portletResponseContext;
+    private PortletRequestContext portletRequestContext;
+    private PortletResponse portletResponse;
+    private PortletInstance portletInstance;
+    private List<KeyValue<String, Element>> headElements;
 
     private boolean valid;
     
     public PortletWindowImpl(RequestContext requestContext, ContentFragment fragment)
     {
-        this.requestContext = requestContext;
-        this.fragment = fragment;
-        this.id = fragment.getId();
+        this(requestContext, fragment, null);
     }
     
     public PortletWindowImpl(RequestContext requestContext, ContentFragment fragment, PortletDefinition pd)
@@ -91,7 +89,7 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
         this.id = fragment.getId();
         this.fragment = fragment;
         this.pd = pd;
-        this.valid = true;
+        this.valid = pd != null;
     }
     
     public boolean isValid()

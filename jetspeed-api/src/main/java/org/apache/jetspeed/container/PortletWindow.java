@@ -17,7 +17,6 @@
 
 package org.apache.jetspeed.container;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -37,9 +36,8 @@ import org.w3c.dom.Element;
  * @version $Id$
  *
  */
-public interface PortletWindow extends org.apache.pluto.container.PortletWindow, Serializable
+public interface PortletWindow extends org.apache.pluto.container.PortletWindow
 {
-    
     boolean isValid();
     PortletWindowID getId();
     String getWindowId();

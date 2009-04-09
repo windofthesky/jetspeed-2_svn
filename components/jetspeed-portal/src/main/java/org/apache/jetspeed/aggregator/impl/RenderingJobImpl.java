@@ -65,7 +65,6 @@ public class RenderingJobImpl implements RenderingJob
     protected PortletTrackingManager portletTracking = null;
 
     protected PortletDefinition portletDefinition;
-    protected PortletContent portletContent;
     protected PortalStatistics statistics;
     
     protected int expirationCache = 0;
@@ -80,7 +79,6 @@ public class RenderingJobImpl implements RenderingJob
     public RenderingJobImpl(PortletContainer container,
                             PortletRenderer renderer,
                             PortletDefinition portletDefinition,
-                            PortletContent portletContent, 
                             HttpServletRequest request, 
                             HttpServletResponse response, 
                             RequestContext requestContext, 
@@ -97,7 +95,6 @@ public class RenderingJobImpl implements RenderingJob
         this.response = response;
         this.requestContext = requestContext; 
         this.window = window;
-        this.portletContent = portletContent; 
         this.expirationCache = expirationCache;
     }
 
@@ -143,8 +140,6 @@ public class RenderingJobImpl implements RenderingJob
             {
                 this.startTimeMillis = System.currentTimeMillis();
             }
-
-            this.window.getFragment().setPortletContent(portletContent);
             execute();                     
         }
         finally
@@ -154,10 +149,10 @@ public class RenderingJobImpl implements RenderingJob
                 requestContext.clearThreadContext();
             }
             parallel = false;
-            synchronized (portletContent)
+            synchronized (window.getFragment().getPortletContent())
             {
                if (log.isDebugEnabled()) log.debug("Notifying completion of rendering job for portlet window " + this.window.getId());                
-               portletContent.notifyAll();
+               window.getFragment().getPortletContent().notifyAll();
             }
         }
     }
@@ -222,15 +217,15 @@ public class RenderingJobImpl implements RenderingJob
             }
             finally
             {
-                synchronized (portletContent)
+                synchronized (fragment.getPortletContent())
                 {
                     if (fragment.getOverriddenContent() != null)
                     {
-                        portletContent.completeWithError();
+                        fragment.getPortletContent().completeWithError();
                     }
                     else
                     {
-                        portletContent.complete();
+                        fragment.getPortletContent().complete();
                     }
                 }
             }
@@ -260,7 +255,7 @@ public class RenderingJobImpl implements RenderingJob
      */
     public PortletContent getPortletContent()
     {
-        return portletContent;
+        return window.getFragment().getPortletContent();
     }
 
     public PortletDefinition getPortletDefinition()

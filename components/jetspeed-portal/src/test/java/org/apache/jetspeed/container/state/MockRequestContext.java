@@ -97,6 +97,15 @@ public class MockRequestContext implements RequestContext
         // TODO Auto-generated method stub
         return null;
     }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#setCurrentPortletWindow(org.apache.jetspeed.container.PortletWindow)
+     */
+    public void setCurrentPortletWindow(PortletWindow window)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.request.RequestContext#getLocale()
@@ -450,21 +459,12 @@ public class MockRequestContext implements RequestContext
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.request.RequestContext#getInstantlyCreatedPortletWindow(java.lang.String)
+     * @see org.apache.jetspeed.request.RequestContext#getInstantlyCreatedPortletWindow(java.lang.String,java.lang.String)
      */
-    public PortletWindow getInstantlyCreatedPortletWindow(String windowId)
+    public PortletWindow getInstantlyCreatedPortletWindow(String windowId, String portletUniqueName)
     {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.request.RequestContext#registerInstantlyCreatedPortletWindow(org.apache.jetspeed.container.PortletWindow)
-     */
-    public void registerInstantlyCreatedPortletWindow(PortletWindow portletWindow)
-    {
-        // TODO Auto-generated method stub
-        
     }
 
     /* (non-Javadoc)
