@@ -125,7 +125,7 @@ public abstract class PortletStateAwareResponseContextImpl extends PortletRespon
     {
         if (!isClosed())
         {
-            return ((JetspeedEventCoordinationService)getContainer().getRequiredContainerServices().getEventCoordinationService()).createEventProvider(getServletRequest(), getPortletWindow());
+            return ((JetspeedEventCoordinationService)getContainer().getContainerServices().getEventCoordinationService()).createEventProvider(getServletRequest(), getPortletWindow());
         }
         return null;
     }
