@@ -19,22 +19,28 @@ package org.apache.jetspeed.container.services;
 import java.io.IOException;
 import java.util.List;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.EventPortlet;
+import javax.portlet.EventRequest;
+import javax.portlet.EventResponse;
 import javax.portlet.Portlet;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 import javax.portlet.ResourceServingPortlet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.container.FilterManager;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletFilterInstance;
 import org.apache.jetspeed.om.portlet.Filter;
 import org.apache.jetspeed.om.portlet.FilterMapping;
 import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.jetspeed.container.FilterManager;
 
 public class JetspeedFilterManager implements FilterManager
 {
@@ -96,20 +102,24 @@ public class JetspeedFilterManager implements FilterManager
         }
     }
 
-    public void processFilter(PortletRequest req, PortletResponse res, ClassLoader loader, EventPortlet eventPortlet, PortletContext portletContext) throws PortletException, IOException
+    public void processFilter(ActionRequest req, ActionResponse res, ClassLoader loader, Portlet portlet, PortletContext portletContext) throws PortletException, IOException
     {
-        filterchain.processFilter(req, res, loader, eventPortlet, portletContext);
+        filterchain.processFilter(req, res, loader, portlet, portletContext);
     }
-
-    public void processFilter(PortletRequest req, PortletResponse res, ClassLoader loader, ResourceServingPortlet resourceServingPortlet,
-                              PortletContext portletContext) throws PortletException, IOException
+    
+    public void processFilter(RenderRequest req, RenderResponse res, ClassLoader loader, Portlet portlet, PortletContext portletContext) throws PortletException, IOException
+    {
+        filterchain.processFilter(req, res, loader, portlet, portletContext);
+    }
+    
+    public void processFilter(ResourceRequest req, ResourceResponse res, ClassLoader loader, ResourceServingPortlet resourceServingPortlet, PortletContext portletContext) throws PortletException, IOException
     {
         filterchain.processFilter(req, res, loader, resourceServingPortlet, portletContext);
     }
-
-    public void processFilter(PortletRequest req, PortletResponse res, ClassLoader loader, Portlet portlet, PortletContext portletContext) throws PortletException, IOException
+    
+    public void processFilter(EventRequest req, EventResponse res, ClassLoader loader, EventPortlet eventPortlet, PortletContext portletContext)throws PortletException, IOException
     {
-        filterchain.processFilter(req, res, loader, portlet, portletContext);
+        filterchain.processFilter(req, res, loader, eventPortlet, portletContext);
     }
 
     private boolean isLifeCycle(Filter filter, String lifeCycle)
