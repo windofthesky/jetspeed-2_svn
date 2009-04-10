@@ -21,7 +21,7 @@ limitations under the License.
   <metadata name="short-title" xml:lang="es">Import-Export</metadata>
 
   <fragment id="export-layout-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="export-2" type="portlet" name="j2-admin::PortalSchemaExporter"/>
+    <fragment id="export-2a" type="portlet" name="j2-admin::PortalDataSerializer"/>
   </fragment>
 
 </page>
