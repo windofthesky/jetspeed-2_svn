@@ -102,24 +102,24 @@ public class JetspeedFilterManager implements FilterManager
         }
     }
 
-    public void processFilter(ActionRequest req, ActionResponse res, ClassLoader loader, Portlet portlet, PortletContext portletContext) throws PortletException, IOException
+    public void processFilter(ActionRequest req, ActionResponse res, Portlet portlet, PortletContext portletContext) throws PortletException, IOException
     {
-        filterchain.processFilter(req, res, loader, portlet, portletContext);
+        filterchain.processFilter(req, res, portlet, portletContext);
     }
     
-    public void processFilter(RenderRequest req, RenderResponse res, ClassLoader loader, Portlet portlet, PortletContext portletContext) throws PortletException, IOException
+    public void processFilter(RenderRequest req, RenderResponse res, Portlet portlet, PortletContext portletContext) throws PortletException, IOException
     {
-        filterchain.processFilter(req, res, loader, portlet, portletContext);
+        filterchain.processFilter(req, res, portlet, portletContext);
     }
     
-    public void processFilter(ResourceRequest req, ResourceResponse res, ClassLoader loader, ResourceServingPortlet resourceServingPortlet, PortletContext portletContext) throws PortletException, IOException
+    public void processFilter(ResourceRequest req, ResourceResponse res, ResourceServingPortlet resourceServingPortlet, PortletContext portletContext) throws PortletException, IOException
     {
-        filterchain.processFilter(req, res, loader, resourceServingPortlet, portletContext);
+        filterchain.processFilter(req, res, resourceServingPortlet, portletContext);
     }
     
-    public void processFilter(EventRequest req, EventResponse res, ClassLoader loader, EventPortlet eventPortlet, PortletContext portletContext)throws PortletException, IOException
+    public void processFilter(EventRequest req, EventResponse res, EventPortlet eventPortlet, PortletContext portletContext)throws PortletException, IOException
     {
-        filterchain.processFilter(req, res, loader, eventPortlet, portletContext);
+        filterchain.processFilter(req, res, eventPortlet, portletContext);
     }
 
     private boolean isLifeCycle(Filter filter, String lifeCycle)

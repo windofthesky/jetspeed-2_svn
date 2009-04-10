@@ -250,8 +250,6 @@ public class JetspeedContainerServlet extends HttpServlet
             window.getPortletResponseContext().init(request, response);
             
             FilterManager filterManager = (FilterManager) window.getAttribute(PortalReservedParameters.PORTLET_FILTER_MANAGER_ATTRIBUTE);
-            ClassLoader paCl = Thread.currentThread().getContextClassLoader();
-            
             window.removeAttribute(PortalReservedParameters.PORTLET_FILTER_MANAGER_ATTRIBUTE);
             
             if (PortletWindow.Action.ACTION.equals(window.getAction()))
@@ -261,7 +259,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 
                 if (filterManager != null)
                 {
-                    filterManager.processFilter(actionRequest, actionResponse, paCl, (Portlet) portletInstance, portletConfig.getPortletContext());
+                    filterManager.processFilter(actionRequest, actionResponse, (Portlet) portletInstance, portletConfig.getPortletContext());
                 }
                 else
                 {
@@ -275,7 +273,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 
                 if (filterManager != null)
                 {
-                    filterManager.processFilter(renderRequest, renderResponse, paCl, (Portlet) portletInstance, portletConfig.getPortletContext());
+                    filterManager.processFilter(renderRequest, renderResponse, (Portlet) portletInstance, portletConfig.getPortletContext());
                 }
                 else
                 {
@@ -289,7 +287,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 
                 if (filterManager != null)
                 {
-                    filterManager.processFilter(eventRequest, eventResponse, paCl, (EventPortlet) portletInstance, portletConfig.getPortletContext());
+                    filterManager.processFilter(eventRequest, eventResponse, (EventPortlet) portletInstance, portletConfig.getPortletContext());
                 }
                 else
                 {
@@ -303,7 +301,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 
                 if (filterManager != null)
                 {
-                    filterManager.processFilter(resourceRequest, resourceResponse, paCl, (ResourceServingPortlet) portletInstance, portletConfig.getPortletContext());
+                    filterManager.processFilter(resourceRequest, resourceResponse, (ResourceServingPortlet) portletInstance, portletConfig.getPortletContext());
                 }
                 else
                 {

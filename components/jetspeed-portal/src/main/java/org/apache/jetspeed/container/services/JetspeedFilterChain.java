@@ -52,7 +52,6 @@ public class JetspeedFilterChain implements FilterChain
     Portlet portlet;
     EventPortlet eventPortlet;
     ResourceServingPortlet resourceServingPortlet;
-    ClassLoader loader;
     PortletContext portletContext;
     int filterListIndex = 0;
     boolean filtersInitialized;
@@ -62,30 +61,27 @@ public class JetspeedFilterChain implements FilterChain
         this.lifeCycle = lifeCycle;
     }
 
-    public void processFilter(PortletRequest req, PortletResponse res, ClassLoader loader, EventPortlet eventPortlet, PortletContext portletContext) throws IOException, PortletException
+    public void processFilter(PortletRequest req, PortletResponse res, EventPortlet eventPortlet, PortletContext portletContext) throws IOException, PortletException
     {
         initFilters(portletContext);
         this.eventPortlet = eventPortlet;
-        this.loader = loader;
         this.portletContext = portletContext;
         doFilter((EventRequest) req, (EventResponse) res);
     }
 
-    public void processFilter(PortletRequest req, PortletResponse res, ClassLoader loader, ResourceServingPortlet resourceServingPortlet,
+    public void processFilter(PortletRequest req, PortletResponse res, ResourceServingPortlet resourceServingPortlet,
                               PortletContext portletContext) throws IOException, PortletException
     {
         initFilters(portletContext);
         this.resourceServingPortlet = resourceServingPortlet;
-        this.loader = loader;
         this.portletContext = portletContext;
         doFilter((ResourceRequest) req, (ResourceResponse) res);
     }
 
-    public void processFilter(PortletRequest req, PortletResponse res, ClassLoader loader, Portlet portlet, PortletContext portletContext) throws IOException, PortletException
+    public void processFilter(PortletRequest req, PortletResponse res, Portlet portlet, PortletContext portletContext) throws IOException, PortletException
     {
         initFilters(portletContext);
         this.portlet = portlet;
-        this.loader = loader;
         this.portletContext = portletContext;
         if (lifeCycle.equals(PortletRequest.ACTION_PHASE))
         {
