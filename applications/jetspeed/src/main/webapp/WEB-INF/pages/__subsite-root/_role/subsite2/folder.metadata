@@ -18,6 +18,8 @@ limitations under the License.
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd">
 
+  <defaults layout-decorator="thesolution" portlet-decorator="blue-gradient"/>
+
   <title>Subsite2 Root Folder</title>  
   <default-page>subsite2-default-page.psml</default-page>
   <metadata name="title" xml:lang="ja">サブサイト２ルートフォルダ</metadata>

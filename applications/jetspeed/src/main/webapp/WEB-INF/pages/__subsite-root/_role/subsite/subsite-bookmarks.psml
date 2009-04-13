@@ -20,10 +20,6 @@ limitations under the License.
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
 
-  <defaults 
-	layout-decorator="tigris" 
-	portlet-decorator="tigris"/>
-
   <title>Subsite Bookmarks</title>
   <metadata name="title" xml:lang="ja">サブサイトブックマーク</metadata>
   <metadata name="title" xml:lang="es">Favoritos de subportal</metadata>

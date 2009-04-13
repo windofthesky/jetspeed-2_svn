@@ -19,7 +19,6 @@ limitations under the License.
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
-    <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
     <title>Selector</title>
     <short-title>Selector</short-title>
     <fragment id="ss-js-cp-selector" type="layout" name="jetspeed-layouts::VelocityOneColumn">

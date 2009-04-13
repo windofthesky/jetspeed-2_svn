@@ -26,8 +26,8 @@ limitations under the License.
   <metadata name="title" xml:lang="ko">루트 폴더</metadata>
 
   <defaults
-     layout-decorator="tigris"
-     portlet-decorator="gray-gradient"
+     layout-decorator="jetspeed"
+     portlet-decorator="jetspeed"
   />
 
   <document-order>Jetspeed2.link</document-order>

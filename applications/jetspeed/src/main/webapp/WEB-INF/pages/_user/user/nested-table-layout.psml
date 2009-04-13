@@ -20,7 +20,6 @@ limitations under the License.
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
-  <defaults layout-decorator="tigris" portlet-decorator="tigris"/>
   <title>Nested Table Layout Test</title>
   <short-title>Nested Table Layout</short-title>
   <metadata name="title" xml:lang="ja">入れ子レイアウトテスト</metadata>

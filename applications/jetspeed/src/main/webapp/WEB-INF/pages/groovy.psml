@@ -17,11 +17,7 @@ limitations under the License.
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
-  <defaults
-     skin="blue"
-     layout-decorator="tigris"
-     portlet-decorator="blue-gradient"
-  />
+ 
   <title>Groovy</title>
   <fragment id="groovy-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="groovy-2" type="portlet" name="demo::HelloGroovy" >

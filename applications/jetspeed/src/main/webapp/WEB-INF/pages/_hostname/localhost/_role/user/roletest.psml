@@ -16,7 +16,6 @@ limitations under the License.
 <page id="/localhost/roletest.psml" hidden="false">
     <title>Role Test</title>
     <short-title>Role Test</short-title>
-    <defaults/>
     <fragment id="role-test-001" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
         <fragment id="role-test-002" type="portlet" name="j2-admin::JetspeedDeveloper">
             <property name="row" value="0"/>

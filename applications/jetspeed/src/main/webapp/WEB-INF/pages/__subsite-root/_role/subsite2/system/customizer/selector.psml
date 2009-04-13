@@ -15,22 +15,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="j2-portlet-selector" hidden='true'
+<page id="Selector.psml" hidden="true"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
-  <defaults
-     layout-decorator="simple"
-     portlet-decorator="clear"
-  />
-  <title>Portlet Selector</title>
-  <metadata name="title" xml:lang="ja">ポートレットセレクタ</metadata>
-  <metadata name="title" xml:lang="es">Selector de portlets</metadata>
-  <metadata name="title" xml:lang="zh">Portlet选择器</metadata>
-  <metadata name="title" xml:lang="zh-TW">Portlet選擇器</metadata>
-
-  <fragment id="ss2-portlet-selector" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
-    <fragment id="ss2-portlet-selector-1" type="portlet" name="j2-admin::PortletSelector" >
+    <title>Selector</title>
+    <short-title>Selector</short-title>
+    <fragment id="ss2-js-cp-selector" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+        <fragment id="ss2-js-cp-selector.2" type="portlet" name="j2-admin::CategoryPortletSelector"/>
     </fragment>
-  </fragment>
 </page>

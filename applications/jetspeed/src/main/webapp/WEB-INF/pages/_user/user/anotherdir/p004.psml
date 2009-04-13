@@ -19,11 +19,6 @@ limitations under the License.
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
-  <defaults
-     skin="blue"
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
-  />
   <title>[USER 004] PSML Page</title>
   <metadata name="title" xml:lang="ja">[ユーザー 004] PSML ページ</metadata>
   <metadata name="title" xml:lang="es">Página PSML [USUARIO 004]</metadata>

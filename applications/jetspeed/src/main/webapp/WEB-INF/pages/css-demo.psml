@@ -17,11 +17,7 @@ limitations under the License.
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
-  <defaults
-     skin="blue"
-     layout-decorator="tigris"
-     portlet-decorator="blue-gradient"
-  />
+
   <title>CSS Demo</title>
   <metadata name="title" xml:lang="ja">CSS デモ</metadata>
   <metadata name="title" xml:lang="es">Demo Hojas de Estilo en Cascada</metadata>
