@@ -50,14 +50,12 @@
         <module>jetspeed-profiler</module>
         <module>jetspeed-rdbms</module>
         <module>jetspeed-registry</module>
-        <module>jetspeed-rewriter</module>
         <module>jetspeed-search</module>
         <module>jetspeed-security</module>
         <module>jetspeed-serializer</module>
         <module>jetspeed-sso</module>
         <module>jetspeed-statistics</module>
         <module>jetspeed-utils</module>
-        <module>jetspeed-web-content</module>
         <module>jetspeed-webapp-logging</module>
         <module>jetspeed-layout-portlets</module>
         <module>jetspeed-db-tools</module>
