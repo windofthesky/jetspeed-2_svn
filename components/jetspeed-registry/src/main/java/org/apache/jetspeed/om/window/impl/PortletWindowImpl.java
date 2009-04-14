@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.om.window.impl;
 
-import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +34,7 @@ import org.apache.jetspeed.container.PortletWindowID;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.KeyValue;
 import org.apache.pluto.container.PortletEntity;
@@ -306,6 +307,7 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
             // Refer to description in the javadoc for details.
             headElements = new TreeList();
             aggregateHeadElements(getFragment(), headElements);
+            mergeHeadElementsByHint(headElements);
         }
         
         return headElements;
@@ -361,6 +363,60 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
                     }
                 }
             }
+        }
+    }
+    
+    private static void mergeHeadElementsByHint( List<KeyValue<String, Element>> headElements )
+    {
+        Map<String, Element> firstElementByMergeHint = new HashMap<String, Element>();
+        Map<String, StringBuilder> mergedTextContents = new HashMap<String, StringBuilder>();
+        
+        for (Iterator<KeyValue<String, Element>> it = headElements.iterator(); it.hasNext(); )
+        {
+            KeyValue<String, Element> kvPair = it.next();
+            Element element = kvPair.getValue();
+            
+            if (element.hasAttribute(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE))
+            {
+                String mergeHint = element.getAttribute(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE);
+                String textContent = element.getTextContent();
+                
+                if (textContent != null)
+                {
+                    textContent = textContent.trim();
+                }
+                
+                if (firstElementByMergeHint.containsKey(mergeHint))
+                {
+                    if (textContent != null && !"".equals(textContent))
+                    {
+                        StringBuilder sb = mergedTextContents.get(mergeHint);
+                        sb.append(textContent).append("\r\n");
+                    }
+                    
+                    it.remove();
+                }
+                else
+                {
+                    firstElementByMergeHint.put(mergeHint, element);
+                    StringBuilder sb = new StringBuilder();
+                    
+                    if (textContent != null && !"".equals(textContent))
+                    {
+                        sb.append(textContent).append("\r\n");
+                    }
+                    
+                    mergedTextContents.put(mergeHint, sb);
+                }
+            }
+        }
+        
+        for (Map.Entry<String, Element> entry : firstElementByMergeHint.entrySet())
+        {
+            String mergeHint = entry.getKey();
+            Element firstElement = entry.getValue();
+            StringBuilder sb = mergedTextContents.get(mergeHint);
+            firstElement.setTextContent(sb.toString());
         }
     }
 
