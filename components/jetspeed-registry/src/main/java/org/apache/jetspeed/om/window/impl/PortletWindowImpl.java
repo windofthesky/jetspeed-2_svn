@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -27,6 +29,7 @@ import javax.portlet.PortletResponse;
 import javax.portlet.WindowState;
 
 import org.apache.commons.collections.list.TreeList;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.RenderTrackable;
 import org.apache.jetspeed.container.PortletWindow;
@@ -369,7 +372,7 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
     private static void mergeHeadElementsByHint( List<KeyValue<String, Element>> headElements )
     {
         Map<String, Element> firstElementByMergeHint = new HashMap<String, Element>();
-        Map<String, StringBuilder> mergedTextContents = new HashMap<String, StringBuilder>();
+        Map<String, Set<String>> mergedTextContents = new HashMap<String, Set<String>>();
         
         for (Iterator<KeyValue<String, Element>> it = headElements.iterator(); it.hasNext(); )
         {
@@ -390,8 +393,8 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
                 {
                     if (textContent != null && !"".equals(textContent))
                     {
-                        StringBuilder sb = mergedTextContents.get(mergeHint);
-                        sb.append(textContent).append("\r\n");
+                        Set<String> textContentSet = mergedTextContents.get(mergeHint);
+                        textContentSet.add(textContent);
                     }
                     
                     it.remove();
@@ -399,14 +402,13 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
                 else
                 {
                     firstElementByMergeHint.put(mergeHint, element);
-                    StringBuilder sb = new StringBuilder();
+                    Set<String> textContentSet = new TreeSet<String>();
+                    mergedTextContents.put(mergeHint, textContentSet);
                     
                     if (textContent != null && !"".equals(textContent))
                     {
-                        sb.append(textContent).append("\r\n");
+                        textContentSet.add(textContent);
                     }
-                    
-                    mergedTextContents.put(mergeHint, sb);
                 }
             }
         }
@@ -415,8 +417,8 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
         {
             String mergeHint = entry.getKey();
             Element firstElement = entry.getValue();
-            StringBuilder sb = mergedTextContents.get(mergeHint);
-            firstElement.setTextContent(sb.toString());
+            Set<String> textContentSet = mergedTextContents.get(mergeHint);
+            firstElement.setTextContent(StringUtils.join(textContentSet, "\r\n"));
         }
     }
 
