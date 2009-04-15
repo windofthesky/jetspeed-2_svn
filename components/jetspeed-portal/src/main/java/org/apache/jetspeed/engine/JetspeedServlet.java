@@ -39,8 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.cache.ContentCacheKeyGenerator;
-import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.UserContentCacheManager;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
@@ -405,35 +404,7 @@ implements JetspeedEngineConstants, HttpSessionListener
         long sessionLength = System.currentTimeMillis() - se.getSession().getCreationTime();
         String ipAddress = (String)se.getSession().getAttribute(SecurityValve.IP_ADDRESS);
         statistics.logUserLogout(ipAddress, subjectUserPrincipal.getName(), sessionLength);    
-        JetspeedCache portletContentCache = (JetspeedCache)engine.getComponentManager().getComponent("portletContentCache");
-        JetspeedCache decorationContentCache = null;
-        
-        try
-        {
-            decorationContentCache = (JetspeedCache)engine.getComponentManager().getComponent("decorationContentCache");
-        }
-        catch (Exception e)
-        {
-        }
-        
-        ContentCacheKeyGenerator generator = (ContentCacheKeyGenerator)engine.getComponentManager().getComponent("ContentCacheKeyGenerator");
-        
-        if (generator.isCacheBySessionId())
-        {
-            portletContentCache.evictContentForUser(se.getSession().getId());
-            
-            if (decorationContentCache != null)
-            {
-                decorationContentCache.evictContentForUser(se.getSession().getId());
-            }
-        }
-        else
-        {
-            portletContentCache.evictContentForUser(subjectUserPrincipal.getName());
-            
-            if (decorationContentCache != null)
-            {
-                decorationContentCache.evictContentForUser(subjectUserPrincipal.getName());            }
-        }
+        UserContentCacheManager userContentCacheManager = (UserContentCacheManager)engine.getComponentManager().getComponent("userContentCacheManager");
+        userContentCacheManager.evictUserContentCache(subjectUserPrincipal.getName(), se.getSession().getId());
     }
 }

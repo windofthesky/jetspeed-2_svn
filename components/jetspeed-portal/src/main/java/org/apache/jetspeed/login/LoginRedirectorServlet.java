@@ -27,6 +27,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.audit.AuditActivity;
+import org.apache.jetspeed.cache.UserContentCacheManager;
+import org.apache.jetspeed.components.ComponentManager;
 
 /**
  * LoginRedirectorServlet
@@ -55,11 +57,15 @@ public class LoginRedirectorServlet extends HttpServlet
         session.removeAttribute(LoginConstants.RETRYCOUNT);
         session.removeAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
 
-        AuditActivity audit = (AuditActivity)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.audit.AuditActivity");
+        ComponentManager cm = Jetspeed.getComponentManager();
+        UserContentCacheManager userContentCacheManager = (UserContentCacheManager)cm.getComponent("userContentCacheManager");
+        userContentCacheManager.evictUserContentCache(username, session.getId());
+        AuditActivity audit = (AuditActivity)cm.getComponent("org.apache.jetspeed.audit.AuditActivity");
         if (audit != null)
         {
             audit.logUserActivity(username, request.getRemoteAddr(), AuditActivity.AUTHENTICATION_SUCCESS, "Active Authentication");
         }
+        
         response.sendRedirect(response.encodeURL(destination));
     }
 

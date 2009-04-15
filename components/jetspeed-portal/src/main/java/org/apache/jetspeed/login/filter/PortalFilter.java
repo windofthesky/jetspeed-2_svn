@@ -18,8 +18,6 @@ package org.apache.jetspeed.login.filter;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.security.auth.Subject;
 import javax.servlet.Filter;
@@ -36,12 +34,12 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.audit.AuditActivity;
+import org.apache.jetspeed.cache.UserContentCacheManager;
+import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.login.LoginConstants;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.AuthenticatedUserImpl;
 import org.apache.jetspeed.security.AuthenticationProvider;
-import org.apache.jetspeed.security.JetspeedSubjectFactory;
-import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
@@ -69,9 +67,10 @@ public class PortalFilter implements Filter
             String password = request.getParameter(LoginConstants.PASSWORD);            
             if (username != null)
             {
-                UserManager userManager = (UserManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.UserManager");
-                AuditActivity audit = (AuditActivity)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.audit.AuditActivity");
-                AuthenticationProvider authProvider = (AuthenticationProvider)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.AuthenticationProvider");
+                ComponentManager cm = Jetspeed.getComponentManager();
+                UserManager userManager = (UserManager)cm.getComponent("org.apache.jetspeed.security.UserManager");
+                AuditActivity audit = (AuditActivity)cm.getComponent("org.apache.jetspeed.audit.AuditActivity");
+                AuthenticationProvider authProvider = (AuthenticationProvider)cm.getComponent("org.apache.jetspeed.security.AuthenticationProvider");
                 
                 // Commenting out for the using latest securty API's
                 //boolean success = userManager.authenticate(username, password);
@@ -89,10 +88,15 @@ public class PortalFilter implements Filter
                 {
                     audit.logUserActivity(username, request.getRemoteAddr(), AuditActivity.AUTHENTICATION_SUCCESS, "PortalFilter");
                     PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
-                        Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");
+                        cm.getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");
                     if (authenticationConfiguration.isCreateNewSessionOnLogin())
                     {
                         request.getSession().invalidate();
+                    }
+                    else
+                    {
+                        UserContentCacheManager userContentCacheManager = (UserContentCacheManager)cm.getComponent("userContentCacheManager");
+                        userContentCacheManager.evictUserContentCache(username, request.getSession().getId());
                     }
                     if (authUser.getUser() == null)
                     {

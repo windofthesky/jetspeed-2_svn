@@ -33,6 +33,8 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.audit.AuditActivity;
+import org.apache.jetspeed.cache.UserContentCacheManager;
+import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.login.LoginConstants;
 import org.apache.jetspeed.login.filter.PortalRequestWrapper;
 import org.apache.jetspeed.security.AuthenticationProvider;
@@ -53,8 +55,8 @@ public class ShibbolethPortalFilter implements Filter
 
 	public void doFilter(ServletRequest sRequest, ServletResponse sResponse, FilterChain filterChain) throws IOException, ServletException
 	{
-		AuthenticationProvider authProvider = (AuthenticationProvider) Jetspeed.getComponentManager().getComponent(
-				"org.apache.jetspeed.security.AuthenticationProvider");
+        ComponentManager cm = Jetspeed.getComponentManager();
+		AuthenticationProvider authProvider = (AuthenticationProvider) cm.getComponent("org.apache.jetspeed.security.AuthenticationProvider");
 		if (sRequest instanceof HttpServletRequest)
 		{
 			HttpServletRequest request = (HttpServletRequest) sRequest;
@@ -62,7 +64,7 @@ public class ShibbolethPortalFilter implements Filter
 			{
 				synchronized (sem)
 				{
-					ShibbolethConfiguration config = (ShibbolethConfiguration) Jetspeed.getComponentManager().getComponent(
+					ShibbolethConfiguration config = (ShibbolethConfiguration) cm.getComponent(
 							"org.apache.jetspeed.security.shibboleth.ShibbolethConfiguration");
 					userNameHeader = config.getHeaderMapping().get(ShibbolethConfiguration.USERNAME);
 				}
@@ -87,9 +89,9 @@ public class ShibbolethPortalFilter implements Filter
 						}
 					}
 				}
-				UserManager userManager = (UserManager) Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.UserManager");
-				AuditActivity audit = (AuditActivity) Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.audit.AuditActivity");
-				ShibbolethConfiguration config = (ShibbolethConfiguration) Jetspeed.getComponentManager().getComponent(
+				UserManager userManager = (UserManager) cm.getComponent("org.apache.jetspeed.security.UserManager");
+				AuditActivity audit = (AuditActivity) cm.getComponent("org.apache.jetspeed.audit.AuditActivity");
+				ShibbolethConfiguration config = (ShibbolethConfiguration) cm.getComponent(
 						"org.apache.jetspeed.security.shibboleth.ShibbolethConfiguration");
 				boolean success = false;
 				if (config.isAuthenticate())
@@ -124,11 +126,16 @@ public class ShibbolethPortalFilter implements Filter
 				if (success)
 				{
 					audit.logUserActivity(username, request.getRemoteAddr(), AuditActivity.AUTHENTICATION_SUCCESS, "ShibbolethFilter");
-					PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration) Jetspeed.getComponentManager()
-							.getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");
+					PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
+							cm.getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");
 					if (authenticationConfiguration.isCreateNewSessionOnLogin())
 					{
 						request.getSession().invalidate();
+					}
+					else
+					{
+                        UserContentCacheManager userContentCacheManager = (UserContentCacheManager)cm.getComponent("userContentCacheManager");
+                        userContentCacheManager.evictUserContentCache(username, request.getSession().getId());
 					}
 					subject = null;
 					try
