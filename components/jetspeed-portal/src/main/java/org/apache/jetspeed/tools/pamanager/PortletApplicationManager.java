@@ -664,8 +664,6 @@ public class PortletApplicationManager implements PortletApplicationManagement
     {
 
         updateSearchEngine(true,pa);
-        // TODO: PortletDefinition cache invalidation?
-//      log.info("Remove all registry entries defined for portlet application " + pa.getName());
 
         // todo keep (User)Prefs?
         registry.removeApplication(pa);
