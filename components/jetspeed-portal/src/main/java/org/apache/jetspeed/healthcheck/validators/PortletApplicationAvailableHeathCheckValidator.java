@@ -95,7 +95,7 @@ public class PortletApplicationAvailableHeathCheckValidator implements HealthChe
                     messages.append(LINE_SEPARATOR);
                 }
                 messages.append(paName + ": ");
-                PortletApplication pa = portletRegistry.getPortletApplication(paName);
+                PortletApplication pa = portletRegistry.getPortletApplication(paName, true);
                 boolean thisPAStatus = portletFactory.isPortletApplicationRegistered(pa);
                 if (thisPAStatus)
                 {

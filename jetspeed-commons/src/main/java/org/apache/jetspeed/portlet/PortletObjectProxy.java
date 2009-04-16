@@ -316,7 +316,7 @@ public class PortletObjectProxy extends BaseObjectProxy
         PortletFactory portletFactory = (PortletFactory) Jetspeed.getComponentManager().getComponent("portletFactory");
         ServletContext portalAppContext = ((ServletConfig) Jetspeed.getComponentManager().getComponent("ServletConfig")).getServletContext();
         
-        PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName(this.customConfigModePortletUniqueName);
+        PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName(this.customConfigModePortletUniqueName, true);
         PortletApplication portletApp = portletDef.getApplication();
         ServletContext portletAppContext = portalAppContext.getContext(portletApp.getContextPath());
         

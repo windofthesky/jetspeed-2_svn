@@ -249,7 +249,7 @@ public class GetPageAction
             String portletName = frag.getName();
             if ( portletName != null && portletName.length() > 0 )
             {
-                PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName( portletName );
+                PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName( portletName, true );
                 
                 if ( portletDef != null && portletIcons != null )
                 {

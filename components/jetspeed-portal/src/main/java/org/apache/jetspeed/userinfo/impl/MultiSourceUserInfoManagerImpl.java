@@ -61,7 +61,7 @@ public class MultiSourceUserInfoManagerImpl extends AbstractUserInfoManagerImpl
         {
             Map userInfoMap = new HashMap();
             Subject subject = context.getSubject();
-            PortletApplication pa = portletRegistry.getPortletApplication(appName);
+            PortletApplication pa = portletRegistry.getPortletApplication(appName, true);
             if (null == pa)
             {
                 log.debug(PortletRequest.USER_INFO + " is set to null");

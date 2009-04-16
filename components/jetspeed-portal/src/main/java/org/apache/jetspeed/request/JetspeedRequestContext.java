@@ -655,7 +655,7 @@ public class JetspeedRequestContext implements RequestContext
     private PortletWindow createPortletWindow(ContentFragment fragment)
     {
         PortletWindow window = null;
-        PortletDefinition pd = rcc.getPortletRegistry().getPortletDefinitionByUniqueName(fragment.getName());
+        PortletDefinition pd = rcc.getPortletRegistry().getPortletDefinitionByUniqueName(fragment.getName(), true);
         if (pd != null)
         {
             window = new PortletWindowImpl(this, fragment, pd);

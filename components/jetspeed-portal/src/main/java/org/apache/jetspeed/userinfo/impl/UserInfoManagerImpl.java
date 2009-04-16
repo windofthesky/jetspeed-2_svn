@@ -118,7 +118,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
             return null;
         }
 
-        PortletApplication pa = registry.getPortletApplication(appName);
+        PortletApplication pa = registry.getPortletApplication(appName, true);
         if (null == pa)
         {
             log.debug(PortletRequest.USER_INFO + " is set to null");

@@ -211,7 +211,7 @@ public class GetPortletsAction
         if (found == false)
             return null;
         
-        return registry.getPortletDefinitionByUniqueName(name);
+        return registry.getPortletDefinitionByUniqueName(name, true);
     }
     
     public int compare(Object obj1, Object obj2)

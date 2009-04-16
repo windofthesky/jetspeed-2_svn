@@ -85,7 +85,7 @@ public class PortletApplicationProxyImpl implements InvocationHandler, PortletAp
             {
                 if (app == null)
                 {
-                    app = registry.getPortletApplication(name);
+                    app = registry.getPortletApplication(name, true);
                 }
                 return m.invoke(app, args);
             }

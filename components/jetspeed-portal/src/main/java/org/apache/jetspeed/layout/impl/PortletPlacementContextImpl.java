@@ -811,7 +811,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
     			if ( layoutName != null )
     			{
     				// logic below is copied from org.apache.jetspeed.portlets.MultiColumnPortlet
-    				portletDef = registry.getPortletDefinitionByUniqueName( layoutName );
+    				portletDef = registry.getPortletDefinitionByUniqueName( layoutName, true );
                     if ( portletDef != null )
                     {
                         InitParam sizesParam = portletDef.getInitParam( "sizes" );

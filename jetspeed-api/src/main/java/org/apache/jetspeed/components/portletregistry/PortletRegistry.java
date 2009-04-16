@@ -37,13 +37,32 @@ public interface PortletRegistry
     Collection<PortletDefinition> getAllPortletDefinitions();
 
     /**
-     * Retreives a PortletApplication by it's unique name.  We use
-     * PortletApplicationComposite interface which extends the PortletApplication
+     * Retrieves a PortletApplication by it's unique name.  We use
+     * PortletApplication interface which extends the Pluto PortletApplicationDefinition
      * and adds additional functionallity to it.
-     * @param id 
-     * @return PortletApplicationComposite
+     * <br/>
+     * This method will always retrieve a fresh instance from the database, bypassing
+     * internal cache and therefore should be used when expecting to perform a write operation.
+     * @param name 
+     * @return PortletApplication
      */
     PortletApplication getPortletApplication( String name );
+
+    /**
+     * Retreives a PortletApplication by it's unique name.  We use
+     * PortletApplication interface which extends the Pluto PortletApplicationDefinition
+     * and adds additional functionallity to it.
+     * <br/>
+     * This method will optionally try to retrieve a <em>shared</em> instance from an internal
+     * cache first. If not found it will retrieve a fresh instance from the database (which
+     * will also store the instance in the cache for future access).
+     * <br/>
+     * Because the returned instance might be shared it should only be used for readonly purposes.
+     * @param name
+     * @param fromCache when true first try to retrieve a shared instance from cache
+     * @return PortletApplication
+     */
+    PortletApplication getPortletApplication( String name, boolean fromCache );
 
     Collection<PortletApplication> getPortletApplications();
 
@@ -56,17 +75,32 @@ public interface PortletRegistry
      * <br/>
      * <strong>EXAMPLE: </strong> com.myapp.portletApp1::weather-portlet
      * <br/>
-     * This methos automatically calls {@link getStoreableInstance(PortletDefinitionComposite portlet)}
-     * on the returned <code>PortletEntityInstance</code> 
+     * This method will always retrieve a fresh instance from the database, bypassing
+     * internal cache and therefore should be used when expecting to perform a write operation.
      * @param name portlets unique name.  
      * @return Portlet that matches the unique name 
-     * @throws java.lang.IllegalStateException If <code>PortletDefinitionComposite != null</code> AND
-     *  <code>PortletDefinitionComposite.getPortletApplicationDefinition() ==  null</code>.
-     * The reason for this is that every PortletDefinition is required to
-     * have a parent PortletApplicationDefinition
-     * 
      */
     PortletDefinition getPortletDefinitionByUniqueName( String name );
+
+    /**
+     * unique name is a string formed by the combination of a portlet's
+     * unique within it's parent application plus the parent application's
+     * unique name within the portlet container using ":" as a delimiter. 
+     * <br/>
+     * <strong>FORMAT: </strong> <i>application name</i>::<i>portlet name</i>
+     * <br/>
+     * <strong>EXAMPLE: </strong> com.myapp.portletApp1::weather-portlet
+     * <br/>
+     * This method will optionally try to retrieve a <em>shared</em> instance from an internal
+     * cache first. If not found it will retrieve a fresh instance from the database (which
+     * will also store the instance in the cache for future access).
+     * <br/>
+     * Because the returned instance might be shared it should only be used for readonly purposes.
+     * @param name portlets unique name.  
+     * @param fromCache when true first try to retrieve a shared instance from cache
+     * @return Portlet that matches the unique name 
+     */
+    PortletDefinition getPortletDefinitionByUniqueName( String name, boolean fromCache );
 
     /**
      * Checks whether or not a portlet application with this name has all ready

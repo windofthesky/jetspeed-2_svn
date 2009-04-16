@@ -18,32 +18,19 @@ package org.apache.jetspeed.components.portletregistry;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
+import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.om.common.Support;
-import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
-import org.apache.jetspeed.om.portlet.Description;
-import org.apache.jetspeed.om.portlet.DisplayName;
-import org.apache.jetspeed.om.portlet.EventDefinitionReference;
-import org.apache.jetspeed.om.portlet.InitParam;
-import org.apache.jetspeed.om.portlet.Language;
-import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.om.portlet.Preferences;
-import org.apache.jetspeed.om.portlet.SecurityRoleRef;
-import org.apache.jetspeed.om.portlet.Supports;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
-import org.apache.jetspeed.om.portlet.impl.PreferencesImpl;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.springframework.dao.DataAccessException;
@@ -103,6 +90,7 @@ public class PersistenceBrokerPortletRegistry
         this.preferenceService = preferenceService;
     }
     
+    @SuppressWarnings("unchecked")
     public Collection<PortletDefinition> getAllPortletDefinitions()
     {
         Criteria c = new Criteria();
@@ -114,6 +102,23 @@ public class PersistenceBrokerPortletRegistry
 
     public PortletApplication getPortletApplication(String name)
     {
+        return getPortletApplication(name, false);
+    }
+    
+    public PortletApplication getPortletApplication(String name, boolean fromCache)
+    {
+        if (fromCache)
+        {
+            CacheElement cacheElement = applicationNameCache.get(name);
+            if (cacheElement != null)
+            {
+                cacheElement = applicationOidCache.get(((RegistryCacheObjectWrapper)cacheElement.getContent()).getId());
+                if (cacheElement != null)
+                {
+                    return (PortletApplication)cacheElement.getContent();
+                }
+            }
+        }
         Criteria c = new Criteria();
         c.addEqualTo("name", name);
         PortletApplication app = (PortletApplication) getPersistenceBrokerTemplate().getObjectByQuery(
@@ -122,6 +127,7 @@ public class PersistenceBrokerPortletRegistry
         return app;
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<PortletApplication> getPortletApplications()
     {
         Criteria c = new Criteria();
@@ -130,9 +136,26 @@ public class PersistenceBrokerPortletRegistry
         postLoadColl(list);
         return list;
     }
-
+    
     public PortletDefinition getPortletDefinitionByUniqueName( String name )
     {
+        return getPortletDefinitionByUniqueName(name, false);
+    }
+
+    public PortletDefinition getPortletDefinitionByUniqueName( String name, boolean fromCache )
+    {
+        if (fromCache)
+        {
+            CacheElement cacheElement = portletNameCache.get(name);
+            if (cacheElement != null)
+            {
+                cacheElement = portletOidCache.get(((RegistryCacheObjectWrapper)cacheElement.getContent()).getId());
+                if (cacheElement != null)
+                {
+                    return (PortletDefinition)cacheElement.getContent();
+                }
+            }
+        }
         String appName = PortletRegistryHelper.parseAppName(name);
         String portletName = PortletRegistryHelper.parsePortletName(name);
 
@@ -153,7 +176,7 @@ public class PersistenceBrokerPortletRegistry
 
     public boolean portletApplicationExists( String name )
     {
-        return getPortletApplication(name) != null;
+        return getPortletApplication(name, true) != null;
     }
     
     public boolean portletDefinitionExists( String portletName, PortletApplication app )
@@ -238,7 +261,7 @@ public class PersistenceBrokerPortletRegistry
         try
         {
             getPersistenceBrokerTemplate().store(portlet);
-            ((PortletDefinition)portlet).storeChildren();
+            portlet.storeChildren();
         }
         catch (DataAccessException e)
         {
@@ -272,12 +295,12 @@ public class PersistenceBrokerPortletRegistry
         {
             //System.out.println("%%% portlet remote removed " + key);            
             RegistryPortletCache.cacheRemoveQuiet((String)key, (RegistryCacheObjectWrapper)element);
-            PortletDefinition pd = this.getPortletDefinitionByUniqueName((String)key);
-            if (listeners != null)
+            if (listeners != null && !listeners.isEmpty())
             {
+                PortletDefinition pd = this.getPortletDefinitionByUniqueName((String)key);
                 for (int ix=0; ix < listeners.size(); ix++)
                 {
-                    RegistryEventListener listener = (RegistryEventListener)listeners.get(ix);
+                    RegistryEventListener listener = listeners.get(ix);
                     listener.portletRemoved(pd);
                 }        
             }           
@@ -286,12 +309,12 @@ public class PersistenceBrokerPortletRegistry
         {
             //System.out.println("%%% PA remote removed " + key);
             RegistryApplicationCache.cacheRemoveQuiet((String) key, (RegistryCacheObjectWrapper)element);
-            PortletApplication pa = this.getPortletApplication((String)key);
-            if (listeners != null)
+            if (listeners != null && !listeners.isEmpty())
             {
+                PortletApplication pa = this.getPortletApplication((String)key);
                 for (int ix=0; ix < listeners.size(); ix++)
                 {
-                    RegistryEventListener listener = (RegistryEventListener)listeners.get(ix);
+                    RegistryEventListener listener = listeners.get(ix);
                     listener.applicationRemoved(pa);
                 }        
             }
