@@ -577,11 +577,13 @@
                     </deployment>
                     <!-- demo pa's -->
                     <deployment>
-                      <artifact>org.apache.portals.applications:demo:war</artifact>
+                      <artifact>org.apache.portals.applications:apa-demo:war</artifact>
+                      <targetName>demo.war</targetName>
                       <delete>./demo</delete>
                     </deployment>
                     <deployment>
-                      <artifact>org.apache.portals.applications:rss:war</artifact>
+                      <artifact>org.apache.portals.applications:apa-rss-war:war</artifact>
+                      <targetName>rss.war</targetName>
                       <delete>./rss</delete>
                     </deployment>
                     <deployment>
@@ -660,14 +662,14 @@
               <!-- demo pa's -->
               <dependency>
                 <groupId>org.apache.portals.applications</groupId>
-                <artifactId>rss</artifactId>
-                <version>2.2-SNAPSHOT</version>
+                <artifactId>apa-rss-war</artifactId>
+                <version>1.0-SNAPSHOT</version>
                 <type>war</type>
               </dependency>
               <dependency>
                 <groupId>org.apache.portals.applications</groupId>
-                <artifactId>demo</artifactId>
-                <version>2.2-SNAPSHOT</version>
+                <artifactId>apa-demo</artifactId>
+                <version>1.0-SNAPSHOT</version>
                 <type>war</type>
               </dependency>
               <dependency>

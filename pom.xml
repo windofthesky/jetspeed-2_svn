@@ -316,6 +316,8 @@
     <org.apache.portals.bridges.velocity.version>1.0.4</org.apache.portals.bridges.velocity.version>
     <org.apache.portals.bridges.groovy.version>1.0.4</org.apache.portals.bridges.groovy.version>
     <org.apache.portals.bridges.portletfilter.version>1.0.4</org.apache.portals.bridges.portletfilter.version>
+    <org.apache.portals.applications.apa-demo.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-demo.version>
+    <org.apache.portals.applications.apa-rss.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-rss.version>
     <oro.version>2.0.8</oro.version>
     <portlet-api.version>2.0</portlet-api.version>
     <regexp.version>1.2</regexp.version>
@@ -510,13 +512,13 @@
 
       <!-- Portals Applications JARs -->
       <dependency>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
-        <artifactId>jetspeed-rss</artifactId>
+        <groupId>org.apache.portals.applications</groupId>
+        <artifactId>apa-rss-jar</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
-        <artifactId>portals-gems</artifactId>
+        <groupId>org.apache.portals.applications</groupId>
+        <artifactId>apa-gems</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
@@ -540,9 +542,9 @@
       </dependency>
       <dependency>
         <groupId>org.apache.portals.applications</groupId>
-        <artifactId>demo</artifactId>
+        <artifactId>apa-demo</artifactId>
         <type>war</type>
-        <version>${pom.version}</version>
+        <version>${org.apache.portals.applications.apa-demo.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.portals.jetspeed-2</groupId>
@@ -551,10 +553,10 @@
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
-        <artifactId>rss</artifactId>
+        <groupId>org.apache.portals.applications</groupId>
+        <artifactId>apa-rss-war</artifactId>
         <type>war</type>
-        <version>${pom.version}</version>
+        <version>${org.apache.portals.applications.apa-demo.version}</version>
       </dependency>
 
       <!-- Standard APIs -->
