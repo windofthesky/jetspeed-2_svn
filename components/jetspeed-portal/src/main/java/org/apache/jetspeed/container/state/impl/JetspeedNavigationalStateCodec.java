@@ -45,6 +45,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
 
     protected static final char PARAMETER_SEPARATOR = '|';
     protected static final char PARAMETER_ELEMENT_SEPARATOR = '=';    
+    protected static final char PARAMETER_SEPARATOR_ESCAPE = '\\';
     protected static final char RENDER_WINDOW_ID_KEY = 'a';
     protected static final char ACTION_WINDOW_ID_KEY = 'b';
     protected static final char MODE_KEY = 'c';
@@ -105,10 +106,11 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
 
             // decode arguments and parameters into states
             int position = 0;
+            int length = decodedParameters.length();
             StringBuffer buffer = new StringBuffer();            
             PortletWindowRequestNavigationalState currentState = null;
             String parameter;
-            while ( (position = decodeArgument(position, decodedParameters, buffer, PARAMETER_SEPARATOR )) != -1 )
+            while ( (position = decodeArgument(position, length, decodedParameters, buffer, PARAMETER_SEPARATOR )) != -1 && buffer.length() > 0)
             {
                 parameter = buffer.toString();
                 currentState = decodeParameter( states, currentState, parameter);
@@ -667,10 +669,11 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     protected boolean decodeParamsParameter(String parameter, String [] parameterName, String [][] parameterValues)
     {
         int position = 1;
+        int length = parameter.length();
         StringBuffer buffer = new StringBuffer();
         int parameterValueCount = -1;
         int parameterValueIndex = -1;
-        while ( (position = decodeArgument(position, parameter, buffer, PARAMETER_ELEMENT_SEPARATOR)) != -1 )
+        while ( (position = decodeArgument(position, length, parameter, buffer, PARAMETER_ELEMENT_SEPARATOR)) != -1 )
         {
             if ( parameterName[0] == null )
             {
@@ -680,8 +683,20 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             else if ( parameterValueCount == -1 )
             {
                 parameterValueCount = Integer.parseInt(buffer.toString(), 16);
-                parameterValues[0] = new String[parameterValueCount];
-                parameterValueIndex = 0;
+                if (parameterValueCount < 0)
+                {
+                    return false;
+                }
+                else if (parameterValueCount == 0)
+                {
+                    parameterValues[0] = null;
+                    return true;
+                }
+                else
+                {
+                    parameterValues[0] = new String[parameterValueCount];
+                    parameterValueIndex = 0;
+                }
             }
             else
             {
@@ -787,7 +802,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         return value.replace('/','-').replace('=','_');
     }
 
-    protected String encodeArgument( String argument, char escape )
+    protected String encodeArgument( String argument, char terminator )
     {
         int length = argument.length();
         StringBuffer buffer = new StringBuffer(length);
@@ -796,8 +811,12 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         for ( int i = 0; i < length; i++ )
         {
             c = argument.charAt(i);
+            if (c == terminator)
+            {
+                buffer.append(PARAMETER_SEPARATOR_ESCAPE);
+            }
             buffer.append(c);
-            if ( c == escape )
+            if ( c == PARAMETER_SEPARATOR_ESCAPE )
             {
                 buffer.append(c);
             }
@@ -805,32 +824,39 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         return buffer.toString();
     }
     
-    protected int decodeArgument(int position, String arguments, StringBuffer buffer, char escape)
+    protected int decodeArgument(int position, int maxLength, String arguments, StringBuffer buffer, char terminator)
     {
-        int maxLength = arguments.length();
         buffer.setLength(0);
+        if (position > maxLength)
+        {
+            return -1;
+        }
         char c;
         for ( ; position < maxLength; position++ )
         {
             c = arguments.charAt(position);
-            if ( c != escape )
+            if (c == terminator)
+            {    
+                position++;
+                break;
+            }
+            else if ( c != PARAMETER_SEPARATOR_ESCAPE )
             {
                 buffer.append(c);
             }
             else 
             {
-                if ( c == escape && position < maxLength-1 && arguments.charAt(position+1) == escape )
+                position++;
+                if ( position < maxLength )
                 {
-                    buffer.append(c);
-                    position++;
+                    buffer.append(arguments.charAt(position));
                 }
                 else
                 {
-                    position++;
                     break;
                 }
             }
         }
-        return buffer.length() > 0 ? position : -1; 
+        return position; 
     }
 }
