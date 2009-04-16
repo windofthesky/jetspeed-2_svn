@@ -320,7 +320,7 @@ public class PortletRendererImpl implements PortletRenderer
         {
             title = portletWindow.getPortletDefinition().getPortletName();
         }
-        return new PortletContentImpl(this, cacheKey, expirationCache, title);
+        return new PortletContentImpl(cacheKey, expirationCache, title);
     }
     
     protected RenderingJob buildRenderingJob( PortletWindow portletWindow, 
@@ -399,7 +399,7 @@ public class PortletRendererImpl implements PortletRenderer
         return true;
     }
  
-    protected void addToCache(PortletContent content)
+    protected void addToCache(RequestContext context, PortletContent content)
     {
         CacheElement cachedElement = portletContentCache.createElement(content.getCacheKey(), content);
         if (content.getExpiration() == -1)
@@ -412,14 +412,16 @@ public class PortletRendererImpl implements PortletRenderer
             cachedElement.setTimeToIdleSeconds(content.getExpiration());
             cachedElement.setTimeToLiveSeconds(content.getExpiration());
         }
-        portletContentCache.put(cachedElement);        
+        portletContentCache.put(cachedElement);
+        context.getPortalURL().getNavigationalState().registerPortletContentCachedForPublicRenderParameters(context, content);
     }    
     
-    public void notifyContentComplete(PortletContent content)
+    public void notifyContentComplete(RequestContext context, PortletWindow window)
     {
+        PortletContent content = window.getFragment().getPortletContent();
         if (content.getExpiration() != 0)
         {
-            addToCache(content);
+            addToCache(context, content);
         }
     }
     

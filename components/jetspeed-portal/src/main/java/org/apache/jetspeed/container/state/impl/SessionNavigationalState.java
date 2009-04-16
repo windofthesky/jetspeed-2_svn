@@ -59,7 +59,7 @@ public class SessionNavigationalState extends AbstractNavigationalState
     
     public boolean sync(RequestContext context)
     {
-        HttpSession session = context.getRequest().getSession();
+        HttpSession session = context.getRequest().getSession(false);
         Object syncLock = session;
         if (syncLock == null)
         {
@@ -109,14 +109,6 @@ public class SessionNavigationalState extends AbstractNavigationalState
                         }
                     }
                 }
-                if ( session != null )
-                {
-                    PortletWindowSessionNavigationalStates sessionStates = (PortletWindowSessionNavigationalStates)session.getAttribute(NavigationalState.NAVSTATE_SESSION_KEY);
-                    if ( sessionStates != null )
-                    {
-                        sessionStates.syncPublicRequestParameters(context, requestStates, true, cache, decorationCache);
-                    }
-                }
             }
             else
             {
@@ -144,8 +136,8 @@ public class SessionNavigationalState extends AbstractNavigationalState
                     }
                 }
             }
-            
-            this.resetRequestPortletWindowPublicRenderParameters();
+            syncPublicRequestParameters(context, transientNavState);
+            resetRequestPortletWindowPublicRenderParameters();
             
             return result;
         }

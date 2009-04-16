@@ -97,6 +97,11 @@ public class RenderingJobImpl implements RenderingJob
         this.window = window;
         this.expirationCache = expirationCache;
     }
+    
+    public PortletRenderer getRenderer()
+    {
+        return renderer;
+    }
 
     /**
      * Sets portlet timout in milliseconds.
@@ -219,13 +224,10 @@ public class RenderingJobImpl implements RenderingJob
             {
                 synchronized (fragment.getPortletContent())
                 {
-                    if (fragment.getOverriddenContent() != null)
+                    fragment.getPortletContent().complete();
+                    if (fragment.getOverriddenContent() == null)
                     {
-                        fragment.getPortletContent().completeWithError();
-                    }
-                    else
-                    {
-                        fragment.getPortletContent().complete();
+                        renderer.notifyContentComplete(requestContext, window);
                     }
                 }
             }

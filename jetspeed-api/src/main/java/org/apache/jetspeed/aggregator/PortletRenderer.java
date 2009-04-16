@@ -21,6 +21,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -82,10 +83,10 @@ public interface PortletRenderer
     /**
      * Notify that content completed by worker jobs 
      * So that renderer can update its state
-     * 
-     * @param content
+     * @param context
+     * @param window
      */
-    public void notifyContentComplete(PortletContent content);
+    public void notifyContentComplete(RequestContext context, PortletWindow window);
 
     PortletTrackingManager getPortletTrackingManager();
     

@@ -17,17 +17,22 @@
 package org.apache.jetspeed.container.state.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpSession;
 import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.aggregator.PortletContent;
+import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
+import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
@@ -64,6 +69,35 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         if ( requestStates == null )
         {
             requestStates = codec.decode(encodedState, characterEncoding);
+        }
+    }
+    
+    private static boolean changedParameterValues(String[] requestValues, String[] sessionValues)
+    {
+        if ((requestValues == null) || (sessionValues == null) || (requestValues.length != sessionValues.length))
+        {
+            return true;
+        }
+        for (int ix = 0; ix < requestValues.length; ix++)
+        {
+            if (!requestValues[ix].equals(sessionValues[ix]))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void removeFromCache(RequestContext context, String id, JetspeedContentCache cache)
+    {
+        if (cache != null)
+        {
+            ContentCacheKey cacheKey = cache.createCacheKey(context, id);
+            if (cache.isKeyInCache(cacheKey))
+            {
+                cache.remove(cacheKey);
+            }
+            cache.invalidate(context);
         }
     }
     
@@ -147,7 +181,87 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
         }
         requestStates.setPublicRenderParametersMap(map);
     }
-       
+
+    @SuppressWarnings("unchecked")
+    protected void syncPublicRequestParameters(RequestContext context, boolean transientNavState)
+    {
+        Map<QName, ValuesAndWindowUsage> publicRenderParametersMap = null;
+        
+        // sync public render parameters if not a transient NavState request
+        if (!transientNavState && requestStates.getPublicRenderParametersMap() != null)
+        {
+            HttpSession session = context.getRequest().getSession(true);
+            publicRenderParametersMap = (Map<QName, ValuesAndWindowUsage>)session.getAttribute(NavigationalState.PRP_SESSION_KEY);
+            
+            if (publicRenderParametersMap == null)
+            {
+                publicRenderParametersMap = Collections.synchronizedMap(new HashMap<QName, ValuesAndWindowUsage>());
+                session.setAttribute(NavigationalState.PRP_SESSION_KEY, publicRenderParametersMap);
+            }
+
+            for (Iterator<Map.Entry<QName, String[]>> iter = requestStates.getPublicRenderParametersMap().entrySet()
+                                                                          .iterator(); iter.hasNext();)
+            {
+                Map.Entry<QName, String[]> entry = iter.next();
+                ValuesAndWindowUsage vawu = publicRenderParametersMap.get(entry.getKey());
+                if (vawu == null || changedParameterValues(entry.getValue(), vawu.getValues()))
+                {
+                    if (vawu != null && vawu.getWindowIds() != null)
+                    {
+                        for (String windowId : vawu.getWindowIds())
+                        {
+                            removeFromCache(context, windowId, cache);
+                        }
+                        for (String pageId : vawu.getPageIds())
+                        {
+                            removeFromCache(context, pageId, decorationCache);
+                        }
+                    }
+                    if (entry.getValue() == null)
+                    {
+                        iter.remove();
+                        publicRenderParametersMap.remove(entry.getKey());
+                    }
+                    else if (vawu == null)
+                    {
+                        publicRenderParametersMap.put(entry.getKey(), new ValuesAndWindowUsage(entry.getValue()));
+                    }
+                    else
+                    {
+                        vawu.setValues(entry.getValue());
+                    }
+                }
+            }
+        }
+        
+        if (publicRenderParametersMap == null)
+        {
+            HttpSession session = context.getRequest().getSession(false);
+            if (session != null)
+            {
+                publicRenderParametersMap = (Map<QName, ValuesAndWindowUsage>)session.getAttribute(NavigationalState.PRP_SESSION_KEY);
+            }
+        }
+        
+        if (publicRenderParametersMap != null && !publicRenderParametersMap.isEmpty())
+        {
+            Map<QName, String[]> map = requestStates.getPublicRenderParametersMap();
+            if (map == null)
+            {
+                map = new HashMap<QName, String[]>();
+            }
+            for (Map.Entry<QName, ValuesAndWindowUsage> entry : publicRenderParametersMap.entrySet())
+            {
+                if (!map.containsKey(entry.getKey()))
+                {
+                    map.put(entry.getKey(), entry.getValue().getValues());
+                }
+            }
+            requestStates.setPublicRenderParametersMap(map);
+        }
+    }
+ 
+    
     protected void resetRequestPortletWindowPublicRenderParameters()
     {
         for (PortletWindowRequestNavigationalState state : requestStates.getPortletWindowRequestNavigationalStates().values())
@@ -443,6 +557,11 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
                 {
                     Map<String, String[]> targets = new HashMap<String, String[]>();
                     Map<QName, String[]> qtargets = new HashMap<QName, String[]>();
+                    Map<QName, String[]> rsPrpMap = requestStates.getPublicRenderParametersMap();
+                    if (rsPrpMap == null)
+                    {
+                        rsPrpMap = new HashMap<QName,String[]>();
+                    }
                     for (Map.Entry<String,String[]> entry : publicRenderParametersMap.entrySet())
                     {
                         QName qname = targetState.getPublicRenderParameterQNameByIdentifier(entry.getKey());
@@ -452,13 +571,17 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
                             targets.put(entry.getKey(),entry.getValue());
                             if (entry.getValue() == null)
                             {
-                                requestStates.getPublicRenderParametersMap().remove(qname);
+                                rsPrpMap.remove(qname);
                             }
                             else
                             {
-                                requestStates.getPublicRenderParametersMap().put(qname, entry.getValue());
+                                rsPrpMap.put(qname, entry.getValue());
                             }
                         }
+                    }
+                    if (!rsPrpMap.isEmpty())
+                    {
+                        requestStates.setPublicRenderParametersMap(rsPrpMap);
                     }
                     targetState.setTargetPublicRenderParametersMap(targets);
                     // now symc with the requestStates publicParametersMap and other possible targetted states
@@ -624,5 +747,37 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     public Iterator<String> getWindowIdIterator()
     {
         return requestStates.getWindowIdIterator();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void registerPortletContentCachedForPublicRenderParameters(RequestContext context, PortletContent content)
+    {
+        String windowId = content.getCacheKey().getWindowId();
+        PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(windowId);
+        if (state != null && state.getPublicRenderParametersMap() != null && !state.getPublicRenderParametersMap().isEmpty())
+        {
+            HttpSession session = context.getRequest().getSession(true);
+            
+            synchronized (session)
+            {
+                String pageId = context.getPage().getId();
+                Map<QName, ValuesAndWindowUsage> publicRenderParametersMap = (Map<QName, ValuesAndWindowUsage>)session.getAttribute(NavigationalState.PRP_SESSION_KEY);
+                if (publicRenderParametersMap == null)
+                {
+                    // should not be possible, because having publicRenderParameters implies the publicRenderParametersMap already must have been created
+                    publicRenderParametersMap = Collections.synchronizedMap(new HashMap<QName, ValuesAndWindowUsage>());
+                    session.setAttribute(PRP_SESSION_KEY, publicRenderParametersMap);
+                }
+                for (String identifier : state.getPublicRenderParametersMap().keySet())
+                {
+                    QName qname = state.getPublicRenderParameterQNameByIdentifier(identifier);
+                    ValuesAndWindowUsage usage = publicRenderParametersMap.get(qname);
+                    if (usage != null)
+                    {
+                        usage.registerWindowUsage(pageId, windowId);
+                    }
+                }
+            }
+        }
     }
 }

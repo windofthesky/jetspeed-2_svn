@@ -107,6 +107,15 @@ public class MockRenderJob  implements RenderingJob
         // TODO Auto-generated method stub
         return window;
     }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.aggregator.RenderingJob#getRenderer()
+     */
+    public PortletRenderer getRenderer()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.aggregator.RenderingJob#getPortletContent()

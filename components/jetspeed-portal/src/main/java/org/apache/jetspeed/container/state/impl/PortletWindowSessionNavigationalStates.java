@@ -24,7 +24,6 @@ import java.util.Map;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
-import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedContentCache;
@@ -46,7 +45,6 @@ public class PortletWindowSessionNavigationalStates implements Serializable
 
     private final boolean storeParameters;
     private Map<String, PageState> pageStates = new HashMap<String, PageState>();
-    private Map<QName, ValuesAndWindowUsage> publicRenderParametersMap = Collections.synchronizedMap(new HashMap<QName, ValuesAndWindowUsage>());
 
     public PortletWindowSessionNavigationalStates(boolean storeParameters)
     {
@@ -114,67 +112,8 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                         ((PortletWindowExtendedNavigationalState)sessionState).resetDecoratorActionEncodings();
                     }
                 }
-                syncPublicRequestParameters(context, requestStates, false, cache, decorationCache);
             }      
         } 
-    }
-    
-    public void syncPublicRequestParameters(RequestContext context, PortletWindowRequestNavigationalStates requestStates, 
-                                               boolean transientNavState, 
-                                               JetspeedContentCache cache, JetspeedContentCache decorationCache)
-    {
-        // sync session states public render parameters
-        if (!transientNavState && requestStates.getPublicRenderParametersMap() != null)
-        {            
-            for (Iterator<Map.Entry<QName, String[]>> iter = requestStates.getPublicRenderParametersMap().entrySet().iterator(); iter.hasNext(); )
-            {
-                Map.Entry<QName, String[]> entry = iter.next();
-                ValuesAndWindowUsage vawu = publicRenderParametersMap.get(entry.getKey());
-                if (vawu == null || changedParameterValues(entry.getValue(), vawu.getValues()))
-                {
-                    if (vawu != null && vawu.getWindowIds() != null)
-                    {
-                        for (String windowId : vawu.getWindowIds())
-                        {
-                            removeFromCache(context, windowId, cache);
-                        }
-                        for (String pageId : vawu.getPageIds())
-                        {
-                            removeFromCache(context, pageId, decorationCache);
-                        }
-                    }
-                    if (entry.getValue() == null)
-                    {
-                        iter.remove();
-                    }
-                    else if (vawu == null)
-                    {
-                        publicRenderParametersMap.put(entry.getKey(), new ValuesAndWindowUsage(entry.getValue()));
-                    }
-                    else
-                    {
-                        vawu.setValues(entry.getValue());
-                    }
-                }
-            }
-        }
-        
-        if (!publicRenderParametersMap.isEmpty())
-        {
-            Map<QName, String[]> map = requestStates.getPublicRenderParametersMap();
-            if (map == null)
-            {
-                map = new HashMap<QName, String[]>();
-            }
-            for (Map.Entry<QName, ValuesAndWindowUsage> entry : publicRenderParametersMap.entrySet())
-            {
-                if (!map.containsKey(entry.getKey()))
-                {
-                    map.put(entry.getKey(), entry.getValue().getValues());
-                }
-            }
-            requestStates.setPublicRenderParametersMap(map);
-        }
     }
     
     public void sync(RequestContext context, Page page, 
@@ -327,7 +266,6 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                 }
             }
         }        
-        syncPublicRequestParameters(context, requestStates, false, cache, decorationCache);
     }
     
     private boolean modeChanged(PortletMode req, PortletMode ses)

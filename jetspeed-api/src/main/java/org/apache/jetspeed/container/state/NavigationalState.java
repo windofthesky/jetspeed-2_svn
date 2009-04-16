@@ -24,6 +24,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
 
@@ -40,7 +41,15 @@ import org.apache.jetspeed.container.url.PortalURL;
  */
 public interface NavigationalState 
 {
+    /**
+     * Session key for storing the PortletWindowSessionNavigationalStates
+     */
     public static final String NAVSTATE_SESSION_KEY = "org.apache.jetspeed.navstate";
+    
+    /**
+     * Session key for storing the PublicRenderParametersMap
+     */
+    public static final String PRP_SESSION_KEY = "org.apache.jetspeed.prp";
 
     /*
      * Decodes an encoded Navigational State as retrieved from a Portal URL.
@@ -236,4 +245,6 @@ public interface NavigationalState
      * @return true if render parameters will be saved in the Session
      */
     boolean isRenderParameterStateFull();
+    
+    void registerPortletContentCachedForPublicRenderParameters(RequestContext context, PortletContent content);
 }

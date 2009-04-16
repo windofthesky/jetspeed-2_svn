@@ -358,7 +358,7 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
                             {
                                 synchronized (content)
                                 {
-                                    content.completeWithError();
+                                    content.complete();
                                 }
                             }
                         }

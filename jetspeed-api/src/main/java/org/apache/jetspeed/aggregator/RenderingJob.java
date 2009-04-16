@@ -36,6 +36,8 @@ public interface RenderingJob extends Runnable
 {
     void execute();
     
+    PortletRenderer getRenderer();
+    
     PortletWindow getWindow(); 
 
     PortletContent getPortletContent();

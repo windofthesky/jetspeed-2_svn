@@ -38,7 +38,7 @@ public class PathNavigationalState extends AbstractNavigationalState
 
     public boolean sync(RequestContext context)
     {        
-        HttpSession session = context.getRequest().getSession();
+        HttpSession session = context.getRequest().getSession(false);
         Object syncLock = session;
         if (syncLock == null)
         {
@@ -48,6 +48,7 @@ public class PathNavigationalState extends AbstractNavigationalState
         {
             boolean result = resolvePortletWindows(context);
             resolvePublicParametersMap();
+            syncPublicRequestParameters(context, false);
             resetRequestPortletWindowPublicRenderParameters();
             return result;
         }

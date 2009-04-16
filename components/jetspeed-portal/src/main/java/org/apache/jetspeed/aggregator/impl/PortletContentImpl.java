@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.commons.collections.list.TreeList;
 import org.apache.jetspeed.aggregator.PortletContent;
-import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.util.DOMUtils;
 import org.apache.jetspeed.util.DefaultKeyValue;
@@ -42,7 +41,6 @@ public class PortletContentImpl implements PortletContent
     private int expiration;
     private String title;
     private String contentType;
-    private PortletRenderer renderer;
     
     /**
      * The list container for all contributed head elements from this portlet content.
@@ -52,27 +50,21 @@ public class PortletContentImpl implements PortletContent
     
     PortletContentImpl()
     {
-        init();
+        cw = new CharArrayWriter();
+        writer = new PrintWriter(cw);
     }
     
-    PortletContentImpl(PortletRenderer renderer, ContentCacheKey cacheKey, int expiration, String title)
+    PortletContentImpl(ContentCacheKey cacheKey, int expiration, String title)
     {
-        this.renderer = renderer;
+        this();
         this.cacheKey = cacheKey;
         this.expiration = expiration;
         this.title = title;
-        init();
     }
 
     public PrintWriter getWriter()
     {
         return writer;
-    }
-
-    public void init()
-    {
-        cw = new CharArrayWriter();
-        writer = new PrintWriter(cw);
     }
 
     public void release()
@@ -84,6 +76,7 @@ public class PortletContentImpl implements PortletContent
         }
         cw = null;
         writer = null;
+        headElements = null;
     }
 
     public String toString()
@@ -109,13 +102,6 @@ public class PortletContentImpl implements PortletContent
         return complete;
     }
 
-    void setComplete(boolean state, boolean notify)
-    {
-        if (renderer != null && notify)
-            renderer.notifyContentComplete(this);
-        this.complete = state;
-    }
-    
     public String getContent()
     {
         return toString();
@@ -130,13 +116,7 @@ public class PortletContentImpl implements PortletContent
      */
     public void complete()
     {
-       setComplete(true, true);
-    }
-    
-    // error case, don't notify 
-    public void completeWithError()
-    {
-        setComplete(true, false);
+        this.complete = true;
     }
     
     public ContentCacheKey getCacheKey()
@@ -179,7 +159,8 @@ public class PortletContentImpl implements PortletContent
         if (!complete)
         {
             resetBuffer();
-            // TODO: clear headers
+            headElements = null;
+            // TODO: clear other (normal) headers
         }
     }
     
@@ -264,5 +245,4 @@ public class PortletContentImpl implements PortletContent
         
         return headElems;
     }
-    
 }
