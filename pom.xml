@@ -318,6 +318,7 @@
     <org.apache.portals.bridges.portletfilter.version>1.0.4</org.apache.portals.bridges.portletfilter.version>
     <org.apache.portals.applications.apa-demo.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-demo.version>
     <org.apache.portals.applications.apa-rss.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-rss.version>
+    <org.apache.portals.applications.apa-webcontent.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-webcontent.version>
     <oro.version>2.0.8</oro.version>
     <portlet-api.version>2.0</portlet-api.version>
     <regexp.version>1.2</regexp.version>
@@ -556,7 +557,13 @@
         <groupId>org.apache.portals.applications</groupId>
         <artifactId>apa-rss-war</artifactId>
         <type>war</type>
-        <version>${org.apache.portals.applications.apa-demo.version}</version>
+        <version>${org.apache.portals.applications.apa-rss.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.portals.applications</groupId>
+        <artifactId>apa-webcontent-war</artifactId>
+        <type>war</type>
+        <version>${org.apache.portals.applications.apa-webcontent.version}</version>
       </dependency>
 
       <!-- Standard APIs -->
