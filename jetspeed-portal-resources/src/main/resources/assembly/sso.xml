@@ -22,7 +22,7 @@
   <!-- SSO Implementation -->
 
   <bean id="org.apache.jetspeed.sso.spi.impl.SSOUserManagerSPIImpl" class="org.apache.jetspeed.sso.spi.impl.SSOUserManagerSPIImpl">
-      <meta key="j2:cat" value="default,security" />
+      <meta key="j2:cat" value="default or security" />
       <constructor-arg index="0" ref="org.apache.jetspeed.security.JetspeedPrincipalType.sso_user" />
       <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
       <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" />
@@ -34,7 +34,7 @@
     
   <bean id="org.apache.jetspeed.security.JetspeedPrincipalType.sso_user"
     class="org.apache.jetspeed.security.impl.JetspeedPrincipalTypeImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" value="sso_user" />
     <constructor-arg index="1" value="org.apache.jetspeed.sso.impl.SSOUserImpl" />
     <constructor-arg index="2">
@@ -74,7 +74,7 @@
   </bean>
   
   <bean id="org.apache.jetspeed.sso.spi.SSOUserManagerSPI" parent="baseTransactionProxy">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <property name="proxyInterfaces">
       <value>
         org.apache.jetspeed.sso.spi.SSOUserManagerSPI, org.apache.jetspeed.security.JetspeedPrincipalManager,
@@ -96,7 +96,7 @@
 
   <bean id="ssoUserIsOwnedByUserAssociationHandler"
     class="org.apache.jetspeed.sso.impl.IsOwnedByPrincipalAssociationHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.sso.spi.SSOUserManagerSPI" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
@@ -104,7 +104,7 @@
 
   <bean id="ssoUserIsOwnedByGroupAssociationHandler"
     class="org.apache.jetspeed.sso.impl.IsOwnedByPrincipalAssociationHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.sso.spi.SSOUserManagerSPI" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.GroupManager" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
@@ -112,7 +112,7 @@
   
   <bean id="ssoUserIsRelatedToUserAssociationHandler"
     class="org.apache.jetspeed.sso.impl.IsRemoteIdentityForPrincipalAssociationHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.sso.spi.SSOUserManagerSPI" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.UserManager" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
@@ -120,14 +120,14 @@
 
   <bean id="ssoUserIsRelatedGroupAssociationHandler"
     class="org.apache.jetspeed.sso.impl.IsRemoteIdentityForPrincipalAssociationHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.sso.spi.SSOUserManagerSPI" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.GroupManager" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
   </bean>
   
   <bean id="org.apache.jetspeed.sso.SSOManager" class="org.apache.jetspeed.sso.impl.SSOManagerImpl">
-    <meta key="j2:cat" value="default,security"/>
+    <meta key="j2:cat" value="default or security"/>
     <property name="userManager" ref="org.apache.jetspeed.security.UserManager"/>
     <property name="SSOUserManagerSPI" ref="org.apache.jetspeed.sso.spi.SSOUserManagerSPI"/>
     <property name="domainAccessManager" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager"/>
@@ -137,14 +137,14 @@
   
   <bean id="PersistenceBrokerSSOSiteManager"
     class="org.apache.jetspeed.sso.spi.impl.JetspeedPersistentSSOSiteManager" init-method="init">
-    <meta key="j2:cat" value="default,security"/>
+    <meta key="j2:cat" value="default or security"/>
     <constructor-arg index="0">
       <value>JETSPEED-INF/ojb/sso_repository.xml</value>
     </constructor-arg>
   </bean>
 
   <bean id="org.apache.jetspeed.sso.spi.SSOSiteManagerSPI" parent="baseTransactionProxy" name="ssoSiteManager">
-    <meta key="j2:cat" value="default,security"/>
+    <meta key="j2:cat" value="default or security"/>
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.sso.spi.SSOSiteManagerSPI</value>
     </property>

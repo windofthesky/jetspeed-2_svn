@@ -21,7 +21,7 @@
   <!-- XML/Castor PageManager -->
 
   <bean id="xmlDocumentHandlerFactory" class="org.apache.jetspeed.page.document.psml.DocumentHandlerFactoryImpl">
-    <meta key="j2:cat" value="xmlPageManager,pageSerializer" />
+    <meta key="j2:cat" value="xmlPageManager or pageSerializer" />
     <constructor-arg>
       <map>
         <entry key=".psml">
@@ -105,7 +105,7 @@
   </bean>
 
   <bean id="xmlFolderHandler" class="org.apache.jetspeed.page.document.psml.FileSystemFolderHandler">
-    <meta key="j2:cat" value="xmlPageManager,pageSerializer" />
+    <meta key="j2:cat" value="xmlPageManager or pageSerializer" />
     <constructor-arg index="0">
       <value>${psml.pages.path}</value>
     </constructor-arg>
@@ -118,7 +118,7 @@
   </bean>
 
   <bean name="xmlPageManager" class="org.apache.jetspeed.page.psml.CastorXmlPageManager">
-    <meta key="j2:cat" value="xmlPageManager,pageSerializer" />
+    <meta key="j2:cat" value="xmlPageManager or pageSerializer" />
     <constructor-arg index="0">
       <ref bean="IdGenerator" />
     </constructor-arg>
@@ -146,7 +146,7 @@
   <!-- Database PageManager -->
 
   <bean id="dbPageManagerImpl" class="org.apache.jetspeed.page.impl.DatabasePageManager" init-method="init">
-    <meta key="j2:cat" value="dbPageManager,pageSerializer" />
+    <meta key="j2:cat" value="dbPageManager or pageSerializer" />
     <!-- OJB configuration file resource path -->
     <constructor-arg index="0">
       <value>JETSPEED-INF/ojb/page-manager-repository.xml</value>
@@ -170,7 +170,7 @@
   </bean>
 
   <bean id="dbPageManager" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-    <meta key="j2:cat" value="dbPageManager,pageSerializer" />
+    <meta key="j2:cat" value="dbPageManager or pageSerializer" />
     <meta key="j2:alias" value="org.apache.jetspeed.page.PageManager" />
     <property name="transactionManager">
       <ref bean="transactionManager" />
@@ -248,7 +248,7 @@
 
   <!-- Inject Page Manager Proxy into Page Manager -->
   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <meta key="j2:cat" value="dbPageManager,pageSerializer" />
+    <meta key="j2:cat" value="dbPageManager or pageSerializer" />
     <property name="targetObject">
       <ref bean="dbPageManagerImpl" />
     </property>

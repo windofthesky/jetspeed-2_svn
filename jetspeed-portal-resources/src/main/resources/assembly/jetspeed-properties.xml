@@ -20,7 +20,7 @@
 
   <!-- Commons configuration object generated from jetspeed.properties + override.properties -->
   <bean id="portal_configuration" class="org.apache.jetspeed.components.util.ConfigurationProperties">
-    <meta key="j2:cat" value="default,springProperties" />
+    <meta key="j2:cat" value="default or springProperties" />
     <property name="locations">
       <list>
         <value>file:///${jetspeedPropertiesPath}/jetspeed.properties</value>
@@ -34,7 +34,7 @@
 
   <!-- Adds jetspeed.properties as our configuration object to support ${...} vars -->
   <bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <meta key="j2:cat" value="default,springProperties" />
+    <meta key="j2:cat" value="default or springProperties" />
     <property name="locations">
       <list>
         <value>file:///${jetspeedPropertiesPath}/jetspeed.properties</value>

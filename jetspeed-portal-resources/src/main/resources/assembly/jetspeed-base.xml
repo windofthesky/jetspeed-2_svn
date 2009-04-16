@@ -21,7 +21,7 @@
     <!-- ID Generator -->
     <bean id="IdGenerator" class="org.apache.jetspeed.idgenerator.JetspeedIdGenerator" init-method="start"
         destroy-method="stop">
-        <meta key="j2:cat" value="default,base" />
+        <meta key="j2:cat" value="default or base" />
         <!-- ID Start value -->
         <constructor-arg index="0">
             <value>${portal.core.id.generator.start}</value>

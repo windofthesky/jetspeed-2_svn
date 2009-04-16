@@ -23,7 +23,7 @@
   <!-- require a non-empty password -->
   <bean id="org.apache.jetspeed.security.spi.CredentialPasswordValidator"
     class="org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
 
     <!-- UNCOMMENT TO TURN ON Regex-based password validation. The pattern below gives:
       * Must be at least 6 characters
@@ -36,7 +36,7 @@
   <!-- MessageDigest encode passwords using SHA-1 -->
   <bean id="org.apache.jetspeed.security.spi.CredentialPasswordEncoder"
     class="org.apache.jetspeed.security.spi.impl.MessageDigestCredentialPasswordEncoder">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0">
       <value>SHA-1</value>
     </constructor-arg>
@@ -53,7 +53,7 @@
   <!--
     <bean id="org.apache.jetspeed.security.spi.PasswordCredentialProvider"
     class="org.apache.jetspeed.security.spi.impl.DefaultPasswordCredentialProvider">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0">
     <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordValidator" />
     </constructor-arg>
@@ -104,7 +104,7 @@
   <!--
     <bean id="org.apache.jetspeed.security.spi.InternalPasswordCredentialInterceptor"
     class="org.apache.jetspeed.security.spi.impl.InternalPasswordCredentialInterceptorsProxy">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0">
     <list>
     
@@ -120,7 +120,7 @@
   <!--
     <bean id="org.apache.jetspeed.security.spi.CredentialHandler"
     class="org.apache.jetspeed.security.spi.impl.DefaultCredentialHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0">
     <ref bean="org.apache.jetspeed.security.spi.SecurityAccess" />
     </constructor-arg>
@@ -138,7 +138,7 @@
     may demarcate its own transactions -->
   <!--<bean id="org.apache.jetspeed.security.spi.UserSecurityHandlerImpl"
     class="org.apache.jetspeed.security.spi.impl.DefaultUserSecurityHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg>
     <ref bean="org.apache.jetspeed.security.spi.SecurityAccess" />
     </constructor-arg>
@@ -146,7 +146,7 @@
     
     <bean id="org.apache.jetspeed.security.spi.UserSecurityHandler" parent="baseTransactionProxy"
     name="userSecurityHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <property name="proxyInterfaces">
     <value>org.apache.jetspeed.security.spi.UserSecurityHandler</value>
     </property>

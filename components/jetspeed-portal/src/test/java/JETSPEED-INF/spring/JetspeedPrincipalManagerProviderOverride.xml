@@ -21,7 +21,7 @@
     
     <bean id="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider"
         class="org.apache.jetspeed.security.impl.JetspeedPrincipalManagerProviderImpl">
-        <meta key="j2:cat" value="default,security" />
+        <meta key="j2:cat" value="default or security" />
         <constructor-arg index="0">
             <set>
                 <ref bean="org.apache.jetspeed.security.UserManager" />

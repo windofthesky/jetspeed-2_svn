@@ -22,7 +22,7 @@
   <!-- Security: Login Module Proxy -->
   <bean id="org.apache.jetspeed.security.LoginModuleProxy"
     class="org.apache.jetspeed.security.impl.LoginModuleProxyImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <!-- Authentication Provider to authenticate a user -->
     <constructor-arg index="0">
       <ref bean="org.apache.jetspeed.security.AuthenticationProvider" />

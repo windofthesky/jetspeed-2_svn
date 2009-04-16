@@ -20,7 +20,7 @@
 
   <!--SEARCH COMPONENT-->
   <bean id="org.apache.jetspeed.search.HandlerFactory" class="org.apache.jetspeed.search.handlers.HandlerFactoryImpl">
-    <meta key="j2:cat" value="default,search" />
+    <meta key="j2:cat" value="default or search" />
     <constructor-arg>
       <map>
         <entry key="java.net.URL">
@@ -38,7 +38,7 @@
 
 
   <bean id="org.apache.jetspeed.search.SearchEngine" class="org.apache.jetspeed.search.lucene.SearchEngineImpl">
-    <meta key="j2:cat" value="default,search" />
+    <meta key="j2:cat" value="default or search" />
     <constructor-arg index="0">
       <value>${search.index.location}</value>
     </constructor-arg>

@@ -4,7 +4,7 @@
 
   <bean id="org.apache.jetspeed.serializer.JetspeedSerializer" name="JetspeedSerializer"
     class="org.apache.jetspeed.serializer.JetspeedSerializerImpl">
-    <meta key="j2:cat" value="default,serializer" />
+    <meta key="j2:cat" value="default or serializer" />
     <constructor-arg index="0">
       <list>
         <bean class="org.apache.jetspeed.serializer.JetspeedCapabilitiesSerializer">

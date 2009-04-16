@@ -20,7 +20,7 @@
 
   <bean id="org.apache.jetspeed.security.JetspeedPrincipalType.user"
     class="org.apache.jetspeed.security.impl.JetspeedPrincipalTypeImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" value="user" />
     <constructor-arg index="1" value="org.apache.jetspeed.security.impl.UserImpl" />
     <constructor-arg index="2">
@@ -57,7 +57,7 @@
 
   <bean id="org.apache.jetspeed.security.JetspeedPrincipalType.role"
     class="org.apache.jetspeed.security.impl.JetspeedPrincipalTypeImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" value="role" />
     <constructor-arg index="1" value="org.apache.jetspeed.security.impl.RoleImpl" />
     <constructor-arg index="2">
@@ -82,7 +82,7 @@
 
   <bean id="org.apache.jetspeed.security.JetspeedPrincipalType.group"
     class="org.apache.jetspeed.security.impl.JetspeedPrincipalTypeImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" value="group" />
     <constructor-arg index="1" value="org.apache.jetspeed.security.impl.GroupImpl" />
     <constructor-arg index="2">
@@ -108,7 +108,7 @@
   <!-- Security: User Manager -->
 
   <bean id="org.apache.jetspeed.security.UserManager" parent="baseTransactionProxy">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <property name="proxyInterfaces">
       <value>
         org.apache.jetspeed.security.UserManager, org.apache.jetspeed.security.JetspeedPrincipalManager,
@@ -131,7 +131,7 @@
 
   <bean id="org.apache.jetspeed.security.impl.UserManagerImpl"
     class="org.apache.jetspeed.security.impl.UserManagerImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.JetspeedPrincipalType.user" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.JetspeedPrincipalType.role" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.JetspeedPrincipalType.group" />
@@ -141,7 +141,7 @@
   </bean>
 
   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <property name="targetObject"><ref local="org.apache.jetspeed.security.impl.UserManagerImpl"/></property>
     <property name="targetMethod"><value>addListener</value></property>
     <property name="arguments">
@@ -152,7 +152,7 @@
   <!-- Security: Group Manager -->
 
   <bean id="org.apache.jetspeed.security.GroupManager" parent="baseTransactionProxy">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <property name="proxyInterfaces">
       <value>
         org.apache.jetspeed.security.GroupManager,org.apache.jetspeed.security.JetspeedPrincipalManager,
@@ -174,7 +174,7 @@
 
   <bean id="org.apache.jetspeed.security.impl.GroupManagerImpl"
     class="org.apache.jetspeed.security.impl.GroupManagerImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.JetspeedPrincipalType.group" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.JetspeedPrincipalType.user" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.JetspeedPrincipalType.role" />
@@ -183,7 +183,7 @@
   </bean>
 
   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <property name="targetObject"><ref local="org.apache.jetspeed.security.impl.GroupManagerImpl"/></property>
     <property name="targetMethod"><value>addListener</value></property>
     <property name="arguments">
@@ -194,7 +194,7 @@
   <!-- Security: Role Manager -->
 
   <bean id="org.apache.jetspeed.security.RoleManager" parent="baseTransactionProxy">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <property name="proxyInterfaces">
       <value>
         org.apache.jetspeed.security.RoleManager,org.apache.jetspeed.security.JetspeedPrincipalManager,
@@ -216,7 +216,7 @@
 
   <bean id="org.apache.jetspeed.security.impl.RoleManagerImpl"
     class="org.apache.jetspeed.security.impl.RoleManagerImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.JetspeedPrincipalType.role" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.JetspeedPrincipalType.user" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.JetspeedPrincipalType.group" />
@@ -225,7 +225,7 @@
   </bean>
 
   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <property name="targetObject"><ref local="org.apache.jetspeed.security.impl.RoleManagerImpl"/></property>
     <property name="targetMethod"><value>addListener</value></property>
     <property name="arguments">
@@ -236,7 +236,7 @@
   <!-- Security: Permission Manager -->
 
   <bean id="org.apache.jetspeed.security.PermissionManager" parent="baseTransactionProxy">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.security.PermissionManager</value>
     </property>
@@ -258,7 +258,7 @@
 
   <bean id="org.apache.jetspeed.security.impl.PermissionManagerImpl"
     class="org.apache.jetspeed.security.impl.PermissionManagerImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0">
       <list>
         <bean class="org.apache.jetspeed.security.spi.impl.FolderPermission$Factory" />
@@ -277,7 +277,7 @@
 
   <bean id="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider"
     class="org.apache.jetspeed.security.impl.JetspeedPrincipalManagerProviderImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0">
       <set>
         <ref bean="org.apache.jetspeed.security.UserManager" />
@@ -290,7 +290,7 @@
 
   <bean id="userIsMemberOfRoleAssociationHandler"
     class="org.apache.jetspeed.security.spi.impl.IsMemberOfPrincipalAssociationHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.UserManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.RoleManager" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
@@ -298,7 +298,7 @@
 
   <bean id="userIsMemberOfGroupAssociationHandler"
     class="org.apache.jetspeed.security.spi.impl.IsMemberOfPrincipalAssociationHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.UserManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.GroupManager" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
@@ -306,7 +306,7 @@
 
   <bean id="groupIsMemberOfRoleAssociationHandler"
     class="org.apache.jetspeed.security.spi.impl.IsMemberOfPrincipalAssociationHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.GroupManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.RoleManager" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
@@ -314,34 +314,34 @@
 
   <bean id="roleIsARoleAssociationHandler"
     class="org.apache.jetspeed.security.spi.impl.IsAPrincipalAssociationHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.RoleManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
   </bean>
   
   <bean id="roleIsPartOfRoleAssociationHandler"
     class="org.apache.jetspeed.security.spi.impl.IsPartOfPrincipalAssociationHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.RoleManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
   </bean>
   
   <bean id="groupIsAGroupAssociationHandler"
     class="org.apache.jetspeed.security.spi.impl.IsAPrincipalAssociationHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.GroupManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
   </bean>
   
   <bean id="groupIsPartOfGroupAssociationHandler"
     class="org.apache.jetspeed.security.spi.impl.IsPartOfPrincipalAssociationHandler">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.GroupManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" />
   </bean>
   
   <bean id="userSubjectRolesResolver" class="org.apache.jetspeed.security.spi.impl.UserSubjectPrincipalsResolverImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.UserManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.JetspeedPrincipalType.role" />
     <constructor-arg index="2">
@@ -378,7 +378,7 @@
 
   <bean id="userSubjectGroupsResolver"
     class="org.apache.jetspeed.security.spi.impl.UserSubjectPrincipalsResolverImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.UserManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.JetspeedPrincipalType.group" />
     <constructor-arg index="2">
@@ -421,6 +421,6 @@
     </constructor-arg>
   </bean>
   <bean id="org.apache.jetspeed.security.PrincipalManagerEventAdapter" class="org.apache.jetspeed.security.PrincipalManagerEventAdapter" >
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
   </bean>  
 </beans>

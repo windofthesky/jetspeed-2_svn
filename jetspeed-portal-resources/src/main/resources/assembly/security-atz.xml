@@ -20,7 +20,7 @@
 
   <!-- Security: RDBMS Policy implementation for JAAS -->
   <bean id="org.apache.jetspeed.security.impl.RdbmsPolicy" class="org.apache.jetspeed.security.impl.RdbmsPolicy">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg>
       <ref bean="org.apache.jetspeed.security.PermissionManager" />
     </constructor-arg>

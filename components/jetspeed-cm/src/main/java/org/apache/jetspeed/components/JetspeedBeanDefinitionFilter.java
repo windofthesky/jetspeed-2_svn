@@ -54,11 +54,14 @@ import org.springframework.core.io.support.PropertiesLoaderSupport;
  * <p>
  * Beans which needs to be matched against active categories must define a:<br/>
  * <pre>&lt;meta key="j2:cat" value="&lt;categories&gt;"/&gt;</pre> meta value within the bean definition.
- * The bean categories value may contain multiple comma separated values.
+ * The bean categories value is parsed as a standard logical expression that can utilize the unary
+ * NOT operator, the binary AND and OR operators, and parentheses. Categories within the expression are
+ * substituted with TRUE and FALSE values depending on whether the category is defined for filtering
+ * or not, respectively. The bean matches if the whole expression evaluates to TRUE.
  * </p>
  * <p>
- * Unmatched beans (having a "j2:cat" meta value for which none were active) will not be registered in the
- * Spring beanFactory (see: {@link FilteringListableBeanFactory}. By not defining an id or name attribute,
+ * Unmatched beans (having a "j2:cat" meta value expression that evaluates to FALSE) will not be registered
+ * in the Spring beanFactory (see: {@link FilteringListableBeanFactory}. By not defining an id or name attribute,
  * or a unique one not referenced by other beans with different (or no) set of categories, different versions
  * of a similar bean can be defined within a single Spring configuration file.
  * </p>
@@ -90,7 +93,8 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
 
     private String categoriesKey;
     private Properties props;
-    private Set categories;
+    private Set<String> categories;
+    private JetspeedBeanDefinitionFilterMatcher matcher;
     private boolean initialized;
     
     public JetspeedBeanDefinitionFilter()
@@ -103,7 +107,7 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
         setCategories(categories);
     }
     
-    public JetspeedBeanDefinitionFilter(Set categories)
+    public JetspeedBeanDefinitionFilter(Set<String> categories)
     {
         setCategories(categories);
     }
@@ -136,8 +140,8 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
             
             // interpolation of property references within properties delimited by '${' and '}'
             // based on org.apache.maven.plugin.resources.PropertiesUtils
-            HashSet circularRefs = new HashSet();
-            ArrayList visitedProps = new ArrayList();
+            HashSet<String> circularRefs = new HashSet<String>();
+            ArrayList<String> visitedProps = new ArrayList<String>();
             for ( Enumeration n = props.propertyNames(); n.hasMoreElements(); )
             {
                 String k = (String) n.nextElement();
@@ -218,22 +222,25 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
     {
         if (categories != null && categories.length()>0)
         {            
-            this.categories = new HashSet();
+            this.categories = new HashSet<String>();
             StringTokenizer st = new StringTokenizer(categories, " ,;\t");
             while (st.hasMoreTokens())
             {
                 this.categories.add(st.nextToken());
             }
+            this.matcher = new JetspeedBeanDefinitionFilterMatcher(this.categories);
         }
         else
         {
             this.categories = null;
+            this.matcher = null;
         }
     }
 
-    public void setCategories(Set categories)
+    public void setCategories(Set<String> categories)
     {
         this.categories = categories;
+        this.matcher = ((this.categories != null) ? new JetspeedBeanDefinitionFilterMatcher(this.categories) : null);
     }
     
     public Properties getProperties()
@@ -252,9 +259,9 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
         {
             initialized = true;
             
-            if (props != null && categories == null)
+            if (props != null && this.categories == null)
             {
-                this.categories = new HashSet();
+                this.categories = new HashSet<String>();
                 String value = System.getProperty(SYSTEM_PROPERTY_CATEGORIES_KEY);
                 if (value == null && props != null)
                 {
@@ -284,27 +291,19 @@ public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
             }
             if (this.categories == null)
             {
-                this.categories = new HashSet();
+                this.categories = new HashSet<String>();
             }
+            this.matcher = new JetspeedBeanDefinitionFilterMatcher(this.categories);            
         }
     }
     
     public boolean match(BeanDefinition bd)
     {
-        String beanCategories = (String)bd.getAttribute(CATEGORY_META_KEY);
+        String beanCategoriesExpression = (String)bd.getAttribute(CATEGORY_META_KEY);
         boolean matched = true;
-        if (beanCategories != null)
+        if (beanCategoriesExpression != null)
         {
-            matched = false;
-            StringTokenizer st = new StringTokenizer(beanCategories, " ,;\t");
-            while (st.hasMoreTokens())
-            {
-                if (categories.contains(st.nextToken()))
-                {
-                    matched = true;
-                    break;
-                }
-            }
+            matched = ((matcher != null) && matcher.match(beanCategoriesExpression));
         }
         return matched;
     }

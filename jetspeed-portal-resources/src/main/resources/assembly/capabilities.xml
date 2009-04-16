@@ -20,7 +20,7 @@
 
   <!-- Capabilities DAO-->
   <bean id="capabilitiesImpl" class="org.apache.jetspeed.capabilities.impl.JetspeedCapabilities" init-method="init">
-    <meta key="j2:cat" value="default,capabilities" />
+    <meta key="j2:cat" value="default or capabilities" />
     <constructor-arg index="0">
       <value>JETSPEED-INF/ojb/capabilities_repository.xml</value>
     </constructor-arg>
@@ -40,7 +40,7 @@
 
   <!-- Capabilities -->
   <bean id="org.apache.jetspeed.capabilities.Capabilities" name="capabilities" parent="baseTransactionProxy">
-    <meta key="j2:cat" value="default,capabilities" />
+    <meta key="j2:cat" value="default or capabilities" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.capabilities.Capabilities</value>
     </property>
@@ -65,22 +65,22 @@
 
   <!-- Client -->
   <bean id="Client" class="org.apache.jetspeed.capabilities.impl.ClientImpl" scope="prototype">
-    <meta key="j2:cat" value="default,capabilities" />
+    <meta key="j2:cat" value="default or capabilities" />
   </bean>
 
   <!-- MediaType -->
   <bean id="MediaType" class="org.apache.jetspeed.capabilities.impl.MediaTypeImpl" scope="prototype">
-    <meta key="j2:cat" value="default,capabilities" />
+    <meta key="j2:cat" value="default or capabilities" />
   </bean>
 
   <!-- MimeType -->
   <bean id="MimeType" class="org.apache.jetspeed.capabilities.impl.MimeTypeImpl" scope="prototype">
-    <meta key="j2:cat" value="default,capabilities" />
+    <meta key="j2:cat" value="default or capabilities" />
   </bean>
 
   <!-- Capability -->
   <bean id="Capability" class="org.apache.jetspeed.capabilities.impl.CapabilityImpl" scope="prototype">
-    <meta key="j2:cat" value="default,capabilities" />
+    <meta key="j2:cat" value="default or capabilities" />
   </bean>
 
 </beans>

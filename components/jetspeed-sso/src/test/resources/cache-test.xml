@@ -20,20 +20,20 @@
     
     <!-- Cache Manager -->
     <bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
-        <meta key="j2:cat" value="default,cache"/>
+        <meta key="j2:cat" value="default or cache"/>
         <property name="defaultConfigResource" value="ehcache.xml"/>
         <property name="test" value="true"/>
     </bean>
 
     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-        <meta key="j2:cat" value="default,cache"/>
+        <meta key="j2:cat" value="default or cache"/>
         <property name="configLocation" ref="cacheManagerConfig"/>
     </bean>
     
     <!-- Page File Cache -->
     <bean id="PageFileCache" class="org.apache.jetspeed.cache.file.FileCache" init-method="startFileScanner"
         destroy-method="stopFileScanner">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <!-- Internal cache -->
         <constructor-arg index="0">
             <ref bean="internalPageFileCache" />
@@ -47,7 +47,7 @@
     <!-- Factory bean used to instantiate a EHCache with the specified name (and corresponding
         configuration in cacheManager.xml -->
     <bean id="ehPortletContentCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -55,7 +55,7 @@
     </bean>
     
     <bean id="ContentCacheKeyGenerator" class="org.apache.jetspeed.cache.impl.JetspeedCacheKeyGenerator">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <!-- Keys are order specific in the list:
             where username  == the user principal name of the current user
             pipeline  == the name of the active pipeline for the current request (portal | desktop)
@@ -76,7 +76,7 @@
     </bean>
     
     <bean id="portletContentCache" class="org.apache.jetspeed.cache.impl.EhPortletContentCacheImpl">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg index="0">
             <ref bean="ehPortletContentCache" />
         </constructor-arg>
@@ -89,7 +89,7 @@
     </bean>
     
     <bean id="ehDecorationContentCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -97,7 +97,7 @@
     </bean>
     
     <bean id="decorationContentCache" class="org.apache.jetspeed.cache.impl.EhDecorationContentCacheImpl">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg index="0">
             <ref bean="ehDecorationContentCache" />
         </constructor-arg>
@@ -110,7 +110,7 @@
     </bean>
     
     <bean id="ehDecorationConfigurationCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -118,14 +118,14 @@
     </bean>
     
     <bean id="decorationConfigurationCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg>
             <ref bean="ehDesktopContentCache" />
         </constructor-arg>
     </bean>
     
     <bean id="ehPreferencesCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -133,14 +133,14 @@
     </bean>
     
     <bean id="preferencesCache" class="org.apache.jetspeed.cache.impl.EhCacheDistributedImpl">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg>
             <ref bean="ehPreferencesCache" />
         </constructor-arg>
     </bean>
     
     <bean id="ehPortletApplicationOidCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -148,7 +148,7 @@
     </bean>
     
     <bean id="ehPortletApplicationNameCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -156,7 +156,7 @@
     </bean>
     
     <bean id="ehDesktopContentCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -164,28 +164,28 @@
     </bean>
     
     <bean id="portletApplicationOidCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg>
             <ref bean="ehPortletApplicationOidCache" />
         </constructor-arg>
     </bean>
     
     <bean id="portletApplicationNameCache" class="org.apache.jetspeed.cache.impl.EhCacheDistributedImpl">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg>
             <ref bean="ehPortletApplicationNameCache" />
         </constructor-arg>
     </bean>
     
     <bean id="desktopContentCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg>
             <ref bean="ehDesktopContentCache" />
         </constructor-arg>
     </bean>
     
     <bean id="ehPortletDefinitionOidCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -193,7 +193,7 @@
     </bean>
     
     <bean id="ehPortletDefinitionNameCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -202,14 +202,14 @@
     
     
     <bean id="portletDefinitionOidCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg>
             <ref bean="ehPortletDefinitionOidCache" />
         </constructor-arg>
     </bean>
     
     <bean id="portletDefinitionNameCache" class="org.apache.jetspeed.cache.impl.EhCacheDistributedImpl">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg>
             <ref bean="ehPortletDefinitionNameCache" />
         </constructor-arg>
@@ -219,7 +219,7 @@
     <!-- Factory bean used to instantiate a EHCache with the specified name (and corresponding
         configuration in cacheManager.xml -->
     <bean id="ehActiveAuthenticationCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -227,14 +227,14 @@
     </bean>
     
     <bean id="activeAuthenticationCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg index="0">
             <ref bean="ehActiveAuthenticationCache" />
         </constructor-arg>
     </bean>
     
     <bean id="ehPortletWindowCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -242,14 +242,14 @@
     </bean>
     
     <bean id="portletWindowCache" class="org.apache.jetspeed.cache.impl.EhPortletWindowCache">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg index="0">
             <ref bean="ehPortletWindowCache" />
         </constructor-arg>
     </bean>
     
     <bean id="ehInternalPageFileCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -257,14 +257,14 @@
     </bean>
     
     <bean id="internalPageFileCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg>
             <ref bean="ehInternalPageFileCache" />
         </constructor-arg>
     </bean>
     
     <bean id="ehInternalImportPageFileCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">
             <ref local="cacheManager" />
         </property>
@@ -272,7 +272,7 @@
     </bean>
     
     <bean id="internalImportPageFileCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
-        <meta key="j2:cat" value="default,cache" />
+        <meta key="j2:cat" value="default or cache" />
         <constructor-arg>
             <ref bean="ehInternalImportPageFileCache" />
         </constructor-arg>
@@ -280,24 +280,24 @@
     
     <!-- Page Manager Caches -->
     <bean id="ehPageManagerOidCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache"/>
+        <meta key="j2:cat" value="default or cache"/>
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="pageManagerOidCache"/>
     </bean>
     
     <bean id="ehPageManagerPathCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default,cache"/>
+        <meta key="j2:cat" value="default or cache"/>
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="pageManagerPathCache"/>
     </bean>
     
     <bean id="pageManagerOidCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
-        <meta key="j2:cat" value="default,cache"/>
+        <meta key="j2:cat" value="default or cache"/>
         <constructor-arg><ref bean="ehPageManagerOidCache"/></constructor-arg>
     </bean>
     
     <bean id="pageManagerPathCache" class="org.apache.jetspeed.cache.impl.EhCacheDistributedImpl">
-        <meta key="j2:cat" value="default,cache"/>
+        <meta key="j2:cat" value="default or cache"/>
         <constructor-arg><ref bean="ehPageManagerPathCache"/></constructor-arg>
     </bean>
     

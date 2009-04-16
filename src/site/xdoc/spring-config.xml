@@ -41,11 +41,11 @@
                 <p>
                     In Jetspeed assembly files, a bean definition should have <strong><code>j2:cat</code></strong> meta data like the following example:
                     <div class="source"><pre>&lt;bean name="xmlPageManager" class="org.apache.jetspeed.page.psml.CastorXmlPageManager"&gt;
-    &lt;meta key="j2:cat" value="xmlPageManager,pageSerializer" /&gt;
+    &lt;meta key="j2:cat" value="xmlPageManager or pageSerializer" /&gt;
     ...
 &lt;/bean&gt;</pre></div>
-                    In the above example, the <strong><code>xmlPageManager</code></strong> bean definition has two categories: <strong><code>xmlPageManager</code></strong> and <strong><code>pageSerializer</code></strong>.
-                    If the Spring filter key setting of Jetspeed contains one of the categories, then the <strong><code>xmlPageManager</code></strong> bean definition will be registered. Otherwise, the bean definition will be ignored. By the Spring filter key setting, bean definitions in assembly files will be filtered according to their cateogories.
+                    In the above example, the <strong><code>xmlPageManager</code></strong> bean definition is included for two categories: <strong><code>xmlPageManager</code></strong> and <strong><code>pageSerializer</code></strong>.
+                    If the Spring filter key setting of Jetspeed contains one of the categories, then the <strong><code>xmlPageManager</code></strong> bean definition will be registered. Otherwise, the bean definition will be ignored. By the Spring filter key setting, bean definitions in assembly files will be filtered according to their categories.
                 </p>
             </subsection>
             <subsection name="Spring Filter Keys and Categories Settings">

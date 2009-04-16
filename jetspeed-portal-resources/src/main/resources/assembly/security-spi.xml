@@ -23,14 +23,14 @@
 
   <bean id="org.apache.jetspeed.security.spi.impl.JetspeedSecurityPersistenceManager"
     class="org.apache.jetspeed.security.spi.impl.JetspeedSecurityPersistenceManager" init-method="init">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0">
       <value>JETSPEED-INF/ojb/security_repository.xml</value>
     </constructor-arg>
   </bean>
   
   <bean id="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" parent="baseTransactionProxy">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <property name="proxyInterfaces">
       <value>
         org.apache.jetspeed.security.spi.JetspeedPermissionAccessManager,
@@ -100,14 +100,14 @@
   
   <bean id="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialManagerImpl"
     class="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialManagerImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager" />
   </bean>
 
   <bean id="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" parent="baseTransactionProxy">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.security.spi.UserPasswordCredentialManager</value>
     </property>
@@ -123,7 +123,7 @@
   
   <bean id="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialPolicyManagerImpl"
     class="org.apache.jetspeed.security.spi.impl.UserPasswordCredentialPolicyManagerImpl">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0" ref="org.apache.jetspeed.security.CredentialPasswordEncoder" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.CredentialPasswordValidator" />
     <constructor-arg index="2">
@@ -137,7 +137,7 @@
   </bean>
 
   <bean id="org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager" parent="baseTransactionProxy">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager</value>
     </property>
@@ -154,7 +154,7 @@
   
   <bean id="org.apache.jetspeed.security.CredentialPasswordEncoder"
     class="org.apache.jetspeed.security.spi.impl.MessageDigestCredentialPasswordEncoder">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0">
       <value>SHA-1</value>
     </constructor-arg>
@@ -162,12 +162,12 @@
 
   <bean id="org.apache.jetspeed.security.CredentialPasswordValidator"
     class="org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator">
-    <meta key="j2:cat" value="default,security" />
+    <meta key="j2:cat" value="default or security" />
   </bean>
 
   <bean id="org.apache.jetspeed.security.spi.AuthorizationProvider"
     class="org.apache.jetspeed.security.impl.AuthorizationProviderImpl">
-    <meta key="j2:cat" value="default,security,AuthorizationProvider" />
+    <meta key="j2:cat" value="default or security or AuthorizationProvider" />
     <constructor-arg index="0">
       <ref bean="org.apache.jetspeed.security.impl.RdbmsPolicy" />
     </constructor-arg>
