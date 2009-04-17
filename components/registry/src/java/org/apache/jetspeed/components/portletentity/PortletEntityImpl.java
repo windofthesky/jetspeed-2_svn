@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -78,7 +79,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     protected static PageManager pm;
     
     protected PrefsPreferenceSetImpl pagePreferenceSet;
-    protected Map perPrincipalPrefs = new HashMap();
+    protected Map perPrincipalPrefs = Collections.synchronizedMap(new HashMap());
     private PortletApplicationEntity applicationEntity = null;
     private PortletWindowList portletWindows = new PortletWindowListImpl();
     private PortletDefinitionComposite portletDefinition = null;  
