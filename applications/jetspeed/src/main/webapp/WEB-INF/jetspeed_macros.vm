@@ -78,6 +78,11 @@
 #macro (includeHeaderResource)
 #acquireHeaderResource()
 $resourceHeader.getContent()
+#if ( $jetspeed.dojoEnabled )
+<script language="javascript">
+$jetspeed.dojoConfigurations
+</script>
+#end
 #set($headElements = $jetspeed.headElements)
 #foreach($kvPair in $headElements)
 #set($headElemHtml = $jetspeed.getElementHtmlString($kvPair.value))
@@ -95,6 +100,16 @@ $resourceHeader.getNamedContentForPrefix( "header.dojo" )
 #macro (desktopIncludeHeaderContent)
  #acquireHeaderResource()
 $resourceHeader.getContent()
+#if ( $jetspeed.dojoEnabled )
+<script language="javascript">
+$jetspeed.dojoConfigurations
+</script>
+#end
+#set($headElements = $jetspeed.headElements)
+#foreach($kvPair in $headElements)
+#set($headElemHtml = $jetspeed.getElementHtmlString($kvPair.value))
+$headElemHtml
+#end
 #end
 
 #macro (acquireHeaderResource)

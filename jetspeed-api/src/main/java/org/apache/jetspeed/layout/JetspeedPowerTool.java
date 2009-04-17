@@ -261,6 +261,26 @@ public interface JetspeedPowerTool
      * @return
      * @throws Exception
      */
-    List<KeyValue<String, Element>> getHeadElements() throws Exception;;
+    List<KeyValue<String, Element>> getHeadElements() throws Exception;
+    
+    /**
+     * Returns true if any portlet contributes dojo include head element.
+     * @param f
+     * @return
+     */
+    boolean isDojoEnabled(ContentFragment f);
+    
+    /**
+     * Returns true if any portlet contributes dojo include head element.
+     * @param f
+     * @return
+     */
+    boolean isDojoEnabled();
+    
+    /**
+     * Returns dojo configurations script body text
+     * @return
+     */
+    String getDojoConfigurations();
     
 }

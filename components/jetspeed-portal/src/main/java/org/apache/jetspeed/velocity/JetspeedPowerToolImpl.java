@@ -49,6 +49,7 @@ import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.DOMUtils;
@@ -854,5 +855,43 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     {
         return getHeadElements(getCurrentFragment());
     }
+
+    public boolean isDojoEnabled(ContentFragment f)
+    {
+        try
+        {
+            for (KeyValue<String, Element> kvPair : getHeadElements(f))
+            {
+                Element element = kvPair.getValue();
+                
+                if (element.hasAttribute(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE) 
+                                && HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_KEY_DOJO_JS_INCLUDE.equals(element.getAttribute(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE)))
+                {
+                    return true;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            handleError(e, e.toString(), f);
+        }
+        
+        return false;
+    }
+
+    public boolean isDojoEnabled()
+    {
+        return isDojoEnabled(getCurrentFragment());
+    }
     
+    public String getDojoConfigurations()
+    {
+        HttpServletRequest request = getRequestContext().getRequest();
+        StringBuilder sb = new StringBuilder(128);
+        sb.append("var djConfig = {jetspeed: {}};\r\n");
+        sb.append("djConfig.baseScriptUri = \"" + request.getContextPath() + "/javascript/dojo/\";\r\n");
+        sb.append("djConfig.jetspeed.servletPath = \"" + request.getServletPath() + "\";");
+        return sb.toString();
+    }
+
 }
