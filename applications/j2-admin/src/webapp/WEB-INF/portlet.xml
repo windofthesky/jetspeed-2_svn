@@ -1859,7 +1859,7 @@ limitations under the License.
       <mime-type>text/html</mime-type>
       <portlet-mode>view</portlet-mode>
     </supports>
-    <resource-bundle>org.apache.jetspeed.portlets.admin.resources.Importer</resource-bundle>
+    <!--<resource-bundle>org.apache.jetspeed.portlets.admin.resources.Importer</resource-bundle>-->
     <portlet-info>
       <title>Import Export Service</title>
       <short-title>Import-Export</short-title>
