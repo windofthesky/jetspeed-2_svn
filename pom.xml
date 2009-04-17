@@ -316,8 +316,9 @@
     <org.apache.portals.bridges.velocity.version>1.0.4</org.apache.portals.bridges.velocity.version>
     <org.apache.portals.bridges.groovy.version>1.0.4</org.apache.portals.bridges.groovy.version>
     <org.apache.portals.bridges.portletfilter.version>1.0.4</org.apache.portals.bridges.portletfilter.version>
-    <org.apache.portals.applications.apa-demo.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-demo.version>
+    <org.apache.portals.applications.apa-gems.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-gems.version>
     <org.apache.portals.applications.apa-rss.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-rss.version>
+    <org.apache.portals.applications.apa-demo.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-demo.version>
     <org.apache.portals.applications.apa-webcontent.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-webcontent.version>
     <oro.version>2.0.8</oro.version>
     <portlet-api.version>2.0</portlet-api.version>
@@ -515,12 +516,12 @@
       <dependency>
         <groupId>org.apache.portals.applications</groupId>
         <artifactId>apa-rss-jar</artifactId>
-        <version>${pom.version}</version>
+        <version>${org.apache.portals.applications.apa-rss.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.portals.applications</groupId>
         <artifactId>apa-gems</artifactId>
-        <version>${pom.version}</version>
+        <version>${org.apache.portals.applications.apa-gems.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.portals.jetspeed-2</groupId>
