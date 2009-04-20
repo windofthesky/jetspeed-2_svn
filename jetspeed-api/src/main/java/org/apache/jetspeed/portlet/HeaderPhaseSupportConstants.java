@@ -16,9 +16,50 @@
  */
 package org.apache.jetspeed.portlet;
 
+/**
+ * This interface defines some constants for attribute name or value of contributed head elements.
+ * This constant values are used by Jetspeed portal to optimize the head elements aggregation.
+ * <P>
+ * Jetspeed can look up 'id' attribute value not to include redundant head element.
+ * Also, Jetspeed can look up 'org.apache.portals.portal.page.head.element.contribution.merge.hint' attribute value
+ * to merge all the text content of elements containing 'org.apache.portals.portal.page.head.element.contribution.merge.hint'
+ * attribute with same value.
+ * </P>
+ * <P>
+ * For example, if the following elements are contributed by a portlet,
+ * <XMP>
+ * <script id="header.dojo.library.include" language="JavaScript" src="/script/dojo/dojo.js"></script>
+ * <script language="JavaScript" org.apache.portals.portal.page.head.element.contribution.merge.hint="header.dojo.requires">
+ * dojo.require("dojo.io.*");
+ * </script>
+ * </XMP>
+ * and, if the following elements are contributed by another portlet,
+ * <XMP>
+ * <script id="header.dojo.library.include" language="JavaScript" src="/script/dojo/dojo.js"></script>
+ * <script language="JavaScript" org.apache.portals.portal.page.head.element.contribution.merge.hint="header.dojo.requires">
+ * dojo.require("dojo.lang.*");
+ * </script>
+ * </XMP>
+ * then, the result aggregated elements are to be like the following:
+ * <XMP>
+ * <script id="header.dojo.library.include" language="JavaScript" src="/script/dojo/dojo.js"></script>
+ * <script language="JavaScript" org.apache.portals.portal.page.head.element.contribution.merge.hint="header.dojo.requires">
+ * dojo.require("dojo.io.*");
+ * dojo.require("dojo.lang.*");
+ * </script>
+ * </XMP>
+ * </P>
+ * 
+ * @version $Id$
+ */
 public interface HeaderPhaseSupportConstants
 {
 
+    /**
+     * An ID attribute value for dojo library inclusion which can be used in head elements merging by portal.  
+     */
+    public static final String HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_DOJO_LIBRARY_INCLUDE = "header.dojo.library.include";
+    
     /**
      * An attribute name of head element contributed to the portal page aggregation by a portlet.
      * The value of this attribute can be used by portal to merge contents of each contributed head element
@@ -31,13 +72,13 @@ public interface HeaderPhaseSupportConstants
     public static final String HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE = "org.apache.portals.portal.page.head.element.contribution.merge.hint";
 
     /**
-     * An attribute value for key hint which can be used in head elements merging by portal.  
+     * An attribute value for key hint to aggregate dojo configuration which can be used in head elements merging by portal.  
      */
-    public static final String HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_KEY_DOJO_REQUIRE = "dojo.require";
-
-    /**
-     * An ID attribute value which can be used in head elements merging by portal.  
-     */
-    public static final String HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_DOJO_LIBRARY_INCLUDE = "dojo.library.include";
+    public static final String HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_KEY_DOJO_CONFIG = "header.dojo.config";
     
+    /**
+     * An attribute value for key hint to aggregate dojo require statements which can be used in head elements merging by portal.  
+     */
+    public static final String HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_KEY_DOJO_REQUIRES = "header.dojo.requires";
+
 }

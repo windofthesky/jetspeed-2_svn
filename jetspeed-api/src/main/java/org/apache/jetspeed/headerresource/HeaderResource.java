@@ -18,6 +18,8 @@ package org.apache.jetspeed.headerresource;
 
 import java.util.Map;
 
+import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
+
 /**
  * HeaderResource has tags information to put them into &lt;head&gt; tag.
  * 
@@ -63,11 +65,11 @@ public interface HeaderResource
     public final static String HEADER_SECTION_NAME_PREFIX_DOJO = "header.dojo.";
     public final static String HEADER_SECTION_DOJO_PARAMETERS = "header.dojo.parameters";
     public final static String HEADER_SECTION_DOJO_PREINIT = "header.dojo.preinit";
-    public final static String HEADER_SECTION_DOJO_CONFIG = "header.dojo.config";
+    public final static String HEADER_SECTION_DOJO_CONFIG = HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_KEY_DOJO_CONFIG;
     public final static String HEADER_SECTION_DOJO_INIT = "header.dojo.init";
-    public final static String HEADER_SECTION_DOJO_REQUIRES_CORE = "header.dojo.requires.core";
+    public final static String HEADER_SECTION_DOJO_REQUIRES_CORE = HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_KEY_DOJO_REQUIRES + ".core";
     public final static String HEADER_SECTION_DOJO_MODULES_PATH = "header.dojo.modules.path";
-    public final static String HEADER_SECTION_DOJO_REQUIRES_MODULES = "header.dojo.requires.modules";
+    public final static String HEADER_SECTION_DOJO_REQUIRES_MODULES = HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_KEY_DOJO_REQUIRES + ".modules";
     public final static String HEADER_SECTION_DOJO_WRITEINCLUDES = "header.dojo.writeincludes";
     public final static String HEADER_SECTION_DOJO_MODULES_NAMESPACE = "header.dojo.modules.namespace";
     public final static String HEADER_SECTION_DOJO_STYLE_BODYEXPAND = "header.dojo.style.bodyexpand";

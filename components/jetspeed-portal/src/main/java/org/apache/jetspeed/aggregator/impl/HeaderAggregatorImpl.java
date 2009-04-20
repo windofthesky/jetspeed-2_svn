@@ -17,20 +17,17 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import javax.portlet.Portlet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PageAggregator;
-import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.decoration.DecorationFactory;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -40,14 +37,7 @@ import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.headerresource.HeaderResourceLib;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.jetspeed.portlet.PortletHeaderRequest;
-import org.apache.jetspeed.portlet.PortletHeaderResponse;
-import org.apache.jetspeed.portlet.SupportsHeaderPhase;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * HeaderAggregator builds the content required to render a page of portlets.
@@ -1046,94 +1036,8 @@ public class HeaderAggregatorImpl implements PageAggregator
         {
             context.setAttribute( PortalReservedParameters.HEADER_NAMED_RESOURCE_REGISTRY_ATTRIBUTE, getHeaderResourceRegistry() );
         }
-        
-        // handle maximized state
-        boolean atLeastOneHasHeaderPhase = false;
-        NavigationalState nav = context.getPortalURL().getNavigationalState();
-        PortletWindow window = nav.getMaximizedWindow();
-        if ( null != window )
-        {
-            ContentFragment maxedContentFragment = page.getContentFragmentById( window.getId().toString() );
-            if ( maxedContentFragment != null )
-            {
-                atLeastOneHasHeaderPhase = renderHeaderFragment( context, maxedContentFragment );
-            }
-        }
-        else
-        {
-            atLeastOneHasHeaderPhase = aggregateAndRender( root, context, page );
-        }
-        
-        if ( atLeastOneHasHeaderPhase )
-        {
-            
-        }
     }
 
-    protected boolean aggregateAndRender( ContentFragment fragment, RequestContext context, ContentPage page )
-    {
-        boolean atLeastOneHasHeaderPhase = false;
-        boolean hasHeaderPhase = false;
-        if ( fragment.getContentFragments() != null && fragment.getContentFragments().size() > 0 )
-        {
-            Iterator children = fragment.getContentFragments().iterator();
-            while (children.hasNext())
-            {
-                ContentFragment child = (ContentFragment) children.next();
-                if ( ! "hidden".equals( fragment.getState() ) )
-                {
-                    hasHeaderPhase = aggregateAndRender( child, context, page );
-                    if ( hasHeaderPhase )
-                    {
-                        atLeastOneHasHeaderPhase = true;
-                    }
-                }
-            }
-        }
-        hasHeaderPhase = renderHeaderFragment( context, fragment );
-        if ( hasHeaderPhase )
-        {
-            atLeastOneHasHeaderPhase = true;
-        }
-        return atLeastOneHasHeaderPhase;
-    }
-    
-    protected boolean renderHeaderFragment( RequestContext context, ContentFragment fragment )
-    {
-        try
-        {
-            if ( !fragment.getType().equals( ContentFragment.LAYOUT ) )
-            {
-                PortletWindow portletWindow = context.getPortletWindow( fragment );
-                if (portletWindow.isValid())
-                {
-                    PortletDefinition pd = portletWindow.getPortletDefinition();
-                    if ( getPortletFactory().isPortletApplicationRegistered((PortletApplication)pd.getApplication() ) )
-                    {
-                        String portletApplicationContextPath = pd.getApplication().getContextPath();
-                        Portlet portlet = getPortletFactory().getPortletInstance( context.getConfig().getServletContext().getContext( portletApplicationContextPath ), pd ).getRealPortlet();            
-                        if ( portlet != null && portlet instanceof SupportsHeaderPhase )
-                        {
-                            log.debug( "renderHeaderFragment: " + pd.getPortletName() + " supports header phase" );
-                            
-                            HeaderResource hr = getHeaderResourceFactory().getHeaderResource( context, this.baseUrlAccess, isDesktop(), getHeaderConfiguration() );
-                            PortletHeaderRequest headerRequest = new PortletHeaderRequestImpl( context, portletWindow, portletApplicationContextPath );
-                            PortletHeaderResponse headerResponse = new PortletHeaderResponseImpl( context, hr, isDesktop(), getHeaderConfiguration(), getHeaderResourceRegistry() );
-                            ((SupportsHeaderPhase)portlet).doHeader( headerRequest, headerResponse );
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-        catch ( Exception e )
-        {
-            log.error( "renderHeaderFragment failed", e );
-        }
-        return false;
-    }
-    
     protected PortletFactory getPortletFactory()
     {
         return this.factory;

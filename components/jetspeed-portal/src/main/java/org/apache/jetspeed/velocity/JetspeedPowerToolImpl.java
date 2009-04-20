@@ -885,10 +885,16 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     public String getDojoConfigurations()
     {
         HttpServletRequest request = getRequestContext().getRequest();
-        StringBuilder sb = new StringBuilder(128);
-        sb.append("var djConfig = {jetspeed: {}};\r\n");
-        sb.append("djConfig.baseScriptUri = \"" + request.getContextPath() + "/javascript/dojo/\";\r\n");
-        sb.append("djConfig.jetspeed.servletPath = \"" + request.getServletPath() + "\";");
+        StringBuilder sb = new StringBuilder(256);
+        
+        sb.append("<script language=\"JavaScript\" type=\"text/javascript\" ")
+        .append(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE).append("=\"")
+        .append(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_KEY_DOJO_CONFIG).append("\">\r\n")
+        .append("var djConfig = {jetspeed: {}};\r\n")
+        .append("djConfig.baseScriptUri = \"" + request.getContextPath() + "/javascript/dojo/\";\r\n")
+        .append("djConfig.jetspeed.servletPath = \"" + request.getServletPath() + "\";\r\n")
+        .append("</script>");
+        
         return sb.toString();
     }
 

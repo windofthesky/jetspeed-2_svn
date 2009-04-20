@@ -491,16 +491,42 @@ jetspeed.contributeHeadElements = function( headElements )
 {
     var jsObj = jetspeed;
     var headTagElems = [];
+    var headTagElemsByMergeHint = [];
     var childTagElems = jsObj.getHead().childNodes;
     
     // retrieve the current head tag elements
     if (childTagElems)
     {
+        var reDojoRequires = /^header\.dojo\.requires/;
+        var reDojo = /^header\.dojo\./;
+        
         for (var i = 0; i < childTagElems.length; i++)
         {
             if (childTagElems[i].nodeType == dojo.dom.ELEMENT_NODE)
             {
                 headTagElems.push(childTagElems[i]);
+                if (childTagElems[i].tagName == "SCRIPT")
+                {
+                    var mergeHint = childTagElems[i].getAttribute("org.apache.portals.portal.page.head.element.contribution.merge.hint");
+                    // TODO: HeaderResourceImpl needs to write some dojo sections separately.
+                    if (mergeHint == "header.dojo.parameters")
+                    {
+                        mergeHint = "header.dojo.config";
+                    }
+                    else if (reDojoRequires.test(mergeHint))
+                    {
+                        mergeHint = "header.dojo.requires";
+                    }
+                    
+                    if (mergeHint && reDojo.test(mergeHint))
+                    {
+                        if (!headTagElemsByMergeHint[mergeHint])
+                        {
+                            headTagElemsByMergeHint[mergeHint] = [];
+                        }
+                        headTagElemsByMergeHint[mergeHint].push(childTagElems[i]);
+                    }
+                }
             }
         }
     }
@@ -519,6 +545,7 @@ jetspeed.contributeHeadElements = function( headElements )
         if (!id) id = childNode.getAttribute("ID");
         if (!id) id = childNode.getAttribute("Id");
         if (!id) id = childNode.getAttribute("iD");
+        var mergeHint = childNode.getAttribute("org.apache.portals.portal.page.head.element.contribution.merge.hint");
         var tagName = childNode.tagName;
         var matched = false;
 
@@ -539,35 +566,87 @@ jetspeed.contributeHeadElements = function( headElements )
         
         if (!matched)
         {
-            // not matched, insert the new head element in the current insertionIndex and increase the insertion index.
-            var headElem = jetspeed.createHeadElement(childNode);
-            
-            if (jsObj.UAie)
+            if (headTagElemsByMergeHint[mergeHint])
             {
-                if (tagName == "SCRIPT" && childNode.text)
+                if (jsObj.UAie)
                 {
-                    headElem.text = childNode.value;
+                    var headTagElemsByMergeHintArray = headTagElemsByMergeHint[mergeHint];
+                    var lines = childNode.text.split(/\n/);
+                    for (var i = 0; i < lines.length; i++)
+                    {
+                        var found = false;
+                        for (var j = 0; j < headTagElemsByMergeHintArray.length; j++)
+                        {
+                            var existingLine = headTagElemsByMergeHintArray[j].text;
+                            if (existingLine && existingLine.indexOf(lines[i]) >= 0)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found)
+                        {
+                            var lastLine = headTagElemsByMergeHintArray[headTagElemsByMergeHintArray.length - 1].text;
+                            headTagElemsByMergeHintArray[headTagElemsByMergeHintArray.length - 1].text = (lastLine ? lastLine + "\r\n": "") + lines[i];
+                        }
+                    }
                 }
-                else if (tagName == "STYLE" && childNode.text)
+                else if (childNode.textContent)
                 {
-                    headElem.styleSheet.cssText = childNode.text;
+                    var headTagElemsByMergeHintArray = headTagElemsByMergeHint[mergeHint];
+                    var lines = childNode.textContent.split(/\n/);
+                    for (var i = 0; i < lines.length; i++)
+                    {
+                        var found = false;
+                        for (var j = 0; j < headTagElemsByMergeHintArray.length; j++)
+                        {
+                            var existingLine = headTagElemsByMergeHintArray.textContent;
+                            if (existingLine && existingLine.indexOf(lines[i]) >= 0)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found)
+                        {
+                            var lastLine = headTagElemsByMergeHintArray[headTagElemsByMergeHintArray.length - 1].textContent;
+                            headTagElemsByMergeHintArray[headTagElemsByMergeHintArray.length - 1].textContent = (lastLine ? lastLine + "\r\n": "") + lines[i];
+                        }
+                    }
                 }
-            }
-            else if (childNode.textContent)
-            {
-                headElem.appendChild(document.createTextNode(childNode.textContent));
-            }
-            
-            if (headTagElems[insertionIndex])
-            {
-                jsObj.getHead().insertBefore(headElem, headTagElems[insertionIndex]);
             }
             else
             {
-                jsObj.getHead().appendChild(scriptElem);
+                // not matched, insert the new head element in the current insertionIndex and increase the insertion index.
+                var headElem = jetspeed.createHeadElement(childNode);
+                
+                if (jsObj.UAie)
+                {
+                    if (tagName == "SCRIPT" && childNode.text)
+                    {
+                        headElem.text = childNode.value;
+                    }
+                    else if (tagName == "STYLE" && childNode.text)
+                    {
+                        headElem.styleSheet.cssText = childNode.text;
+                    }
+                }
+                else if (childNode.textContent)
+                {
+                    headElem.appendChild(document.createTextNode(childNode.textContent));
+                }
+                
+                if (headTagElems[insertionIndex])
+                {
+                    jsObj.getHead().insertBefore(headElem, headTagElems[insertionIndex]);
+                }
+                else
+                {
+                    jsObj.getHead().appendChild(scriptElem);
+                }
+                
+                ++insertionIndex;
             }
-            
-            ++insertionIndex; 
         }
     }
 }

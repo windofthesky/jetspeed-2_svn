@@ -16,23 +16,23 @@
  */
 package org.apache.jetspeed.headerresource.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 import java.util.Set;
-
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.container.url.BasePortalURL;
-import org.apache.jetspeed.headerresource.HeaderResource;
-import org.apache.jetspeed.headerresource.HeaderResourceLib;
-import org.apache.jetspeed.request.RequestContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.container.url.BasePortalURL;
+import org.apache.jetspeed.headerresource.HeaderResource;
+import org.apache.jetspeed.headerresource.HeaderResourceLib;
+import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
  * Default implementation for HeaderResource
@@ -346,7 +346,9 @@ public class HeaderResourceImpl implements HeaderResource
                         {
                             if ( requiresScriptBlock && ! inScriptBlock )
                             {
-                                header.append( "<script language=\"JavaScript\" type=\"text/javascript\">" ).append( EOL );
+                                header.append( "<script language=\"JavaScript\" type=\"text/javascript\" ")
+                                .append( HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE ).append( "=\"" )
+                                .append( headerName ).append( "\">" ).append( EOL );
                                 inScriptBlock = true;
                             }
                             else if ( requiresStyleBlock && ! inStyleBlock )
@@ -1007,7 +1009,8 @@ public class HeaderResourceImpl implements HeaderResource
         StringBuffer initOut = new StringBuffer();
         // <script type="text/javascript" src='http://localhost:8080/jetspeed/javascript/dojo/dojo.js'></script>
         // src='$jetspeedDesktop.getPortalResourceUrl("/javascript/dojo/dojo.js")'
-        initOut.append( "<script type=\"text/javascript\" src=\"" ).append( getPortalResourceUrl( dojoGetPath(), false ) ).append( "dojo.js" ).append( "\"></script>" );
+        initOut.append( "<script type=\"text/javascript\" src=\"" ).append( getPortalResourceUrl( dojoGetPath(), false ) ).append( "dojo.js" )
+        .append( "\" id=\"").append(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_DOJO_LIBRARY_INCLUDE).append("\"></script>" );
         return initOut.toString();
     }
     protected String dojoGenerateWriteincludes()

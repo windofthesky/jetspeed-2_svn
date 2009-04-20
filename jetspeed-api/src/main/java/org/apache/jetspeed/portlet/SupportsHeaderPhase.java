@@ -19,9 +19,14 @@ package org.apache.jetspeed.portlet;
 import javax.portlet.PortletException;
 
 /**
- * Indicates that a portlet supports the pre-286 header phase  
- *
+ * Indicates that a portlet supports the pre-286 header phase.
+ * <P>
+ * This interface is deprecated because head contribution from portlet is possible
+ * by the native portlet API in a JSR-286 compliant portal.
+ * </P>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
+ * @version $Id$
+ * @deprecated
  */
 public interface SupportsHeaderPhase
 {

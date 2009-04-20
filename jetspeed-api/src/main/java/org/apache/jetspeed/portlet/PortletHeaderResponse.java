@@ -22,7 +22,13 @@ import javax.portlet.PortletException;
 
 import org.apache.jetspeed.headerresource.HeaderResource;
 
-
+/**
+ * This interface is deprecated because head contribution from portlet is possible
+ * by the native portlet API in a JSR-286 compliant portal.
+ * 
+ * @version $Id$
+ * @deprecated
+ */
 public interface PortletHeaderResponse
 {    
     /**

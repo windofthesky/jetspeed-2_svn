@@ -18,6 +18,13 @@ package org.apache.jetspeed.portlet;
 
 import javax.portlet.PortletPreferences;
 
+/**
+ * This interface is deprecated because head contribution from portlet is possible
+ * by the native portlet API in a JSR-286 compliant portal.
+ * 
+ * @version $Id$
+ * @deprecated
+ */
 public interface PortletHeaderRequest
 {    
     /**
