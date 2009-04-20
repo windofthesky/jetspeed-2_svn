@@ -85,7 +85,7 @@ public class CapabilityValveImpl implements CapabilityValve
         }
 
         String encoding = request.getRequest().getCharacterEncoding();
-
+        boolean containerEncoding = encoding!=null;
         if (encoding == null)
         {
             if (mediaType != null && mediaType.getCharacterSet() != null)
@@ -102,6 +102,7 @@ public class CapabilityValveImpl implements CapabilityValve
         }
 
         // Put the encoding in the request
+        if(!containerEncoding && encoding!=null)
         request.setCharacterEncoding(encoding);
 
         // Put the CapabilityMap into the request
