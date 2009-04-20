@@ -155,7 +155,7 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
             try
             {
                 // ID attribute of element is used as keyHint for the head element if available.
-                this.portletContent.addHeadElement(headElement, getIdAttribute(element));
+                this.portletContent.addHeadElement(headElement, DOMUtils.getIdAttribute(element));
             }
             catch (NotSerializableException e)
             {
@@ -167,22 +167,4 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
         }
     }
     
-    private String getIdAttribute(Element element)
-    {
-        String value = null;
-        
-        if (element != null)
-        {
-            if (element.hasAttribute("id"))
-                value = element.getAttribute("id");
-            else if (element.hasAttribute("ID"))
-                value = element.getAttribute("ID");
-            else if (element.hasAttribute("Id"))
-                value = element.getAttribute("Id");
-            else if (element.hasAttribute("iD"))
-                value = element.getAttribute("iD");
-        }
-        
-        return value;
-    }
 }

@@ -33,11 +33,11 @@ public interface HeaderPhaseSupportConstants
     /**
      * An attribute value for key hint which can be used in head elements merging by portal.  
      */
-    public static final String HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_KEY_DOJO_JS_INCLUDE = "dojo.js.include";
-    
-    /**
-     * An attribute value for key hint which can be used in head elements merging by portal.  
-     */
     public static final String HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_KEY_DOJO_REQUIRE = "dojo.require";
 
+    /**
+     * An ID attribute value which can be used in head elements merging by portal.  
+     */
+    public static final String HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_DOJO_LIBRARY_INCLUDE = "dojo.library.include";
+    
 }

@@ -239,4 +239,23 @@ public class DOMUtils
         return html;
     }
     
+    public static String getIdAttribute(Element element)
+    {
+        String value = null;
+        
+        if (element != null)
+        {
+            if (element.hasAttribute("id"))
+                value = element.getAttribute("id");
+            else if (element.hasAttribute("ID"))
+                value = element.getAttribute("ID");
+            else if (element.hasAttribute("Id"))
+                value = element.getAttribute("Id");
+            else if (element.hasAttribute("iD"))
+                value = element.getAttribute("iD");
+        }
+        
+        return value;
+    }
+    
 }

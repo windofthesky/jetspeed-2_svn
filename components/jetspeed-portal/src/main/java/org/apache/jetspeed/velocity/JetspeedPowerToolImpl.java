@@ -862,10 +862,8 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         {
             for (KeyValue<String, Element> kvPair : getHeadElements(f))
             {
-                Element element = kvPair.getValue();
-                
-                if (element.hasAttribute(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE) 
-                                && HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_KEY_DOJO_JS_INCLUDE.equals(element.getAttribute(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE)))
+                if (HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_DOJO_LIBRARY_INCLUDE
+                                .equals(DOMUtils.getIdAttribute(kvPair.getValue())))
                 {
                     return true;
                 }
