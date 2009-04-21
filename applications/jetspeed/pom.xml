@@ -91,6 +91,59 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.2</version>
+        <executions>
+          <execution>
+            <id>compress-js</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                <echo>Compressing JS files</echo>
+                <property name="compressor.jar" 
+                          value="${settings.localRepository}/org/dojotoolkit/custom_rhino/0.4.3/custom_rhino-0.4.3.jar"/>
+                <mkdir dir="${project.build.directory}/${project.build.finalName}/javascript/jetspeed"/>
+                <copy todir="${project.build.directory}/${project.build.finalName}/javascript/jetspeed">
+                  <fileset dir="${basedir}/src/main/webapp/javascript/jetspeed">
+                    <include name="**/*.src.js" />
+                  </fileset>
+                </copy>
+                <apply executable="${java.home}/bin/java"
+                       dir="${project.build.directory}/${project.build.finalName}/javascript/jetspeed">
+                  <arg value="-jar"/>
+                  <arg value="${compressor.jar}"/>
+                  <arg value="-strict"/>
+                  <arg value="-opt"/>
+                  <arg value="-1"/>
+                  <arg value="-c"/>
+                  <fileset dir="${project.build.directory}/${project.build.finalName}/javascript/jetspeed">
+                    <patternset>
+                      <include name="**/*.src.js"/>
+                    </patternset>
+                  </fileset>
+                  <redirector>
+                    <outputmapper id="out" type="glob"
+                                  from="*.src.js" 
+                                  to="${project.build.directory}${file.separator}${project.build.finalName}${file.separator}javascript${file.separator}jetspeed${file.separator}*.js" />
+                  </redirector>
+                </apply>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.dojotoolkit</groupId>
+            <artifactId>custom_rhino</artifactId>
+            <version>0.4.3</version>
+          </dependency>
+        </dependencies>
+      </plugin>
     </plugins>
   </build>
 
