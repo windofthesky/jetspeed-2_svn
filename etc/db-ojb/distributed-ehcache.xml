@@ -495,8 +495,8 @@
             />
    
      <cache name="portletWindowCache"
-           maxElementsInMemory="200"
-           maxElementsOnDisk="1000"
+           maxElementsInMemory="2000"
+           maxElementsOnDisk="2000"
            eternal="false"
            overflowToDisk="false"
            timeToIdleSeconds="28800"
