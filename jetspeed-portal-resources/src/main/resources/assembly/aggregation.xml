@@ -155,6 +155,31 @@
     </bean>
   -->
 
+  <bean id="HeaderAggregatorPortal" class="org.apache.jetspeed.aggregator.impl.HeaderAggregatorImpl">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg index="0">
+      <ref bean="portletFactory" />
+    </constructor-arg>
+    <constructor-arg index="1">
+      <ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory" />
+    </constructor-arg>
+    <constructor-arg index="2" type="boolean">
+      <value>false</value><!-- isDesktop == false -->
+    </constructor-arg>
+    <constructor-arg index="3">
+      <ref bean="HeaderResourceConfigurationPortal" />
+    </constructor-arg>
+    <constructor-arg index="4">
+      <ref bean="HeaderResourceRegistry" />
+    </constructor-arg>
+    <constructor-arg index="5">
+      <ref bean="DecorationFactory" />
+    </constructor-arg>
+
+    <!-- Uncomment this to HARD CODE your portal URL -->
+    <!-- <constructor-arg><ref bean="BasePortalURL"/></constructor-arg>  -->
+  </bean>
+
   <bean id="HeaderAggregatorDesktop" class="org.apache.jetspeed.aggregator.impl.HeaderAggregatorImpl">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">

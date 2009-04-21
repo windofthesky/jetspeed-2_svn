@@ -77,14 +77,17 @@
 #* Adds additional style sheets and java script from portlets *#
 #macro (includeHeaderResource)
 #acquireHeaderResource()
-$resourceHeader.getContent()
-#if ( $jetspeed.dojoEnabled )
-$jetspeed.dojoConfigurations
-#end
 #set($headElements = $jetspeed.headElements)
+#set($isDojoEnabled = $jetspeed.isDojoEnabled($headElements))
+#if ( $isDojoEnabled )
+#set($result = $resourceHeader.dojoEnable())
+#end
+$resourceHeader.getContent()
 #foreach($kvPair in $headElements)
+#if ( $kvPair.key != "header.dojo.library.include" )
 #set($headElemHtml = $jetspeed.getElementHtmlString($kvPair.value))
 $headElemHtml
+#end
 #end
 #end
 

@@ -124,7 +124,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     private BasePortalURL baseUrlAccess;
     
     private PortletRenderer renderer;
-
+    
     public JetspeedPowerToolImpl(RequestContext requestContext, PortletConfig portletConfig, RenderRequest renderRequest, RenderResponse renderResponse, PortletRenderer renderer) throws Exception
     {
         HttpServletRequest request = requestContext.getRequest();
@@ -856,46 +856,17 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         return getHeadElements(getCurrentFragment());
     }
 
-    public boolean isDojoEnabled(ContentFragment f)
+    public boolean isDojoEnabled(List<KeyValue<String, Element>> headElements)
     {
-        try
+        for (KeyValue<String, Element> kvPair : headElements)
         {
-            for (KeyValue<String, Element> kvPair : getHeadElements(f))
+            if (HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_DOJO_LIBRARY_INCLUDE.equals(kvPair.getKey()))
             {
-                if (HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_DOJO_LIBRARY_INCLUDE
-                                .equals(DOMUtils.getIdAttribute(kvPair.getValue())))
-                {
-                    return true;
-                }
+                return true;
             }
-        }
-        catch (Exception e)
-        {
-            handleError(e, e.toString(), f);
         }
         
         return false;
     }
-
-    public boolean isDojoEnabled()
-    {
-        return isDojoEnabled(getCurrentFragment());
-    }
     
-    public String getDojoConfigurations()
-    {
-        HttpServletRequest request = getRequestContext().getRequest();
-        StringBuilder sb = new StringBuilder(256);
-        
-        sb.append("<script language=\"JavaScript\" type=\"text/javascript\" ")
-        .append(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE).append("=\"")
-        .append(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_KEY_DOJO_CONFIG).append("\">\r\n")
-        .append("var djConfig = {jetspeed: {}};\r\n")
-        .append("djConfig.baseScriptUri = \"" + request.getContextPath() + "/javascript/dojo/\";\r\n")
-        .append("djConfig.jetspeed.servletPath = \"" + request.getServletPath() + "\";\r\n")
-        .append("</script>");
-        
-        return sb.toString();
-    }
-
 }

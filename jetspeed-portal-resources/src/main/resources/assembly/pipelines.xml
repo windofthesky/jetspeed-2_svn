@@ -271,6 +271,14 @@
     </constructor-arg>
   </bean>
 
+  <bean id="headerAggregatorValvePortal" class="org.apache.jetspeed.aggregator.HeaderAggregatorValve"
+    init-method="initialize">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg>
+      <ref bean="HeaderAggregatorPortal" />
+    </constructor-arg>
+  </bean>
+
   <bean id="headerAggregatorValveDesktop" class="org.apache.jetspeed.aggregator.HeaderAggregatorValve"
     init-method="initialize">
     <meta key="j2:cat" value="default" />
@@ -304,7 +312,7 @@
     <!-- 
       <constructor-arg index='3'>
       <ref bean="decorationContentCache"/>
-      </constructor-arg>       		
+      </constructor-arg>            
     -->
     <!-- When clicking on Edit Mode, also switch to Maximize -->
     <property name="maximizeOnEdit">
@@ -491,6 +499,7 @@
           <ref bean="cleanupPortalURLValve"/>
         -->
         <ref bean="DecorationValve" />
+        <ref bean="headerAggregatorValvePortal" />
         <ref bean="aggregatorValve" />
         <ref bean="cleanUpValve" />
       </list>
@@ -515,6 +524,7 @@
         <ref bean="actionValve" />
         <ref bean="resourceValve" />
         <ref bean="DecorationValve" />
+        <ref bean="headerAggregatorValvePortal" />
         <ref bean="aggregatorValve" />
         <ref bean="cleanUpValve" />
       </list>
