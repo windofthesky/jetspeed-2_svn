@@ -284,6 +284,7 @@
     <commons-jexl.version>1.1</commons-jexl.version>
     <commons-lang.version>2.4</commons-lang.version>
     <commons-logging.version>1.1</commons-logging.version>
+    <slf4j.version>1.5.6</slf4j.version>
     <commons-pool.version>1.3</commons-pool.version>
     <!-- ddlutils svn r551445 with patch applied from http://issues.apache.org/jira/browse/DDLUTILS-75#action_12521579 -->
     <ddlutils.version>r551445-patched-75</ddlutils.version>
@@ -683,11 +684,20 @@
         <version>${spring.modules.version}</version>
       </dependency>
 
-      <!-- Jakarta -->
       <dependency>
         <groupId>lucene</groupId>
         <artifactId>lucene-core</artifactId>
         <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>log4j</groupId>
