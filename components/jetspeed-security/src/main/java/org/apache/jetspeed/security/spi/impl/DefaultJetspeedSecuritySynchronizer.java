@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
@@ -49,7 +49,7 @@ import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
  */
 public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySynchronizer
 {
-    private static final Log logger = LogFactory.getLog(DefaultJetspeedSecuritySynchronizer.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultJetspeedSecuritySynchronizer.class);
     JetspeedPrincipalManagerProvider principalManagerProvider;
     SecurityEntityManager securityEntityManager;
     Collection<String> supportedExternalEntityTypes = Collections.emptyList();

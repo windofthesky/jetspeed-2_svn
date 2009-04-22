@@ -25,8 +25,8 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.support.JdbcUtils;
 
 /**
@@ -37,7 +37,7 @@ import org.springframework.jdbc.support.JdbcUtils;
  */
 public class DatasourceAvailableHealthCheckValidator implements HealthCheckValidator
 {
-    private static final Log log = LogFactory.getLog(DatasourceAvailableHealthCheckValidator.class);
+    private static final Logger log = LoggerFactory.getLogger(DatasourceAvailableHealthCheckValidator.class);
     public static boolean isInfoEnabled = log.isInfoEnabled();
     public static boolean isDebugEnabled = log.isDebugEnabled();
     /**

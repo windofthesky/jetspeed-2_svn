@@ -32,8 +32,8 @@ import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.JetspeedContentCache;
@@ -55,7 +55,7 @@ import org.apache.jetspeed.container.PortletWindow;
 public class MultiColumnPortlet extends LayoutPortlet
 {
     /** Commons logging */
-    protected final static Log log = LogFactory.getLog(MultiColumnPortlet.class);
+    protected final static Logger log = LoggerFactory.getLogger(MultiColumnPortlet.class);
 
     protected final static String PARAM_NUM_COLUMN = "columns";
     protected final static int DEFAULT_NUM_COLUMN = 2;

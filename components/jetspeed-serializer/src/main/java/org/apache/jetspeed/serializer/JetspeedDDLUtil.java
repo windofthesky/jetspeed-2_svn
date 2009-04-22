@@ -28,8 +28,8 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.ddlutils.DatabaseOperationException;
 import org.apache.ddlutils.Platform;
 import org.apache.ddlutils.PlatformFactory;
@@ -62,7 +62,7 @@ public class JetspeedDDLUtil
 
 	
     /** Logger */
-    private static final Log log = LogFactory.getLog(JetspeedDDLUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(JetspeedDDLUtil.class);
 
 	JdbcTypeCategoryEnum temEnum = null;
 	
@@ -228,7 +228,7 @@ public class JetspeedDDLUtil
 				{
 					System.out.println("Error in ALTER DATABASE");
 					aEX.printStackTrace();
-					log.error(aEX);
+					log.error("Error in ALTER DATABASE", aEX);
 				}
 			} else
 			{
@@ -248,7 +248,7 @@ public class JetspeedDDLUtil
 				}
 				catch (Exception aEX)
 				{
-					log.error(aEX);
+					log.error("Error in DROP TABLES", aEX);
 				}
 				try
 				{
@@ -272,7 +272,7 @@ public class JetspeedDDLUtil
 				catch (Exception aEX)
 				{
                     aEX.printStackTrace();
-					log.error(aEX);
+					log.error("Error in CREATE TABLES", aEX);
 				}
 			}
 			// TODO: DST: REMOVE, AINT WORKING IN ORACLE model = this.readModelFromDatabase(null);
@@ -429,8 +429,7 @@ public class JetspeedDDLUtil
 			}
 		} catch (Exception ex)
 		{
-			log.warn("Exception in trying to establish connection to " + databaseName + " : " + ex.getLocalizedMessage());
-			log.warn(ex);
+			log.warn("Exception in trying to establish connection to " + databaseName + " : " + ex.getLocalizedMessage(), ex);
 		}
 		if (_databaseName == null)
 		{

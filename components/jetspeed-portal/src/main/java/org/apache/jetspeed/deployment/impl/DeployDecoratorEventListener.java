@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
 import org.apache.jetspeed.deployment.DeploymentException;
@@ -44,7 +44,7 @@ import org.apache.jetspeed.util.DirectoryHelper;
  */
 public class DeployDecoratorEventListener implements DeploymentEventListener
 {
-    protected static final Log log = LogFactory.getLog("deployment");
+    protected static final Logger log = LoggerFactory.getLogger("deployment");
     protected String           deployToDir;
 
     public DeployDecoratorEventListener(String deployToDir) throws FileNotFoundException

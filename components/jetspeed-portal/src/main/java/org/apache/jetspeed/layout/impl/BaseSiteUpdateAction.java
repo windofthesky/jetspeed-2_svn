@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -44,7 +44,7 @@ public abstract class BaseSiteUpdateAction
     extends BasePortletAction
     implements AjaxAction, AjaxBuilder, Constants 
 {
-    protected static final Log log = LogFactory.getLog(BaseSiteUpdateAction.class);    
+    protected static final Logger log = LoggerFactory.getLogger(BaseSiteUpdateAction.class);    
     
     public BaseSiteUpdateAction(String template, 
             String errorTemplate, 

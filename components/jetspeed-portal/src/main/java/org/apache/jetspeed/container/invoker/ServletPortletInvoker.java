@@ -27,8 +27,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.FilterManager;
 import org.apache.jetspeed.container.PortletWindow;
@@ -64,7 +64,7 @@ import org.apache.pluto.container.PortletResponseContext;
  */
 public class ServletPortletInvoker implements JetspeedPortletInvoker
 {
-    private final static Log log = LogFactory.getLog(ServletPortletInvoker.class);
+    private final static Logger log = LoggerFactory.getLogger(ServletPortletInvoker.class);
 
     protected PortletFactory portletFactory;
     protected ServletContext jetspeedContext;

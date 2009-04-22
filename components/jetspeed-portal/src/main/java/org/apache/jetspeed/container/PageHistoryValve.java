@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.container;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -36,7 +36,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class PageHistoryValve extends AbstractValve
 {
-    protected final Log log = LogFactory.getLog(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());
     
     // SessionFullExtendedNavigationalState object needs this.
     public static final String REQUEST_CLEAR_PORTLETS_MODE_AND_WINDOWSTATE_KEY = "clearPortletsModeAndWindowState";

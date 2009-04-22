@@ -26,8 +26,8 @@ import java.util.Properties;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.CacheElement;
@@ -69,7 +69,7 @@ public class DecorationValve extends AbstractValve implements Valve
     public static final String ACTION_IMAGE_EXTENSION_ATTR = "actionImageExtension";
     public static final String IS_AJAX_DECORATION_REQUEST = "org.apache.jetspeed.decoration.ajax";
     
-    protected final static Log log = LogFactory.getLog(DecorationValve.class);
+    protected final static Logger log = LoggerFactory.getLogger(DecorationValve.class);
     
     private final DecorationFactory decorationFactory;
 

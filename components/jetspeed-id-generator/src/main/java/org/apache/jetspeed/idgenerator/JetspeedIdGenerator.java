@@ -18,8 +18,8 @@ package org.apache.jetspeed.idgenerator;
 
 
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple implementation of the IdGeneratorService.
@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class JetspeedIdGenerator implements IdGenerator
 {
-    private final static Log log = LogFactory.getLog(JetspeedIdGenerator.class);
+    private final static Logger log = LoggerFactory.getLogger(JetspeedIdGenerator.class);
 
     // default configuration values
     private final static long DEFAULT_CONFIG_COUNTER_START = 0x10000;

@@ -24,8 +24,8 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.LayoutValve;
@@ -47,7 +47,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class VerySimpleLayoutValveImpl extends AbstractValve implements LayoutValve
 {
-    private static final Log log = LogFactory.getLog(VerySimpleLayoutValveImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(VerySimpleLayoutValveImpl.class);
 
     /**
      * @see org.apache.jetspeed.pipeline.valve.Valve#invoke(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.pipeline.valve.ValveContext)

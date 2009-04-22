@@ -24,8 +24,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
@@ -46,7 +46,7 @@ import org.apache.jetspeed.util.DirectoryHelper;
 public class DeployPortletAppEventListener implements DeploymentEventListener
 {
 
-    protected static final Log           log = LogFactory.getLog("deployment");
+    protected static final Logger           log = LoggerFactory.getLogger("deployment");
     private String                       webAppDir;
     private int                           localPAPrefixLength;
     private String                       localAppDir;

@@ -19,8 +19,8 @@ package org.apache.jetspeed.localization.impl;
 import java.util.Enumeration;
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.i18n.CurrentLocale;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -37,7 +37,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class SimplifiedLocalizationValveImpl extends AbstractValve implements LocalizationValve
 {
-    private static final Log log = LogFactory.getLog(LocalizationValveImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(LocalizationValveImpl.class);
     private Locale defaultLocale = null;
     
     public SimplifiedLocalizationValveImpl() {}

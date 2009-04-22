@@ -17,8 +17,8 @@
 
 package org.apache.jetspeed.tools.db.serializer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.test.JetspeedTestCase;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.jetspeed.test.JetspeedTestCase;
  */
 public class TestJetspeedSerializerApplication extends JetspeedTestCase
 {
-    private static Log logger = LogFactory.getLog(TestJetspeedSerializerApplication.class);
+    private static Logger logger = LoggerFactory.getLogger(TestJetspeedSerializerApplication.class);
     
     public void testSerializer() throws Exception
     {

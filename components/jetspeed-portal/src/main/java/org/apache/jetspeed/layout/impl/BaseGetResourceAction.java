@@ -18,8 +18,8 @@ package org.apache.jetspeed.layout.impl;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
@@ -36,7 +36,7 @@ public abstract class BaseGetResourceAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants 
 {
-    protected static final Log log = LogFactory.getLog(BaseSiteUpdateAction.class);    
+    protected static final Logger log = LoggerFactory.getLogger(BaseSiteUpdateAction.class);    
     
     public BaseGetResourceAction(String template, 
             String errorTemplate, 

@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.Hashtable;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.security.SecurityDomain;
 import org.apache.jetspeed.security.impl.SecurityDomainImpl;
@@ -46,7 +46,7 @@ public class JetspeedPersistentSSOSiteManager extends
 InitablePersistenceBrokerDaoSupport implements SSOSiteManagerSPI
 {
     /* Logging */
-    private static final Log log = LogFactory.getLog(JetspeedPersistentSSOSiteManager.class);
+    private static final Logger log = LoggerFactory.getLogger(JetspeedPersistentSSOSiteManager.class);
     private Hashtable<String,SSOSite> mapSiteNameIndex = new Hashtable<String,SSOSite>();
     private Hashtable<String,SSOSite> mapSiteUrlIndex = new Hashtable<String,SSOSite>();
     private Hashtable<Long,SSOSite> mapSiteDomainIndex = new Hashtable<Long,SSOSite>();

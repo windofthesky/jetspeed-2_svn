@@ -34,8 +34,8 @@ import javax.servlet.Servlet;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.Rule;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.oro.text.GlobCompiler;
 import org.apache.oro.text.regex.Pattern;
 import org.apache.oro.text.regex.PatternCompiler;
@@ -47,7 +47,7 @@ import com.mockrunner.mock.web.MockServletConfig;
 @SuppressWarnings("deprecation")
 public class ResourceLocatingServletContext extends BaseMockServletContext
 {
-    protected final static Log log = LogFactory.getLog(ResourceLocatingServletContext.class);
+    protected final static Logger log = LoggerFactory.getLogger(ResourceLocatingServletContext.class);
     
     private final File rootPath;
     private final Map pathOverrides = new HashMap();

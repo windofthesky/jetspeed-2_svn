@@ -91,14 +91,6 @@
             <artifactId>portals-bridges-velocity</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
         </dependency>
@@ -109,10 +101,6 @@
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-configuration</groupId>
@@ -163,6 +151,14 @@
         	<artifactId>commonj-twm</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>org.springframework</groupId>
+           <artifactId>spring-context-support</artifactId>
+        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>
@@ -206,11 +202,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-webapp-logging</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>jmock</groupId>
             <artifactId>jmock</artifactId>
             <scope>test</scope>
@@ -245,11 +236,6 @@
         </dependency>
         
         <!-- defining optional dependencies which are included transitively so their exclusions (defined in the root pom) are honored -->
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <optional>true</optional>
-         </dependency>
          <dependency>
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>

@@ -29,8 +29,8 @@ import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
@@ -49,7 +49,7 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 public class DBCPDatasourceComponent implements DatasourceComponent
 {
 
-    private static final Log log = LogFactory.getLog(DBCPDatasourceComponent.class);
+    private static final Logger log = LoggerFactory.getLogger(DBCPDatasourceComponent.class);
 
     protected PoolingDataSource dataSource;
     //protected DataSource dataSource;
@@ -214,7 +214,7 @@ public class DBCPDatasourceComponent implements DatasourceComponent
             ise.initCause(e);
             try
             {
-                log.error(ise);
+                log.error("Unable to sfaely shutdown the DBCPConnection pool", ise);
             }
             catch (Exception e1)
             {

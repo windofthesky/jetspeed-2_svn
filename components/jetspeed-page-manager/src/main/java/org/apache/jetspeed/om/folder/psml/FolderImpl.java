@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -70,7 +70,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     private FolderHandler folderHandler;
     private int reservedType = RESERVED_FOLDER_NONE;
     
-    private static final Log log = LogFactory.getLog(FolderImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(FolderImpl.class);
 
     private static PermissionFactory pf;
     

@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Jetspeed's default implementation of a template locator.
@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class JetspeedTemplateLocator implements TemplateLocator
 {
-    private final static Log log = LogFactory.getLog(JetspeedTemplateLocator.class);
+    private final static Logger log = LoggerFactory.getLogger(JetspeedTemplateLocator.class);
 
     private static final String PATH_SEPARATOR = "/";
 

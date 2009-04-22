@@ -19,8 +19,8 @@ package org.apache.jetspeed.layout.impl;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -43,7 +43,7 @@ import org.apache.jetspeed.request.RequestContext;
 public class GetMenuAction extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected static final Log log = LogFactory.getLog(GetMenusAction.class);
+    protected static final Logger log = LoggerFactory.getLogger(GetMenusAction.class);
     
     public GetMenuAction(String template,
                          String errorTemplate,

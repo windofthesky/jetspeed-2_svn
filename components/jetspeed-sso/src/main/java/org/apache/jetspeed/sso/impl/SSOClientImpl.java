@@ -28,8 +28,8 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.sso.SSOClient;
 import org.apache.jetspeed.sso.SSOException;
@@ -44,7 +44,7 @@ public class SSOClientImpl implements SSOClient
 {
 
     /* Logging */
-    private static final Log log = LogFactory.getLog(SSOClientImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(SSOClientImpl.class);
     
     private SSOSite site;
     private PasswordCredential credential;
@@ -139,7 +139,7 @@ public class SSOClientImpl implements SSOClient
         try{
             url = new URL(site.getURL());
         } catch (MalformedURLException muex){
-            log.error(muex);
+            log.error(muex.getMessage(), muex);
             throw new SSOException("SSO: Marlformed url: "+site.getURL());
         }
         httpClient = new HttpClient();

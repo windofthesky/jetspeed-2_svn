@@ -18,8 +18,8 @@ package org.apache.jetspeed.pipeline.valve.impl;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
@@ -36,7 +36,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class DebugValveImpl extends AbstractValve 
 {
-    private static final Log log = LogFactory.getLog(DebugValveImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DebugValveImpl.class);
 
     public DebugValveImpl()
     {

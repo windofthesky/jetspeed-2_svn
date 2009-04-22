@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.profiler.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -33,7 +33,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class CreatePageValveImpl extends AbstractValve implements Valve
 {
-    protected Log log = LogFactory.getLog(CreatePageValveImpl.class);
+    protected Logger log = LoggerFactory.getLogger(CreatePageValveImpl.class);
     
     private PortletActionSecurityBehavior securityBehavior;
 

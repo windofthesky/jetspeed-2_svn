@@ -27,8 +27,8 @@ import java.security.ProtectionDomain;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.SecurityPolicies;
 
@@ -50,7 +50,7 @@ import org.apache.jetspeed.security.SecurityPolicies;
  */
 public class RdbmsPolicy extends Policy
 {
-    private static final Log log = LogFactory.getLog(RdbmsPolicy.class);
+    private static final Logger log = LoggerFactory.getLogger(RdbmsPolicy.class);
 
     /**
      * <p>

@@ -31,8 +31,8 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
@@ -65,7 +65,7 @@ public class PortletApplicationWar
     public static final String WEB_XML_PATH = "WEB-INF/web.xml";
     public static final String EXTENDED_PORTLET_XML_PATH = "WEB-INF/jetspeed-portlet.xml";
 
-    protected static final Log log = LogFactory.getLog("deployment");
+    protected static final Logger log = LoggerFactory.getLogger("deployment");
 
     protected String paName;
     protected String webAppContextRoot;

@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -55,7 +55,7 @@ public class GetPortletsAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants, Comparator
 {
-    protected static final Log log = LogFactory.getLog(GetPortletsAction.class);
+    protected static final Logger log = LoggerFactory.getLogger(GetPortletsAction.class);
     private PortletRegistry registry = null;
     private SearchEngine searchEngine = null;
     private SecurityAccessController securityAccessController;
@@ -105,7 +105,7 @@ public class GetPortletsAction
         } 
         catch (Exception e)
         {
-            // Log the exception
+            // Logger the exception
             log.error("exception while getting portlet info", e);
 
             // Return a failure indicator

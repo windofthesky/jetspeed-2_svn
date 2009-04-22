@@ -22,8 +22,8 @@ import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -45,7 +45,7 @@ import org.apache.jetspeed.container.PortletWindow;
 public class ResourceValveImpl extends AbstractValve
 {
 
-    private static final Log log = LogFactory.getLog(ResourceValveImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ResourceValveImpl.class);
     private PortletContainer container;
 
     public ResourceValveImpl(PortletContainer container)
@@ -79,7 +79,7 @@ public class ResourceValveImpl extends AbstractValve
             }
             catch (PortletContainerException e)
             {
-                log.fatal("Unable to retrieve portlet container!", e);
+                log.error("Unable to retrieve portlet container!", e);
                 throw new PipelineException("Unable to retrieve portlet container!", e);
             }
             catch (PortletException e)

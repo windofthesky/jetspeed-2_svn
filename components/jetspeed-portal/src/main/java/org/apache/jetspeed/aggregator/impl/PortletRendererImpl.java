@@ -23,8 +23,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletAccessDeniedException;
@@ -61,7 +61,7 @@ import org.apache.jetspeed.container.PortletWindow;
  */
 public class PortletRendererImpl implements PortletRenderer
 {
-    protected final static Log log = LogFactory.getLog(PortletRendererImpl.class);
+    protected final static Logger log = LoggerFactory.getLogger(PortletRendererImpl.class);
 
     protected WorkerMonitor workMonitor;
     protected PortletContainer container;
@@ -168,7 +168,7 @@ public class PortletRendererImpl implements PortletRenderer
         catch (Exception e)
         {
             fragment.overrideRenderedContent(e.getLocalizedMessage());
-            log.error(e);
+            log.error(e.getMessage(),e);
         }
     }
 

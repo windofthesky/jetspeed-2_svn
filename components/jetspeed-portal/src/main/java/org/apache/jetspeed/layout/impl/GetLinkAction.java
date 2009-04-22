@@ -18,8 +18,8 @@ package org.apache.jetspeed.layout.impl;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -41,7 +41,7 @@ public class GetLinkAction
     extends BaseGetResourceAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(GetLinkAction.class);
+    protected Logger log = LoggerFactory.getLogger(GetLinkAction.class);
     
     public GetLinkAction(String template, 
                              String errorTemplate,

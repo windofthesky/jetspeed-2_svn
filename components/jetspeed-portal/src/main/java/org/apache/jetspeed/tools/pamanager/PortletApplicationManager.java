@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.cluster.NodeManager;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
@@ -51,7 +51,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 {
     private static int DEFAULT_DESCRIPTOR_CHANGE_MONITOR_INTERVAL = 10*1000; // 10 seconds
     private static int DEFAULT_MAX_RETRIED_STARTS = 10; // 10 times retry PA
-    private static final Log    log = LogFactory.getLog("deployment");
+    private static final Logger    log = LoggerFactory.getLogger("deployment");
 
     protected PortletFactory        portletFactory;
     protected PortletRegistry       registry;

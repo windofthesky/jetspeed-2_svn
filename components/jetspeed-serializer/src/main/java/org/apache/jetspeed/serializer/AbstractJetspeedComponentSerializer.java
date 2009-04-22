@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
 
 /**
@@ -34,24 +34,24 @@ public abstract class AbstractJetspeedComponentSerializer implements JetspeedCom
 {
     public void deleteData(Map settings) throws SerializerException
     {
-        deleteData(settings, (Log)settings.get(JetspeedSerializer.KEY_LOGGER));
+        deleteData(settings, (Logger)settings.get(JetspeedSerializer.KEY_LOGGER));
     }
 
     public void processExport(JetspeedSerializedData data, Map settings) throws SerializerException
     {
-        processExport((JSSnapshot)data, settings, (Log)settings.get(JetspeedSerializer.KEY_LOGGER));
+        processExport((JSSnapshot)data, settings, (Logger)settings.get(JetspeedSerializer.KEY_LOGGER));
     }
 
     public void processImport(JetspeedSerializedData data, Map settings) throws SerializerException
     {
-        processImport((JSSnapshot)data, settings, (Log)settings.get(JetspeedSerializer.KEY_LOGGER));
+        processImport((JSSnapshot)data, settings, (Logger)settings.get(JetspeedSerializer.KEY_LOGGER));
     }
 
-    protected abstract void deleteData(Map settings, Log log) throws SerializerException;
+    protected abstract void deleteData(Map settings, Logger log) throws SerializerException;
 
-    protected abstract void processExport(JSSnapshot data, Map settings, Log log) throws SerializerException;
+    protected abstract void processExport(JSSnapshot data, Map settings, Logger log) throws SerializerException;
 
-    protected abstract void processImport(JSSnapshot data, Map settings, Log log) throws SerializerException;
+    protected abstract void processImport(JSSnapshot data, Map settings, Logger log) throws SerializerException;
     
     /**
      * returns if the key for a particular setting is true. False if the key

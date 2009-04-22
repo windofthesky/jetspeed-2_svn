@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
@@ -80,7 +80,7 @@ import org.apache.jetspeed.page.document.psml.NodeSetImpl;
  */
 public class CastorXmlPageManager extends AbstractPageManager implements PageManager, FileCacheEventListener
 {
-    private final static Log log = LogFactory.getLog(CastorXmlPageManager.class);
+    private final static Logger log = LoggerFactory.getLogger(CastorXmlPageManager.class);
 
     private static Map modelClasses = new HashMap();
     static

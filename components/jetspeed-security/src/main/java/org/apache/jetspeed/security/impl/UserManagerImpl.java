@@ -25,8 +25,8 @@ import java.util.Set;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.AuthenticatedUserImpl;
 import org.apache.jetspeed.security.GroupManager;
@@ -58,7 +58,7 @@ import org.apache.jetspeed.security.spi.UserSubjectPrincipalsResolver;
  */
 public class UserManagerImpl extends BaseJetspeedPrincipalManager implements UserManager, UserSubjectPrincipalsProvider
 {
-	private static final Log log = LogFactory.getLog(UserManagerImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(UserManagerImpl.class);
 
 	private String anonymousUser = "guest";
 	private JetspeedPrincipalType roleType;

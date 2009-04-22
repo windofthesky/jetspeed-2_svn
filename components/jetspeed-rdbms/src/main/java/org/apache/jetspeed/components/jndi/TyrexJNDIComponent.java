@@ -27,8 +27,8 @@ import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.NamingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import tyrex.naming.MemoryContext;
 import tyrex.tm.RuntimeContext;
@@ -47,7 +47,7 @@ import tyrex.tm.RuntimeContext;
 public class TyrexJNDIComponent implements JNDIComponent
 {
 
-    private static final Log log = LogFactory.getLog(TyrexJNDIComponent.class);
+    private static final Logger log = LoggerFactory.getLogger(TyrexJNDIComponent.class);
 
     private MemoryContext rootJNDIContext;
 

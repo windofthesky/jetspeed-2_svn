@@ -18,8 +18,8 @@ package org.apache.jetspeed.layout.impl;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
@@ -52,7 +52,7 @@ public class UpdateLinkAction
     extends BaseSiteUpdateAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(UpdateLinkAction.class);
+    protected Logger log = LoggerFactory.getLogger(UpdateLinkAction.class);
 
     public UpdateLinkAction(String template, 
                             String errorTemplate, 

@@ -17,7 +17,7 @@
 package org.apache.jetspeed.tools;
 
 /**
- * ToolsLogger is a lightweight "typical" logger interface allowing wrapping a Maven Log to be used by Commons Log
+ * ToolsLogger is a lightweight "typical" logger interface allowing wrapping a Maven Log to be used by SLF4J Logger
  * while not depending on not requiring either of those logging api's to be required from a shared classpath.
  * 
  * @version $Id$

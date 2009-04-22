@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -43,7 +43,7 @@ import org.apache.jetspeed.request.RequestContext;
  * @version $Id$
  */
 public class ExportObject extends BaseGetResourceAction implements AjaxAction, AjaxBuilder, Constants {
-	protected Log log = LogFactory.getLog(GetFolderAction.class);
+	protected Logger log = LoggerFactory.getLogger(GetFolderAction.class);
 
 	protected PageManager castorPageManager;
 

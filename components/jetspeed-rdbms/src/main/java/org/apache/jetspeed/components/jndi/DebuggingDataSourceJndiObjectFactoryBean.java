@@ -34,8 +34,8 @@ import java.util.Map;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.jndi.JndiObjectFactoryBean;
 
@@ -46,8 +46,8 @@ import org.apache.jetspeed.util.DelegatingObjectProxy;
 */
 public class DebuggingDataSourceJndiObjectFactoryBean extends JndiObjectFactoryBean implements DisposableBean
 {
-   private static final Log statisticsLog = LogFactory.getLog("org.apache.jetspeed.ds.statistics");
-   private static final Log openConnectionsLog = LogFactory.getLog("org.apache.jetspeed.ds.connections");
+   private static final Logger statisticsLog = LoggerFactory.getLogger("org.apache.jetspeed.ds.statistics");
+   private static final Logger openConnectionsLog = LoggerFactory.getLogger("org.apache.jetspeed.ds.connections");
 
    private Object mutex = new Object();
    private DataSourceWrapper cachedWrapper;

@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletAccessDeniedException;
@@ -46,7 +46,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageAggregator
 {
-    protected final static Log log = LogFactory.getLog(AsyncPageAggregatorImpl.class);
+    protected final static Logger log = LoggerFactory.getLogger(AsyncPageAggregatorImpl.class);
 
     public AsyncPageAggregatorImpl(PortletRenderer renderer)
     {

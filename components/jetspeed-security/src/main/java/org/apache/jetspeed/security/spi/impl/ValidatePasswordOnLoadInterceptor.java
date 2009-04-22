@@ -16,8 +16,8 @@
 */
 package org.apache.jetspeed.security.spi.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.CredentialPasswordValidator;
 import org.apache.jetspeed.security.PasswordCredential;
@@ -37,7 +37,7 @@ import org.apache.jetspeed.security.spi.PasswordCredentialInterceptor;
  */
 public class ValidatePasswordOnLoadInterceptor extends AbstractPasswordCredentialInterceptorImpl
 {
-    private static final Log log = LogFactory.getLog(PasswordCredentialInterceptor.class);
+    private static final Logger log = LoggerFactory.getLogger(PasswordCredentialInterceptor.class);
     
     /**
      * @return true is the password was invalid and update is required

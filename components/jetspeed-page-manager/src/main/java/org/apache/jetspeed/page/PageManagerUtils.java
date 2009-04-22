@@ -21,8 +21,8 @@ import java.util.Iterator;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
@@ -43,7 +43,7 @@ import org.apache.jetspeed.security.User;
  */
 public class PageManagerUtils
 {
-    protected static Log log = LogFactory.getLog(PageManagerUtils.class);    
+    protected static Logger log = LoggerFactory.getLogger(PageManagerUtils.class);    
     
     /**
      * Creates a user's home page from the roles of the current user.

@@ -21,8 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.ajax.AjaxAction;
@@ -54,7 +54,7 @@ public class GetPageAction
     extends BaseGetResourceAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog( GetPageAction.class );
+    protected Logger log = LoggerFactory.getLogger( GetPageAction.class );
     
     private PortletRegistry registry;
     private DecorationValve decorationValve;

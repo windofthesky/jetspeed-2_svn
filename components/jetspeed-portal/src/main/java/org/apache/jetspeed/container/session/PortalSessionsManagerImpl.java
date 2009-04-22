@@ -25,8 +25,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * PortalSessionsManagerImpl
@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
 public class PortalSessionsManagerImpl implements PortalSessionsManager
 {
 
-    private static Log log = LogFactory.getLog(PortalSessionsManagerImpl.class);
+    private static Logger log = LoggerFactory.getLogger(PortalSessionsManagerImpl.class);
     
     private static final class PortalSessionRegistry
     {

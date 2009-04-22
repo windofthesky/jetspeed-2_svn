@@ -56,7 +56,6 @@
         <module>jetspeed-sso</module>
         <module>jetspeed-statistics</module>
         <module>jetspeed-utils</module>
-        <module>jetspeed-webapp-logging</module>
         <module>jetspeed-layout-portlets</module>
         <module>jetspeed-db-tools</module>
     </modules>

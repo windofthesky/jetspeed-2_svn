@@ -21,8 +21,8 @@ import java.util.List;
 import javax.portlet.PortletException;
 import javax.portlet.PortletURLGenerationListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.pluto.container.PortletURLListenerService;
@@ -30,7 +30,7 @@ import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
 
 public class JetspeedPortletURLListenerService implements PortletURLListenerService
 {
-    private static final Log log = LogFactory.getLog(JetspeedPortletURLListenerService.class);
+    private static final Logger log = LoggerFactory.getLogger(JetspeedPortletURLListenerService.class);
     
     protected PortletFactory portletFactory;
     

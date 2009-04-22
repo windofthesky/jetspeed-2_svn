@@ -21,8 +21,8 @@ import java.io.IOException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.LoginViewValve;
@@ -38,7 +38,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class LoginJSPViewValve extends AbstractValve implements LoginViewValve
 {
-    private static final Log log = LogFactory.getLog(LoginJSPViewValve.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginJSPViewValve.class);
 
     private static final String DEFAULT_TEMPLATE_PATH = "/WEB-INF/templates/login";
 

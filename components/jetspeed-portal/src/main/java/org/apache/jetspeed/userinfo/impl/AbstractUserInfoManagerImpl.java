@@ -23,8 +23,8 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.om.portlet.impl.UserAttributeRefImpl;
@@ -42,7 +42,7 @@ import org.apache.jetspeed.container.PortletWindow;
 public abstract class AbstractUserInfoManagerImpl
 {
     /** Logger */
-    private static final Log log = LogFactory.getLog(UserInfoManagerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(UserInfoManagerImpl.class);
     
     /**
      * <p>

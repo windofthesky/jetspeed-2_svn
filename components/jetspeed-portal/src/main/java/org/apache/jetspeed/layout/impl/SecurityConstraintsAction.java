@@ -25,8 +25,8 @@ import java.util.StringTokenizer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
@@ -57,7 +57,7 @@ public class SecurityConstraintsAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected static final Log log = LogFactory.getLog(SecurityConstraintsAction.class);
+    protected static final Logger log = LoggerFactory.getLogger(SecurityConstraintsAction.class);
 
     public SecurityConstraintsAction(String template, 
                                      String errorTemplate, 

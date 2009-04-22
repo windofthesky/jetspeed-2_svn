@@ -17,20 +17,20 @@
 
 package org.apache.jetspeed.components.util;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.apache.jetspeed.tools.ToolsLogger;
 
 /**
- * ToolsLogger wrapper of a Commons Log
+ * ToolsLogger wrapper of a SLF4J Logger
  * 
  * @version $Id$
  *
  */
-public class CommonsToolsLogger implements ToolsLogger
+public class Slf4JToolsLogger implements ToolsLogger
 {
-    private Log log;
+    private Logger log;
     
-    public CommonsToolsLogger(Log log)
+    public Slf4JToolsLogger(Logger log)
     {
         this.log = log;
     }
@@ -40,7 +40,7 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public void debug(CharSequence content)
     {
-        log.debug(content);
+        log.debug(content.toString());
     }
 
     /* (non-Javadoc)
@@ -48,7 +48,7 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public void debug(CharSequence content, Throwable error)
     {
-        log.debug(content, error);
+        log.debug(content.toString(), error);
     }
 
     /* (non-Javadoc)
@@ -56,7 +56,7 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public void debug(Throwable error)
     {
-        log.debug(error);
+        log.debug(error.getMessage(),error);
     }
 
     /* (non-Javadoc)
@@ -64,7 +64,7 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public void error(CharSequence content)
     {
-        log.error(content);
+        log.error(content.toString());
     }
 
     /* (non-Javadoc)
@@ -72,7 +72,7 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public void error(CharSequence content, Throwable error)
     {
-        log.error(content,error);
+        log.error(content.toString(),error);
     }
 
     /* (non-Javadoc)
@@ -80,7 +80,7 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public void error(Throwable error)
     {
-        log.error(error);
+        log.error(error.getMessage(),error);
     }
 
     /* (non-Javadoc)
@@ -88,7 +88,7 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public void info(CharSequence content)
     {
-        log.info(content);
+        log.info(content.toString());
     }
 
     /* (non-Javadoc)
@@ -96,7 +96,7 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public void info(CharSequence content, Throwable error)
     {
-        log.info(content,error);
+        log.info(content.toString(),error);
     }
 
     /* (non-Javadoc)
@@ -104,7 +104,7 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public void info(Throwable error)
     {
-        log.info(error);
+        log.info(error.getMessage(),error);
     }
 
     /* (non-Javadoc)
@@ -120,7 +120,7 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public boolean isErrorEnabled()
     {
-        return log.isErrorEnabled() || log.isFatalEnabled();
+        return log.isErrorEnabled();
     }
 
     /* (non-Javadoc)
@@ -144,7 +144,7 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public void warn(CharSequence content)
     {
-        log.warn(content);
+        log.warn(content.toString());
     }
 
     /* (non-Javadoc)
@@ -152,7 +152,7 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public void warn(CharSequence content, Throwable error)
     {
-        log.warn(content,error);
+        log.warn(content.toString(),error);
     }
 
     /* (non-Javadoc)
@@ -160,7 +160,6 @@ public class CommonsToolsLogger implements ToolsLogger
      */
     public void warn(Throwable error)
     {
-        log.warn(error);
+        log.warn(error.getMessage(),error);
     }
-
 }

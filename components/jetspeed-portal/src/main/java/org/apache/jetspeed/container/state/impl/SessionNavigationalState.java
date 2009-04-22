@@ -21,8 +21,8 @@ import java.util.Map;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.state.NavigationalState;
@@ -43,7 +43,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class SessionNavigationalState extends AbstractNavigationalState
 {   
-    protected final Log log = LogFactory.getLog(getClass());    
+    protected final Logger log = LoggerFactory.getLogger(getClass());    
     private Map<String, PortletWindowBaseNavigationalState> currentPageWindowStates;
     private boolean clearPortletsModeAndWindowStateEnabled = false;
     

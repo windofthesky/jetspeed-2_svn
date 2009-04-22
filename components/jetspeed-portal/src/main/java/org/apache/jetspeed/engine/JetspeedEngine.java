@@ -23,8 +23,8 @@ import java.util.Map;
 import javax.servlet.ServletConfig;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -62,7 +62,7 @@ public class JetspeedEngine implements Engine
     private Map pipelineMapper ;
     private PortalStatistics statistics;
     
-    protected static final Log log = LogFactory.getLog(JetspeedEngine.class);
+    protected static final Logger log = LoggerFactory.getLogger(JetspeedEngine.class);
     protected String defaultPipelineName;    
 
     public JetspeedEngine(Configuration configuration, String applicationRoot, ServletConfig config, ComponentManager componentManager )

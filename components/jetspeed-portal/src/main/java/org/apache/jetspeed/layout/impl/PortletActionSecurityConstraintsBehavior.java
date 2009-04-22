@@ -18,8 +18,8 @@ package org.apache.jetspeed.layout.impl;
 
 import java.security.Principal;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
@@ -37,7 +37,7 @@ public class PortletActionSecurityConstraintsBehavior
        extends PortletActionSecurityPathBehavior
        implements PortletActionSecurityBehavior
 {
-    protected Log log = LogFactory.getLog(PortletActionSecurityConstraintsBehavior.class);    
+    protected Logger log = LoggerFactory.getLogger(PortletActionSecurityConstraintsBehavior.class);    
     protected String guest = "guest";
     
     public PortletActionSecurityConstraintsBehavior(PageManager pageManager)

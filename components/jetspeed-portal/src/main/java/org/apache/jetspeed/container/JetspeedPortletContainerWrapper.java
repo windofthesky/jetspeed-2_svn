@@ -23,8 +23,8 @@ import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.pluto.container.ContainerServices;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletContainerException;
@@ -39,7 +39,7 @@ import org.apache.pluto.container.PortletWindow;
 public class JetspeedPortletContainerWrapper implements PortletContainerWrapper
 {
     private boolean initialized = false;
-    private static final Log log = LogFactory.getLog(JetspeedPortletContainerWrapper.class);
+    private static final Logger log = LoggerFactory.getLogger(JetspeedPortletContainerWrapper.class);
     private final PortletContainer pluto;
     private final String containerId;
     

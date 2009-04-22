@@ -26,8 +26,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.WorkerMonitor;
@@ -85,7 +85,7 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
     }
     
     /** Commons logging */
-    protected final static Log log = LogFactory.getLog(CommonjWorkerMonitorImpl.class);
+    protected final static Logger log = LoggerFactory.getLogger(CommonjWorkerMonitorImpl.class);
     
     /** Renering Job Timeout monitor */
     protected CommonjWorkerRenderingJobTimeoutMonitor jobMonitor = null;

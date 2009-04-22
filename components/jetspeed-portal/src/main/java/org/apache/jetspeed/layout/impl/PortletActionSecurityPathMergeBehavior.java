@@ -22,8 +22,8 @@ import java.util.Set;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
@@ -44,7 +44,7 @@ public class PortletActionSecurityPathMergeBehavior
     extends PortletActionSecurityPathBehavior
     implements PortletActionSecurityBehavior
 {
-    protected Log log = LogFactory.getLog(PortletActionSecurityPathMergeBehavior.class);
+    protected Logger log = LoggerFactory.getLogger(PortletActionSecurityPathMergeBehavior.class);
     
     public PortletActionSecurityPathMergeBehavior( PageManager pageManager )
     {

@@ -25,8 +25,8 @@ import java.util.Random;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
@@ -53,7 +53,7 @@ import org.springframework.web.context.ServletContextAware;
  */
 public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
 {
-	private static final Log log = LogFactory.getLog( JetspeedDesktopImpl.class );
+	private static final Logger log = LoggerFactory.getLogger( JetspeedDesktopImpl.class );
 	
     private final static String EOL = "\r\n";   // html eol
     private final static String DOJO_CONFIG_LAYOUT_DECORATION_PATH_VAR_NAME = HeaderResource.HEADER_INTERNAL_DOJO_CONFIG_JETSPEED_VAR_NAME + ".layoutDecorationPath";

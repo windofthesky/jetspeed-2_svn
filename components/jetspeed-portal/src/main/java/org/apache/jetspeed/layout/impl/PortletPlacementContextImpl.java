@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.Coordinate;
 import org.apache.jetspeed.layout.PortletPlacementException;
@@ -65,7 +65,7 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
  */
 public class PortletPlacementContextImpl implements PortletPlacementContext 
 {
-    private static Log log = LogFactory.getLog( PortletPlacementContextImpl.class );
+    private static Logger log = LoggerFactory.getLogger( PortletPlacementContextImpl.class );
     protected static final String eol = System.getProperty( "line.separator" );
 
 	// Columns are reference by index, the rows are held

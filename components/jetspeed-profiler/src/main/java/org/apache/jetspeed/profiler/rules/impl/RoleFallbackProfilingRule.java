@@ -19,8 +19,8 @@ package org.apache.jetspeed.profiler.rules.impl;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.FallbackCriterionResolver;
@@ -40,7 +40,7 @@ public class RoleFallbackProfilingRule
     extends AbstractProfilingRule
     implements ProfilingRule
 {
-    protected final static Log log = LogFactory.getLog(RoleFallbackProfilingRule.class);
+    protected final static Logger log = LoggerFactory.getLogger(RoleFallbackProfilingRule.class);
     private final static long serialVersionUID = 1L;
     
     public RoleFallbackProfilingRule()

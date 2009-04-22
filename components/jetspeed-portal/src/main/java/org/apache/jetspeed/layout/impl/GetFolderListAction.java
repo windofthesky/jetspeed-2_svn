@@ -19,8 +19,8 @@ package org.apache.jetspeed.layout.impl;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -42,7 +42,7 @@ public class GetFolderListAction
     extends BaseGetResourceAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(GetThemesAction.class);
+    protected Logger log = LoggerFactory.getLogger(GetThemesAction.class);
     
     public GetFolderListAction(String template, 
             String errorTemplate,

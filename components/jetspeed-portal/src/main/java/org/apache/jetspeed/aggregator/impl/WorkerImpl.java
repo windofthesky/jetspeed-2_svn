@@ -22,8 +22,8 @@ import java.security.PrivilegedAction;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.WorkerMonitor;
@@ -41,7 +41,7 @@ import org.apache.jetspeed.security.JSSubject;
 public class WorkerImpl extends Thread implements Worker
 {
     /** Commons logging */
-    protected final static Log log = LogFactory.getLog(WorkerImpl.class);
+    protected final static Logger log = LoggerFactory.getLogger(WorkerImpl.class);
 
     /** Running status of this worker */
     private boolean running = true;

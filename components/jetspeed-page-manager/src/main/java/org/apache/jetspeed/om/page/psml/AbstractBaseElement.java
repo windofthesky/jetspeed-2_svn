@@ -27,8 +27,8 @@ import java.util.List;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraint;
@@ -53,7 +53,7 @@ import org.apache.jetspeed.security.User;
  */
 public abstract class AbstractBaseElement implements java.io.Serializable, SecuredResource
 {
-    private final static Log log = LogFactory.getLog(AbstractBaseElement.class);
+    private final static Logger log = LoggerFactory.getLogger(AbstractBaseElement.class);
 
     private String id = null;
 

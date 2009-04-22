@@ -29,8 +29,8 @@ import java.util.Map;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.layout.impl.Constants;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.velocity.VelocityContext;
@@ -64,7 +64,7 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
     protected static final String URL_PARAMETER_NAME = "action";
 
     /** Logger */
-    protected Log log = LogFactory.getLog(AjaxRequestServiceImpl.class);
+    protected Logger log = LoggerFactory.getLogger(AjaxRequestServiceImpl.class);
 
     // Objects that are available to execution. These objects must
     // implement either the Action interface or the Builder interface

@@ -25,8 +25,8 @@ import javax.portlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
@@ -52,7 +52,7 @@ import org.apache.jetspeed.container.PortletWindow;
 public class RenderingJobImpl implements RenderingJob
 {
     /** Commons logging */
-    protected final static Log log = LogFactory.getLog(RenderingJobImpl.class);
+    protected final static Logger log = LoggerFactory.getLogger(RenderingJobImpl.class);
 
     /** WorkerMonitor used to flush the queue */
     protected PortletWindow window = null;

@@ -20,8 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -41,7 +41,7 @@ import org.apache.jetspeed.security.UserManager;
 public abstract class BaseUserAction 
     implements AjaxAction, AjaxBuilder, Constants 
 {
-    protected Log log = LogFactory.getLog(BaseUserAction.class);    
+    protected Logger log = LoggerFactory.getLogger(BaseUserAction.class);    
 	protected String template = null;
     protected UserManager userManager = null;
     protected String errorTemplate = null;

@@ -18,8 +18,8 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
@@ -37,7 +37,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public abstract class BaseAggregatorImpl 
 {
-    private final static Log log = LogFactory.getLog(BaseAggregatorImpl.class);
+    private final static Logger log = LoggerFactory.getLogger(BaseAggregatorImpl.class);
     
     protected PortletRenderer renderer;
     

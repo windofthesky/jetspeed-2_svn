@@ -24,8 +24,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -82,7 +82,7 @@ import org.springframework.core.io.support.PropertiesLoaderSupport;
  */
 public class JetspeedBeanDefinitionFilter extends PropertiesLoaderSupport
 {
-    private static Log log = LogFactory.getLog(JetspeedBeanDefinitionFilter.class);
+    private static Logger log = LoggerFactory.getLogger(JetspeedBeanDefinitionFilter.class);
     
     public static final String SYSTEM_PROPERTY_CATEGORIES_KEY = "JetspeedBeanDefinitionFilter.categoriesKey";
     

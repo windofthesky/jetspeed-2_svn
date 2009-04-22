@@ -17,8 +17,8 @@
 package org.apache.jetspeed.security.spi.impl;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.RefreshableBean;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.UserManager;
@@ -30,7 +30,7 @@ import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
  */
 public class OnStartupSecuritySynchronizationBean implements RefreshableBean
 {
-    private static final Log log = LogFactory.getLog(OnStartupSecuritySynchronizationBean.class);
+    private static final Logger log = LoggerFactory.getLogger(OnStartupSecuritySynchronizationBean.class);
     private UserManager userManager;
     private JetspeedSecuritySynchronizer synchronizer;
     private boolean synchronizeAllUser;

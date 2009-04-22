@@ -19,8 +19,8 @@ package org.apache.jetspeed.layout.impl;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -32,7 +32,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class RolesSecurityBehavior implements PortletActionSecurityBehavior
 {
-    protected Log log = LogFactory.getLog(PortletActionSecurityPathBehavior.class);    
+    protected Logger log = LoggerFactory.getLogger(PortletActionSecurityPathBehavior.class);    
     protected List roles;
     
     public RolesSecurityBehavior(List roles)

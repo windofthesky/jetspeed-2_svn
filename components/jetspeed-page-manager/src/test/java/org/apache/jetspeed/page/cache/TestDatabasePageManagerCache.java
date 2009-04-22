@@ -33,8 +33,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.cache.impl.EhCacheConfigResource;
 
 /**
@@ -45,7 +45,7 @@ import org.apache.jetspeed.cache.impl.EhCacheConfigResource;
  */
 public class TestDatabasePageManagerCache extends TestCase
 {
-    protected static Log log = LogFactory.getLog(TestDatabasePageManagerCache.class);
+    protected static Logger log = LoggerFactory.getLogger(TestDatabasePageManagerCache.class);
     
     // Members
     

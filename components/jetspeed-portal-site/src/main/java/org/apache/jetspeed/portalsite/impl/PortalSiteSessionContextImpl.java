@@ -31,8 +31,8 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionEvent;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
@@ -77,7 +77,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     /**
      * log - logging instance
      */
-    private final static Log log = LogFactory.getLog(PortalSiteSessionContextImpl.class);
+    private final static Logger log = LoggerFactory.getLogger(PortalSiteSessionContextImpl.class);
 
     /**
      * pageManager - PageManager component
@@ -787,7 +787,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     debug.append("null");
                 }
                 debug.append(")");
-                log.debug(debug);
+                log.debug(debug.toString());
             }
 
             // return valid

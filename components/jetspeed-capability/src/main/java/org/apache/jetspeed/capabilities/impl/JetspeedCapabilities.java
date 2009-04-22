@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.capabilities.Capabilities;
 import org.apache.jetspeed.capabilities.CapabilitiesException;
 import org.apache.jetspeed.capabilities.Capability;
@@ -49,8 +49,8 @@ import org.springframework.beans.factory.BeanFactoryAware;
  */
 public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport implements Capabilities ,BeanFactoryAware 
 {
-    private static final Log log =
-        LogFactory.getLog(JetspeedCapabilities.class);
+    private static final Logger log =
+        LoggerFactory.getLogger(JetspeedCapabilities.class);
 
     public static final String DEFAULT_AGENT = "Mozilla/4.0";
 

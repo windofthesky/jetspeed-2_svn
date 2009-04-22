@@ -19,8 +19,8 @@ package org.apache.jetspeed.layout.impl;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -40,7 +40,7 @@ import org.apache.jetspeed.request.RequestContext;
 public abstract class BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants 
 {
-    protected static final Log log = LogFactory.getLog(BasePortletAction.class);    
+    protected static final Logger log = LoggerFactory.getLogger(BasePortletAction.class);    
 	protected String template = null;
     protected PageManager pageManager = null;
     protected String errorTemplate = null;

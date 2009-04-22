@@ -43,9 +43,8 @@
     </property>
     <property name="velocityProperties">
       <props>
-        <!-- use webapp-logging CommonsLoggingLog4JLogSystem for logging through IsolatedLog4JLogger -->
         <prop key="runtime.log.logsystem.class">
-          org.apache.jetspeed.webapp.logging.velocity.CommonsLoggingLog4JLogSystem
+          org.apache.velocity.runtime.log.Log4JLogChute
         </prop>
         <prop key="runtime.log.logsystem.log4j.category">velocity</prop>
         <!-- clear out default global VM_global_library.vm leading to ERROR logging because its not available -->

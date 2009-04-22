@@ -19,8 +19,8 @@ package org.apache.jetspeed.page.impl;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.ojb.broker.util.collections.RemovalAwareCollection;
 import org.apache.ojb.broker.util.collections.RemovalAwareList;
 
@@ -33,7 +33,7 @@ import org.apache.ojb.broker.util.collections.RemovalAwareList;
  */
 public class DatabasePageManagerUtils
 {
-    protected static Log log = LogFactory.getLog(DatabasePageManagerUtils.class);    
+    protected static Logger log = LoggerFactory.getLogger(DatabasePageManagerUtils.class);    
     
     /**
      * OJB 1.0.3 requires collections to be removal aware.

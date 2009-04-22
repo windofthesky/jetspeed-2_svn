@@ -24,8 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
@@ -63,7 +63,7 @@ public class GetUserListAction
     extends BaseUserAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(GetUserListAction.class);
+    protected Logger log = LoggerFactory.getLogger(GetUserListAction.class);
     private PortalStatistics pstats = null;
     private PortalSessionsManager psm = null;
     // By default the protection is set to all

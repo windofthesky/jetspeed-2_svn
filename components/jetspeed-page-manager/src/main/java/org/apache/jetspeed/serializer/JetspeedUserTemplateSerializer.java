@@ -21,8 +21,8 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.administration.PortalConfigurationConstants;
 import org.apache.jetspeed.components.util.ConfigurationProperties;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -47,7 +47,7 @@ import org.apache.jetspeed.serializer.objects.JSPrincipal;
  */
 public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSerializer
 {
-    private final static Log log = LogFactory.getLog(JetspeedUserTemplateSerializer.class);
+    private final static Logger log = LoggerFactory.getLogger(JetspeedUserTemplateSerializer.class);
     private PageManager pageManager;
     private UserManager userManager;
     private String adminUserName = null;
@@ -65,7 +65,7 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
      * @see org.apache.jetspeed.serializer.JetspeedComponentSerializer#processExport(org.apache.jetspeed.serializer.objects.JSSnapshot,
      *      java.util.Map, org.apache.commons.logging.Log)
      */
-    protected void processExport(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    protected void processExport(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_TEMPLATES))
         {
@@ -79,7 +79,7 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
      * @see org.apache.jetspeed.serializer.JetspeedComponentSerializer#processImport(org.apache.jetspeed.serializer.objects.JSSnapshot,
      *      java.util.Map, org.apache.commons.logging.Log)
      */
-    protected void processImport(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    protected void processImport(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_TEMPLATES))
         {
@@ -127,7 +127,7 @@ public class JetspeedUserTemplateSerializer extends AbstractJetspeedComponentSer
         }
     }
 
-    protected void deleteData(Map settings, Log log) throws SerializerException
+    protected void deleteData(Map settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_TEMPLATES))
         {

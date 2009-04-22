@@ -20,8 +20,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.login.LoginConstants;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -43,7 +43,7 @@ import org.apache.jetspeed.security.UserManager;
  */
 public class LoginValidationValveImpl extends AbstractValve implements org.apache.jetspeed.pipeline.valve.LoginValidationValve
 {
-    private static final Log log = LogFactory.getLog(LoginValidationValveImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginValidationValveImpl.class);
     
     private int maxNumberOfAuthenticationFailures;
     private List sessionAttributes; 

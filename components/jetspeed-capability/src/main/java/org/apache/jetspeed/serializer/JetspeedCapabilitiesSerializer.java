@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.apache.jetspeed.capabilities.Capabilities;
 import org.apache.jetspeed.capabilities.Capability;
 import org.apache.jetspeed.capabilities.Client;
@@ -73,7 +73,7 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
      * @see org.apache.jetspeed.serializer.JetspeedComponentSerializer#processImport(org.apache.jetspeed.serializer.objects.JSSnapshot,
      *      java.util.Map, org.apache.commons.logging.Log)
      */
-    protected void processImport(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    protected void processImport(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_CAPABILITIES))
         {
@@ -93,7 +93,7 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
      * @see org.apache.jetspeed.serializer.JetspeedComponentSerializer#processExport(org.apache.jetspeed.serializer.objects.JSSnapshot,
      *      java.util.Map, org.apache.commons.logging.Log)
      */
-    protected void processExport(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    protected void processExport(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_CAPABILITIES))
         {
@@ -108,7 +108,7 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
         }
     }
     
-    protected void deleteData(Map settings, Log log) throws SerializerException
+    protected void deleteData(Map settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_CAPABILITIES))
         {
@@ -148,7 +148,7 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
         }
     }
 
-    private void recreateCapabilities(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    private void recreateCapabilities(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
         log.debug("recreateCapabilities - processing");
         JSCapabilities capabilities = snapshot.getCapabilities();
@@ -185,7 +185,7 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
         log.debug("recreateCapabilities - done");
     }
 
-    private void recreateMimeTypes(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    private void recreateMimeTypes(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
         log.debug("recreateMimeTypes - processing");
         JSMimeTypes mimeTypes = snapshot.getMimeTypes();
@@ -223,7 +223,7 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
         log.debug("recreateMimeTypes - done");
     }
 
-    private void recreateMediaTypes(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    private void recreateMediaTypes(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
         String _line;
 
@@ -312,7 +312,7 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
         log.debug("recreateMediaTypes - done");
     }
 
-    private void recreateClients(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    private void recreateClients(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
         String _line;
 
@@ -417,7 +417,7 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
      * 
      * @throws SerializerException
      */
-    private void exportCapabilites(Refs refs, JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    private void exportCapabilites(Refs refs, JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
 
         Iterator list = caps.getCapabilities();
@@ -449,7 +449,7 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
      * 
      * @throws SerializerException
      */
-    private void exportMimeTypes(Refs refs, JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    private void exportMimeTypes(Refs refs, JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
 
         Iterator list = caps.getMimeTypes();
@@ -536,7 +536,7 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
      * @return
      * @throws SerializerException
      */
-    private void exportClients(Refs refs, JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    private void exportClients(Refs refs, JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
 
         /** first the the mime types */
@@ -569,7 +569,7 @@ public class JetspeedCapabilitiesSerializer extends AbstractJetspeedComponentSer
      *            capabilit container
      * @throws SerializerException
      */
-    private void exportMediaTypes(Refs refs, JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    private void exportMediaTypes(Refs refs, JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
         Iterator list = caps.getMediaTypes();
 

@@ -18,8 +18,8 @@ package org.apache.jetspeed.security.impl;
 
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.jetspeed.components.util.system.SystemResourceUtil;
 import org.apache.jetspeed.components.util.system.ClassLoaderSystemResourceUtilImpl;
@@ -35,7 +35,7 @@ public abstract class BaseAuthenticationProvider implements AuthenticationProvid
 {
 
     /** The logger. */
-    private static final Log log = LogFactory.getLog(BaseAuthenticationProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(BaseAuthenticationProvider.class);
 
     /** The provider name. */
     private String providerName;

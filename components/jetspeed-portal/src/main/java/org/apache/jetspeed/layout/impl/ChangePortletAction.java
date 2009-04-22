@@ -23,8 +23,8 @@ import java.util.Map;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.ajax.AJAXException;
@@ -55,7 +55,7 @@ public class ChangePortletAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected static final Log log = LogFactory.getLog(ChangePortletAction.class);
+    protected static final Logger log = LoggerFactory.getLogger(ChangePortletAction.class);
     protected String action;
     protected Map validWindowStates = new HashMap();
     protected Map validPortletModes = new HashMap();

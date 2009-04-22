@@ -28,8 +28,8 @@ import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.LoginModuleProxy;
 import org.apache.jetspeed.security.Role;
@@ -55,7 +55,7 @@ import org.apache.jetspeed.security.UserSubjectPrincipal;
  */
 public class DefaultLoginModule implements LoginModule
 {
-    private static final Log log = LogFactory.getLog(DefaultLoginModule.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultLoginModule.class);
     
     /** <p>LoginModule debug mode is turned off by default.</p> */
     protected boolean debug;
@@ -192,7 +192,7 @@ public class DefaultLoginModule implements LoginModule
             }
             catch (Exception ex)
             {
-                log.error(ex);
+                log.error(ex.getMessage(), ex);
                 throw new LoginException(ex.getMessage());
             }
         }

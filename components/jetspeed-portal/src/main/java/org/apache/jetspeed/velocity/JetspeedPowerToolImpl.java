@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletRenderer;
@@ -103,7 +103,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
 
     protected Writer templateWriter;
 
-    protected static final Log log = LogFactory.getLog(JetspeedPowerToolImpl.class);
+    protected static final Logger log = LoggerFactory.getLogger(JetspeedPowerToolImpl.class);
 
     protected CapabilityMap capabilityMap;
 

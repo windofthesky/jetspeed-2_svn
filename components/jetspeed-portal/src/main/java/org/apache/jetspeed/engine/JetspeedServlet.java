@@ -35,8 +35,8 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.UserContentCacheManager;
@@ -66,8 +66,8 @@ public class JetspeedServlet
 extends HttpServlet 
 implements JetspeedEngineConstants, HttpSessionListener
 {
-    private static Log log;
-    private static Log console;
+    private static Logger log;
+    private static Logger console;
 
     /**
      * In certain situations the init() method is called more than once,
@@ -109,8 +109,8 @@ implements JetspeedEngineConstants, HttpSessionListener
         {
             if ( log == null )
             {
-                log = LogFactory.getLog(JetspeedServlet.class);
-                console = LogFactory.getLog(CONSOLE_LOGGER);                
+                log = LoggerFactory.getLogger(JetspeedServlet.class);
+                console = LoggerFactory.getLogger(CONSOLE_LOGGER);                
             }
             
             console.info(INIT_START_MSG);
@@ -200,8 +200,8 @@ implements JetspeedEngineConstants, HttpSessionListener
                 // save the exception to complain loudly later :-)
                 final String msg = "Jetspeed: init() failed: ";
                 initFailure = e;               
-                log.fatal(msg, e);
-                console.fatal(msg, e);
+                log.error(msg, e);
+                console.error(msg, e);
             }
 
             console.info(INIT_DONE_MSG);
@@ -291,7 +291,7 @@ implements JetspeedEngineConstants, HttpSessionListener
         catch (Throwable e)
         {            
             final String msg = "Fatal error encountered while processing portal request: "+e.getMessage();
-            log.fatal(msg, e);
+            log.error(msg, e);
             req.getSession(true).setAttribute("org.apache.portals.jestspeed.diagnostics", e.getLocalizedMessage());
             res.sendRedirect(req.getContextPath() + "/diagnostics");
         }
@@ -330,7 +330,7 @@ implements JetspeedEngineConstants, HttpSessionListener
         }
         catch (JetspeedException e)
         {
-            log.fatal("Jetspeed: shutdown() failed: ", e);
+            log.error("Jetspeed: shutdown() failed: ", e);
             System.err.println(ExceptionUtils.getStackTrace(e));
         }
 

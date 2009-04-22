@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.deployment.DeploymentEvent;
 import org.apache.jetspeed.deployment.DeploymentEventListener;
@@ -56,7 +56,7 @@ public class StandardDeploymentManager implements DeploymentManager
         }
     };
     
-    protected Log               log = LogFactory.getLog("deployment");
+    protected Logger               log = LoggerFactory.getLogger("deployment");
     protected FileSystemScanner scanner;
     protected PortletRegistry   registry;
     protected Collection        deploymentListeners;

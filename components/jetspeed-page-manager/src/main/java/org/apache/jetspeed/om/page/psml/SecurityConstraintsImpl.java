@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
@@ -41,7 +41,7 @@ import org.apache.jetspeed.om.page.SecurityConstraintsDef;
  */
 public class SecurityConstraintsImpl implements SecurityConstraints
 {
-    private final static Log log = LogFactory.getLog(SecurityConstraintsImpl.class);
+    private final static Logger log = LoggerFactory.getLogger(SecurityConstraintsImpl.class);
 
     private String owner;
 

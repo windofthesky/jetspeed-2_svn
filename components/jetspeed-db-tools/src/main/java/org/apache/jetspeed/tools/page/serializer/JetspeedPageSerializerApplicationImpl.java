@@ -22,10 +22,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Properties;
 
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
-import org.apache.jetspeed.components.util.CommonsToolsLogger;
+import org.apache.jetspeed.components.util.Slf4JToolsLogger;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.page.JetspeedPageSerializerApplication;
 import org.apache.jetspeed.page.PageSerializer;
@@ -40,7 +40,7 @@ import org.apache.jetspeed.tools.ToolsLogger;
  */
 public class JetspeedPageSerializerApplicationImpl implements JetspeedPageSerializerApplication
 {
-    private static final ToolsLogger logger = new CommonsToolsLogger(LogFactory.getLog(JetspeedPageSerializerApplicationImpl.class));
+    private static final ToolsLogger logger = new Slf4JToolsLogger(LoggerFactory.getLogger(JetspeedPageSerializerApplicationImpl.class));
     
     public static void main(String[] args) throws Exception
     {

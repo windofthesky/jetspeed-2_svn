@@ -18,8 +18,8 @@ package org.apache.jetspeed.layout.impl;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -41,7 +41,7 @@ public class GetThemesAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected static final Log log = LogFactory.getLog(GetThemesAction.class);
+    protected static final Logger log = LoggerFactory.getLogger(GetThemesAction.class);
     protected DecorationFactory decorationFactory;
     
     public GetThemesAction(String template, 

@@ -24,8 +24,8 @@ import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.jexl.Script;
 import org.apache.commons.jexl.ScriptFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.jndi.JetspeedTestJNDIComponent;
@@ -39,7 +39,7 @@ import org.apache.jetspeed.page.PageManager;
  */
 public class DatabasePageManagerServer
 {
-    protected static Log log = LogFactory.getLog(DatabasePageManagerServer.class);
+    protected static Logger log = LoggerFactory.getLogger(DatabasePageManagerServer.class);
     
     // Constants
     

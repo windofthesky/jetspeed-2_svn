@@ -18,8 +18,8 @@ package org.apache.jetspeed.profiler.rules.impl;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.profiler.rules.FallbackCriterionResolver;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.request.RequestContext;
@@ -40,7 +40,7 @@ public class PrincipalCriterionResolver extends StandardResolver implements
         FallbackCriterionResolver
 {
     private static final long serialVersionUID = 1L;
-    protected final static Log log = LogFactory.getLog(PrincipalCriterionResolver.class);
+    protected final static Logger log = LoggerFactory.getLogger(PrincipalCriterionResolver.class);
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#resolve(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.RuleCriterion)

@@ -28,8 +28,8 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.ojb.broker.PBKey;
 import org.apache.ojb.broker.accesslayer.ConnectionFactoryDBCPImpl;
 import org.apache.ojb.broker.accesslayer.ConnectionFactoryManagedImpl;
@@ -84,7 +84,7 @@ public class ConnectionRepositoryEntry
     extends BasicDataSource
     implements BeanNameAware, InitializingBean
 {
-    private static final Log log = LogFactory.getLog(ConnectionRepositoryEntry.class);
+    private static final Logger log = LoggerFactory.getLogger(ConnectionRepositoryEntry.class);
     
     // general properties
     private String jcdAlias = null;

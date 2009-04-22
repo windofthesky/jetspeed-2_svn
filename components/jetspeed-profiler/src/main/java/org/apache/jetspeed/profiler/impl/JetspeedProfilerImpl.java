@@ -26,8 +26,8 @@ import java.util.Properties;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
@@ -61,7 +61,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     public final static String DEFAULT_RULE = "j1";
     
     /** Commons logging */
-    protected final static Log log = LogFactory.getLog(JetspeedProfilerImpl.class);
+    protected final static Logger log = LoggerFactory.getLogger(JetspeedProfilerImpl.class);
 
     /**
      * This is the principal that is used if there are no principal to rule associations for the current principal

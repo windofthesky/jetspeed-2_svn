@@ -23,8 +23,8 @@ import java.sql.Timestamp;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.audit.AuditActivity;
 import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 
@@ -38,7 +38,7 @@ import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
  */
 public class AuditActivityImpl extends PersistenceBrokerDaoSupport implements AuditActivity
 {
-    protected final static Log log = LogFactory.getLog(AuditActivityImpl.class);
+    protected final static Logger log = LoggerFactory.getLogger(AuditActivityImpl.class);
     
     protected DataSource ds;
     protected String anonymousUser = "guest";
@@ -128,7 +128,7 @@ public class AuditActivityImpl extends PersistenceBrokerDaoSupport implements Au
         } 
         catch (SQLException e)
         {
-            log.error(e);
+            log.error(e.getMessage(),e);
         } 
         finally
         {

@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.folder.Folder;
@@ -35,7 +35,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class PortletActionSecurityPathBehavior implements PortletActionSecurityBehavior
 {
-    protected Log log = LogFactory.getLog(PortletActionSecurityPathBehavior.class);    
+    protected Logger log = LoggerFactory.getLogger(PortletActionSecurityPathBehavior.class);    
     protected PageManager pageManager;
     private boolean enableCreateUserPagesFromRolesOnEdit;
     

@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
@@ -56,7 +56,7 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 
 public class VersionedPortletApplicationManager extends PortletApplicationManager
 {
-    private static final Log    log = LogFactory.getLog("deployment");
+    private static final Logger    log = LoggerFactory.getLogger("deployment");
         
     public VersionedPortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry, 
             PermissionManager permissionManager, SearchEngine searchEngine,  RoleManager roleManager,

@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.components;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -28,7 +28,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
  */
 public class ContextRefreshableBeanInitializer implements ApplicationListener
 {
-    Log log = LogFactory.getLog(ContextRefreshableBeanInitializer.class);
+    Logger log = LoggerFactory.getLogger(ContextRefreshableBeanInitializer.class);
     
     private RefreshableBean bean;
     /**

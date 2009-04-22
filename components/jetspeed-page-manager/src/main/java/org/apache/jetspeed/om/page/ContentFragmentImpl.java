@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.om.common.SecurityConstraint;
@@ -39,7 +39,7 @@ public class ContentFragmentImpl implements ContentFragment
     private StringBuffer overridenContent;
     private PortletContent portletContent;
     private List contentFragments;
-    private static final Log log = LogFactory.getLog(ContentFragmentImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ContentFragmentImpl.class);
     private final Map cachedFragments;
     private Decoration decoration;
     private boolean instantlyRendered;

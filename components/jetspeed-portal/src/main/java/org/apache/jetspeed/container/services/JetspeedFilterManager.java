@@ -33,8 +33,8 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.ResourceServingPortlet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.container.FilterManager;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.factory.PortletFilterInstance;
@@ -44,7 +44,7 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
 
 public class JetspeedFilterManager implements FilterManager
 {
-    private static final Log log = LogFactory.getLog(JetspeedFilterManager.class);
+    private static final Logger log = LoggerFactory.getLogger(JetspeedFilterManager.class);
     
     private PortletFactory portletFactory;
     private JetspeedFilterChain filterchain;

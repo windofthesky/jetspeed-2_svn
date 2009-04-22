@@ -20,8 +20,8 @@ import java.security.Principal;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
@@ -42,7 +42,7 @@ public class UserCriterionResolver
     extends StandardResolver
     implements RuleCriterionResolver
 {
-    protected final static Log log = LogFactory.getLog(UserCriterionResolver.class);
+    protected final static Logger log = LoggerFactory.getLogger(UserCriterionResolver.class);
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#resolve(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.RuleCriterion)

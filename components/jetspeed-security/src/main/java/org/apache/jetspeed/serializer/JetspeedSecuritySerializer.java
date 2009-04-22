@@ -18,6 +18,7 @@ package org.apache.jetspeed.serializer;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.apache.jetspeed.security.Credential;
 import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.Group;
@@ -67,8 +68,6 @@ import org.apache.jetspeed.serializer.objects.JSUserAttributes;
 import org.apache.jetspeed.serializer.objects.JSUserGroups;
 import org.apache.jetspeed.serializer.objects.JSUserRoles;
 import org.apache.jetspeed.serializer.objects.JSUserUsers;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * JetspeedSecuritySerializer - Security component serializer
@@ -162,7 +161,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         this.domainStorageManager=sdsm;
     }
 
-    protected void processExport(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    protected void processExport(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USERS))
         {
@@ -186,7 +185,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    protected void processImport(JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    protected void processImport(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USERS))
         {
@@ -213,7 +212,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    protected void deleteData(Map settings, Log log) throws SerializerException
+    protected void deleteData(Map settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USERS))
         {
@@ -267,7 +266,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         return domain;
     }
     
-    private void recreateSecurityDomains(ImportRefs refs, JSSnapshot snapshot, Map settings, Log log) throws SerializerException {
+    private void recreateSecurityDomains(ImportRefs refs, JSSnapshot snapshot, Map settings, Logger log) throws SerializerException {
         log.debug("recreateSecurityDomains");
     
      // create system and default domain. Adding them to the seed is not necessary!           
@@ -359,7 +358,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
      * 
      * @throws SerializerException
      */
-    private void recreateJetspeedPrincipals(ImportRefs refs, JSSnapshot snapshot, Map settings, Log log)
+    private void recreateJetspeedPrincipals(ImportRefs refs, JSSnapshot snapshot, Map settings, Logger log)
             throws SerializerException
     {
         log.debug("recreateRolesGroupsUsers");
@@ -710,7 +709,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         log.debug("recreateUsers - done");
     }
 
-    private void recreateJetspeedPrincipalAssociations(ImportRefs refs, JSSnapshot snapshot, Map settings, Log log)
+    private void recreateJetspeedPrincipalAssociations(ImportRefs refs, JSSnapshot snapshot, Map settings, Logger log)
             throws SerializerException
     {
         log.debug("recreateJetspeedPrincipalAssociations");
@@ -747,7 +746,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
      * 
      * @throws SerializerException
      */
-    private void recreatePermissions(ImportRefs refs, JSSnapshot snapshot, Map settings, Log log) throws SerializerException
+    private void recreatePermissions(ImportRefs refs, JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
     {
         log.debug("recreatePermissions - started");
         JSPermissions permissionList = null ;
@@ -885,7 +884,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
      * @throws SerializerException
      * @throws SecurityException 
      */
-    private void exportJetspeedPrincipals(ExportRefs refs, JSSnapshot snapshot, Map settings, Log log)
+    private void exportJetspeedPrincipals(ExportRefs refs, JSSnapshot snapshot, Map settings, Logger log)
             throws SerializerException, SecurityException
     {
         /** set the security provider info in the snapshot file */
@@ -983,7 +982,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    private void exportJetspeedPrincipalAssociations(ExportRefs refs, JSSnapshot snapshot, Map settings, Log log) throws SecurityException, SerializerException
+    private void exportJetspeedPrincipalAssociations(ExportRefs refs, JSSnapshot snapshot, Map settings, Logger log) throws SecurityException, SerializerException
     {
         Map<String, JetspeedPrincipalType> principalTypes = this.principalManagerProvider.getPrincipalTypeMap();
         Map<String, JetspeedPrincipalType> copiedPrincipalTypes = new HashMap<String, JetspeedPrincipalType>(principalTypes);
@@ -1029,7 +1028,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
      * 
      * @throws SerializerException
      */
-    private void exportPermissions(ExportRefs refs, JSSnapshot snapshot, Map settings, Log log) throws SerializerException, SecurityException
+    private void exportPermissions(ExportRefs refs, JSSnapshot snapshot, Map settings, Logger log) throws SerializerException, SecurityException
     {
         for (JetspeedPermission perm : pm.getPermissions())
         {

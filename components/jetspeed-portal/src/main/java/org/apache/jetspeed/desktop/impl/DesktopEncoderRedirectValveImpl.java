@@ -18,8 +18,8 @@ package org.apache.jetspeed.desktop.impl;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -46,7 +46,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class DesktopEncoderRedirectValveImpl extends AbstractValve
 {
-    protected Log log = LogFactory.getLog(DesktopEncoderRedirectValveImpl.class);
+    protected Logger log = LoggerFactory.getLogger(DesktopEncoderRedirectValveImpl.class);
     
     private String desktopPipelinePath = null;
     private String desktopRenderPipelinePath = null;

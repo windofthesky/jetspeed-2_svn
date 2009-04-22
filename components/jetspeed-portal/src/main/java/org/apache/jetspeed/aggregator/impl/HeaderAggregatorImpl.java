@@ -24,8 +24,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.container.url.BasePortalURL;
@@ -49,7 +50,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class HeaderAggregatorImpl implements PageAggregator
 {
-    protected final static Log log = LogFactory.getLog( HeaderAggregatorImpl.class );
+    protected final static Logger log = LoggerFactory.getLogger( HeaderAggregatorImpl.class );
     protected final static String EOL = "\r\n";   // html eol
 
     private PortletFactory factory;

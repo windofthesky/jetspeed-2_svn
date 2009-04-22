@@ -22,8 +22,8 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.ojb.broker.PBKey;
 import org.apache.ojb.broker.accesslayer.LookupException;
 import org.apache.ojb.broker.metadata.ConnectionRepository;
@@ -43,7 +43,7 @@ import org.apache.ojb.broker.metadata.MetadataManager;
  */
 public class DatabasePlatformConfigurator
 {
-    private static final Log log = LogFactory.getLog(DatabasePlatformConfigurator.class);
+    private static final Logger log = LoggerFactory.getLogger(DatabasePlatformConfigurator.class);
     
     private DataSource ds;
     private String jcdAlias;

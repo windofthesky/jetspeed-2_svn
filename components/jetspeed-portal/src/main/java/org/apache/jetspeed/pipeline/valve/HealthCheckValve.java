@@ -23,8 +23,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.healthcheck.validators.HealthCheckValidator;
 import org.apache.jetspeed.healthcheck.validators.HealthCheckValidatorResult;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -41,7 +41,7 @@ import org.apache.jetspeed.request.RequestContext;
 public class HealthCheckValve extends AbstractValve
 {
     static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    private static final Log log = LogFactory.getLog(HealthCheckValve.class);
+    private static final Logger log = LoggerFactory.getLogger(HealthCheckValve.class);
     public static boolean isInfoEnabled = log.isInfoEnabled();
     public static boolean isDebugEnabled = log.isDebugEnabled();
     /**

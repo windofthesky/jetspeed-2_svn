@@ -39,8 +39,8 @@ import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.statistics.AggregateStatistics;
@@ -63,8 +63,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         PortalStatistics
 {
     /* CLF logger */
-    protected final static Log logger = LogFactory
-            .getLog(PortalStatisticsImpl.class);
+    protected final static Logger logger = LoggerFactory.getLogger(PortalStatisticsImpl.class);
 
     /* batch of portlet statistics */
     protected BatchedStatistics portletBatch;

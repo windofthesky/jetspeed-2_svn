@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
-import org.apache.jetspeed.components.util.CommonsLogToolsLogger;
+import org.apache.jetspeed.components.util.Slf4JLoggerToolsLogger;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
 import org.apache.jetspeed.serializer.JetspeedSerializerApplication;
 import org.apache.jetspeed.serializer.SerializerException;
@@ -41,7 +41,7 @@ import org.apache.jetspeed.tools.ToolsLogger;
  */
 public class JetspeedSerializerApplicationImpl implements JetspeedSerializerApplication
 {    
-    private static final Log logger = LogFactory.getLog(JetspeedSerializerApplicationImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(JetspeedSerializerApplicationImpl.class);
     
     public static void main(String[] args) throws Exception
     {
@@ -144,11 +144,11 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
        
     public void importFiles(ToolsLogger logger, String applicationRootPath, String categories, String filterPropertiesFileName, Properties initProperties, String[] seedFiles) throws SerializerException
     {        
-        importFiles(new CommonsLogToolsLogger(logger), applicationRootPath, categories, filterPropertiesFileName, initProperties, seedFiles);
+        importFiles(new Slf4JLoggerToolsLogger(logger), applicationRootPath, categories, filterPropertiesFileName, initProperties, seedFiles);
     }
     
     
-    public void importFiles(Log logger, String applicationRootPath, String categories, String filterPropertiesFileName, Properties initProperties, String[] seedFiles) throws SerializerException
+    public void importFiles(Logger logger, String applicationRootPath, String categories, String filterPropertiesFileName, Properties initProperties, String[] seedFiles) throws SerializerException
     {        
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         SpringComponentManager scm = null;
@@ -193,7 +193,7 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
         catch (Exception e)
         {
             e.printStackTrace();
-            logger.error(e);
+            logger.error(e.getMessage(),e);
             if (e instanceof SerializerException)
             {
                 throw (SerializerException)e;
@@ -212,10 +212,10 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
 
     public void export(ToolsLogger logger, String applicationRootPath, String categories, String filterPropertiesFileName, Properties initProperties, String exportFile, String exportName) throws SerializerException
     {
-        export(new CommonsLogToolsLogger(logger), applicationRootPath, categories, filterPropertiesFileName, initProperties, exportFile, exportName);
+        export(new Slf4JLoggerToolsLogger(logger), applicationRootPath, categories, filterPropertiesFileName, initProperties, exportFile, exportName);
     }
     
-    public void export(Log logger, String applicationRootPath, String categories, String filterPropertiesFileName, Properties initProperties, String exportFile, String exportName) throws SerializerException
+    public void export(Logger logger, String applicationRootPath, String categories, String filterPropertiesFileName, Properties initProperties, String exportFile, String exportName) throws SerializerException
     {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         SpringComponentManager scm = null;
@@ -265,7 +265,7 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
             {
                 throw (SerializerException)e;
             }
-            logger.error(e);
+            logger.error(e.getMessage(),e);
             throw new SerializerException(SerializerException.EXPORT_ERROR.create(e.getMessage()));
         }
         finally

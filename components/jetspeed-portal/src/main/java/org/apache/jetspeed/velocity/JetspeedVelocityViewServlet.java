@@ -36,8 +36,8 @@ import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.CapabilityMap;
@@ -69,7 +69,7 @@ import org.apache.velocity.tools.view.servlet.WebappLoader;
 public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
 {
     /** logging */
-    private static final Log log = LogFactory.getLog(JetspeedVelocityViewServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(JetspeedVelocityViewServlet.class);
 
     /** default cache size */
     private static final long DEFAULT_CACHE_SIZE = 50;

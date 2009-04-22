@@ -33,8 +33,8 @@ import java.util.TreeSet;
 
 import javax.servlet.ServletContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
@@ -56,7 +56,7 @@ import org.springframework.web.context.ServletContextAware;
  */
 public class DecorationFactoryImpl implements DecorationFactory, ServletContextAware
 {
-    private static final Log log = LogFactory.getLog(DecorationFactoryImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DecorationFactoryImpl.class);
 
     private final Path decorationsPath;
     private final Path portletDecorationsPath;

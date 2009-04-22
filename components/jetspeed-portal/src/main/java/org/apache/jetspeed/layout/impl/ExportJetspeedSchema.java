@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -46,7 +46,7 @@ import org.apache.jetspeed.serializer.JetspeedSerializer;
  */
 public class ExportJetspeedSchema extends BaseGetResourceAction implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(GetFolderAction.class);
+    protected Logger log = LoggerFactory.getLogger(GetFolderAction.class);
     protected PageManager castorPageManager;
     protected JetspeedSerializer serializer;
     protected String pageRoot;

@@ -20,8 +20,8 @@ import java.security.Principal;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.pipeline.valve.SecurityValve;
 import org.apache.jetspeed.profiler.Profiler;
@@ -44,7 +44,7 @@ import org.apache.jetspeed.statistics.PortalStatistics;
  */
 public class SecurityValveImpl extends AbstractSecurityValve implements SecurityValve
 {
-    private static Log log = LogFactory.getLog(SecurityValveImpl.class);
+    private static Logger log = LoggerFactory.getLogger(SecurityValveImpl.class);
     
     private UserManager userMgr;
     private PortalStatistics statistics;

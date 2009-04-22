@@ -23,8 +23,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -37,7 +37,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
  */
 public class NodeManagerImpl implements NodeManager,BeanFactoryAware
 {
-	protected final static Log log = LogFactory.getLog(NodeManagerImpl.class);
+	protected final static Logger log = LoggerFactory.getLogger(NodeManagerImpl.class);
 
     /**
      * added support for bean factory to create profile rules

@@ -28,8 +28,8 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.util.Path;
 
 /**
@@ -47,7 +47,7 @@ import org.apache.jetspeed.util.Path;
  */
 public class BaseDecoration implements Decoration, Serializable
 {
-    private static final Log log = LogFactory.getLog(BaseDecoration.class);
+    private static final Logger log = LoggerFactory.getLogger(BaseDecoration.class);
     
     protected static final String NO_SUCH_RESOURCE = "no_such_resource";
     protected transient Properties config;

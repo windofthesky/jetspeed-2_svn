@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.capabilities.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.capabilities.Client;
 import org.apache.jetspeed.capabilities.Capability;
@@ -37,8 +37,8 @@ import org.apache.jetspeed.capabilities.MimeType;
  */
 class CapabilityMapImpl implements CapabilityMap
 {
-    private static final Log log =
-        LogFactory.getLog(JetspeedCapabilities.class);
+    private static final Logger log =
+        LoggerFactory.getLogger(JetspeedCapabilities.class);
     
     // Members
     private String useragent; // User agent for request

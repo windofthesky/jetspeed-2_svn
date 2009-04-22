@@ -24,8 +24,8 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -50,7 +50,7 @@ public class GetUserInformationAction
     extends BaseUserAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected Log log = LogFactory.getLog(GetUserInformationAction.class);
+    protected Logger log = LoggerFactory.getLogger(GetUserInformationAction.class);
 
     public GetUserInformationAction(String template, 
                             String errorTemplate, 

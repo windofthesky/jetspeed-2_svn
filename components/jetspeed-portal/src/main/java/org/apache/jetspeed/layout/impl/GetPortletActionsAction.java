@@ -19,8 +19,8 @@ package org.apache.jetspeed.layout.impl;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -47,7 +47,7 @@ public class GetPortletActionsAction
     extends BasePortletAction 
     implements AjaxAction, AjaxBuilder, Constants
 {
-    protected static final Log log = LogFactory.getLog(GetPortletActionsAction.class);
+    protected static final Logger log = LoggerFactory.getLogger(GetPortletActionsAction.class);
     protected String action;
     private DecorationValve decorationValve;
     

@@ -24,8 +24,8 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -55,7 +55,7 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 public abstract class AbstractPageManager 
     implements PageManager    
 {
-    private final static Log log = LogFactory.getLog(AbstractPageManager.class);
+    private final static Logger log = LoggerFactory.getLogger(AbstractPageManager.class);
     
     private final static String FOLDER_NODE_TYPE = "folder";
     private final static String PAGE_NODE_TYPE = "page";

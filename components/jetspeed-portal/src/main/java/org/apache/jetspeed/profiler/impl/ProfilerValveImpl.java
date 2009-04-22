@@ -24,8 +24,8 @@ import java.util.Map;
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.om.page.ContentPageImpl;
@@ -53,7 +53,7 @@ import org.apache.jetspeed.security.User;
  */
 public class ProfilerValveImpl extends AbstractValve implements PageProfilerValve
 {
-    protected Log log = LogFactory.getLog(ProfilerValveImpl.class);   
+    protected Logger log = LoggerFactory.getLogger(ProfilerValveImpl.class);   
 
     /**
      * PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY - session portal site context attribute key

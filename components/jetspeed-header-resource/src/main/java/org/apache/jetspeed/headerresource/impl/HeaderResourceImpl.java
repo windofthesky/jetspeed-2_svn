@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.headerresource.HeaderResource;
@@ -43,7 +43,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class HeaderResourceImpl implements HeaderResource
 {
-    protected final static Log log = LogFactory.getLog( HeaderResourceImpl.class );
+    protected final static Logger log = LoggerFactory.getLogger( HeaderResourceImpl.class );
     
     protected final static String EOL = "\r\n";   // html eol
     protected final static String UNNAMED_CONTENT_HEADER_NAME = "org.apache.jetspeed.headerresource.unnamed";

@@ -26,8 +26,8 @@ import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * CreateUserTemplatePagesValveImpl
@@ -40,7 +40,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CreateUserTemplatePagesValveImpl extends ProfilerValveImpl
 {
-    private static final Log log = LogFactory.getLog(CreateUserTemplatePagesValveImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(CreateUserTemplatePagesValveImpl.class);
 
     public static final String USER_TEMPLATE_FOLDER_REQUEST_ATTR_KEY = "org.apache.jetspeed.profiler.UserTemplateFolder";
     

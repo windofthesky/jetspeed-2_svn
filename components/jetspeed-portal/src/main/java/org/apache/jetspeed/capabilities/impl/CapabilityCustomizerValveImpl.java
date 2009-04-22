@@ -19,8 +19,8 @@ package org.apache.jetspeed.capabilities.impl;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.jetspeed.capabilities.Capabilities;
 import org.apache.jetspeed.capabilities.CapabilityMap;
@@ -40,7 +40,7 @@ import org.apache.jetspeed.request.RequestContext;
 public class CapabilityCustomizerValveImpl extends AbstractValve
 {
 
-    private static final Log log = LogFactory.getLog(CapabilityCustomizerValveImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(CapabilityCustomizerValveImpl.class);
 
     private Capabilities capabilities;
     private Map clientToMediaTypeMap;

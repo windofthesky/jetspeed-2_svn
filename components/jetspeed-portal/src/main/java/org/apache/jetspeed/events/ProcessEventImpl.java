@@ -20,8 +20,8 @@ import java.io.Serializable;
 
 import javax.xml.namespace.QName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.container.PortletWindow;
 
 /**
@@ -36,7 +36,7 @@ public class ProcessEventImpl implements ProcessEvent
     private String className;
     private JetspeedEventCoordinationService eventService;
     private boolean processed = false;
-    private static Log log = LogFactory.getLog(ProcessEventImpl.class);
+    private static Logger log = LoggerFactory.getLogger(ProcessEventImpl.class);
     
 
     public ProcessEventImpl(PortletWindow window, QName qname, String className, java.io.Serializable value, JetspeedEventCoordinationService eventService)
@@ -70,7 +70,7 @@ public class ProcessEventImpl implements ProcessEvent
             }
             catch (Exception e)
             {
-                log.error(e);
+                log.error(e.getMessage(),e);
             }
             finally
             {

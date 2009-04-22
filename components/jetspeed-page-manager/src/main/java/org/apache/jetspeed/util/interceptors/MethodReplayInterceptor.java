@@ -18,8 +18,8 @@ package org.apache.jetspeed.util.interceptors;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generic aspect that will attempt to replay a method invocation if one of a
@@ -30,8 +30,8 @@ import org.apache.commons.logging.LogFactory;
 public class MethodReplayInterceptor implements MethodInterceptor
 {
 
-    /** Log reference */
-    private Log log = LogFactory.getLog(MethodReplayInterceptor.class);
+    /** Logger reference */
+    private Logger log = LoggerFactory.getLogger(MethodReplayInterceptor.class);
 
     /** Serialization version identifier */
     private static final long serialVersionUID = -1316279974504594833L;

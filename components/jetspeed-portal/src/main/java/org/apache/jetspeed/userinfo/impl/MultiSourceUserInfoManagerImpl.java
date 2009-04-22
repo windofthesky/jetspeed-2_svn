@@ -25,8 +25,8 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.request.RequestContext;
@@ -47,8 +47,7 @@ public class MultiSourceUserInfoManagerImpl extends AbstractUserInfoManagerImpl
 {
 
     /** Logger */
-    private static final Log log = LogFactory
-            .getLog(MultiSourceUserInfoManagerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(MultiSourceUserInfoManagerImpl.class);
 
     private List sources;
 

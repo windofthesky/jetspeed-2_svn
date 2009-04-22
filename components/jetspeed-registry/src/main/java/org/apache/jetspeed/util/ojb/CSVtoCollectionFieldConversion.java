@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.ojb.broker.accesslayer.conversions.ConversionException;
 import org.apache.ojb.broker.accesslayer.conversions.FieldConversion;
 
@@ -41,7 +41,7 @@ public class CSVtoCollectionFieldConversion implements FieldConversion
     private static final String DELIM = ",";
     private static final String QUOTE = "\"";
     
-    private static final Log log = LogFactory.getLog(CSVtoCollectionFieldConversion.class);
+    private static final Logger log = LoggerFactory.getLogger(CSVtoCollectionFieldConversion.class);
     
     /**
      * @see org.apache.ojb.broker.accesslayer.conversions.FieldConversion#javaToSql(java.lang.Object)

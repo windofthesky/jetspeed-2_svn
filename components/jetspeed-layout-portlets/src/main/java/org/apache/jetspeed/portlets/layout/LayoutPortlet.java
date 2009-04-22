@@ -33,8 +33,8 @@ import javax.portlet.RenderResponse;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -75,7 +75,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     
     
     /** Commons logging */
-    protected final static Log log = LogFactory.getLog(LayoutPortlet.class);
+    protected final static Logger log = LoggerFactory.getLogger(LayoutPortlet.class);
     
     protected PortletRegistry registry;
     protected PageManager pageManager;

@@ -30,8 +30,8 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -72,7 +72,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 public class PortalAdministrationImpl implements PortalAdministration
 {
-    private final static Log log = LogFactory.getLog(PortalAdministrationImpl.class);
+    private final static Logger log = LoggerFactory.getLogger(PortalAdministrationImpl.class);
     
     /** administration services */
     protected Configuration config;

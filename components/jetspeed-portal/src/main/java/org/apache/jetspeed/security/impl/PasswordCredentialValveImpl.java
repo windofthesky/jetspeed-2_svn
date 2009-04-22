@@ -21,8 +21,8 @@ import java.util.List;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
@@ -41,7 +41,7 @@ import org.apache.jetspeed.security.UserCredential;
  */
 public class PasswordCredentialValveImpl extends AbstractValve implements org.apache.jetspeed.pipeline.valve.PasswordCredentialValve
 {
-    private static final Log log = LogFactory.getLog(PasswordCredentialValveImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(PasswordCredentialValveImpl.class);
     
     private static final String CHECKED_KEY = PasswordCredentialValveImpl.class.getName() + ".checked";
     //private PageManager pageManager;

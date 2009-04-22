@@ -29,8 +29,8 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.impl.PortletAggregatorFragmentImpl;
@@ -67,7 +67,7 @@ import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
  */
 public class JetspeedRequestContext implements RequestContext
 {
-    protected final static Log log = LogFactory.getLog(JetspeedRequestContext.class);
+    protected final static Logger log = LoggerFactory.getLogger(JetspeedRequestContext.class);
     
     private static final String ACTION_ERROR_ATTR = "org.apache.jetspeed.action.error:";
     private static final String INSTANT_WINDOWS_SESSION_KEY = "org.apache.jetspeed.instant.windows";

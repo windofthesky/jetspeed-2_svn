@@ -30,8 +30,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
@@ -83,7 +83,7 @@ import org.xml.sax.XMLReader;
  */
 public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page.document.DocumentHandler, FileCacheEventListener
 {
-    private final static Log log = LogFactory.getLog(CastorFileSystemDocumentHandler.class);
+    private final static Logger log = LoggerFactory.getLogger(CastorFileSystemDocumentHandler.class);
 
     private final static String PSML_DOCUMENT_ENCODING = "UTF-8";
 

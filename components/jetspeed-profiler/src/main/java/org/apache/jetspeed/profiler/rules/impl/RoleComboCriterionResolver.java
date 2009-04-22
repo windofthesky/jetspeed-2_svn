@@ -18,8 +18,8 @@ package org.apache.jetspeed.profiler.rules.impl;
 
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.profiler.rules.FallbackCriterionResolver;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.request.RequestContext;
@@ -38,7 +38,7 @@ public class RoleComboCriterionResolver
     implements FallbackCriterionResolver
 {
     private static final long serialVersionUID = 1L;
-    protected final static Log log = LogFactory.getLog(RoleComboCriterionResolver.class);
+    protected final static Logger log = LoggerFactory.getLogger(RoleComboCriterionResolver.class);
     
     public String resolve(RequestContext context, RuleCriterion criterion)
     {

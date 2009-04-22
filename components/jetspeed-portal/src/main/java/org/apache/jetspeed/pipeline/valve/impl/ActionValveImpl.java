@@ -23,8 +23,8 @@ import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedContentCache;
@@ -59,7 +59,7 @@ import org.apache.pluto.container.PortletContainerException;
 public class ActionValveImpl extends AbstractValve implements ActionValve
 {
 
-    private static final Log log = LogFactory.getLog(ActionValveImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ActionValveImpl.class);
     private PortletContainer container;
     private boolean patchResponseCommitted = false;
     private JetspeedContentCache portletContentCache;
@@ -112,7 +112,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         }
         catch (PortletContainerException e)
         {
-            log.fatal("Unable to retrieve portlet container!", e);
+            log.error("Unable to retrieve portlet container!", e);
             throw new PipelineException("Unable to retrieve portlet container!", e);
         }
         catch (PortletException e)

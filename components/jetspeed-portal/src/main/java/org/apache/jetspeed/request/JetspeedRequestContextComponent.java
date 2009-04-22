@@ -22,8 +22,8 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 
@@ -40,7 +40,7 @@ public class JetspeedRequestContextComponent implements RequestContextComponent
     private Map<String, Object> requestContextObjects;
     private ThreadLocal<RequestContext> tlRequestContext = new ThreadLocal<RequestContext>();
     
-    private final static Log log = LogFactory.getLog(JetspeedRequestContextComponent.class);
+    private final static Logger log = LoggerFactory.getLogger(JetspeedRequestContextComponent.class);
 
 
     public JetspeedRequestContextComponent(PortletRegistry registry, UserInfoManager userInfoMgr, Map<String, Object> requestContextObjects)

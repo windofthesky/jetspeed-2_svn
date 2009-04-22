@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
@@ -67,7 +67,7 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
     private DocumentHandler metadataDocHandler;
     private DocumentHandlerFactory handlerFactory;
 
-    private final static Log log = LogFactory.getLog(FileSystemFolderHandler.class);
+    private final static Logger log = LoggerFactory.getLogger(FileSystemFolderHandler.class);
 
     protected static final FilenameFilter FOLDER_FILTER = new FilenameFilter()
     {

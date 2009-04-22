@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.pluto.container.util.PrintWriterServletOutputStream;
@@ -32,7 +32,7 @@ public class HttpBufferedResponse extends javax.servlet.http.HttpServletResponse
     private boolean usingStream;
 
     /** Commons logging */
-    protected final static Log log = LogFactory.getLog(HttpBufferedResponse.class);
+    protected final static Logger log = LoggerFactory.getLogger(HttpBufferedResponse.class);
 
     private ServletOutputStream wrappedStream;
     private PrintWriter writer;

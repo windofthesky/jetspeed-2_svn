@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.util.ojb;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class that allows convenient access to commons=logging for OJB 
@@ -30,8 +30,8 @@ import org.apache.commons.logging.LogFactory;
 public abstract class FieldConversionLog
 {
     /**
-     * There is only default ("package") access to this Log only as
+     * There is only default ("package") access to this Logger only as
      * all OJB FieldConversions should be located here.
      */
-    static final Log LOG = LogFactory.getLog("org.apache.jetspeed.util.ojb");
+    static final Logger LOG = LoggerFactory.getLogger("org.apache.jetspeed.util.ojb");
 }

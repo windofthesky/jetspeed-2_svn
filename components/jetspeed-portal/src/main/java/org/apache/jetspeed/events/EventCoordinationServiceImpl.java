@@ -35,8 +35,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.container.PortletWindow;
@@ -67,7 +67,7 @@ import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
  */
 public class EventCoordinationServiceImpl implements JetspeedEventCoordinationService
 {
-    private static Log log = LogFactory.getLog(EventProviderImpl.class);
+    private static Logger log = LoggerFactory.getLogger(EventProviderImpl.class);
 
     private final PortalStatistics statistics;
     private final PortletTrackingManager portletTracking;

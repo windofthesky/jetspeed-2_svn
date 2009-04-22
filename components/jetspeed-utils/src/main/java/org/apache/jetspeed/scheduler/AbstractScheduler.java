@@ -18,8 +18,8 @@ package org.apache.jetspeed.scheduler;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service for a cron like scheduler.
@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class AbstractScheduler implements Scheduler
 {
-    private final static Log log = LogFactory.getLog(MemoryBasedScheduler.class);
+    private final static Logger log = LoggerFactory.getLogger(MemoryBasedScheduler.class);
     
     /**
      * The queue.

@@ -25,8 +25,8 @@ import java.util.Stack;
 import java.util.LinkedList;
 import java.util.Collections;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.WorkerMonitor;
 import org.apache.jetspeed.aggregator.PortletContent;
@@ -60,7 +60,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
     }
     
     /** Commons logging */
-    protected final static Log log = LogFactory.getLog(WorkerMonitorImpl.class);
+    protected final static Logger log = LoggerFactory.getLogger(WorkerMonitorImpl.class);
 
     /** Static counters for identifying workers */
     protected static long sCount = 0;

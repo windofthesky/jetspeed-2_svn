@@ -22,8 +22,8 @@ import java.util.HashMap;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.page.Page;
 
@@ -35,7 +35,7 @@ import org.apache.jetspeed.om.page.Page;
  */
 public class PageActionAccess implements PageEditAccess, Serializable
 {
-    protected static final Log log = LogFactory.getLog(PageActionAccess.class);
+    protected static final Logger log = LoggerFactory.getLogger(PageActionAccess.class);
 
     private static final class ActionAccess implements Serializable
     {

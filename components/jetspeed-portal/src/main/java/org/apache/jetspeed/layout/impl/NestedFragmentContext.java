@@ -19,8 +19,8 @@ package org.apache.jetspeed.layout.impl;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PortletPlacementException;
 import org.apache.jetspeed.om.page.Fragment;
@@ -47,7 +47,7 @@ import org.apache.jetspeed.om.page.Page;
  */
 public class NestedFragmentContext
 {
-    protected static final Log log = LogFactory.getLog( NestedFragmentContext.class );
+    protected static final Logger log = LoggerFactory.getLogger( NestedFragmentContext.class );
     protected static final String eol = System.getProperty( "line.separator" );
 	
 	private Fragment targetFragment;

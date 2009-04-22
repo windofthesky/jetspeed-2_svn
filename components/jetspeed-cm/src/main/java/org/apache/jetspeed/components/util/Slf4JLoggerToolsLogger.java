@@ -16,21 +16,26 @@
  */
 package org.apache.jetspeed.components.util;
 
-import org.apache.commons.logging.Log;
+import java.text.MessageFormat;
+
+import org.slf4j.helpers.MessageFormatter;
+import org.slf4j.helpers.MarkerIgnoringBase;
 import org.apache.jetspeed.tools.ToolsLogger;
 
 /**
- * Commons Log wrapper of a ToolsLogger allowing plugging in other logging implementations
- * like Maven Log logger to be used as Commons Log logger
+ * SLF4J Logger wrapper of a ToolsLogger allowing plugging in other logging implementations
+ * like Maven Logger logger to be used as a SLF4J logger
  * 
  * @version $Id$
  *
  */
-public class CommonsLogToolsLogger implements Log
+public class Slf4JLoggerToolsLogger extends MarkerIgnoringBase
 {
+    private static final long serialVersionUID = 3184831685009180480L;
+    
     ToolsLogger toolsLogger;
     
-    public CommonsLogToolsLogger(ToolsLogger toolsLogger)
+    public Slf4JLoggerToolsLogger(ToolsLogger toolsLogger)
     {
         this.toolsLogger = toolsLogger;
     }
@@ -177,5 +182,135 @@ public class CommonsLogToolsLogger implements Log
     public void warn(Object message, Throwable t)
     {
         toolsLogger.warn(message.toString(),t);
+    }
+
+    public void debug(String arg0)
+    {
+        toolsLogger.debug(arg0);
+    }
+
+    public void debug(String arg0, Object arg1)
+    {
+        toolsLogger.debug(MessageFormatter.format(arg0, arg1));
+    }
+
+    public void debug(String arg0, Object[] arg1)
+    {
+        toolsLogger.debug(MessageFormatter.format(arg0, arg1));
+    }
+
+    public void debug(String arg0, Throwable arg1)
+    {
+        toolsLogger.debug(arg0, arg1);
+    }
+
+    public void debug(String arg0, Object arg1, Object arg2)
+    {
+        toolsLogger.debug(MessageFormatter.format(arg0, arg1, arg2));
+    }
+    
+    public void error(String arg0)
+    {
+        toolsLogger.error(arg0);
+    }
+
+    public void error(String arg0, Object arg1)
+    {
+        toolsLogger.error(MessageFormatter.format(arg0, arg1));
+    }
+
+    public void error(String arg0, Object[] arg1)
+    {
+        toolsLogger.error(MessageFormatter.format(arg0, arg1));
+    }
+
+    public void error(String arg0, Throwable arg1)
+    {
+        toolsLogger.error(arg0, arg1);
+    }
+
+    public void error(String arg0, Object arg1, Object arg2)
+    {
+        toolsLogger.error(MessageFormatter.format(arg0, arg1, arg2));
+    }
+
+    public String getName()
+    {
+        return toolsLogger.toString();
+    }
+
+    public void info(String arg0)
+    {
+        toolsLogger.info(arg0);
+    }
+
+    public void info(String arg0, Object arg1)
+    {
+        toolsLogger.info(MessageFormatter.format(arg0, arg1));
+    }
+
+    public void info(String arg0, Object[] arg1)
+    {
+        toolsLogger.info(MessageFormatter.format(arg0, arg1));
+    }
+
+    public void info(String arg0, Throwable arg1)
+    {
+        toolsLogger.info(arg0, arg1);
+    }
+    
+    public void info(String arg0, Object arg1, Object arg2)
+    {
+        toolsLogger.info(MessageFormatter.format(arg0, arg1, arg2));
+    }
+
+    public void trace(String arg0)
+    {
+        toolsLogger.debug(arg0);
+    }
+
+    public void trace(String arg0, Object arg1)
+    {
+        toolsLogger.debug(MessageFormat.format(arg0, arg1));
+    }
+
+    public void trace(String arg0, Object[] arg1)
+    {
+        toolsLogger.debug(MessageFormat.format(arg0, arg1));
+    }
+
+    public void trace(String arg0, Throwable arg1)
+    {
+        toolsLogger.debug(arg0, arg1);
+    }
+
+    public void trace(String arg0, Object arg1, Object arg2)
+    {
+        toolsLogger.debug(MessageFormat.format(arg0, arg1, arg2));
+    }
+
+    public void warn(String arg0)
+    {
+        toolsLogger.warn(arg0);
+    }
+
+    public void warn(String arg0, Object arg1)
+    {
+        toolsLogger.warn(MessageFormatter.format(arg0, arg1));
+    }
+
+    public void warn(String arg0, Object[] arg1)
+    {
+        toolsLogger.warn(MessageFormatter.format(arg0, arg1));
+    }
+
+    public void warn(String arg0, Throwable arg1)
+    {
+        toolsLogger.warn(arg0, arg1);
+    }
+
+    public void warn(String arg0, Object arg1, Object arg2)
+    {
+        toolsLogger.warn(MessageFormatter.format(arg0, arg1));
     }
 }

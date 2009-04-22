@@ -23,15 +23,15 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.layout.JetspeedPowerTool;
 import org.apache.jetspeed.request.RequestContext;
 
 public class JetspeedPowerToolFactory implements org.apache.jetspeed.layout.JetspeedPowerToolFactory
 {
-    protected static final Log log = LogFactory.getLog(JetspeedPowerToolFactory.class);
+    protected static final Logger log = LoggerFactory.getLogger(JetspeedPowerToolFactory.class);
     
     private Class jptClass;
     private Constructor constructor;

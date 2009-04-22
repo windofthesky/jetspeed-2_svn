@@ -20,8 +20,8 @@ package org.apache.jetspeed.tools.page.serializer;
 import java.io.File;
 import java.util.Properties;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.util.CommonsToolsLogger;
+import org.slf4j.LoggerFactory;
+import org.apache.jetspeed.components.util.Slf4JToolsLogger;
 import org.apache.jetspeed.page.JetspeedPageSerializerApplication;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.tools.ToolsLogger;
@@ -32,7 +32,7 @@ import org.apache.jetspeed.tools.ToolsLogger;
  */
 public class TestJetspeedPageSerializerApplication extends JetspeedTestCase
 {
-    private static ToolsLogger logger = new CommonsToolsLogger(LogFactory.getLog(TestJetspeedPageSerializerApplication.class));
+    private static ToolsLogger logger = new Slf4JToolsLogger(LoggerFactory.getLogger(TestJetspeedPageSerializerApplication.class));
     
     public void testSerializer() throws Exception
     {

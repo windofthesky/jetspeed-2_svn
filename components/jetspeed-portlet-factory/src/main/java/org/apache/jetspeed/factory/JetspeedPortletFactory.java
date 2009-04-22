@@ -33,8 +33,8 @@ import javax.portlet.UnavailableException;
 import javax.portlet.filter.PortletFilter;
 import javax.servlet.ServletContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.ContainerInfo;
 import org.apache.jetspeed.container.JetspeedPortletConfig;
@@ -61,7 +61,7 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
  */
 public class JetspeedPortletFactory implements PortletFactory
 {
-    private static final Log log = LogFactory.getLog(JetspeedPortletFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(JetspeedPortletFactory.class);
     
     private Map<String, Map<String, PortletInstance>> portletCache;
     private Map<String, Map<String, PreferencesValidator>> validatorCache;
@@ -273,7 +273,7 @@ public class JetspeedPortletFactory implements PortletFactory
         }
         catch (Exception e)
         {
-            log.error(e);
+            log.error(e.getMessage(),e);
         }
         
         return validator;
@@ -313,7 +313,7 @@ public class JetspeedPortletFactory implements PortletFactory
         }
         catch (Exception e)
         {
-            log.error(e);
+            log.error(e.getMessage(),e);
         }
         return bundle;
     }
@@ -369,7 +369,7 @@ public class JetspeedPortletFactory implements PortletFactory
         }
         catch (Exception e)
         {
-            log.error(e);
+            log.error(e.getMessage(),e);
         }
         return bundle;
     }

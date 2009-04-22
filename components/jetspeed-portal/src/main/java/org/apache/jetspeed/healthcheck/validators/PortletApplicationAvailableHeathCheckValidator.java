@@ -19,8 +19,8 @@ package org.apache.jetspeed.healthcheck.validators;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
@@ -33,7 +33,7 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
  */
 public class PortletApplicationAvailableHeathCheckValidator implements HealthCheckValidator
 {
-    private static final Log log = LogFactory.getLog(PortletApplicationAvailableHeathCheckValidator.class);
+    private static final Logger log = LoggerFactory.getLogger(PortletApplicationAvailableHeathCheckValidator.class);
     public static boolean isInfoEnabled = log.isInfoEnabled();
     public static boolean isDebugEnabled = log.isDebugEnabled();
     /**

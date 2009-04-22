@@ -26,8 +26,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.beans.factory.InitializingBean;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.util.ConfigurationProperties;
 
 /**
@@ -38,7 +38,7 @@ import org.apache.jetspeed.components.util.ConfigurationProperties;
  */
 public class EhCacheConfigResource extends AbstractResource implements InitializingBean
 {
-    protected static Log log = LogFactory.getLog(EhCacheConfigResource.class);
+    protected static Logger log = LoggerFactory.getLogger(EhCacheConfigResource.class);
     
     // Constants
     
