@@ -77,6 +77,9 @@ limitations under the License.
     <c:if test="${not empty requestScope.headerResource}">
       <c:out escapeXml="false" value="${requestScope.headerResource.content}"/><br />
     </c:if>
+    <c:if test="${not empty pageScope.contributedHeadTags}">
+      <c:out escapeXml="false" value="${pageScope.contributedHeadTags}"/><br />
+    </c:if>
     
     <meta http-equiv="Content-type" content="<c:out value='${ContentType}'/>"/>
     <meta http-equiv="Content-style-type" content="text/css"/>   
@@ -94,7 +97,7 @@ limitations under the License.
   <body class="<c:out value='${PageBaseCSSClass}'/>">
 
     <div class="<c:out value='${PageBaseCSSClass}'/>"> <!-- BEGIN: body div  wrapper -->
-	
+    
       <div id="banner"> <!-- B: banner div -->
         <table border="0" cellspacing="0" cellpadding="8" width="100%">
           <tr>

@@ -28,16 +28,21 @@ limitations under the License.
 <%@page import="org.apache.jetspeed.layout.JetspeedPowerTool"%>
 <%@page import="org.apache.jetspeed.om.page.ContentFragment"%>
 <%@page import="org.apache.jetspeed.request.RequestContext"%>
+<%@page import="org.apache.jetspeed.headerresource.HeaderResource"%>
+<%@page import="org.apache.jetspeed.util.KeyValue"%>
+
+<%@page import="org.w3c.dom.Element"%>
 
 <%@page import="java.util.Locale"%>
+<%@page import="java.util.List"%>
 
 
 <portlet:defineObjects/>
 
   <%!
-	  /**
-	   * @author <a href="mailto:kmoh.raj@gmail.com">Mohan Kannapareddy</a>
-	   */
+      /**
+       * @author <a href="mailto:kmoh.raj@gmail.com">Mohan Kannapareddy</a>
+       */
       private final static Log log = LogFactory.getLog("org.apache.jetspeed.decoration.layout.tigris_jsp");
       private int PAGE_SCOPE = PageContext.PAGE_SCOPE;
       private String getLayoutResource(LayoutDecoration _layoutDecoration,String _path)
@@ -77,7 +82,28 @@ limitations under the License.
   //PageTitle
   String _PageTitle = _jpt.getPage().getTitle(_preferedLocale);
   pageContext.setAttribute("PageTitle", _PageTitle, DEFAULT_SCOPE);
-  
+
+  List<KeyValue<String, Element>> _headElements = _jpt.getHeadElements();
+  pageContext.setAttribute("headElements", _headElements, DEFAULT_SCOPE);
+  boolean _dojoEnabled = false;
+  if (_jpt.isDojoEnabled(_headElements))
+  {
+    HeaderResource hr = (HeaderResource) request.getAttribute("headerResource");
+    if (hr != null)
+    {
+      hr.dojoEnable();
+      _dojoEnabled = true;
+    }
+  }
+  StringBuilder _contributedHeadTags = new StringBuilder(256);
+  for (KeyValue<String, Element> kvPair : _headElements)
+  {
+    if (!"header.dojo.library.include".equals(kvPair.getKey()) || !_dojoEnabled)
+    {
+      _contributedHeadTags.append(_jpt.getElementHtmlString(kvPair.getValue())).append("\r\n");
+    }
+  }
+  pageContext.setAttribute("contributedHeadTags", _contributedHeadTags.toString(), DEFAULT_SCOPE);
 %>
   <%-- BEGIN GLOBAL PAGE SCOPE variables for decorators --%>
 
