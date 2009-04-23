@@ -145,7 +145,7 @@ public class JetspeedPortletInvokerService implements PortletInvokerService
         PortletDefinition portletDefinition = (PortletDefinition)requestContext.getPortletWindow().getPortletEntity().getPortletDefinition();
         if (portletDefinition.getApplication().getApplicationType() == PortletApplication.LOCAL)
         {
-            invoker = new LocalPortletInvoker(portalContext);
+            invoker = new LocalPortletInvoker(portalContext, requestResponseUnwrapper);
         }
         else
         {

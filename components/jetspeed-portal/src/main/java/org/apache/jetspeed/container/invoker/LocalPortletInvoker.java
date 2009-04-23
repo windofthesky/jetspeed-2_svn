@@ -68,10 +68,12 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
     protected ServletConfig jetspeedConfig;
     protected PortletDefinition portletDefinition;
     protected boolean activated = false;
+    private ContainerRequestResponseUnwrapper requestResponseUnwrapper;
     
-    public LocalPortletInvoker(PortalContext portalContext)
+    public LocalPortletInvoker(PortalContext portalContext, ContainerRequestResponseUnwrapper requestResponseUnwrapper)
     {
         this.portalContext = portalContext;
+        this.requestResponseUnwrapper = requestResponseUnwrapper;
         activated = false;
     }
     
@@ -138,6 +140,9 @@ public class LocalPortletInvoker implements JetspeedPortletInvoker
             // initialize request/response for portletRequestContext
             HttpServletRequest request = requestContext.getContainerRequest();
             HttpServletResponse response = requestContext.getContainerResponse();
+            
+            request = (HttpServletRequest) requestResponseUnwrapper.unwrapContainerRequest(request);
+            response = (HttpServletResponse) requestResponseUnwrapper.unwrapContainerResponse(response);
             requestContext.init(window.getPortletInstance().getConfig(), this.jetspeedContext, request, response);
             window.getPortletResponseContext().init(request, response);
             
