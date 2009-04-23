@@ -92,6 +92,11 @@
       <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
       <scope>test</scope>
     </dependency>      
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!--
       Note: tyrex and junit are normally required only for test, but 
       in this case, abstract test cases are included in the component
