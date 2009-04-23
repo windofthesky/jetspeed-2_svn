@@ -233,21 +233,6 @@
         </constructor-arg>
     </bean>
     
-    <bean id="ehPortletWindowCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
-        <property name="cacheName" value="portletWindowCache" />
-    </bean>
-    
-    <bean id="portletWindowCache" class="org.apache.jetspeed.cache.impl.EhPortletWindowCache">
-        <meta key="j2:cat" value="default or cache" />
-        <constructor-arg index="0">
-            <ref bean="ehPortletWindowCache" />
-        </constructor-arg>
-    </bean>
-    
     <bean id="ehInternalPageFileCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <meta key="j2:cat" value="default or cache" />
         <property name="cacheManager">

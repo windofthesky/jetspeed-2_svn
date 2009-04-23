@@ -190,50 +190,6 @@
                 </p>
             </subsection>
         </section>
-        <section name='Maven Profiles'>
-            <p>The following profiles can be supplied when building </p>
-            <div>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <p> <strong><tt>mvn -P all</tt></strong> </p>
-                            </td>
-                            <td>
-                                <p> specified that all modules (the API, plugins, portal resources, commons, components and applications) be built.</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p> <strong><tt>mvn -P init</tt></strong> </p>
-                            </td>
-                            <td>
-                                <p> specified some modules to be initialized first (the API, plugins and portal resources) </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p> <strong><tt>mvn -P test</tt></strong> </p>
-                            </td>
-                            <td>
-                                <p> specified that all modules (the API, plugins, portal resources, commons, components and applications) be built, with the property setting, <b>-Dmaven.test.skip=false</b></p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-    		<subsection name='Additional Notes'>
-        		<ul>
-            		<li><b>mvn -P test</b> and <b>mvn -Dmaven.test.skip=false</b> are equivalent.</li>
-            		<li><b>mvn -P test -Dtest=MyTest</b> will execute a single test or matching tests if Ant wildcards are used. </li>		
-            		<li>Due to forking bugs in the Surefire Maven2 test runner plugin, test output, (e.g. System.out.println()), is not echoed to the build shell. If you wish to see console output for component tests, temporarily comment out the &lt;forkMode&gt;
-            		 elements in the components/pom.xml and the components pom.xml and run single tests. Note: the forking is required to run multiple tests. 
-                    </li>
-                    <li><p> The <strong><tt>-o</tt></strong> offline option can be specified with the commands documented here to force Maven2 to use only the local repository. This can be invaluable in the event the main Maven2 repositories are down and the build insists upon validating a missing or troublesome POM. </p>
-                   </li>
-        		</ul>
-    		</subsection>	
-		</section>
         <section name="More detailed building options">
             <subsection name="Overview">
                 <p>With the new jetspeed-mvn  plugin, building the Jetspeed-2 Portal itself from source as well as building and deploying the default jetspeed-demo portal is now extremely easy.</p>
@@ -253,7 +209,17 @@
                     <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=test-install</pre>
                     </div>
                 </p>
-                <em>Note: Running the test-cases requires (and only for this) the proper configuration of the org.apache.jetspeed.test.database.* properties in jetspeed-mvn-settings.xml</em>
+                <p>
+                    <em>Note: Running the test-cases requires (and only for this) the proper configuration of the org.apache.jetspeed.test.database.* properties in jetspeed-mvn-settings.xml</em>
+                </p>
+                <p>
+                    <em>
+                        Note: Probably you need to configure some memory settings for maven to run all the tests properly because some test cases require more memory than the default size.
+                        You can configure memory settings for maven by setting the environment variable 'MAVEN_OPTS'. For example,
+                        <div class="source"><pre>$export MAVEN_OPTS="-Xmx128m -XX:MaxPermSize=128m"</pre>
+                        </div>
+                    </em>
+                </p>
             </subsection>
             <subsection name="Initializing the production database">
                 <p>The production database configuration provided by the Jetspeed-2 Portal project itself is primarly intended to be used by the developers using the jetspeed-demo Portal.</p>
@@ -330,6 +296,50 @@ Once you've installed Tomcat, adjust the <strong><code>org.apache.jetspeed.serve
                 </p>
                 <p>Further detail of the different jetspeed:mvn targets and configurations used for the dbpsml demo can be found in the jetspeed-mvn-plugin configuration within the root pom.xml.</p>
             </subsection>
+        </section>
+        <section name='Maven Profiles'>
+            <p>The following profiles can be supplied when building.</p>
+            <div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <p> <strong><tt>mvn -P all</tt></strong> </p>
+                            </td>
+                            <td>
+                                <p> specified that all modules (the API, plugins, portal resources, commons, components and applications) be built.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p> <strong><tt>mvn -P init</tt></strong> </p>
+                            </td>
+                            <td>
+                                <p> specified some modules to be initialized first (the API, plugins and portal resources) </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p> <strong><tt>mvn -P test</tt></strong> </p>
+                            </td>
+                            <td>
+                                <p> specified that all modules (the API, plugins, portal resources, commons, components and applications) be built, with the property setting, <b>-DskipTests=false</b></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <subsection name='Additional Notes'>
+                <ul>
+                    <li><b>mvn -P test</b> and <b>mvn -DskipTests=false</b> are equivalent.</li>
+                    <li><b>mvn -P test -Dtest=MyTest</b> will execute a single test or matching tests if Ant wildcards are used. </li>      
+                    <li>Due to forking bugs in the Surefire Maven2 test runner plugin, test output, (e.g. System.out.println()), is not echoed to the build shell. If you wish to see console output for component tests, temporarily comment out the &lt;forkMode&gt;
+                     elements in the components/pom.xml and the components pom.xml and run single tests. Note: the forking is required to run multiple tests. 
+                    </li>
+                    <li><p> The <strong><tt>-o</tt></strong> offline option can be specified with the commands documented here to force Maven2 to use only the local repository. This can be invaluable in the event the main Maven2 repositories are down and the build insists upon validating a missing or troublesome POM. </p>
+                   </li>
+                </ul>
+            </subsection>   
         </section>
 	</body>
 </document>
