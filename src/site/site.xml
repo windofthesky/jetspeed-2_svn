@@ -18,15 +18,15 @@
 <project name="Jetspeed 2">
   <publishDate format="d MMMM yyyy"/>
   <bannerLeft>
-    <name>Apache Software Foundation</name>
-    <src>images/apache-portals.gif</src>
-    <href>http://portals.apache.org/</href>
-  </bannerLeft>
-  <bannerRight>
     <name>Jetspeed 2 Enterprise Portal</name>
-    <src>images/Jetspeed_blue_med.png</src>
+    <src>images/jetspeed-logo.gif</src>
     <href>http://portals.apache.org/jetspeed-2/</href>
-  </bannerRight>
+  </bannerLeft>
+  <skin>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
+    <artifactId>jetspeed-maven-skin</artifactId>
+    <version>2.2-SNAPSHOT</version>
+  </skin>
   <body>
   
     <links>

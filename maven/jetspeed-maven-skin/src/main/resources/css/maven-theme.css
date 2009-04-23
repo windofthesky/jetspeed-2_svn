@@ -1,0 +1,237 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+body {
+  padding: 0px 0px 10px 0px;
+}
+body, td, select, input, li{
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+}
+code{
+  font-family: Courier, monospace;
+  font-size: 13px;
+}
+a {
+  text-decoration: none;
+}
+a:link {
+  color:#36a;
+}
+a:visited  {
+  color:#47a;
+}
+a:active, a:hover {
+  color:#69c;
+}
+#legend li.externalLink {
+  background: url(../images/external.png) left top no-repeat;
+  padding-left: 18px;
+}
+a.externalLink, a.externalLink:link, a.externalLink:visited, a.externalLink:active, a.externalLink:hover {
+  background: url(../images/external.png) right center no-repeat;
+  padding-right: 18px;
+}
+#legend li.newWindow {
+  background: url(../images/newwindow.png) left top no-repeat;
+  padding-left: 18px;
+}
+a.newWindow, a.newWindow:link, a.newWindow:visited, a.newWindow:active, a.newWindow:hover {
+  background: url(../images/newwindow.png) right center no-repeat;
+  padding-right: 18px;
+}
+h2 {
+  padding: 4px 4px 4px 6px;
+  border: 1px solid #999;
+  color: #363738;
+  background-color: #f2f2f2;
+  font-weight:900;
+}
+h3 {
+  padding: 4px 4px 4px 6px;
+  border: 1px solid #aaa;
+  color: #363738;
+  background-color: #f2f2f2;
+}
+h4 {
+  padding: 4px 4px 4px 6px;
+  border: 1px solid #bbb;
+  color: #363738;
+  background-color: #f2f2f2;
+}
+h5 {
+  padding: 4px 4px 4px 6px;
+  color: #363738;
+}
+p {
+  line-height: 1.3em;
+  font-size: small;
+}
+#breadcrumbs {
+  color:#ffffff;
+  background-color: #05549c;
+  border-top-width: 2px;
+  border-top-style: solid;
+  border-top-color: #033563;  
+}
+
+#breadcrumbs a {
+  color: #ced7dc;
+  text-decoration: none;
+}
+#breadcrumbs a:hover {
+  color: #f5f7f8;
+  text-decoration: underline;
+}
+
+#leftColumn {
+  margin: 10px 0 0 5px;
+}
+#navcolumn h5 {
+  font-size: smaller;
+  padding-top: 2px;
+  
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #afafaf;
+  color: #303031;
+  
+  margin-top:2px;
+  margin-bottom:2px;
+}
+
+#navcolumn a {
+  color: #012d46;
+  text-decoration: none;
+}
+
+#navcolumn a:active, #navcolumn a:hover {
+  color: #000000;
+  text-decoration: underline;
+}
+
+#navcolumn ul {
+  margin-bottom:2px;
+}
+
+#navcolumn ul li {
+  margin-top:1px;
+  margin-bottom:1px;
+}
+
+table.bodyTable th {
+  color: white;
+  background-color: #bbb;
+  text-align: left;
+  font-weight: bold;
+}
+
+table.bodyTable th, table.bodyTable td {
+  font-size: 1em;
+}
+
+table.bodyTable tr.a {
+  background-color: #ddd;
+}
+
+table.bodyTable tr.b {
+  background-color: #eee;
+}
+
+.source {
+  border: 1px solid #999;
+}
+dl {
+  padding: 4px 4px 4px 6px;
+  border: 1px solid #aaa;
+  background-color: #ffc;
+}
+dt {
+  color: #900;
+}
+#organizationLogo img, #projectLogo img, #projectLogo span{
+  margin: 8px;
+}
+#banner {
+  border-bottom:none;
+  padding:8px;
+  background-color:#000000;
+}
+.errormark, .warningmark, .donemark, .infomark {
+  background: url(../images/icon_error_sml.gif) no-repeat;
+}
+
+.warningmark {
+  background-image: url(../images/icon_warning_sml.gif);
+}
+
+.donemark {
+  background-image: url(../images/icon_success_sml.gif);
+}
+
+.infomark {
+  background-image: url(../images/icon_info_sml.gif);
+}
+
+/*
+---------------------- 
+Project Style
+----------------------
+*/
+
+#downloadbox {
+	float: right;
+	margin: 0 10px 20px 20px;
+	padding: 5px;
+	border: 1px solid #999;
+	background-color: #eee;
+}
+
+#downloadbox {
+	float: right;
+	margin: 0 10px 20px 20px;
+	padding: 5px;
+	border: 1px solid #999;
+	background-color: #eee;
+}
+
+#downloadbox h5 {
+	color: #000;
+	margin: 0;
+	border-bottom: 1px solid #aaaaaa;
+	font-size: smaller;
+	padding: 0;
+}
+
+#downloadbox p {
+	margin-top: 1em;
+	margin-bottom: 0;
+}
+
+#downloadbox ul {
+	margin-top: 0;
+	margin-bottom: 1em;
+	list-style-type: disc;
+}
+
+#downloadbox li {
+	font-size: smaller;
+}
+
+
