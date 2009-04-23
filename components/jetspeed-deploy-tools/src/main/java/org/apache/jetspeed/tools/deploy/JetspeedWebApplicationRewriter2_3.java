@@ -103,9 +103,9 @@ class JetspeedWebApplicationRewriter2_3 extends JetspeedWebApplicationRewriter
         servletDesc.setTextContent(JETSPEED_SERVLET_DESCRIPTION);
         Element servletClass = root.getOwnerDocument().createElementNS(namespace, "servlet-class");
         servletClass.setTextContent(JETSPEED_SERVLET_CLASS);
-        jetspeedServletElement.appendChild(servletName);
-        jetspeedServletElement.appendChild(servletDspName);
         jetspeedServletElement.appendChild(servletDesc);
+        jetspeedServletElement.appendChild(servletDspName);
+        jetspeedServletElement.appendChild(servletName);
         jetspeedServletElement.appendChild(servletClass);
         insertContextNameParam(jetspeedServletElement);
         insertLoadOnStartup(jetspeedServletElement);
