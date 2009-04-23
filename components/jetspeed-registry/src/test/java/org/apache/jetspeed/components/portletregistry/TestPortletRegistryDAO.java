@@ -475,7 +475,8 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         assertEquals(event1.getName(), "plainOldEvent");
         assertEquals(event1.getValueType(), "java.lang.String");
         QName q = event1.getQName();
-        assertEquals(q.getNamespaceURI(), "");
+        // if the event definition is registered without QName, then the default namespace of app will be used.
+        assertEquals(q.getNamespaceURI(), "http:apache.org/events");
         assertEquals(q.getPrefix(), "");
         Description en = event1.getDescription(new Locale("en"));
         assertEquals(en.getDescription(), "The Plain Old Event");
