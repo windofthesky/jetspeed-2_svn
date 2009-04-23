@@ -95,7 +95,6 @@
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
-      <scope>test</scope>
     </dependency>
     <!--
       Note: tyrex and junit are normally required only for test, but 
