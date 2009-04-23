@@ -245,11 +245,11 @@
                     <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=testdb</pre>
                     </div>
                 </p>
-                <p>Thereafter, enabling the test-cases during a build is done by using profile <strong><code>test</code></strong>:
-                    <div class="source"><pre>$mvn install -P test</pre>
+                <p>But, to make it even a little more easier, another jetspeed:mvn target is provided. This will combine the above steps:
+                    <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=test</pre>
                     </div>
                 </p>
-                <p>But, to make it even a little more easier, another jetspeed:mvn target is provided which already combines the above two steps in one:
+                <p>Or you can run the following command to proceeed to install step after test.
                     <div class="source"><pre>$mvn jetspeed:mvn -Dtarget=test-install</pre>
                     </div>
                 </p>
