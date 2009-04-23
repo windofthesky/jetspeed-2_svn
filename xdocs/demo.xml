@@ -27,13 +27,13 @@
 	<body>
 		<section name="Live Jetspeed Demo">
 			<p>To get a quick look at the Jetspeed decorators, themes,
-			<a href="../features.html">functionalities</a>,
+			<a href="features.html">functionalities</a>,
 			and the admin interface point your browser to
 			<ul>
 			<li>
-			<a href="http://portals.zones.apache.org/jetspeed/portal/">the standard portal demo</a> or</li>
+			<a href="http://portals.zones.apache.org:8080/jetspeed/portal/">the standard portal demo</a> or</li>
 			<li>
-			<a href="http://portals.zones.apache.org/jetspeed/desktop/">the web 2.0 desktop demo</a>.
+			<a href="http://portals.zones.apache.org:8080/jetspeed/desktop/">the web 2.0 desktop demo</a>.
 			Use the username <i>admin</i> connects using the password <i>j2</i>. Note: It is probable that
 			someone changes the password therefore we will regenerate the site on a regular basis.
 			</li>

@@ -24,9 +24,48 @@ limitations under the License.
     </authors>
   </properties>
   <body>
-<section name="Spring Datasource">
+<section name="Spring Datasource Bootstrap">
 <p>
+Jetspeed uses two Spring containers in the Jetspeed Engine. The first container is the <strong>Bootstrap</strong> container. It contains all database-related Spring components. 
+The second container is the general Jetspeed container. It contains all other Jetspeed components. The main file configured in the bootstrap is the datasource.xml file.
 </p>
+<p>
+The Database can be configured in two modes either via JNDI or directly with JDBC and DBCP connection pool datasource.</p>
+<subsection name='JNDI Database Configuration'>
+<p>
+When configuring with JNDI, Jetspeed does not handle the management of the JDBC data source. The data source and database connection pooling is handling usually
+by an application server, such as Tomcat or Websphere. With Spring, we configure a JNDI bean by JDNI name, and match that with the Tomcat or Websphere JNDI resource 
+configured in the application server.
+</p>
+<source><![CDATA[
+   <bean id="JetspeedDS" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="resourceRef"><value>false</value></property> 
+        <property name="jndiName">
+            <value>java:comp/env/jdbc/jetspeed</value>
+        </property>
+    </bean>
+]]></source>
+<p>This method is the default configuration for Jetspeed. This allows the application to manage the database connection pool and possibly use with JNDI resource in other
+web applications</p>
+</subsection>
+<subsection name='JDBC/DBCP Database Configuration'>
+<p>
+There is a second bean, commented out, in the spring datasource.xml. It has the same name as the JNDI-based implementation. So you can't use both of these beans at the same
+time. You must choose one, and comment out the other. With the JDBC/DBCP (Database Connection Pool) configuration, we setup the database connection directly
+in the Jetspeed web application. We also set up the four standard JDBC connection properties here:
+</p>
+<source><![CDATA[
+    <bean id="JetspeedDS" class="org.apache.commons.dbcp.BasicDataSource" 
+        destroy-method="close"
+        >
+                <property name="driverClassName"><value>com.mysql.jdbc.Driver</value></property>
+                <property name="url"><value>jdbc:mysql://localhost/j2test</value></property>
+                <property name="username"><value>j2</value></property>
+                <property name="password"><value>XXX</value></property>
+        </bean>    
+]]></source>
+</subsection>
+    		
 </section>
 </body>
 </document>

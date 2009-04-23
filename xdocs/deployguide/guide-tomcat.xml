@@ -21,21 +21,272 @@
 		<subtitle>Documentation on How to Download Jetspeed-2</subtitle>
 		<authors>
 			<person name="David Le Strat" email="dlestrat@apache.org" />
+			<person name="David Sean Taylor" email="taylor@apache.org" />
 		</authors>
 	</properties>
-	<body>
-		<section name="Tomcat Configuration">
+<body>
+<section name="Apache Tomcat Overview">
+<p>
+<a href='http://tomcat.apache.org/'>Apache Tomcat</a> is an implementation of the Java Servlet and JavaServer Pages technologies.
+ The Java Servlet and JavaServer Pages specifications are developed under the Java Community Process. Although Tomcat is not a full Java Enterprise Application Server,
+  such as <a href='http://geronimo.apache.org/'>Geronimo</a> or <a href='http://jboss.org/'>JBoss</a>, Tomcat
+ still has many advanced features of an applications server. Tomcat is not an portal server nor is it portlet container. Jetspeed is both a portal server and includes a portlet container.
+ To find out more about portlet containers, see the <a href='http://portals.apache.org/pluto/'>Pluto project</a>. 
+ The Jetspeed installer comes with a pre-packaged release of Tomcat built-in.</p>
+<subsection name="Tomcat Versions Supported">
+<p>
+Jetspeed is well tested and integrated to run on the following Apache Tomcat platforms:
+</p>
+<ul>
+<li>All Tomcat 6.x version - recommended for Servlet API 2.5 / JSP 2.1</li>
+<li>All Tomcat 5.5.x versions - recommended for Servlet API 2.4 / JSP 2.0</li>
+</ul>
+</subsection>
+<subsection name="How Jetspeed runs in Tomcat">
+<p>
+Jetspeed is a normal web application, thus it runs in Tomcat like any other web application. 
+However, since Jetspeed is also a portal server, with the ability to include content from other deployed portlet applications in the application server,
+ it has a few special requirements in order for it to run in Tomcat:
+</p>
+<ul>		
+<li>Cross Context Invocation - Jetspeed must be configured in Tomcat to execute cross-context request dispatching.</li>
+<li>Database Configuration - By default, Jetspeed lets Tomcat manage the database connections. Tomcat requires a context file be provided in order for Jetspeed to use Tomcat connection pooling</li>
+<li>Common Class Loader - Jetspeed requires loading several jars in Tomcats shared class loader. The classes from these jars are shared between Jetspeed and all portlet applications</li>
+<li>Renaming the Context Path - you can give Jetspeed a different context path name</li>
+<li>Configuring a JAAS Realm - you can configure JAAS Realm features in Tomcat specific to Jetspeed like providing your own role and user classes</li>
+</ul>
+<p>
+Getting Jetspeed to run in Tomcat requires some minimal configuration describing in the following section. If you run the Jetspeed installer, which comes with Tomcat built-in,
+all the configuration is managed by the installer program for you. 
+</p>
+</subsection>
+</section>
+<section name="Tomcat Configuration">
+<p>Tomcat uses XML files to configure Tomcat-specific features as well as standardized features. The <i>WEB-INF/web.xml</i> file configures the standard features. Some Tomcat specific features for web applications,
+not explicity covered by the servlet specification, are configured in the <i>META-INF/context.xml</i> file. Several of
+Tomcat specific configurations required to configure Jetspeed without the installer are: database, cross-context requests, and the common-class-loader.
+Also note, If you build Jetspeed using the Maven build tools, Jetspeed will create this Tomcat context file for the Jetspeed web application and deploys it to Tomcat automatically.
+</p>
+<p>Here is an example of a context.xml file for Jetspeed:</p>
+<source>
+<![CDATA[
+<Context crossContext="true">
 
-				<p>
-					Jetspeed 2 can use the Tomcat Manager application
-					for managing portlet applications with the Portlet
-					Application Lifecycle Manager Portlet (PALM). To be
-					able to do so it needs a configured Tomcat user with
-					the predefined 'manager' role in the
-					${org.apache.jetspeed.server.home}/conf/tomcat-users.xml.
-				</p>
-				<p>
-					A minimal example tomcat-users.xml can look like:
+  <Realm className="org.apache.catalina.realm.JAASRealm"
+         appName="Jetspeed"
+         userClassNames="org.apache.jetspeed.security.impl.UserPrincipalImpl"
+         roleClassNames="org.apache.jetspeed.security.impl.RolePrincipalImpl"
+         useContextClassLoader="false"
+         debug="0"/>
+
+
+	<Resource name="jdbc/jetspeed" auth="Container"
+            factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+            type="javax.sql.DataSource" username="j2" password="secret"
+            driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/jetdb"
+            maxActive="100" maxIdle="30" maxWait="10000"/> 
+
+	<Valve className="org.apache.catalina.authenticator.FormAuthenticator" characterEncoding="UTF-8"/>
+
+</Context>
+]]>
+</source>
+<subsection name='Tomcat Cross-Context Configuration'>
+<p>
+First thing you will notice about the Tomcat context file is the cross context setting set to true, which is *not* the default:
+</p>
+<source>
+<![CDATA[
+<Context crossContext="true">
+]]>
+</source>
+<p>
+This setting is required for Jetspeed to "aggregate" content from different portlet applications all onto the same page. But default, Tomcat does not enable this feature.
+Please make sure this setting is true, or Jetspeed will not function properly.	
+</p>
+<img src='images/dispatch.jpg'/>
+</subsection>
+<p>
+</p>
+<subsection name='Tomcat Database Configuration'>
+<p>
+ This context file also holds the JDBC configuration for the database used by Jetspeed internally. By default, Jetpeed looks up database connections with JNDI.
+ Thus Jetspeed expects you that you configure your database connections in your particular application server configuration. In the case of Tomcat, here
+ is the database configuration necessary to setup a required JNDI resource name <i>jdbc/jetspeed</i>:
+ </p>
+<source>
+<![CDATA[
+<Context crossContext="true">
+
+...
+	<Resource name="jdbc/jetspeed" auth="Container"
+            factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+            type="javax.sql.DataSource" username="j2" password="secret"
+            driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/jetdb"
+            maxActive="100" maxIdle="30" maxWait="10000"/> 
+
+...
+
+</Context>
+]]>
+</source>
+<p>We have configured several important features of the database configuration specific to Tomcat including:</p>
+<table>
+<tr><th>attribute</th><th>description</th></tr>
+<tr>
+  <td>factory</td>
+  <td>The JDBC Data Source Factory class name. Here we make use of the Apache Commons DBCP (Database Connection Pooling) library</td>
+</tr>
+<tr>
+  <td>type</td>
+  <td>javax.sql.DataSource - the type of resource: a JDBC DataSource provider</td>
+</tr>
+<tr>
+  <td>username</td>
+  <td>The username in the database that will be used to authenticate</td>
+</tr>
+<tr>
+  <td>password</td>
+  <td>The password of the user on the database</td>
+</tr>
+<tr>
+  <td>driverClassName</td>
+  <td>The classname of the JDBC database driver: specific to the database being used by Jetspeed</td>
+</tr>
+<tr>
+  <td>url</td>
+  <td>The JDBC Database connection URL string</td>
+</tr>
+<tr>
+  <td>maxActive</td>
+  <td>Maximum number of active database connections</td>
+</tr>
+<tr>
+  <td>maxIdle</td>
+  <td>Maximum number of idle database connections</td>
+</tr>
+<tr>
+  <td>maxWait</td>
+  <td>Maximum wait time to get a connection in milliseconds before timing out</td>
+</tr>
+</table>
+<p>Also see the Tomcat documentation for more details on configuring 
+<a href='http://tomcat.apache.org/tomcat-5.5-doc/jndi-datasource-examples-howto.html'>database connection pools</a> 
+and <a href='http://tomcat.apache.org/tomcat-5.5-doc/jndi-resources-howto.html'>JNDI</a> in Tomcat</p>
+</subsection>
+<subsection name='Common Class Loader in Tomcat shared/lib'>
+<p>
+Jetspeed requires loading several jars in Tomcats shared class loader. The classes from these jars are shared between Jetspeed and all portlet applications.
+</p><p>
+Jetspeed and portlet applications are deployed as separate web 
+applications. Jetspeed runs as a MVC-Controller-type servlet, running 
+in a standalone web(portlet) application. Each portlet application runs 
+in its own web application. The Portal then dispatches to portlets using 
+cross-context invocation 
+</p><p>
+This means that parts of Jetspeed 
+must exist in common class loaders shared amongst all web 
+applications in the application server. As the diagram below depicts, the shared/lib class loader takes precedence over the individual portlet application class loaders:
+</p>
+<img src='images/sharedlib.jpg'/>
+<p>To summarize, you must place the following jars in Tomcat's shared library directory (shared/lib):</p>
+<source>
+ls $TOMCAT_HOME/shared/lib
+...
+jetspeed-api-2.1.3.jar
+jetspeed-commons-2.1.3.jar
+pluto-1.0.1.jar
+portals-bridges-common-1.0.4.jar
+portlet-api-1.0.jar
+</source>
+<p>Additionally, you may want to put your JDBC driver here, for example:</p>
+<source>
+mysql-connector-java-5.1.6-bin.jar
+</source>
+</subsection>
+</section>
+<section name='Deploying Portlet Applications to Tomcat'>
+<p>
+Portlets are similar to servlets. They require a deployment descriptor, called the <i>portlet.xml</i> placed in the WEB-INF directory in addition to the <i>web.xml</i> required by servlet applications. 
+Portlet Applications need to be packaged in the same <i>WAR</i> format specified for servlets. In order to deploy a portlet, Jetspeed-2 requires the user to follow those steps: 
+<ul>
+<li>Build your portlets as a portlet application just as you would a web application.</li>
+<li>Package your portlet application into a .war file, along with a WEB-INF/portlet.xml descriptor.</li> 
+<li>Copy the .war file to Jetspeed's deployment directory, by default this is <i>WEB-INF/deploy</i>. Jetspeed will take care of automatically 
+deploying the portlet application into the application server (Tomcat), and  then registering the portlets into the portlet registry. 
+</li> 
+</ul> 
+</p>
+<p>
+Alternatively, you can copy directly into Tomcat's <i>webapps</i> directory, but only if you have <i>infused</i> your portlet application with the necessary settings in your web.xml.
+</p>
+<p>
+You can also copy over a portlet-application's web.xml or 
+portlet.xml to cause re-registration of the portlet application.
+</p>
+<subsection name='Infusing Jetspeed Servlet in your Application'>
+<p>
+Jetspeed requires that a Jetspeed Container servlet be placed in your portlet application's web.xml. This servlet's class file is actually stored in the Jetspeed shared library path, so you 
+do not have to include it into your portlet application distribution. Again, when dropping into Jetspeed's deploy directory, this procedure is not necessary, as the servlet
+will be automatically added to your web.xml by the Jetspeed deployer. This servlet allows 
+Jetspeed to communicate with your portlet application to invoke cross-context portlet
+phases (action, render). Additionally, the servlet will attempt to register this portlet 
+application during the servlet initialization phase. A check-sum value on the portlet.xml, 
+web.xml, and jetspeed-portlet.xml is compared for changes, determining if re-registration is necessary.
+</p>
+<source>
+<![CDATA[
+   <servlet>
+    <description>MVC Servlet for Jetspeed Portlet Applications</description>
+    <display-name>Jetspeed Container</display-name>
+    <servlet-name>JetspeedContainer</servlet-name>
+    <servlet-class>org.apache.jetspeed.container.JetspeedContainerServlet</servlet-class>
+    <init-param>
+      <param-name>contextName</param-name>
+      <param-value>j2-admin</param-value>
+    </init-param>
+    <load-on-startup>100</load-on-startup>
+   </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>JetspeedContainer</servlet-name>
+    <url-pattern>/container/*</url-pattern>
+  </servlet-mapping>
+]]>
+</source>
+<p>The <i>contextName</i> init parameter defines the context path used by Tomcat and Jetspeed in locating your application. This should be the same as your servlet context path setting for Tomcat.</p>
+<p>Finally, you have the option to run the Jetspeed deploy tool to automatically add the above XML to your application's web.xml. Jetspeed provides a Deploy Tool to run during 
+the build process of your portlet application:</p> 
+<source>
+<![CDATA[
+    java -jar jetspeed-deploy-tools-<version>.jar -s inputWarPath outputWarPath 
+
+ where: 
+
+ -s: flag indicating whether or not to strip to loggers from the application. When the flag is 
+     present, the loggers available in the application will be removed.
+      
+ inputWarPath: the path of the war to process. 
+ outputWarPath: the path of the processed war. 
+]]>
+</source>
+</subsection>
+<subsection name='Tomcat Manager and Jetspeed'>
+<p>
+Jetspeed knows how to communicate with the Tomcat Manager application. The Tomcat Manager is a simple programmatic API for managing servlet application lifecycle including:</p>
+<ul>
+<li>Deploy an application</li>
+<li>Undeploy an application</li>
+<li>Start an application</li>
+<li>Stop an application</li>
+</ul>
+<p>
+See the <a href='../adminguide/palm.html'>PALM Administrative Guide</a> documentation for more details on managing applications with Tomcat's Manager. 
+The PALM requires some Tomcat configuration modifications before it can work correctly. You will need to define an adminstrative user in Tomcat's <i>conf/tomcat-users.xml</i>.
+Make sure to configure your user with the <i>manager</i> role.
+</p>
+<p>
+A minimal example tomcat-users.xml can look like:
 					<source>
 						<![CDATA[
 <tomcat-users>
@@ -53,29 +304,54 @@
 						<code>
 							${org.apache.jetspeed.services.autodeployment.user}
 						</code>
-						as described above.
+						These two values must be configured in the <a href='config-overrides.html'>Jetspeed Override Properties</a>
 					</i>
 				</p>
-			</section>
-			
-			<section name="Tomcat 5.5.9 on Windows">
+</subsection>				
+</section>
+<section name='Advanced Configuration...'>
+<subsection name="Changing the Application Context Path and Docbase">
+<p>If you would like, you can change the context path and document base of any web or portlet application, including Jetspeed.
+The context path is the path that identifies the application, such as /jetspeed in a URL like http://localhost:8080/jetspeed/portal.
+With this feature you can change the name of your portal to say something like <i>/myportal</i>:
+</p>
+<source>
+<![CDATA[
+<Context path='/myportal' docBase='/opt/myportal'>
+]]>
+</source>
+<p>Additionally, your application doesn't have to reside in the Tomcat webapps directory. In the example above we have moved it to the /opt/myportal directory.
+</p>
+</subsection>
+<subsection name="JAAS Realms, Users and Roles">
+<p>Jetspeed makes use of its own login module. In that login module, Jetspeed provides its own implementations of User Principals and Role Principals to Tomcat.
+In order for Tomcat to know about these JAAS (Java Authentication and Authorization Services) classes, we need to tell Tomcat:</p>
+<source>
+<![CDATA[
+  <Realm className="org.apache.catalina.realm.JAASRealm"
+         appName="Jetspeed"
+         userClassNames="org.apache.jetspeed.security.impl.UserPrincipalImpl"
+         roleClassNames="org.apache.jetspeed.security.impl.RolePrincipalImpl"
+         useContextClassLoader="true"
+         debug="0"/>
+]]>
+</source>
+<p>NOTE: For Tomcat version 5.5.24 and above, set <i>useContextClassLoader="true"</i>. For versions 5.5.23 and earlier, set <i>useContextClassLoader="false"</i></p>
+</subsection>
+<subsection name="Tomcat on Windows">
 				<p>
 					To have redeployment and undeployment working
-					properly when using Tomcat 5.5.9 on Windows you have
+					properly when using Tomcat 5.5.x on Windows you have
 					to set the global Context attribute "antiJARLocking"
-					to true.
+					to true in the <i>context.xml</i> file under META-INF.
 				</p>
-				<p>
-					In
-					${org.apache.jetspeed.server.home}\conf\context.xml
-					use:
 					<source>
 						<![CDATA[
     <Context antiJARLocking="true">
     ...
     </Context>]]>
 					</source>
-				</p>
-			</section>
+</subsection>				
+</section>
 </body>
 </document>

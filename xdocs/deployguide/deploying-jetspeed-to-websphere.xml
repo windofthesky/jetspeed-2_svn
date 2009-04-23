@@ -584,7 +584,7 @@ META-INF/application.xml
 			<subsection name='Remove any old shared libraries'>
 			<p>
 			<a name="section_5_3"></a>
-			If you deploy the shared jar files into your EAR file, you will want to remove any application server-wide shared libraries such as the one configured in <a href="section_43">section 4.3</a> #Add a Shared Library Reference to the Application Server Class Loader.
+			If you deploy the shared jar files into your EAR file, you will want to remove any application server-wide shared libraries such as the one configured in <a href="#section_4_3">section 4.3</a> #Add a Shared Library Reference to the Application Server Class Loader.
 			</p>
 			</subsection>
 			<subsection name='Installing the EAR File'>

@@ -179,7 +179,7 @@ approaches described here can be applied to writing decroations in other scripti
                <br/><br/>
             Next up we have this line <code>#set($rootFragment = $jetspeed.currentFragment)</code> another set()
             statement, this time creating an object called <code>$rootFragment</code> which is an instance of
-            <a href="http://portals.apache.org/jetspeed-2/multiproject/jetspeed-api/apidocs/org/apache/jetspeed/om/page/ContentFragment.html">org.apache.jetspeed.om.page.ContentFragment</a>.
+            <a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/om/page/ContentFragment.html">org.apache.jetspeed.om.page.ContentFragment</a>.
 			It is really not relevant to this guide
             to describe what <code>$jetspeed.currentFragment</code> is doing so I am going to skip that and move on. 
             <br/><br/>
@@ -191,9 +191,9 @@ approaches described here can be applied to writing decroations in other scripti
             <br/>
             Ah <code>$request</code>, now that looks familiar, this is actually an instance of <code>javax.servlet.http.HttpServletRequest</code>
             from which we are retreiving objects that were been placed into Velocity by Jetspeed.  The actual objects are:
-            <a href="http://portals.apache.org/jetspeed-2/multiproject/jetspeed-api/apidocs/org/apache/jetspeed/portalsite/PortalSiteRequestContext.html">org.apache.jetspeed.portalsite.PortalSiteRequestContext</a>
+            <a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/portalsite/PortalSiteRequestContext.html">org.apache.jetspeed.portalsite.PortalSiteRequestContext</a>
             and
-            <a href="http://portals.apache.org/jetspeed-2/multiproject/jetspeed-api/apidocs/org/apache/jetspeed/decroation/Theme.html">org.apache.jetspeed.decoration.Theme</a>
+            <a href="../multiproject/jetspeed-api/apidocs/org/apache/jetspeed/decoration/Theme.html">org.apache.jetspeed.decoration.Theme</a>
             respectively.  We will put all of these objects to good use in just a little while.       
         </p>
 	  <h4>Feed Your HEAD: How to Properly Code Your Head Tag.</h4>

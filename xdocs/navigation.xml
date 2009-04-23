@@ -18,10 +18,16 @@
 <project>
     <body>
         <links>
+            <item name="Users Guide" href="usersguide/index.html" />
+            <item name="Admin Guide" href="adminguide/index.html"/>
+            <item name="Deployers Guide" href="deployguide/index.html"/>
+            <item name="Developers Guide" href="devguide/index.html"/>
+            <!--
         	<item name="Jetspeed-1" href="http://portals.apache.org/jetspeed-1" target="_nw"/>
         	<item name="Jetspeed-2.2" href="http://portals.apache.org/jetspeed-2" target="_nw"/>
         	<item name="Bridges" href="http://portals.apache.org/bridges" target="_nw"/>
-            <item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />
+        	-->
+            <!--<item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />-->
         </links>
         <menu name="Essentials">
             <item name="Welcome" href="index.html" />
@@ -42,9 +48,9 @@
     		<item name="Migration Guide" href="guide-migration.html" />
     	</menu>
     	<menu name="APIs">
-    		<item name="Jetspeed-2 Java API" href="jetspeed-api/apidocs/index.html" />
+    		<item name="Jetspeed-2 Java API" href="multiproject/jetspeed-api/apidocs/index.html" />
     		<item name="Jetspeed-2 AJAX API" href="devguide/guide-ajax-api.html" />
-    		<item name="Jetspeed-2 Maven-2 Plugin" href="devguide/m2-build/j2-maven-plugin.html" />    		
+    		<item name="Jetspeed-2 Maven-2 Plugin" href="devguide/j2-maven-plugin.html" />    		
     	</menu>
     	<menu name="Tutorials">
     	    <item name="Jetspeed Tutorial - Maven-2 Custom Build" href="tutorials/maven-2/index.html" />
@@ -64,7 +70,7 @@
             <item name="Mailing List" href="mail-lists.html" />
             <item name="Bug Database" href="issue-tracking.html" />
             <item name="Wiki" href="http://wiki.apache.org/portals/Jetspeed2" />
-            <item name="Quality Testing" href="quality-testing.html" />
+            <!--<item name="Quality Testing" href="quality-testing.html" />-->
             <item name='FAQ' href='faq.html'/>
         </menu>
         <menu name="Translation"> 	

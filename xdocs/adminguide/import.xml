@@ -25,9 +25,41 @@
 		</authors>
 	</properties>
 	<body>
-		<section name="Import/Export Administration Guide">
-<p> 
-</p>
-</section>
+	<section name="Import/Export Administration Guide">
+		<p>
+			The Import/Export Service Portlet can be used to export properties to an xml file or to import properties from an xml file.
+		</p>
+		<p>
+			<img src="images/import_export.png" />
+		</p>
+		<subsection name="Export">
+		<p>
+			There are four sections that can be exported together or individually using this portlet. User/Groups/Roles, Profiling Rules, Capabilities and 
+			Permissions are available to export as an xml file. Click the section or sections you wish to retrieve and click the Export button.  A new link 
+			will appear to the right of the Export button titled "Download".  Clicking on the Download link display the xml contents exported in your browser window.
+		</p>
+		<p>
+			Save the xml file in your browser window with the Save As option as type xml.  The name of the file defaults to tmpExport.xml, rename and save 
+			to an appropriate location.
+		</p>
+		</subsection>
+		<subsection name="Export Preferences">
+		<p>
+			A second section in Export is known Export Preferences.  Export Preferences will retrieve the portlet preferences currently configured in Jetspeed.
+		</p>
+		<p>
+			Save the xml file in your browser window with the Save As option as type xml.  The name of the file defaults to tmpExport.xml, rename and save 
+			to an appropriate location.
+		</p>
+		</subsection>
+		<subsection name="Import">
+		<p>
+			Import will allow you to retrieve one of your previously exported xml files or another file properly formatted in xml for Jetspeed.  
+			Click the Browse button and your browsers window open dialogue window will allow you to navigate your system for the file.  Locate the file and 
+			click open.  The file will now be displayed in the Choose file to import field.  Click on the Import button to finish the process.  A "File 
+			imported successfully" message will appear just below the Import word in the portlet window.   
+		</p>
+		</subsection>
+	</section>
 	</body>
 </document>

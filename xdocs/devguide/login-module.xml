@@ -50,7 +50,7 @@ Jetspeed {
                 location of the login.conf file is configured in the
                 <code>security-providers.xml</code>
                 as described below. For more information on how to configure the security providers, see
-                <a href="config.html">the configuration section</a>.
+                <a href="../deployguide/security-config.html">the configuration section</a>.
             </p>
             <p>
                 <source>

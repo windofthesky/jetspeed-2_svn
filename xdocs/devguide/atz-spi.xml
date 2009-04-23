@@ -60,7 +60,7 @@
                 <tr>
                     <td>org.apache.jetspeed.security.spi.SecurityMappingHandler</td>
                     <td>
-                        See <a href="config.html#security-spi-atz_xml">security-spi-atz.xml</a> configuration.
+                        See <a href="../deployguide/security-config.html#security-spi-atz_xml">security-spi-atz.xml</a> configuration.
                     </td>
                 </tr>
                 <tr>
@@ -72,13 +72,13 @@
                 <tr>
                     <td>org.apache.jetspeed.security.spi.RoleSecurityHandler</td>
                     <td>
-                        See <a href="config.html#security-spi-atz_xml">security-spi-atz.xml</a> configuration.
+                        See <a href="../deployguide/security-config.html#security-spi-atz_xml">security-spi-atz.xml</a> configuration.
                     </td>
                 </tr>
                 <tr>
                     <td>org.apache.jetspeed.security.spi.GroupSecurityHandler</td>
                     <td>
-                        See <a href="config.html#security-spi-atz_xml">security-spi-atz.xml</a> configuration.
+                        See <a href="../deployguide/security-config.html#security-spi-atz_xml">security-spi-atz.xml</a> configuration.
                     </td>
                 </tr>
 

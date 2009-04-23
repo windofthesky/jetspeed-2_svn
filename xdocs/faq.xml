@@ -44,10 +44,10 @@
 		<p>From here you can create a new user. Choose a unique username with no spaces. Then enter a secure password.
 		You can require the password to be changed on the first login. You can also select the default role assigned to this user,
 		as well as a default profiling rule. Last, you can assign this user to a subsite</p>
-		 <img src="images/add-user.png"/>
+		 <img src="adminguide/images/add-user.png"/>
 		<p>Going into edit mode, you an further configure the User Details portlet. Note that the following fields can be defaulted:
 		</p>
-		<img src="images/add-user-editmode.png"/>		
+			<img src="adminguide/images/add-user-editmode.png"/>		
 		<ul><li>Default Role for New User</li>
 		<li>Required Role for New User (not shown on view mode)</li>
 		<li>Default Profile for new user</li>

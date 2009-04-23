@@ -18,11 +18,11 @@
 <project>
     <body>
         <links>
-        	<item name="Home" href="http://portals.apache.org/jetspeed-2" target="_nw"/>
-        	<item name="Admin Guide" href="http://portals.apache.org/jetspeed-2/adminguide/" target="_nw"/>
-        	<item name="Deployers Guide" href="http://portals.apache.org/jetspeed-2/deployersguide/" target="_nw"/>
-        	<item name="Developers Guide" href="http://portals.apache.org/jetspeed-2/devguide/" target="_nw"/>
-            <item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />
+        	<item name="Main Docs" href="index.html"/>
+        	<item name="Admin Guide" href="adminguide/index.html"/>
+        	<item name="Deployement Guide" href="deployguide/index.html"/>
+        	<item name="Developers Guide" href="devguide/index.html"/>
+            <!--<item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />-->
         </links>
         <menu name="Introduction">
             <item name="Welcome" href="usersguide/index.html" />
@@ -42,14 +42,14 @@
     	    <item name="Menu" href="usersguide/menu.html" />  
     	    <item name="Desktop" href="usersguide/desktop.html" />
     	</menu>
-    	<menu name="Reference">
+    <!--  	<menu name="Reference">
     		<item name="QuickRef : Option Locations" href="usersguide/options.html" />
-    	</menu>
+    	</menu> -->
         <menu name="Support"> 	
             <item name="Mailing List" href="mail-lists.html" />
             <item name="Bug Database" href="issue-tracking.html" />
             <item name="Wiki" href="http://wiki.apache.org/portals/Jetspeed2" />
-            <item name="Quality Testing" href="quality-testing.html" />
+            <!--<item name="Quality Testing" href="quality-testing.html" />-->
             <item name='FAQ' href='faq.html'/>
         </menu>
     </body>

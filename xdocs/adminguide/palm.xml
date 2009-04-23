@@ -26,8 +26,70 @@
 	</properties>
 	<body>
 		<section name="Portlet Application Lifecycle Administration Guide">
-<p> 
-</p>
-</section>
+		<p>
+			The Portlet Application Lifecycle Manager can be found in the Jetspeed Administrative Portlets Tabbed Menu named PALM. This Administrative 
+			portlet can be used to manage portlets deployed from war files that were added through RPAD or are part of the default installation.
+		</p>
+		<p>
+			<img src="images/palmmain.png"/>
+		</p>
+		<p> 
+		<table>
+					<tr>
+						<th>Field</th>
+						<th>Description</th>            
+					</tr>
+					<tr>
+						<td>Name</td>
+						<td>Corresponds to the Artifact ID from the <a href="rpad.html">RPAD portlet.</a></td>
+					</tr>
+					<tr>
+						<td>Version</td>
+						<td>Defaults to 1.0.</td>
+					</tr>
+					<tr>
+						<td>Path</td>
+						<td>The path is the location of the portlet files in relation to the webapps folder of the Application Server.</td>
+					</tr>
+					<tr>
+						<td>Running</td>
+						<td>Shows the status of the Portlet.  True or False values.</td>
+					</tr>
+					<tr>
+						<td>Commands</td>
+						<td>Actions to take on the portlet listed in the same row.</td>
+					</tr>
+					<tr>
+						<td> </td>
+						<td>Start</td>
+						<td>Starts a portlet that has been stopped using the stop command, will not start an undeployed portlet.</td>
+					</tr>
+					<tr>
+						<td> </td>
+						<td>Stop</td>
+						<td>Changes the state of a running portlet from true to false. Portlet will remain on pages they were previously added.</td>
+					</tr>
+					<tr>
+						<td> </td>
+						<td>Undeploy</td>
+						<td>Disables the portlet. Portlet must be redployed from <a href="rpad.html">RPAD</a> before it can be started again.  Portlet is still available in Add Portlets section</td>
+					</tr>
+					<tr>
+						<td> </td>
+						<td>Delete</td>
+						<td>Removes the portlet from the list of portlets and removes from the list of portlets in the Add Portlet section.</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			Each of the commands start, stop, undeploy and delete will display a warning message in a drop down window that will ask you to confirm your action.
+		</p>
+		<p>
+			<img src="images/palmmessage.png"/>
+		</p>
+		<p>
+			Required portlets will have their Commands section without clickable links to prevent disabling Jetspeed.
+		</p>
+	</section>
 	</body>
 </document>

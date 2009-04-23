@@ -27,97 +27,110 @@
 	<body>
 		<section name="Group Administration Guide">
 			<p>
-				Administering roles with Jetspeed. 
-				<br/><br/>
+				Administering groups with Jetspeed. 
+			</p>
+			<p>
+				Group Management is where you manage the creation and removal of groups for users and roles. This interface can also be used for adding users
+				to groups and removing individual or multiple users from group membership. 
+				The Group Management page is located inside the Jetspeed Administrative Portlets section. 
+				The Group Management page is the third tab on the administrative menu across the top. Here you see the Group Admin which is located on 
+				the left of the two portlets displayed when initially accessing this area.
 			</p>
 		</section>
 		<section name="The Group Browser">
 			<p>
-			TODO: overview, screenshot			
+				<img src="images/groupbrowser.png"/>		
 			</p>
-			<subsection name="Paging">
-			<p>
-			</p>
-			</subsection>
 			<subsection name="Searching">
 			<p>
+					You can search for a particular group by entering the group name or start of the group name
+					in the search text box. After clicking on the "Search" button, the group listing
+					will show the search results starting with the group that best matched your search
+					query. Groups that are listed normally after the matched search result will still be displayed.
 			</p>
 			</subsection>
 			<subsection name="Filtering">
 			<p>
+					To get only exact matches when searching for a particular group name, check the "filter"
+					checkbox below the search text box. Clicking on the "Refresh" button will reset the group listing to the first page. 
 			</p>
 			</subsection>
 			<subsection name="Selecting for Edit">
 			<p>
+					Select one of the groups in the listing for editing by clicking on the group name.
+					A small arrow will appear in front of the group name to indicate it is currently
+					selected, and the group's details will be loaded in the Group Detail Information
+					portlet.
 			</p>
 			</subsection>		
 		</section>
 		<section name="Adding a New Group">
 			<p>
-			TODO: overview, screenshot
-			<table>
-			<tr>
-			<th>Field</th>
-			<th>Description</th>			
-			</tr>
-			<tr>
-			<td>New Group Name</td>
-			<td></td>
-			</tr>
-			</table>
+			You may add a group by entering the name in the Group Name field of the Group Detail Information Portlet and clicking Save.  The Group Admin portlet on the left will update 
+			to include the new name alphabetically. You can use the Users and Roles tabs to add users and roles to your new group.
+			</p>
+		</section>
+		<section name="Removing a Group">
+			<p>
+				You may remove a group by selecting a group for edit in the Group Admin portlet.  The Group Detail Information portlet will update to include 
+				an option for remove.  Any users or roles that are members of that group will not be affected any other way.  Adding a group of the same name 
+				will not reinstate the users or roles membership automatically.  Roles and Users must be added again for them to belong to the group.	
 			</p>
 		</section>
 		<section name="Group Detail Information">
 		<p>
+			<img src="images/groupedit.png"/>
+		</p>
+		<p>
+			The following sections are based on a group having been selected for editing as described above. Two tabbed menu's, Users and Roles, are 
+			available for editing within the group.
 		</p>
 		<subsection name="Add Users to Group">
 		<p>
+			With the Users tab active, click the "Add User to Group..." button located below.  A new pop-up window
+			will appear with a list of available users.  Select the checkboxes of any user you wish to add to the group and click "Add Users". Multiple selections are possible by clicking on the 
+			checkboxes individually. The window 
+			will automatically refresh with the new users listed.
 		</p>
 		</subsection>
 		<subsection name="Remove Checked Users">
 		<p>
+			Checkboxes to the left of each user in the list can be checked to select the user.  Multiple selections are possible by clicking on the 
+			checkboxes individually.  Click the "Remove Checked Users" button to remove the selected users.  The window will update itself after 
+			performing the action.
 		</p>
 		</subsection>
 		<subsection name="Search Users in Group">
 		<p>
+			You can search for a particular user in a group by entering the user name or start of the user name
+			in the search text box. After clicking on the "Search" button, the Users in Group listing
+			will show the search results starting with the user that best matched your search
+			query. Users that are listed normally after the matched search result will still be displayed.
 		</p>
 		</subsection>
 		<subsection name="Add Roles to Group">
 		<p>
+			With the group selected for editing and the Roles tab active, click the "Add Roles to Group..." button located below.  A new pop-up window
+			will appear with a list of available roles.  Select the checkboxes of any roles you wish to add to the group and click "Add Roles".  Multiple selections are possible by clicking on the 
+			checkboxes individually. The window 
+			will automatically refresh with the new users listed.
 		</p>
 		</subsection>
 		<subsection name="Remove Checked Roles">
 		<p>
+			Checkboxes to the left of each role in the list can be checked to select the role.  Multiple selections are possible by clicking on the 
+			checkboxes individually.  Click the "Remove Checked Roles" button to remove the selected roles.  The window will update itself after 
+			performing the action.
 		</p>
 		</subsection>
 		<subsection name="Search Roles in Group">
 		<p>
+			You can search for a particular role in a group by entering the role name or beginning part of the role name
+			in the search text box. After clicking on the "Search" button, the Roles in Group listing
+			will show the search results starting with the role that best matched your search
+			query. Roles that are listed normally after the matched search result will still be displayed.
 		</p>
 		</subsection>
-		<subsection name="Deleting a Group">
-		<p>
-		</p>
-		</subsection>
-
 		</section>	
-		<subsection name="Group Details Configuration">
-		<p>
-		For some weird reason there is no Edit Mode here!	
-			<table>
-			<tr>
-			<th>Field</th>
-			<th>Description</th>			
-			</tr>
-			<tr>
-			<td></td>
-			<td></td>
-			</tr>
-			<tr>
-			<td></td>
-			<td></td>
-			</tr>
-			</table>
-		</p>		
-		</subsection>				
 	</body>
 </document>

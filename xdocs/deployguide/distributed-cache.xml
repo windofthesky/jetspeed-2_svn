@@ -24,76 +24,285 @@
     </authors>
   </properties>
   <body>
-    <section name="Jetspeed Distributed Cache">
 
-First, verify that the following page-manager test works on your development machine:
-
-mvn test -P test -Dtest=TestDatabasePageManagerCache
-
-Not only must this test pass, but the following message should not appear in the
-console/shell or in the test log files:
-
-"Server page managers not distributed: possible system limitation... test skipped"
-
-If you see the above message, check firewall settings to allow UDP/4446. That is
-sometimes needed on Lunix systems if firewalls are enabled to allow udp multicast
-loopback. Some older TCP stacks do not support udp multicast loopback at all. This
-is why this test does not outright fail when distributed caches can not be setup.
-
-Now for the full test: setup two independent tomcat J2 images.
-
-
-Edit webapps/jetspeed/WEB-INF/assembly/cache.xml in tomcat image #1:
+<section name="Jetspeed Distributed Cache Configuration">
+	<p>
+		Jetspeed can be optionally configured to use distributed cache replication with ehcache.
+		By default, distributed cache replication is disabled but it can be enabled through the Jetspeed configuration.
+		The assembly folder contains <strong><code>cache.xml</code></strong> to control the ehcache configuration via Spring.
+	</p>
+	<p>
+		Jetspeed uses cache-replication for managing all of its distributed caches, such as the page-manager and preferences caches.  
+		The <strong><code>ehcache.xml</code></strong> (found in <strong><code>/WEB-INF/classes/</code></strong>) has more detailed cache configuration details. 
+		It has been modified to enable distributed cache replication for all caches including the page manager and preferences caches.
+	</p>
+	<p>
+		The following examples are taken from the <strong><code>distributed-ehcache.xml</code></strong> (in <strong><code>/WEB-INF/classes/</code></strong>).  
+		If you want to switch to complete distributed cache usage, it is easier to swap the usages of <strong><code>ehache.xml</code></strong> with 
+		the <strong><code>distributed.ehcache.xml</code></strong> completely in <strong><code>cache.xml</code></strong> (in <strong><code>/WEB-INF/assembly/</code></strong>) as shown below.
+	</p>
+	<p>
 <source><![CDATA[
-   <bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
-       <property name="defaultConfigResource" value="distributed-ehcache.xml"/>
-       <property name="defaultHostname" value="localhost"/>
-       <property name="defaultPort" value="40001"/>
-   </bean>
+<!-- Cache Manager -->
+<bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
+	<!-- <property name="defaultConfigResource" value="distributed-ehcache.xml"/> -->
+	<property name="defaultConfigResource" value="ehcache.xml"/>
+</bean>
 ]]></source>
-Edit webapps/jetspeed/WEB-INF/assembly/cache.xml in tomcat image #2:
+	</p>
+	<p>
+		The Listener and Provider factory caches are required for cache replication. You shouldn't have to enter values in this file but instead use the jetspeed override.properties to set them.
+		 Below are parameters which can be set for configuring the distributed cache.
+		The port and hostname can be the same for all nodes in the cluster under most default configurations.
+	</p>
+
+	<subsection name="ListenerFactory">
+		<p>
 <source><![CDATA[
-   <bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
-       <property name="defaultConfigResource" value="distributed-ehcache.xml"/>
-       <property name="defaultHostname" value="localhost"/>
-       <property name="defaultPort" value="40002"/>
-   </bean>
+<cacheManagerPeerListenerFactory class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+                                 properties="hostName=${org.apache.jetspeed.ehcache.hostname},
+                                 port=${org.apache.jetspeed.ehcache.port}"/>
 ]]></source>
-Startup browsers against each server, (remember to use different host names to
-ensure cookies are managed separately... for instance: '127.0.0.1' and 'localhost').
-View the same page in each browser. Edit the page in one browser. Change should be
-visible in second browser on refresh.
-
-When distributed caches are run on multiple virtual or physical servers, the default
-port assigned above does not need to be incremented for each machine. If the servers
-are deployed on multiple networks, care must be taken to ensure multicast traffic on
-UDP/4446/230.0.0.1 and TCP/40001 is routed between the servers. Additionally,
-multicast propagation TTL may have to be specified to enable the UDP packets to
-jump between networks. The default value is "1", which is supposed to limit packets
-to one subnet. Here are the ttl options:
-
-     0   - the same host
-     1   - the same subnet
-     32  - the same site
-     64  - the same region
-     128 - the same continent
-     255 - unrestricted
-
-Here is a fully specified cacheManagerConfig bean with its distributed cache default
-values for normal installation:
+		</p>
+	</subsection>
+	
+	<subsection name="ProviderFactory">
+		<p>
 <source><![CDATA[
-
-   <bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
-       <property name="defaultConfigResource" value="distributed-ehcache.xml"/>
-       <property name="defaultGroupAddress" value="230.0.0.1"/>
-       <property name="defaultGroupPort" value="4446"/>
-       <property name="defaultGroupTTL" value="1"/>
-       <property name="defaultHostname" value="localhost"/>
-       <property name="defaultPort" value="40001"/>
-   </bean>
+<cacheManagerPeerProviderFactory class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+                                 properties="peerDiscovery=automatic,
+                                 multicastGroupAddress=${org.apache.jetspeed.ehcache.group.address},
+                                 multicastGroupPort=${org.apache.jetspeed.ehcache.group.port},
+                                 timeToLive=${org.apache.jetspeed.ehcache.group.ttl}"/>
 ]]></source>
+		</p>
+	</subsection>
+	
+	<subsection name="preferencesCache">
+		<p>
+<source><![CDATA[
+<cache name="preferencesCache"
+       maxElementsInMemory="10000"
+       maxElementsOnDisk="1000"
+       eternal="false"
+       overflowToDisk="false"
+       timeToIdleSeconds="28800"
+       timeToLiveSeconds="28800"
+       memoryStoreEvictionPolicy="LFU">
+	<cacheEventListenerFactory
+	        class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+	        properties="replicateAsynchronously=true, replicatePuts=false,
+	                    replicateUpdates=false, replicateUpdatesViaCopy=false,
+	                    replicateRemovals=true"/>
+ </cache>
+]]></source>
+		</p>
+	</subsection>
+	
+	<subsection name="pageManagerPathCache">
+		<p>
+<source><![CDATA[
+<cache name="pageManagerPathCache"
+       maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxelements}"
+       eternal="false"
+       overflowToDisk="false"
+       timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+       timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+       memoryStoreEvictionPolicy="LFU">
+	<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+	                           properties="replicateAsynchronously=true,
+	                                       replicatePuts=false,
+	                                       replicateUpdates=false,
+	                                       replicateUpdatesViaCopy=false,
+	                                       replicateRemovals=true"/>
+</cache>
+]]></source>
+		</p>
+	</subsection>
+	<subsection name='Hostnames'>
+	<p>
+   The host name, represented by the <code>org.apache.jetspeed.ehcache.hostname</code> property, is the host the listener is running on. 
+   The host name defaults to the host name of the default interface if not specified.
+   You will be required to specify a host name for each node when the host is multi-homed and you want to control the interface over which cluster messages are received. 
+   For instance, if you happen to setup your network so that the cache to cache communication is not on the default interface, then you have to set that host name property on each machine.
+   This requires a custom jetspeed.property file for each node.   	
+	</p>
+	<p>Configuring a different hostname per node can be done through the Cache Manager configuration Spring bean combined with setting a Java System property. 
+	In the <code>cache.xml</code>, you can configure the <code>CacheManagerConfig</code> to use a system property, in this case a property named <code>server.ref</code>.
+	This argument is populated at runtime in the portal framework via the following setting in cache.xml:</p>
+<source><![CDATA[
+    <!-- Cache Manager -->
+    <bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
+        <!-- <property name="defaultConfigResource" value="distributed-ehcache.xml"/> -->
+        <property name="defaultConfigResource" value="ehcache${server.ref}.xml"/>
+    </bean> 	
+]]></source>
+	<p>Make sure to set the system property, for example at startup:</p>
+<source><![CDATA[
+java .... -Dserver.ref=_NODE56 
+]]></source>
+	</subsection>
+	<subsection name='Cache Properties'>
+	<p>
+		Following are the default settings for using the distributed cache.  These can be set/modified in the <strong><code>jetspeed.properties</code></strong> or <strong><code>override.properties</code></strong>:
+	</p>
 
-Any of these can be configured to reflect requirements of the production network.
+	<table>
+		<tr>
+			<th colspan="3">Cache (commented out by default)</th>
+		</tr>
+		<tr>
+			<td colspan="3">Cache page manager override properties.</td>
+		</tr>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>#org.apache.jetspeed.ehcache.pagemanager.maxelements</td>
+			<td>128</td>
+			<td>Database page manager cache size</td>
+		</tr>
+		<tr>
+			<td>#org.apache.jetspeed.ehcache.pagemanager.element.ttl</td>
+			<td>150</td>
+			<td>Database page manager cache element expiration in seconds, (infinite = 0)</td>
+		</tr>
+		<tr>
+			<td>#org.apache.jetspeed.ehcache.pagemanager.maxfiles</td>
+			<td>1000</td>
+			<td>PSML page manager file cache size</td>
+		</tr>
+		<tr>
+			<td>#org.apache.jetspeed.ehcache.config.resource</td>
+			<td>ehcache.xml</td>
+			<td>Cache configuration resource, ('ehcache.xml' or 'distributed-ehcache.xml' supported by default)</td>
+		</tr>
+		<tr>
+			<td>#org.apache.jetspeed.ehcache.group.address</td>
+			<td>230.0.0.1</td>
+			<td>Distributed cache peer discovery multicast address</td>
+		</tr>
+		<tr>
+			<td>#org.apache.jetspeed.ehcache.group.port</td>
+			<td>4446</td>
+			<td>Distributed cache peer discovery multicast port</td>
+		</tr>
+		<tr>
+			<td>#org.apache.jetspeed.ehcache.group.ttl</td>
+			<td>1</td>
+			<td>Distributed cache peer discovery multicast TTL. Choose based on the nodes locations.
+				<ul>	
+					<li>0   - restricted to the same host</li>
+					<li>1   - restricted to the same subnet</li>
+					<li>32  - restricted to the same site</li>
+					<li>64  - restricted to the same region</li>
+					<li>128 - restricted to the same continent</li>
+					<li>255 - unrestricted</li>
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td>#org.apache.jetspeed.ehcache.hostname</td>
+			<td></td>
+			<td>Distributed cache peer hostname, (set to listen on specific interface). Hostname will need to be entered for every node in some cases, see section above on <code>Hostnames</code>, otherwise leave blank.</td>
+		</tr>
+		<tr>
+			<td>#org.apache.jetspeed.ehcache.port</td>
+			<td>40001</td>
+			<td>Distributed cache peer port. Port should be different for each node if they are running on the same machine.</td>
+		</tr>
+	</table><br/>	
+
+	<p>
+		These settings are specific for the page manger cache:<br />
+		<ul>	
+			<li>#org.apache.jetspeed.ehcache.pagemanager.maxelements=128</li>
+			<li>#org.apache.jetspeed.ehcache.pagemanager.element.ttl=150</li>
+			<li>#org.apache.jetspeed.ehcache.pagemanager.maxfiles=1000</li>
+		</ul>
+	</p>
+	</subsection>
 </section>
+
+<section name="Testing Jetspeed Distributed Cache">
+	<p>
+		First, verify that the following page-manager test works on your development machine:
+	</p>
+	<p>
+<source><![CDATA[
+mvn test -P test -Dtest=TestDatabasePageManagerCache
+]]></source>		
+	</p>
+	<p>		
+		Not only must this test pass, but the following message should not appear in the
+		console/shell or in the test log files:
+	</p>
+	<p><strong>		
+		"Server page managers not distributed: possible system limitation... test skipped"
+	</strong></p>
+	<p>		
+		If you see the above message, check firewall settings to allow UDP/4446. That is
+		sometimes needed on Lunix systems if firewalls are enabled to allow UDP multicast
+		loopback. Some older TCP stacks do not support UDP multicast loopback at all. This
+		is why this test does not outright fail even though distributed caches can not be setup.
+	</p>
+	<p>
+		Now for the full test: setup two independent tomcat J2 images.
+	Edit <strong><code>webapps/jetspeed/WEB-INF/assembly/cache.xml</code></strong> for Tomcat image #1:
+	</p>
+<source><![CDATA[
+<bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
+    <property name="defaultConfigResource" value="distributed-ehcache.xml"/>
+    <property name="defaultHostname" value="localhost"/>
+    <property name="defaultPort" value="40001"/>
+</bean>
+]]></source>
+	<p>
+		Edit <strong><code>webapps/jetspeed/WEB-INF/assembly/cache.xml</code></strong> for Tomcat image #2:
+	</p>
+<source><![CDATA[
+<bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
+    <property name="defaultConfigResource" value="distributed-ehcache.xml"/>
+    <property name="defaultHostname" value="localhost"/>
+    <property name="defaultPort" value="40002"/>
+</bean>
+]]></source>
+	
+	<p>
+		Startup browsers against each server.  Use different host names to
+		ensure cookies are managed separately (i.e. '127.0.0.1' and 'localhost').
+		View the same page in each browser. Edit the page in one browser. Upon refresh, changes should be
+		visible in second browser.
+	</p>
+	<p>
+		When distributed caches are run on multiple virtual or physical servers, the default
+		port assigned above does not need to be incremented for each machine. If the servers
+		are deployed on multiple networks, care must be taken to ensure multicast traffic on
+		UDP/4446/230.0.0.1 and TCP/40001 is routed between the servers. Additionally,
+		multicast propagation TTL may have to be specified to enable the UDP packets to
+		jump between networks. The default value is "1", which is supposed to limit packets
+		to one subnet. (See the org.apache.jetspeed.ehcache.group.ttl property).
+	</p>
+	<p>
+		Here is a fully specified cacheManagerConfig bean with its distributed cache default
+		values for normal installation:
+	</p>
+<source><![CDATA[
+<bean id="cacheManagerConfig" class="org.apache.jetspeed.cache.impl.EhCacheConfigResource">
+	<property name="defaultConfigResource" value="distributed-ehcache.xml"/>
+	<property name="defaultGroupAddress" value="230.0.0.1"/>
+	<property name="defaultGroupPort" value="4446"/>
+	<property name="defaultGroupTTL" value="1"/>
+	<property name="defaultHostname" value="localhost"/>
+	<property name="defaultPort" value="40001"/>
+</bean>
+]]></source>
+	<p>
+		Any of these can be configured to reflect requirements of the production network.
+	</p>
+</section>
+
 </body>
 </document>

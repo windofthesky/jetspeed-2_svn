@@ -17,16 +17,107 @@ limitations under the License.
 -->
 <document>
   <properties>
-    <title>Spring Overrides Configuration</title>
-    <subtitle>Spring Overrides Configuration</subtitle>
+    <title>Spring Framework Introduction</title>
+    <subtitle>Spring Framework Introduction</subtitle>
     <authors>
       <person name="David Sean Taylor" email="taylor@apache.org"/>
     </authors>
   </properties>
-  <body>
-<section name="Spring Overrides Configuration">
-<p>
-</p>
-</section>
-</body>
+	<body>
+  
+		<section name="Spring Introduction">
+			<p>
+			Spring is a unique Java application framework meant to simplify the development of applications. Whereas Enterprise Java Beans are very complex to use, the <a href="http://www.springframework.org">Spring Framework</a> is an easy to use and understand framework for enterprise applications. Spring focuses on:
+			<ul>
+				<li>Providing a simple way to manage an object's lifetime and relationships (through Dependency Injection).</li>
+				<li>A layered architecture. Spring is comprehensive yet modular. You only use what you need. For example, you may only make use of the JDBC support without linking in an entire framework.</li>
+				<li>Promoting best software development practices. For example, Spring is designed to always promote test-driven development and eliminate the need for factories and singletons.</li>
+				<li>Inversion of Control. Spring is an application container supporting interceptions and declarative aspect oriented programming.</li>
+			</ul>
+			Spring is an open source project; however it is not housed at Apache.
+			</p>
+
+			<subsection name="Jetspeed + Spring">
+				<p>
+					The Jetspeed portal is configured completely as a Spring application. All services in Jetspeed are constructed and configured as Spring beans.
+					Jetspeed runs in a Spring container. Spring provides a great environment for customization your deployment of Jetspeed. Some of the 
+					added benefits of Spring in Jetspeed are: 
+					<ul>
+						<li>Aspect Oriented Programming in the Spring configuration files.</li>
+						<li>Hot swapping: allows implementation hiding and swapping.</li>
+						<li>Failover: failover to next component when a component fails.</li>
+						<li>Multicasting: multicasting of method invocation to multiple components.</li>
+						<li>Lifecycle management: starting, pausing and resuming components.</li>
+					</ul>
+				</p>
+			</subsection>
+		
+			<subsection name="Components run in a Spring Container">
+				<p>
+					Jetspeed, as a Spring application, is a collection of components, or services, all assembled together to create a complete working portal. If you look at from this point of view, you
+					can see the major portal components being managed by the container, which is really just a Spring container as shown in the diagram below. Note this is by no way an inclusive list of all Jetspeed services wired in Spring:
+				</p>
+				<p>
+					<img src="images/jetspeed-portal-container.jpg" border="0"/><br/><br/>
+				</p>
+			</subsection>
+			
+			
+			<subsection name="Programming to the Jetspeed API">
+				<p>			
+					When developing Jetspeed core, Jetspeed extensions, or Jetspeed Administrative Portlets, you should always program to the Jetspeed API. 
+					All Jetspeed Components are wired together on interfaces, not class implementations. This contract-by-interface approach to programming makes for a powerful
+					and extensible programming model for developing enterprise portal applications. When you are configuring your Jetspeed Spring components (beans), you will see
+					that components have their dependencies wired in to other Jetspeed components via dependency injection. The injected dependencies are always interfaces.
+					Dependencies are declaratively managed in the Spring configuration. In Jetspeed, we support both constructor
+					and setter dependency injection. Here is an example of a component having its dependencies constructor-injected:			
+				</p>
+				<p>				
+				<source><![CDATA[
+<bean id='PortalAdministrationImpl' init-method="start"
+      class='org.apache.jetspeed.administration.PortalAdministrationImpl'>
+    	<constructor-arg index='0'>
+    		<ref bean="org.apache.jetspeed.security.UserManager"/>
+    	</constructor-arg>
+        <constructor-arg index='1'>
+    		<ref bean="org.apache.jetspeed.security.RoleManager"/>
+    	</constructor-arg>
+        <constructor-arg index='2'>
+    		<ref bean="org.apache.jetspeed.security.GroupManager"/>
+    	</constructor-arg>
+        <constructor-arg index='3'>
+    		<ref bean="org.apache.jetspeed.page.PageManager"/>
+    	</constructor-arg>
+        <constructor-arg index='4'>
+    		<ref bean="org.apache.jetspeed.prefs.PreferencesProvider"/>
+    	</constructor-arg>        
+        <constructor-arg index='5'>
+    		<ref bean="org.apache.jetspeed.profiler.Profiler"/>
+    	</constructor-arg>
+        <constructor-arg index='6'>
+    		<ref bean="mailSender"/>
+    	</constructor-arg>
+        <constructor-arg index='7'>
+    		<ref bean="adminVelocityEngine"/>
+    	</constructor-arg>                                                            
+</bean>
+   				]]></source>
+				</p>
+				<p>And here is the Java code constructor matching the Spring configuration. Notice that the dependencies injected are interfaces, not concrete class implementations:
+				</p>
+				<source><![CDATA[
+public PortalAdministrationImpl( UserManager userManager,
+                                 RoleManager roleManager,
+                                 GroupManager groupManager, 
+                                 PageManager pageManager,
+                                 PreferencesProvider preferences,
+                                 Profiler profiler,
+                                 JavaMailSender mailSender,
+                                 VelocityEngine velocityEngine)
+   				]]></source>
+								
+			</subsection>			
+
+		</section>
+	</body>
 </document>

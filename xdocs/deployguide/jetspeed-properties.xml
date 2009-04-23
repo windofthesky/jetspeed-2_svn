@@ -17,271 +17,704 @@ limitations under the License.
 -->
 <document>
   <properties>
-    <title>User Attributes</title>
-    <subtitle>User Information Configuration</subtitle>
+    <title>Jetspeed Properties</title>
+    <subtitle>Jetspeed Properties</subtitle>
     <authors>
       <person name="David Sean Taylor" email="taylor@apache.org"/>
     </authors>
   </properties>
   <body>
+  
 <section name="Jetspeed Properties">
-<p>
+	<p>
+	Jetspeed default configuration properties are located in the <strong><code>jetspeed.properties</code></strong> file in the <strong><code>/WEB-INF/conf/</code></strong> directory. 
+	</p>
+	<p>
+	Jetspeed properties are used at runtime to customize the Jetspeed Portal runtime portal behavior. As of version 2.1.3, you must restart the server after changing one or more properties. We do not recommend
+	editing this file. Instead, use the procedure defined in the <a href='override-properties.html'>Override Properties</a> document. Provided below is a list of all properties as of version 2.1.3.
+	Additionally, see the <a href='config-spring.html'>Spring configuration</a> documentation for further deployment configuration of your portal.  
+	</p>	
+	<table>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>include</td>
+			<td>override.properties</td>
+			<td><a href='override-properties.html'>Override</a> for jetspeed.properties. Make your changes in the overrides, not in jetspeed.properties. This include needs to be come before any other property definitions.</td>
+		</tr>
+		<tr>
+			<td>portal.name</td>
+			<td>Jetspeed</td>
+			<td>The name of your portal as returned to the portlet container via the Portlet API</td>
+		</tr>
+		<tr>
+			<td>portal.version</td>
+			<td>2.1.3</td>
+			<td>The current version of Jetspeed.</td>
+		</tr>
+		<tr>
+			<td>portal.use.internal.jndi</td>
+			<td>false</td>
+			<td>By setting this to true, the Engine will create its own JNDI context.  Not needed in deployment.  We use Tomcat's JNDI instead. Useful for command line utilities and tests.</td>
+		</tr>
+	</table><br/>
+	
+	<table>
+		<tr>
+			<th colspan="3">Portal URL Navigation</th>
+		</tr>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>portalurl.navigationalstate.parameter.name</td>
+			<td>_ns</td>
+			<td>Portal URL Navigational State Parameter Name. This parameter is encoded into the portal URL as part of the URL path.</td>
+		</tr>
+		<tr>
+			<td>portalurl.relative.only</td>
+			<td>false</td>
+			<td>Generate all Portal URLs without schema, servername or port.  WARNING: Setting this to true means requesting secure 
+				Portlet URLs won't have any effect anymore but a proxy frontend (like Apache) can still be used for securing the whole site.  
+				See: https://issues.apache.org/jira/browse/JS2-275#action_12474326</td>
+		</tr>
+	</table><br/>
+	
+	<table>
+		<tr>
+			<th colspan="3">Merged Portal Request Parameters</th>
+		</tr>		
+		<tr>
+			<td colspan="3">Until version 2.1, Jetspeed merged portal request parameters with portlet specific parameters, effectively allowing "shared" parameters.  This 
+		 	is not compliant with the JSR-168 PLT.11, so by default this is now disabled.  By setting merge.portal.parameters.with.portlet.parameters=true this feature can 
+		 	be "restored".  In the situation of portal and portlet parameters with the same name, by default the portlet parameters will be provided first in the values array, 
+		 	but this too can be overridden by setting merge.portal.parameters.before.portlet.parameters=true.  Setting both these properties to true will deliver the "old" 
+		 	pre-2.1 behavior.  Note: for individual portlets, these global settings can be overridden by setting these properties as metadata in jetspeed-portlet.xml.</td>
+		</tr>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>merge.portal.parameters.with.portlet.parameters</td>
+			<td>false</td>
+			<td>Enable merging Portal (servlet) parameters with portlet parameters</td>
+		</tr>
+		<tr>
+			<td>merge.portal.parameters.before.portlet.parameters</td>
+			<td>false</td>
+			<td>By merging portal parameters first, they will override portlet parameters</td>
+		</tr>
+	</table><br/>
+	
+	<table>
+		<tr>
+			<th colspan="3">Portlet Mode Support</th>
+		</tr>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>		
+		<tr>
+			<td>supported.portletmode</td>
+			<td>view</td>
+			<td>Standard portlet mode</td>
+		</tr>
+		<tr>
+			<td>supported.portletmode</td>
+			<td>edit</td>
+			<td>Standard portlet mode</td>
+		</tr>
+		<tr>
+			<td>supported.portletmode</td>
+			<td>help</td>
+			<td>Standard portlet mode</td>
+		</tr>
+		<tr>
+			<td>supported.portletmode</td>
+			<td>about</td>
+			<td>Extended portlet mode</td>
+		</tr>
+		<tr>
+			<td>supported.portletmode</td>
+			<td>config</td>
+			<td>Extended portlet mode</td>
+		</tr>
+		<tr>
+			<td>supported.portletmode</td>
+			<td>edit_defaults</td>
+			<td>Extended portlet mode</td>
+		</tr>
+		<tr>
+			<td>supported.portletmode</td>
+			<td>print</td>
+			<td>Extended portlet mode</td>
+		</tr>
+		<tr>
+			<td>supported.portletmode</td>
+			<td>secure</td>
+			<td>Extended portlet mode (currently only used for testing purposes)</td>
+		</tr>
+		</table>
+		<table>
+		<tr>
+			<th colspan="3">Auto Switching</th>
+		</tr>
+		<tr>
+			<td colspan="3">Auto Switching features enable the portal to use a built-in Configure Mode portlet for portlets who want to support Config Mode, but have not implemented it. Additionally, it also enables the portal to 
+			use the portlet's Edit mode in Edit_Defaults mode. Both of these features are turned off by default. Use the properties below to enable them.</td>
+		</tr>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>		
+		
+		<tr>
+			<td>supported.portletmode.autoswitch.config</td>
+			<td>false</td>
+			<td>Enable auto-switching of config mode to built-in custom config mode portlet when a portlet does not itself provide config mode</td>
+		</tr>
+		
+		<tr>
+			<td>supported.portletmode.autoswitch.edit_defaults</td>
+			<td>false</td>
+			<td>Enable auto-switching in edit_defaults mode to edit mode automatically for portlets not supporting edit_defaults mode</td>
+		</tr>
+		
+		<tr>
+			<td>supported.portletmode.autoswitch.config.surrogate.portlet</td>
+			<td>j2-admin::CustomConfigModePortlet</td>
+			<td>The Auto-switching surrogate portlet for config mode</td>
+		</tr>
+	</table><br/>
+			
+	<table>
+		<tr>
+			<th colspan="3">Window State Support</th>
+		</tr>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>		
+		<tr>
+			<td>supported.windowstate</td>
+			<td>normal</td>
+			<td>Standard window state</td>
+		</tr>
+		<tr>
+			<td>supported.windowstate</td>
+			<td>maximized</td>
+			<td>Standard window state</td>
+		</tr>
+		<tr>
+			<td>supported.windowstate</td>
+			<td>minimized</td>
+			<td>Standard window state</td>
+		</tr>
+		<tr>
+			<td>supported.windowstate</td>
+			<td>solo</td>
+			<td>Extended window state</td>
+		</tr>
+	</table><br/>
 
-</p>
-<table>
-    <tr>
-        <th>Property</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td></td>    
-        <td></td>
-    </tr>
-    <tr>
-        <td></td>    
-        <td></td>
-    </tr>
-</table>
-<p>
-TODO: document these
-</p>
-<source><![CDATA[
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+	<table>
+		<tr>
+			<th colspan="3">User and Role Defaults</th>
+		</tr>
+		<tr>
+			<td colspan="3">The following settings allow you to set default values for guest (non-authenticated) users, as well as default role and user names where required.</td>
+		</tr>		
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>	
+		<tr>
+			<td>default.user.principal</td>
+			<td>guest</td>
+			<td>If there is no authenticated user available from the portlet container, default to this un-authenticated guest user name. 
+			This user is automatically added to the portlet request for calls like getUserPrincipal in the Portlet API</td>
+		</tr>
+		<tr>
+			<td>default.admin.user</td>
+			<td>admin</td>
+			<td>The default admin user is necessary for the portal to execute administrative tasks under non-administrative subjects. Example usage is during self-registration, 
+			where a new user must be created from a non-authenticated user session. </td>
+		</tr>
+		<tr>
+			<td>default.admin.role</td>
+			<td>admin</td>
+			<td>The default name of the admin role. This role is used in the default Jetspeed system deployment for accessing all Administrative Portlets.
+			Beware that if you change this value, you will need to change your security constraints and permissions to grant access to this newly changed role</td>
+		</tr>
+		<tr>
+			<td>default.manager.role</td>
+			<td>manager</td>
+			<td>The default name of the manager role.  This role is used in the default Jetspeed system deployment for accessing all Administrative Portlets
+			Beware that if you change this value, you will need to change your security constraints and permissions to to grant access to this newly changed role</td>
+		</tr>
+		<tr>
+			<td>default.user.role</td>
+			<td>user</td>
+			<td>Authenticated users are distinguished from non-authenticated users such as guest, when they have this specific role in their Subject</td>
+		</tr>
+		<tr>
+			<td>default.guest.role</td>
+			<td>guest</td>
+			<td>This role denotes an un-authenticated user. All users who are not authenticated should have this role.</td>
+		</tr>
+	</table><br/>
 
-# ------------------------------------------------------------------------
-#
-# Jetspeed Portal Engine - Properties
-#
-# $Id$
-#
-# ------------------------------------------------------------------------
+	<table>
+		<tr>
+			<th colspan="3">LOG4J - Logging</th>
+		</tr>
+		<tr>
+			<td colspan="3">The location of the Log4J configuration file. All Jetspeed categories are configured in this file. Jetspeed uses an isolated Log4J logger, so that
+			it does not interfere with the App Server's or other portlet application's Log4J logging. By default, all logging goes into the Jetspeed web application itself under
+			/WEB-INF/conf/Log4j.properties. You may want to change this configuration to point the log files outside of the distributed application. In the distribution,
+			all logging is configured at the <strong>ERROR</strong> level.</td>
+		</tr>
+		<tr>
+			<th>Logger</th>
+			<th>Location</th>
+			<th>Description</th>
+		</tr>	
+		<tr>
+			<td>jetspeed</td>
+			<td>${applicationRoot}/logs/jetspeed.log</td>
+			<td>Default logger for all jetspeed logging not covered in other loggers. This is also the root logger for the Jetspeed application</td>
+		</tr>
+		<tr>
+			<td>PLUTO</td>
+			<td>${applicationRoot}/logs/pluto.log</td>
+			<td>Logs all Portlet Container, Pluto, output.</td>
+		</tr>
+		<tr>
+			<td>console</td>
+			<td>the system console</td>
+			<td>Logs to the Application Server console via a Log4J console appender. Often this is simply System.out</td>
+		</tr>
+		<tr>
+			<td>ojb</td>
+			<td>${applicationRoot}/logs/ojb.log</td>
+			<td>Logs all OJB related activity at the configured level (Object Relational Bridge, the ORM)</td>
+		</tr>
+		<tr>
+			<td>velocity</td>
+			<td>${applicationRoot}/logs/velocity.log</td>
+			<td>Velocity Engine logging</td>
+		</tr>
+		<tr>
+			<td>DEPLOYMENT</td>
+			<td>${applicationRoot}/logs/deployment.log</td>
+			<td>Jetspeed Deployment engine logging</td>
+		</tr>
+	</table>
+	<br/>
+	<table>
+		<tr>
+			<th colspan="3">Portlet Container</th>
+		</tr>
+		<tr>
+			<td colspan="3">The Portlet Container, Pluto, is configured here. We basically just allow you to plugin another portlet container or wrapper. Not very common, but
+			you may want to extend Pluto for custom behavior</td>
+		</tr>		
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>		
+		<tr>
+			<td>container.impl</td>
+			<td>org.apache.pluto.PortletContainerImpl</td>
+			<td>The Portlet Container Implementation, Apache Pluto</td>
+		</tr>
+		<tr>
+			<td>container.wrapper</td>
+			<td>org.apache.jetspeed.container.JetspeedPortletContainerWrapper</td>
+			<td>Portlet Container wrapper implementation</td>
+		</tr>
+	</table><br/>
+	
+	<table>
+		<tr>
+			<th colspan="3">Jetspeed Pipeline</th>
+		</tr>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>		
+		<tr>
+			<td>pipeline.default</td>
+			<td>jetspeed-pipeline</td>
+			<td>Configure the name of the default pipeline if there is no mapping provided for the URL of the request. The pipeline name should exist as a bean
+			in the jetspeed-pipelines.xml Spring configuration file.</td>
+		</tr>
+	</table><br/>
+	
+	<table>	
+		<tr>
+			<th colspan="3">Pluto Factories</th>
+		</tr>
+		<tr>
+			<td colspan="3">The Portlet Container, Pluto 1.0, is made extensible via factories. Pluto behavior can be overriden with this factory mechanism. 
+			Some of the factory configuration is here. Other configuration is
+			directly coded in Spring. See the Spring configuration pluto-factories.xml for details.</td>
+		</tr>		
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>	
+		<tr>
+			<td>factory.container.response</td>
+			<td>org.apache.jetspeed.container.ContainerResponse</td>
+			<td>The Portlet Response factory provider</td>
+		</tr>
+		<tr>
+			<td>factory.container.request</td>
+			<td>org.apache.jetspeed.container.ContainerRequest</td>
+			<td>The Portlet Request factory provider</td>
+		</tr>
+		<tr>
+			<td>factory.invoker.servlet</td>
+			<td>org.apache.jetspeed.container.invoker.ServletPortletInvoker</td>
+			<td>The Portlet Servlet Invoker provider</td>
+		</tr>
+		<tr>
+			<td>factory.invoker.servlet.mapping.name</td>
+			<td>/container</td>
+			<td>Jetspeed Portlet Container Servlet's servlet name</td>
+		</tr>
+		<tr>
+			<td>factory.invoker.local</td>
+			<td>org.apache.jetspeed.container.invoker.LocalPortletInvoker</td>
+			<td>The Local Porltet nvoker provider</td>
+		</tr>
+	</table><br/>
+			
+	<table>
+		<tr>
+			<th colspan="3">Capability, Content Encoding</th>
+		</tr>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>		
+		<tr>
+			<td>content.defaultencoding</td>
+			<td>iso-8859-1</td>
+			<td>Default Content Encoding for a portal response if a content encoding is not configured for a capability map or if a device capability cannot be mapped</td>
+		</tr>
+	</table><br/>
 
-#-------------------------------------------------------------------------
-# override for jetspeed.properties.  This include needs to be come before
-# any other prop definitions.
-#-------------------------------------------------------------------------
-include=override.properties
+	<table>
+		<tr>
+			<th colspan="3">Auto Deployment</th>
+		</tr>
+		<tr>
+			<td colspan="3">Auto Deployment configuration. For automated deployment of portlet applications using the <a href='http://tomcat.apache.org/tomcat-5.5-doc/manager-howto.html'>Tomcat Manager</a> and <a href='../adminguide/palm.html'>Jetspeed PALM</a>.
+			 Most of these properties only work with Tomcat as denoted below.</td>
+		</tr>				
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>autodeployment.catalina.version.major</td>
+			<td>5</td>
+			<td>The version of Tomcat (Catalina). (Tomcat-specific)</td>
+		</tr>
+		<tr>
+			<td>autodeployment.catalina.base</td>
+			<td>${applicationRoot}/../../</td>
+			<td>The home directory for Tomcat</td>
+		</tr>
+		<tr>
+			<td>autodeployment.catalina.engine</td>
+			<td>Catalina</td>
+			<td>The name of the Tomcat engine (Tomcat-specific)</td>
+		</tr>
+		<tr>
+			<td>autodeployment.server</td>
+			<td>localhost</td>
+			<td>The server name or IP address of the Tomcat server. Can be left blank and will default to localhost (Tomcat-specific)</td>
+		</tr>
+		<tr>
+			<td>autodeployment.port</td>
+			<td>8080</td>
+			<td>The port of the Tomcat server. Can be left blank and will default to 8080 (Tomcat-specific)</td>
+		</tr>
+		<tr>
+			<td>autodeployment.user</td>
+			<td>j2deployer</td>
+			<td>The name of the Tomcat user. This value must also be added in the conf/tomcat-users.xml. The user should be given the manager role (Tomcat-specific)</td>
+		</tr>
+		<tr>
+			<td>autodeployment.password</td>
+			<td>@j2deployer</td>
+			<td>The password of the Tomcat user. This value must also be added in the conf/tomcat-users.xml (Tomcat-specific)</td>
+		</tr>
+		<tr>
+			<td>autodeployment.staging.dir</td>
+			<td>${applicationRoot}/WEB-INF/deploy</td>
+			<td>The location of the file watcher directory. Portlet application WAR files can be dropped into here and auto-deployed to the application server.
+			Only tested with Tomcat but may work with other application servers.</td>
+		</tr>
+		<tr>
+			<td>autodeployment.target.dir</td>
+			<td>${applicationRoot}/../</td>
+			<td>The directory where to copy WAR files copied into the autodeployment.staging.dir. The application server is expected to expand the WAR file from there.
+			Only tested with Tomcat but may work with other application servers.</td>
+		</tr>
+		<tr>
+			<td>autodeployment.delay</td>
+			<td>10000</td>
+			<td>The Auto-Deployment file scanner delay (wait) time. Value is in milliseconds. Defaults to 10 seconds (10,000 ms)</td>
+		</tr>
+	</table><br/>
 
-portal.name = Jetspeed
-portal.version = 2.1.3
+	<table>
+		<tr>
+			<th colspan="3">Spring Configuration Directory Location (assembly)</th>
+		</tr>
+		<tr>
+			<td colspan="3">Jetspeed is configured in a Spring Framework container.</td>
+		</tr>				
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>	
+		<tr>
+			<td>assembly.dir</td>
+			<td>/WEB-INF/assembly</td>
+			<td>Webapp-relative location of the Spring configuration directory.</td>
+		</tr>
+		<tr>
+			<td>assembly.extension</td>
+			<td>.xml</td>
+			<td>Extension of the XML files</td>
+		</tr>
+	</table><br/>
 
-# By setting this to true, the Engine will create its own
-# JNDI context.  Not needed in deployment.  We use Tomcat's JNDI
-# instead.
-portal.use.internal.jndi=false
+	<table>
+		<tr>
+			<th colspan="3">Email</th>
+		</tr>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>email.admin</td>
+			<td>someemailaddress@somecompanyororganization.comororgornet</td>
+			<td>Email of the system administrator</td>
+		</tr>
+		<tr>
+			<td>email.manager</td>
+			<td>someemailaddress@somecompanyororganization.comororgornet</td>
+			<td>Email of the system manager</td>
+		</tr>
+		<tr>
+			<td>email.userinfo.attribute</td>
+			<td>user.email</td>
+			<td>Email user info attribute (non standard)</td>
+		</tr>
+	</table><br/>
 
-#----------------------------------------------------------------------------------
-# Portal URL NavigationalState Parameter Name (default: _ns)
-#----------------------------------------------------------------------------------
-portalurl.navigationalstate.parameter.name=_ns
+	<table>
+		<tr>
+			<th colspan="3">Layout</th>
+		</tr>
+		<tr>
+			<td colspan="3">Jetspeed layouts are used to table-like structure to portal pages. Layouts are implemented as portlets..</td>
+		</tr>						
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>layout.page.default</td>
+			<td>jetspeed-layouts::VelocityTwoColumns</td>
+			<td>The default page layout if none is specified. Specified in portlet-application::portlet-name format</td>
+		</tr>
+		<tr>
+			<td>layout.page.storeViewPageInSession</td>
+			<td>true</td>
+			<td>Optimization for looking up LayoutPortlet Page template, default == true</td>
+		</tr>
+	</table><br/>
 
-#----------------------------------------------------------------------------------
-# Generate all Portal URLs without schema, servername or port.
-# WARNING: Defining this to true (default = false) means requesting secure Portlet URLs
-#          won't have any effect anymore.
-#          But a proxy frontend (like Apache) can still be used for securing the whole site.
-#          See: https://issues.apache.org/jira/browse/JS2-275#action_12474326
-#----------------------------------------------------------------------------------
-portalurl.relative.only=false
+	<table>
+		<tr>
+			<th colspan="3">Decorators</th>
+		</tr>
+		<tr>
+			<td colspan="3">Jetspeed decorators are skins that can decorator a portal page or a portlet window.</td>
+		</tr>						
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>decorator.page.default</td>
+			<td>tigris</td>
+			<td>Default page decorator if none specified</td>
+		</tr>
+		<tr>
+			<td>decorator.portlet.default</td>
+			<td>tigris</td>
+			<td>Default portlet decorator if none specified</td>
+		</tr>
+	</table><br/>
 
-#----------------------------------------------------------------------------------
-# Until version 2.1, Jetspeed merged portal request parameters with portlet specific
-# parameters, effectively allowing "shared" parameters.
-# This is not compliant with the JSR-168 PLT.11, so by default this is now disabled.
-#
-# By setting merge.portal.parameters.with.portlet.parameters=true this feature can
-# be "restored".
-# In the situation of portal and portlet parameters with the same name, by default
-# the portlet parameters will be provided first in the values array, but this too
-# can be overridden by setting merge.portal.parameters.before.portlet.parameters=true
-#
-# Setting both these properties to true will deliver the "old" pre-2.1 behavior.
-# Note: for individual portlets, these global settings can be overridden by setting
-#       these properties as metadata in jetspeed-portlet.xml
-#----------------------------------------------------------------------------------
-merge.portal.parameters.with.portlet.parameters=false
-merge.portal.parameters.before.portlet.parameters=false
-# -------------------------------------------------------------------
-#  Portlet Mode Support
-# -------------------------------------------------------------------
-# standard
-supported.portletmode = view
-supported.portletmode = edit
-supported.portletmode = help
-# extended
-supported.portletmode = about
-supported.portletmode = config
-supported.portletmode = edit_defaults
-supported.portletmode = print
-supported.portletmode = secure  # currently only used for testing purposes
-# auto-switching
-# switch config mode to built-in custom config mode portlet
-supported.portletmode.autoswitch.config=false
-# switch edit_defaults mode to edit mode automatically for portlets not supporting edit_defaults mode
-supported.portletmode.autoswitch.edit_defaults=false
-# auto-switching surrogate portlet for config mode
-supported.portletmode.autoswitch.config.surrogate.portlet = j2-admin::CustomConfigModePortlet
+	<table>
+		<tr>
+			<th colspan="3">PSML</th>
+		</tr>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>psml.template.folder</td>
+			<td>/_user/template/</td>
+			<td>PSML Folder Template root. Templates are used for creating new portal site directories, like during new user creation and registration</td>
+		</tr>
+	</table><br/>
 
-# -------------------------------------------------------------------
-#  Window State Support
-# -------------------------------------------------------------------
-# standard
-supported.windowstate = normal
-supported.windowstate = maximized
-supported.windowstate = minimized
-supported.windowstate = solo
-    
-# -------------------------------------------------------------------
-#  Security Information
-# -------------------------------------------------------------------
+	<table>
+		<tr>
+			<th colspan="3">Page Manager Cache</th>
+		</tr>
+		<tr>
+			<td colspan="3">Local and Distributed Cache for Page Manager. Use the override properties to enable these properties. The settings below are the defaults.</td>
+		</tr>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>org.apache.jetspeed.ehcache.pagemanager.maxelements</td>
+			<td>128</td>
+			<td>Database page manager cache size in page elements</td>
+		</tr>
+		<tr>
+			<td>org.apache.jetspeed.ehcache.pagemanager.element.ttl</td>
+			<td>150</td>
+			<td>Database page manager cache element expiration in seconds, (infinite = 0), time to live</td>
+		</tr>
+		<tr>
+			<td>org.apache.jetspeed.ehcache.pagemanager.maxfiles</td>
+			<td>1000</td>
+			<td>PSML (Castor File System Page Manager only) page manager file cache size</td>
+		</tr>
+		<tr>
+			<td>org.apache.jetspeed.ehcache.config.resource</td>
+			<td>ehcache.xml</td>
+			<td>EhCache configuration file name, ('ehcache.xml' or 'distributed-ehcache.xml' supported by default)</td>
+		</tr>
+		<tr>
+			<td>org.apache.jetspeed.ehcache.group.address</td>
+			<td>230.0.0.1</td>
+			<td>Distributed cache peer discovery multicast address</td>
+		</tr>
+		<tr>
+			<td>org.apache.jetspeed.ehcache.group.port</td>
+			<td>4446</td>
+			<td>Distributed cache peer discovery multicast port</td>
+		</tr>
+		<tr>
+			<td>org.apache.jetspeed.ehcache.group.ttl</td>
+			<td>1</td>
+			<td>Distributed cache peer discovery multicast TTL
+				<ul>	
+					<li>0   - restricted to the same host</li>
+					<li>1   - restricted to the same subnet</li>
+					<li>32  - restricted to the same site</li>
+					<li>64  - restricted to the same region</li>
+					<li>128 - restricted to the same continent</li>
+					<li>255 - unrestricted</li>
+				</ul>			
+			</td>
+		</tr>
+		<tr>
+			<td>org.apache.jetspeed.ehcache.hostname</td>
+			<td></td>
+			<td>Distributed cache peer hostname, (set to listen on specific interface)</td>
+		</tr>
+		<tr>
+			<td>org.apache.jetspeed.ehcache.port</td>
+			<td>40001</td>
+			<td>Distributed cache peer port</td>
+		</tr>
+	</table><br/>
 
-# if no user has been setup, default.user.principal will be
-# automatically added via HttpRequestContext.setUserPrincpal()
-default.user.principal=guest
-default.admin.user=admin
-default.admin.role=admin
-default.manager.role=manager
-default.user.role=user
-default.guest.role=guest
+	<table>
+		<tr>
+			<th colspan="3">Profiler</th>
+		</tr>
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>profiler.rule.names.default</td>
+			<td>page</td>
+			<td>Default profiling rule names assigned to a new user</td>
+		</tr>
+		<tr>
+			<td>profiler.rule.values.default</td>
+			<td>j2</td>
+			<td>Default profiling rule values assigned to a new user</td>
+		</tr>
+	</table><br/>
 
-# -------------------------------------------------------------------
-#  L O G 4 J - L O G G I N G
-# -------------------------------------------------------------------
-log4j.file = /WEB-INF/conf/Log4j.properties
-
-# -------------------------------------------------------------------
-#  C O N T A I N E R
-# -------------------------------------------------------------------
-container.impl = org.apache.pluto.PortletContainerImpl
-container.wrapper = org.apache.jetspeed.container.JetspeedPortletContainerWrapper
-
-
-# -------------------------------------------------------------------
-#  P I P E L I N E
-# -------------------------------------------------------------------
-pipeline.default = jetspeed-pipeline
-
-
-# -------------------------------------------------------------------
-#  F A C T O R Y
-# -------------------------------------------------------------------
-
-factory.container.response = org.apache.jetspeed.container.ContainerResponse
-factory.container.request = org.apache.jetspeed.container.ContainerRequest
-
-# Servlet Invoker
-factory.invoker.servlet = org.apache.jetspeed.container.invoker.ServletPortletInvoker
-factory.invoker.servlet.pool.size = 50
-factory.invoker.servlet.mapping.name = /container
-
-# Local Invoker
-factory.invoker.local = org.apache.jetspeed.container.invoker.LocalPortletInvoker
-factory.invoker.local.pool.size = 50
-
-#--------------------------------------------------------------------
-# P O R T L E T  D E P L O Y M E N T  D E S C R I P T O R
-#--------------------------------------------------------------------
-deployment.descriptor.mapping.xml=/WEB-INF/conf/portletdefinitionmapping.xml
-
-
-#-------------------------------------------------------------------------
-# C A P A B I L I T Y,  C O N T E N T  E N C O D I N G
-#-------------------------------------------------------------------------
-content.defaultencoding=iso-8859-1
-
-#---------------------------------------------------------------------------------
-# Run Auto-Deployment set up
-#----'-----------------------------------------------------------------------------
-# THE NEXT PROPERTY DEFINITION MAY NOT BE MODIFIED (NOT EVEN BE PADDED WITH WHITESPACE)
-# BECAUSE ITS FILTERED BY ANT DURING DEPLOYMENT.
-# ITS CONCREET VALUE WILL BE SET FROM BUILD PROPERTY org.apache.jetspeed.catalina.version.major
-autodeployment.catalina.version.major=5
-autodeployment.catalina.base=${applicationRoot}/../../
-autodeployment.catalina.engine=Catalina
-autodeployment.server=@AUTODEPLOYMENT_SERVER@
-autodeployment.port=8080
-autodeployment.user=@AUTODEPLOYMENT_USER@
-autodeployment.password=@AUTODEPLOYMENT_PASSWORD@
-autodeployment.staging.dir=${applicationRoot}/WEB-INF/deploy
-autodeployment.target.dir=${applicationRoot}/../
-autodeployment.delay=10000
-autodeployment.earlyInit = true
-
-#-------------------------------------------------------------------------
-# A S S E M B L Y (note may move this to class path)
-#-------------------------------------------------------------------------
-assembly.dir=/WEB-INF/assembly
-assembly.extension=.xml
-
-#-------------------------------------------------------------------------
-# E M A I L
-#-------------------------------------------------------------------------
-# email of the system administrator
-email.admin = someemailaddress@somecompanyororganization.comororgornet
-# email of the system manager
-email.manager = someemailaddress@somecompanyororganization.comororgornet
-# email user info attribute (non standard)
-email.userinfo.attribute = user.email
-
-#-------------------------------------------------------------------------
-# L A Y O U T
-#-------------------------------------------------------------------------
-# the default page layout if none is specified
-layout.page.default = jetspeed-layouts::VelocityTwoColumns
-# optimization for looking up LayoutPortlet Page template, default == true
-layout.page.storeViewPageInSession = true
-
-#-------------------------------------------------------------------------
-# D E C O R A T O R S
-#-------------------------------------------------------------------------
-# default page decorator if none specified
-decorator.page.default = tigris
-# default portlet decorator if none specified
-decorator.portlet.default = tigris
-
-#-------------------------------------------------------------------------
-# P S M L
-#-------------------------------------------------------------------------
-# default page name (currently handled by PM)
-psml.page.default = default-page.psml    
-# PSML Folder Template to copy during new user creation and registration
-psml.template.folder = /_user/template/
-
-#-------------------------------------------------------------------------
-# P R O F I L E R
-#-------------------------------------------------------------------------
-# default profiling rule names assigned to a new user
-profiler.rule.names.default = page
-# default profiling rule values assigned to a new user
-profiler.rule.values.default = j2 
-    
-#-------------------------------------------------------------------------
-# R E G I S T R A T I O N
-#-------------------------------------------------------------------------
-# PSML Folder Template to copy during new user creation and registration
-# comma separated list
-registration.roles.default = user
-
-# Registration default groups assigned during registration or new user creation
-# comma separated list    
-registration.groups.default = 
-# Registration default profiling rules assigned during registration or new user creation
-# comma separated list
-registration.rules.default = 
-]]></source>        
+	<table>
+		<tr>
+			<th colspan="3">User Registration</th>
+		</tr>
+		<tr>
+			<td colspan="3">User Registration default settings. One or more roles and groups can be assigned during new user registration. Roles or group lists should be comma-separated.</td>
+		</tr>								
+		<tr>
+			<th>Property</th>
+			<th>Default</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td>registration.roles.default</td>
+			<td>user</td>
+			<td>PSML Folder Template to copy during new user creation and registration (comma separated list)</td>
+		</tr>
+		<tr>
+			<td>registration.groups.default</td>
+			<td></td>
+			<td>Registration default groups assigned during registration or new user creation (comma separated list)</td>
+		</tr>
+	</table>
+       
 </section>
 </body>
 </document>

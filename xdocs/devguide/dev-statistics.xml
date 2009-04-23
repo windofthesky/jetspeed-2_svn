@@ -155,7 +155,7 @@
 			</subsection>
 			<subsection name="Using Aggregate Statistics">
 			<p>
-			As illustrated in <a href="stats.html">viewing statistics</a>, Jetspeed-2 provides a default reporting portlet
+			As illustrated in <a href="../adminguide/statistics.html">viewing statistics</a>, Jetspeed-2 provides a default reporting portlet
 			for view statistics.  To query statistics, a <code>StatisticsQueryCriteria</code> must be set.  According to this
 			criteria the <code>PortalStatistics</code> <code>queryStatistics()</code> method will return an <code>AggregateStatistics</code>.
 			</p>

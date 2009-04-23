@@ -45,8 +45,8 @@
                 <img src="images/arch-overview.gif" border="0" />
             </p>
             <p>
-                Configuration files for each component areas are specified.  For more information, go to the documentation
-                section on <a href="config.html">configuration</a>.
+                Configuration files for each component areas are specified.  For more information, see the
+                <a href="../deployguide/security-config.html">Security Configuration section</a> in the Deployment Guide.
             </p>
             <p>
                 Jetspeed security architecture is fully JAAS compliant.  Developers can replace Jetspeed security

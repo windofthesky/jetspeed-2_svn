@@ -32,10 +32,10 @@ It is the standard specification for developing Java portlets. However the Java 
 does not define standards for laying out and aggregating portlets and markup on a page.
 The documentation here under "Portal Design" covers:
 <ul>
-  <li><a href='devguide/guide-psml.html'>Page Aggregation - see the section on PSML</a></li>    
-  <li><a href='devguide/guide-decorators.html'>Page and Portlet Decorators</a></li>    
-  <li><a href='devguide/guide-layouts.html'>Page Layouts</a></li>    
-  <li><a href='devguide/guide-jpt.html'>The Jetspeed Power Tool</a></li>    
+  <li><a href='guide-psml.html'>Page Aggregation - see the section on PSML</a></li>    
+  <li><a href='guide-decorators.html'>Page and Portlet Decorators</a></li>    
+  <li><a href='guide-layouts.html'>Page Layouts</a></li>    
+  <li><a href='guide-jpt.html'>The Jetspeed Power Tool</a></li>    
   <li><a href='#Template Locators'>Template Locators</a></li>          
   <li><a href='#Terminology'>Terminology</a></li>          
 </ul>
@@ -57,7 +57,7 @@ Layout templates are packaged in special Jetspeed-specific and deployable portle
 Layout templates control the overall aggregation of a portal page. Layout templates are 
 combined with portlets, providing a component model for aggregation. Jetspeed-2 comes out 
 of the box with several layout components including one, two and three column layouts. 
-See the <a href='layouts.html'>Layout Documentation</a> for all available Layouts in the 
+See the <a href='guide-layouts.html'>Layout Documentation</a> for all available Layouts in the 
 default Jetspeed-2 system. Of course you can define and derive your own layouts. 
 </p>
 </subsection>
@@ -67,7 +67,7 @@ Decorator templates are packaged in special Jetspeed-specific and deployable arc
 Layout templates control the overall aggregation of a portal page. Layout templates are 
 combined with portlets, providing a component model for aggregation. Jetspeed-2 comes out 
 of the box with several layout components including one, two and three column layouts. 
-See the <a href='devguide/guide-decorators.html'>Decorator Documentation</a> for all available Layouts in the 
+See the <a href='guide-decorators.html'>Decorator Documentation</a> for all available Layouts in the 
 default Jetspeed-2 system. Of course you can define and derive your own layouts. 
 </p>
 </subsection>
@@ -78,7 +78,7 @@ Templates are located by the Jetspeed Template (and Decorator) Locator Component
 locates templates using a normalized name/value pair URL scheme. 
 using this scheme in what is called a 'normalized' URL to either a decorator or layout.
 However, templating engines such as  Velocity need to work with templates using paths to templates that are
-relative of a document root. The <a href='devguide/guide-jpt.html'>Jetspeed Power Tool</a> facilitates conversion between normalized
+relative of a document root. The <a href='guide-jpt.html'>Jetspeed Power Tool</a> facilitates conversion between normalized
 and relative paths. Typically in the Spring configuration, the template root of all decorators is defined as:
 <source test=""><![CDATA[
 ${applicationRoot}/WEB-INF/decorations

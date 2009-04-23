@@ -46,7 +46,9 @@ The profiler input is defined in profiling rules, and can be made of any Java cl
 Jetspeed comes with quite a few predefined rules for taking criteria from request parameters, HTTP headers,
 security information, language and session attributes. The profiler is invoked during the Jetspeed request 
 processing pipeline in the profiler valve. 
-<img src="devguide/images/profiler-pipeline.jpg" border="1"/>   
+</p>
+<p>  
+<img src="images/profiler-pipeline.jpg" border="1"/>   
 </p>
 <p>  
 All of these runtime parameters are called the <i>profile criterion</i>, which the profiler uses to locate 
@@ -87,7 +89,7 @@ There are several reserved (system) directories standardized by the profiler:
         <td>contains complete subsite trees, exactly like root tree</td>
     </tr>    
 </table>        
-<img src="devguide/images/pages.jpg" border="1"/>           
+<img src="images/pages.jpg" border="1"/>           
 </p>    
 <p>By applying profiling rules, the profiler locates pages in the portal site directory.</p>
 </section>      
@@ -550,13 +552,13 @@ Profile Locators are used to locate profiled portal resources such as
 pages, folders, menus and links. A locator contains a collection of properties 
 (name value pairs) describing the actual resource to be located. 
 </p>
-<img src="devguide/images/parameter-resolution.jpg" border="1"/>           
+<img src="images/parameter-resolution.jpg" border="1"/>           
 <p>
 The profiler takes runtime information as input, generalized into 
 generalized profile locators that are passed on to the page manager to locate a  page or menu. 
 The profile locators are normalized and not coupled to the profiler or page manager implementation.
 </p>       
-<img src="devguide/images/parameter-resolution-2.jpg" border="1"/>               
+<img src="images/parameter-resolution-2.jpg" border="1"/>               
 </section>
 
 

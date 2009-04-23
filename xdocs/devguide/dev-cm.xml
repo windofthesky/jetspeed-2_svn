@@ -38,7 +38,7 @@
             behind generic methods such as <code>getComponent()</code>.
             </p>
             <p>
-            <img src="devguide/images/spring-component-manager-c.gif" border="0"/><br/><br/>
+            <img src="images/spring-component-manager-c.gif" border="0"/><br/><br/>
             </p>
             </subsection>
         </section>

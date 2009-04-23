@@ -29,8 +29,8 @@ limitations under the License.
 The following PSML DTDs and XML Schema are included to further define the XML documents defined in these guides:
 <ul>
     <li><a href="guide-psml.html">Guide to PSML</a></li>
-    <li><a href="guide-security-declarative-psml.html">Guide to declarative security through PSML</a></li>
-    <li><a href="guide-menus-declarative-psml.html">Guide to declarative menus in PSML</a></li>
+    <li><a href="../deployguide/guide-security-declarative-psml.html">Guide to declarative security through PSML</a></li>
+    <li><a href="../deployguide/guide-menus-declarative-psml.html">Guide to declarative menus in PSML</a></li>
 </ul>
 </p>
 <p>

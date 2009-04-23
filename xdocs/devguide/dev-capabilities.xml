@@ -216,8 +216,8 @@ cm = capabilities.getCapabilityMap(agent);
             <p>
             The two pictures below describes the <code>Capabilities</code> interfaces and the relational database model
             backing the implementation.<br/><br/>
-            <img src="devguide/images/capabilities-c.gif" border="0"/><br/><br/>
-            <img src="devguide/images/capabilities-db.gif" border="0"/>
+            <img src="images/capabilities-c.gif" border="0"/><br/><br/>
+            <img src="images/capabilities-db.gif" border="0"/>
             </p>
             </subsection>
         </section>

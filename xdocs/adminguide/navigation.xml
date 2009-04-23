@@ -19,15 +19,15 @@
     <body>
         <links>
         	<item name="Main Docs" href="index.html" />
+        	<item name="Users Guide" href="usersguide/index.html" />
         	<item name="Deployment Guide" href="deployguide/index.html" />
         	<item name="Developers Guide" href="devguide/index.html" />
-        	<item name="Users Guide" href="usersguide/index.html" />
             <!--<item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />-->
         </links>
-        <menu name="Installer">
-            <item name="Getting Started" href="getting-started-installer.html" />
-        </menu>
-    	<menu name="Security">
+    	<menu name="Admin Overview">
+    		<item name="Overview" href="adminguide/index.html"/>
+    	</menu>
+    	<menu name="Security Administration">
     	    <item name="Constraints" href="adminguide/constraints.html" />
     	    <item name="Credentials" href="adminguide/credentials.html" />
     	    <item name="Groups" href="adminguide/groups.html" />
@@ -35,26 +35,19 @@
     	    <item name="Roles" href="adminguide/roles.html" />    	    
     	    <item name="SSO" href="adminguide/sso.html" />
     	    <item name="Users" href="adminguide/users.html" />
-    	    <item name="User Attributes" href="adminguide/user-attributes.html" />
-    	    <item name="User Profile" href="adminguide/user-profiler.html" />
 
     	</menu>
-    	<menu name="Portal Management">
+    	<menu name="Portal Administration">
     	    <item name="Applications" href="adminguide/pam.html" />
     	    <item name="Application Lifecycle" href="adminguide/palm.html" />
         	<item name="Import/Export" href="adminguide/import.html" />      	    
         	<item name="Portal Site" href="adminguide/site.html" />  
         	<item name="Portlet Selector" href="adminguide/portlet-selector.html" />  
-        	<item name="Portlet Tracking" href="adminguide/tracking.html" />  
         	<item name="Profiler" href="adminguide/profiler.html" />
         	<item name="Remote Deployment" href="adminguide/rpad.html" />
            	<item name="Search" href="adminguide/search.html" />         	          	      	    
         	<item name="Statistics" href="adminguide/statistics.html" />  
         	<item name="Subsites" href="adminguide/subsites.html" />  
-		</menu>
-		<menu name="Deployment">
-			<item name="Tomcat 5" href="deployguide/guide-tomcat.html"/>
-			<item name="Websphere" href="deployguide/deploying-jetspeed-to-websphere.html"/>
 		</menu>
     </body>
 </project>

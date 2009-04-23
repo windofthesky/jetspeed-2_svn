@@ -24,15 +24,80 @@
         </authors>
     </properties>
     <body>
-        <section name="Default configuration">
+    	<section name='Security Deployment Configuration'>
+    	<p>This section of the guide provides deployers with several quick deployment configuration options for Jetspeed Security.</p>
+    	<subsection name='Authorization: Permissions vs Constraints'>
+    	<p>Jetspeed supports two different kinds of authorization policies:
+    	<ol>
+    	<li>Permissions - use a standard Java Security Policy. Jetspeed stores this policy in a relational database</li>
+    	<li>Constraints - Jetspeed specific Constraint-based Security</li>
+    	</ol>
+    	</p>
+    	<p>By default, Jetspeed uses constraints as shown in the service configuration for the Security Access Controller bean shown below, from the Spring configuration file <code>administration.xml</code>.
+    	Constraints are usually defined on the resource itself in the Jetspeed site, such as on pages or folders. See the <a href='guide-security-declarative-psml.html'>Constraints guide</a> as 
+    	well as the <a href='../adminguide/constraints.html'></a> for more information on constraints-based security.
+    	</p> 
+    	<p>Java Security policies are a little more advanced. See the <a href='../devguide/atz-jaas.html'>JAAS Security Policy Guide</a> for more information on configuring Jetspeed's JAAS Security Policy in a relational database</p>
+ <source><![CDATA[    	
+<bean id="org.apache.jetspeed.security.SecurityAccessController"
+      class='org.apache.jetspeed.security.impl.SecurityAccessControllerImpl'>
+    	<constructor-arg index='0'>
+    		<ref bean="org.apache.jetspeed.page.PageManager"/> 
+    	</constructor-arg>
+    	<!--
+    	   Security Mode:
+    	      1 = Permissions = use Jetspeed Java Security Policy
+    	      2 = Constraints = use Jetspeed (PageManager) Constraint-based Security  
+    	 -->
+    	 <constructor-arg index="1">
+            <value>2</value>
+        </constructor-arg>
+</bean>
+]]></source>
+    	
+    	</subsection>
+    	<subsection name='Login and Authorization Options'>
+<p>Jetspeed provides some general Login and Authorization options to help you customize the behavior of your portal. The service configuration for the 
+Portal Authentication Configuration bean shown below, from the Spring configuration file <code>administration.xml</code> is used to customize two key behaviors of the portal.
+    	<ol>
+    	<li>Create New Sessions upon Login - When a user authentications (logs in) with one of the Jetspeed login portlets, by default, a new session is not created. The session
+    	of the guest user is carried over to the authenticated user. If you want to change this behavior to create a 
+    	new session, set this value to true. The reason this setting is false, is to simulate a online store, where you buy things and then login at the end. </li>
+    	<li>Hard Session Timeouts - For configurations where you need to set the hard session timeout limit in seconds, regardless of (in)activity. Setting to 0 turns off this feature. 
+   		 Note:this feature should be used with 'create new session upon authentication' feature</li>
+    	</ol>
+</p>
+ <source><![CDATA[    	
+
+<bean id='org.apache.jetspeed.administration.PortalAuthenticationConfiguration'
+	class='org.apache.jetspeed.administration.PortalAuthenticationConfigurationImpl'>
+
+   <!--  create new session upon authentication -->   
+   <constructor-arg index='0'>
+   		<value>false</value>
+   </constructor-arg>	
+   <!--  hard session timeout limit in seconds, regardless of (in)activity, setting to 0 turns off this feature 
+   		 note:this feature should be used with 'create new session upon authentication' feature 
+   -->   
+   <constructor-arg index='1'>
+   		<value>0</value>
+   </constructor-arg>
+   <!--  redirect location for hard session expiration -->   
+   <constructor-arg index='2'>
+   		<value>/login/logout</value>
+   </constructor-arg>
+</bean>    
+]]></source>
+
+    	</subsection>
+
+    	</section>
+        <section name="Jetspeed Security Spring Configuration">
             <p>
-                Jetspeed 2 default security services configuration leverages a relational database as its default persitent datastore for security information.
-                Jetspeed 2 security service provider interface provides a mechanism to replace the default datastore configured.
-            </p>
-            <p>
-                3 files are involved when configuring Jetspeed 2 security SPI. All the SPI configuration files are located under
-                <i>${jetspeed-source-home}/portal/src/webapp/WEB-INF/assembly/</i>
-                .
+                The files that are involved when configuring Jetspeed security are located under
+                <i>${jetspeed-source-home}/portal/src/webapp/WEB-INF/assembly/</i>. This section introduces you to these deployment descriptor files. 
+                In normal usage, you will not need to modify these files. This documentation is provided for advanced usage of Jetpeed security 
+                such as replacing the default Security implementations with your own.
             </p>
             <subsection name="security-atn.xml">
                 <p>
@@ -43,7 +108,7 @@
             <subsection name="security-atz.xml">
                 <p>
                     This configuration file configures the authorization policy, in J2's case
-                    <a href="atz-jaas.html">RdbmsPolicy</a>
+                    <a href="../devguide/atz-jaas.html">RdbmsPolicy</a>
                     .
                 </p>
             </subsection>
@@ -300,8 +365,7 @@
                 <p>
                 Also, make sure the above valves are configured in the <code>jetspeed-pipeline</code> bean.</p>
                 <p>
-                See the <a href="credentials.html#User_interaction">User Interaction</a> section in the
-                Credentials Management document for a description of these valves and their relation to the
+                See the <a href="credentials.html">Credentials Management</a> document for a description of these valves and their relation to the
                 interceptors configuration.</p>
             </subsection>
             <subsection name="security-spi-atz.xml">

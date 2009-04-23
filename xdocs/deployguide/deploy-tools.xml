@@ -23,27 +23,27 @@
         </authors>
     </properties>
     <body>
-        <section name="The Role of Jetspeed-2 Deploy Tools">
+        <section name="The Role of Jetspeed Deploy Tools">
         	<subsection name="JetspeedDeploy and the DeploymentManager">
         	<p>
-        	<code>JetspeedDeploy</code> prepares portlet applications for deployment within Jetspeed-2. When a new
-        	portlet deployment event is registered, the <code>DeployPortletAppEventListener</code> invokes <code>JetspeedDeploy</code>
-        	to prepare the portlet application for deployment.
-        	<source>
-    new JetspeedDeploy(event.getPath(), toFile.getAbsolutePath(), stripLoggers);
-            </source>
+        	The Jetpeed Deployment tool (JetspeedDeploy) prepares portlet applications for deployment within the Jetspeed Portal. Jetspeed requires 
+        	that a servlet be added to all portlet application's web.xml declarations before the portlet application can be run with Jetpeed.
+        	Your portlet application can be prepared for deployment by you manually editing the web.xml and adding the required servlet, or the tool 
+        	can be used standalone, from the command line. Or, you can also rely on Jetspeed to add the servlet itself, as the deploy tool is built 
+        	into the Jetspeed Portal itself. Inside the portal, when a new
+        	portlet deployment event is registered, the <code>DeployPortletAppEventListener</code> invokes <code>JetspeedDeploy</code> tool
+        	to prepare the portlet application for deployment. When are new events registered? When you drop the portlet application WAR in the deploy
+        	directory, which is located by default in the Jetspeed WEB-INF/deploy directory.
+        	<code>JetspeedDeploy</code> copies the web application archives (.war) from the WEB-INF/deploy directory to the
+        	destination directory (for example, the Tomcat /webapps directory) and parses the <code>web.xml</code>, <code>portlet.xml</code>, and <code>context.xml</code>
+        	to ensure their compliance with the Jetspeed-2 portal engine.  
         	</p>
         	<p>
-        	<code>JetspeedDeploy</code> copies the web application archives (.war) from the input directory to the
-        	output directory and parses the <code>web.xml</code>, <code>portlet.xml</code>, and <code>context.xml</code>
-        	to ensure their compliance with the Jetspeed-2 portal engine. 
-        	</p>
-        	<p>
-            <img src="deployguide/images/jetspeed-deploy-c.gif" border="0"/><br/><br/>
+            <img src="images/jetspeed-deploy-c.gif" border="0"/><br/><br/>
             </p>
             <p>
-            <code>JetspeedDeploy</code> invokes the <code>JetspeedWebApplicationRewriter</code> to infuse the <code>web.xml</code>
-            with the <code>JetspeedContainer</code> servlet if it does not already exist:
+            The deploy tool then infuses the <code>web.xml</code>
+            with the <code>JetspeedContainer</code> servlet if it does not already exist, which is necessary for any portlet application deployed to Jetpeed:
             <source>
   &lt;servlet&gt;
     &lt;servlet-name&gt;JetspeedContainer&lt;/servlet-name&gt;
@@ -66,7 +66,7 @@
             <p>
             In the same fashion, the <code>JetspeedDeploy</code> invokes the <code>JetspeedContextRewriter</code> to manipulate
             a portlet application <code>context.xml</code> file.  For more information about Tomcat <code>context.xml</code>, 
-            see <a href="http://tomcat.apache.org/tomcat-5.0-doc/deployer-howto.html#Context%20descriptors">tomcat's documentation</a>.
+            see <a href="http://tomcat.apache.org/tomcat-5.5-doc/deployer-howto.html#A%20word%20on%20Contexts">tomcat's documentation</a>.
             </p>
         	</subsection>
             <subsection name="JetspeedDeploy Standalone Usage">

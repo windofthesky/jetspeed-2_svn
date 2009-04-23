@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+    <properties>
+        <title>Jetspeed 2 Registry</title>
+        <subtitle>Guide to Jetspeed Registry</subtitle>
+        <authors>
+            <person name="David Sean Taylor" email="taylor@apache.org" />
+        </authors>
+    </properties>
+    <body>
+        <section name="Registry">
+            <p>
+				The Portlet Registry persists the entire contents of the portlet
+				deployment descriptors in the Jetspeed database:
+				<ul>
+					<li>portlet.xml</li>
+					<li>jetspeed-portlet.xml (Jetspeed-specific extensions)</li>
+				</ul>
+				When a portlet application is deployed, Jetspeed updates the
+				registry with the definitions defined in these portlet
+				descriptors including:
+				<ul>
+					<li>One Portlet Application definition</li>
+					<li>One or more portlet definitions</li>
+					<li>Supported User Attributes</li>
+					<li>Supported custom portlet modes and window states</li>
+				</ul>
+            </p>
+
+			<subsection name='portlet.xml'>         
+			<p>The portlet.xml is the Portlet API descriptor for portlets. The entire contents of the file is indexed and stored
+			in the Jetspeed registry database. Typical content includes:</p> 
+				<ul>
+					<li>Portlet Name, description, display name</li>
+					<li>Implementing class</li>
+					<li>Init Parameters</li>
+					<li>Supported Mime Types / Modes</li>
+					<li>Supported Locales</li>
+					<li>Resource Bundle Information / Localization (titles, keywords)</li>
+					<li>Default Portlet Preferences</li>
+				</ul>
+			<p>Refer to the Portlet Specification for more information on the portlet.xml.
+			</p>
+			</subsection>
+			<subsection name='jetspeed-portlet.xml'>
+			<p>
+			The jetspeed-portlet.xml is used for configuration of specific Jetspeed features not found in other 
+			portals such as parallel rendering. The jetpeed-portlet.xml is made up of a set of elements extending the portlet application definition,
+			and then repeatable sections for each portlet (very much like the portlet.xml). Here is a look at an example portlet application
+			elements: 
+			</p>
+
+<source><![CDATA[					
+   <js:security-constraint-ref>admin</js:security-constraint-ref>
+ 
+    <dc:title>Jetspeed-2 Administration Portlets</dc:title>
+    <dc:title xml:lang="en">Jetspeed-2 Administration Portlets</dc:title>
+    <dc:creator>J2 Team</dc:creator>
+    <js:metadata name="pa-version">2.2</js:metadata>
+]]></source>			
+	<p>Notice the <code>dc:</code> prefixed settings refer to a Dublin Core XML schema. The <code>js:metadata</code> tag provides the version number
+	of the portlet application. This is used by Jetspeed's <a href='config-cluster.html'>Versioned deployment</a> for clusters in
+	order to determine when a new version of the application WAR is ready for deployment.</p>
+	<p>Addtionally, a portlet application can be secured with the js:security-constraint-ref tag, referencing a security constraint. 
+	<a href='../adminguide/constraints.html'>Security constraints</a> allow you to protect an entire portlet application securely.
+	For instance you may want to require the 'admin' role restricting edit mode on all portlets in this application. Or you may require the 'developer'
+	role to restrict users from viewing portlets in this application. Constraints secure access to portlets or applications. 
+	</p>
+	<p>Portlets can also be further defined in the <code>jetspeed-security.xml</code> file. The <code>portlet-name</code> tag allows us to map back
+	to the main <code>portlet.xml</code> file, matching the portlet by name. Again, we have a js:security-constraint-ref tag. This time,
+	we are assigning a security constraint to just one portlet. This constraint overrides the portlet application wide security
+	constraint tag. We also have similar Dublin Core tags for extended metadata.
+	</p>
+<source><![CDATA[			
+    <portlet>
+        <portlet-name>LoginPortlet</portlet-name>
+        <js:security-constraint-ref>public-view</js:security-constraint-ref>       
+        <dc:title>Login Portlet</dc:title>
+        <dc:creator>J2 Team</dc:creator>
+    </portlet>
+]]></source>			
+	<p>Another setting is a hint to the Jetspeed Customizer's Portlet Selector feature:</p>
+<source><![CDATA[			
+	        <js:metadata name="selector.conditional.role">admin</js:metadata>                         
+]]></source>			
+<p>The js:metadata tag with the name attribute set to <code>selector.conditional.role</code> means that only users with the role named
+<code>admin</code> will be able to see this portlet in the portlet selector. All other users will not see this portlet in the selector.
+By setting the conditional role to <code>*</code>, you are telling Jetspeed that this portlet should never appear in the 
+portlet selector.</p>
+<p>There is a global setting in the <a href='jetspeed-properties.html'>jetspeed.properties</a> file allowing you to merge servlet 
+request parameters with portlet parameters. This is useful in Portlet 1.0 applications that need shared render parameters, or if you
+need to communicate with your portlet via the URL in some rare cases. This global feature is also available on a per portlet basis
+ with the <code>merge.portal.parameters.with.portlet.parameters</code> setting. The second line below, <code>merge.portal.parameters.before.portlet.parameters</code>
+ simply determines whether servlet parameters should be merged before or after portlet parameters</p> 
+<source><![CDATA[			
+         <js:metadata name="merge.portal.parameters.with.portlet.parameters">true</js:metadata>
+         <js:metadata name="merge.portal.parameters.before.portlet.parameters">true</js:metadata>
+]]></source>
+<p>
+When you have portlets in certain frameworks, they may submit actions when they should be submitting render navigations.
+If this is the case, we consider this non-standard action behavior. In this case, we do not want cached portlets to be required 
+to refresh while navigating around the portlet. To handle this, we have the <code>nonStandardAction</code> setting.
+</p>
+<source><![CDATA[			
+   <js:metadata name="nonStandardAction">true</js:metadata>
+]]></source>
+
+<p>Jetspeed allows you to define mapping window states in the jetspeed-portlet.xml. In the example below, 
+we are mapping the window state named <code>popup</code> to an existing window state named <code>solo</code>.
+Note this setting is portlet application wide.</p>
+<source><![CDATA[			
+    <custom-window-state>
+      <name>popup</name>
+      <mapped-name>solo</mapped-name> 
+    </custom-window-state>
+]]></source>
+
+<p>Finally, for enabling <a href='guide-aggregation.html'>parallel rendering</a>, you can set the metadata attribute <code>timeout</code>.
+This value is in milliseconds. It serves two purposes: (1) the presence of it enables parallel rendering, and (2) the value determines how long Jetspeed will
+give this portlet to complete rendering before it times out and abandons rendering the portlet.</p>
+<source><![CDATA[			
+   <js:metadata name="timeout">3000</js:metadata>
+]]></source>
+<p>Extended metadata can also be added to the portlets using Dublin Core.
+This metadata conforms to the <a href='http://dublincore.org/'>Dublin Core DCMI format</a> 
+DCMI allows for extended metadata, including localized data for example: 
+</p>
+<source><![CDATA[			
+   <dc:title>Title 1</dc:title>
+    <dc:title xml:lang="en">Eng Title</dc:title>
+    <dc:title xml:lang="fr">Fr Title</dc:title>
+    <dc:subject xml:lang="sp">Spanish Subject</dc:subject>
+    <dc:creator>Default Jeremy Ford</dc:creator>
+    <dc:coverage>Default Coverage</dc:coverage>
+    <dc:contributor>Default Contributor</dc:contributor>
+    <dc:description>Default Description</dc:description>
+    <dc:format>Default Format</dc:format>
+    <dc:identifer>Default Identifier</dc:identifer>
+    <dc:language>Default Language</dc:language>
+    <dc:publisher>Default Publisher</dc:publisher>
+    <dc:relation>Default Relation</dc:relation>
+    <dc:right>Default Right</dc:right>
+    <dc:source>Default Source</dc:source>
+    <dc:type>Default Type</dc:type>
+]]></source>
+</subsection>
+<subsection name='Services'>
+<p>The jetspeed-portlet.xml is also used to define required Jetspeed services.
+If your portlet requires a <a href='guide-services.html'>Jetspeed service</a> it must reference the service by name in the descriptor, for example:
+</p>
+<source><![CDATA[			
+	<js:services>        
+        <js:service name='ApplicationServerManager'/>
+        <js:service name='DeploymentManager'/>
+		<js:service name='EntityAccessor'/>
+        <js:service name='GroupManager'/>    
+        <js:service name='PageManager'/>    
+	</js:services>
+]]></source>
+	
+</subsection>
+      <subsection name="Registry Administration">
+          <p>
+		Jetspeed provides several Registry Administrative portlets:
+		<ul>
+			<li><a href='../adminguide/pam.html'>Portlet Application Manager</a></li>
+			<li><a href='../adminguide/palm.html'>Portlet Application Life Cycle Manager</a></li>
+		</ul>
+	</p>
+</subsection>			
+</section>
+</body>
+</document>

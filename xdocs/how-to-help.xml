@@ -36,7 +36,7 @@
 		Prior to reporting a bug, make sure to discuss the issue on the <a href="mail-lists.html">user mailing list</a> or even the 
 		<a href="mail-lists.html">developer mailing list</a>.</li>
 		<li>When you encounter an issue, you may be compelled to fix it.  We encourage this as this makes for a vibrant
-		community.  Once you have a fix, <a href="guides/guide-j2-development.html">submit a patch</a> on the reporting issue.</li>
+		community.  Once you have a fix, <a href="devguide/patches.html">submit a patch</a> on the reporting issue.</li>
 		</ul>
 		</p>
 		</subsection>

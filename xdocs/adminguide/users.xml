@@ -23,6 +23,7 @@
 			<person name="David Sean Taylor" email="taylor@apache.org" />
 			<person name="Jody McAlister" email="jmcalister@onehippo.com" />
 			<person name="Niels van Kampenhout" email="n.vankampenhout@onehippo.com"/>
+			<person name="Ate Douma" email="ate@douma.nu"/>
 		</authors>
 	</properties>
 	<body>
@@ -32,7 +33,7 @@
 				You can set a user's password, and manage a user's attributes, roles, group memberships, and profiling rules.
 				The User Management page is located inside the Jetspeed Administrative Portlets section.
 				The User Management page is the first tab on the administrative menu across the top.
-				Here you see the User Browser on the left, and the User Details on the right.
+				Here you see the User Browser.
 			</p>
 		</section>
 		<section name="The User Browser">
@@ -59,7 +60,7 @@
 					You can search for a particular user by entering the username or part of the username
 					in the search text box. After clicking on the "Search" button, the user listing
 					will show the search results, starting with the user that best matched your search
-					query, followed by increasingly less matching users.
+					query, followed by the users that normally appear after the matched user in alphabetical order.
 				</p>
 				<p>
 					<img src="images/usersearch.png"/>
@@ -67,7 +68,7 @@
 			</subsection>
 			<subsection name="Filtering">
 				<p>
-					To get only exact matches when searching for (part of) a particular username, check the "filter"
+					To get only exact matches when searching for (or part of) a particular username, check the "filter"
 					checkbox below the search text box.
 				</p>
 				<p>
@@ -118,12 +119,9 @@
 					button to store the new attribute. Note that if you use the name of an
 					existing attribute, its value will be overwritten.
 				</p>
-				<p>
-					For more details on user attributes see <a href="user-attributes.html">User Attributes</a>.
-				</p>
-				<p>
-					<img src="images/userdetailattribute.png"/>
-				</p>
+				<p>   
+     				<img src="images/defininguserattributes.png"/>
+      			</p>
 			</subsection>
 			<subsection name="Password Credentials">
 				<p>
@@ -157,21 +155,32 @@
 				</p>
 			</subsection>
 			<subsection name="Profile">
-				<p>
-					See <a href="user-profiler.html">User Profile</a> for details.
-				</p>
+				<p>Each user principal can be mapped to specific profiling rule. This association is stored in the Jetspeed database.
+The association is three-way, combining the PRINCIPAL + PROFILING RULE + LOCATOR, where the locator values 
+currently supported are <quote>menu</quote> or <quote>page</quote>. Thus we can have two different profiling rules
+applied for locating resources per user: locate pages and locate menus. When the profiler attempts to locate a page
+for the current user, it will apply the profiling rule for the given user. The Jetspeed User Administration portlet
+has a tab for editing user profile information:
+</p>
+<p>    
+<img src="images/user-profile-locator.png" />               
+</p>
+<p>
+Often, profiling rules are determined and then associated by portal-specific logic during user registration (or self-registration).    
+A Jetspeed-specific self-registration portlet could handle the registration process of adding a user to the system, granting roles, 
+setting user attributes, and assigning the profiling rule for the user.        
+</p>
 			</subsection>
 			<subsection name="Deleting a User">
 				<p>
 					To remove a user from the system, click on the "Remove User" button.
-					A message will be shown "Node has been removed". Be aware that this action is permanent! 
+					This action is permanent.  A message indicating that the node has been removed and that the user you just deleted does not exist 
+					will be displayed. 
 				</p>
 				<p>
-					<img src="images/userremoveuser.png"/> 
+					<img src="images/usermessage.png"/> 
 				</p>
-				<p>
-					TODO screenshot of feedback message "Node has been removed"
-				</p>
+
 			</subsection>
 			<subsection name="User Details Configuration">
 				<p>
@@ -296,38 +305,6 @@
 				You can require the password to be changed on the first login. You can also select the default role assigned 
 				to this user, as well as a default profiling rule. Last, you can assign this user to a subsite.
 			</p>
-			<!--
-			<table>
-			<tr>
-			<th>Field</th>
-			<th>Description</th>			
-			</tr>
-			<tr>
-			<td>New User Name</td>
-			<td></td>
-			</tr>
-			<tr>
-			<td>Password</td>
-			<td></td>
-			</tr>
-			<tr>
-			<td>Change Password on first Login</td>
-			<td></td>
-			</tr>
-			<tr>
-			<td>Default Role</td>
-			<td></td>
-			</tr>
-			<tr>
-			<td>Profiling Rule</td>
-			<td></td>
-			</tr>
-			<tr>
-			<td>Subsites</td>
-			<td></td>
-			</tr>
-			</table>
-			-->
 		</section>
 
 	</body>

@@ -1,45 +1,66 @@
 <?xml version="1.0"?>
 <!--
-	Licensed to the Apache Software Foundation (ASF) under one or more
-	contributor license agreements.  See the NOTICE file distributed with
-	this work for additional information regarding copyright ownership.
-	The ASF licenses this file to You under the Apache License, Version 2.0
-	(the "License"); you may not use this file except in compliance with
-	the License.  You may obtain a copy of the License at
-	
-	http://www.apache.org/licenses/LICENSE-2.0
-	
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 -->
 <document>
-	<properties>
-		<title>Jetspeed Deployment Guide</title>
-		<subtitle>Guide to a Jetspeed Deployment</subtitle>
-		<authors>
-			<person name="David Sean Taylor" email="taylor@apache.org" />
-			<person name="Jody McAlister" email="jmcalister@onehippo.com" />
-		</authors>
-	</properties>
-	<body>
-		<section name="Deployment Guide">
-			<p>
-				This guide is targeted for helping administrators and developers configure and deploy Jetspeed to application servers. While the Administrative Guide documents configuring
-				Jetspeed within the portal user interface, this guide documents configuring and deploying with Spring configurations and Java properties files.  
-				<br/><br/>
-			</p>
-		<subsection name="Configuring Jetspeed 2.2 Components">
-            <p>Jetspeed provides very flexible ways for specific configuration settings.</p>
-            <p>Jetspeed components are initially loaded from <strong><code>/WEB-INF/assembly/</code></strong> folder, while the default configuration properties are loaded from <strong><code>/WEB-INF/conf/jetspeed.properties.</code></strong></p>
-            <p>The initial/default configurations can be overrided through the <strong><code>/WEB-INF/assembly/override/</code></strong> folder, while overrides/additional values can be provided through the <strong><code>/WEB-INF/conf/override.properties.</code></strong></p>
-            <p>Another new feature is conditional Spring assembly loading. Jetspeed provides an extended BeanFactory
-            which checks a loaded Spring BeanDefinition for some extra meta data (defined within the Spring configuration itself)
-            against a predefined configuration, registering a BeanDefinition within Spring can be "prevented", effectively
-            filtering out certain definitions.</p>
-        </subsection>
-       </section>		
-	</body>
+    <properties>
+        <title>Jetspeed Deployment Guide</title>
+        <subtitle>Guide to a Jetspeed Deployment</subtitle>
+        <authors>
+            <person name="David Sean Taylor" email="taylor@apache.org" />
+            <person name="Jody McAlister" email="jmcalister@onehippo.com" />
+        </authors>
+    </properties>
+    <body>
+        <section name="Deployment Guide">
+            <p>
+                This guide is targeted at helping administrators and developers configure and deploy Jetspeed to application servers. While the Administrative Guide documents configuring
+                Jetspeed within the portal user interface, this guide documents configuring and deploying with Spring configurations and Java properties files.  
+            </p>
+            
+            <subsection name="Deploying Jetspeed 2">
+                <p>
+                    Jetspeed can be deployed in a variety of application servers. This guide describes the deployments procedure
+                    for <a href="guide-tomcat.html">Apache Tomcat</a> and <a href="deploying-jetspeed-to-websphere.html">IBM Websphere</a>.
+                </p>
+            </subsection>
+            
+            <subsection name="Configuring Jetspeed 2 Components">
+                <p>Jetspeed provides very flexible ways for specific configuration settings.</p>
+                <p>Jetspeed components are initially loaded from <strong><code>/WEB-INF/assembly/</code></strong> folder, while the default configuration properties are loaded from <strong><code>/WEB-INF/conf/jetspeed.properties.</code></strong></p>
+                <p>The initial/default configurations can be overridden through the <strong><code>/WEB-INF/assembly/override/</code></strong> folder, while overrides/additional values can be provided through the <strong><code>/WEB-INF/conf/override.properties.</code></strong></p>
+                <p>Another new feature is conditional Spring assembly loading. Jetspeed provides an extended BeanFactory
+                which checks a loaded Spring BeanDefinition for some extra meta data (defined within the Spring configuration itself)
+                against a predefined configuration, registering a BeanDefinition within Spring can be "prevented", effectively
+                filtering out certain definitions.</p>
+            </subsection>
+            
+            <subsection name="This guide">
+                <p>
+                    The deployment guide describes the <a href="jetspeed-properties.html">properties that can be configured</a>, 
+                    and how to <a href="override-properties.html">override the default values</a>.
+                </p>
+                <p>
+                    There is a short introduction to managing <a href="config-spring.html">Spring configurations</a>, and how to 
+                    <a href="config-overrides.html">override</a> the default Spring configurations with your own deployment customization. 
+                    The entire Jetspeed portal is constructed with a Spring configuration. This deployment guide documents the key components
+                     that you can override. The guide is categorized, in the menu on the left-hand-side, into describing the general subjects of <b>Security Components</b> and <b>Portal Components</b>.
+                </p>
+            </subsection>
+            
+       </section>        
+    </body>
 </document>

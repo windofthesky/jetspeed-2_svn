@@ -944,7 +944,8 @@ http://localhost:8080/jetspeed/ajaxapi?action=getuserinfo
         <td>
             <p>
                 By default the private information (emails, etc..) is protected with
-                RolesSecurityBehavior security, but can be changed in <a href="http://svn.apache.org/viewvc/portals/jetspeed-2/trunk/src/webapp/WEB-INF/assembly/ajax-layout.xml?view=markup">AJAX configuration</a>
+                RolesSecurityBehavior security, but can be changed in 
+                <a href="http://svn.apache.org/viewvc/portals/jetspeed-2/portal/branches/JETSPEED-2.1.3-POSTRELEASE/src/webapp/WEB-INF/assembly/ajax-layout.xml?view=markup">AJAX configuration</a>
                 by altering the protectionScope constructor value to either "all" to protect
                 even the basic information or to "none" when everything will be shown for everyone (not wise on production).
                 The default value "private" will show just the basic information of online/offline users and number of guest sessions,

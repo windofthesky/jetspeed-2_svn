@@ -27,7 +27,7 @@ limitations under the License.
 <section name="Declarative Menus">
 <p>
 Declarative menus are used to add new or customize default navigation elements in displayed portal pages.
-These PSML declarations are part of the <a href="guide-psml.html#Page">page</a> and <a href="guide-psml.html#Folder">folder</a> elements.
+These PSML declarations are part of the <a href="../devguide/guide-psml.html#Page">page</a> and <a href="../devguide/guide-psml.html#Folder">folder</a> elements.
 As with other PSML elements, effective menu declarations available for a given page are those that are explicity
 defined in the page along with all defined in parent folders. For this reason, global site menus are defined in
 the PSML associated with the site root folder. Menu definitions in a specific page or folder override
@@ -42,7 +42,7 @@ sequence of events while a portal page is being composed:
 <ol>
 	<li>The portal layout decorator would request a menu definition by name,</li>
 	<li>the definition would be inherited by the current page and located in the root folder PSML,</li>
-	<li>the Portal Site Component would interpret the menu definition in the context of the current page and populate <a href="guide-psml.html#Page">page</a>, <a href="guide-psml.html#Folder">folder</a>, and <a href="guide-psml.html#Link">link</a> menu options,</li>
+    <li>the Portal Site Component would interpret the menu definition in the context of the current page and populate <a href="../devguide/guide-psml.html#Page">page</a>, <a href="../devguide/guide-psml.html#Folder">folder</a>, and <a href="../devguide/guide-psml.html#Link">link</a> menu options,</li>
 	<li>the decorator would display the menu rendering titles and text from the menu definition itself and the computed menu options into portal navigation content.</li>
 </ol>
 </p>
@@ -69,7 +69,7 @@ The remainder of this guide provides more information on specifying and using de
     </ul>
 	<li><a href="#Page_Layout_Decorators">Page Layout Decorators</a></li>
 	<li><a href="#Portal_Site_Component">Portal Site Component</a></li>
-    <li><a href="guide-psml-dtd.html#PSML_DTDs">PSML Document DTDs</a></li>        
+    <li><a href="../devguide/guide-psml-dtd.html#PSML_DTDs">PSML Document DTDs</a></li>        
 </ul>
 </p>
 </section>
@@ -134,7 +134,7 @@ The &lt;menu&gt; element contains a number of other menu definition PSML element
     <td>Simple element text specifies default locale-independent short title for the menu. The short title, if available, is used as menu text in some decorators. If not specified, the title text is used.</td>
     </tr>
     <tr>
-    <td><a href="guide-psml.html#PSML_Titles_and_Metadata">metadata</a>*</td>
+    <td><a href="../devguide/guide-psml.html#PSML_Titles_and_Metadata">metadata</a>*</td>
     <td>Optionally specifies additional locale-specific titles and short titles.</td>
     </tr>
     <tr>
@@ -297,7 +297,7 @@ The &lt;separator&gt; element contains a number of other menu definition PSML el
     <td>Simple element text specifies default locale-independent text for the separator. The required separator text, whether specified by this attribute or as the contained text of the separator element, is the text to be inserted in the menu by the layout decorator.</td>
     </tr>
     <tr>
-    <td><a href="guide-psml.html#PSML_Titles_and_Metadata">metadata</a>*</td>
+    <td><a href="../devguide/guide-psml.html#PSML_Titles_and_Metadata">metadata</a>*</td>
     <td>Optionally specifies additional locale-specific titles and separator text.</td>
     </tr>
 </table>
@@ -432,13 +432,13 @@ documented here.
 
 <section name='Portal Site Component'>
 <p>
-In conjunction with the <a href="guide-profiler.html">Jetspeed Profiler Component</a>, the Portal Site Component
+In conjunction with the <a href="../devguide/guide-profiler.html">Jetspeed Profiler Component</a>, the Portal Site Component
 performs two closely related functions:
 <ol>
-	<li>Map portal request URLs from a user to PSML <a href="guide-psml.html#Page">page</a> or <a href="guide-psml.html#Folder">folder</a> elements in the site, and</li>
+    <li>Map portal request URLs from a user to PSML <a href="../devguide/guide-psml.html#Page">page</a> or <a href="../devguide/guide-psml.html#Folder">folder</a> elements in the site, and</li>
     <li>construct site navigational menus and their options that reflect what is available to the user from the site.</li>
 </ol>
-At first glance, these functions seem relatively simple: searching within and traversing the <a href="guide-psml.html">PSML site definition</a>.
+    At first glance, these functions seem relatively simple: searching within and traversing the <a href="../devguide/guide-psml.html">PSML site definition</a>.
 However, once the complexities of Profiler composition and <a href="guide-security-declarative-psml.html">Security Constraints</a>
 filtering are taken into account, the mapping is often not trivial.
 </p>
@@ -464,7 +464,7 @@ For example, suppose the following:
     <li>security constraints denied access to '/page2.psml' for the user, and</li>
     <li>'/hidden-page.psml' is declared hidden in the page PSML.</li>
 </ul>
-The current <a href="guide-profiler.html">Profile Locator</a> for the user would specify that the Portal Site Component map the
+The current <a href="../devguide/guide-profiler.html">Profile Locator</a> for the user would specify that the Portal Site Component map the
 following portal request URLs to the specific PSML elements:
 <table>
     <tr>

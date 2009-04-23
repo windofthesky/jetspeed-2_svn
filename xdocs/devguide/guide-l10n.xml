@@ -73,7 +73,7 @@ $ native2ascii LocaleSelectorResources_ja.properties.orig LocaleSelectorResource
 ]]></source>
 <h5>5. Build &amp; Deploy Jetspeed2, and see if your translation is displayed</h5>
 <p>
-For more information about Jetspeed 2 build and deploy steps, see "<a href="getting-started.html">Getting Started</a>".
+For more information about Jetspeed 2 build and deploy steps, see "<a href="../getting-started.html">Getting Started</a>".
 </p>
 <h5>6. Create a new JIRA issue, and attach <code>*_&lt;your language, [country and variant]&gt;.properties</code></h5>
 <p>

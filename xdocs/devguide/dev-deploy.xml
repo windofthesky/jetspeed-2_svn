@@ -69,13 +69,13 @@
             <ul>
             <li>The <code>DeployPortletAppEventListener</code> handles the hot deployment of portlet applications.</li>
             <li>The <code>DeployDecoratorEventListener</code>: handles the hot deployment of decorators. See 
-            <a href="../../guides/guide-decorators.html">guide to decorators</a> for more information.</li>
+            <a href="guide-decorators.html">guide to decorators</a> for more information.</li>
             </ul>
             </p>
         	<p>
         	Jetspeed-2 provides a <code>StandardDeploymentManager</code>.  The <code>StandardDeploymentManager</code> leverages
         	a <code>FileSystemScanner</code> to scan for new assets to deploy.  It leverages Jetspeed-2 
-        	<a href="deploy-tools.html">deploy tools</a> to prepare portlet applications prior to deployment.
+        	<a href="../deployguide/deploy-tools.html">deploy tools</a> to prepare portlet applications prior to deployment.
             </p>
             <p>
             <img src="images/deployment-mgr-c.gif" border="0"/><br/><br/>

@@ -724,7 +724,7 @@ attributes on the defaults element:
 The &lt;security-constraints&gt;, &lt;security-constraints-def&gt;, and &lt;global-security-constraints-ref&gt; elements that appear in <a href="#Page">pages</a>, <a href="#Layout_Fragments">fragments</a>, <a href="#Folder">folders</a>, <a href="#Link">links</a>, and the <a href="#Global_Page_Security">page security</a> elements above are documented separately in the the Declarative Security Constraints Guide.
 </p>
 <p>
-<a href='guide-security-declarative-psml.html'>Declarative Security Constraints Guide</a>
+<a href='../deployguide/guide-security-declarative-psml.html'>Declarative Security Constraints Guide</a>
 </p>
 </section>
 
@@ -733,7 +733,7 @@ The &lt;security-constraints&gt;, &lt;security-constraints-def&gt;, and &lt;glob
 The &lt;menu&gt; element that appears in <a href="#Page">page</a> and <a href="#Folder">folder</a> elements above are documented separately in the the Declarative Menus Guide.
 </p>
 <p>
-<a href='guide-menus-declarative-psml.html'>Declarative Menus Guide</a>
+  <a href='../deployguide/guide-menus-declarative-psml.html'>Declarative Menus Guide</a>
 </p>
 </section>
 

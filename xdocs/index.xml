@@ -84,7 +84,7 @@ Jetspeed provides a security infrastructure so that the information and function
 	<p>
 		
 The Jetspeed enterprise portal integrates dynamic information, people, and processes across organization boundaries. This content is aggregated using portlets from diverse sources. 
-Portlets are just mini-web applications, or web-components. Jetspeed always provides secured access to the portlets. A short overview of Jetspeed <a href="feature.html">features</a>:
+Portlets are just mini-web applications, or web-components. Jetspeed always provides secured access to the portlets. A short overview of Jetspeed <a href="features.html">features</a>:
 <ul>
 <li>Secure Access - Security based on standards, ACLs</li> 
 <li>Single Point of Entry (SSO, Federated) </li>

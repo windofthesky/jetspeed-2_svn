@@ -41,13 +41,14 @@
 </section>
 <section name="SSO Management">
 <para>The SSO management portlet helps to administer SSO credentials and assigning them to Portal Users.</para>
-<table>
-                <tr>
-                    <td style="background-color:#FFFFFF;" align="center">
-                        <img src="images/sso-manage.gif" border="0" />
-                    </td>
-                </tr>
-            </table>
-            </section>
+<p>
+	<img src="images/sso-manage.png" />
+</p>
+<p>
+	The Portal Principal field may be populated by clicking on either the user icon or the group icon.  A pop up window will display to allow you to 
+	select your user or group.
+</p>
+
+</section>
 	</body>
 </document>

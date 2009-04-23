@@ -28,7 +28,7 @@
 			<p>
 				An overview of Jetspeed-2 security architecture is
 				available
-				<a href="../multiproject/jetspeed-security/arch.html">
+				<a href="arch.html">
 					here
 				</a>
 				.
@@ -37,7 +37,7 @@
 				<p>
 					Jetspeed-2 provides a
 					<a
-						href="../multiproject/jetspeed-security/login-module.html">
+						href="login-module.html">
 						LoginModule implementation
 					</a>
 					that leverage the security SPI model to interact
@@ -45,21 +45,21 @@
 				</p>
 				<p>
 					Jetspeed authentication configuration is managed by the <i>security-spi-atn.xml</i> located in 
-					the <a href="guide-portal-assembly.html">portal application assembly directory</a>.  Jetspeed-2
+					the <a href="../deployguide/config-overrides.html">portal application assembly directory</a>.  Jetspeed-2
 					supports authentication against:
 					<ul>
-						<li>A <a href="../multiproject/jetspeed-security/config.html#security-spi-atn_xml">relational database</a> (default authentication implementation).</li>
-						<li>A <a href="../multiproject/jetspeed-security/ldap.html">LDAP authentication</a> implementation.</li>
+						<li>A <a href="../deployguide/security-config.html#security-spi-atn_xml">relational database</a> (default authentication implementation).</li>
+						<li>A <a href="../deployguide/ldap.html">LDAP authentication</a> implementation.</li>
 				    </ul>
 				</p>
 			</subsection>
 			<subsection name="Guide to Authorization Configuration">
 				<p>
-					Jetspeed-2 provides a <a href="http://portals.apache.org/jetspeed-2/multiproject/jetspeed-security/atz-jaas.html">relational database backed JAAS policy implementation</a>.
+					Jetspeed-2 provides a <a href="atz-jaas.html">relational database backed JAAS policy implementation</a>.
 				</p>
 				<p>
 					Jetspeed-2 authorization implementation relies on a SPI model as well and is configured through <code>security-spi-atz.xml</code>.
-					Configuration details are available <a href="../multiproject/jetspeed-security/config.html">here</a>.
+					Configuration details are available <a href="../deployguide/security-config.html">here</a>.
 				</p>
 			</subsection>
 		</section>

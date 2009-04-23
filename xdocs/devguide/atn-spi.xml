@@ -68,7 +68,7 @@
                         Exposes a specific authentication and user management services implementation.  Jetspeed 2
                         provides 2 implementations: RDBMS and LDAP.  Multiple authentication providers 
                         can be provided through configuration.  For more information,
-                        see the <a href="config.html#security-providers_xml">security providers</a> configuration.
+                        see the <a href="../deployguide/security-config.html#security-providers_xml">security providers</a> configuration.
                     </td>
                 </tr>
                 <tr>
@@ -76,7 +76,7 @@
                         <code>CredentialHandler</code>
                     </td>
                     <td>
-                        See <a href="config.html#security-spi-atn_xml">security-spi-atn.xml</a> configuration.
+                        See <a href="../deployguide/security-config.html#security-spi-atn_xml">security-spi-atn.xml</a> configuration.
                     </td>
                 </tr>
                 <tr>
@@ -84,7 +84,7 @@
                         <code>UserSecurityHandler</code>
                     </td>
                     <td>
-                        See <a href="config.html#security-spi-atn_xml">security-spi-atn.xml</a> configuration.
+                        See <a href="../deployguide/security-config.html#security-spi-atn_xml">security-spi-atn.xml</a> configuration.
                     </td>
                 </tr>
             </table>

@@ -38,7 +38,7 @@
     <section name="Configuring NTLM Authentication">
       <p>
         Jetspeed-2 security configuration is explained  
-        <a href="guide-security.html">
+        <a href="../devguide/guide-security.html">
           here
         </a>
         .
@@ -83,7 +83,7 @@
           The above filters set the correct credentials on the request. To use these credentials, you
           have to configure the <code>org.apache.jetspeed.security.impl.ntlm.NtlmSecurityValve</code> in the
           Jetspeed pipelines you want to secure. This Valve can be used as a <i>replacement</i> for the default <code>SecurityValveImpl</code>. For explanation about how to set up pipelines, see
-          <a href="guide-pipeline.html">here</a>. An example of how to configure the NtlmSecurityValve bean:          
+          <a href="guide-pipelines.html">here</a>. An example of how to configure the NtlmSecurityValve bean:          
         </p>
         <source>
         <![CDATA[

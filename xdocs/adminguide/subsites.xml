@@ -70,7 +70,7 @@
         <p>The screenshots above show using the Site Manager to configure your subsites.
         The Site Manager is useful for configuring a live site. When you configure a site initially, 
         subsites are configured on the file system as folders, subfolders and pages. Optionally, these folders can be imported
-        in the database. See the <a href='guide-psml.html'>Database Page Manager</a> for details on storing subsites in the database.
+        in the database. See the <a href='../devguide/guide-psml.html'>Database Page Manager</a> for details on storing subsites in the database.
         </p>
         <p>
         The Site Manager mirrors your file system (or database structure) in a tree view. Looking at the Site View screenshots 

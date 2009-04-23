@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+    <properties>
+        <title>Jetspeed 2 Device Capabilities</title>
+        <subtitle>Guide to Jetspeed Device Capabilities</subtitle>
+        <authors>
+            <person name="David Sean Taylor" email="taylor@apache.org" />
+        </authors>
+    </properties>
+    <body>
+        <section name="Device Capabilities">
+            <p>
+				Jetspeed capabilities provides a mechanism for mapping the client
+				(browser) used to access the portal to media types for page rendering.
+			</p>
+			<p>
+				A device is associated with a list of capabilities, allowing the portal
+				to know what kind of content the device can handle (such as
+				Javascript, DHTML..)
+			</p>
+			<p>
+				The rules for mapping devices to media types and capabilities are
+				stored in the database. The original values for these are first populated with
+				XML data.
+			</p>
+			<p>
+				Your custom build should be setup with the default XML data for
+				devices and media types. Currently there is no administrative portlets for editing device information.
+			</p>
+			<p>
+				A full set of capabilities, devices, media types and mime types are
+				supplied with the XML test data.
+			</p>
+			<p>
+				The Jetspeed-2 capability engine maps clients to media types to
+				mime types. Here are some more detailed definitions:
+				<ul>
+					<li>Clients: The application that initiates a request to the Jetspeed-2
+					portal engine. Jetspeed-2 uses the User-Agent to determine the
+					client that initiates a request.</li>
+					<li>Media Type: The type of media requesting the content (HTML,
+					WML, etc.). Content in Jetspeed-2 can be requested by different
+					type of devices through different media.</li>
+					<li>Mime Type: The type of content being requested.</li>
+					<li>Supported Media Types: HTML, XHTML-BASIC, XML, WML, VXML</li>
+				</ul>
+			</p>
+			
+			<p>
+Define the default mime types
+<source><![CDATA[
+<MimeTypes>
+	<MimeType>application/xhtml+xml</MimeType>
+	<MimeType>text/html</MimeType>
+	<MimeType>text/vnd.wap.wml</MimeType>
+	<MimeType>text/vxml</MimeType>
+	<MimeType>text/xhtml</MimeType>
+	<MimeType>text/xml</MimeType>
+</MimeTypes>
+]]></source>
+			</p>
+
+			<p>
+Define media types (used in special _control folder processing) and preferred mime type:
+<source><![CDATA[
+<MediaType name="html">
+	<charcterSet value="UTF-8"/>
+	<title value="HTML"/>
+	<description value="Rich HTML for HTML 4.0 compliants browsers"/>
+	<capabilities></capabilities>
+	<mimeTypes>text/html</mimeTypes>
+</MediaType>
+]]></source>
+			</p>
+
+
+			<p>
+Defines supported Clients (browsers) by the portal and their device
+capabilities. Clients are mapped to media types via the preferred
+mime type
+<source><![CDATA[
+<Client name="ie5mac" evalOrder="1" preferredMimeTypeID="text/html">
+	<userAgentPattern value=".*MSIE 5.*Mac.*"/>
+	<version value="5.*"/>
+	<model value="None"/>
+	<manufacturer value="Microsoft"/>
+	<capabilities>
+		HTML_3_2,HTML_JAVA,HTML_JAVASCRIPT, HTML_TABLE,HTML_FORM,HTML_FRAME,HTML_IMAGE,HTML_PLUGIN,HTML_CSS1,HTML_DOM_NS4, HTTP_COOKIE
+	</capabilities>
+	<mimeTypes>text/html</mimeTypes>
+</Client>
+]]></source>
+			</p>			
+
+        </section>
+    </body>
+</document>

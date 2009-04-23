@@ -124,6 +124,12 @@
                 and represents the timeout value that Jetspeed will give the portlet to complete 
                 rendering before it gives up. 
             </p>
+            <p> 
+            IMPORTANT: This parameter serves two purposes: (1) the presence of it enables parallel rendering for a portlet, and (2) the value determines how long Jetspeed will
+give this portlet to complete rendering before it times out and abandons rendering the portlet. Future versions will relax the first requirement. Beware that even if parallel
+rendering is enabled, portlets will not be rendered outside the main thread group, i.e. in sequential, unless this timeout parameter exists in the jetspeed-portlet.xml.
+			</p>
+
             <source test="">
                 <![CDATA[
 <portlet>

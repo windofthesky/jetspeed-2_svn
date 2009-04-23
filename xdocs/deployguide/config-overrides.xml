@@ -17,16 +17,168 @@ limitations under the License.
 -->
 <document>
   <properties>
-    <title>User Attributes</title>
-    <subtitle>User Information Configuration</subtitle>
+    <title>Spring Configuration Overrides</title>
+    <subtitle>Spring Configuration Overrides</subtitle>
     <authors>
       <person name="David Sean Taylor" email="taylor@apache.org"/>
     </authors>
   </properties>
   <body>
-<section name="Override Properties">
-<p>
+<section name="Spring Configuration Overrides">
+
+	<p>
+	Spring Configuration Overrides, located in <strong><code>/WEB-INF/assembly/override/</code></strong>, are loaded over the configuration files found in the parent assembly folder (<strong><code>/WEB-INF/assembly/</code></strong>). 
+	Use the override folder to modify the default assembly configuration. There are examples of overrides in the <strong><code>/WEB-INF/assembly/alternate/</code></strong> directory.
+	Note that the configuration files found in the alternate directory are only examples. They are not actively used. If you wanted to use one of the alternate configuration files, copy it into the overrides directory,
+	and then modify it from there.  
+	</p>
+	<p>
+	Spring beans are replaced by name. So the configuration files do not need to match by file name when overriding. If you are only overriding one bean though,
+	it might be easier to just replace the bean in the main Jetspeed Spring container by dropping in a new file with only that one bean. 
+	</p>
+<subsection name='Example Spring Override'>
+<p>For example, say if we were to override the CapabilityValve found in Jetspeed's pipelines.xml file:</p>
+<source><![CDATA[
+	  <bean id="capabilityValve"
+        class="org.apache.jetspeed.capabilities.impl.CapabilityValveImpl"
+        init-method="initialize"
+  >
+   <constructor-arg>
+       <ref bean="org.apache.jetspeed.capabilities.Capabilities" />
+   </constructor-arg>
+  </bean> 
+]]></source>
+	<p>
+The pipelines.xml has a lot of beans. We only need to replace the one bean, capabilityValve, with our implementation. Note the bean id is the same, the impl is different: 	
+	</p>
+<source><![CDATA[
+	  <bean id="capabilityValve"
+        class="com.ace.capabilities.impl.AceCapabilityValveImpl"
+        init-method="initialize"
+  >
+   <constructor-arg>
+       <ref bean="com.ace.services.AceDataService" />
+   </constructor-arg>
+  </bean> 
+]]></source>	
+<p>Saving this one bean in a file named capability-valve-override.xml would clearly define what is being overriden.</p>
+</subsection>	
+	<p>
+	Commonly used overrides in Jetspeed are:
+		<ul>
+			<li>DBPSML</li>
+			<li>Versioned Deployment</li>
+			<li>Adding a Jetspeed Service</li>	
+			<li>Pipelines or tweaking a feature</li>			
+		</ul>
+	</p>
+<subsection name='DBPSML'>
+<p>PSML represents the pages in your portal. There can be lots of them. The default implementation stores the PSML files on the file system.
+A secondary implementation stores the files in the database. Storing in the database is necessary when deploying to a clustered Jetspeed distribution,
+or when you have tens of thousands of users where performance is required. Provided in the alternate directory is a DBPSML alternate configuration, db-page-manager.xml.
+You can take this file and copy it into your overrides directory. It will override the page-manager.xml beans by name.
 </p>
+<source><![CDATA[
+ <bean id="org.apache.jetspeed.page.PageManagerImpl" 
+        name="pageManagerImpl"
+        init-method="init"
+        class="org.apache.jetspeed.page.impl.DatabasePageManager">
+      <!-- OJB configuration file resource path -->
+      <constructor-arg index="0"><value>JETSPEED-INF/ojb/page-manager-repository.xml</value></constructor-arg>       
+      <!-- permissions security enabled flag, default=false -->
+      <constructor-arg index="1"><value>false</value></constructor-arg>
+      <!-- constraints security enabled flag, default=true -->
+      <constructor-arg index="2"><value>true</value></constructor-arg>
+      <!-- folder/page/link cache -->
+      <constructor-arg index="3"><ref bean="pageManagerOidCache"/></constructor-arg>
+      <!-- folder/page/link path cache -->
+      <constructor-arg index="4"><ref bean="pageManagerPathCache"/></constructor-arg>
+  </bean>
+]]></source>
+</subsection>
+<subsection name="Versioned Deployment">
+<p>The default Jetspeed Deployer, although it works well for development on Tomcat, doesn't work well in clustered environments. 
+We have implement a second, Versioned Portlet Application Manager for clustered environments.
+The Node Manager implementation will most likely be deprecated in the future. We are running into 
+limitations with the NodeManager-based cluster support when deploying
+to clusters with replicated databases as well as replicated app servers.
+The default PAM (Portlet Application Manager) is not-appropriate for many deployments of the
+portal. This second version of the PAM has no listeners,
+and a simpler deployment algorithm based on a version number supplied in the jetspeed-portlet.xml
+metadata
+If this field is not found, or if it is equal to or less than the version in the database,
+then the PA will not be deployed.
+This will allow for dropping in 2..n PAs in a cluster, without re-registering. The problem
+with re-registering is that the registry algorithm deep deletes the old PA def from the database,
+create a new PA, with all new OIDs, invalidating all other PAs and portlets on other nodes
+in the cluster.
+</p>
+<source><![CDATA[
+<bean id="deployFactory" class="org.apache.jetspeed.tools.deploy.JetspeedDeployFactory"/>
+  <bean id="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" 
+  	   class="org.apache.jetspeed.tools.pamanager.VersionedPortletApplicationManager" init-method="start" destroy-method="stop"
+  >  	   
+  	   <constructor-arg><ref bean="portletFactory"/></constructor-arg>
+  	   <constructor-arg><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
+  	   <constructor-arg><ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent"/></constructor-arg>
+  	   <constructor-arg><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/></constructor-arg>
+  	   <constructor-arg><ref bean="org.apache.jetspeed.security.PermissionManager"/></constructor-arg>       
+  	   <constructor-arg><ref bean="org.apache.jetspeed.search.SearchEngine"/></constructor-arg>              
+  	   <constructor-arg><ref bean="org.apache.jetspeed.security.RoleManager"/></constructor-arg>                     
+       <!-- role principals to assign a default permission(s) during deployment of a Portlet Application -->
+       <constructor-arg >
+         <list>
+            <value>user</value>
+         </list>
+       </constructor-arg>
+
+       <!--  application root -->
+        <constructor-arg>
+            <value>${applicationRoot}</value>
+        </constructor-arg>
+
+
+   <!-- optional configuration for automatic creation of not yet existing roles as defined in the deployed web.xml:
+       <property name="autoCreateRoles"><value>true</value></property>
+   -->      
+   <!-- optional descriptor change monitor check interval in seconds (0: disabled, default: 10):
+       <property name="descriptorChangeMonitorInterval"><value>10</value></property>
+   -->
+   <!-- optional max PA start retries in case of an error registering ths PA (0: do not retry, default: 10):
+   		this was introduced because of DB constraint validation errors in clustered environments
+   		see https://issues.apache.org/jira/browse/JS2-666
+       <property name="maxRetriedStarts"><value>10</value></property>
+   -->
+  </bean>
+]]></source>
+<p>
+Provided in the alternate directory is a deployment alternate configuration, deployment.xml. You can take this file and copy it into your overrides directory. It will override the deployment.xml beans by name.
+</p>
+</subsection>
+<subsection name="Adding Jetspeed Services">
+ <p>Occasionally you may write your own service to run inside Jetspeed. You will need to add your service to the PortalServices bean.
+ Unfortunately this requires cutting and pasting the entire PortalServices bean, and adding your service to the map in your overriden jetspeed-services.xml:</p>
+<source><![CDATA[
+
+<beans>
+  <!-- Portlet Services  -->
+  <bean id="PortalServices" 
+  	   class="org.apache.jetspeed.services.JetspeedPortletServices" >
+  	   <constructor-arg>
+  	   	<map>
+  	   	...
+          <entry key="MyNewService">
+          	<ref bean="com.ace.services.MyNewService"/>
+          </entry>          
+  	   	</map>
+  	   </constructor-arg>
+  </bean>
+</beans>
+]]></source>
+<p>
+In this case take the jetspeed-services.xml, copy it to your WEB-INF/assembly/override directory, and modify it there to add your new service
+</p>
+</subsection>
 </section>
 </body>
 </document>

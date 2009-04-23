@@ -35,8 +35,8 @@
             <td><a href="http://db.apache.org/derby/">Derby</a> provides Jetspeed-2 default embedded database engine.</td>
           </tr>
           <tr>
-            <td><a href="http://directory.apache.org/subprojects/apacheds/index.html"><img src="images/supporters/directory.gif" border="0" /></a></td>
-            <td>Apache <a href="http://directory.apache.org/subprojects/apacheds/index.html">Directory Server</a> provides Jetspeed-2 default embedded LDAP engine.</td>
+            <td><a href="http://directory.apache.org/apacheds/1.5/"><img src="images/supporters/directory.gif" border="0" /></a></td>
+            <td>Apache <a href="http://directory.apache.org/apacheds/1.5/">Directory Server</a> provides Jetspeed-2 default embedded LDAP engine.</td>
           </tr>
           <tr>
             <td><a href="http://lucene.apache.org/"><img src="images/supporters/lucene.gif" border="0" /></a></td>

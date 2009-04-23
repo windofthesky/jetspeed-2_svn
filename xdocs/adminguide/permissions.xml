@@ -66,7 +66,7 @@
                     It contains one portlet, Security Permissions, which allows you to set permissions for a role on three
                     different resource types: portlets, folders, and pages.
                 </p>
-                <p>TODO screenshot of permissions portlet</p>
+                <p><img src="images/perms-portlets.png" /></p>
                 <h4>The Permissions User Interface</h4>
                 <p>
                     The UI of the Permissions portlet is devided into the following sections:
@@ -81,7 +81,7 @@
                         <td>
                             <p>
                                 Select the resource type you want to define permissions for by
-                                clicking on the correpsonding tab.
+                                clicking on the corresponding tab.
                             </p>
                             <p>
                                 The resource types are:
@@ -91,7 +91,7 @@
                                 <li>Folders</li>
                                 <li>Pages</li>
                             </ul>
-                            <p>TODO: screenshot of tabs</p>
+                            <p><img src="images/perm-tabs.png" /></p>
                         </td>
                     </tr>
                     <tr>
@@ -101,7 +101,7 @@
                                 The list of permissions defined for the selected resource type. Each permission displays
                                 the resource name, the permitted actions, and the roles to which this permission applies.
                             </p>
-                            <p>TODO screenshot of permissions listing</p>
+                            <p><img src="images/perm-resources.png" /></p>
                         </td>
                     </tr>
                     <tr>
@@ -132,7 +132,7 @@
                                 Finally, in the top right corner of the form are four buttons to create a new permission, or
                                 to save, revert or delete the selected permission.
                             </p>
-                            <p>TODO screenshot of the permission edit form</p>
+                            <p><img src="images/perms-buttons.png" /></p>
                         </td>
                     </tr>
                 </table>
