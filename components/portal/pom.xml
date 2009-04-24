@@ -198,6 +198,16 @@ limitations under the License.
             <artifactId>mockrunner</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>commons-jexl</groupId>
+            <artifactId>commons-jexl</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-serializer</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- Runtime Dependencies -->
         <dependency>
@@ -247,7 +257,6 @@ limitations under the License.
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-surefire-plugin</artifactId>
               <configuration>
-                  <skip>true</skip>
                 <excludes>
                   <exclude>**/*TestAggregator.java</exclude>
                 </excludes>
