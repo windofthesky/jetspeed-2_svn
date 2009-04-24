@@ -59,6 +59,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     protected static final char ACTION_SCOPE_ID_KEY = 'k';
     protected static final char PUBLIC_RENDER_PARAM_KEY = 'l';
     protected static final char RENDERED_ACTION_SCOPE_ID_KEY = 'm';
+    protected static final char PORTLET_MANAGED_MODE_KEY = 'n';
     protected static final char[] URLTYPE_ID_KEYS = { 'b', 'g', 'a' };
     
     protected static final String keytable = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -401,8 +402,22 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             if (state.getPortletMode() != null)
             {
                 buffer.append(PARAMETER_SEPARATOR);
-                buffer.append(MODE_KEY);
-                buffer.append(encodePortletMode(state.getPortletMode()));
+                boolean found = false;
+                for ( int i = 0; i < portletModes.length; i++ )
+                {
+                    if (portletModes[i].equals(state.getPortletMode()))
+                    {
+                        buffer.append(MODE_KEY);
+                        buffer.append(keytable.charAt(i));
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    buffer.append(PORTLET_MANAGED_MODE_KEY);
+                    buffer.append(state.getPortletMode().toString());
+                }
                 encoded = true;
             }
             if (state.getWindowState() != null)
@@ -560,6 +575,11 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
                     {
                         currentState.setPortletMode(portletMode);
                     }
+                    break;
+                }
+                case PORTLET_MANAGED_MODE_KEY:
+                {
+                    currentState.setPortletMode(new PortletMode(parameter.substring(1)));
                     break;
                 }
                 case STATE_KEY:
@@ -720,16 +740,6 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
             portletMode = portletModes[index];
         }
         return portletMode;
-    }
-    
-    protected char encodePortletMode(PortletMode portletMode)
-    {
-        for ( int i = 0; i < portletModes.length; i++ )
-        {
-            if (portletModes[i].equals(portletMode))
-                return keytable.charAt(i);
-        }
-        throw new IllegalArgumentException("Unsupported PortletMode: "+portletMode);
     }
     
     protected WindowState decodeWindowState(char state)

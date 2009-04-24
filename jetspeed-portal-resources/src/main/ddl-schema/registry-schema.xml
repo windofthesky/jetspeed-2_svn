@@ -262,6 +262,7 @@ limitations under the License.
         <column name="APPLICATION_ID" required="true" type="INTEGER"/>
         <column name="CUSTOM_NAME" required="true" size="150" type="VARCHAR"/>
         <column name="MAPPED_NAME" size="150" type="VARCHAR"/>
+        <column name="PORTAL_MANAGED" required="true" type="BOOLEANINT"/>        
         <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_CUSTOM_PORTLET_MODE_1" onDelete="cascade">
             <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>
         </foreign-key>        

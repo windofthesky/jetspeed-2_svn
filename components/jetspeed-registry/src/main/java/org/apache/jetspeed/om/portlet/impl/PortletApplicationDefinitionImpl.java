@@ -489,13 +489,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         {
             return mode;
         }
-        else if (JetspeedActions.getExtendedPortletModes().contains(mode))
+        else
         {
             // make sure transient cache is setup
             getSupportedPortletModes();
             return supportedCustomModes.get(mode);
         }
-        return null;            
     }
     
     public List<CustomPortletMode> getCustomPortletModes()
@@ -589,7 +588,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
             
             for (CustomPortletMode customMode : getCustomPortletModes())
             {
-                if ( !list.contains(customMode.getCustomMode()) && JetspeedActions.getExtendedPortletModes().contains(customMode.getMappedMode()) )
+                if ( !list.contains(customMode.getCustomMode()) && (!customMode.isPortalManaged() || JetspeedActions.getExtendedPortletModes().contains(customMode.getMappedMode())) )
                 {
                     list.add(customMode.getCustomMode());
                     supportedCustomModes.put(customMode.getMappedMode(), customMode.getCustomMode());

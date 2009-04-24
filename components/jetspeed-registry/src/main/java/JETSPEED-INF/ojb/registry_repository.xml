@@ -1290,6 +1290,15 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
          jdbc-type="VARCHAR"
       />
 
+      <field-descriptor
+          name="portalManaged"
+          column="PORTAL_MANAGED"
+          jdbc-type="INTEGER"
+          conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+          nullable="false"
+      >
+      </field-descriptor>
+
       <collection-descriptor
          name="descriptions"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.DescriptionImpl"
