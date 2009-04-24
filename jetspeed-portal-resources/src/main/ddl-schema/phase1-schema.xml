@@ -129,9 +129,9 @@ limitations under the License.
 		<column name='USER_NAME' type='VARCHAR' size="80"/>
 		<column name='TIME_STAMP' type='TIMESTAMP'/>
 		<column name='IPADDRESS' type='VARCHAR' size="80"/>
-		<column name='ATTR_NAME' type='VARCHAR' size='40'/>
-		<column name='ATTR_VALUE_BEFORE' type='VARCHAR' size='80'/>
-		<column name='ATTR_VALUE_AFTER' type='VARCHAR' size='80'/>
+		<column name='ATTR_NAME' type='VARCHAR' size='200'/>
+		<column name='ATTR_VALUE_BEFORE' type='VARCHAR' size='1000'/>
+		<column name='ATTR_VALUE_AFTER' type='VARCHAR' size='1000'/>
 		<column name='DESCRIPTION' type='VARCHAR' size="128"/>			    
 	</table>
 
@@ -141,9 +141,9 @@ limitations under the License.
 		<column name='USER_NAME' type='VARCHAR' size="80"/>		
 		<column name='TIME_STAMP' type='TIMESTAMP'/>
 		<column name='IPADDRESS' type='VARCHAR' size="80"/>
-		<column name='ATTR_NAME' type='VARCHAR' size='40'/>
-		<column name='ATTR_VALUE_BEFORE' type='VARCHAR' size='80'/>
-		<column name='ATTR_VALUE_AFTER' type='VARCHAR' size='80'/>
+		<column name='ATTR_NAME' type='VARCHAR' size='200'/>
+		<column name='ATTR_VALUE_BEFORE' type='VARCHAR' size='1000'/>
+		<column name='ATTR_VALUE_AFTER' type='VARCHAR' size='1000'/>
 		<column name='DESCRIPTION' type='VARCHAR' size="128"/>			    
 	</table>
 	
