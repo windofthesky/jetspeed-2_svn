@@ -148,21 +148,35 @@ public class RefreshUserHomepageValveImpl extends ProfilerValveImpl
                 String userName = user.getName();
                 String userFolder = Folder.USER_FOLDER + userName;
                 
-                if (removeBeforeCopy)
+                boolean found = true;
+                Folder destFolder = null;
+                
+                try
                 {
-                    try
+                    destFolder = this.pageManager.getFolder(userFolder);
+                    
+                    if (removeBeforeCopy)
                     {
-                        this.pageManager.removeFolder(this.pageManager.getFolder(userFolder));
-                    }
-                    catch (FolderNotFoundException e)
-                    {
+                        this.pageManager.removeFolder(destFolder);
+                        found = false;
                     }
                 }
-                
-                this.pageManager.deepCopyFolder(source, userFolder, userName);
+                catch (FolderNotFoundException e)
+                {
+                    found = false;
+                }
+
+                if (!found)
+                {
+                    this.pageManager.deepCopyFolder(source, userFolder, userName);
+                }
+                else
+                {
+                    this.pageManager.deepMergeFolder(source, userFolder, userName);
+                }
                 
                 // The user folder will have titles named after the user name.
-                Folder destFolder = this.pageManager.getFolder(userFolder);
+                destFolder = this.pageManager.getFolder(userFolder);
                 destFolder.setTitle(userName);
                 destFolder.setShortTitle(userName);   
                 this.pageManager.updateFolder(destFolder);
@@ -176,6 +190,7 @@ public class RefreshUserHomepageValveImpl extends ProfilerValveImpl
             finally
             {
                 secAtttr.setStringValue("false");
+                userManager.updateUser(user);
             }
         }
         
