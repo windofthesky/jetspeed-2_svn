@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.layout;
 
-import java.util.List;
-
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
@@ -25,6 +23,7 @@ import org.jmock.Mock;
 import org.jmock.core.Constraint;
 import org.jmock.core.InvocationMatcher;
 import org.jmock.core.constraint.IsEqual;
+import org.jmock.core.constraint.IsInstanceOf;
 import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
 import org.jmock.core.stub.ReturnStub;
 
@@ -55,8 +54,8 @@ public class MockPortletRegistryFactory
 
         expectAndReturn(new InvokeAtLeastOnceMatcher(), portletSizesParamMock, "getParamValue", "33%,66%");
         expectAndReturn(new InvokeAtLeastOnceMatcher(), portletRegistryMock, "getPortletDefinitionByUniqueName",new Constraint[] {new IsEqual("layout")}, portletDef);
+        expectAndReturn(new InvokeAtLeastOnceMatcher(), portletRegistryMock, "getPortletDefinitionByUniqueName",new Constraint[] {new IsEqual("layout"), new IsInstanceOf(Boolean.class)}, portletDef);
         expectAndReturn(new InvokeAtLeastOnceMatcher(), portletDefMock, "getInitParam", new Constraint[] {new IsEqual("sizes")}, portletSizesParam);
-        
         
         return portletRegistry;
     }

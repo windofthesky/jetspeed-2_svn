@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.userinfo;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.UserImpl;
+import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.pluto.container.impl.PortletAppDescriptorServiceImpl;
 
 /**
@@ -88,12 +90,25 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
 
     private void innerTestSetUserInfoMap(UserInfoManager uim) throws Exception
     {
+        File webXmlFile = new File(getBaseDir()+"src/test/testdata/deploy/web.xml");
+        File portletXmlFile = new File(getBaseDir()+"src/test/testdata/deploy/portlet.xml");
+        File jetspeedPortletXmlFile = new File(getBaseDir()+"src/test/testdata/deploy/jetspeed-portlet.xml");
+        
         JetspeedDescriptorService descriptorService = new JetspeedDescriptorServiceImpl(new PortletAppDescriptorServiceImpl());
-        InputStream webDescriptor = new FileInputStream(getBaseDir()+"src/test/testdata/deploy/web.xml");
-        InputStream portletDescriptor = new FileInputStream(getBaseDir()+"src/test/testdata/deploy/portlet.xml");
-        InputStream jetspeedPortletDescriptor = new FileInputStream(getBaseDir()+"src/test/testdata/deploy/jetspeed-portlet.xml");
+        InputStream webDescriptor = new FileInputStream(webXmlFile);
+        InputStream portletDescriptor = new FileInputStream(portletXmlFile);
+        InputStream jetspeedPortletDescriptor = new FileInputStream(jetspeedPortletXmlFile);
         ClassLoader paClassLoader = Thread.currentThread().getContextClassLoader();
-        portletApp = descriptorService.read("TestRegistry", "/TestRegistry", webDescriptor, portletDescriptor, jetspeedPortletDescriptor, paClassLoader);
+        
+        String appName = "TestRegistry";
+        String contextPath = "/TestRegistry";
+        long paChecksum = MultiFileChecksumHelper.getChecksum(new File[] {webXmlFile, portletXmlFile, jetspeedPortletXmlFile});
+        
+        portletApp = descriptorService.read(appName, contextPath, webDescriptor, portletDescriptor, jetspeedPortletDescriptor, paClassLoader);
+        portletApp.setName(appName);
+        portletApp.setContextPath(contextPath);
+        portletApp.setChecksum(paChecksum);
+        
         assertNotNull("App is null", portletApp);
         
         // persist the app

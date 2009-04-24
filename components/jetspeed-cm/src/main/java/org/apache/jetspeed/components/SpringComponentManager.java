@@ -143,6 +143,27 @@ public class SpringComponentManager implements ComponentManager
     
     /**
      * <p>
+     * containsComponent
+     * </p>
+     * 
+     * @see org.apache.jetspeed.components.ComponentManagement#containsComponent(java.lang.Object)
+     * @param componentName
+     * @return
+     */
+    public boolean containsComponent(Object componentName)
+    {
+        if (componentName instanceof Class)
+        {
+            return appContext.containsBean(((Class) componentName).getName());
+        }
+        else
+        {
+            return appContext.containsBean(componentName.toString());
+        }
+    }
+    
+    /**
+     * <p>
      * getComponent
      * </p>
      * 
@@ -162,6 +183,22 @@ public class SpringComponentManager implements ComponentManager
         }
     }
 
+    /**
+     * <p>
+     * containsComponent
+     * </p>
+     * 
+     * @see org.apache.jetspeed.components.ComponentManagement#containsComponent(java.lang.Object,
+     *      java.lang.Object)
+     * @param containerName
+     * @param componentName
+     * @return
+     */
+    public boolean containsComponent(Object containerName, Object componentName)
+    {
+        return containsComponent(componentName);
+    }
+    
     /**
      * <p>
      * getComponent

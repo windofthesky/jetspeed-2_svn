@@ -22,10 +22,10 @@
   <!-- Request Context -->
   <bean id="org.apache.jetspeed.request.RequestContextComponent"
     class="org.apache.jetspeed.request.JetspeedRequestContextComponent">
-    <constructor-arg index='0'><ref bean="ServletRequestFactory" /></constructor-arg>
-    <constructor-arg index='1'><ref bean="ServletResponseFactory" /></constructor-arg>
-    <constructor-arg index='2'><ref bean="org.apache.jetspeed.userinfo.UserInfoManager" /></constructor-arg>
-    <constructor-arg index='3'><ref bean="RequestContextObjects" /></constructor-arg>
+    <meta key="j2:cat" value="default or registry" />
+    <constructor-arg index='0'><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" /></constructor-arg>
+    <constructor-arg index='1'><ref bean="org.apache.jetspeed.userinfo.UserInfoManager" /></constructor-arg>
+    <constructor-arg index='2'><ref bean="RequestContextObjects" /></constructor-arg>
   </bean>
   
   <bean id="RequestContextObjects" class="java.util.HashMap">
@@ -40,14 +40,6 @@
     </constructor-arg>
   </bean>
 
-  <bean id="ServletRequestFactory" name="javax.servlet.http.HttpServletRequest"
-    class="org.apache.jetspeed.engine.servlet.ServletRequestFactoryImpl">
-    <constructor-arg><ref bean="org.apache.pluto.services.NamespaceMapper"/></constructor-arg>  </bean>
-
-  <bean id="ServletResponseFactory" name="javax.servlet.http.HttpServletResponse"
-    class="org.apache.jetspeed.engine.servlet.ServletResponseFactoryImpl">
-  </bean>
-  
   <bean id="org.apache.pluto.services.NamespaceMapper"
     class="org.apache.jetspeed.container.namespace.JetspeedNamespaceMapperImpl">
     <constructor-arg index="0"><value>js_</value></constructor-arg>

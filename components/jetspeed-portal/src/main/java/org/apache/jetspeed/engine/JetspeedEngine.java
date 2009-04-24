@@ -168,8 +168,13 @@ public class JetspeedEngine implements Engine
     
         try
         {
-            PortletContainer container = (PortletContainer) componentManager
-                    .getComponent(PortletContainer.class);
+            PortletContainer container = null;
+            
+            if (componentManager.containsComponent(PortletContainer.class))
+            {
+                container = (PortletContainer) componentManager.getComponent(PortletContainer.class);
+            }
+            
             if (container != null)
             {
                 container.destroy();

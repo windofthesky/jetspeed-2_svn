@@ -28,6 +28,7 @@ import junit.framework.TestSuite;
 
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.cache.JetspeedContentCache;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.state.impl.NavigationalStateCodec;
 import org.apache.jetspeed.container.state.impl.PathNavigationalState;
 import org.apache.jetspeed.container.state.impl.SessionFullNavigationalState;
@@ -40,10 +41,11 @@ import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 import org.apache.jetspeed.window.MockPortletWindow;
-import org.apache.jetspeed.container.PortletWindow;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpSession;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * TestPortletContainer
@@ -99,7 +101,6 @@ public class TestNavigationalState extends JetspeedTestCase
         return new TestSuite(TestNavigationalState.class);
     }
 
-    
     public void testSessionFullStateAndQuery()
     {        
         SessionFullNavigationalState navState = new SessionFullNavigationalState(codec, cache);
@@ -147,14 +148,22 @@ public class TestNavigationalState extends JetspeedTestCase
 
         portalURL.setRequest(request);
         portalURL.setCharacterEncoding("UTF-8");
-        portalURL.getNavigationalState().sync(new MockRequestContext());
+        MockRequestContext requestContext = new MockRequestContext();
+        requestContext.setRequest(request);
+        portalURL.getNavigationalState().sync(requestContext);
 
         PortletWindow window = new MockPortletWindow("111");
 
         HashMap<String,String[]> parameters = new HashMap<String, String[]>();
         parameters.put("test",new String[]{"one","two","three"});
 
-        String portletURL = portalURL.createPortletURL(window,parameters,PortletMode.EDIT,WindowState.MAXIMIZED,PortalURL.URLType.ACTION,false);
+        Map<String, String[]> privateRenderParameters = Collections.emptyMap();
+        Map<String, String[]> publicRenderParameters = Collections.emptyMap();
+        
+        String portletURL = portalURL.createPortletURL( window, parameters, null, false, 
+                                                        "PAGE", null, privateRenderParameters, publicRenderParameters, 
+                                                        PortletMode.EDIT, WindowState.MAXIMIZED, 
+                                                        PortalURL.URLType.ACTION, false );
         
         String navStateParameterName = engine.getContext().getConfigurationProperty("portalurl.navigationalstate.parameter.name", AbstractPortalURL.DEFAULT_NAV_STATE_PARAMETER); 
 
@@ -171,32 +180,36 @@ public class TestNavigationalState extends JetspeedTestCase
     }
     
     protected void doTestUrl(PortalURL portalURL, HttpServletRequest request)
-    {             
-      portalURL.setRequest(request);
-      portalURL.setCharacterEncoding("UTF-8");
-      
-      PortletWindow window = new MockPortletWindow("111");
-      NavigationalState nav = portalURL.getNavigationalState();
-
-      // Check that they come out correctly
-      assertTrue("window mode is not set", nav.getMode(window).equals(PortletMode.EDIT));
-      assertTrue("window state is not set", nav.getState(window).equals(WindowState.MAXIMIZED));
-      PortletWindow target = nav.getPortletWindowOfAction();
-      assertNotNull("target window is null", target);
-      assertEquals("target window should equal window 111", target.getId().getStringId(), "111");
-
-      PortletWindow maximizedWindow = nav.getMaximizedWindow();
-      assertNotNull("maximized window is null", maximizedWindow);
-      assertEquals("maximized window should equal window 111", maximizedWindow.getId().getStringId(), "111");
-
-      Map<String,String[]> parameters = nav.getParameterMap(target);
-      assertTrue("There should be one parameter",parameters.size()==1);
-      String[] values = parameters.get("test");
-      assertNotNull("parameter name has no values", values);
-      assertEquals("parameter test should have 3 values", values.length, 3);
-      assertEquals("parameter test[0] should be \"one\"", values[0], "one");
-      assertEquals("parameter test[1] should be \"two\"", values[1], "two");
-      assertEquals("parameter test[2] should be \"three\"", values[2], "three");
+    {
+        portalURL.setRequest(request);
+        portalURL.setCharacterEncoding("UTF-8");
+        
+        PortletWindow window = new MockPortletWindow("111");
+        NavigationalState nav = portalURL.getNavigationalState();
+        MockRequestContext requestContext = new MockRequestContext();
+        requestContext.addPortletWindow(window);
+        requestContext.setRequest(request);
+        nav.sync(requestContext);
+        
+        // Check that they come out correctly
+        assertTrue("window mode is not set", nav.getMode(window).equals(PortletMode.EDIT));
+        assertTrue("window state is not set", nav.getState(window).equals(WindowState.MAXIMIZED));
+        PortletWindow target = nav.getPortletWindowOfAction();
+        assertNotNull("target window is null", target);
+        assertEquals("target window should equal window 111", target.getId().getStringId(), "111");
+        
+        PortletWindow maximizedWindow = nav.getMaximizedWindow();
+        assertNotNull("maximized window is null", maximizedWindow);
+        assertEquals("maximized window should equal window 111", maximizedWindow.getId().getStringId(), "111");
+        
+        Map<String,String[]> parameters = nav.getParameterMap(target);
+        assertTrue("There should be one parameter",parameters.size()==1);
+        String[] values = parameters.get("test");
+        assertNotNull("parameter name has no values", values);
+        assertEquals("parameter test should have 3 values", values.length, 3);
+        assertEquals("parameter test[0] should be \"one\"", values[0], "one");
+        assertEquals("parameter test[1] should be \"two\"", values[1], "two");
+        assertEquals("parameter test[2] should be \"three\"", values[2], "three");
     }
 
 

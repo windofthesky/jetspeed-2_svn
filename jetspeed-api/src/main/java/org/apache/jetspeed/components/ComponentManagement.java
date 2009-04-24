@@ -24,7 +24,11 @@ package org.apache.jetspeed.components;
  */
 public interface ComponentManagement
 {
+    boolean containsComponent(Object componentName);
+    
     Object getComponent(Object componentName);
+    
+    boolean containsComponent(Object containerName, Object componentName);
     
     Object getComponent(Object containerName, Object componentName);
     

@@ -18,6 +18,7 @@
 package org.apache.jetspeed.container.state;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -44,6 +45,15 @@ import org.apache.jetspeed.window.MockPortletWindow;
  */
 public class MockRequestContext implements RequestContext
 {
+    
+    private HttpServletRequest request;
+    private final Map<String, PortletWindow> portletWindows = new HashMap<String, PortletWindow>();
+    
+    public void addPortletWindow(PortletWindow window)
+    {
+        portletWindows.put(window.getId().getStringId(), window);
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.request.RequestContext#getActionWindow()
      */
@@ -228,10 +238,9 @@ public class MockRequestContext implements RequestContext
      */
     public HttpServletRequest getRequest()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return request;
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.request.RequestContext#getRequestForWindow(org.apache.jetspeed.container.PortletWindow)
      */
@@ -431,7 +440,7 @@ public class MockRequestContext implements RequestContext
      */
     public void setRequest(HttpServletRequest request)
     {
-        // TODO Auto-generated method stub
+        this.request = request;
     }
 
     /* (non-Javadoc)
@@ -472,8 +481,7 @@ public class MockRequestContext implements RequestContext
      */
     public PortletWindow resolvePortletWindow(String windowId)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return portletWindows.get(windowId);
     }
 
     /* (non-Javadoc)

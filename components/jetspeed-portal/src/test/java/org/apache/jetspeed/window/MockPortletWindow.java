@@ -45,11 +45,24 @@ public class MockPortletWindow implements PortletWindow
 {
     private static final long serialVersionUID = 6391120828720160018L;
     
-    private String id;
+    private PortletWindowID windowId;
     
-    public MockPortletWindow(String id)
+    public MockPortletWindow(final String id)
     {
-        this.id = id;
+        this.windowId = new PortletWindowID()
+        {
+            private static final long serialVersionUID = 1L;
+
+            public String getStringId()
+            {
+                return id;
+            }
+
+            public String toString()
+            {
+                return getStringId();
+            }
+        };
     }
     
     /* (non-Javadoc)
@@ -102,8 +115,7 @@ public class MockPortletWindow implements PortletWindow
      */
     public PortletWindowID getId()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return windowId;
     }
 
     /* (non-Javadoc)
@@ -129,8 +141,7 @@ public class MockPortletWindow implements PortletWindow
      */
     public String getWindowId()
     {
-        // TODO Auto-generated method stub
-        return id;
+        return windowId.getStringId();
     }
 
     /* (non-Javadoc)
@@ -234,8 +245,8 @@ public class MockPortletWindow implements PortletWindow
 
     public boolean isValid()
     {
-        // TODO Auto-generated method stub
-        return false;
+        // always return true
+        return true;
     }
 
     public List<KeyValue<String, Element>> getHeadElements()
