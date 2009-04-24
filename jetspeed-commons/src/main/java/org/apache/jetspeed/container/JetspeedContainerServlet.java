@@ -18,26 +18,20 @@ package org.apache.jetspeed.container;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.EventPortlet;
 import javax.portlet.EventRequest;
 import javax.portlet.EventResponse;
-import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
-import javax.portlet.ResourceServingPortlet;
 import javax.portlet.UnavailableException;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -54,6 +48,7 @@ import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.DirectoryHelper;
+import org.apache.pluto.container.PortletMimeResponseContext;
 
 /**
  * Jetspeed Container entry point.
@@ -64,11 +59,12 @@ import org.apache.jetspeed.util.DirectoryHelper;
 public class JetspeedContainerServlet extends HttpServlet 
 {
     private static final long serialVersionUID = -7900846019170204195L;
-    private String  contextName;
     private boolean started = false;
-    private Timer   startTimer = null;
     private PortalSessionsManager psm;
-    private String contextPath;
+    // default visibility for more optimal access by the startTimer
+    Timer startTimer = null;
+    String contextName;
+    String contextPath;
 
     // -------------------------------------------------------------------
     // I N I T I A L I Z A T I O N
@@ -139,7 +135,6 @@ public class JetspeedContainerServlet extends HttpServlet
     }
 
     private void startPortletApplication(final ServletContext context, final String paDir, final ClassLoader paClassLoader)
-    throws ServletException
     {
 
 /* TODO: Ate Douma, 2005-03-25
@@ -156,29 +151,30 @@ public class JetspeedContainerServlet extends HttpServlet
         final String START_DELAYED_MSG = JCS + "Could not yet start portlet application at: "+contextName+". Starting back ground thread to start when the portal comes online.";
         context.log(START_DELAYED_MSG);
         startTimer = new Timer(true);
-        startTimer.schedule(
-                new TimerTask() {
-                    public void run() {
-                      synchronized(contextName)
-                      {
-                        if (startTimer != null)
+        startTimer.schedule(new TimerTask()
+        {
+            public void run()
+            {
+                synchronized (contextName)
+                {
+                    if (startTimer != null)
+                    {
+                        if (attemptStart(context, contextName, contextPath, paDir, paClassLoader))
                         {
-                          if (attemptStart(context, contextName, contextPath, paDir, paClassLoader)) {
                             startTimer.cancel();
                             startTimer = null;
-                        } else {
-                            context.log(START_DELAYED_MSG);
-                          }
                         }
+                        else
+                        {
+                            context.log(START_DELAYED_MSG);
                         }
                     }
-                },
-//                10000, Setting delay to 1ms, see TODO comment above
-                1,
-                10000);
+                }
+            }
+        }, 1, 10000);
     }
 
-    private boolean attemptStart(ServletContext context, String contextName, String contextPath, String paDir, ClassLoader paClassLoader) 
+    boolean attemptStart(ServletContext context, String contextName, String contextPath, String paDir, ClassLoader paClassLoader) 
     {
         try
         {
@@ -259,7 +255,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 
                 if (filterManager != null)
                 {
-                    filterManager.processFilter(actionRequest, actionResponse, (Portlet) portletInstance, portletConfig.getPortletContext());
+                    filterManager.processFilter(actionRequest, actionResponse, portletInstance, portletConfig.getPortletContext());
                 }
                 else
                 {
@@ -273,7 +269,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 
                 if (filterManager != null)
                 {
-                    filterManager.processFilter(renderRequest, renderResponse, (Portlet) portletInstance, portletConfig.getPortletContext());
+                    filterManager.processFilter(renderRequest, renderResponse, portletInstance, portletConfig.getPortletContext());
                 }
                 else
                 {
@@ -287,7 +283,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 
                 if (filterManager != null)
                 {
-                    filterManager.processFilter(eventRequest, eventResponse, (EventPortlet) portletInstance, portletConfig.getPortletContext());
+                    filterManager.processFilter(eventRequest, eventResponse, portletInstance, portletConfig.getPortletContext());
                 }
                 else
                 {
@@ -301,7 +297,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 
                 if (filterManager != null)
                 {
-                    filterManager.processFilter(resourceRequest, resourceResponse, (ResourceServingPortlet) portletInstance, portletConfig.getPortletContext());
+                    filterManager.processFilter(resourceRequest, resourceResponse, portletInstance, portletConfig.getPortletContext());
                 }
                 else
                 {
@@ -320,38 +316,16 @@ public class JetspeedContainerServlet extends HttpServlet
                 destroyPortlet = true;
             }
             
-            if (!PortletWindow.Action.ACTION.equals(window.getAction()))
+            if (PortletWindow.Action.RENDER.equals(window.getAction())|| PortletWindow.Action.RESOURCE.equals(window.getAction()))
             {
                 ServletContext context = getServletContext();
                 context.log(JCS + "Error rendering portlet \"" + window.getPortletDefinition().getUniqueName() + "\": " + t.toString(), t);
-                try
+                PrintWriter writer = ((PortletMimeResponseContext)window.getPortletResponseContext()).getWriter();
+                if (writer != null)
                 {
-                    String errorTemplate = getInitParameter("portal.error.page");
-                    if (errorTemplate == null)
-                    {
-                        errorTemplate = "/WEB-INF/templates/generic/html/error.vm";
-                    }
-                    if (null != context.getResource(errorTemplate))
-                    {
-                        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(errorTemplate);
-                        request.setAttribute("e", t);
-                        StringWriter stackTrace = new StringWriter();
-                        t.printStackTrace(new PrintWriter(stackTrace));
-                        request.setAttribute("stacktrace", stackTrace.toString());
-                        dispatcher.include(request, response);
-                    }
-                    else
-                    {
-                        displayPortletNotAvailableMessage(t, response, window.getPortletDefinition().getUniqueName());
-                    }
-                }
-                catch (Throwable e)
-                {
-                    displayPortletNotAvailableMessage(t, response, window.getPortletDefinition().getUniqueName());
-                }
-                finally
-                {
-                    t.printStackTrace();
+                    Throwable cause = t;
+                    while (cause.getCause() != null) cause = cause.getCause();
+                    writer.write("Portlet " + window.getPortletDefinition().getUniqueName() +" not available: " + cause.getMessage());
                 }
             }
             else
@@ -395,25 +369,6 @@ public class JetspeedContainerServlet extends HttpServlet
         }
     }
 
-    private void displayPortletNotAvailableMessage(Throwable t, HttpServletResponse response, String portletName)
-    throws IOException
-    {
-        getServletContext().log(JCS + "Error rendering JetspeedContainerServlet error page: " + t.toString(), t);
-        PrintWriter directError;
-        try
-        {
-            directError = new PrintWriter(response.getWriter());
-        }
-        catch (IllegalStateException e)
-        {
-            // Happens if get writer is already been called.
-            directError = new PrintWriter(new OutputStreamWriter(response.getOutputStream()));            
-        }
-        directError.write("Portlet is Not Available: " + portletName + "<br/>Reason: " + t.getMessage());
-        //t.printStackTrace(directError); 
-        directError.close();        
-    }
-    
     /**
      * In this application doGet and doPost are the same thing.
      *
@@ -433,41 +388,39 @@ public class JetspeedContainerServlet extends HttpServlet
 
     public final void destroy()
     {
-      if ( contextName != null )
-      {
-        synchronized (contextName)
+        if (contextName != null)
         {
-          if ( startTimer != null )
-          {
-            startTimer.cancel();
-            startTimer = null;
-    }
-          else if ( started )
-          {
-            started = false;
-            PortletServices services = JetspeedPortletServices.getSingleton();
-            if (services != null)
+            synchronized (contextName)
             {
-                PortletApplicationManagement pam =
-                    (PortletApplicationManagement)services.getService("PAM");
-
-                if (pam != null)
-    {
-                    getServletContext().log(STOP_MSG + contextName);
-        try
-        {
-                      pam.stopPortletApplication(contextName);
+                if (startTimer != null)
+                {
+                    startTimer.cancel();
+                    startTimer = null;
+                }
+                else if (started)
+                {
+                    started = false;
+                    PortletServices services = JetspeedPortletServices.getSingleton();
+                    if (services != null)
+                    {
+                        PortletApplicationManagement pam = (PortletApplicationManagement) services.getService("PAM");
+                        if (pam != null)
+                        {
+                            getServletContext().log(STOP_MSG + contextName);
+                            try
+                            {
+                                pam.stopPortletApplication(contextName);
+                            }
+                            catch (Exception e)
+                            {
+                                getServletContext().log(STOP_FAILED_MSG + contextName, e);
+                            }
+                        }
                     }
-                    catch (Exception e)
-            {
-                      getServletContext().log(STOP_FAILED_MSG + contextName, e);
-                    }
+                    contextName = null;
+                    psm = null;
                 }
             }
-            contextName = null;
-            psm = null;
-            }
-        }
         }
     }
 }
