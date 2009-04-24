@@ -237,6 +237,11 @@
             <artifactId>tyrex</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>commons-jexl</groupId>
+            <artifactId>commons-jexl</artifactId>
+            <scope>test</scope>
+        </dependency>
         
         <!-- Runtime Dependencies -->
         <dependency>

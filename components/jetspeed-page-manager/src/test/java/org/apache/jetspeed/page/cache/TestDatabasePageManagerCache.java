@@ -563,7 +563,7 @@ public class TestDatabasePageManagerCache extends TestCase
         
         private void logProcessLine(final String line)
         {
-            if (!line.contains("INFO") && (line.contains("ERROR") || line.contains("Exception") || line.startsWith("   at ")))
+            if (!line.contains("INFO") && (line.contains("ERROR") || line.contains("Exception") || line.matches("^\\s+at\\s")))
             {
                 log.error("{"+name+"} "+line);
             }
