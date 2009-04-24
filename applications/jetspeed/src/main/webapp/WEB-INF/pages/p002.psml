@@ -37,12 +37,12 @@
 			name="jetspeed-layouts::VelocityTwoColumns">
 			<property layout="OneColumn" name="sizes" value="30%,70%" />
 			<fragment id="xx2.1" type="portlet"
-				name="demo::SSOIFramePortlet">
+				name="j2-admin::SSOIFramePortlet">
 				<property layout="TwoColumns" name="row" value="0" />
 				<property layout="TwoColumns" name="column" value="0" />
 			</fragment>
 			<fragment id="wcp2.0" type="portlet"
-				name="demo::SSOWebContentPortlet">
+				name="j2-admin::SSOWebContentPortlet">
 				<property layout="TwoColumns" name="row" value="0" />
 				<property layout="TwoColumns" name="column" value="1" />
 			</fragment>
