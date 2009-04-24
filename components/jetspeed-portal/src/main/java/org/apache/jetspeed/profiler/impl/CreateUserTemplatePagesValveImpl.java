@@ -34,9 +34,12 @@ import org.slf4j.LoggerFactory;
  * 
  * Create User Pages from template folder on first login feature
  * The CreateUserTemplatePagesValveImpl creates a new user's home page from the user template folder.
+ * <P>
+ * Note: this valve is deprecated. Please consider to use {@link RefreshUserHomepageValveImpl} instead.
+ * </P>
  * 
- * @author Woonsan Ko
  * @version $Id$
+ * @deprecated
  */
 public class CreateUserTemplatePagesValveImpl extends ProfilerValveImpl
 {

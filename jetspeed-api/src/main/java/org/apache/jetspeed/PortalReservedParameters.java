@@ -79,6 +79,10 @@ public interface PortalReservedParameters
     public static final String PAGE_THEME_OVERRIDE_ATTRIBUTE = "org.apache.jetspeed.theme.override";
     public static final String PORTAL_FILTER_ATTRIBUTE = "org.apache.jetspeed.login.filter.PortalFilter";
     
+    // Reserved security attribute names
+    public static final String USER_HOMEPAGE_REFRESH_FLAG = "org.apache.jetspeed.profiler.refreshUserHomepage";
+    public static final String USER_HOMEPAGE_TEMPLATE_PATH = "org.apache.jetspeed.profiler.userHomepageTemplate";
+    
     //
     // Settings for Metadata on jetspeed-portlet.xml
     //
