@@ -25,9 +25,6 @@
 		</authors>
 	</properties>
     <body>
-    <p>
-    	TODO : More details for Admin, Deployer and Developer guides.
-    </p>
         <section name="About this guide">
 			<p>
 				This User guide is designed for people who are new to Jetspeed or as a reference for navigating
