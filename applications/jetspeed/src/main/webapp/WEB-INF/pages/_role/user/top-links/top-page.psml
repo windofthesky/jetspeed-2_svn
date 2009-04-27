@@ -17,7 +17,7 @@ limitations under the License.
 -->
 <page id="_role-user-top-links-top-page"
     xmlns="http://portals.apache.org/jetspeed"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
   <title>[USER] Top Page</title>
   <metadata name="title" xml:lang="ja">[ユーザー] トップページ</metadata>
@@ -31,18 +31,14 @@ limitations under the License.
     <fragment id="utp-2" type="portlet" name="j2-admin::LoginPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
-    </fragment>                                
+    </fragment>
     <fragment id="utp-3" type="portlet" name="demo::UserInfoTest">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
-    </fragment>    
+    </fragment>
     <fragment id="utp-4" type="portlet" name="demo::BookmarkPortlet">
-      <property layout="TwoColumns" name="row" value="0" />
+      <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
-    </fragment>    	
-    <fragment id="utp-5" type="portlet" name="jsf-demo::CalendarPortlet">
-      <property layout="TwoColumns" name="row" value="0" />
-      <property layout="TwoColumns" name="column" value="1" />
-    </fragment>    		
+    </fragment>
   </fragment>
 </page>

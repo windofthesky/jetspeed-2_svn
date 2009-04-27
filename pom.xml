@@ -310,9 +310,6 @@
     <org.apache.pluto.version>2.0.0-SNAPSHOT</org.apache.pluto.version>
     <org.apache.portals.bridges.common.version>1.0.4</org.apache.portals.bridges.common.version>
     <org.apache.portals.bridges.frameworks.version>1.0.4</org.apache.portals.bridges.frameworks.version>
-    <org.apache.portals.bridges.jpetstore.version>1.0.4</org.apache.portals.bridges.jpetstore.version>
-    <org.apache.portals.bridges.jsf-demo.version>1.0.4</org.apache.portals.bridges.jsf-demo.version>
-    <org.apache.portals.bridges.jsf.version>1.0.4</org.apache.portals.bridges.jsf.version>
     <org.apache.portals.bridges.velocity.version>1.0.4</org.apache.portals.bridges.velocity.version>
     <org.apache.portals.bridges.groovy.version>1.0.4</org.apache.portals.bridges.groovy.version>
     <org.apache.portals.bridges.portletfilter.version>1.0.4</org.apache.portals.bridges.portletfilter.version>
@@ -1242,11 +1239,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.portals.bridges</groupId>
-        <artifactId>portals-bridges-jsf</artifactId>
-        <version>${org.apache.portals.bridges.jsf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.portals.bridges</groupId>
         <artifactId>portals-bridges-groovy</artifactId>
         <version>${org.apache.portals.bridges.groovy.version}</version>
       </dependency>
@@ -1254,20 +1246,6 @@
         <groupId>org.apache.portals.bridges</groupId>
         <artifactId>portals-bridges-portletfilter</artifactId>
         <version>${org.apache.portals.bridges.portletfilter.version}</version>
-      </dependency>
-
-      <!-- Portals Bridges Applications -->
-      <dependency>
-        <groupId>org.apache.portals.bridges</groupId>
-        <artifactId>jpetstore</artifactId>
-        <type>war</type>
-        <version>${org.apache.portals.bridges.jpetstore.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.portals.bridges</groupId>
-        <artifactId>jsf-demo</artifactId>
-        <type>war</type>
-        <version>${org.apache.portals.bridges.jsf-demo.version}</version>
       </dependency>
 
       <!-- MyFaces -->

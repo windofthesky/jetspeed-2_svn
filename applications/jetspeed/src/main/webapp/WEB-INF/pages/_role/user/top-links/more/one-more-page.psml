@@ -17,7 +17,7 @@ limitations under the License.
 -->
 <page id="_role-user-top-links-more-one-more-page"
     xmlns="http://portals.apache.org/jetspeed"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
   <title>[USER] One More Page</title>
   <metadata name="title" xml:lang="ja">[ユーザー] 追加ページ</metadata>
@@ -27,14 +27,9 @@ limitations under the License.
   <metadata name="title" xml:lang="zh-TW">[用戶] 追加頁</metadata>
   <metadata name="title" xml:lang="ko">[사용자] 추가 페이지</metadata>
 
-  <fragment id="utp-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
+  <fragment id="utp-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="utp-4" type="portlet" name="demo::BookmarkPortlet">
       <property layout="TwoColumns" name="row" value="0" />
-      <property layout="TwoColumns" name="column" value="1" />
-    </fragment>    	
-    <fragment id="utp-5" type="portlet" name="jsf-demo::CalendarPortlet">
-      <property layout="TwoColumns" name="row" value="0" />
-      <property layout="TwoColumns" name="column" value="1" />
-    </fragment>    		
+    </fragment>
   </fragment>
 </page>

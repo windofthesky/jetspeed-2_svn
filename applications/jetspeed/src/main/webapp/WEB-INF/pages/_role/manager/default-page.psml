@@ -17,7 +17,7 @@ limitations under the License.
 -->
 <page id="_role-manager-default-page"
     xmlns="http://portals.apache.org/jetspeed"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
   <title>Manager Role Page</title>
   <metadata name="title" xml:lang="ja">マネージャロールページ</metadata>
@@ -31,13 +31,9 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="mrp-xx5" type="portlet" name="jsf-demo::CalendarPortlet">
+    <fragment id="mrp-xx6" type="portlet" name="j2-admin::LoginPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="mrp-xx6" type="portlet" name="j2-admin::LoginPortlet">
-      <property layout="TwoColumns" name="row" value="0" />
-      <property layout="TwoColumns" name="column" value="2" />
-    </fragment>                                    
   </fragment>
 </page>
