@@ -16,8 +16,6 @@ limitations under the License.
 */
 
 
-/*  begin portlet decorator tigris additions  */
-
 .jetspeed .PContentBorder
 {    
 
@@ -46,33 +44,29 @@ limitations under the License.
 {
   float:left;
   width:100%;
-  background:#DAE0D2 url("../images/tab_bg.gif") repeat-x bottom;
   line-height:normal;
 }
 
 .layout-jetspeed div.tabpanel div.tab-row ul 
 {
   margin:0;
-  padding:10px 10px 0;
   list-style:none;
 }
   
 .layout-jetspeed div.tabpanel div.tab-row li 
 {
   float:left;
-  background:url("../images/tab_left.gif") no-repeat left top;
-  margin:0;
-  padding:0 0 0 9px;
+  padding-right:3px;
 }
   
 .layout-jetspeed div.tabpanel div.tab-row a 
 {
   display:block;
-  background:url("../images/tab_right.gif") no-repeat right top;
-  padding:5px 15px 4px 6px;
+  border-bottom:2px solid #ccc;
+  padding:3px;
   text-decoration:none;
- font-size: 11px;
- color: #666666; 
+  font-size: 11px;
+  color: #666666; 
   white-space:nowrap;
 }
   
@@ -83,18 +77,22 @@ limitations under the License.
   
 .layout-jetspeed div.tabpanel div.tab-row li.selected 
 {
-  background-image:url("../images/tab_left_on.gif");
 }
   
 .layout-jetspeed div.tabpanel div.tab-row li.selected a 
 {
-  background-image:url("../images/tab_right_on.gif");
+  border-bottom:2px solid #05549c;
+  	background:#EEF0F0;
   color:#333;
-  padding-bottom:5px;
+}
+
+.portlet-action {
+ font-family:verdana;
 }
 
 /* wicket styling */
+/*
 .jetspeed .j2admin-datatable{width: 100%;}
 .jetspeed .j2admin-datatable-checkbox{width: 20px}
 .jetspeed .j2admin-datatable td{text-align: left; font-size: small;}
-
+*/

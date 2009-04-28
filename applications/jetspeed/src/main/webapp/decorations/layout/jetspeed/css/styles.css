@@ -17,22 +17,42 @@ limitations under the License.
 
 @import url("../../css/portal-standard.css");
 
-body {
-    font-family: Tahoma, Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    padding: 1em;
-    background: #fff;
-    color: #000;
-    white-space: normal;
-    margin:0px;padding:0px;
-}
 
 * { margin:0; padding:0; }
 
-div, span, a, form, li, ul, ol, input, textarea, button, pre, blockquote, label, h1, h2, h3, h4, td, tr, th, tbody, table, p, iframe, img  {
+body, div, span, a, form, li, ul, ol, input, select, textarea, button, pre, blockquote, label, h1, h2, h3, h4, td, tr, th, tbody, table, p, iframe, img  {
  padding:0px;margin:0px;
  white-space:normal;
+ font-weight:normal;
+ font-family: Tahoma, Verdana, Helvetica, Arial, sans-serif;
+ voice-family: "\"}\"";
+ voice-family: inherit;
+ font-size:7pt;
+}
+
+body {
+    background: #fff;;
+}
+
+textarea, button, select, form {
+ padding:1px;
+}
+
+p {
+ margin-top:4px;
+ margin-bottom:4px;
+}
+
+h2 {
+ margin-bottom:6px;
+ color:#12293f;
+ font-size:9pt;
+ font-weight:bold;
+}
+
+h3 {
+ margin-bottom:4px;
+ text-decoration:underline;
 }
 
 /** 
@@ -162,9 +182,9 @@ background-position: 0px -30px
 }
 
 .layout-jetspeed .menu {
-    background:/*#f0f0f0*/#05549c;
+    background:url(../images/blue_gradient.gif) #05549c;
     padding:1px;
-    border-top:2px solid #033563;
+    border-top:1px solid #033563;
 }
 
 .layout-jetspeed .menu a {
@@ -380,7 +400,7 @@ color: #012d46;
 .layout-jetspeed .header {
 	width:100%;
 	background:#000;
-	border-bottom:2px solid #eef0f0;
+	border-bottom:4px solid #eef0f0;
 	margin:0px;
 }
 
@@ -397,19 +417,14 @@ padding:3px;
 .layout-jetspeed .layout-jetspeed-logout {
 position: absolute; 
 right: 5px; top: 5px; 
-z-index: 10; 
-padding: 4px; 
-color: white; 
-text-align: right;
-padding-right: 18px;
-background-image: url("../images/logout.gif");
-background-repeat: no-repeat; 
-background-position: right 2px;
-text-decoration: none;
+z-index: 10;  
+color: #fff;
+padding:2px;
+text-decoration:none;
 }
+
 .layout-jetspeed .layout-jetspeed-logout:hover{
-color: red;
-background-position: right -15px;
+text-decoration: underline;
 }
 
 .layout-jetspeed .default-tabs{padding-top: 75px; margin-top: 0px; margin-bottom: 0px;}

@@ -193,13 +193,14 @@ limitations under the License.
 /* PLT.C.4 Sections                  */
 /* --------------------------------- */
 .jetspeed .portlet-section-header {
-    background:#05549c;
+    background:#4589c8/*05549c*/;
     color: #e5e9ed;
     padding: 3px;
     margin-right: 2px;
     margin-left: 2px;
     clear: both;
-    border-bottom:2px solid #EEF0F0;
+    border-bottom:3px solid #EEF0F0;
+    line-height:16px;
 }
 
 .jetspeed .portlet-section-header a {
@@ -214,6 +215,7 @@ limitations under the License.
     text-align: left;
     vertical-align: top;
     text-align: left;
+    line-height:16px;
 }
 
 .jetspeed .portlet-section-alternate {
@@ -239,11 +241,13 @@ limitations under the License.
 .jetspeed .portlet-section-subheader {
     background: url(../images/portlet-section-subheader.gif) repeat-x;
     color: #6b7783;
-    margin-right: 2px;
-    margin-left: 2px;
+    text-indent:3px;
     padding:1px;
     clear: both;
+    text-align:left;
+    vertical-align:middle;
     border-bottom: 1px solid #afafaf;
+    line-height:14px;
 }
 
 .jetspeed .portlet-section-subheader a {
