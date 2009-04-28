@@ -90,11 +90,17 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         this.useEntityPreferences = useEntityPreferences;
     }
 
-    public PortletPreferencesServiceImpl(PortletFactory portletFactory, JetspeedCache preferenceCache, PageManager pageManager)
-            throws ClassNotFoundException
+    public PortletPreferencesServiceImpl(PortletFactory portletFactory, JetspeedCache preferenceCache)
+    throws ClassNotFoundException
     {
         this.portletFactory = portletFactory;
         this.preferenceCache = preferenceCache;
+    }
+    
+    public PortletPreferencesServiceImpl(PortletFactory portletFactory, JetspeedCache preferenceCache, PageManager pageManager)
+            throws ClassNotFoundException
+    {
+        this(portletFactory, preferenceCache);
         this.pageManager = pageManager;
     }
     
