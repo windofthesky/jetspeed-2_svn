@@ -147,7 +147,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         {
             return new PreferencesImpl();            
         }
-        Map<String, PortletPreference> prefMap = PortletDefinitionImpl.portletPreferencesProvider.getDefaultPreferences(this);        
+        Map<String, PortletPreference> prefMap = PortletDefinitionImpl.portletPreferencesProvider.retrieveDefaultPreferences(this);        
         Preferences preferences = new PreferencesImpl();
         List<Preference> list = preferences.getPortletPreferences();
         for (PortletPreference pref : prefMap.values())

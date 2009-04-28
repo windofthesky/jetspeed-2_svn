@@ -34,6 +34,7 @@ import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.Preferences;
@@ -119,6 +120,9 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         preloadEntities = false;
     }
     
+    /**
+     * PLUTO: PortletPreferencesService
+     */   
     public Map<String, PortletPreference> getDefaultPreferences(
             org.apache.pluto.container.PortletWindow pw, PortletRequest request)
             throws PortletContainerException
@@ -126,7 +130,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         PortletWindow window = (PortletWindow)pw;
         org.apache.jetspeed.om.portlet.PortletDefinition pd = window.getPortletDefinition();
         String entityId = window.getPortletEntityId();
-        Map<String, PortletPreference> defaultsMap = this.getDefaultPreferences(pd);
+        Map<String, PortletPreference> defaultsMap = this.retrieveDefaultPreferences(pd);
         // retrieve entity preferences
         if (useEntityPreferences)
         {
@@ -141,7 +145,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             }            
             else
             {
-                entityMap = retrieveEntityPreferences(window, request);                
+                entityMap = (JetspeedPreferencesMap)retrieveEntityPreferences(window);                
             }
             // merge default with entity preferences
             if (entityMap != null && entityMap.size() > 0)
@@ -157,6 +161,9 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         return defaultsMap;
     }
 
+    /**
+     * PLUTO: PortletPreferencesService
+     */       
     public Map<String, PortletPreference> getStoredPreferences(
             org.apache.pluto.container.PortletWindow pw, PortletRequest request)
             throws PortletContainerException
@@ -164,16 +171,31 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         PortletWindow window = (PortletWindow)pw;
         if (request.getPortletMode().equals(JetspeedActions.EDIT_DEFAULTS_MODE))
         {
-            return retrieveEntityPreferences(window, request);
+            return retrieveEntityPreferences(window);
         }
-        String appName = window.getPortletDefinition().getApplication().getName();
-        String portletName = window.getPortletDefinition().getPortletName();
-        String entityId = window.getPortletEntityId();
         String userName = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
         if (userName == null)
         {
             userName = SubjectHelper.getPrincipal(window.getRequestContext().getSubject(), User.class).getName();
         }
+        return retrieveUserPreferences(window, userName);
+    }
+
+    /**
+     * Jetspeed: PortletPreferencesProvider
+     * 
+     * @param appName
+     * @param portletName
+     * @param entityId
+     * @param userName
+     * @return
+     * @throws PortletContainerException
+     */
+    public Map<String, PortletPreference> retrieveUserPreferences(PortletWindow window, String userName)
+    {
+        String appName = window.getPortletDefinition().getApplication().getName();
+        String portletName = window.getPortletDefinition().getPortletName();
+        String entityId = window.getPortletEntityId();        
         String cacheKey = getUserPreferenceKey(appName, portletName, entityId, userName);
         // first search in cache        
         CacheElement cachedElement = preferenceCache.get(cacheKey);        
@@ -200,9 +222,12 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             map.put(preference.getName(), value);
         }
         preferenceCache.put(preferenceCache.createElement(cacheKey, map));
-        return map;        
+        return map;                
     }
-
+    
+    /**
+     * PLUTO: PortletPreferencesService
+     */       
     public void store(org.apache.pluto.container.PortletWindow pw, PortletRequest request,
             Map<String, PortletPreference> map)
             throws PortletContainerException
@@ -210,99 +235,133 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         PortletWindow window = (PortletWindow)pw;
         if (request.getPortletMode().equals(JetspeedActions.EDIT_DEFAULTS_MODE))
         {
-            storeEntityPreferences(window, request, map);
+            RequestContext rc = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+            try
+            {
+                storeEntityPreferences(map, rc.getPage(), window);
+            }
+            catch (PreferencesException e)
+            {
+                throw new PortletContainerException(e);
+            }
             return;
         }        
-        String appName = window.getPortletDefinition().getApplication().getName();
-        String portletName = window.getPortletDefinition().getPortletName();
-        String entityId = window.getPortletEntityId();
         String userName = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
         if (userName == null)
         {
             userName = SubjectHelper.getPrincipal(window.getRequestContext().getSubject(), User.class).getName();
         }
-        // always read in to get a fresh copy for merge
-        Criteria c = new Criteria();
-        c.addEqualTo("dtype", DISCRIMINATOR_USER);
-        c.addEqualTo("applicationName", appName);
-        c.addEqualTo("portletName", portletName);
-        c.addEqualTo("entityId", entityId);
-        c.addEqualTo("userName", userName);
-        QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
-        Map<String, DatabasePreference> mergeMap = new HashMap<String, DatabasePreference>();
-        List<DatabasePreference> deletes = new LinkedList<DatabasePreference>();
-        List<DatabasePreference> updates = new LinkedList<DatabasePreference>();
-        List<PortletPreference> inserts = new LinkedList<PortletPreference>();        
-        Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
-        while (preferences.hasNext())
+        try
         {
-            DatabasePreference preference = preferences.next();
-            PortletPreference found = map.get(preference.getName());
-            if (found == null)
-            {
-                deletes.add(preference);
-            }
-            else
-            {
-                updates.add(preference);
-            }
-            mergeMap.put(preference.getName(), preference); 
-            
+            storeUserPreferences(map, window, userName);
         }
-        for (PortletPreference preference : map.values())
+        catch (PreferencesException e)
         {
-            DatabasePreference dbPref = mergeMap.get(preference.getName());
-            if (dbPref == null)
-            {
-                inserts.add(preference);
-            }                
+            throw new PortletContainerException(e);
         }
-        // perform database manipulations
-        for (DatabasePreference dbPref : deletes)
-        {
-            getPersistenceBrokerTemplate().delete(dbPref);
-        }
-        for (PortletPreference preference : inserts)
-        {
-            DatabasePreference dbPref = new DatabasePreference();
-            dbPref.setDtype(DISCRIMINATOR_USER);
-            dbPref.setApplicationName(appName);
-            dbPref.setPortletName(portletName);
-            dbPref.setEntityId(entityId);
-            dbPref.setUserName(userName);
-            dbPref.setName(preference.getName());
-            dbPref.setReadOnly(preference.isReadOnly());
-            short index = 0;
-            for (String value : preference.getValues())
-            {
-                DatabasePreferenceValue dbValue = new DatabasePreferenceValue();
-                dbValue.setIndex(index);
-                dbValue.setValue(value);
-                dbPref.getPreferenceValues().add(dbValue);                
-                index++;
-            }
-            getPersistenceBrokerTemplate().store(dbPref);
-        }
-        for (DatabasePreference dbPref : updates)
-        {
-            dbPref.getPreferenceValues().clear();
-            PortletPreference preference = map.get(dbPref.getName());
-            short index = 0;
-            for (String value : preference.getValues())
-            {
-                DatabasePreferenceValue dbValue = new DatabasePreferenceValue();
-                dbValue.setIndex(index);
-                dbValue.setValue(value);
-                index++;
-                dbPref.getPreferenceValues().add(dbValue);
-            }            
-            getPersistenceBrokerTemplate().store(dbPref);            
-        }        
-        // remove from cache to send distributed notification
-        String cacheKey = getUserPreferenceKey(appName, portletName, entityId, userName);
-        preferenceCache.remove(cacheKey);        
     }
 
+    /**
+     * Jetspeed: PortletPreferencesProvider
+     */
+    public void storeUserPreferences(Map<String, PortletPreference> map, PortletWindow window, String userName)
+    throws PreferencesException
+    {
+        try
+        {
+            String appName = window.getPortletDefinition().getApplication().getName();
+            String portletName = window.getPortletDefinition().getPortletName();
+            String entityId = window.getPortletEntityId();        
+            // always read in to get a fresh copy for merge
+            Criteria c = new Criteria();
+            c.addEqualTo("dtype", DISCRIMINATOR_USER);
+            c.addEqualTo("applicationName", appName);
+            c.addEqualTo("portletName", portletName);
+            c.addEqualTo("entityId", entityId);
+            c.addEqualTo("userName", userName);
+            QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
+            Map<String, DatabasePreference> mergeMap = new HashMap<String, DatabasePreference>();
+            List<DatabasePreference> deletes = new LinkedList<DatabasePreference>();
+            List<DatabasePreference> updates = new LinkedList<DatabasePreference>();
+            List<PortletPreference> inserts = new LinkedList<PortletPreference>();        
+            Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
+            while (preferences.hasNext())
+            {
+                DatabasePreference preference = preferences.next();
+                PortletPreference found = map.get(preference.getName());
+                if (found == null)
+                {
+                    deletes.add(preference);
+                }
+                else
+                {
+                    updates.add(preference);
+                }
+                mergeMap.put(preference.getName(), preference); 
+                
+            }
+            for (PortletPreference preference : map.values())
+            {
+                DatabasePreference dbPref = mergeMap.get(preference.getName());
+                if (dbPref == null)
+                {
+                    inserts.add(preference);
+                }                
+            }
+            // perform database manipulations
+            for (DatabasePreference dbPref : deletes)
+            {
+                getPersistenceBrokerTemplate().delete(dbPref);
+            }
+            for (PortletPreference preference : inserts)
+            {
+                DatabasePreference dbPref = new DatabasePreference();
+                dbPref.setDtype(DISCRIMINATOR_USER);
+                dbPref.setApplicationName(appName);
+                dbPref.setPortletName(portletName);
+                dbPref.setEntityId(entityId);
+                dbPref.setUserName(userName);
+                dbPref.setName(preference.getName());
+                dbPref.setReadOnly(preference.isReadOnly());
+                short index = 0;
+                for (String value : preference.getValues())
+                {
+                    DatabasePreferenceValue dbValue = new DatabasePreferenceValue();
+                    dbValue.setIndex(index);
+                    dbValue.setValue(value);
+                    dbPref.getPreferenceValues().add(dbValue);                
+                    index++;
+                }
+                getPersistenceBrokerTemplate().store(dbPref);
+            }
+            for (DatabasePreference dbPref : updates)
+            {
+                dbPref.getPreferenceValues().clear();
+                PortletPreference preference = map.get(dbPref.getName());
+                short index = 0;
+                for (String value : preference.getValues())
+                {
+                    DatabasePreferenceValue dbValue = new DatabasePreferenceValue();
+                    dbValue.setIndex(index);
+                    dbValue.setValue(value);
+                    index++;
+                    dbPref.getPreferenceValues().add(dbValue);
+                }            
+                getPersistenceBrokerTemplate().store(dbPref);            
+            }        
+            // remove from cache to send distributed notification
+            String cacheKey = getUserPreferenceKey(appName, portletName, entityId, userName);
+            preferenceCache.remove(cacheKey);
+        }
+        catch (Throwable t)
+        {
+            throw new PreferencesException(t);
+        }
+    }
+
+    /**
+     * PLUTO: PortletPreferencesService
+     */       
     public PreferencesValidator getPreferencesValidator(PortletDefinition pd)
             throws ValidatorException
     {
@@ -324,6 +383,9 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         return DISCRIMINATOR_USER + KEY_SEPARATOR + applicationName + KEY_SEPARATOR + portletName + KEY_SEPARATOR + entityId + KEY_SEPARATOR + userName;        
     }
     
+    /**
+     * Jetspeed: PortletPreferencesProvider
+     */
     public void preloadApplicationPreferences(String portletApplicationName)
     {
         JetspeedPreferencesMap map = new JetspeedPreferencesMap();
@@ -353,7 +415,10 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         }
     }
     
-    public void preloadAllEntities()
+    /**
+     * Jetspeed: PortletPreferencesProvider
+     */    
+    public void preloadUserPreferences()
     {
         JetspeedPreferencesMap map = new JetspeedPreferencesMap();
         Criteria c = new Criteria();
@@ -395,10 +460,13 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         }
         if (preloadEntities)
         {
-            preloadAllEntities();
+            preloadUserPreferences();
         }
     }    
 
+    /**
+     * Jetspeed: PortletPreferencesProvider
+     */    
     public void storeDefaults(org.apache.jetspeed.om.portlet.PortletApplication app)
     {
         for (org.apache.jetspeed.om.portlet.PortletDefinition pd : app.getPortlets())
@@ -407,6 +475,9 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         }
     }
     
+    /**
+     * Jetspeed: PortletPreferencesProvider
+     */    
     public void storeDefaults(org.apache.jetspeed.om.portlet.PortletDefinition pd)
     {
         Preferences preferences = pd.getDescriptorPreferences();
@@ -440,7 +511,10 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         preferenceCache.put(preferenceCache.createElement(defaultsCacheKey, map));                    
     }
 
-    public  JetspeedPreferencesMap  retrieveEntityPreferences(PortletWindow window, PortletRequest request)
+    /**
+     * Jetspeed: PortletPreferencesProvider
+     */        
+    public Map<String, PortletPreference> retrieveEntityPreferences(PortletWindow window)
     {
         JetspeedPreferencesMap entityMap = new JetspeedPreferencesMap();
         List<FragmentPreference> fragmentPrefs = window.getFragment().getPreferences();
@@ -464,10 +538,12 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         return entityMap;
     }
     
+    /**
+     * Jetspeed: PortletPreferencesProvider
+     */        
     @SuppressWarnings("unchecked")
-    public void storeEntityPreferences(PortletWindow window, PortletRequest request,
-            Map<String, PortletPreference> map)
-            throws PortletContainerException
+    public void storeEntityPreferences(Map<String, PortletPreference> map, ContentPage page, PortletWindow window)
+            throws PreferencesException
     {
         ContentFragment fragment = window.getFragment();
         List<FragmentPreference> fragmentPrefs = fragment.getPreferences();
@@ -496,18 +572,19 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             String entityCacheKey = this.getEntityPreferenceKey(appName, portletName, entityId);
             preferenceCache.remove(entityCacheKey);
         }
-        RequestContext rc = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         try
         {
-            pageManager.updatePage(rc.getPage());
+            pageManager.updatePage(page);
         }
         catch (Exception e)
         {
-            throw new PortletContainerException(e);
+            throw new PreferencesException(e);
         }
     }
 
-
+    /**
+     * Jetspeed: PortletPreferencesProvider
+     */    
     public void removeDefaults(org.apache.jetspeed.om.portlet.PortletDefinition pd)
     {
         Criteria c = new Criteria();
@@ -520,7 +597,9 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         preferenceCache.remove(defaultsCacheKey);
     }
 
-
+    /**
+     * Jetspeed: PortletPreferencesProvider
+     */    
     public void removeDefaults(PortletApplication app)
     {
         Criteria c = new Criteria();
@@ -535,7 +614,10 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         }
     }
 
-    public Map<String, PortletPreference> getDefaultPreferences(org.apache.jetspeed.om.portlet.PortletDefinition pd)
+    /**
+     * Jetspeed: PortletPreferencesProvider
+     */        
+    public Map<String, PortletPreference> retrieveDefaultPreferences(org.apache.jetspeed.om.portlet.PortletDefinition pd)
     {
         String appName = pd.getApplication().getName();
         String portletName = pd.getPortletName();        

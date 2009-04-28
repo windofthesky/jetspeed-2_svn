@@ -18,8 +18,11 @@ package org.apache.jetspeed.components.portletpreferences;
 
 import java.util.Map;
 
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.pluto.container.PortletContainerException;
 import org.apache.pluto.container.PortletPreference;
 import org.apache.pluto.container.PortletPreferencesService;
 
@@ -31,11 +34,87 @@ import org.apache.pluto.container.PortletPreferencesService;
  */
 public interface PortletPreferencesProvider extends PortletPreferencesService
 {
+    /**
+     * Preload all preferences for the given portlet application name into the preferences cache
+     * @param portletApplicationName
+     */
     public void preloadApplicationPreferences(String portletApplicationName);
-    public void preloadAllEntities();    
+    
+    /**
+     * Preload all user preferences for all users into the preferences cache. Be careful 
+     * with this method as it can chew up a lot of memory. Ensure the cache is configured
+     * to be large enough to hold all preferences
+     */
+    public void preloadUserPreferences();
+    
+    /**
+     * Store the default preferences for a given portlet definition
+     * @param pd
+     */
     public void storeDefaults(PortletDefinition pd);
+    
+    /**
+     * Store the default preferences for all portlets in the given portlet application
+     * @param app
+     */
     public void storeDefaults(PortletApplication app);
+    
+    /**
+     * Remove all default preferences for a given portlet definition
+     * @param pd
+     */
     public void removeDefaults(PortletDefinition pd);
+    
+    /**
+     * Remove all default preferences for all portlet definitions in a given portlet application
+     * @param app
+     */
     public void removeDefaults(PortletApplication app);
-    public Map<String, PortletPreference> getDefaultPreferences(PortletDefinition pd);
+    
+    /**
+     * Retrieve the default preferences for a given portlet definition
+     * @param pd
+     * @return the default preferences map for a given portlet definition
+     */
+    public Map<String, PortletPreference> retrieveDefaultPreferences(PortletDefinition pd);
+
+    /**
+     * Retrieve the user preferences for the window and user parameters
+     * 
+     * @param window
+     * @param userName
+     * @return
+     */
+    public Map<String, PortletPreference> retrieveUserPreferences(PortletWindow window, String userName);
+
+    /**
+     * Retrieve entity (window) default preferences for a given window 
+     * 
+     * @param window
+     * @return
+     */
+    public Map<String, PortletPreference> retrieveEntityPreferences(PortletWindow window);
+
+    /**
+     * Store user preferences contained in the map parameter for a given user and window
+     *  
+     * @param map
+     * @param window
+     * @param userName
+     * @throws PreferencesException 
+     */
+    public void storeUserPreferences(Map<String, PortletPreference> map, PortletWindow window, String userName)
+    throws PreferencesException;
+
+    /**
+     * Store entity preferences contained in the map parameter for a given page and window
+     * 
+     * @param map
+     * @param page
+     * @param window
+     * @throws PreferencesException
+     */
+    public void storeEntityPreferences(Map<String, PortletPreference> map, ContentPage page, PortletWindow window)
+        throws PreferencesException;
+
 }
