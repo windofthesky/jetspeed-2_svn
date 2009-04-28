@@ -100,6 +100,9 @@
     <constructor-arg index="1">
       <ref bean="preferencesCache" />
     </constructor-arg>    
+    <constructor-arg index='2'>
+    	<ref bean='org.apache.jetspeed.page.PageManager'/>
+    </constructor-arg>
     <property name="useEntityPreferences" ><value>true</value></property>
     </bean>
 
