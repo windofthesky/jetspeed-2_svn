@@ -456,10 +456,18 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     	}
     	
         NodeCache key = new NodeCache(hit);
-        getPersistenceBrokerTemplate().store(hit.getNode()); // avoid racing condition with the db and with cluster notification
-        											// do the db first
-        preferenceCache.remove(key.getCacheKey()); // not sure we should actually do that, could also just update the node
-        addToCache(key);
+        try
+        {
+            getPersistenceBrokerTemplate().store(hit.getNode()); // avoid racing condition with the db and with cluster notification
+                                                                 // do the db first
+            preferenceCache.remove(key.getCacheKey());           // not sure we should actually do that, could also just update the node
+            addToCache(key);
+        }
+        catch (Exception e)
+        {
+            preferenceCache.removeQuiet(key.getCacheKey());      // remove problematic nodes from cache
+            throw new RuntimeException("Failed to store node of type " + node.getNodeType() + " for the path " + node.getFullPath() + ".  " + e.toString(), e);
+        }
     }
 
     /**
@@ -656,5 +664,46 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     {
         NodeImplProxy.setProvider(null);
         preferenceCache = null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.prefs.PreferencesProvider#clearCachedApplicationPreferences(java.lang.String)
+     */
+    public void clearCachedApplicationPreferences(String portletApplicationName)
+    {
+        String portletDefPrefPath = "/" + MutablePortletApplication.PREFS_ROOT + "/" + portletApplicationName + "/";
+        long start = System.currentTimeMillis();        
+        int count = clearCachedNodeAndAllChildren(portletDefPrefPath);
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println("++++ PREFS:PA clear cached " + count + " pref nodes for app " + portletDefPrefPath + " in " + elapsed + " milliseconds.");
     }    
+
+    /**
+     * Clear node and all children based on specified path from cache.
+     * 
+     * @param path full path of node to remove
+     * @return count of nodes cleared from cache
+     */
+    protected int clearCachedNodeAndAllChildren(String path)
+    {
+        int count = 0;
+        String root = path.substring(0, path.length()-1);
+        List preferenceCacheKeys = preferenceCache.getKeys();
+        for (Iterator iter = preferenceCacheKeys.iterator(); iter.hasNext();)
+        {
+            CacheElement preferenceCacheElement = preferenceCache.get(iter.next());
+            if (preferenceCacheElement != null)
+            {
+                String preferenceFullPath = ((NodeCache)preferenceCacheElement.getContent()).getNode().getFullPath();
+                if (preferenceFullPath.startsWith(path) || preferenceFullPath.equals(root))
+                {
+                    if (preferenceCache.removeQuiet(preferenceCacheElement.getKey()))
+                    {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
 }

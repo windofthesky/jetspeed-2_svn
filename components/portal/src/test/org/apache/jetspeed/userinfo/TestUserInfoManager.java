@@ -98,7 +98,7 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
     private void innerTestSetUserInfoMap(UserInfoManager uim) throws Exception
     {
         PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("test/testdata/deploy/portlet.xml"), "unit-test");
-        portletApp = pad.createPortletApplication();
+        portletApp = pad.createPortletApplication(true);
         assertNotNull("App is null", portletApp);
 
         // persist the app

@@ -81,7 +81,7 @@ public class TestPortletDescriptorSecurityRoles extends AbstractRequestContextTe
         File warFile = new File("./test/testdata/deploy/webapp");
         PortletApplicationWar paWar = new PortletApplicationWar(new DirectoryHelper(warFile), "unit-test", "/" );
 
-        MutablePortletApplication app = paWar.createPortletApp();
+        MutablePortletApplication app = paWar.createPortletApp(false);
         assertNotNull("App is null", app);
 
         MutableWebApplication webApp = paWar.createWebApp();

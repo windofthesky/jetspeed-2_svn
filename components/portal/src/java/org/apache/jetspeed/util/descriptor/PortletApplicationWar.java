@@ -225,14 +225,14 @@ public class PortletApplicationWar
      * @throws IOException
      * @see org.apache.jetspeed.uitl.descriptor.PortletApplicationDescriptor
      */
-    public MutablePortletApplication createPortletApp(ClassLoader classLoader) throws PortletApplicationException, IOException
+    public MutablePortletApplication createPortletApp(boolean populatePreferences, ClassLoader classLoader) throws PortletApplicationException, IOException
     {
         Reader portletXmlReader = getReader(PORTLET_XML_PATH);
         
         try
         {
             PortletApplicationDescriptor paDescriptor = new PortletApplicationDescriptor(portletXmlReader, paName);
-            portletApp = paDescriptor.createPortletApplication(classLoader);
+            portletApp = paDescriptor.createPortletApplication(populatePreferences, classLoader);
             // validate(portletApplication);
             Reader extMetaDataXml = null;
             try
@@ -278,10 +278,10 @@ public class PortletApplicationWar
         }
     }
 
-    public MutablePortletApplication createPortletApp() 
+    public MutablePortletApplication createPortletApp(boolean populatePreferences) 
     throws PortletApplicationException, IOException
     {
-        return createPortletApp(this.getClass().getClassLoader());
+        return createPortletApp(populatePreferences, this.getClass().getClassLoader());
     }
     
     /**

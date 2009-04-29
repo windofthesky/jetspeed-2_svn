@@ -103,8 +103,6 @@ public class PreferencesFactoryImpl implements PreferencesFactory
     {
         ((Observer) Preferences.userRoot()).update(null, null);
         ((Observer) Preferences.systemRoot()).update(null, null);
-        userRoot.disposeNode();
-        systemRoot.disposeNode();
         userRoot.ppw.dispose();
         userRoot = null;
         systemRoot = null;

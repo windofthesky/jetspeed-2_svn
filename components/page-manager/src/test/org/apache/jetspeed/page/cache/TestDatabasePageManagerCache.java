@@ -561,7 +561,7 @@ public class TestDatabasePageManagerCache extends TestCase
         
         private void logProcessLine(final String line)
         {
-            if ((line.indexOf("INFO") == -1) && ((line.indexOf("ERROR") != -1) || (line.indexOf("Exception") != -1) || line.matches("^\\s+at\\s")))
+            if ((line.indexOf("INFO") == -1) && ((line.indexOf("ERROR") != -1) || (line.indexOf("Exception") != -1) || line.matches("\\s+at\\s.*")))
             {
                 log.error("{"+name+"} "+line);
             }

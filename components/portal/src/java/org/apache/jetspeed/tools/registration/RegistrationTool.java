@@ -120,7 +120,7 @@ public class RegistrationTool
         WebApplicationDescriptor wad = new WebApplicationDescriptor(new FileReader(webappDescriptor), "/" + appName);
         MutableWebApplication webapp = wad.createWebApplication();
         PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader(appDescriptor), appName);        
-        MutablePortletApplication app = pad.createPortletApplication();                
+        MutablePortletApplication app = pad.createPortletApplication(true);                
         app.setWebApplicationDefinition(webapp);
         ExtendedPortletMetadata extMetaData = new ExtendedPortletMetadata(new FileReader(extendedDescriptor), app);
         extMetaData.load();        

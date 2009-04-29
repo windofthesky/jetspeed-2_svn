@@ -46,15 +46,9 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
 {
     private static final Log log = LogFactory.getLog(TestPortletApplicationManager.class);
 
-    /*
-     * TODO: this test case is properly run with concurrent PAM access
-     * enabled, use of the versioned PAM, and with multiple restarts.
-     * Test will not pass with those settings, so these are being used
-     * temporarily until these issues are addressed.
-     */
-    public static final boolean TEST_CONCURRENT_PAM_ACCESS = false;
+    public static final boolean TEST_CONCURRENT_PAM_ACCESS = true;
     public static final boolean TEST_USE_VERSIONED_PAM = false;
-    public static final int TEST_PORTLET_APPLICATION_RESTARTS = 1;
+    public static final int TEST_PORTLET_APPLICATION_RESTARTS = 5;
 
     public static final String CONTEXT_NAME = "test-pa";
     public static final String CONTEXT_PATH = "/"+CONTEXT_NAME;
@@ -207,6 +201,7 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
                 if (TEST_CONCURRENT_PAM_ACCESS)
                 {
                     // start portlet application asynchronously in background threads per server
+                    log.info("test concurrent register/start/stop portlet application, iteration "+i+"...");
                     TestExecuteThread startPortletApplication0 = new TestExecuteThread(server0, "portletApplicationManagerServer.startPortletApplication();");
                     TestExecuteThread startPortletApplication1 = new TestExecuteThread(server1, "portletApplicationManagerServer.startPortletApplication();");
                     startPortletApplication0.start();
@@ -219,6 +214,7 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
                 else
                 {
                     // stop portlet application synchronously
+                    log.info("test serial register/start/stop portlet application, iteration "+i+"...");
                     result = server0.execute("portletApplicationManagerServer.startPortletApplication();");
                     assertTrue(result.indexOf("Exception") == -1);
                     result = server1.execute("portletApplicationManagerServer.startPortletApplication();");
@@ -230,6 +226,7 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
                 result = server0.execute("portletApplicationManagerServer.stopPortletApplication();");
                 assertTrue(result.indexOf("Exception") == -1);
                 // unregister portlet application
+                log.info("test unregister portlet application, iteration "+i+"...");
                 try
                 {
                     portletApplicationManager.unregisterPortletApplication(CONTEXT_NAME);
@@ -418,7 +415,7 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
         
         private void logProcessLine(final String line)
         {
-            if ((line.indexOf("INFO") == -1) && ((line.indexOf("ERROR") != -1) || (line.indexOf("Exception") != -1) || line.matches("^\\s+at\\s")))
+            if ((line.indexOf("INFO") == -1) && ((line.indexOf("ERROR") != -1) || (line.indexOf("Exception") != -1) || line.matches("\\s+at\\s.*")))
             {
                 log.error("{"+name+"} "+line);
             }

@@ -35,6 +35,7 @@ import org.apache.jetspeed.container.window.PortletWindowAccessor;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.servlet.MutableWebApplication;
+import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.PortletPermission;
@@ -64,6 +65,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 
     protected PortletEntityAccessComponent entityAccess;
     protected PortletFactory        portletFactory;
+    protected PreferencesProvider   prefs;
     protected PortletRegistry       registry;
     protected PortletWindowAccessor windowAccess;
     protected SearchEngine          searchEngine;
@@ -82,15 +84,19 @@ public class PortletApplicationManager implements PortletApplicationManagement
     protected String appRoot;
     protected NodeManager nodeManager;
     
+    protected PortletApplicationManagement pamProxy;
+    protected boolean startOnSetPAMProxy;
+    
     /**
 	 * Creates a new PortletApplicationManager object.
 	 */
-	public PortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
+	public PortletApplicationManager(PortletFactory portletFactory, PreferencesProvider prefs, PortletRegistry registry,
 		PortletEntityAccessComponent entityAccess, PortletWindowAccessor windowAccess,
         PermissionManager permissionManager, SearchEngine searchEngine,
         RoleManager roleManager, List permissionRoles, NodeManager nodeManager, String appRoot)
 	{
 		this.portletFactory     = portletFactory;
+		this.prefs              = prefs;
 		this.registry		    = registry;
 		this.entityAccess	    = entityAccess;
 		this.windowAccess	    = windowAccess;
@@ -102,14 +108,28 @@ public class PortletApplicationManager implements PortletApplicationManagement
         this.appRoot            = appRoot;
 	}
     
+    public void setPAMProxy(PortletApplicationManagement pamProxy)
+    {
+        this.pamProxy = pamProxy;
+        if (!started && startOnSetPAMProxy)
+        {
+            start();
+        }
+    }
+    
     public void start()
     {
+        if ( pamProxy == null)
+        {
+            startOnSetPAMProxy = true;
+            return;
+        }
         if ( descriptorChangeMonitorInterval > 0 )
         {
             try
             {
                 monitor = new DescriptorChangeMonitor(Thread.currentThread().getThreadGroup(),
-                                                "PortletApplicationManager Descriptor Change Monitor Thread", this, descriptorChangeMonitorInterval, maxRetriedStarts);
+                                                "PortletApplicationManager Descriptor Change Monitor Thread", pamProxy, descriptorChangeMonitorInterval, maxRetriedStarts);
 
                 monitor.setContextClassLoader(getClass().getClassLoader());
                 monitor.start();
@@ -168,7 +188,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		throws RegistryException
 	{
         checkStarted();
-        startPA(contextName, "/"+contextName, warStruct, paClassLoader, MutablePortletApplication.LOCAL);
+        retryStartPortletApplication(contextName, "/"+contextName, warStruct, paClassLoader, MutablePortletApplication.LOCAL);
 	}
 
     public void startInternalApplication(String contextName) throws RegistryException
@@ -184,7 +204,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             app.setApplicationType(MutablePortletApplication.INTERNAL);
             registry.updatePortletApplication(app);
         }
-        startPA(contextName, "/"+contextName, dir, contextClassLoader, MutablePortletApplication.INTERNAL);
+        retryStartPortletApplication(contextName, "/"+contextName, dir, contextClassLoader, MutablePortletApplication.INTERNAL);
         // startInternal(contextName, warStruct, paClassLoader, true);        
     }
     
@@ -203,7 +223,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try
         {
-            startPA(contextName, contextPath, warStruct, paClassLoader, MutablePortletApplication.WEBAPP);
+            retryStartPortletApplication(contextName, contextPath, warStruct, paClassLoader, MutablePortletApplication.WEBAPP);
         }
         finally
         {
@@ -211,6 +231,50 @@ public class PortletApplicationManager implements PortletApplicationManagement
         }
         
     }    
+
+    protected void retryStartPortletApplication(String contextName, String contextPath, FileSystemHelper warStruct, ClassLoader paClassLoader, int paType) throws RegistryException
+    {
+        // Retry to start application according to configuration. Note
+        // that this method is not declared transactional to allow clean
+        // retries within a single transaction.
+        RegistryException tryStartException = null;
+        for (int i = 0; (i < maxRetriedStarts+1); i++)
+        {
+            try
+            {
+                // try to start portlet application
+                pamProxy.tryStartPortletApplication(contextName, contextPath, warStruct, paClassLoader, paType, 0, true);
+                // continue on success
+                tryStartException = null;
+                break;
+            }
+            catch (RegistryException re)
+            {
+                // save exception
+                tryStartException = re;
+            }
+            // brief pause between retries to let portlet application
+            // state settle
+            try
+            {
+                Thread.sleep(50);
+            }
+            catch (InterruptedException ie)
+            {
+            }
+        }
+        // throw try start exception
+        if (tryStartException != null)
+        {
+            log.error("Unable to start portlet application after "+maxRetriedStarts+" retries: "+tryStartException, tryStartException);
+            throw tryStartException;
+        }
+    }
+
+    public void tryStartPortletApplication(String contextName, String contextPath, FileSystemHelper warStruct, ClassLoader paClassLoader, int paType, long checksum, boolean silent) throws RegistryException
+    {
+        attemptStartPA(contextName, contextPath, warStruct, paClassLoader, paType, checksum, silent);
+    }
 
 	public void stopLocalPortletApplication(String contextName)
 		throws RegistryException
@@ -299,7 +363,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 	}
 
 	protected MutablePortletApplication registerPortletApplication(PortletApplicationWar paWar,
-		MutablePortletApplication oldPA, int paType, ClassLoader paClassLoader)
+        MutablePortletApplication oldPA, int paType, ClassLoader paClassLoader, boolean silent)
 		throws RegistryException
 	{
 		if (oldPA != null)
@@ -315,7 +379,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		try
 		{
 			log.info("Loading portlet.xml...." + paName);
-			pa = paWar.createPortletApp(paClassLoader);
+			prefs.clearCachedApplicationPreferences(paName);
+			pa = paWar.createPortletApp(true, paClassLoader);
 			pa.setApplicationType(paType);
 
 			// load the web.xml
@@ -359,9 +424,15 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		}
 		catch (Exception e)
 		{
+		    // clear any cached preferences to be rolled back
+		    prefs.clearCachedApplicationPreferences(paName);
+		    
 			String msg = "Failed to load portlet application for "
 				+ paWar.getPortletApplicationName();
-			log.error(msg, e);
+            if (!silent || log.isDebugEnabled())
+            {
+                log.error(msg, e);
+            }
 			throw new RegistryException(msg);
 		}
 
@@ -409,8 +480,14 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		}
 		catch (Exception e)
 		{
-			String msg = "Failed to register portlet application, " + paName;
-			log.error(msg, e);
+            // clear any cached preferences to be rolled back
+            prefs.clearCachedApplicationPreferences(paName);
+
+            String msg = "Failed to register portlet application, " + paName;
+            if (!silent || log.isDebugEnabled())
+            {
+                log.error(msg, e);
+            }
 
 			if (registered)
 			{
@@ -420,7 +497,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
 				}
 				catch (Exception re)
 				{
-					log.error("Failed to rollback registration of portlet application " + paName, re);
+                    if (!silent || log.isDebugEnabled())
+                    {
+                        log.error("Failed to rollback registration of portlet application " + paName, re);
+                    }
 				}
 			}
 
@@ -428,15 +508,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
 		}
 	}
 
-	protected void startPA(String contextName, String contextPath, FileSystemHelper warStruct,
-	        ClassLoader paClassLoader, int paType)
-	throws RegistryException
-	{
-	    startPA(contextName, contextPath, warStruct, paClassLoader, paType, 0);
-	}
-	
-	protected void startPA(String contextName, String contextPath, FileSystemHelper warStruct,
-	        ClassLoader paClassLoader, int paType, long checksum)
+	protected void attemptStartPA(String contextName, String contextPath, FileSystemHelper warStruct,
+            ClassLoader paClassLoader, int paType, long checksum, boolean silent)
 	throws RegistryException
 	{
         boolean register = true;
@@ -464,7 +537,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             {
                 if (paClassLoader == null)
                 {
-                    paClassLoader = paWar.createClassloader(getClass().getClassLoader());
+                    paClassLoader = paWar.createClassloader(this.getClass().getClassLoader());
                 }                
                 // create checksum from PA descriptors
                 checksum = paWar.getPortletApplicationChecksum();                
@@ -477,7 +550,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
             catch (IOException e)
             {
                 String msg = "Invalid PA WAR for " + contextName;
-                log.error(msg, e);
+                if (!silent || log.isDebugEnabled())
+                {
+                    log.error(msg, e);
+                }
                 if ( paClassLoader == null )
                 {
                     // nothing to be done about it anymore: this pa is beyond repair :(
@@ -521,7 +597,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
                         {
 	                        log.debug("Register new portlet application " + contextName + ".");
                         }
-	                    pa = registerPortletApplication(paWar, pa, paType, paClassLoader);
+	                    pa = registerPortletApplication(paWar, pa, paType, paClassLoader, silent);
 	                }
 	                catch (Exception e)
 	                {
@@ -606,7 +682,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         			    {
         			        log.debug("Register (deploy=true) Portlet application " + contextName + " in database.");
                         }
-	                    pa = registerPortletApplication(paWar, pa, paType, paClassLoader);
+	                    pa = registerPortletApplication(paWar, pa, paType, paClassLoader, silent);
         			}
         			else
         				if (reregister)
@@ -654,7 +730,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
         {
             String msg = "Error starting portlet application " + contextName;
             
-            log.error(msg, e);
+            if (!silent || log.isDebugEnabled())
+            {
+                log.error(msg, e);
+            }
             // monitor PA for changes
             // do not add monitor if a monitor already exists
             if (!monitored && changeMonitor != null)
@@ -969,13 +1048,13 @@ public class PortletApplicationManager implements PortletApplicationManagement
             }
         }        
 
-        private PortletApplicationManager pam;
+        private PortletApplicationManagement pam;
         private long interval;
         private boolean started = true;
         private ArrayList monitorInfos;
         private int maxRetriedStarts;
 
-        public DescriptorChangeMonitor(ThreadGroup group, String name, PortletApplicationManager pam, long interval, int maxretriedStarts)
+        public DescriptorChangeMonitor(ThreadGroup group, String name, PortletApplicationManagement pam, long interval, int maxretriedStarts)
         {
             super(group, name);
             this.pam = pam;
@@ -1105,8 +1184,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
                                 {
                                     try
                                     {
-                                        pam.startPA(monitorInfo.getContextName(), monitorInfo.getContextPath(), new DirectoryHelper(monitorInfo.getPADir()),
-                                                monitorInfo.getPAClassLoader(), monitorInfo.getPortletApplicationType(), monitorInfo.getChecksum());
+                                        pam.tryStartPortletApplication(monitorInfo.getContextName(), monitorInfo.getContextPath(), new DirectoryHelper(monitorInfo.getPADir()),
+                                                                       monitorInfo.getPAClassLoader(), monitorInfo.getPortletApplicationType(), monitorInfo.getChecksum(), true);
                                         // great! we have a successful start. set unsuccessful starts to 0
                                         monitorInfo.setUnsuccessfulStarts(0);
                                     }

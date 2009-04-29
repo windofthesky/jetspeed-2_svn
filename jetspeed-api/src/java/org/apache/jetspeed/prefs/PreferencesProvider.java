@@ -120,4 +120,20 @@ public interface PreferencesProvider
      * @throws Exception
      */
     void init() throws Exception;
+
+    /**
+     * Preload preferences for specified portlet application.
+     * 
+     * @param portletApplicationName application name
+     * @throws NodeDoesNotExistException
+     */
+    void preloadApplicationPreferences(String portletApplicationName) throws NodeDoesNotExistException;
+    
+    /**
+     * Clear cached preferences for specified portlet application.
+     * 
+     * @param portletApplicationName application name
+     * @throws NodeDoesNotExistException
+     */
+    void clearCachedApplicationPreferences(String portletApplicationName);
 }

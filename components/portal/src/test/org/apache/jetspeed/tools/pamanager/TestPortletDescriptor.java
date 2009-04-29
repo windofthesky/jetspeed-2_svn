@@ -95,7 +95,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
     {
         System.out.println("Testing loadPortletApplicationTree");
         PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet.xml"), "unit-test");
-        MutablePortletApplication app = pad.createPortletApplication();
+        MutablePortletApplication app = pad.createPortletApplication(true);
         assertNotNull("App is null", app);
         assertNotNull("Version is null", app.getVersion());
         assertTrue("Version invalid: " + app.getVersion(), app.getVersion().equals("1.0"));
@@ -304,7 +304,7 @@ public class TestPortletDescriptor extends AbstractRequestContextTestCase
         }
 
         PortletApplicationDescriptor pad = new PortletApplicationDescriptor(new FileReader("./test/testdata/deploy/portlet2.xml"), "HW_App");
-        app = pad.createPortletApplication();
+        app = pad.createPortletApplication(true);
 
         app.setName("HW_App");
 

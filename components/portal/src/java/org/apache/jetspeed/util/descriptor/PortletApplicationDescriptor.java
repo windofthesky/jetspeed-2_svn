@@ -68,10 +68,10 @@ public class PortletApplicationDescriptor
         this.appName = appName;
     }
 
-    public MutablePortletApplication createPortletApplication()
+    public MutablePortletApplication createPortletApplication(boolean populatePreferences)
     throws PortletApplicationException
     {
-        return createPortletApplication(this.getClass().getClassLoader());
+        return createPortletApplication(populatePreferences, this.getClass().getClassLoader());
     }
     
     /**
@@ -81,7 +81,7 @@ public class PortletApplicationDescriptor
      * @return MutablePortletApplication newly created MutablePortletApplication with
      * all values of the portlet application descriptor mapped into it.
      */
-    public MutablePortletApplication createPortletApplication(ClassLoader classLoader)
+    public MutablePortletApplication createPortletApplication(boolean populatePreferences, ClassLoader classLoader)
         throws PortletApplicationException
     {
         try
@@ -136,9 +136,11 @@ public class PortletApplicationDescriptor
             digester.addBeanPropertySetter("portlet-app/portlet/portlet-info/short-title", "shortTitle");
             digester.addCallMethod("portlet-app/portlet/portlet-info/keywords", "setKeywords", 0, new Class[]{String.class});
             digester.addSetNext("portlet-app/portlet/portlet-info", "addLanguage");
-            
-            digester.addRuleSet(new PortletPreferenceRuleSet());
 
+            if (populatePreferences)
+            {
+                digester.addRuleSet(new PortletPreferenceRuleSet());
+            }
             
             digester.addObjectCreate("portlet-app/user-attribute", UserAttributeImpl.class);
             digester.addBeanPropertySetter("portlet-app/user-attribute/description", "description");

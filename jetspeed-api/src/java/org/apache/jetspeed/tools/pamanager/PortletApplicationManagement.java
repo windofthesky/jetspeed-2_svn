@@ -48,4 +48,6 @@ public interface PortletApplicationManagement
   void startInternalApplication(String contextName) throws RegistryException;
   void stopLocalPortletApplication(String contextName) throws RegistryException;
   public void unregisterPortletApplication(String paName) throws RegistryException;
+
+  void tryStartPortletApplication(String contextName, String contextPath, FileSystemHelper warStruct, ClassLoader paClassLoader, int paType, long checksum, boolean silent) throws RegistryException;
 }

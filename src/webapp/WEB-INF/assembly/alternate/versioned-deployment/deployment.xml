@@ -23,6 +23,7 @@ limitations under the License.
   	   class="org.apache.jetspeed.tools.pamanager.VersionedPortletApplicationManager" init-method="start" destroy-method="stop"
   >  	   
   	   <constructor-arg><ref bean="portletFactory"/></constructor-arg>
+  	   <constructor-arg><ref bean="org.apache.jetspeed.prefs.PreferencesProvider"/></constructor-arg>
   	   <constructor-arg><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
   	   <constructor-arg><ref bean="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent"/></constructor-arg>
   	   <constructor-arg><ref bean="org.apache.jetspeed.container.window.PortletWindowAccessor"/></constructor-arg>
@@ -65,7 +66,7 @@ limitations under the License.
         </property>
         <property name="transactionAttributes">
             <props>
-                <prop key="start*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+                <prop key="try*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
                 <prop key="stop*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
                 <prop key="unregister*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
                 <prop key="register*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
@@ -73,6 +74,21 @@ limitations under the License.
             </props>
         </property>
     </bean>
+
+  <!-- Inject PAM Proxy into PAM implementation -->
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject">
+      <ref bean="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" />
+    </property>
+    <property name="targetMethod">
+      <value>setPAMProxy</value>
+    </property>
+    <property name="arguments">
+      <list>
+        <ref bean="PAM" />
+      </list>
+    </property>
+  </bean>
 
   <!-- Portlet Application and Decorator deployment event listeners -->
   <bean id="portletAppDeploymentListener" 

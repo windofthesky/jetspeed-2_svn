@@ -51,19 +51,17 @@ public class PreferencesImpl extends AbstractPreferences
     /** System <tt>Preferences</tt> node type. */
     public static final int SYSTEM_NODE_TYPE = 1;
 
-    /** The current <code>Node</code> object. */
-    private Node node = null;
-
     /** Logger. */
     private static final Log log = LogFactory.getLog(PreferencesImpl.class);
 
-    PreferencesProviderWrapper ppw;
+    PreferencesImpl parent;
     
-    void disposeNode()
-    {
-        node = null;
-    }
+    PreferencesProviderWrapper ppw;
 
+    String nodeName;
+    
+    int nodeType;
+    
     /**
      * <p>
      * Constructs a root node in the underlying datastore if they have not yet
@@ -80,55 +78,12 @@ public class PreferencesImpl extends AbstractPreferences
     PreferencesImpl(PreferencesImpl parent, PreferencesProviderWrapper ppw, String nodeName, int nodeType) throws IllegalStateException
     {
         super(parent, nodeName);
+        this.parent = parent;
         this.ppw = ppw;
-        try
-        {
-            node = ppw.provider().getNode(this.absolutePath(), nodeType);
-            newNode = false;
-        }
-        catch (NodeDoesNotExistException e1)
-        {
-            try
-            {
-                if (parent != null)
-                {
-                    this.node = ppw.provider().createNode(parent.getNode(), nodeName, nodeType, this.absolutePath());
-                }
-                else
-                {
-                    this.node = ppw.provider().createNode(null, nodeName, nodeType, this.absolutePath());
-                }
-
-                newNode = true;
-            }
-            catch (FailedToCreateNodeException e)
-            {
-                IllegalStateException ise = new IllegalStateException("Failed to create new Preferences of type "
-                        + nodeType + " for path " + this.absolutePath());
-                ise.initCause(e);
-                throw ise;
-            }
-            catch (NodeAlreadyExistsException e)
-            {
-                try
-                {
-                    node = ppw.provider().getNode(this.absolutePath(), nodeType);
-                    newNode = false;
-                }
-                catch (NodeDoesNotExistException e2)
-                {
-                    // If we get this at this point something is very wrong
-                    IllegalStateException ise = new IllegalStateException(
-                            "Unable to create node for Preferences of type "
-                                    + nodeType
-                                    + " for path "
-                                    + this.absolutePath()
-                                    + ".  If you see this exception at this, it more than likely means that the Preferences backing store is corrupt.");
-                    ise.initCause(e2);
-                    throw ise;
-                }
-            }
-        }
+        this.nodeName = nodeName;
+        this.nodeType = nodeType;
+        // aggressively fetch/create node
+        getNode();
     }        
 
     /**
@@ -161,7 +116,7 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public AbstractPreferences childSpi(String name)
     {
-        return new PreferencesImpl(this, ppw, name, node.getNodeType());
+        return new PreferencesImpl(this, ppw, name, nodeType);
     }
 
     /**
@@ -169,7 +124,6 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public void flushSpi() throws BackingStoreException
     {
-        ppw.provider().storeNode(this.node);
     }
 
     /**
@@ -178,8 +132,7 @@ public class PreferencesImpl extends AbstractPreferences
     public String getSpi(String key)
     {
         String value = null;
-        Collection properties = node.getNodeProperties();
-
+        Collection properties = getNode().getNodeProperties();
         for (Iterator i = properties.iterator(); i.hasNext();)
         {
             Property curProp = (Property) i.next();
@@ -198,7 +151,7 @@ public class PreferencesImpl extends AbstractPreferences
     {
         ArrayList propertyNames = new ArrayList();
 
-        Collection propCol = node.getNodeProperties();
+        Collection propCol = getNode().getNodeProperties();
         if ((null != propCol) && propCol.size() > 0)
         {
             for (Iterator j = propCol.iterator(); j.hasNext();)
@@ -221,6 +174,7 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public void putSpi(String key, String value)
     {
+        Node node = getNode();
         Collection properties = node.getNodeProperties();
         if (null == properties)
         {
@@ -252,6 +206,9 @@ public class PreferencesImpl extends AbstractPreferences
         }
 
         ppw.provider().storeNode(node);
+
+        // mark stored node as old
+        newNode = false;
     }
 
     /**
@@ -259,13 +216,17 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public void removeNodeSpi() throws BackingStoreException
     {
+        // remove node from db
         Node parentNode = null;
         Preferences parent = parent();
         if (parent != null && parent instanceof PreferencesImpl)
         {
             parentNode = ((PreferencesImpl) parent).getNode();
         }
-        ppw.provider().removeNode(parentNode, node);
+        ppw.provider().removeNode(parentNode, getNode());
+
+        // mark removed node as new
+        newNode = true;
     }
 
     /**
@@ -273,8 +234,9 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public void removeSpi(String key)
     {
+        boolean removed = false;
+        Node node = getNode();
         Collection properties = node.getNodeProperties();
-
         for (Iterator i = properties.iterator(); i.hasNext();)
         {
             Property curProp = (Property) i.next();
@@ -282,10 +244,16 @@ public class PreferencesImpl extends AbstractPreferences
             if ((curProp.getPropertyName().equals(key)))
             {
                 i.remove();
+                removed = true;
             }
         }
-        // Update node.
-        ppw.provider().storeNode(node);
+        if (removed)
+        {
+            ppw.provider().storeNode(node);
+
+            // mark stored node as old
+            newNode = false;
+        }
     }
 
     /**
@@ -306,6 +274,49 @@ public class PreferencesImpl extends AbstractPreferences
      */
     public Node getNode()
     {
+        Node node;
+        try
+        {
+            node = ppw.provider().getNode(absolutePath(), nodeType);
+            newNode = false;
+        }
+        catch (NodeDoesNotExistException e1)
+        {
+            try
+            {
+                if (parent != null)
+                {
+                    node = ppw.provider().createNode(parent.getNode(), nodeName, nodeType, absolutePath());
+                }
+                else
+                {
+                    node = ppw.provider().createNode(null, nodeName, nodeType, absolutePath());
+                }
+                newNode = true;
+            }
+            catch (FailedToCreateNodeException e)
+            {
+                IllegalStateException ise = new IllegalStateException("Failed to create new Preferences of type " + nodeType + " for path " + absolutePath());
+                ise.initCause(e);
+                throw ise;
+            }
+            catch (NodeAlreadyExistsException e)
+            {
+                try
+                {
+                    node = ppw.provider().getNode(absolutePath(), nodeType);
+                    newNode = false;
+                }
+                catch (NodeDoesNotExistException e2)
+                {
+                    // If we get this at this point something is very wrong
+                    IllegalStateException ise = new IllegalStateException("Unable to create node for Preferences of type " + nodeType + " for path " + absolutePath() + ". " +
+                                                                          "If you see this exception at this, it more than likely means that the Preferences backing store is corrupt.");
+                    ise.initCause(e2);
+                    throw ise;
+                }
+            }
+        }
         return node;
     }
 }
