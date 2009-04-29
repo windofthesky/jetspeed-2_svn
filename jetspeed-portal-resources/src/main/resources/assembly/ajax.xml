@@ -43,7 +43,7 @@
             <prop key="runtime.log.logsystem.class">
               org.apache.velocity.runtime.log.Log4JLogChute
             </prop>
-            <prop key="runtime.log.logsystem.log4j.category">velocity</prop>
+            <prop key="runtime.log.logsystem.log4j.logger">velocity</prop>
             <!-- clear out default global VM_global_library.vm leading to ERROR logging because its not available -->
             <prop key="velocimacro.library"></prop>
           </props>
