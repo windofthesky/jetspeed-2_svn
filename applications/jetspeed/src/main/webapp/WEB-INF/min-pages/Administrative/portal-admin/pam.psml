@@ -30,11 +30,15 @@ limitations under the License.
   <metadata name="title" xml:lang="ko">포틀릿 애플리케이션 관리</metadata>
 
   <fragment id="pam-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="pam-4" type="portlet" name="j2-admin::PortletApplicationBrowser" >
+    <fragment id="pam-3" type="portlet" name="j2-admin::RegistryApplicationsList" >
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="pam-5" type="portlet" name="j2-admin::PortletApplicationDetail" >
+    <fragment id="pam-4" type="portlet" name="j2-admin::PortletDetailsManager" >
+      <property layout="TwoColumns" name="row" value="1" />
+      <property layout="TwoColumns" name="column" value="0" />
+    </fragment>
+    <fragment id="pam-5" type="portlet" name="j2-admin::ApplicationDetails" >
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>

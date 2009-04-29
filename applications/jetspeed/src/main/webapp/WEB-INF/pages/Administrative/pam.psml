@@ -19,7 +19,7 @@ limitations under the License.
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
- 
+  
   <title>Portlet Application Manager</title>
   <metadata name="title" xml:lang="ja">PAM</metadata>
   <metadata name="title" xml:lang="es">PAM (Gestor de aplicaciones de portlets</metadata>
@@ -30,20 +30,16 @@ limitations under the License.
   <metadata name="title" xml:lang="ko">포틀릿 애플리케이션 관리</metadata>
 
   <fragment id="pam-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="13" type="portlet" name="j2-admin::PortletApplicationBrowser" >
+    <fragment id="pam-3" type="portlet" name="j2-admin::RegistryApplicationsList" >
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="14" type="portlet" name="j2-admin::PortletApplicationDetail" >
-      <property layout="TwoColumns" name="row" value="0" />
-      <property layout="TwoColumns" name="column" value="1" />
-    </fragment>
-   <fragment id="pemp-1" type="portlet" name="j2-admin::PortletEntityBrowserPortlet" >
+    <fragment id="pam-4" type="portlet" name="j2-admin::PortletDetailsManager" >
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-   <fragment id="pemp-2" type="portlet" name="j2-admin::PortletEntityEditorPortlet" >
-      <property layout="TwoColumns" name="row" value="1" />
+    <fragment id="pam-5" type="portlet" name="j2-admin::ApplicationDetails" >
+      <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
   </fragment>

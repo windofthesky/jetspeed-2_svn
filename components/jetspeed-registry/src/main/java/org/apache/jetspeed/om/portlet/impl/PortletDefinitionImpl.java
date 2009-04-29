@@ -158,7 +158,6 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
             {
                 p.addValue(s);
             }
-            list.add(p);
         }
         return preferences;
     }
