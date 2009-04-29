@@ -83,8 +83,8 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
     }
         
     // override to implement versioning logic
-    protected void startPA(String contextName, String contextPath, FileSystemHelper warStruct,
-            ClassLoader paClassLoader, int paType, long checksum)
+    protected void attemptStartPA(String contextName, String contextPath, FileSystemHelper warStruct,
+            ClassLoader paClassLoader, int paType, long checksum, boolean silent)
     throws RegistryException
     {
         PortletApplicationWar paWar = null;
@@ -101,7 +101,10 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
             catch (IOException e)
             {
                 String msg = "Invalid PA WAR for " + contextName;
-                log.error(msg, e);
+                if (!silent || log.isDebugEnabled())
+                {
+                    log.error(msg, e);
+                }
                 if ( paClassLoader == null )
                 {
                     // nothing to be done about it anymore: this pa is beyond repair :(
@@ -115,7 +118,7 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
             if (regPA == null)
             {
                 System.out.println("**** New portlet app found - registration required..." + contextName);
-                regPA = this.registerPortletApplication(paWar, null, paType, paClassLoader);
+                regPA = registerPortletApplication(paWar, null, paType, paClassLoader, silent);
             }
             else
             {
@@ -126,7 +129,7 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
                 if (newVersion.compareTo(regVersion) > 0)
                 {
                     System.out.println(" - **** New Version is greater: registration required... " + contextName);
-                    regPA = this.registerPortletApplication(paWar, regPA, paType, paClassLoader);                    
+                    regPA = registerPortletApplication(paWar, regPA, paType, paClassLoader, silent);                    
                 }
                 else
                 {
@@ -142,7 +145,10 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
         catch (Exception e)
         {
             String msg = "Error starting portlet application " + contextName;            
-            log.error(msg, e);
+            if (!silent || log.isDebugEnabled())
+            {
+                log.error(msg, e);
+            }
             throw new RegistryException(msg, e);
         }
     }
