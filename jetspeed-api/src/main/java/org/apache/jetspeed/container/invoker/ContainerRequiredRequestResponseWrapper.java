@@ -17,11 +17,11 @@
 package org.apache.jetspeed.container.invoker;
 
 /**
- * The PortalRequiredRequestWrapper is a marker interface to be implemented by
+ * The ContainerRequiredRequestResponseWrapper is a marker interface to be implemented by
  * a Portal specific HttpServletRequestWrapper or HttpServletResponseWrapper
  * to protect against being "unwrapped" before a Portlet dispatch call
  * 
- * @see ContainerRequestResponseUnwrapperr
+ * @see ContainerRequestResponseUnwrapper
  * @version $Id$
  */
 public interface ContainerRequiredRequestResponseWrapper
