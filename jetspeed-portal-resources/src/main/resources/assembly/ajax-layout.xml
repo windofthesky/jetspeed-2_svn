@@ -6,9 +6,9 @@
   The ASF licenses this file to You under the Apache License, Version 2.0
   (the "License"); you may not use this file except in compliance with
   the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,8 +18,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-  <!-- AJAX Actions 
-    
+  <!-- AJAX Actions
+
     == Constructor Arguments ==
     index 0 = render response VM template, generates XML NORMAL response
     index 1 = render response VM template, generates XML ERROR response
@@ -48,7 +48,7 @@
 
   <bean id="RolesSecurityBehavior" class="org.apache.jetspeed.layout.impl.RolesSecurityBehavior">
     <meta key="j2:cat" value="default" />
-    <!-- List of required roles (comma-separated) 
+    <!-- List of required roles (comma-separated)
       Only need to match one of the listed  roles to pass security requirements
     -->
     <constructor-arg>
@@ -536,7 +536,7 @@
     </constructor-arg>
   </bean>
 
-  <!-- 
+  <!--
     == AjaxGetUserList Constructor Arguments ==
     index 0 = render response VM template, generates XML NORMAL response
     index 1 = render response VM template, generates XML ERROR response
@@ -571,49 +571,7 @@
       <value>private</value>
     </constructor-arg>
   </bean>
-  <bean id="AjaxJetspeedSchemaExportObject" class="org.apache.jetspeed.layout.impl.ExportJetspeedSchema">
-    <meta key="j2:cat" value="default" />
-    <constructor-arg index="0">
-      <value>org/apache/jetspeed/layout/ajax-xml/jetspeedSchema.vm</value>
-    </constructor-arg>
-    <constructor-arg index="1">
-      <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
-    </constructor-arg>
-    <constructor-arg index='2'>
-      <ref bean="org.apache.jetspeed.page.PageManager" />
-    </constructor-arg>
-    <constructor-arg index='3'>
-      <ref bean="PortletActionSecurityBehavior" />
-    </constructor-arg>
-    <constructor-arg index='4'>
-      <ref bean="JetspeedSerializer" />
-    </constructor-arg>
-    <constructor-arg index='5'>
-      <value>${java.io.tmpdir}</value>
-    </constructor-arg>
-  </bean>
 
-  <bean id="AjaxExportObject" class="org.apache.jetspeed.layout.impl.ExportObject">
-    <meta key="j2:cat" value="default" />
-    <constructor-arg index="0">
-      <value>org/apache/jetspeed/layout/ajax-xml/export.vm</value>
-    </constructor-arg>
-    <constructor-arg index="1">
-      <value>org/apache/jetspeed/layout/ajax-xml/error.vm</value>
-    </constructor-arg>
-    <constructor-arg index='2'>
-      <ref bean="org.apache.jetspeed.page.PageManager" />
-    </constructor-arg>
-    <constructor-arg index='3'>
-      <ref bean="PortletActionSecurityBehavior" />
-    </constructor-arg>
-    <constructor-arg index='4'>
-      <ref bean="importerCastorPageManager" />
-    </constructor-arg>
-    <constructor-arg index='5'>
-      <value>${java.io.tmpdir}</value>
-    </constructor-arg>
-  </bean>
   <bean id="AjaxActionMap" class="java.util.HashMap">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
@@ -698,12 +656,6 @@
         </entry>
         <entry key="getuserlist">
           <ref bean="AjaxGetUserList" />
-        </entry>
-        <entry key="export">
-          <ref bean="AjaxExportObject" />
-        </entry>
-        <entry key="jetspeedexport">
-          <ref bean="AjaxJetspeedSchemaExportObject" />
         </entry>
       </map>
     </constructor-arg>
