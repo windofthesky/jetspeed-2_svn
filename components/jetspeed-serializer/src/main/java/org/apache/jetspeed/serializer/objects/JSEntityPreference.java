@@ -31,29 +31,13 @@ public class JSEntityPreference
 {
 
     private String principalName;
-
-
     private JSNVPElements preferences = null;
 
 
     public JSEntityPreference()
     {
     }
-
-   
-
-    public void setName(String principalName)
-    {
-        this.principalName = principalName;
-    }
-
  
-    public String getName()
-    {
-        return principalName;
-    }
-
-  
     /**
      * @return Returns the preferences.
      */
@@ -84,9 +68,9 @@ public class JSEntityPreference
             try
             {
                 JSEntityPreference g = (JSEntityPreference) o;
-                String s = g.getName();
+                String s = g.getPrincapalName();
                 if ((s == null) || (s.length() == 0)) s = "no-principal";
-                xml.setAttribute("name", s);
+                xml.setAttribute("principal-name", s);
                 if ((g.preferences != null) && (g.preferences.size()>0))
                 	xml.add(g.preferences);
 
@@ -101,7 +85,7 @@ public class JSEntityPreference
             try
             {
                 JSEntityPreference g = (JSEntityPreference) o;
-                g.principalName = StringEscapeUtils.unescapeHtml(xml.getAttribute("name", "no-principal"));
+                g.principalName = StringEscapeUtils.unescapeHtml(xml.getAttribute("principal-name", "-"));
                 
                 
                 Object o1 = null;
@@ -123,6 +107,23 @@ public class JSEntityPreference
         }
 
     };
+
+
+    /**
+     * @return the princapalName
+     */
+    public String getPrincapalName()
+    {
+        return principalName;
+    }
+
+    /**
+     * @param princapalName the princapalName to set
+     */
+    public void setPrincapalName(String princapalName)
+    {
+        this.principalName = princapalName;
+    }
 
 
 }

@@ -31,7 +31,7 @@ public class JSEntity
 {
 
     private String id;
-
+    private String principalName;
 
     private JSEntityPreferences entityPreferences = null;
 
@@ -120,6 +120,24 @@ public class JSEntity
         }
 
     };
+
+
+    /**
+     * @return the principalName
+     */
+    public String getPrincipalName()
+    {
+        return principalName;
+    }
+
+
+    /**
+     * @param principalName the principalName to set
+     */
+    public void setPrincipalName(String principalName)
+    {
+        this.principalName = principalName;
+    }
 
 
 }

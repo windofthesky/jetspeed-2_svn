@@ -28,8 +28,11 @@ public class JSNVPElement
     private String key;
 
     private String value;
+    
+    private String [] values;
 
     private boolean nullValue;
+    private boolean isReadOnly;
 
     public JSNVPElement()
     {
@@ -55,14 +58,22 @@ public class JSNVPElement
         {
             JSNVPElement e = (JSNVPElement) o;
             // xml.add((String) g.get(_key), _key, String.class);
-
+            xml.setAttribute("readonly",String.valueOf(e.isReadOnly()));
             xml.add(e.key, "name", String.class);
             if (e.nullValue)
             {
                 xml.setAttribute("nullValue", true);
             } else
             {
-                xml.add(e.value, "value", String.class);
+                if(null!=e.getValues())
+                {
+                    for(int count=0;count<e.getValues().length;count++)
+                    {
+                        xml.add(e.getValues()[count], "value", String.class);
+                    }
+                }else{
+                    xml.add(e.value, "value", String.class);       
+                }             
             }
         }
 
@@ -71,10 +82,11 @@ public class JSNVPElement
             try
             {
                 JSNVPElement g = (JSNVPElement) o;
+                g.isReadOnly  = Boolean.parseBoolean(xml.getAttribute("readonly", "false"));
                 g.key = StringEscapeUtils.unescapeHtml((String) xml.get("name",
                         String.class));
                 g.value = StringEscapeUtils.unescapeHtml((String) xml.get(
-                        "value", String.class));
+                        "value", String.class));                
                 // DST: not sure what Ate was doing here, but it breaks things
                 // we also need to add upport for multiple values and 'readonly', but its not clear what this null value does for us
                 //                g.nullValue = xml.getAttribute("nullValue", false);                
@@ -105,10 +117,35 @@ public class JSNVPElement
     {
         return value;
     }
+    
+    public String [] getValues()
+    {
+        return values;
+    }
 
     public void setValue(String value)
     {
         this.value = value;
         nullValue = value == null;
+    }
+    
+    public void setValues(String [] values)
+    {
+        this.values = values;
+        nullValue = values == null;
+    }
+    /**
+     * @return the isReadOnly
+     */
+    public boolean isReadOnly()
+    {
+        return isReadOnly;
+    }
+    /**
+     * @param isReadOnly the isReadOnly to set
+     */
+    public void setReadOnly(boolean isReadOnly)
+    {
+        this.isReadOnly = isReadOnly;
     }
 }

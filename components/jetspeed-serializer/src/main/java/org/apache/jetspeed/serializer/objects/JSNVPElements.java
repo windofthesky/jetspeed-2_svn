@@ -33,6 +33,7 @@ import javolution.xml.stream.XMLStreamException;
 public class JSNVPElements
 {
     private List<JSNVPElement> values = new ArrayList<JSNVPElement>();
+    
     private String itemElementName = "preference";
 
     public int size()
@@ -94,8 +95,7 @@ public class JSNVPElements
 
             try
             {
-                JSNVPElements g = (JSNVPElements) o;
-                
+                JSNVPElements g = (JSNVPElements) o;             
                 while (xml.hasNext())
 				{
                     // Allow any sub element as long as it has name-value pair. 
@@ -114,4 +114,7 @@ public class JSNVPElements
             }
         }
     };
+
+
+    
 }

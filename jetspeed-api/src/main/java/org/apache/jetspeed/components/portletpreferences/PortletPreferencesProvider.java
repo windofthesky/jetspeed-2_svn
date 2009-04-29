@@ -17,12 +17,12 @@
 package org.apache.jetspeed.components.portletpreferences;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.pluto.container.PortletContainerException;
 import org.apache.pluto.container.PortletPreference;
 import org.apache.pluto.container.PortletPreferencesService;
 
@@ -116,5 +116,36 @@ public interface PortletPreferencesProvider extends PortletPreferencesService
      */
     public void storeEntityPreferences(Map<String, PortletPreference> map, ContentPage page, PortletWindow window)
         throws PreferencesException;
+    /**
+     * Retrieve entity ids (window) given portlet definitaion
+     * 
+     * @param portletdefinition
+     */
+    public Set<String> getPortletWindowIds(PortletDefinition portletdefinition);
+
+    /**
+     * Retrieve user names for given entity(window) id and portlet definitaion
+     * @param portletdefinition
+     * @param windowId
+     */    
+    public Set<String> getUserNames(PortletDefinition portletdefinition,String windowId);
+    
+    
+    /**
+     * Retrieve entity preference names for given entity(window) id ,portlet definitaion and user name 
+     * @param portletdefinition
+     * @param windowId
+     */
+    public Map<String,PortletPreference>getUserPreferences(PortletDefinition portletdefinition,String windowId,String userName);
+    
+    /**
+     * Store entity preferences contained in the map parameter for a given window and username 
+     * @param portletdefinition
+     * @param windowId
+     * @param userName
+     * @param map
+     */
+    public void storePortletPreference(PortletDefinition portletdefinition,String windowId,String userName, Map<String, PortletPreference> map);
+
 
 }

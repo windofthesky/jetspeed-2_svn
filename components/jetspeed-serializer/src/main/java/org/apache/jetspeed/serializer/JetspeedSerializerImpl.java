@@ -29,8 +29,6 @@ import javolution.xml.XMLBinding;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.serializer.objects.JSApplication;
 import org.apache.jetspeed.serializer.objects.JSApplications;
 import org.apache.jetspeed.serializer.objects.JSCapabilities;
@@ -77,6 +75,8 @@ import org.apache.jetspeed.serializer.objects.JSUserGroups;
 import org.apache.jetspeed.serializer.objects.JSUserRoles;
 import org.apache.jetspeed.serializer.objects.JSUserUsers;
 import org.apache.jetspeed.serializer.objects.JSUsers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main JetspeedSerializer implementation delegating the real serializing to JetspeedComponentSerializer instances
@@ -227,7 +227,9 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         binding.setAlias(JSPortlets.class, "Portlets");
         binding.setAlias(JSEntity.class, "Entity");
         binding.setAlias(JSEntities.class, "Entities");
-        binding.setAlias(JSEntityPreference.class, "Principal");
+        binding.setAlias(JSEntityPreference.class, "EntityPreference");
+        binding.setAlias(JSEntityPreferences.class, "EntityPreferences");
+        //binding.setAlias(JSEntityPreference.class, "Principal");
         binding.setAlias(JSEntityPreferences.class, "Settings");
         binding.setAlias(JSSecurityDomains.class, "SecurityDomains");
         binding.setAlias(JSSecurityDomain.class, "SecurityDomain");
