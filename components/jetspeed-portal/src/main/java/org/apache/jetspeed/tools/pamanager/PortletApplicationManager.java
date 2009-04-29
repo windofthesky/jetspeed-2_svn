@@ -44,7 +44,7 @@ import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 /**
  * PortletApplicationManager
  *
- * @author <a href="mailto:ate@douma.nu">Ate Doumaxs</a>
+ * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
 public class PortletApplicationManager implements PortletApplicationManagement
