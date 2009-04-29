@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
+import org.apache.jetspeed.container.invoker.ContainerRequiredRequestResponseWrapper;
+
 /**
  * PortalRequest wraps the original request to the portal and keeps local
  * references to properties like contextPath, servletPath and the Session
@@ -44,7 +46,7 @@ import javax.servlet.http.HttpSession;
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class PortalRequest extends HttpServletRequestWrapper
+public class PortalRequest extends HttpServletRequestWrapper implements ContainerRequiredRequestResponseWrapper
 {
     private final String      contextPath;
     private final String      servletPath;

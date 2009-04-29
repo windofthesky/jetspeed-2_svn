@@ -22,10 +22,11 @@ import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.jetspeed.container.invoker.ContainerRequiredRequestResponseWrapper;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.SubjectHelper;
 
-public class PortalRequestWrapper extends HttpServletRequestWrapper
+public class PortalRequestWrapper extends HttpServletRequestWrapper implements ContainerRequiredRequestResponseWrapper
 {
     private Principal userPrincipal = null;
     private Subject subject ;

@@ -34,7 +34,7 @@ public class DefaultContainerRequestResponseUnwrapper implements ContainerReques
     public ServletRequest unwrapContainerRequest(HttpServletRequest containerRequest)
     {
         ServletRequest request = containerRequest;
-        while (request instanceof HttpServletRequestWrapper)
+        while (request instanceof HttpServletRequestWrapper && !(request instanceof ContainerRequiredRequestResponseWrapper))
         {
             request = ((HttpServletRequestWrapper)request).getRequest();
         }
