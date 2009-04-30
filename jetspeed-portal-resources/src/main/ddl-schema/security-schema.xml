@@ -181,7 +181,7 @@ limitations under the License.
     </table>
     
     <table name="SECURITY_DOMAIN">
-        <column name="DOMAIN_ID" primaryKey="true" type="INTEGER" autoIncrement="true"/>
+        <column name="DOMAIN_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="DOMAIN_NAME" type="VARCHAR" size="30"/>
         <column name="REMOTE" default="0" type="BOOLEANINT"/>
         <column name="ENABLED" default="1" type="BOOLEANINT"/>
