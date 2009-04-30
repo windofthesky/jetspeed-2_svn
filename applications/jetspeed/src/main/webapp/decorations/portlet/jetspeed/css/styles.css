@@ -642,3 +642,13 @@ limitations under the License.
 }
 
 
+.jetspeed ul
+{
+  margin:1em;
+}
+
+.jetspeed ul li
+{
+  padding:2px;
+  margin-left:1em;
+}

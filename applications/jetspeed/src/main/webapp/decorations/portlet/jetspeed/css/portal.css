@@ -17,19 +17,26 @@ limitations under the License.
 
 
 .jetspeed .PContentBorder
-{    
-
-}
-
-.jetspeed .PContent
 {
-    padding: 1em;
-    white-space: normal;
-    font-size: 1em;
     border-bottom:1px solid #cccccc;
     border-left:1px solid #cccccc;
     border-right:1px solid #cccccc;
+    clear:left;
 }
+
+.jetspeed .PContent 
+{
+    padding-left:2px;
+    padding-right:2px;
+    white-space:normal;
+    font-size:1em;
+}
+
+.jetspeed .PTitleContent
+{
+    padding-bottom:0px;
+}
+
 
 .portlet th, .portlet td, .portlet input {
     font-size:7pt;
