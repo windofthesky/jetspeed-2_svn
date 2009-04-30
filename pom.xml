@@ -1199,6 +1199,11 @@
         <artifactId>random</artifactId>
         <version>${taglibs-random.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.pluto</groupId>
+        <artifactId>pluto-taglib</artifactId>
+        <version>${org.apache.pluto.version}</version>
+      </dependency>
 
       <!-- Velocity -->
       <dependency>
@@ -1561,7 +1566,7 @@
               </target>	              
               <target>
                 <id>min-dbpsml</id>
-                <depends>demo-install,demo-db,demo-deploy-min,demo-deploy-dbpsml,demomin-seed-dbpsml</depends>
+                <depends>demo-install,demo-db,demo-deploy-min,demo-deploy-dbpsml,min-seed-dbpsml</depends>
               </target>	          
               <target>
                 <id>demo-dbpsml</id>
