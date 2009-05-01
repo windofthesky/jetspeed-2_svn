@@ -126,6 +126,9 @@
         <entry key="JetspeedPrincipalManagerProvider">
           <ref bean="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider" />
         </entry>
+        <entry key="AuthenticationProvider">
+        	<ref bean="org.apache.jetspeed.security.AuthenticationProvider" />
+        </entry>
         <!--<entry key="SecurityAttributesProvider">
           <ref bean="org.apache.jetspeed.security.attributes.SecurityAttributesProvider" />
           </entry>-->

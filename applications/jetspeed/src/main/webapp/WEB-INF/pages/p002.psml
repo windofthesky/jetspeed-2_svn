@@ -30,7 +30,7 @@
 	<metadata name="title" xml:lang="zh-TW">第二個PSML頁面</metadata>
 	<fragment id="xx2.0" type="layout"
 		name="jetspeed-layouts::VelocityOneColumn">
-		<fragment id="xx2.3" type="portlet" name="demo::SSODemoHelp">
+		<fragment id="xx2.3" type="portlet" name="j2-admin::SSODemoHelp">
 			<property layout="OneColumn" name="row" value="0" />
 		</fragment>
 		<fragment id="xx2.4" type="layout"

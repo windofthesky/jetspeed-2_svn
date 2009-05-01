@@ -110,7 +110,8 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
  
      
      */
-    public void testAddAndFetchSites() throws Exception {
+    public void testAddAndFetchSites() throws Exception
+    {
         addTestUser();
         addAnotherTestUser();
         addTestSite();
@@ -167,7 +168,8 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
         
     }
     
-    public void testWildCardSiteSearch() throws Exception {
+    public void testWildCardSiteSearch() throws Exception 
+    {
 
         // test fetching sites with wildcard searches
         ssoManager.addSite(ssoManager.newSite("Our Website", "http://portals.apache.org/jetspeed-2"));
@@ -198,7 +200,8 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
 
     }
     
-    public void testUpdateSite() throws Exception {
+    public void testUpdateSite() throws Exception 
+    {
         addTestSite();
         
         SSOSite s = ssoManager.getSiteByName(TESTSITE);
@@ -234,7 +237,8 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
         assertEquals("siteURL",s.getURL());
     }
     
-    public void testFecthSitesForSubject() throws Exception {
+    public void testFecthSitesForSubject() throws Exception 
+    {
         addTestUser();
         addAnotherTestUser();
         addTestSite();
@@ -263,7 +267,8 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
         assertEquals(2, sites.size());
     }
     
-    public void testAddAndFetchUsers() throws Exception {
+    public void testAddAndFetchUsers() throws Exception 
+    {
         addTestUser();
         addAnotherTestUser();
         addTestSite();
@@ -285,8 +290,8 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
         s.getPrincipals().add(subjectUser); // add twice 
         s.getPrincipals().add(subjectGroup);
         // the following principal should just be ignored
-        s.getPrincipals().add(new Principal(){
-
+        s.getPrincipals().add(new Principal()
+        {
             public String getName()
             {
                 return "someNonJetspeedPrincipal";
@@ -310,7 +315,8 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
         assertNotNull(someRemoteUser);
     }
 
-    public void testAddDuplicateSite() throws Exception {        
+    public void testAddDuplicateSite() throws Exception 
+    {        
         ssoManager.addSite(ssoManager.newSite(TESTSITE, "http://www.blah.com"));
 
         try{
@@ -332,7 +338,8 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
     /**
      * Tests SSOManager.testAddUserForLocalGroup()
      */
-    public void testAddUserForLocalGroup() throws Exception {
+    public void testAddUserForLocalGroup() throws Exception 
+    {
         addTestGroup();
         addTestSite(); 
         
@@ -347,7 +354,8 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
         assertNotNull(someRemoteUser);
     }
     
-    public void testRemoveUser() throws Exception {
+    public void testRemoveUser() throws Exception 
+    {
         addTestUser();
         addTestSite();
         
@@ -372,16 +380,20 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
     /**
      * Tests SSOManager.addUser()
      */
-    public void testAddDuplicateUser() throws Exception {
+    public void testAddDuplicateUser() throws Exception 
+    {
         addTestUser();
         addTestSite();
         
         ssoManager.addUser(testSite, testuser, "someRemoteUser", "someRemotePwd");
 
-        try{
+        try
+        {
             ssoManager.addUser(testSite, testuser, "someRemoteUser", "whatever");
             throw new Exception("Test failed: duplicate user was added");
-        } catch (SSOException ssoe){
+        } 
+        catch (SSOException ssoe)
+        {
             
         }
         Collection<SSOUser> remoteUsers = ssoManager.getRemoteUsers(testSite, testuser);
@@ -389,16 +401,18 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
         
         // test adding remote user with other local user
         addAnotherTestUser();
-        try{
+        try
+        {
             ssoManager.addUser(testSite, anotherTestuser, "someRemoteUser", "myOwnPwd");
             throw new Exception("Test failed: duplicate user was added");
-        } catch (SSOException ssoe){
-            
-        }
-        
+        } 
+        catch (SSOException ssoe)
+        {            
+        }        
     }
     
-    public void testCredentials() throws Exception {
+    public void testCredentials() throws Exception 
+    {
         addTestUser();
         addTestSite();
         
@@ -412,7 +426,8 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
 
     }
     
-    public void testFetchPortalPrincipals() throws Exception {
+    public void testFetchPortalPrincipals() throws Exception 
+    {
         addTestUser();
         addAnotherTestUser();
         addTestGroup();
@@ -437,27 +452,33 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
 
     }
     
-    public void addTestSite() throws Exception {
+    public void addTestSite() throws Exception
+    {
         testSite = ssoManager.addSite(ssoManager.newSite(TESTSITE, "http://www.blah.com"));
     }
-    
-    public void addAnotherTestSite() throws Exception {
+
+    public void addAnotherTestSite() throws Exception
+    {
         anotherTestSite = ssoManager.addSite(ssoManager.newSite(ANOTHER_TESTSITE, "http://www.alternative.com"));
     }
-    
-    public void addTestUser() throws Exception {
+
+    public void addTestUser() throws Exception
+    {
         testuser = ums.addUser(TESTUSER);
     }
-    
-    public void addAnotherTestUser() throws Exception {
+
+    public void addAnotherTestUser() throws Exception
+    {
         anotherTestuser = ums.addUser(ANOTHER_TESTUSER);
     }
-    
-    public void addTestGroup() throws Exception {
+
+    public void addTestGroup() throws Exception
+    {
         testgroup = gms.addGroup(TESTGROUP);
     }
-    
-    public void addAnotherTestGroup() throws Exception {
+
+    public void addAnotherTestGroup() throws Exception
+    {
         anotherTestgroup = gms.addGroup(ANOTHER_TESTGROUP);
     }
     
@@ -508,11 +529,14 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
         return new TestSuite(TestSSOManager.class);
     }
 
-    protected void tryRemovePrincipal(PrincipalTypeManager pman, String pname){
-        try{
+    protected void tryRemovePrincipal(PrincipalTypeManager pman, String pname)
+    {
+        try
+        {
             pman.getPrincipalManager().removePrincipal(pname);
-        } catch (Exception e){
-            
+        } 
+        catch (Exception e)
+        {            
         }
     }
     
@@ -527,9 +551,11 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
         
         Collection<SSOSite> sites = ssoManager.getSites("");
         if (sites != null){
-            for (SSOSite site : sites){
+            for (SSOSite site : sites)
+            {
                 Collection<SSOUser> users = ssoManager.getUsersForSite(site);
-                for (SSOUser user : users){
+                for (SSOUser user : users)
+                {
                     ssoManager.removeUser(user);
                 }
                 ssoManager.removeSite(site);
