@@ -71,6 +71,7 @@
         <artifactId>maven-ear-plugin</artifactId>
         <configuration>
           <modules>
+            <!-- skinny wars: must be explicitly repackaged below with maven-ear-plugin-skinny-wars -->
             <webModule>
               <groupId>${pom.groupId}</groupId>
               <artifactId>jetspeed</artifactId>
@@ -97,6 +98,7 @@
               <contextRoot>/webcontent</contextRoot>
             </webModule>                       
 
+            <!-- skinny wars classpath lib jars -->
             <jarModule>
               <groupId>javax.ccpp</groupId>
               <artifactId>ccpp</artifactId>
@@ -134,6 +136,64 @@
             </jarModule>                                              
           </modules>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>maven-ear-plugin-skinny-wars</id>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <!-- unpackage EAR -->
+                <delete dir="${project.build.directory}/package-skinny-wars"/>
+                <unjar src="${project.build.directory}/${project.build.finalName}.ear" dest="${project.build.directory}/package-skinny-wars"/>
+                <!-- determine skinny wars classpath from lib jars -->
+                <pathconvert pathsep=" " property="war.manifest.classpath">
+                  <map from="${project.build.directory}${file.separator}package-skinny-wars${file.separator}" to=""/>
+                  <path>
+                    <fileset dir="${project.build.directory}/package-skinny-wars">
+                      <include name="lib/*.jar"/>
+                    </fileset>
+                  </path>
+                </pathconvert>
+                <!-- set skinny wars classpath -->
+                <jar destfile="${project.build.directory}/package-skinny-wars/jetspeed-${pom.version}.war" update="true">
+                  <manifest>
+                    <attribute name="Class-Path" value="${war.manifest.classpath}"/>
+                  </manifest>
+                </jar>
+                <jar destfile="${project.build.directory}/package-skinny-wars/j2-admin-${pom.version}.war" update="true">
+                  <manifest>
+                    <attribute name="Class-Path" value="${war.manifest.classpath}"/>
+                  </manifest>
+                </jar>
+                <jar destfile="${project.build.directory}/package-skinny-wars/apa-demo-${org.apache.portals.applications.apa-demo.version}.war" update="true">
+                  <manifest>
+                    <attribute name="Class-Path" value="${war.manifest.classpath}"/>
+                  </manifest>
+                </jar>
+                <jar destfile="${project.build.directory}/package-skinny-wars/apa-rss-war-${org.apache.portals.applications.apa-rss.version}.war" update="true">
+                  <manifest>
+                    <attribute name="Class-Path" value="${war.manifest.classpath}"/>
+                  </manifest>
+                </jar>
+                <jar destfile="${project.build.directory}/package-skinny-wars/apa-webcontent-war-${org.apache.portals.applications.apa-webcontent.version}.war" update="true">
+                  <manifest>
+                    <attribute name="Class-Path" value="${war.manifest.classpath}"/>
+                  </manifest>
+                </jar>
+                <!-- repackage EAR with skinny wars -->
+                <jar destfile="${project.build.directory}/${project.build.finalName}.ear" basedir="${project.build.directory}/package-skinny-wars" manifest="${project.build.directory}/package-skinny-wars/META-INF/MANIFEST.MF"/>
+                <delete dir="${project.build.directory}/package-skinny-wars"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
