@@ -97,41 +97,41 @@
               <contextRoot>/webcontent</contextRoot>
             </webModule>                       
 
-            <javaModule>
+            <jarModule>
               <groupId>javax.ccpp</groupId>
               <artifactId>ccpp</artifactId>
-              <bundleDir>/</bundleDir>
-            </javaModule>
-            <javaModule>
+              <bundleDir>/lib</bundleDir>
+            </jarModule>
+            <jarModule>
               <groupId>${pom.groupId}</groupId>
               <artifactId>jetspeed-api</artifactId>
-              <bundleDir>/</bundleDir>
-            </javaModule>
-            <javaModule>
+              <bundleDir>/lib</bundleDir>
+            </jarModule>
+            <jarModule>
               <groupId>${pom.groupId}</groupId>
               <artifactId>jetspeed-commons</artifactId>
-              <bundleDir>/</bundleDir>
-            </javaModule>
-            <javaModule>
+              <bundleDir>/lib</bundleDir>
+            </jarModule>
+            <jarModule>
               <groupId>org.apache.portals.bridges</groupId>
               <artifactId>portals-bridges-common</artifactId>
-              <bundleDir>/</bundleDir>
-            </javaModule>
-            <javaModule>                      
+              <bundleDir>/lib</bundleDir>
+            </jarModule>
+            <jarModule>                      
               <groupId>javax.portlet</groupId>
               <artifactId>portlet-api</artifactId>
-              <bundleDir>/</bundleDir>
-            </javaModule>
-            <javaModule>                      
+              <bundleDir>/lib</bundleDir>
+            </jarModule>
+            <jarModule>                      
               <groupId>org.apache.pluto</groupId>
               <artifactId>pluto-container-api</artifactId>
-              <bundleDir>/</bundleDir>
-            </javaModule>                                              
-            <javaModule>                      
+              <bundleDir>/lib</bundleDir>
+            </jarModule>                                              
+            <jarModule>                      
               <groupId>org.apache.pluto</groupId>
               <artifactId>pluto-taglib</artifactId>
-              <bundleDir>/</bundleDir>
-            </javaModule>                                              
+              <bundleDir>/lib</bundleDir>
+            </jarModule>                                              
           </modules>
         </configuration>
       </plugin>
