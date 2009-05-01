@@ -964,5 +964,13 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
             }
         }
     }
-    
+
+    public NodeSet getAll(boolean filtered) throws DocumentException
+    {
+        if (!filtered)
+        {
+            return getAllNodes();
+        }
+        return getAll();
+    }     
 }

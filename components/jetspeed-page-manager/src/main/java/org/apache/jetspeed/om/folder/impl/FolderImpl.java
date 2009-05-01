@@ -1112,5 +1112,14 @@ public class FolderImpl extends NodeImpl implements Folder
             pageManager = (PageManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.page.PageManager");
         }        
         return pageManager;
+    }
+
+    public NodeSet getAll(boolean filtered) throws DocumentException
+    {
+        if (!filtered)
+        {
+            return getAllNodeSet();
+        }
+        return getAll();
     }     
 }
