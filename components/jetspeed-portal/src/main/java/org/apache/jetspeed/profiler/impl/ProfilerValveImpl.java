@@ -257,7 +257,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             // security system has been replaced/overridden
             if (request.getRequest().getUserPrincipal() == null &&
                 request.getPath() != null &&
-                !request.getPath().equals("/"))
+                !request.getPath().equals("/") && requestFallback)
             {
                 try 
                 {
