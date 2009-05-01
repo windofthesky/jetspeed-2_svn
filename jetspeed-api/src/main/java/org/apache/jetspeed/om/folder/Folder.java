@@ -260,7 +260,7 @@ public interface Folder extends Node
      * this folder.
      * @throws DocumentException
      */
-    NodeSet getAll(boolean filtered) throws DocumentException;
+    NodeSet getAll(boolean secured) throws DocumentException;
 
     /**
      * getMenuDefinitions - get list of menu definitions

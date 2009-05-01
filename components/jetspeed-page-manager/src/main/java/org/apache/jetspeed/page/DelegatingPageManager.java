@@ -169,15 +169,6 @@ public class DelegatingPageManager extends AbstractPageManager
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#getAll(org.apache.jetspeed.om.folder.Folder)
-     */
-    public NodeSet getAll(Folder folder) throws DocumentException
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#updatePage(org.apache.jetspeed.om.page.Page)
      */
     public void updatePage(Page page) throws NodeException,
@@ -271,5 +262,10 @@ public class DelegatingPageManager extends AbstractPageManager
     throws NodeException
     {
         throw new NodeException("not impl");
+    }
+
+    public void initFolder(Folder folder) throws DocumentException
+    {
+        
     }
 }

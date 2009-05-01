@@ -457,7 +457,7 @@ public interface PageManager
      *         and documents directly under this folder.
      * @throws DocumentException
      */
-    public NodeSet getAll(Folder folder) throws DocumentException;
+    public void initFolder(Folder folder) throws DocumentException;
 
     /** Update a page in persistent storage
      *

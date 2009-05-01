@@ -831,16 +831,26 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public NodeSet getAll() throws DocumentException
     {
+        return getAll(true);
+    }
+    
+    public NodeSet getAll(boolean secured) throws DocumentException
+    {
         // get all nodes collection
         if (!allCached)
         {
             // use PageManager to get and cache all nodes
             // collection for this folder
-            return getPageManager().getAll(this);
+            getPageManager().initFolder(this);
         }
 
+        NodeSet nodes = getAllNodeSet();
+        if (!secured)
+        {
+            return nodes;
+        }
         // return nodes with view access
-        return filterNodeSetByAccess(getAllNodeSet());
+        return filterNodeSetByAccess(nodes);
     }
     
     /* (non-Javadoc)
@@ -1112,14 +1122,5 @@ public class FolderImpl extends NodeImpl implements Folder
             pageManager = (PageManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.page.PageManager");
         }        
         return pageManager;
-    }
-
-    public NodeSet getAll(boolean filtered) throws DocumentException
-    {
-        if (!filtered)
-        {
-            return getAllNodeSet();
-        }
-        return getAll();
     }     
 }

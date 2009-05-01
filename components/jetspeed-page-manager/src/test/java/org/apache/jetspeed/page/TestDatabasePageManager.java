@@ -485,8 +485,8 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(1, pageManager.getFolders(folder).size());
         assertNotNull(folder.getAll());
         assertEquals(6, folder.getAll().size());
-        assertNotNull(pageManager.getAll(folder));
-        assertEquals(6, pageManager.getAll(folder).size());
+        assertNotNull(folder.getAll(false));
+        assertEquals(6, folder.getAll(false).size());
         Iterator all = folder.getAll().iterator();
         assertEquals("some-other-page.psml", ((Node)all.next()).getName());
         assertEquals("default-page.psml", ((Node)all.next()).getName());
