@@ -41,12 +41,6 @@
   <!-- Application Dependencies -->
   
   <dependencies>
-    <!-- Provided Dependencies -->
-    <dependency>
-      <groupId>${pom.groupId}</groupId>
-      <artifactId>j2-admin</artifactId>
-      <type>war</type>
-    </dependency>
     <dependency>
       <groupId>org.apache.portals.applications</groupId>
       <artifactId>apa-demo</artifactId>
@@ -64,6 +58,8 @@
     </dependency>
   </dependencies>
 
+  <!-- POM build -->
+
   <build>
     <plugins>
       <plugin>
@@ -74,7 +70,7 @@
             <!-- skinny wars: must be explicitly repackaged below with maven-ear-plugin-skinny-wars -->
             <webModule>
               <groupId>${pom.groupId}</groupId>
-              <artifactId>jetspeed</artifactId>
+              <artifactId>jetspeed-demo</artifactId>
               <contextRoot>/jetspeed</contextRoot>
             </webModule>                                              
             <webModule>
@@ -159,7 +155,7 @@
                   </path>
                 </pathconvert>
                 <!-- set skinny wars classpath -->
-                <jar destfile="${project.build.directory}/package-skinny-wars/jetspeed-${pom.version}.war" update="true">
+                <jar destfile="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" update="true">
                   <manifest>
                     <attribute name="Class-Path" value="${war.manifest.classpath}"/>
                   </manifest>

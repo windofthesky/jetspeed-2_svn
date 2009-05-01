@@ -53,9 +53,15 @@
   <dependencies>
     <dependency>
       <groupId>${pom.groupId}</groupId>
-      <artifactId>jetspeed</artifactId>
+      <artifactId>jetspeed-demo</artifactId>
       <type>war</type>
     </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>j2-admin</artifactId>
+      <type>war</type>
+    </dependency>
+
     <dependency>
       <groupId>javax.ccpp</groupId>
       <artifactId>ccpp</artifactId>

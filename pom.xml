@@ -496,12 +496,6 @@
         <artifactId>jetspeed-serializer</artifactId>
         <version>${pom.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
-        <artifactId>jetspeed</artifactId>
-        <type>war</type>
-        <version>${pom.version}</version>
-      </dependency>
 
       <!-- Portals Applications JARs -->
       <dependency>
@@ -521,6 +515,18 @@
       </dependency>
 
       <!-- Portals Applications -->
+      <dependency>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
+        <artifactId>jetspeed</artifactId>
+        <type>war</type>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
+        <artifactId>jetspeed-demo</artifactId>
+        <type>war</type>
+        <version>${pom.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-layouts</artifactId>
