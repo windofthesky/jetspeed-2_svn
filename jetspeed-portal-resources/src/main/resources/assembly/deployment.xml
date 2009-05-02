@@ -120,7 +120,7 @@
     </bean>
 
   <!-- Inject PAM Proxy into PAM implementation -->
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+  <bean id="injectPAMProxyIntoPAM" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <meta key="j2:cat" value="default" />
     <property name="targetObject">
       <ref bean="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" />
@@ -174,7 +174,7 @@
     DeploymentEventListeners registered to it.
   -->
   <bean id="deploymentManager" class="org.apache.jetspeed.deployment.impl.StandardDeploymentManager" init-method="start"
-    destroy-method="stop">
+    destroy-method="stop" depends-on="injectPAMProxyIntoPAM">
     <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>${autodeployment.staging.dir},${autodeployment.staging.dir}/local</value>
