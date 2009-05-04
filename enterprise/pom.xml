@@ -79,11 +79,11 @@
       <artifactId>portlet-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.pluto</groupId>
+      <groupId>org.apache.portals.pluto</groupId>
       <artifactId>pluto-container-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.pluto</groupId>
+      <groupId>org.apache.portals.pluto</groupId>
       <artifactId>pluto-taglib</artifactId>
     </dependency>
     <dependency>

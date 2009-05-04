@@ -232,10 +232,10 @@
                       <artifact>org.apache.portals.jetspeed-2:jetspeed-commons:jar</artifact>
                     </deployment>
                     <deployment>
-                      <artifact>org.apache.pluto:pluto-container-api:jar</artifact>
+                      <artifact>org.apache.portals.pluto:pluto-container-api:jar</artifact>
                     </deployment>
                     <deployment>
-                      <artifact>org.apache.pluto:pluto-taglib:jar</artifact>
+                      <artifact>org.apache.portals.pluto:pluto-taglib:jar</artifact>
                     </deployment>
                     <deployment>
                       <artifact>org.apache.portals.bridges:portals-bridges-common:jar</artifact>
@@ -297,12 +297,12 @@
                 <version>${dollar}{org.apache.portals.jetspeed.version}</version>
               </dependency>
               <dependency>
-                <groupId>org.apache.pluto</groupId>
+                <groupId>org.apache.portals.pluto</groupId>
                 <artifactId>pluto-container-api</artifactId>
                 <version>${dollar}{org.apache.pluto.version}</version>
               </dependency>
               <dependency>
-                <groupId>org.apache.pluto</groupId>
+                <groupId>org.apache.portals.pluto</groupId>
                 <artifactId>pluto-taglib</artifactId>
                 <version>${dollar}{org.apache.pluto.version}</version>
               </dependency>

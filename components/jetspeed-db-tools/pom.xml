@@ -49,7 +49,7 @@
       <version>${portlet-api.version}</version>
     </dependency>
       <dependency>
-        <groupId>org.apache.pluto</groupId>
+        <groupId>org.apache.portals.pluto</groupId>
         <artifactId>pluto-container-api</artifactId>
         <version>${org.apache.pluto.version}</version>
       </dependency>

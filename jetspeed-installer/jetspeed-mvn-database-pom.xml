@@ -87,7 +87,7 @@
           <artifactId>portlet-api</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.pluto</groupId>
+          <groupId>org.apache.portals.pluto</groupId>
           <artifactId>pluto-container-api</artifactId>
         </exclusion>
         <exclusion>

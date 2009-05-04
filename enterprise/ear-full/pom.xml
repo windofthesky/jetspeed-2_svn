@@ -121,12 +121,12 @@
               <bundleDir>/lib</bundleDir>
             </jarModule>
             <jarModule>                      
-              <groupId>org.apache.pluto</groupId>
+              <groupId>org.apache.portals.pluto</groupId>
               <artifactId>pluto-container-api</artifactId>
               <bundleDir>/lib</bundleDir>
             </jarModule>                                              
             <jarModule>                      
-              <groupId>org.apache.pluto</groupId>
+              <groupId>org.apache.portals.pluto</groupId>
               <artifactId>pluto-taglib</artifactId>
               <bundleDir>/lib</bundleDir>
             </jarModule>                                              

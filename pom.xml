@@ -588,12 +588,12 @@
 
       <!-- Pluto Container -->
       <dependency>
-        <groupId>org.apache.pluto</groupId>
+        <groupId>org.apache.portals.pluto</groupId>
         <artifactId>pluto-container-api</artifactId>
         <version>${org.apache.pluto.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.pluto</groupId>
+        <groupId>org.apache.portals.pluto</groupId>
         <artifactId>pluto-container</artifactId>
         <version>${org.apache.pluto.version}</version>
       </dependency>
@@ -1206,7 +1206,7 @@
         <version>${taglibs-random.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.pluto</groupId>
+        <groupId>org.apache.portals.pluto</groupId>
         <artifactId>pluto-taglib</artifactId>
         <version>${org.apache.pluto.version}</version>
       </dependency>
@@ -1349,7 +1349,7 @@
       <scope>provided</scope>
     </dependency>
       <dependency>
-        <groupId>org.apache.pluto</groupId>
+        <groupId>org.apache.portals.pluto</groupId>
         <artifactId>pluto-container-api</artifactId>
         <version>${org.apache.pluto.version}</version>
         <scope>provided</scope>
