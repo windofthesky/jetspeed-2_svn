@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed;
 
+
 /**
  * CPS: Common Portlet Services provided by Jetspeed available to portlet applications  
  *
@@ -34,6 +35,7 @@ public interface CommonPortletServices
     public final static String CPS_SSO_COMPONENT = "cps:SSO";    
     public final static String CPS_APPLICATION_SERVER_MANAGER_COMPONENT = "cps:ApplicationServerManager";
     public final static String CPS_PORTLET_FACTORY_COMPONENT = "cps:PortletFactory";    
+    public final static String CPS_PORTLET_PREFERENCES_PROVIDER = "cps:PortletPreferencesProvider";
     public final static String CPS_DEPLOYMENT_MANAGER_COMPONENT = "cps:DeploymentManager";    
     public final static String CPS_ENTITY_ACCESS_COMPONENT = "cps:EntityAccessor";
     public final static String CPS_WINDOW_ACCESS_COMPONENT = "cps:WindowAccessor";

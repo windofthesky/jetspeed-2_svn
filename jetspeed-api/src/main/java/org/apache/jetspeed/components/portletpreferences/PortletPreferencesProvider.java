@@ -23,6 +23,7 @@ import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.pluto.container.PortletPreference;
 import org.apache.pluto.container.PortletPreferencesService;
 
@@ -48,10 +49,16 @@ public interface PortletPreferencesProvider extends PortletPreferencesService
     public void preloadUserPreferences();
     
     /**
-     * Store the default preferences for a given portlet definition
+     * Store the default preferences by descriptor preferences for a given portlet definition
      * @param pd
      */
     public void storeDefaults(PortletDefinition pd);
+    
+    /**
+     * Store the default preferences by input preference for a given portlet definition
+     * @param pd
+     */
+    public void storeDefaults(PortletDefinition pd, Preference preference);
     
     /**
      * Store the default preferences for all portlets in the given portlet application
@@ -64,6 +71,12 @@ public interface PortletPreferencesProvider extends PortletPreferencesService
      * @param pd
      */
     public void removeDefaults(PortletDefinition pd);
+    
+    /**
+     * Remove default preferences by preference name for a given portlet definition
+     * @param pd
+     */
+    public void removeDefaults(PortletDefinition pd, String preferenceName);
     
     /**
      * Remove all default preferences for all portlet definitions in a given portlet application

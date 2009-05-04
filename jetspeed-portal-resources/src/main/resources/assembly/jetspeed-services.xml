@@ -63,6 +63,9 @@
         <entry key="DeploymentManager">
           <ref bean="deploymentManager" />
         </entry>
+        <entry key="PortletPreferencesProvider">
+          <ref bean="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" />
+        </entry>
         <entry key='IdGenerator'>
           <ref bean='IdGenerator' />
         </entry>
