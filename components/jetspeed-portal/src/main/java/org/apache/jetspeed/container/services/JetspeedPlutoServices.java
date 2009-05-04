@@ -35,6 +35,7 @@ import org.apache.pluto.container.PortletPreferencesService;
 import org.apache.pluto.container.PortletRequestContextService;
 import org.apache.pluto.container.PortletURLListenerService;
 import org.apache.pluto.container.ContainerServices;
+import org.apache.pluto.container.RequestDispatcherService;
 import org.apache.pluto.container.UserInfoService;
 
 /**
@@ -55,6 +56,7 @@ public class JetspeedPlutoServices implements ContainerServices
     protected UserInfoService userInfoService;
     protected PortletInvokerService invokerService;
     protected PortletPreferencesService preferencesService;
+    private RequestDispatcherService rdService;
     private CCPPProfileService profileService = new DummyCCPPProfileServiceImpl();
 
     public JetspeedPlutoServices(PortalContext portalContext, 
@@ -66,7 +68,8 @@ public class JetspeedPlutoServices implements ContainerServices
                                  PortletEnvironmentService environmentService,
                                  UserInfoService userInfoService,
                                  PortletInvokerService invokerService, 
-                                 PortletPreferencesService preferencesService)
+                                 PortletPreferencesService preferencesService,
+                                 RequestDispatcherService rdService)
     {
         this.portalContext = portalContext;
         this.eventCoordinationService = eventCoordinationService;
@@ -78,6 +81,7 @@ public class JetspeedPlutoServices implements ContainerServices
         this.userInfoService = userInfoService;
         this.invokerService = invokerService;
         this.preferencesService = preferencesService;
+        this.rdService = rdService;
     }
 
     public PortalContext getPortalContext()
@@ -133,6 +137,11 @@ public class JetspeedPlutoServices implements ContainerServices
     public UserInfoService getUserInfoService()
     {
         return userInfoService;
+    }
+    
+    public RequestDispatcherService getRequestDispatcherService()
+    {
+        return rdService;
     }
     
     class DummyCCPPProfileServiceImpl implements CCPPProfileService 

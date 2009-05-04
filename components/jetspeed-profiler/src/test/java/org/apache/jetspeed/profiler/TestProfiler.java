@@ -42,8 +42,12 @@ import org.apache.jetspeed.profiler.rules.impl.StandardProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.PrincipalsSet;
+import org.apache.jetspeed.security.SecurityDomain;
 import org.apache.jetspeed.security.impl.RoleImpl;
+import org.apache.jetspeed.security.impl.SecurityDomainImpl;
 import org.apache.jetspeed.security.impl.UserImpl;
+import org.apache.jetspeed.security.spi.SecurityDomainAccessManager;
+import org.apache.jetspeed.security.spi.SecurityDomainStorageManager;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
 
 /**
@@ -56,6 +60,8 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
 {
     private Profiler profiler = null;
     private ProfileResolvers resolvers = null;
+    protected SecurityDomainStorageManager domainStorageManager;
+    protected SecurityDomainAccessManager domainAccessManager;
     
     protected static final Properties TEST_PROPS = new Properties();
 
@@ -116,6 +122,26 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
+        
+        // Need to ensure required Security Domains are setup.
+        domainStorageManager = (SecurityDomainStorageManager) scm.getComponent(SecurityDomainStorageManager.class.getName());
+        domainAccessManager = (SecurityDomainAccessManager) scm.getComponent("org.apache.jetspeed.security.spi.SecurityDomainAccessManager");
+
+        SecurityDomain domain = domainAccessManager.getDomainByName(SecurityDomain.SYSTEM_NAME); 
+        if (domain == null){
+            
+            SecurityDomainImpl newDomain = new SecurityDomainImpl();
+            newDomain.setName(SecurityDomain.SYSTEM_NAME);
+            domainStorageManager.addDomain(newDomain);
+        } 
+        domain = domainAccessManager.getDomainByName(SecurityDomain.DEFAULT_NAME); 
+        if (domain == null){
+            
+            SecurityDomainImpl newDomain = new SecurityDomainImpl();
+            newDomain.setName(SecurityDomain.DEFAULT_NAME);
+            domainStorageManager.addDomain(newDomain);
+        }
+        
         this.profiler = (Profiler) scm.getComponent("profiler");
         JetspeedProfilerImpl profilerImpl = (JetspeedProfilerImpl)scm.getComponent("profilerImpl");
         assertNotNull("profiler not found ", profiler);
@@ -559,7 +585,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     protected String[] getConfigurations()
     {
         return new String[] { "profiler.xml", "transaction.xml", "serializer.xml", "security-providers.xml", "cache-test.xml", "capabilities.xml", "registry.xml", "search.xml", "jetspeed-spring.xml",
-                "security-managers.xml", "security-spi.xml", "security-spi-atn.xml", "security-atz.xml", "static-bean-references.xml", "JETSPEED-INF/spring/JetspeedPrincipalManagerProviderOverride.xml",
+                "security-managers.xml", "security-spi.xml", "security-spi-atn.xml", "security-atz.xml", "static-bean-references.xml", "pluto-services.xml", "JETSPEED-INF/spring/JetspeedPrincipalManagerProviderOverride.xml",
                 "JETSPEED-INF/spring/JetspeedPreferencesOverride.xml"};
     }
 

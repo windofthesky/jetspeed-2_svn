@@ -37,6 +37,7 @@ limitations under the License.
       <constructor-arg><ref bean="org.apache.pluto.services.UserInfoService"/></constructor-arg>            
       <constructor-arg><ref bean="org.apache.pluto.services.PortletInvokerService"/></constructor-arg>            
       <constructor-arg><ref bean="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider"/></constructor-arg>
+      <constructor-arg><ref bean="org.apache.pluto.services.RequestDispatcherService"/></constructor-arg>
     </bean>
     
     <bean id='org.apache.jetspeed.events.PortletEventQueue'
@@ -91,6 +92,17 @@ limitations under the License.
         <constructor-arg index="0"><ref bean="javax.servlet.ServletConfig" /></constructor-arg>
         <constructor-arg index="1"><ref bean="PortalContext" /></constructor-arg>
         <constructor-arg index="2"><ref bean="portletFactory" /></constructor-arg>
+    </bean>
+
+    <bean id="org.apache.pluto.services.RequestDispatcherService"
+          class="org.apache.pluto.container.impl.RequestDispatcherServiceImpl">
+      <meta key="j2:cat" value="default or registry" />
+      <!-- Pluto HttpServletPortletRequestWrapper.DispatchDetection:
+           - 0: CHECK_STATE (default)
+           - 1: CHECK_REQUEST_WRAPPER_STACK
+           - 2: EVALUATE
+      -->
+      <constructor-arg><value>0</value></constructor-arg>          
     </bean>
 
 </beans>

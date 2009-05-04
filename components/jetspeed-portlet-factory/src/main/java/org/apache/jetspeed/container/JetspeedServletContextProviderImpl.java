@@ -30,16 +30,15 @@ import javax.portlet.PortletResponse;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.pluto.container.PortletRequestContext;
+import org.apache.pluto.container.RequestDispatcherService;
 
-import org.apache.pluto.container.impl.HttpServletPortletRequestWrapper;
-import org.apache.pluto.container.impl.HttpServletPortletResponseWrapper;
-import org.apache.pluto.container.impl.RequestDispatcherPathInfoImpl;
 import org.apache.portals.bridges.common.ServletContextProvider;
 
 /**
@@ -52,7 +51,7 @@ public class JetspeedServletContextProviderImpl implements ServletContextProvide
     private static final String SERVLET_REQUEST = ServletContextProvider.class.getName()+".request";
     private static final String SERVLET_RESPONSE = ServletContextProvider.class.getName()+".response";
     
-    private static ServletContextProvider instance = new JetspeedServletContextProviderImpl();
+    private RequestDispatcherService requestDispatcherService;
     
     private static class ServletContextProxy implements InvocationHandler
     {
@@ -122,14 +121,13 @@ public class JetspeedServletContextProviderImpl implements ServletContextProvide
         }        
     }
     
-    private static class HttpServletPortletResourceResponseWrapper extends HttpServletPortletResponseWrapper
+    private static class HttpServletPortletResourceResponseWrapper extends HttpServletResponseWrapper
     {
         private HttpServletResponse response;
         
-        public HttpServletPortletResourceResponseWrapper(HttpServletResponse response, PortletRequest portletRequest,
-                                                         PortletResponse portletResponse, boolean included)
+        public HttpServletPortletResourceResponseWrapper(HttpServletResponse response)
         {
-            super(response, portletRequest, portletResponse, included);
+            super(response);
             this.response = response;
         }
 
@@ -140,14 +138,9 @@ public class JetspeedServletContextProviderImpl implements ServletContextProvide
         }
     }
     
-    private JetspeedServletContextProviderImpl()
+    public JetspeedServletContextProviderImpl(RequestDispatcherService requestDispatcherService)
     {
-        
-    }
-    
-    public static ServletContextProvider getInstance()
-    {
-        return instance;
+        this.requestDispatcherService = requestDispatcherService;
     }
     
     public ServletContext getServletContext(GenericPortlet portlet)
@@ -165,20 +158,17 @@ public class JetspeedServletContextProviderImpl implements ServletContextProvide
 
     public HttpServletRequest getHttpServletRequest(GenericPortlet portlet, PortletRequest request)
     {        
-        PortletWindow window = Jetspeed.getCurrentRequestContext().getCurrentPortletWindow();        
+        PortletWindow window = Jetspeed.getCurrentRequestContext().getCurrentPortletWindow();
         HttpServletRequest req = (HttpServletRequest)window.getAttribute(SERVLET_REQUEST);
         if (req == null)
         {
             PortletRequestContext rc = window.getPortletRequestContext();
-            req = new HttpServletPortletRequestWrapper(rc.getServletRequest(),
-                                                       rc.getServletContext(),
-                                                       null,
-                                                       request,
-                                                       new RequestDispatcherPathInfoImpl((String)request.getAttribute("javax.servlet.include.context_path"), 
-                                                                                         (String)request.getAttribute("javax.servlet.include.servlet_path"), 
-                                                                                         (String)request.getAttribute("javax.servlet.include.path_info"), 
-                                                                                         (String)request.getAttribute("javax.servlet.include.query_string")), 
-                                                       true);
+            req = requestDispatcherService.getRequestWrapper(rc.getServletContext(),
+                                                             rc.getServletRequest(),
+                                                             request,
+                                                             null,
+                                                             true,
+                                                             false);
             req.setAttribute(ContainerConstants.PORTLET_CONFIG, rc.getPortletConfig());
             req.setAttribute(ContainerConstants.PORTLET_REQUEST, window.getPortletRequest());
             req.setAttribute(ContainerConstants.PORTLET_RESPONSE, window.getPortletResponse());
@@ -194,19 +184,15 @@ public class JetspeedServletContextProviderImpl implements ServletContextProvide
         if (res == null)
         {
             boolean included = window.getAttribute(PortalReservedParameters.PORTLET_CONTAINER_INVOKER_USE_FORWARD) == null;
+            PortletRequestContext rc = window.getPortletRequestContext();
+            res = requestDispatcherService.getResponseWraper(rc.getServletContext(),
+                                                             rc.getServletResponse(),
+                                                             window.getPortletRequest(),
+                                                             response,
+                                                             included);
             if (PortletWindow.Action.RENDER == window.getAction() && !included)
             {
-                res = new HttpServletPortletResourceResponseWrapper(window.getPortletRequestContext().getServletResponse(),
-                                                                    window.getPortletRequest(),
-                                                                    response,
-                                                                    included);
-            }
-            else
-            {
-                res = new HttpServletPortletResponseWrapper(window.getPortletRequestContext().getServletResponse(),
-                                                            window.getPortletRequest(),
-                                                            response,
-                                                            included);
+                res = new HttpServletPortletResourceResponseWrapper(res);
             }
             window.setAttribute(SERVLET_RESPONSE, res);
         }

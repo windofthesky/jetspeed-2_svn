@@ -26,6 +26,7 @@ import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
+import org.apache.pluto.container.RequestDispatcherService;
 import org.apache.pluto.container.impl.PortletContextImpl;
 import org.apache.portals.bridges.common.ServletContextProvider;
 
@@ -38,10 +39,18 @@ import org.apache.portals.bridges.common.ServletContextProvider;
 public class JetspeedPortletContextImpl extends PortletContextImpl implements JetspeedPortletContext
 {
     private static final String CONTAINER_SUPPORTED_RUNTIME_OPTION = "container.supported.runtimeOption";
+
+    private ServletContextProvider servletContextProvider;
     
-    public JetspeedPortletContextImpl(ServletContext servletContext, PortletApplication application, ContainerInfo containerInfo, PortalConfiguration configuration)
-    {
-        super(servletContext, application, containerInfo, Arrays.asList(configuration.getStringArray(CONTAINER_SUPPORTED_RUNTIME_OPTION)));
+    public JetspeedPortletContextImpl(ServletContext servletContext, 
+                                      PortletApplication application, 
+                                      ContainerInfo containerInfo, 
+                                      PortalConfiguration configuration,
+                                      RequestDispatcherService rdService,
+                                      ServletContextProvider servletContextProvider)
+    {        
+        super(servletContext, application, containerInfo, Arrays.asList(configuration.getStringArray(CONTAINER_SUPPORTED_RUNTIME_OPTION)), rdService);
+        this.servletContextProvider = servletContextProvider;
     }
 
     public java.lang.Object getAttribute(java.lang.String name)
@@ -88,6 +97,6 @@ public class JetspeedPortletContextImpl extends PortletContextImpl implements Je
     
     public ServletContextProvider getServletContextProvider()
     {
-        return JetspeedServletContextProviderImpl.getInstance();
+        return servletContextProvider;
     }
 }

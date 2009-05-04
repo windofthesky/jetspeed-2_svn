@@ -40,6 +40,7 @@ import org.apache.jetspeed.om.portlet.Listener;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.util.DelegatingObjectProxy;
+import org.apache.pluto.container.impl.RequestDispatcherServiceImpl;
 import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
 
 import com.mockrunner.mock.web.MockServletContext;
@@ -51,7 +52,7 @@ public class TestPortletFactory extends TestCase
     @Override
     public void setUp() throws Exception
     {
-        this.portletFactory = new JetspeedPortletFactory(true, true);
+        this.portletFactory = new JetspeedPortletFactory(new RequestDispatcherServiceImpl(), true, true);
         PortalConfiguration configuration = (PortalConfiguration) DelegatingObjectProxy.createProxy(new Class [] { PortalConfiguration.class },
                                                                                                     new MockPortalConfiguration());
         PortalContext portalContext = (PortalContext) DelegatingObjectProxy.createProxy(new Class [] { PortalContext.class },

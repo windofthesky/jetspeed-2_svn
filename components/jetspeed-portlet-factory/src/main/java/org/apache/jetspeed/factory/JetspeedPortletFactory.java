@@ -41,11 +41,14 @@ import org.apache.jetspeed.container.JetspeedPortletConfig;
 import org.apache.jetspeed.container.JetspeedPortletConfigImpl;
 import org.apache.jetspeed.container.JetspeedPortletContext;
 import org.apache.jetspeed.container.JetspeedPortletContextImpl;
+import org.apache.jetspeed.container.JetspeedServletContextProviderImpl;
 import org.apache.jetspeed.om.portlet.Filter;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.Listener;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.pluto.container.RequestDispatcherService;
+import org.apache.portals.bridges.common.ServletContextProvider;
 
 /**
  * <p>
@@ -71,6 +74,8 @@ public class JetspeedPortletFactory implements PortletFactory
     private Map<String, Map<String, Map<Locale, ResourceBundle>>> portletsResourceBundleCache;
     private final Map<String, ClassLoader> classLoaderMap;
     private PortalContext portalContext;
+    private RequestDispatcherService rdService;
+    private ServletContextProvider servletContextProvider;   
 
     /**
      * Flag whether this factory will create proxy instances for actual portlet
@@ -92,13 +97,14 @@ public class JetspeedPortletFactory implements PortletFactory
 
     private String customConfigModePortletUniqueName;
 
-    public JetspeedPortletFactory()
+    public JetspeedPortletFactory(RequestDispatcherService rdService)
     {
-        this(false, false);
+        this(rdService, false, false);
     }
     
-    public JetspeedPortletFactory(boolean autoSwitchConfigMode, boolean autoSwitchEditDefaultsModeToEditMode)
+    public JetspeedPortletFactory(RequestDispatcherService rdService, boolean autoSwitchConfigMode, boolean autoSwitchEditDefaultsModeToEditMode)
     {
+        this.rdService = rdService;
         this.portletCache = Collections.synchronizedMap(new HashMap<String, Map<String, PortletInstance>>());
         this.validatorCache = Collections.synchronizedMap(new HashMap<String, Map<String, PreferencesValidator>>());
         this.classLoaderMap = Collections.synchronizedMap(new HashMap<String, ClassLoader>());
@@ -109,6 +115,7 @@ public class JetspeedPortletFactory implements PortletFactory
         this.autoSwitchConfigMode = autoSwitchConfigMode;
         this.autoSwitchEditDefaultsModeToEditMode = autoSwitchEditDefaultsModeToEditMode;
         this.portletProxyUsed = (this.autoSwitchConfigMode || this.autoSwitchEditDefaultsModeToEditMode);
+        this.servletContextProvider = new JetspeedServletContextProviderImpl(rdService);
     }
     
     protected ResourceBundle loadResourceBundle( Locale locale, String bundleName, ClassLoader cl )
@@ -471,7 +478,13 @@ public class JetspeedPortletFactory implements PortletFactory
                     throw new UnavailableException(msg);
                 }
                 
-                JetspeedPortletContext portletContext = new JetspeedPortletContextImpl(servletContext, pa, ContainerInfo.getInfo(), portalContext.getConfiguration());                    
+                JetspeedPortletContext portletContext = new JetspeedPortletContextImpl(servletContext, 
+                                                                                       pa, 
+                                                                                       ContainerInfo.getInfo(), 
+                                                                                       portalContext.getConfiguration(),
+                                                                                       rdService,
+                                                                                       servletContextProvider
+                                                                                       );
                 JetspeedPortletConfig portletConfig = new JetspeedPortletConfigImpl(this, portletContext, pd); 
                 
                 try

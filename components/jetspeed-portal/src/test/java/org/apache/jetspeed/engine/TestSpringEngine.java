@@ -22,6 +22,8 @@
  */
 package org.apache.jetspeed.engine;
 
+import java.util.HashMap;
+
 import javax.servlet.ServletConfig;
 
 import junit.framework.Test;
@@ -31,6 +33,7 @@ import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.capabilities.Capabilities;
+import org.apache.jetspeed.components.ComponentManagement;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.profiler.Profiler;
@@ -40,6 +43,8 @@ import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.RdbmsPolicy;
+import org.apache.jetspeed.test.JetspeedTestCase;
+import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
@@ -54,26 +59,29 @@ import org.apache.jetspeed.userinfo.UserInfoManager;
  * @version $Id$
  *  
  */
-public class TestSpringEngine extends AbstractEngineTest
+public class TestSpringEngine extends JetspeedTestCase
 {
-    public TestSpringEngine()
-    {        
-        keysToCheck = new Object[] {"IdGenerator", "DecorationLocator", "TemplateLocator", "IdGenerator", "PageFileCache", PageManager.class, 
-                                     PortletRegistry.class, "PortalServices",
-                                     Profiler.class, Capabilities.class, UserManager.class,
-                                     GroupManager.class, RoleManager.class, PermissionManager.class, RdbmsPolicy.class,
-                                     UserInfoManager.class, RequestContextComponent.class, 
-                                     PortletRenderer.class, PageAggregator.class, PortletAggregator.class, "PAM",
-                                     "deploymentManager", "portletFactory", ServletConfig.class, 
-                                      "NavigationalStateCodec", "PortalURL", "NavigationalStateComponent"};
-    }
+    private Engine engine;
+    private SpringEngineHelper engineHelper;
     
-    public static Test suite()
+    
+    protected void setUp() throws Exception
     {
-        // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestSpringEngine.class);
+        super.setUp();
+       HashMap context = new HashMap();
+       engineHelper = new SpringEngineHelper(context);
+       engineHelper.setUp(getBaseDir());
+       engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
     }
 
+    protected void tearDown() throws Exception
+    {
+        engineHelper.tearDown();
+        super.tearDown();        
+    }
 
+    public void testSomeEngine() throws Exception
+    {
+    }
 
 }

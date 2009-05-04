@@ -21,17 +21,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.jetspeed.components.util.RegistrySupportedTestCase;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.components.util.TransactionCacheEnabledSpringTestCase;
 
-public class AbstractRequestContextTestCase extends RegistrySupportedTestCase
+public class AbstractRequestContextTestCase extends TransactionCacheEnabledSpringTestCase
 {
+    protected PortletRegistry portletRegistry;
 
+    protected void setUp() throws Exception
+    {       
+        super.setUp();
+        portletRegistry = (PortletRegistry) scm.getComponent("portletRegistry");
+    }   
+    
     protected String[] getConfigurations()
     {
-//        File webapp = new File("../../src/webapp");
-//        System.setProperty(JetspeedEngineConstants.APPLICATION_ROOT_KEY, webapp.getAbsolutePath());        
         String[] confs = super.getConfigurations();
-        List confList = new ArrayList(Arrays.asList(confs));
+        List<String> confList = new ArrayList<String>(Arrays.asList(confs));
+        confList.add("jetspeed-base.xml");
+        confList.add("jetspeed-properties.xml");
+        confList.add("page-manager.xml");
+        confList.add("registry.xml");
+        confList.add("JETSPEED-INF/spring/RequestDispatcherService.xml");        
         confList.add("rc2.xml");
         confList.add("static-bean-references.xml");
         confList.add("security-managers.xml");
@@ -41,11 +52,11 @@ public class AbstractRequestContextTestCase extends RegistrySupportedTestCase
         confList.add("security-spi-atn.xml");
         confList.add("security-atz.xml");
         confList.add("JETSPEED-INF/spring/JetspeedPrincipalManagerProviderOverride.xml");        
-        return (String[]) confList.toArray(new String[confList.size()]);
+        return confList.toArray(new String[confList.size()]);
     }
 
     protected String getBeanDefinitionFilterCategories()
     {
-        return super.getBeanDefinitionFilterCategories()+",security,dbSecurity";
+        return super.getBeanDefinitionFilterCategories()+",xmlPageManager,security,dbSecurity";
     }
 }

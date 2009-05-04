@@ -357,16 +357,6 @@
       </collection-descriptor>
       
    <collection-descriptor
-         name="servletMappingURLPatternList"
-         element-class-ref="org.apache.jetspeed.om.portlet.impl.ServletMappingURLPatternImpl"
-          auto-delete="true"
-          auto-update = "true"
-          auto-retrieve = "true"
-      >
-         <inverse-foreignkey field-ref="applicationId"/>
-      </collection-descriptor>
-
-   <collection-descriptor
          name="localeEncodingMappingList"
          element-class-ref="org.apache.jetspeed.om.portlet.impl.LocaleEncodingMappingImpl"
           auto-delete="true"
@@ -2223,38 +2213,6 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
       <field-descriptor
          name="name"
          column="NAME"
-         jdbc-type="VARCHAR"
-      />
-
-    </class-descriptor>
-
-<!--
-   - S E R V L E T  M A P P I N G  U R L P A T T E R N
- -->
-   <class-descriptor
-      class="org.apache.jetspeed.om.portlet.impl.ServletMappingURLPatternImpl"
-      table="SERVLET_MAPPING_URLPATTERN"
-   >
-
-      <field-descriptor
-         name="id"
-         column="ID"
-         jdbc-type="BIGINT"
-         primarykey="true"
-         autoincrement="true"
-         access="anonymous"
-      />
-
-      <field-descriptor
-         name="applicationId"
-         column="APPLICATION_ID"
-         jdbc-type="BIGINT"
-         access="anonymous"
-      />
-
-      <field-descriptor
-         name="urlPattern"
-         column="VALUE"
          jdbc-type="VARCHAR"
       />
 

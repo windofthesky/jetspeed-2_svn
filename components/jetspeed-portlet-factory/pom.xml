@@ -51,6 +51,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.portals.bridges</groupId>
+      <artifactId>portals-bridges-common</artifactId>
+      <version>${org.apache.portals.bridges.common.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>

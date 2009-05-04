@@ -20,7 +20,11 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
     
     <!-- Portlet Factory -->
-    <bean id="portletFactory" class="org.apache.jetspeed.factory.JetspeedPortletFactory"></bean>
+    <bean id="portletFactory" class="org.apache.jetspeed.factory.JetspeedPortletFactory">
+        <constructor-arg>
+            <bean class="org.apache.pluto.container.impl.RequestDispatcherServiceImpl"/>
+        </constructor-arg>
+    </bean>
 
     <!-- Portlet Registry DAO-->
     <bean id="portletRegistryImpl" class="org.apache.jetspeed.components.portletregistry.PersistenceBrokerPortletRegistry" init-method="init">

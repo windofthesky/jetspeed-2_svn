@@ -22,11 +22,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
@@ -52,7 +50,6 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.PublicRenderParameter;
 import org.apache.jetspeed.om.portlet.SecurityConstraint;
 import org.apache.jetspeed.om.portlet.SecurityRole;
-import org.apache.jetspeed.om.portlet.ServletMappingURLPattern;
 import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.util.JetspeedLocale;
@@ -112,7 +109,6 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     private List<UserAttributeRef> userAttributeRefs;
     private List<JetspeedServiceReference> services = new ArrayList<JetspeedServiceReference>();
 
-    private List<ServletMappingURLPattern> servletMappingURLPatternList;
     private List<LocaleEncodingMapping> localeEncodingMappingList;
     
     private transient Map<PortletMode,PortletMode> supportedCustomModes;
@@ -121,7 +117,6 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     private transient Map<WindowState,WindowState> mappedCustomStates;    
     private transient List<PortletMode> supportedPortletModes;
     private transient List<WindowState> supportedWindowStates;
-    private transient Set<String> servletMappingURLPatterns;
     private transient Map<Locale, String> localeEncodingMappings;
     
     private transient String localContextPath;
@@ -887,36 +882,6 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         ContainerRuntimeOptionImpl cro = new ContainerRuntimeOptionImpl(this, name);
         getContainerRuntimeOptions().add(cro);
         return cro;
-    }
-    
-    public Set<String> getServletMappingURLPatterns()
-    {
-        if (servletMappingURLPatterns == null)
-        {
-            if (servletMappingURLPatternList == null)
-            {
-                servletMappingURLPatterns = Collections.emptySet();
-            }
-            else
-            {
-                Set<String> patterns = new HashSet<String>();
-                for (ServletMappingURLPattern pat : servletMappingURLPatternList)
-                {
-                    patterns.add(pat.getURLPattern());
-                }
-                servletMappingURLPatterns = Collections.unmodifiableSet(patterns);
-            }
-        }                        
-        return servletMappingURLPatterns;
-    }
-    
-    public void addServletMappingURLPattern(String servletMappingURLPattern)
-    {
-        if (servletMappingURLPatternList == null)
-        {
-            servletMappingURLPatternList = new ArrayList<ServletMappingURLPattern>();
-        }
-        servletMappingURLPatternList.add(new ServletMappingURLPatternImpl(servletMappingURLPattern));
     }
     
     public Map<Locale, String> getLocaleEncodingMappings()

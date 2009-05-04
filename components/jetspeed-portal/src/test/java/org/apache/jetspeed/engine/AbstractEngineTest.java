@@ -41,52 +41,14 @@ public abstract class AbstractEngineTest extends JetspeedTestCase
         super();
     }
 
-    /**
-     * @param arg0
-     */
-    public AbstractEngineTest(String arg0)
-    {
-        super(arg0);
-    }
 
     protected Engine engine;
 
     protected Object[] keysToCheck;
 
     private SpringEngineHelper engineHelper;
-
-    public void testEngine() throws Exception
-    {
-        assertNotNull(engine.getComponentManager());
-        assertNotNull(engine.getComponentManager().getRootContainer());
-        if (keysToCheck != null)
-        {
-            verifyComponents(keysToCheck);
-        }
-    }
-
-    protected void setUp() throws Exception
-    {
-       HashMap context = new HashMap();
-       engineHelper = new SpringEngineHelper(context);
-       engineHelper.setUp(getBaseDir());
-       engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
-    }
-
-    protected void tearDown() throws Exception
-    {
-        engineHelper.tearDown();
-        super.tearDown();        
-    }
-
-    protected void verifyComponents(Object[] keys)
-    {
-        ComponentManagement cm = engine.getComponentManager();
-        for (int i = 0; i < keys.length; i++)
-        {
-            assertNotNull("Could not get component insatance " + keys[i], cm.getComponent(keys[i]));
-            System.out.println("Load componenet " + cm.getComponent(keys[i]).getClass() + " for key " + keys[i]);
-        }
-    }
+    
+    private boolean setup;
+    
 
 }

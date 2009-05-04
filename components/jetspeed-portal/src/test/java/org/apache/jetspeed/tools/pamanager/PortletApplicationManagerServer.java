@@ -79,6 +79,7 @@ public class PortletApplicationManagerServer
         configurationsList.add("jetspeed-properties.xml");
         configurationsList.add("page-manager.xml");
         configurationsList.add("registry.xml");
+        configurationsList.add("JETSPEED-INF/spring/RequestDispatcherService.xml");
         configurationsList.add("rc2.xml");
         configurationsList.add("deployment.xml");
         if (TestPortletApplicationManager.TEST_USE_VERSIONED_PAM)
