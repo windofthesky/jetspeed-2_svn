@@ -215,7 +215,7 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         {
             languages = new ArrayList<Language>();
         }
-        return Collections.unmodifiableList(languages);
+        return languages;
     }
     
     public Language addLanguage(Locale locale)
