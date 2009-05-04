@@ -246,21 +246,6 @@ public interface Folder extends Node
      * @throws DocumentException
      */
     NodeSet getAll() throws DocumentException;
-    
-    /**
-     * 
-     * <p>
-     * getAll
-     * 
-     * if filtered param is true, it will return accessed pages
-     * if filtered param is false it will return all pages
-     * </p>
-     *
-     * @return A <code>NodeSet</code> containing all (including nodes, on which you don't have access) sub-folders and documents directly under
-     * this folder.
-     * @throws DocumentException
-     */
-    NodeSet getAll(boolean secured) throws DocumentException;
 
     /**
      * getMenuDefinitions - get list of menu definitions

@@ -690,9 +690,10 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getAll(org.apache.jetspeed.om.folder.Folder)
      */
-    public void initFolder(Folder folder) throws DocumentException
+    public NodeSet getAll(Folder folder) throws DocumentException
     {
-        
+        // delegate back to folder instance
+        return folder.getAll();
     }
 
     /**

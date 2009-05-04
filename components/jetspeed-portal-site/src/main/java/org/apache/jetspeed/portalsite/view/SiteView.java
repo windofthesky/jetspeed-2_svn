@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.proxy.FolderProxy;
@@ -752,14 +751,13 @@ public class SiteView
                 // and visibility is required
                 try
                 {
-                    NodeSet children = currentFolder.getAll(false);
+                    NodeSet children = currentFolder.getAll();
                     if (children != null)
                     {
                         Node node = children.get(currentPath);
                         if ((node != null) && (!onlyVisible || !node.isHidden() || (node == currentPage)) &&
                             (!onlyViewable || isProxyViewable(node, onlyVisible)))
                         {
-                            node.checkAccess(JetspeedActions.VIEW);
                             return node;
                         }
                     }
@@ -779,7 +777,6 @@ public class SiteView
         if ((!onlyVisible || !currentFolder.isHidden()) &&
             (!onlyViewable || isProxyViewable(currentFolder, onlyVisible)))
         {
-            currentFolder.checkAccess(JetspeedActions.VIEW);
             return currentFolder;
         }
         throw new NodeNotFoundException("Specified path " + path + " not found or viewable/visible.");
@@ -1237,5 +1234,5 @@ public class SiteView
             return pageProxy.getPage();
         }
         return null;
-    }    
+    }
 }

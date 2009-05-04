@@ -451,17 +451,16 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         return getPageSecurity(false);
     }
 
-    public NodeSet getAll(boolean secured) throws DocumentException
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jetspeed.om.folder.Folder#getAll()
+     */
+    public NodeSet getAll() throws DocumentException
     {
-              
         // return secure set of all nodes: enforce access checks
-        // on folders and documents while creating filtered nodes        
+        // on folders and documents while creating filtered nodes
         NodeSet nodes = getAllNodes();
-        if (!secured)
-        {
-            return nodes;
-        }
-        
         NodeSet filteredNodes = null;
         Iterator checkAccessIter = nodes.iterator();
         while (checkAccessIter.hasNext())
@@ -501,16 +500,6 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
             return filteredNodes;
         }
         return nodes;
-    }
-    
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.om.folder.Folder#getAll()
-     */
-    public NodeSet getAll() throws DocumentException
-    {
-        return getAll(true);
     }
 
     /**
@@ -974,5 +963,6 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
                     reservedType = RESERVED_FOLDER_OTHER;            
             }
         }
-    }     
+    }
+    
 }

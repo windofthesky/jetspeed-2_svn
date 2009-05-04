@@ -534,7 +534,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         
         // Check link order
         assertEquals(6, folder3.getAll().size());
-        assertEquals(6, folder3.getAll(false).size());
+        assertEquals(6, pageManager.getAll(folder3).size());
         Iterator linkItr = folder3.getAll().iterator();
         assertEquals("Jetspeed2Wiki.link", ((Link)linkItr.next()).getName());
         assertEquals("Jetspeed2.link", ((Link)linkItr.next()).getName());        

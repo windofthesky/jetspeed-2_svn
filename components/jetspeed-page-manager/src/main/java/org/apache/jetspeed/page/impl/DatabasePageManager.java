@@ -866,7 +866,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getAll(org.apache.jetspeed.om.folder.Folder)
      */
-    public void initFolder(Folder folder) throws DocumentException
+    public NodeSet getAll(Folder folder) throws DocumentException
     {
         FolderImpl folderImpl = (FolderImpl)folder;
 
@@ -916,6 +916,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
         // folder all nodes cache populated, get all from folder
         // to provide packaging as filtered node set
+        return folder.getAll();
     }
 
     /* (non-Javadoc)

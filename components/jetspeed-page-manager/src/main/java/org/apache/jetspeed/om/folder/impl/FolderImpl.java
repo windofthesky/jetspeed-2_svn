@@ -831,26 +831,16 @@ public class FolderImpl extends NodeImpl implements Folder
      */
     public NodeSet getAll() throws DocumentException
     {
-        return getAll(true);
-    }
-    
-    public NodeSet getAll(boolean secured) throws DocumentException
-    {
         // get all nodes collection
         if (!allCached)
         {
             // use PageManager to get and cache all nodes
             // collection for this folder
-            getPageManager().initFolder(this);
+            return getPageManager().getAll(this);
         }
 
-        NodeSet nodes = getAllNodeSet();
-        if (!secured)
-        {
-            return nodes;
-        }
         // return nodes with view access
-        return filterNodeSetByAccess(nodes);
+        return filterNodeSetByAccess(getAllNodeSet());
     }
     
     /* (non-Javadoc)
