@@ -115,7 +115,7 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
 //			NodeInformationImpl temp = new NodeInformationImpl();
 //			temp.setContextName("tttt");
 	}
-	public int checkNode(Long revision, String contextName)
+	public synchronized int checkNode(Long revision, String contextName)
 	{
 		if ((contextName == null) || (revision == null))
 			return NodeManager.INVALID_NODE_REQUEST;
@@ -127,7 +127,7 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
 		return NodeManager.NODE_SAVED;
 	}
 	
-	public void addNode(Long revision, String contextName) throws Exception
+	public synchronized void addNode(Long revision, String contextName) throws Exception
 	{
 		if ((contextName == null) || (revision == null))
 			return;
@@ -142,7 +142,7 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
 		save();
 	}
 
-	public void removeNode(String contextName) throws Exception
+	public synchronized void removeNode(String contextName) throws Exception
 	{
 		if (contextName == null)
 			return;
@@ -186,7 +186,7 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
         this.beanFactory = beanFactory;
     }
 
-	public int getNumberOfNodes()
+	public synchronized int getNumberOfNodes()
 	{
 		return nodes.size();
 	}    
