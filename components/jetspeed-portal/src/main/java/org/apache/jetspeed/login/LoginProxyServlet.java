@@ -97,9 +97,10 @@ public class LoginProxyServlet extends HttpServlet
                     decoratorName);
         }
 
+        Boolean portalFiltered = Boolean.valueOf((String)request.getAttribute(PortalReservedParameters.PORTAL_FILTER_ATTRIBUTE));
         PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
         Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");   
-        if (authenticationConfiguration.isCreateNewSessionOnLogin())
+        if (!portalFiltered && authenticationConfiguration.isCreateNewSessionOnLogin())
         {
     
             ActiveAuthenticationIdentityProvider identityProvider = (ActiveAuthenticationIdentityProvider) 
