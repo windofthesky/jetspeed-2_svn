@@ -23,6 +23,8 @@ import javax.portlet.PortletRequest;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserSubjectPrincipal;
 
 /**
  * Looks in the Portlet API User Attributes for given named attribute 
@@ -41,16 +43,19 @@ public class UserAttributeResolver
      */    
     public String resolve(RequestContext context, RuleCriterion criterion)
     {
-        Object object = context.getRequest().getAttribute(PortletRequest.USER_INFO);
-        if (object != null && object instanceof Map)
+        if (context.getUserPrincipal() instanceof User)
         {
-            Map map = (Map)object;
-            String attribute = (String)map.get(criterion.getName());
-            if (attribute != null)
+            User user = (User)context.getUserPrincipal();
+            if (user != null)
             {
-                return attribute;
+                Map<String, String> map = user.getInfoMap();
+                String attribute = (String)map.get(criterion.getName());
+                if (attribute != null)
+                {
+                    return attribute;
+                }
+                return criterion.getValue();
             }
-            return criterion.getValue();
         }
         return null;
      }
