@@ -262,23 +262,23 @@ public class DeployMojo extends AbstractMojo
                         dobj.deployment.targetName = dobj.deployment.targetName.substring(0, index);
                     }
                 }
-                if (dobj.deployment.infuse.booleanValue())
+            }
+            if (dobj.deployment.infuse.booleanValue())
+            {                    
+                if (dobj.deployment.expand.booleanValue())
                 {
-                    if (dobj.deployment.expand.booleanValue())
+                    dobj.contextName = dobj.deployment.targetName;
+                }
+                else
+                {
+                    int index = dobj.deployment.targetName.lastIndexOf(".");
+                    if (index > -1)
                     {
-                        dobj.contextName = dobj.deployment.targetName;
+                        dobj.contextName = dobj.deployment.targetName.substring(0, index);
                     }
                     else
                     {
-                        int index = dobj.deployment.targetName.lastIndexOf(".");
-                        if (index > -1)
-                        {
-                            dobj.contextName = dobj.deployment.targetName.substring(0, index);
-                        }
-                        else
-                        {
-                            dobj.contextName = dobj.deployment.targetName;
-                        }
+                        dobj.contextName = dobj.deployment.targetName;
                     }
                 }
             }
