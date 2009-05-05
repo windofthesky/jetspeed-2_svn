@@ -28,7 +28,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ko">DB 브라우저 데모</metadata>
 
   <fragment id="dbb-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-     <fragment id="dbb-101" type="portlet" name="demo::DbBrowserExample">
+     <fragment id="dbb-101" type="portlet" name="dbbrowser::DbBrowserExample">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
      </fragment>
