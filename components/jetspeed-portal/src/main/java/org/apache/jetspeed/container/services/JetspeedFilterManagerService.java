@@ -16,11 +16,11 @@
  */
 package org.apache.jetspeed.container.services;
 
-import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.container.FilterManager;
+import org.apache.jetspeed.factory.PortletFactory;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.pluto.container.FilterManagerService;
-import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
+import org.apache.pluto.container.PortletWindow;
 
 public class JetspeedFilterManagerService implements FilterManagerService
 {
@@ -32,8 +32,10 @@ public class JetspeedFilterManagerService implements FilterManagerService
         this.portletFactory = portletFactory;
     }
     
-    public FilterManager getFilterManager(PortletApplicationDefinition portletAppDD, String portletName, String lifeCycle)
+    public FilterManager getFilterManager(PortletWindow window, String lifeCycle)
     {
-        return new JetspeedFilterManager(this.portletFactory, (PortletApplication) portletAppDD, portletName, lifeCycle);
+        PortletDefinition def = ((org.apache.jetspeed.container.PortletWindow) window).getPortletDefinition();
+        return new JetspeedFilterManager(this.portletFactory, def.getApplication(), def.getPortletName(), lifeCycle);
     }
+    
 }
