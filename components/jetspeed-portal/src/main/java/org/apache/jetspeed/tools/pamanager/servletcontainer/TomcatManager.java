@@ -23,12 +23,15 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,8 +104,9 @@ public class TomcatManager implements ApplicationServerManager
 
         client.setHostConfiguration(hostConfig);
         // Fix for non-buffereing large WAR files during deploy
-        client.getState().setAuthenticationPreemptive(true);
-        client.getState().setCredentials(null, hostUrl, new UsernamePasswordCredentials(userName, password));
+        client.getParams().setAuthenticationPreemptive(true);
+        Credentials defaultcreds = new UsernamePasswordCredentials(userName, password);
+        client.getState().setCredentials(new AuthScope(hostUrl, hostPort, AuthScope.ANY_REALM), defaultcreds);
 
         start = new GetMethod(startPath);
         stop = new GetMethod(stopPath);
@@ -120,7 +124,7 @@ public class TomcatManager implements ApplicationServerManager
         }
         finally
         {
-            start.recycle();
+            start.releaseConnection();
             start.setPath(startPath);
         }
     }
@@ -135,7 +139,7 @@ public class TomcatManager implements ApplicationServerManager
         }
         finally
         {
-            stop.recycle();
+            stop.releaseConnection();
             stop.setPath(stopPath);
         }
     }
@@ -157,9 +161,9 @@ public class TomcatManager implements ApplicationServerManager
         }
         finally
         {
-            stop.recycle();
+            stop.releaseConnection();
             stop.setPath(stopPath);
-            start.recycle();
+            start.releaseConnection();
             start.setPath(startPath);
         }
     }
@@ -174,7 +178,7 @@ public class TomcatManager implements ApplicationServerManager
         }
         finally
         {
-            undeploy.recycle();
+            undeploy.releaseConnection();
             undeploy.setPath(undeployPath);
         }
     }
@@ -184,21 +188,16 @@ public class TomcatManager implements ApplicationServerManager
         try
         {
             deploy.setQueryString(buildPathQueryArgs(appPath));
-
-            //deploy.setRequestContentLength(PutMethod.CONTENT_LENGTH_CHUNKED);
-
-            if (size != -1)
-            {
-                deploy.setRequestContentLength(size);
-            }
-            deploy.setRequestBody(is);
+            deploy.setContentChunked(true);
+            deploy.setRequestEntity(new InputStreamRequestEntity(is));
 
             client.executeMethod(deploy);
+            
             return parseResult(deploy.getResponseBodyAsString());
         }
         finally
         {
-            deploy.recycle();
+            deploy.releaseConnection();
             deploy.setPath(deployPath);
         }
     }
