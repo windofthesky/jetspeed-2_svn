@@ -29,7 +29,7 @@ limitations under the License.
   <metadata name="title" xml:lang="zh-TW">用戶組管理</metadata>
   <metadata name="title" xml:lang="ko">그룹 관리</metadata>
   <fragment id="gm-2" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="gm-3" type="portlet" name="j2-admin::JetspeedPrincipalmanagementGroupPortlet">
+    <fragment id="gm-3" type="portlet" name="j2-admin::JetspeedPrincipalManagementGroupPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>

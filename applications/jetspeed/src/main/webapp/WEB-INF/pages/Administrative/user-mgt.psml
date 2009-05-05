@@ -30,7 +30,7 @@ limitations under the License.
   <metadata name="title" xml:lang="ko">사용자 관리</metadata>
 
   <fragment id="um-2" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="um-3" type="portlet" name="j2-admin::JetspeedPrincipalmanagementUserPortlet">
+    <fragment id="um-3" type="portlet" name="j2-admin::JetspeedPrincipalManagementUserPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
