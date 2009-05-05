@@ -190,12 +190,12 @@
                 <java classname="org.apache.jetspeed.tools.deploy.JetspeedDeploy">
                    <arg value="${project.build.directory}/package-skinny-wars/apa-rss-war-${org.apache.portals.applications.apa-rss.version}.war"/>
                    <arg value="${project.build.directory}/package-skinny-wars/apa-rss-war-${org.apache.portals.applications.apa-rss.version}.war"/>
-                   <arg value="demo"/>
+                   <arg value="rss"/>
                 </java>
                 <java classname="org.apache.jetspeed.tools.deploy.JetspeedDeploy">
                    <arg value="${project.build.directory}/package-skinny-wars/apa-webcontent-war-${org.apache.portals.applications.apa-webcontent.version}.war"/>
                    <arg value="${project.build.directory}/package-skinny-wars/apa-webcontent-war-${org.apache.portals.applications.apa-webcontent.version}.war"/>
-                   <arg value="demo"/>
+                   <arg value="webcontent"/>
                 </java>
                 
                 <!-- repackage EAR with skinny wars -->
