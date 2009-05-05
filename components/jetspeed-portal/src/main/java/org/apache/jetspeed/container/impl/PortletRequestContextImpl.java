@@ -17,7 +17,6 @@
 
 package org.apache.jetspeed.container.impl;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -113,7 +112,6 @@ public class PortletRequestContextImpl implements PortletRequestContext
         return publicRenderParameterNames.isEmpty() ? false : publicRenderParameterNames.contains(name);
     }
         
-    @SuppressWarnings("unchecked")
     public Map<String, String[]> getPrivateParameterMap()
     {
         if (privateParameters == null)
@@ -183,40 +181,17 @@ public class PortletRequestContextImpl implements PortletRequestContext
             
             //get request params
             if (mergeRequestParameters)
-            {
-                String encoding = (String)containerRequest.getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
-                boolean decode = containerRequest.getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null
-                        && encoding != null;
-                if (decode)
+            {                
+                for (Map.Entry<String,String[]> entry : ns.getRequestParameterMap().entrySet())
                 {
-                    containerRequest.setAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE,new Boolean(true));
-                }
-                for (Enumeration parameters = containerRequest.getParameterNames(); parameters.hasMoreElements();)
-                {
-                    String paramName = (String) parameters.nextElement();
-                    String[] paramValues = containerRequest.getParameterValues(paramName);
-
-                    if (decode)
-                    {
-                        for (int i = 0; i < paramValues.length; i++)
-                        {
-                            try
-                            {
-                                paramValues[i] = new String(paramValues[i].getBytes("ISO-8859-1"), encoding);
-                            }
-                            catch (UnsupportedEncodingException e)
-                            {
-                                ;
-                            }
-                        }
-                    }
-                    String[] navValues = privateParameters.get(paramName);
+                    String[] navValues = privateParameters.get(entry.getKey());
                     if (navValues == null)
                     {
-                        privateParameters.put(paramName, paramValues);
+                        privateParameters.put(entry.getKey(), entry.getValue());
                     }
                     else
                     {
+                        String[] paramValues = entry.getValue();
                         String[] combined = new String[navValues.length+paramValues.length];
                         if (mergeRequestParametersBefore)
                         {
@@ -228,7 +203,7 @@ public class PortletRequestContextImpl implements PortletRequestContext
                             System.arraycopy(navValues,0,combined,0,navValues.length);
                             System.arraycopy(paramValues,0,combined,navValues.length,paramValues.length);
                         }
-                        privateParameters.put(paramName, combined);
+                        privateParameters.put(entry.getKey(), combined);
                     }
                 }
             }

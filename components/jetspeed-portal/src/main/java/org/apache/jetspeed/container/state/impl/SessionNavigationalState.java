@@ -138,6 +138,7 @@ public class SessionNavigationalState extends AbstractNavigationalState
             }
             syncPublicRequestParameters(context, transientNavState);
             resetRequestPortletWindowPublicRenderParameters();
+            resolveRequestParameterMap(context);
             
             return result;
         }

@@ -24,10 +24,12 @@ import java.util.Map;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.namespace.QName;
 
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedContentCache;
@@ -50,6 +52,7 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     private PortletWindowRequestNavigationalStates requestStates;
     protected JetspeedContentCache cache;
     protected JetspeedContentCache decorationCache;
+    protected Map<String,String[]> requestParameterMap;
     
     public AbstractNavigationalState(NavigationalStateCodec codec, JetspeedContentCache cache)
     {
@@ -150,6 +153,33 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
             }
         }
         return targetResolved;
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected void resolveRequestParameterMap(RequestContext context)
+    {
+        HttpServletRequest request = context.getRequest();
+        requestParameterMap = Collections.unmodifiableMap(new HashMap<String,String[]>(request.getParameterMap()));
+        String encoding = (String)request.getAttribute(PortalReservedParameters.PREFERED_CHARACTERENCODING_ATTRIBUTE);
+        if (encoding != null && request.getAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE) == null)
+        {
+            request.setAttribute(PortalReservedParameters.PARAMETER_ALREADY_DECODED_ATTRIBUTE,new Boolean(true));
+            for (Map.Entry<String,String[]> entry : requestParameterMap.entrySet())
+            {
+                String[] paramValues = entry.getValue();
+                for (int i = 0; i < paramValues.length; i++)
+                {
+                    try
+                    {
+                        paramValues[i] = new String(paramValues[i].getBytes("ISO-8859-1"), encoding);
+                    }
+                    catch (UnsupportedEncodingException e)
+                    {
+                        ;
+                    }
+                }
+            }
+        }
     }
     
     protected void resolvePublicParametersMap()
@@ -420,6 +450,15 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
                 state.setPortletMode(portletMode);
             }
         }
+    }
+    
+    public Map<String,String[]> getRequestParameterMap()
+    {
+        if (requestParameterMap == null)
+        {
+            requestParameterMap = Collections.emptyMap();
+        }
+        return requestParameterMap;
     }
 
     public Map<String, String[]> getParameterMap(PortletWindow window)

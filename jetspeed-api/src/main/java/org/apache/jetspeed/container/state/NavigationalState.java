@@ -144,6 +144,23 @@ public interface NavigationalState
      */
     PortletWindow getMaximizedWindow();
         
+    /**
+     * Provides a "safe" copy of the client/portal request parameterMap, with the values
+     * already (re)encode in the preferred or requested character encoding
+     * <p>
+     * This parameterMap is created early (and only once) to protect against dynamic
+     * modification by certain webcontainers like Websphere which might change the contents
+     * of the original request parametersMap during request dispatching with additional
+     * query string parameters.
+     * </p>
+     * <p>
+     * Furthermore, when using parallel rendering this is even more critical to do upfront
+     * and only once while still in the initial portal request Thread.
+     * </p>
+     * @return
+     */
+    Map<String, String[]> getRequestParameterMap();
+    
     Map<String, String[]> getParameterMap(PortletWindow window);
 
     boolean isActionScopedRequestAttributes(PortletWindow window);

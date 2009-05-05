@@ -50,6 +50,7 @@ public class PathNavigationalState extends AbstractNavigationalState
             resolvePublicParametersMap();
             syncPublicRequestParameters(context, false);
             resetRequestPortletWindowPublicRenderParameters();
+            resolveRequestParameterMap(context);
             return result;
         }
     }
