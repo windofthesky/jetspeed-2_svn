@@ -180,6 +180,24 @@
                     <attribute name="Class-Path" value="${war.manifest.classpath}"/>
                   </manifest>
                 </jar>
+                
+                <!-- Offline deployment infusion of generic APA wars for Jetspeed-2 -->
+                <java classname="org.apache.jetspeed.tools.deploy.JetspeedDeploy">
+                   <arg value="${project.build.directory}/package-skinny-wars/apa-demo-${org.apache.portals.applications.apa-demo.version}.war"/>
+                   <arg value="${project.build.directory}/package-skinny-wars/apa-demo-${org.apache.portals.applications.apa-demo.version}.war"/>
+                   <arg value="demo"/>
+                </java>
+                <java classname="org.apache.jetspeed.tools.deploy.JetspeedDeploy">
+                   <arg value="${project.build.directory}/package-skinny-wars/apa-rss-war-${org.apache.portals.applications.apa-rss.version}.war"/>
+                   <arg value="${project.build.directory}/package-skinny-wars/apa-rss-war-${org.apache.portals.applications.apa-rss.version}.war"/>
+                   <arg value="demo"/>
+                </java>
+                <java classname="org.apache.jetspeed.tools.deploy.JetspeedDeploy">
+                   <arg value="${project.build.directory}/package-skinny-wars/apa-webcontent-war-${org.apache.portals.applications.apa-webcontent.version}.war"/>
+                   <arg value="${project.build.directory}/package-skinny-wars/apa-webcontent-war-${org.apache.portals.applications.apa-webcontent.version}.war"/>
+                   <arg value="demo"/>
+                </java>
+                
                 <!-- repackage EAR with skinny wars -->
                 <jar destfile="${project.build.directory}/${project.build.finalName}.ear" basedir="${project.build.directory}/package-skinny-wars" manifest="${project.build.directory}/package-skinny-wars/META-INF/MANIFEST.MF"/>
                 <delete dir="${project.build.directory}/package-skinny-wars"/>
@@ -190,6 +208,18 @@
             </goals>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-api</artifactId>
+            <version>${pom.version}</version>
+          </dependency>        
+          <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-deploy-tools</artifactId>
+            <version>${pom.version}</version>
+          </dependency>        
+        </dependencies>
       </plugin>
     </plugins>
   </build>
