@@ -352,23 +352,25 @@
                     <deployment>
                       <artifact>org.apache.portals.jetspeed-2:j2-admin:war</artifact>
                       <expand>true</expand>
-                      <infuse>true</infuse>
                       <delete>./j2-admin</delete>
                     </deployment>
                     <!-- demo pa's, not for minimal! -->
                     <deployment>
                       <artifact>org.apache.portals.applications:apa-demo:war</artifact>
                       <targetName>demo.war</targetName>
+                      <infuse>true</infuse>
                       <delete>./demo</delete>
                     </deployment>
                     <deployment>
                       <artifact>org.apache.portals.applications:apa-rss-war:war</artifact>
                       <targetName>rss.war</targetName>
+                      <infuse>true</infuse>
                       <delete>./rss</delete>
                     </deployment>
                     <deployment>
                       <artifact>org.apache.portals.applications:apa-webcontent-war:war</artifact>
                       <targetName>webcontent.war</targetName>
+                      <infuse>true</infuse>
                       <delete>./webcontent</delete>
                     </deployment>
                   </deployments>

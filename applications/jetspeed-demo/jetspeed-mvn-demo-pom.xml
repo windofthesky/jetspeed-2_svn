@@ -579,16 +579,19 @@
                     <deployment>
                       <artifact>org.apache.portals.applications:apa-demo:war</artifact>
                       <targetName>demo.war</targetName>
+                      <infuse>true</infuse>
                       <delete>./demo</delete>
                     </deployment>
                     <deployment>
                       <artifact>org.apache.portals.applications:apa-rss-war:war</artifact>
                       <targetName>rss.war</targetName>
+                      <infuse>true</infuse>
                       <delete>./rss</delete>
                     </deployment>
                     <deployment>
                       <artifact>org.apache.portals.applications:apa-webcontent-war:war</artifact>
                       <targetName>webcontent.war</targetName>
+                      <infuse>true</infuse>
                       <delete>./webcontent</delete>
                     </deployment>
                   </deployments>
