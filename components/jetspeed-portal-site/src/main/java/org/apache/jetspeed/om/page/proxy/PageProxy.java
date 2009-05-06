@@ -160,7 +160,7 @@ public class PageProxy extends NodeProxy implements InvocationHandler
         // folder menu definitions include standard menu definition
         // locator defaults
         mergeMenuDefinitionLocators(page.getMenuDefinitions(), page);
-        FolderProxy parentFolderProxy = (FolderProxy)Proxy.getInvocationHandler(getParent());
+        FolderProxy parentFolderProxy = FolderProxy.getFolderProxy(getParent());
         mergeMenuDefinitionLocators(parentFolderProxy.getMenuDefinitionLocators());
     }
 }

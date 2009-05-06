@@ -34,6 +34,7 @@ import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.NodeSet;
+import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
 import org.apache.jetspeed.portalsite.impl.MenuImpl;
 import org.apache.jetspeed.portalsite.view.SiteView;
@@ -245,6 +246,22 @@ public class TestPortalSite extends AbstractSpringTestCase
         folder0Page0ProxyByPath = (Page)baseView.getNodeProxy("page0.psml", rootFolder0Proxy, false, false);
         assertNotNull(folder0Page0ProxyByPath);
         assertEquals(folder0Page0Proxy, folder0Page0ProxyByPath);
+        try
+        {
+            baseView.getNodeProxy("/folderX/page0.psml", null, false, false);
+            fail("/folderX/page0.psml should not be found");
+        }
+        catch (NodeNotFoundException nnfe)
+        {
+        }
+        try
+        {
+            baseView.getNodeProxy("/folder0/pageX.psml", null, false, false);
+            fail("/folder0/pageX.psml should not be found");
+        }
+        catch (NodeNotFoundException nnfe)
+        {
+        }
         List rootPageProxiesByPath = baseView.getNodeProxies("/page?.psml", null, false, false);
         assertNotNull(rootPageProxiesByPath);
         assertEquals(3,rootPageProxiesByPath.size());

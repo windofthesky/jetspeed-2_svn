@@ -154,8 +154,8 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * newRequestContext - create a new request context instance with history
      *
      * @param requestProfileLocators request profile locators
-     * @param requestFallback flag specifying whether to fallback to root folder
-     *                        if locators do not select a page or access is forbidden
+     * @param requestFallback flag specifying whether to fallback to folders if
+     *                        locators do not select a page or access is forbidden
      * @return new request context instance
      */
     public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback)
@@ -167,8 +167,8 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * newRequestContext - create a new request context instance
      *
      * @param requestProfileLocators request profile locators
-     * @param requestFallback flag specifying whether to fallback to root folder
-     *                        if locators do not select a page or access is forbidden
+     * @param requestFallback flag specifying whether to fallback to folders if
+     *                        locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      * @return new request context instance
@@ -182,8 +182,8 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * selectRequestPage - select page proxy for request given profile locators
      *
      * @param requestProfileLocators map of profile locators for request
-     * @param requestFallback flag specifying whether to fallback to root folder
-     *                        if locators do not select a page or access is forbidden
+     * @param requestFallback flag specifying whether to fallback to folders if
+     *                        locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      * @return selected page proxy for request
