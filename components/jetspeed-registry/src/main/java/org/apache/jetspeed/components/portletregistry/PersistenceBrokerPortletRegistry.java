@@ -27,13 +27,21 @@ import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.om.common.Support;
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
+import org.apache.jetspeed.om.portlet.Description;
+import org.apache.jetspeed.om.portlet.DisplayName;
+import org.apache.jetspeed.om.portlet.EventDefinitionReference;
+import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Preference;
-import org.apache.jetspeed.om.portlet.Preferences;
+import org.apache.jetspeed.om.portlet.SecurityRoleRef;
+import org.apache.jetspeed.om.portlet.Supports;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
+import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.springframework.dao.DataAccessException;
@@ -341,30 +349,107 @@ public class PersistenceBrokerPortletRegistry
         {
             throw new FailedToStorePortletDefinitionException("Cannot clone to portlet named " + newPortletName + ", name already exists"); 
         }
+        
         PortletDefinitionImpl copy = new PortletDefinitionImpl();
-        copy.setApplication(source.getApplication());
+        
+        // First set the name and display name
+        
         copy.setPortletName(newPortletName);
+        DisplayName displayName = copy.addDisplayName(JetspeedLocale.getDefaultLocale().getLanguage());
+        displayName.setDisplayName(newPortletName);
+        
+        // And, then, copy all attributes
+        
+        copy.setApplication(source.getApplication());
         copy.setPortletClass(source.getPortletClass());
         copy.setResourceBundle(source.getResourceBundle());
         copy.setPreferenceValidatorClassname(source.getPreferenceValidatorClassname());
         copy.setExpirationCache(source.getExpirationCache());
         copy.setCacheScope(source.getCacheScope());
-        Collection<LocalizedField> fields = source.getMetadata().getFields();
-        for (LocalizedField field : fields)
+        
+        for (LocalizedField field : source.getMetadata().getFields())
         {
-            copy.getMetadata().addField(field);            
-        }        
+            copy.getMetadata().addField(field.getLocale(), field.getName(), field.getValue());
+        }
+        
         copy.setJetspeedSecurityConstraint(source.getJetspeedSecurityConstraint());
-        copy.getDescriptions().addAll(source.getDescriptions());
-        copy.getDisplayNames().addAll(source.getDisplayNames());
-        copy.getInitParams().addAll(source.getInitParams());
-        copy.getSupportedProcessingEvents().addAll(source.getSupportedProcessingEvents());
-        copy.getSupportedPublishingEvents().addAll(source.getSupportedPublishingEvents());
-        copy.getSecurityRoleRefs().addAll(source.getSecurityRoleRefs());
-        copy.getSupports().addAll(source.getSupports());
-        copy.getLanguages().addAll(source.getLanguages());
-        copy.getContainerRuntimeOptions().addAll(source.getContainerRuntimeOptions());
+        
+        for (Description desc : source.getDescriptions())
+        {
+            Description copyDesc = copy.addDescription(desc.getLang());
+            copyDesc.setDescription(desc.getDescription());
+        }
+
+        for (InitParam initParam : source.getInitParams())
+        {
+            InitParam copyInitParam = copy.addInitParam(initParam.getParamName());
+            copyInitParam.setParamValue(initParam.getParamValue());
+            
+            for (Description desc : initParam.getDescriptions())
+            {
+                Description copyDesc = copyInitParam.addDescription(desc.getLang());
+                copyDesc.setDescription(desc.getDescription());
+            }
+        }
+        
+        for (EventDefinitionReference eventDefRef : source.getSupportedProcessingEvents())
+        {
+            copy.addSupportedProcessingEvent(eventDefRef.getQName());
+        }
+
+        for (EventDefinitionReference eventDefRef : source.getSupportedPublishingEvents())
+        {
+            copy.addSupportedPublishingEvent(eventDefRef.getQName());
+        }
+        
+        for (SecurityRoleRef secRoleRef : source.getSecurityRoleRefs())
+        {
+            SecurityRoleRef copySecRoleRef = copy.addSecurityRoleRef(secRoleRef.getRoleName());
+            copySecRoleRef.setRoleLink(secRoleRef.getRoleLink());
+            
+            for (Description desc : secRoleRef.getDescriptions())
+            {
+                Description copyDesc = copySecRoleRef.addDescription(desc.getLang());
+                copyDesc.setDescription(desc.getDescription());
+            }
+        }
+        
+        for (Supports supports : source.getSupports())
+        {
+            Supports copySupports = copy.addSupports(supports.getMimeType());
+            
+            for (String portletMode : supports.getPortletModes())
+            {
+                copySupports.addPortletMode(portletMode);
+            }
+            
+            for (String windowState : supports.getWindowStates())
+            {
+                copySupports.addWindowState(windowState);
+            }
+        }
+        
+        for (Language language : source.getLanguages())
+        {
+            Language copyLanguage = copy.addLanguage(language.getLocale());
+            copyLanguage.setTitle(language.getTitle());
+            copyLanguage.setShortTitle(language.getShortTitle());
+            copyLanguage.setKeywords(language.getKeywords());
+            copyLanguage.setSupportedLocale(language.isSupportedLocale());
+        }
+        
+        for (ContainerRuntimeOption runtimeOption : source.getContainerRuntimeOptions())
+        {
+            ContainerRuntimeOption copyRuntimeOption = copy.addContainerRuntimeOption(runtimeOption.getName());
+            
+            for (String value : runtimeOption.getValues())
+            {
+                copyRuntimeOption.addValue(value);
+            }
+        }
+        
         copy.getSupportedPublicRenderParameters().addAll(source.getSupportedPublicRenderParameters());
+        
         //savePortletDefinition(copy);
         source.getApplication().getPortlets().add(copy);
         try

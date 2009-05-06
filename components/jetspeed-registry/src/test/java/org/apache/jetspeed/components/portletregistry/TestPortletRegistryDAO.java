@@ -18,6 +18,7 @@ package org.apache.jetspeed.components.portletregistry;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,6 +40,7 @@ import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.Listener;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Preference;
@@ -124,6 +126,91 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
     public void testData() throws Exception
     {
         verifyData(false);
+    }
+    
+    public void testCloningOfPortletDefinition() throws Exception
+    {
+        final String appName = "App_1";
+        final String sourcePortletName = "Portlet 1";
+        final String clonedPortletName = "ClonedPortlet 1";
+        
+        PortletApplication app = portletRegistry.getPortletApplication(appName);
+        assertNotNull("Portlet application, " + appName + ", is not found.", app);
+        
+        PortletDefinition sourcePortlet = app.getPortlet(sourcePortletName);
+        assertNotNull("Portlet definition, " + sourcePortletName + ", is not found.", sourcePortlet);
+        
+        PortletDefinition clonedPortlet = app.getPortlet(clonedPortletName);
+        assertNull("A portlet definition with cloned portlet name, " + clonedPortletName + ", shouldn't be there.", 
+                   clonedPortlet);
+        
+        try
+        {
+            Collection<LocalizedField> sourceFields = sourcePortlet.getMetadata().getFields();
+            portletRegistry.clonePortletDefinition(sourcePortlet, clonedPortletName);
+            clonedPortlet = app.getPortlet(clonedPortletName);
+            assertNotNull("Cloned portlet is not found after invoking cloning method.", clonedPortlet);
+
+            Collection<LocalizedField> clonedFields = clonedPortlet.getMetadata().getFields();
+            
+            assertEquals("The metadata fields count is not equals.", sourceFields.size(), clonedFields.size());
+            
+            for (LocalizedField sourceField : sourceFields)
+            {
+                List<LocalizedField> foundClonedFields = findLocalizedFieldsByNameAndLocale(clonedFields, sourceField.getName(), sourceField.getLocale());
+                assertFalse("There's no matching metadata field in cloned portlet definition.", foundClonedFields.isEmpty());
+                assertNotNull("The metadata field values from the source metadata not found.", findLocalizedFieldByValue(foundClonedFields, sourceField.getValue()));
+            }
+            
+            for (LocalizedField clonedField : clonedFields)
+            {
+                clonedField.setValue("Cloned value of " + clonedField.getValue());
+            }
+            
+            for (LocalizedField sourceField : sourceFields)
+            {
+                List<LocalizedField> foundClonedFields = findLocalizedFieldsByNameAndLocale(clonedFields, sourceField.getName(), sourceField.getLocale());
+                assertFalse("There's no matching metadata field in cloned portlet definition.", foundClonedFields.isEmpty());
+                assertNull("The metadata field values from the source metadata should not be found because the ones of cloned stuff have been changed.", 
+                           findLocalizedFieldByValue(foundClonedFields, sourceField.getValue()));
+            }
+        }
+        finally
+        {
+            if (clonedPortlet != null)
+            {
+                app.getPortlets().remove(clonedPortlet);
+                portletRegistry.updatePortletApplication(app);
+            }
+        }
+    }
+    
+    private static List<LocalizedField> findLocalizedFieldsByNameAndLocale(final Collection<LocalizedField> sourceFields, final String name, final Locale locale)
+    {
+        List<LocalizedField> localizedFields = new LinkedList<LocalizedField>();
+        
+        for (LocalizedField sourceField : sourceFields)
+        {
+            if (name.equals(sourceField.getName()) && locale.equals(sourceField.getLocale()))
+            {
+                localizedFields.add(sourceField);
+            }
+        }
+        
+        return localizedFields;
+    }
+    
+    private static LocalizedField findLocalizedFieldByValue(final Collection<LocalizedField> sourceFields, String value)
+    {
+        for (LocalizedField sourceField : sourceFields)
+        {
+            if (value.equals(sourceField.getValue()))
+            {
+                return sourceField;
+            }
+        }
+
+        return null;
     }
 
     private void addDublinCore(GenericMetadata metadata)
