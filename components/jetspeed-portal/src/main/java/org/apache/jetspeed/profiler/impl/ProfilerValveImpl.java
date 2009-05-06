@@ -86,8 +86,11 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
     private PortalSite portalSite;
 
     /**
-     * requestFallback - flag indicating whether request should fallback to root folder
-     *                   if locators do not select a page or access is forbidden
+     * requestFallback - flag indicating whether request should fallback to closest
+     *                   intermediate or root folder if locators do not select a page
+     *                   or access is forbidden; if set, forbidden and not found
+     *                   response status codes are avoided if at all possible: do not
+     *                   set if 403s and 404s are expected to be returned by the portal
      */
     private boolean requestFallback;
 
@@ -249,22 +252,26 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
         }
         catch (SecurityException se)
         {
-            // fallback to portal root folder/default page if
-            // no user is available and request path is not
-            // already attempting to access the root folder;
-            // this is rarely the case since the anonymous
-            // user is normally defined unless the default
-            // security system has been replaced/overridden
-            if (request.getRequest().getUserPrincipal() == null &&
-                request.getPath() != null &&
-                !request.getPath().equals("/"))
+            // fallback to root folder/default page
+            if (requestFallback)
             {
-                try 
+                // fallback to portal root folder/default page if
+                // no user is available and request path is not
+                // already attempting to access the root folder;
+                // this is rarely the case since the anonymous
+                // user is normally defined unless the default
+                // security system has been replaced/overridden
+                if (request.getRequest().getUserPrincipal() == null &&
+                    request.getPath() != null &&
+                    !request.getPath().equals("/"))
                 {
-                    request.getResponse().sendRedirect(request.getRequest().getContextPath());
+                    try 
+                    {
+                        request.getResponse().sendRedirect(request.getRequest().getContextPath());
+                    }
+                    catch (IOException ioe){}
+                    return;
                 }
-                catch (IOException ioe){}
-                return;
             }
 
             // return standard HTTP 403 - FORBIDDEN status
