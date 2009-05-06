@@ -27,8 +27,11 @@ import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.om.common.Support;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.Preference;
+import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.ojb.broker.query.Criteria;
@@ -346,33 +349,48 @@ public class PersistenceBrokerPortletRegistry
         copy.setPreferenceValidatorClassname(source.getPreferenceValidatorClassname());
         copy.setExpirationCache(source.getExpirationCache());
         copy.setCacheScope(source.getCacheScope());
-        // TODO: Metadata
-        
+        Collection<LocalizedField> fields = source.getMetadata().getFields();
+        for (LocalizedField field : fields)
+        {
+            copy.getMetadata().addField(field);            
+        }        
         copy.setJetspeedSecurityConstraint(source.getJetspeedSecurityConstraint());
         copy.getDescriptions().addAll(source.getDescriptions());
         copy.getDisplayNames().addAll(source.getDisplayNames());
-        
-    }
-    
-    /*
-
-    private Collection<LocalizedField> metadataFields = null;
-
-    
-    private List<InitParam> initParams;
-    private List<EventDefinitionReference> supportedProcessingEvents;
-    private List<EventDefinitionReference> supportedPublishingEvents;
-    private List<SecurityRoleRef> securityRoleRefs;
-    private List<Supports> supports;
-    private List<String> supportedLocales;
-    private List<Language> languages;
-    private List<ContainerRuntimeOption> containerRuntimeOptions;    
-    private List<String> supportedPublicRenderParameters;
-    private Preferences descriptorPreferences = new PreferencesImpl();    
-    
-    private transient Map<Locale,InlinePortletResourceBundle> resourceBundles = new HashMap<Locale, InlinePortletResourceBundle>();
-    
-    protected List portletEntities;     
-     */
-    
+        copy.getInitParams().addAll(source.getInitParams());
+        copy.getSupportedProcessingEvents().addAll(source.getSupportedProcessingEvents());
+        copy.getSupportedPublishingEvents().addAll(source.getSupportedPublishingEvents());
+        copy.getSecurityRoleRefs().addAll(source.getSecurityRoleRefs());
+        copy.getSupports().addAll(source.getSupports());
+        copy.getLanguages().addAll(source.getLanguages());
+        copy.getContainerRuntimeOptions().addAll(source.getContainerRuntimeOptions());
+        copy.getSupportedPublicRenderParameters().addAll(source.getSupportedPublicRenderParameters());
+        //savePortletDefinition(copy);
+        source.getApplication().getPortlets().add(copy);
+        try
+        {
+            updatePortletApplication(source.getApplication());
+        }
+        catch (RegistryException e)
+        {
+            throw new FailedToStorePortletDefinitionException(e);
+        }
+        for (Preference pref : source.getPortletPreferences().getPortletPreferences())
+        {
+            Preference copyPref = copy.getPortletPreferences().addPreference(pref.getName());
+            for (String value : pref.getValues())
+            {
+                copyPref.addValue(value);
+            }            
+        }
+        try
+        {
+            preferenceService.storeDefaults(copy);
+        }
+        catch (Throwable e)
+        {
+            source.getApplication().getPortlets().remove(copy);            
+            throw new FailedToStorePortletDefinitionException(e);            
+        }
+    }       
 }
