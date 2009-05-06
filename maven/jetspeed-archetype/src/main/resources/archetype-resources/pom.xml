@@ -26,7 +26,7 @@
   </prerequisites>
   <groupId>${groupId}</groupId>
   <artifactId>${artifactId}</artifactId>
-  <name>My Portal Project</name>
+  <name>${artifactId} portal project</name>
   <version>${version}</version>
   <packaging>pom</packaging>
 
@@ -37,9 +37,9 @@
     <org.apache.portals.bridges.common.version>1.0.4</org.apache.portals.bridges.common.version>
     <servlet-api.version>2.4</servlet-api.version>
     <portlet-api.version>2.0</portlet-api.version>
+    <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
     <portal.context.name>${artifactId}</portal.context.name>
     <org.apache.jetspeed.server.home>/opt/apache-tomcat-5.5.27/</org.apache.jetspeed.server.home>
-
   </properties>
 
   <repositories>

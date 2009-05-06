@@ -26,7 +26,7 @@
   </prerequisites>
 
   <artifactId>${artifactId}</artifactId>
-  <name>My Portal</name>
+  <name>${rootArtifactId} portal</name>
   <parent>
     <groupId>${groupId}</groupId>
     <artifactId>${rootArtifactId}</artifactId>

@@ -26,7 +26,7 @@
   </prerequisites>
 
   <artifactId>${artifactId}</artifactId>
-  <name>My Portlet Application</name>
+  <name>${rootArtifactId} portlet application</name>
   <parent>
     <groupId>${groupId}</groupId>
     <artifactId>${rootArtifactId}</artifactId>
@@ -45,6 +45,19 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>${dollar}{javax.servlet.jstl.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.portals.jetspeed-2</groupId>
+      <artifactId>jetspeed-api</artifactId>
+      <version>${dollar}{org.apache.portals.jetspeed.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    
   </dependencies>
 
   <build>

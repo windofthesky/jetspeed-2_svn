@@ -20,9 +20,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
   <defaults
-     skin="blue"
-     layout-decorator="tigris"
-     portlet-decorator="tigris"
+     layout-decorator="jetspeed"
+     portlet-decorator="jetspeed"
   />
   <title>Welcome to Jetspeed 2</title>
   <metadata name="title" xml:lang="fr">Bienvenue a Jetspeed</metadata>
@@ -34,27 +33,28 @@
   <metadata name="title" xml:lang="ko">Jetspeed 2 에 오신 것을 환영합니다</metadata>
 
   <fragment id="dp-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
+    <fragment id="dp-12" type="portlet" name="j2-admin::LoginPortlet">
+      <property layout="TwoColumns" name="row" value="0" />
+      <property layout="TwoColumns" name="column" value="0" />
+    </fragment>                                
+    <fragment id="dp-22" type="portlet" name="j2-admin::ForgottenPasswordPortlet">
+      <property layout="TwoColumns" name="row" value="1" />
+      <property layout="TwoColumns" name="column" value="0" />
+    </fragment>                                
+    <fragment id="dp-7" type="portlet" name="${parentArtifactId}-pa::myportlet" >
+      <property layout="TwoColumns" name="row" value="2" />
+      <property layout="TwoColumns" name="column" value="0" />
+    </fragment>        
+
     <fragment id="dp-3" type="portlet" name="j2-admin::LocaleSelector">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>                                
-    <fragment id="dp-12" type="portlet" name="j2-admin::LoginPortlet">
-      <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="1" />
-    </fragment>                                
-    <fragment id="dp-22" type="portlet" name="j2-admin::ForgottenPasswordPortlet">
-      <property layout="TwoColumns" name="row" value="2" />
-      <property layout="TwoColumns" name="column" value="1" />
-    </fragment>                                
     <fragment id="dp-23" type="portlet" name="j2-admin::UserRegistrationPortlet">
-      <property layout="TwoColumns" name="row" value="3" />
+      <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>                                
     
-    <fragment id="dp-7" type="portlet" name="${parentArtifactId}-pa::myportlet" >
-      <property layout="TwoColumns" name="row" value="1" />
-      <property layout="TwoColumns" name="column" value="0" />
-    </fragment>        
   </fragment>
 
   <security-constraints>
