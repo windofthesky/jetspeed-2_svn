@@ -87,6 +87,7 @@
           PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException
         </prop>
         <prop key="save*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+        <prop key="clone*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
         <prop key="*">PROPAGATION_SUPPORTS</prop>
       </props>
     </property>
