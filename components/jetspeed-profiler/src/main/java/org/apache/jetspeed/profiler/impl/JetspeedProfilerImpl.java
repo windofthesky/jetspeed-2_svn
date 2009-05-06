@@ -16,7 +16,9 @@
  */
 package org.apache.jetspeed.profiler.impl;
 
+import java.io.Serializable;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,6 +27,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpSessionActivationListener;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
+import javax.servlet.http.HttpSessionEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +47,6 @@ import org.apache.jetspeed.profiler.rules.impl.PrincipalRuleImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.UserSubjectPrincipal;
-import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.springframework.beans.BeansException;
@@ -57,6 +62,9 @@ import org.springframework.beans.factory.BeanFactoryAware;
 public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport 
         implements Profiler, BeanFactoryAware
 {
+    /** Profiler context session attribute name */
+    public final static String PROFILER_CONTEXT_ATTRIBUTE_NAME = "org.apache.jetspeed.profiler.ProfilerContext";
+    
     /** The default rule. */
     public final static String DEFAULT_RULE = "j1";
     
@@ -93,9 +101,14 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     /** The configured default rule for this portal */
     private String defaultRule = DEFAULT_RULE;
 
+    /** list of transient and persistent rules cached by principal and locator name */
     private Map principalRules = Collections.synchronizedMap(new HashMap());
 
+    /** list of persistent rules cached by principal */
     private Map rulesPerPrincipal = Collections.synchronizedMap(new HashMap());
+
+    /** list of all transient and persistent rules cached by principal */
+    private Map allRulesPerPrincipal = Collections.synchronizedMap(new HashMap());
 
     private ProfileResolvers resolvers;
 
@@ -212,6 +225,9 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
             throw new ProfilerException(msg);
         }
 
+        // setup/maintain profiler context for session end notification
+        setupProfilerContext(context);        
+
         // find a profiling rule for this principal
         ProfilingRule rule = getRuleForPrincipal(principal, locatorName);
         if (null == rule)
@@ -235,7 +251,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     public ProfileLocator getDefaultProfile(RequestContext context,
             String locatorName) throws ProfilerException
     {
-
+        // find a profiling rule for the default principal
         ProfilingRule rule = getRuleForPrincipal(DEFAULT_RULE_PRINCIPAL,
                 locatorName);
         if (null == rule)
@@ -299,6 +315,8 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
             pr.setProfilingRule(rule);
             principalRules.put(makePrincipalRuleKey(principal.getName(),
                     locatorName), pr);
+            // track cached principal rules
+            trackCachedPrincipalRulesPut(principal.getName(), pr);
         } else
         {
             // Get the associated rule
@@ -357,7 +375,10 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
         getPersistenceBrokerTemplate().store(pr);
         principalRules.put(makePrincipalRuleKey(principal.getName(),
                 locatorName), pr);
-        this.rulesPerPrincipal.remove(principal.getName());
+        // track cached principal rules
+        trackCachedPrincipalRulesPut(principal.getName(), pr);
+        // reset persistent rules per principal
+        rulesPerPrincipal.remove(principal.getName());
     }
 
     private String makePrincipalRuleKey(String principal, String locator)
@@ -385,9 +406,11 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
 
         pr = (PrincipalRule) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(getPrincipalRuleClass(), c));
+        if (pr != null) pr.getProfilingRule().setResolvers(resolvers);
 
         principalRules.put(makePrincipalRuleKey(principal, locatorName), pr);
-        if (pr != null) pr.getProfilingRule().setResolvers(resolvers);
+        // track cached principal rules
+        trackCachedPrincipalRulesPut(principal, pr);
         return pr;
     }
 
@@ -501,6 +524,10 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     public Map getProfileLocators(RequestContext context, Principal principal)
             throws ProfilerException
     {
+        // setup/maintain profiler context for session end notification
+        setupProfilerContext(context);
+        
+        // get profile locators
         Map locators = new HashMap();
         Collection rules = getRulesForPrincipal(principal);
 
@@ -517,8 +544,8 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     public Map getDefaultProfileLocators(RequestContext context)
             throws ProfilerException
     {
+        // get default profile locators
         Map locators = new HashMap();
-
         Collection rules = getRulesForPrincipal(DEFAULT_RULE_PRINCIPAL);
 
         Iterator it = rules.iterator();
@@ -571,9 +598,13 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
             throws ProfilerException
     {
         getPersistenceBrokerTemplate().delete(rule);
+        // reset persistent rules per principal
         rulesPerPrincipal.remove(rule.getPrincipalName());
         String key = this.makePrincipalRuleKey(rule.getPrincipalName(), rule.getLocatorName());
-        principalRules.remove(key);                
+        // remove individual rule
+        principalRules.remove(key);
+        // track cached principal rules
+        trackCachedPrincipalRulesRemoved(rule.getPrincipalName(), rule);
     }
 
     /*
@@ -738,5 +769,177 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
         }
 
     }
+    
+    /**
+     * Setup and maintain profiler context to be used to reap rule caches
+     * for principals on session end.
+     * 
+     * @param context request context
+     * @throws ProfilerException when subject or principal not available
+     */
+    private void setupProfilerContext(RequestContext context) throws ProfilerException
+    {
+        // validate profiler context
+        ProfilerContext profilerContext = (ProfilerContext) context.getSessionAttribute(PROFILER_CONTEXT_ATTRIBUTE_NAME);
+        try
+        {
+            // access session principal and test for change
+            Principal principal = SubjectHelper.getBestPrincipal(context.getSubject(), UserSubjectPrincipal.class);
+            if (principal == null)
+            {
+                throw new NullPointerException("Principal not found");
+            }
+            if ((profilerContext == null) || (profilerContext.getPrincipal() != principal))
+            {
+                // setup/reset profiler context
+                context.setSessionAttribute(PROFILER_CONTEXT_ATTRIBUTE_NAME, new ProfilerContext(principal));
+            }
+        }
+        catch (Exception e)
+        {
+            String message = "Unable to access principal in pipeline: "+e;
+            log.error(message, e);
+            throw new ProfilerException(message, e);
+        }
+    }
+    
+    /**
+     * Track all put rules, (persistent and transient), cached for a principal.
+     * 
+     * @param principalName name of principal rules is cached under
+     * @param rule rule cached
+     */
+    private void trackCachedPrincipalRulesPut(String principalName, PrincipalRule rule)
+    {
+        if (rule != null)
+        {
+            // maintain list of all rules cached per principal
+            Collection allRules = (Collection)allRulesPerPrincipal.get(principalName);
+            if (allRules == null)
+            {
+                allRules = new ArrayList(4);
+                allRulesPerPrincipal.put(principalName, allRules);
+            }
+            allRules.add(rule);
+        }
+    }
 
+    /**
+     * Track all removed rules, (persistent and transient), cached for a principal.
+     * 
+     * @param principalName name of principal rules is cached under
+     * @param rule rule cached
+     */
+    private void trackCachedPrincipalRulesRemoved(String principalName, PrincipalRule rule)
+    {
+        if (rule != null)
+        {
+            // maintain list of all rules cached per principal
+            Collection allRules = (Collection)allRulesPerPrincipal.get(principalName);
+            if (allRules != null)
+            {
+                allRules.remove(rule);
+            }
+        }
+    }
+
+    /**
+     * Clear cached profiler rule information for principal.
+     * 
+     * @param principal cached profiler rule key
+     */
+    private void clearCachedPrincipalRules(Principal principal)
+    {
+        if (principal != null)
+        {
+            Collection rules = (Collection)allRulesPerPrincipal.remove(principal.getName());
+            if (rules != null)
+            {
+                rulesPerPrincipal.remove(principal.getName());
+                Iterator it = rules.iterator();
+                while (it.hasNext())
+                {
+                    PrincipalRule rule = (PrincipalRule)it.next();
+                    String key = this.makePrincipalRuleKey(rule.getPrincipalName(), rule.getLocatorName());
+                    principalRules.remove(key);
+                }
+            }
+        }
+    }
+        
+    /**
+     * ProfilerContext
+     * 
+     * Class used to track session lifetime within profiler implementation
+     * so that cached profiler rule information per principal can be evicted
+     * from cache on session end.
+     */
+    public class ProfilerContext implements HttpSessionActivationListener, HttpSessionBindingListener, Serializable
+    {
+        private transient Principal principal;
+        
+        /**
+         * Construct new profiler context with specified principal.
+         * 
+         * @param principal profiler context principal
+         */
+        private ProfilerContext(Principal principal)
+        {
+            this.principal = principal;
+        }
+        
+        /**
+         * Notification that the session has just been activated.
+         *
+         * @param event session activation event
+         */
+        public void sessionDidActivate(HttpSessionEvent event)
+        {
+        }
+
+        /**
+         * Notification that the session is about to be passivated.
+         *
+         * @param event session activation event
+         */
+        public void sessionWillPassivate(HttpSessionEvent event)
+        {
+            // clear cached principal rules on session end
+            clearCachedPrincipalRules(principal);
+            principal = null;
+        }
+ 
+        /**
+         * Notifies this context that it is being bound to
+         * a session and identifies the session.
+         *
+         * @param event session binding event
+         */
+        public void valueBound(HttpSessionBindingEvent event)
+        {
+        }
+
+        /**
+         * Notifies this context that it is being unbound
+         * from a session and identifies the session.
+         *
+         * @param event session binding event
+         */
+        public void valueUnbound(HttpSessionBindingEvent event)
+        {
+            // clear cached principal rules on session end
+            clearCachedPrincipalRules(principal);
+            principal = null;
+        }  
+
+        /**
+         * Get context principal.
+         * 
+         * @return context principal
+         */
+        private Principal getPrincipal()
+        {
+            return principal;
+        }
+    }
 }
