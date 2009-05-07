@@ -26,7 +26,7 @@ color: white;
     width: 100px;
 }
 
-.layout-jetspeed #jetspeed-menu-pages{position: absolute; bottom: 0px; left: 0px;}
+.layout-jetspeed #jetspeed-menu-pages{position: relative; bottom: 0px; left: 0px;}
 
 .layout-jetspeed #portalBreadcrumbList {
     float: left;
@@ -35,8 +35,8 @@ color: white;
 }
 
 .layout-jetspeed .portalPageActionButton {
-	height: 11px;
-	width: 11px;
+    height: 11px;
+    width: 11px;
 }
 
 
@@ -129,4 +129,3 @@ padding-bottom: 7px;
 body .layout-jetspeed .dojoTabPaneWrapper {
 border: none;
 }
-

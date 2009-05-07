@@ -38,9 +38,11 @@ Primary cause for setting doctype is to prevent IE (including IE7) from using to
 <div class="layout-${jetspeedDesktop.getLayoutDecorationName()}" id="jetspeedPage">
 <div id="banner" style="position: static">    <!-- BOZO: set to absolute in stylesheet - don't know why - no apparent reason -->
  <div class="header">
- 	<h1>Jetspeed</h1>
-<div class="tabs" widgetId="jetspeed-menu-pages" dojoType="jetspeed:PortalTabContainer"></div>
- 	</div>
+  <h1 class="logo">Jetspeed</h1>
+  <div class="menu">
+   <div class="tabs" widgetId="jetspeed-menu-pages" dojoType="jetspeed:PortalTabContainer"></div>
+  </div>
+ </div>
 </div>
 <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
 <tr>
