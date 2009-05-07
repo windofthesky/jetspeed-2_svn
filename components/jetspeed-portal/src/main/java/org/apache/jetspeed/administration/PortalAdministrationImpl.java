@@ -178,6 +178,7 @@ public class PortalAdministrationImpl implements PortalAdministration
             User user =  userManager.addUser(userName);
             PasswordCredential pwc = userManager.getPasswordCredential(user);
             pwc.setPassword(null, password);
+            userManager.storePasswordCredential(pwc);
                        
             // assign roles to user
             if (roles == null || roles.isEmpty())
