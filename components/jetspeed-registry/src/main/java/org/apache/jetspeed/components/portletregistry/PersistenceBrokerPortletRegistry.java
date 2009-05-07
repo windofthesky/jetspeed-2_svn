@@ -462,7 +462,9 @@ public class PersistenceBrokerPortletRegistry
         }
         for (Preference pref : source.getPortletPreferences().getPortletPreferences())
         {
-            Preference copyPref = copy.getPortletPreferences().addPreference(pref.getName());
+            Preference copyPref = copy.addDescriptorPreference(pref.getName());
+            copyPref.setReadOnly(pref.isReadOnly());
+            
             for (String value : pref.getValues())
             {
                 copyPref.addValue(value);
@@ -474,7 +476,7 @@ public class PersistenceBrokerPortletRegistry
         }
         catch (Throwable e)
         {
-            source.getApplication().getPortlets().remove(copy);            
+            source.getApplication().getPortlets().remove(copy);
             throw new FailedToStorePortletDefinitionException(e);            
         }
     }       
