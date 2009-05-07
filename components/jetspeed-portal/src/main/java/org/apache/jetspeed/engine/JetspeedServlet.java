@@ -28,6 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
@@ -50,6 +51,9 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.pipeline.valve.SecurityValve;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
+import org.apache.jetspeed.request.RequestDiagnostics;
+import org.apache.jetspeed.request.RequestDiagnosticsFactory;
+import org.apache.jetspeed.request.RequestDiagnosticsHolder;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.UserSubjectPrincipal;
 import org.apache.jetspeed.services.JetspeedPortletServices;
@@ -62,9 +66,7 @@ import org.apache.jetspeed.statistics.PortalStatistics;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor </a>
  * @version $Id$
  */
-public class JetspeedServlet 
-extends HttpServlet 
-implements JetspeedEngineConstants, HttpSessionListener
+public class JetspeedServlet extends HttpServlet implements JetspeedEngineConstants, HttpSessionListener
 {
     private static Logger log;
     private static Logger console;
@@ -85,6 +87,18 @@ implements JetspeedEngineConstants, HttpSessionListener
      * Should initialization activities be performed during doGet() execution?
      */
     private static boolean firstDoGet = true;
+    
+    /**
+     * The servlet init parameter name providing the portal url path mapped to a error handler servlet/jsp
+     * for handling request processing exceptions thrown.
+     */
+    private static final String ERROR_HANDLER_PATH_PARM = "errorHandlerPath";
+
+    /**
+     * The default portal url path used as error handler servlet/jsp when the ERROR_HANDLER_PATH_PARAM
+     * servlet init parameter isn't configured
+     */
+    private static final String DEFAULT_ERROR_HANDLER_PATH = "/diagnostics";
 
     /**
      * The Jetspeed Engine
@@ -248,8 +262,13 @@ implements JetspeedEngineConstants, HttpSessionListener
      */
     public final void doGet( HttpServletRequest req, HttpServletResponse res ) throws IOException, ServletException
     {
+        // define RequestContext here to allow protential usage and state processing in case of an exception
+        // in outer catch errorHandler method call
+        RequestContext context = null;
         try
         {
+            cleanupError(req);
+            
             // Check to make sure that we started up properly.
             if (initFailure != null)
             {
@@ -275,7 +294,6 @@ implements JetspeedEngineConstants, HttpSessionListener
                 res.setHeader("Expires", "0");                               // HTTP/1.0 browser/proxy
 
                 // send request through pipeline
-                RequestContext context = null;
                 try
                 {
                     context = contextComponent.create(req, res, getServletConfig());
@@ -290,10 +308,7 @@ implements JetspeedEngineConstants, HttpSessionListener
         }
         catch (Throwable e)
         {            
-            final String msg = "Fatal error encountered while processing portal request: "+e.getMessage();
-            log.error(msg, e);
-            req.getSession(true).setAttribute("org.apache.portals.jestspeed.diagnostics", e.getLocalizedMessage());
-            res.sendRedirect(req.getContextPath() + "/diagnostics");
+            handleError(req, res, context, e);
         }
     }
 
@@ -406,5 +421,65 @@ implements JetspeedEngineConstants, HttpSessionListener
         statistics.logUserLogout(ipAddress, subjectUserPrincipal.getName(), sessionLength);    
         UserContentCacheManager userContentCacheManager = (UserContentCacheManager)engine.getComponentManager().getComponent("userContentCacheManager");
         userContentCacheManager.evictUserContentCache(subjectUserPrincipal.getName(), se.getSession().getId());
+    }
+           
+    /**
+     * Extendable and overridable default main request error handling method.
+     * <p>
+     * Be aware: the context parameter might not (yet) be initialized, or not anymore here, so it should always
+     * be checked against null. Furthermore, not all RequestContext methods might be valid to use or call (anymore) either.
+     * </p>
+     * @param req the original portal request
+     * @param res the original portal response
+     * @param context the context created for handling this request
+     * @param e the exception as occurred 
+     * @throws IOException
+     * @throws ServletException
+     */
+    protected void handleError(HttpServletRequest req, HttpServletResponse res, RequestContext context, Throwable t) throws IOException, ServletException
+    {
+        String errorHandlerPath = getInitParameter(ERROR_HANDLER_PATH_PARM);
+        if (errorHandlerPath == null || errorHandlerPath.trim().length() == 0)
+        {
+            errorHandlerPath = DEFAULT_ERROR_HANDLER_PATH;
+        }
+        final String msg = "Request error encountered while processing portal request: "+t.getMessage();
+        log.error(msg, t);
+        
+        // try to unwind and see if an Exception was thrown containing a RequestDiagnostics
+        RequestDiagnostics rd = null;
+        Throwable e = t;
+        do
+        {
+            if (e instanceof RequestDiagnosticsHolder && ((RequestDiagnosticsHolder)e).getRequestDiagnostics() != null)
+            {
+                rd = ((RequestDiagnosticsHolder)e).getRequestDiagnostics();
+                break;
+            }
+            e = e.getCause();
+        }
+        while (e != null);
+        
+        if (rd == null)
+        {
+            rd = RequestDiagnosticsFactory.newRequestDiagnostics();
+        }
+        RequestDiagnosticsFactory.fillInRequestContext(rd, req, context, t);
+        rd.logAsError();
+        req.getSession(true).setAttribute(PortalReservedParameters.REQUEST_DIAGNOSTICS_ATTRIBUTE, rd);
+        res.sendRedirect(req.getContextPath() + errorHandlerPath);
+    }
+    
+    /**
+     * Cleanup errorHandler state usefull if/when the errorHandler stores error state within the session
+     * @param req
+     */
+    protected void cleanupError(HttpServletRequest req)
+    {
+        HttpSession session = req.getSession(false);
+        if (session != null)
+        {
+            session.removeAttribute(PortalReservedParameters.REQUEST_DIAGNOSTICS_ATTRIBUTE);
+        }
     }
 }

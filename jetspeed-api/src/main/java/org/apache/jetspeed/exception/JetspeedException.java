@@ -20,6 +20,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.apache.jetspeed.i18n.KeyedMessage;
+import org.apache.jetspeed.request.RequestDiagnostics;
+import org.apache.jetspeed.request.RequestDiagnosticsHolder;
 
 
 /**
@@ -30,11 +32,12 @@ import org.apache.jetspeed.i18n.KeyedMessage;
  * @version $Id$
  **/
 
-public class JetspeedException extends Exception 
+public class JetspeedException extends Exception implements RequestDiagnosticsHolder
 {
     public static final String KEYED_MESSAGE_BUNDLE = "org.apache.jetspeed.exception.JetspeedExceptionMessages";
     
     private KeyedMessage keyedMessage;
+    private RequestDiagnostics rd;
     
     public JetspeedException() 
     {
@@ -98,5 +101,15 @@ public class JetspeedException extends Exception
             return keyedMessage.getMessage(locale);
         }
         return super.getMessage();
+    }
+    
+    public void setRequestDiagnostics(RequestDiagnostics rd)
+    {
+        this.rd = rd;
+    }
+    
+    public RequestDiagnostics getRequestDiagnostics()
+    {
+        return rd;
     }
 }

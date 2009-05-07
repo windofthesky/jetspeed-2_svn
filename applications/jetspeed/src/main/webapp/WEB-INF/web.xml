@@ -87,6 +87,10 @@ limitations under the License.
       <param-name>applicationRoot</param-name>
       <param-value>webContext</param-value>
     </init-param>
+    <init-param>
+      <param-name>errorHandlerPath</param-name>
+      <param-value>/diagnostics</param-value>
+    </init-param>    
     <load-on-startup>1</load-on-startup>
   </servlet>
 
