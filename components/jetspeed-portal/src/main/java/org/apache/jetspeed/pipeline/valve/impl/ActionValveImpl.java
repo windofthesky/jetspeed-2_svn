@@ -16,10 +16,8 @@
  */
 package org.apache.jetspeed.pipeline.valve.impl;
 
-import java.io.IOException;
 import java.util.Collection;
 
-import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,8 +37,9 @@ import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ActionValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.request.RequestDiagnostics;
+import org.apache.jetspeed.request.RequestDiagnosticsFactory;
 import org.apache.pluto.container.PortletContainer;
-import org.apache.pluto.container.PortletContainerException;
 
 /**
  * <p>
@@ -83,6 +82,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
     public void invoke(RequestContext request, ValveContext context) throws PipelineException
     {     
         boolean responseCommitted = false;
+        boolean failure = false;
         try
         {            
             PortletWindow actionWindow = request.getActionWindow();
@@ -110,30 +110,20 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
                 request.setAttribute(PortalReservedParameters.PIPELINE, null); // clear the pipeline
             }
         }
-        catch (PortletContainerException e)
-        {
-            log.error("Unable to retrieve portlet container!", e);
-            throw new PipelineException("Unable to retrieve portlet container!", e);
-        }
-        catch (PortletException e)
-        {
-            log.warn("Unexpected PortletException in ActionValveImpl", e);
-            //  throw new PipelineException("Unexpected PortletException in ActionValveImpl", e);
-
-        }
-        catch (IOException e)
-        {
-            log.error("Unexpected IOException in ActionValveImpl", e);
-            // throw new PipelineException("Unexpected IOException in ActionValveImpl", e);
-        }
         catch (IllegalStateException e)
         {
             log.error("Illegal State Exception. Response was written to in Action Phase", e);
+            failure = true;
             responseCommitted = true;
         }
         catch (Throwable t)
         {
-            log.error("Unknown exception processing Action", t);
+            failure = true;
+            RequestDiagnostics rd = RequestDiagnosticsFactory.newRequestDiagnostics();
+            RequestDiagnosticsFactory.fillInPortletWindow(rd, request.getActionWindow(), t);
+            PipelineException pe = new PipelineException(t);
+            pe.setRequestDiagnostics(rd);
+            throw pe;
         }
         finally
         {
@@ -143,13 +133,12 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
             {
                 log.info("Action processed and response committed (pipeline processing stopped)");
             }
-            else
+            else if (!failure)
             {
                 // Pass control to the next Valve in the Pipeline
                 context.invokeNext(request);
             }
         }
-
     }
 
     protected void clearPortletCacheForPage(RequestContext request, PortletWindow actionWindow)

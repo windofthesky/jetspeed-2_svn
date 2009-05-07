@@ -16,22 +16,17 @@
  */
 package org.apache.jetspeed.resource;
 
-import java.io.IOException;
-
-import javax.portlet.PortletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.request.RequestDiagnostics;
+import org.apache.jetspeed.request.RequestDiagnosticsFactory;
 import org.apache.pluto.container.PortletContainer;
-import org.apache.pluto.container.PortletContainerException;
 import org.apache.jetspeed.container.PortletWindow;
 
 /**
@@ -44,8 +39,6 @@ import org.apache.jetspeed.container.PortletWindow;
  */
 public class ResourceValveImpl extends AbstractValve
 {
-
-    private static final Logger log = LoggerFactory.getLogger(ResourceValveImpl.class);
     private PortletContainer container;
 
     public ResourceValveImpl(PortletContainer container)
@@ -64,7 +57,6 @@ public class ResourceValveImpl extends AbstractValve
         {
             try
             {            
-                Fragment fragment = resourceWindow.getFragment();
                 HttpServletRequest servletRequest = request.getRequest();
                 HttpServletResponse servletResponse = request.getResponse();
                 resourceWindow.setAttribute(PortalReservedParameters.PORTLET_CONTAINER_INVOKER_USE_FORWARD, Boolean.TRUE);
@@ -77,27 +69,13 @@ public class ResourceValveImpl extends AbstractValve
                     container.doServeResource(resourceWindow, servletRequest, servletResponse);
                 }
             }
-            catch (PortletContainerException e)
+            catch (Exception e)
             {
-                log.error("Unable to retrieve portlet container!", e);
-                throw new PipelineException("Unable to retrieve portlet container!", e);
-            }
-            catch (PortletException e)
-            {
-                log.warn("Unexpected PortletException", e);
-
-            }
-            catch (IOException e)
-            {
-                log.error("Unexpected IOException", e);
-            }
-            catch (IllegalStateException e)
-            {
-                log.error("Unexpected IllegalStateException.", e);
-            }
-            catch (Exception t)
-            {
-                log.error("Unexpected Exception", t);
+                RequestDiagnostics rd = RequestDiagnosticsFactory.newRequestDiagnostics();
+                RequestDiagnosticsFactory.fillInPortletWindow(rd, resourceWindow, e);
+                PipelineException pe = new PipelineException(e);
+                pe.setRequestDiagnostics(rd);
+                throw pe;
             }
         }
         else
