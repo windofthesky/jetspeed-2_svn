@@ -70,7 +70,7 @@ public class DeployMojo extends AbstractMojo
      *
      * Tomcat 6, ('tomcat6'), support is the default; Tomcat 5, ('tomcat5'), and
      * Tomcat 5.5, ('tomcat5.5'), both map to Tomcat 5.5 which is the minimum
-     * supported Tomcat 5.X version currently supported.
+     * Tomcat 5.X version currently supported.
      */
     private static final String PROFILE_TOMCAT = "tomcat";
     private static final String PROFILE_TOMCAT_NULL = "tomcatnull";
