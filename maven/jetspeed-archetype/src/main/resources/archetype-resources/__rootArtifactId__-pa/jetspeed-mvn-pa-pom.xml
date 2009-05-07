@@ -62,6 +62,7 @@
                 <configuration>
                   <targetBaseDir>${dollar}{org.apache.jetspeed.server.home}</targetBaseDir>
                   <portalName>${dollar}{org.apache.jetspeed.portal.context.name}</portalName>
+                  <profile>tomcat${dollar}{org.apache.jetspeed.catalina.version.major}</profile>
                   <deployments>
                     <!-- portlet app -->
                     <deployment>

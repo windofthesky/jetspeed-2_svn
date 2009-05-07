@@ -54,9 +54,30 @@ public class DeployMojo extends AbstractMojo
 {
     private static final String DEPLOY_FACTORY_CLASS_NAME = "org.apache.jetspeed.tools.deploy.JetspeedDeployFactory";
 
-    private static final String PROFILE_TOMCAT5 = "tomcat5"; 
-    private static final String PROFILE_TOMCAT6 = "tomcat6"; 
-    private static final String DEFAULT_PROFILE = PROFILE_TOMCAT5; 
+    /**
+     * Support only Tomcat 5.5.27+ or Tomcat 6.0.18+. The profile attribute is
+     * typically set in the plugin configurations using the following tags:
+     *
+     * <profile>tomcat${org.apache.jetspeed.catalina.version.major}</profile>
+     * or
+     * <profile>tomcat${tomcat.version.major}</profile>
+     *
+     * The supported values for the org.apache.jetspeed.catalina.version.major
+     * property are '5', '5.5', and '6'. If unset, the profile value will be
+     * 'tomcat' or 'tomcatnull', which will imply the default tomcat support.
+     *
+     * The supported values for the tomcat.version.major are '5' and '6'.
+     *
+     * Tomcat 6, ('tomcat6'), support is the default; Tomcat 5, ('tomcat5'), and
+     * Tomcat 5.5, ('tomcat5.5'), both map to Tomcat 5.5 which is the minimum
+     * supported Tomcat 5.X version currently supported.
+     */
+    private static final String PROFILE_TOMCAT = "tomcat";
+    private static final String PROFILE_TOMCAT_NULL = "tomcatnull";
+    private static final String PROFILE_TOMCAT5 = "tomcat5";
+    private static final String PROFILE_TOMCAT55 = "tomcat5.5";
+    private static final String PROFILE_TOMCAT6 = "tomcat6";
+    private static final String DEFAULT_PROFILE = PROFILE_TOMCAT6; 
 
     public static class Deployment
     {
@@ -145,7 +166,7 @@ public class DeployMojo extends AbstractMojo
             destMap.putAll(destinations);
         }
 
-       	initDefaultDestinations(destMap, (profile != null) ? profile : DEFAULT_PROFILE);
+       	initDefaultDestinations(destMap, profile);
         
         File targetBaseDir = new File(this.targetBaseDir);
         if (targetBaseDir.exists() && targetBaseDir.isFile())
@@ -647,15 +668,25 @@ public class DeployMojo extends AbstractMojo
     /**
      * Initialize default destinations for a certain profile.
      */
-    private void initDefaultDestinations(Map destMap, String profile) throws MojoFailureException {
-
-    	if (!(profile.equals(PROFILE_TOMCAT5) || profile.equals(PROFILE_TOMCAT6))) {
-    		throw new MojoFailureException("Cannot handle profile '" + profile + "', use '" 
-    				+ PROFILE_TOMCAT5 + "' or '" + PROFILE_TOMCAT6 + "'");
+    private void initDefaultDestinations(Map destMap, String profile) throws MojoFailureException
+    {
+        // validate profile settings
+        if ((profile == null) || profile.equals(PROFILE_TOMCAT_NULL) || profile.equals(PROFILE_TOMCAT))
+        {
+            profile = DEFAULT_PROFILE;
+        }
+        else if (profile.equals(PROFILE_TOMCAT55))
+        {
+            profile = PROFILE_TOMCAT5;
+        }
+    	else if (!(profile.equals(PROFILE_TOMCAT5) || profile.equals(PROFILE_TOMCAT6)))
+        {
+    		throw new MojoFailureException("Cannot handle profile '" + profile + "', use '" + PROFILE_TOMCAT5 + "' or '" + PROFILE_TOMCAT6 + "'");
     	}
-    	
-    	if (profile.equals(PROFILE_TOMCAT5)) {
-    		
+
+    	// configure destinations
+    	if (profile.equals(PROFILE_TOMCAT5))
+        {
 	        if (!destMap.containsKey("system"))
 	        {
 	            destMap.put("system","common/endorsed");
@@ -677,8 +708,8 @@ public class DeployMojo extends AbstractMojo
 	            destMap.put("local", ((String)destMap.get("deploy"))+"/local");
 	        }
     	}
-    	else if (profile.equals(PROFILE_TOMCAT6)) {
-
+    	else if (profile.equals(PROFILE_TOMCAT6))
+        {
     		if (!destMap.containsKey("system"))
             {
                 destMap.put("system","lib");

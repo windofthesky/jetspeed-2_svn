@@ -299,6 +299,7 @@
                 <configuration>
                   <targetBaseDir>${org.apache.jetspeed.server.home}</targetBaseDir>
                   <portalName>${org.apache.jetspeed.portal.context.name}</portalName>
+                  <profile>tomcat${org.apache.jetspeed.catalina.version.major}</profile>
                   <destinations>
                     <context>webapps/${org.apache.jetspeed.portal.context.name}/META-INF</context>
                   </destinations>
@@ -528,6 +529,7 @@
                 <configuration>
                   <targetBaseDir>${org.apache.jetspeed.server.home}</targetBaseDir>
                   <portalName>${org.apache.jetspeed.portal.context.name}</portalName>
+                  <profile>tomcat${org.apache.jetspeed.catalina.version.major}</profile>
                   <destinations>
                     <context>webapps/${org.apache.jetspeed.portal.context.name}/META-INF</context>
                   </destinations>
@@ -713,6 +715,7 @@
                 <configuration>
                   <targetBaseDir>${org.apache.jetspeed.server.home}</targetBaseDir>
                   <portalName>${org.apache.jetspeed.portal.context.name}</portalName>
+                  <profile>tomcat${org.apache.jetspeed.catalina.version.major}</profile>
                   <destinations>
                     <conf>webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/conf</conf>
                   </destinations>

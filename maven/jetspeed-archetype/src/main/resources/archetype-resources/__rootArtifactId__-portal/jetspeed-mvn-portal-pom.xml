@@ -213,6 +213,7 @@
                 <configuration>
                   <targetBaseDir>${dollar}{org.apache.jetspeed.server.home}</targetBaseDir>
                   <portalName>${dollar}{org.apache.jetspeed.portal.context.name}</portalName>
+                  <profile>tomcat${dollar}{org.apache.jetspeed.catalina.version.major}</profile>
                   <destinations>
                     <conf>conf</conf>
                     <context>conf/Catalina/localhost</context>
@@ -517,6 +518,7 @@
                 <configuration>
                   <targetBaseDir>${dollar}{org.apache.jetspeed.server.home}</targetBaseDir>
                   <portalName>${dollar}{org.apache.jetspeed.portal.context.name}</portalName>
+                  <profile>tomcat${dollar}{org.apache.jetspeed.catalina.version.major}</profile>
                   <destinations>
                     <conf>webapps/${dollar}{org.apache.jetspeed.portal.context.name}/WEB-INF/conf</conf>
                   </destinations>
