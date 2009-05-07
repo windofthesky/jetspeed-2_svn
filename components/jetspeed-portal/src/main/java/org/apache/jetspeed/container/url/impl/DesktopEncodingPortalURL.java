@@ -25,10 +25,11 @@ import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
+import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
-import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * DesktopEncodingPortalURL encodes action URLs to target desktop specific /action pipeline,
@@ -148,7 +149,16 @@ public class DesktopEncodingPortalURL extends AbstractPortalURL
 
     protected String createPortletURL(String encodedNavState, boolean secure)
     {
-        return createPortletURL(encodedNavState, secure, null, URLType.RENDER, false);
+        // org.apache.pluto.container.impl.PortletContainerImpl invokes responseContext.getResponseURL(),
+        // which invokes this method without window object.
+        // So, in case of action, we need to find actionWindow to avoid NPE.
+        PortletWindow actionWindow = null;
+        if (PortalURL.URLType.ACTION == navState.getURLType())
+        {
+            actionWindow = navState.getPortletWindowOfAction();
+        }
+        
+        return createPortletURL(encodedNavState, secure, actionWindow, URLType.RENDER, false);
     }
     
     protected String createPortletURL(String encodedNavState, boolean secure, PortletWindow window, URLType urlType, boolean desktopRequestNotAjax)
