@@ -112,6 +112,9 @@
                 </copy>
                 <apply executable="${java.home}/bin/java"
                        dir="${project.build.directory}/${project.build.finalName}/javascript/jetspeed">
+                  <!-- Needs to prepend custom_rhino jar of dojotoolkit in the boot classpath 
+                  because some JVMs such as OpenJDK 1.6 may embed another rhino jar. -->
+                  <arg value="-Xbootclasspath/p:${compressor.jar}"/>
                   <arg value="-jar"/>
                   <arg value="${compressor.jar}"/>
                   <arg value="-strict"/>
