@@ -33,6 +33,7 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
     public static final String JETSPEED_SERVLET_MAPPING_XPATH = "/js:web-app/js:servlet-mapping/js:servlet-name[contains(child::text(), \"JetspeedContainer\")]";
     public static final String JSP_CONFIG_XPATH = "/js:web-app/js:jsp-config";
     public static final String PORTLET_TAGLIB_XPATH = "/js:web-app/js:jsp-config/js:taglib/js:taglib-uri[contains(child::text(), \"http://java.sun.com/portlet\")]";
+    public static final String PORTLET20_TAGLIB_XPATH = "/js:web-app/js:jsp-config/js:taglib/js:taglib-uri[contains(child::text(), \"http://java.sun.com/portlet_2_0\")]";
     
     protected static final String[] ELEMENTS_BEFORE_SERVLET = new String[]{"description", "display-name", "icon", 
             "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet"};
@@ -84,6 +85,16 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
     protected String getPortletTagLibXPath()
     {
         return PORTLET_TAGLIB_XPATH.replace("js:", getNamespacePrefix());
+    }
+
+    /**
+     * Returns the portlet 2.0 taglib xpath.
+     * 
+     * @return portlet 2.0 taglib xpath
+     */
+    protected String getPortlet20TagLibXPath()
+    {
+        return PORTLET20_TAGLIB_XPATH.replace("js:", getNamespacePrefix());
     }
 
     /**
@@ -155,6 +166,33 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
         taguri.setTextContent("http://java.sun.com/portlet");
         Element taglocation = root.getOwnerDocument().createElementNS(namespace, "taglib-location");
         taglocation.setTextContent("/WEB-INF/tld/portlet.tld");
+        
+        taglib.appendChild(taguri);
+        taglib.appendChild(taglocation);
+        
+        insertElementCorrectly(jspConfig, taglib, ELEMENTS_BEFORE_TAGLIB_MAPPING);
+    }
+
+    /**
+     * Inserts the portlet 2.0 taglib into web.xml
+     * 
+     * @param root
+     * @throws Exception
+     */
+    protected void insertPortlet20TagLib(Element root) throws Exception
+    {
+        String namespace = root.getNamespaceURI();
+        Element jspConfig = (Element)getXPath().evaluate(JSP_CONFIG_XPATH, root.getOwnerDocument(), XPathConstants.NODE);
+        if (jspConfig == null)
+        {
+            jspConfig = root.getOwnerDocument().createElementNS(namespace,"jsp-config");
+            insertElementCorrectly(root, jspConfig, ELEMENTS_BEFORE_JSP_CONFIG);
+        }
+        Element taglib = root.getOwnerDocument().createElementNS(namespace, "taglib");
+        Element taguri = root.getOwnerDocument().createElementNS(namespace, "taglib-uri");
+        taguri.setTextContent("http://java.sun.com/portlet_2_0");
+        Element taglocation = root.getOwnerDocument().createElementNS(namespace, "taglib-location");
+        taglocation.setTextContent("/WEB-INF/tld/portlet_2_0.tld");
         
         taglib.appendChild(taguri);
         taglib.appendChild(taglocation);

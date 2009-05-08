@@ -123,7 +123,7 @@ public class DeployMojo extends AbstractMojo
     private Boolean infusionStripLoggers;
     
     /**
-     * @parameter expression="2.3"
+     * @parameter
      */
     private String infusionForcedVersion;
     

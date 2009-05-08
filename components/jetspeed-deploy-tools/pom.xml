@@ -65,7 +65,7 @@
                 <resources>
                   <resource>
                     <path>tld</path>
-                    <include>portlet.tld</include>
+                    <include>portlet*.tld</include>
                   </resource>
                 </resources>
               </unpack>

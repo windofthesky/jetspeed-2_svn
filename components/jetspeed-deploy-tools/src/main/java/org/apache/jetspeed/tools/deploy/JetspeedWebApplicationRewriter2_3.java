@@ -33,6 +33,7 @@ class JetspeedWebApplicationRewriter2_3 extends JetspeedWebApplicationRewriter
     public static final String JETSPEED_SERVLET_XPATH = "/js:web-app/js:servlet/js:servlet-name[contains(child::text(), \"JetspeedContainer\")]";
     public static final String JETSPEED_SERVLET_MAPPING_XPATH = "/js:web-app/js:servlet-mapping/js:servlet-name[contains(child::text(), \"JetspeedContainer\")]";
     public static final String PORTLET_TAGLIB_XPATH = "/js:web-app/js:taglib/js:taglib-uri[contains(child::text(), \"http://java.sun.com/portlet\")]";
+    public static final String PORTLET20_TAGLIB_XPATH = "/js:web-app/js:taglib/js:taglib-uri[contains(child::text(), \"http://java.sun.com/portlet_2_0\")]";
     
     protected static final String[] ELEMENTS_BEFORE_SERVLET = new String[]{"icon", "display-name", "description",
             "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet"};
@@ -86,6 +87,16 @@ class JetspeedWebApplicationRewriter2_3 extends JetspeedWebApplicationRewriter
     }
 
     /**
+     * Returns the portlet 2.0 taglib xpath.
+     * 
+     * @return portlet 2.0 taglib xpath
+     */
+    protected String getPortlet20TagLibXPath()
+    {
+        return PORTLET20_TAGLIB_XPATH.replace("js:", getNamespacePrefix());
+    }
+
+    /**
      * Inserts the jetspeed servlet into web.xml
      * 
      * @param root
@@ -103,9 +114,9 @@ class JetspeedWebApplicationRewriter2_3 extends JetspeedWebApplicationRewriter
         servletDesc.setTextContent(JETSPEED_SERVLET_DESCRIPTION);
         Element servletClass = root.getOwnerDocument().createElementNS(namespace, "servlet-class");
         servletClass.setTextContent(JETSPEED_SERVLET_CLASS);
-        jetspeedServletElement.appendChild(servletDesc);
-        jetspeedServletElement.appendChild(servletDspName);
         jetspeedServletElement.appendChild(servletName);
+        jetspeedServletElement.appendChild(servletDspName);
+        jetspeedServletElement.appendChild(servletDesc);
         jetspeedServletElement.appendChild(servletClass);
         insertContextNameParam(jetspeedServletElement);
         insertLoadOnStartup(jetspeedServletElement);
@@ -148,6 +159,27 @@ class JetspeedWebApplicationRewriter2_3 extends JetspeedWebApplicationRewriter
         taguri.setTextContent("http://java.sun.com/portlet");
         Element taglocation = root.getOwnerDocument().createElementNS(namespace, "taglib-location");
         taglocation.setTextContent("/WEB-INF/tld/portlet.tld");
+        
+        taglib.appendChild(taguri);
+        taglib.appendChild(taglocation);
+        
+        insertElementCorrectly(root, taglib, ELEMENTS_BEFORE_TAGLIB_MAPPING);
+    }
+
+    /**
+     * Inserts the portlet 2.0 taglib into web.xml
+     * 
+     * @param root
+     * @throws Exception
+     */
+    protected void insertPortlet20TagLib(Element root) throws Exception
+    {
+        String namespace = root.getNamespaceURI();
+        Element taglib = root.getOwnerDocument().createElementNS(namespace, "taglib");
+        Element taguri = root.getOwnerDocument().createElementNS(namespace, "taglib-uri");
+        taguri.setTextContent("http://java.sun.com/portlet_2_0");
+        Element taglocation = root.getOwnerDocument().createElementNS(namespace, "taglib-location");
+        taglocation.setTextContent("/WEB-INF/tld/portlet_2_0.tld");
         
         taglib.appendChild(taguri);
         taglib.appendChild(taglocation);

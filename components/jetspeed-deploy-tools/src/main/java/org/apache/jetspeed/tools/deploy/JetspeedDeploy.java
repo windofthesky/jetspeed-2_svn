@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.File;
 import java.nio.channels.FileChannel;
 import java.util.Enumeration;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
@@ -119,12 +120,13 @@ public class JetspeedDeploy implements Deploy
             Document portletXml = null;
             Document contextXml = null;
             boolean taglibFound = false;
+            boolean taglib2Found = false;
             ZipEntry src;
             InputStream source;
-            Enumeration zipEntries = jin.entries();
+            Enumeration<JarEntry> zipEntries = jin.entries();
             while (zipEntries.hasMoreElements())
             {
-                src = (ZipEntry) zipEntries.nextElement();
+                src = zipEntries.nextElement();
                 source = jin.getInputStream(src);
                 try
                 {
@@ -156,6 +158,11 @@ public class JetspeedDeploy implements Deploy
                         {
                             System.out.println("Warning: WEB-INF/tld/portlet.tld already provided, won't be replaced.");
                             taglibFound = true;
+                        }
+                        else if ("WEB-INF/tld/portlet_2_0.tld".equals(target))
+                        {
+                            System.out.println("Warning: WEB-INF/tld/portlet_2_0.tld already provided, won't be replaced.");
+                            taglib2Found = true;
                         }
                         addFile(target, source, jout, src.getTime());
                     }
@@ -204,6 +211,28 @@ public class JetspeedDeploy implements Deploy
                     try
                     {
                         addFile("WEB-INF/tld/portlet.tld", is, jout, 0);
+                    }
+                    finally
+                    {
+                        is.close();
+                    }
+                }
+            }
+            if (!taglib2Found)
+            {
+                System.out.println("Attempting to add portlet_2_0.tld to war...");
+                InputStream is = this.getClass().getResourceAsStream("/org/apache/jetspeed/tools/deploy/portlet_2_0.tld");
+                if (is == null)
+                {
+                    System.out.println("Failed to find portlet_2_0.tld in classpath");
+                }
+                else
+                {
+                    System.out.println("Adding portlet_2_0.tld to war...");
+
+                    try
+                    {
+                        addFile("WEB-INF/tld/portlet_2_0.tld", is, jout, 0);
                     }
                     finally
                     {

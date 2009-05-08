@@ -102,6 +102,7 @@ public abstract class JetspeedWebApplicationRewriter
     private String portletApplication;
     private boolean changed = false;
     private boolean portletTaglibAdded = false;
+    private boolean portlet20TaglibAdded = false;
     private XPath xpath;
 
     
@@ -153,6 +154,7 @@ public abstract class JetspeedWebApplicationRewriter
             Object jetspeedServlet =xpath.evaluate(getJetspeedServletXPath(), document, XPathConstants.NODE);
             Object jetspeedServletMapping = xpath.evaluate(getJetspeedServletMappingXPath(), document, XPathConstants.NODE);
             Object portletTaglib = xpath.evaluate(getPortletTagLibXPath(), document, XPathConstants.NODE);
+            Object portlet20Taglib = xpath.evaluate(getPortlet20TagLibXPath(), document, XPathConstants.NODE);
             
             if (!document.hasChildNodes())
             {
@@ -173,11 +175,11 @@ public abstract class JetspeedWebApplicationRewriter
                     Element jetspeedServletElement = (Element)((Element)jetspeedServlet).getParentNode();
                     if (null == xpath.evaluate(prefix+"init-param/"+prefix+"param-name[contains(child::text(), \"contextName\")]",jetspeedServletElement, XPathConstants.NODE))
                     {
-                      insertContextNameParam((Element)jetspeedServletElement);
+                      insertContextNameParam(jetspeedServletElement);
                     }
                     if (null == xpath.evaluate(prefix+"load-on-startup", jetspeedServletElement, XPathConstants.NODE))
                     {
-                        insertLoadOnStartup((Element) jetspeedServletElement);
+                        insertLoadOnStartup(jetspeedServletElement);
                     }
                 }
             }
@@ -194,6 +196,13 @@ public abstract class JetspeedWebApplicationRewriter
                 changed = true;
                 portletTaglibAdded = true;
             }
+            if(portlet20Taglib == null)
+            {
+                insertPortlet20TagLib(root);
+                changed = true;
+                portlet20TaglibAdded = true;
+            }
+            
         }
         catch (Exception e)
         {
@@ -290,6 +299,14 @@ public abstract class JetspeedWebApplicationRewriter
         return portletTaglibAdded;
     }
     
+    /**
+     * @return Returns the portletTaglibAdded.
+     */
+    public boolean isPortlet20TaglibAdded()
+    {
+        return portlet20TaglibAdded;
+    }
+    
     protected XPath getXPath()
     {
         return xpath;
@@ -320,6 +337,14 @@ public abstract class JetspeedWebApplicationRewriter
     protected abstract String getPortletTagLibXPath();
     
     /**
+     * Returns the portlet 2.0 taglib xpath.
+     * The returned path must contain the namespace prefix.
+     * 
+     * @return portlet 2.0 taglib xpath
+     */
+    protected abstract String getPortlet20TagLibXPath();
+    
+    /**
      * Inserts the jetspeed servlet into web.xml
      * 
      * @param root
@@ -342,4 +367,12 @@ public abstract class JetspeedWebApplicationRewriter
      * @throws Exception
      */
     protected abstract void insertPortletTagLib(Element root) throws Exception;
+
+    /**
+     * Inserts the portlet 2.0 taglib into web.xml
+     * 
+     * @param root
+     * @throws Exception
+     */
+    protected abstract void insertPortlet20TagLib(Element root) throws Exception;
 }
