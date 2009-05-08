@@ -27,11 +27,11 @@ limitations under the License.
   <document-order>user-mgt.psml</document-order>
   <document-order>role-mgt.psml</document-order>
   <document-order>group-mgt.psml</document-order>
-  <document-order>security-permissions.psml</document-order>
   <document-order>pam.psml</document-order>
-  <document-order>sso-admin.psml</document-order>
   <document-order>site.psml</document-order>
-  <document-order>palm.psml</document-order>
+  <document-order>sso-admin.psml</document-order>
+  <document-order>security-permissions.psml</document-order>
+  <document-order>security-constraints.psml</document-order>
   <document-order>profiler.psml</document-order>
   <document-order>rpad.psml</document-order>
   <document-order>serializer.psml</document-order>

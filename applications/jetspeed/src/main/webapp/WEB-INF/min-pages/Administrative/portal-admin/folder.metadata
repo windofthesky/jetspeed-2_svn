@@ -24,15 +24,13 @@ limitations under the License.
   <metadata name="title" xml:lang="zh">Jetspeed 管理Portlets</metadata>
   <metadata name="title" xml:lang="ko">Jetspeed 관리 포틀릿들</metadata>
 
-  <document-order>rpad.psml</document-order>
   <document-order>pam.psml</document-order>
   <document-order>site.psml</document-order>
-  <document-order>palm.psml</document-order>
   <document-order>profiler.psml</document-order>
-  <document-order>entities.psml</document-order>
   <document-order>statistics.psml</document-order>  
-  <document-order>tracking.psml</document-order>
+  <document-order>rpad.psml</document-order>
   <document-order>serializer.psml</document-order>
+  <document-order>tracking.psml</document-order>
 
   <security-constraints>
     <security-constraints-ref>admin</security-constraints-ref>
