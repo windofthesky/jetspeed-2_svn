@@ -116,7 +116,7 @@
 	<classpathentry kind="var" path="MAVEN_REPO/commons-beanutils/jars/commons-beanutils-1.7.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-betwixt/jars/commons-betwixt-20061115.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/ant/jars/ant-1.6.5.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/ehcache/jars/ehcache-1.2.4.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/ehcache/jars/ehcache-1.5.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/portlet-api/jars/portlet-api-1.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jmock/jars/jmock-cglib-1.1.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/asm/jars/asm-2.2.jar"/>

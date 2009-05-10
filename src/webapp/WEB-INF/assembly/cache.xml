@@ -29,6 +29,12 @@
         <property name="configLocation" ref="cacheManagerConfig"/>
 	</bean>
 
+    <bean id="org.apache.jetspeed.cache.CacheMonitor" class="org.apache.jetspeed.cache.impl.JetspeedCacheMonitorImpl">
+        <constructor-arg index="0">
+            <ref bean="cacheManager" />
+        </constructor-arg>
+    </bean>
+
 	<!-- Factory bean used to instantiate a EHCache with the specified name (and corresponding
 		configuration in cacheManager.xml -->
 	<bean id="ehPortletContentCache"

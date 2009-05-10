@@ -22,6 +22,13 @@ limitations under the License.
   <title>Portal Statistics</title>
 
   <fragment id="stats-2" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="stats-3" type="portlet" name="j2-admin::StatisticsPortlet" />
+    <fragment id="stats-3" type="portlet" name="j2-admin::StatisticsPortlet" >
+            <property name="row" value="1"/>
+            <property name="column" value="0"/>
+	</fragment>        
+	<fragment id="stats-4" type="portlet" name="j2-admin::CacheMonitor">
+            <property name="row" value="0"/>
+            <property name="column" value="0"/>
+    </fragment>        
   </fragment>
 </page>

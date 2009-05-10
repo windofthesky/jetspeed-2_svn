@@ -1941,7 +1941,29 @@ limitations under the License.
                 <value>/_content/menu.html</value>
             </preference>
         </portlet-preferences>
-   </portlet>  
+   </portlet>
+   
+	<portlet id="CacheMonitor">
+		<description>Monitor the Jetspeed Caches.</description>
+		<portlet-name>CacheMonitor</portlet-name>
+		<display-name>Cache Monitor</display-name>
+		<portlet-class>org.apache.jetspeed.portlets.cache.CacheMonitorPortlet</portlet-class>
+		<init-param>
+			<name>ViewPage</name>
+			<value>/WEB-INF/view/cache/cacheMonitor.jsp</value>
+		</init-param>
+		<supports>
+			<mime-type>text/html</mime-type>
+			<portlet-mode>VIEW</portlet-mode>
+		</supports>
+		<supported-locale>en</supported-locale>
+		<resource-bundle>org.apache.jetspeed.portlets.cache.resources.CacheMonitorResources</resource-bundle>
+		<portlet-info>
+			<title>Cache Monitor</title>
+			<short-title>Cache</short-title>
+			<keywords>cache,monitor,memory,admin</keywords>
+		</portlet-info>
+	</portlet>
 
    <custom-portlet-mode>
         <description>a Custom Edit_defaults Mode</description>            
