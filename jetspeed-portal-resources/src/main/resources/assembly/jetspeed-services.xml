@@ -132,6 +132,9 @@
         <entry key="AuthenticationProvider">
         	<ref bean="org.apache.jetspeed.security.AuthenticationProvider" />
         </entry>
+        <entry key="CacheMonitor">
+        	<ref bean="org.apache.jetspeed.cache.CacheMonitor" />
+        </entry>
         <!--<entry key="SecurityAttributesProvider">
           <ref bean="org.apache.jetspeed.security.attributes.SecurityAttributesProvider" />
           </entry>-->

@@ -29,6 +29,13 @@
         <meta key="j2:cat" value="default or cache"/>
         <property name="configLocation" ref="cacheManagerConfig"/>
     </bean>
+
+    <bean id="org.apache.jetspeed.cache.CacheMonitor" class="org.apache.jetspeed.cache.impl.JetspeedCacheMonitorImpl">
+        <meta key="j2:cat" value="default or cache"/>
+        <constructor-arg index="0">
+            <ref bean="cacheManager" />
+        </constructor-arg>
+    </bean>
     
     <!-- Page File Cache -->
     <bean id="PageFileCache" class="org.apache.jetspeed.cache.file.FileCache" init-method="startFileScanner"
