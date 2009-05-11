@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.decoration.caches;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,11 +32,11 @@ import org.apache.jetspeed.decoration.PathResolverCache;
  */
 public class HashMapPathResolverCache implements PathResolverCache
 {
-    protected Map cache;
+    protected Map<String,String> cache;
     
     public HashMapPathResolverCache()
     {
-        this.cache = new HashMap();
+        this.cache = Collections.synchronizedMap(new HashMap<String,String>());
     }
 
     public void addPath(String key, String path)
@@ -45,12 +46,12 @@ public class HashMapPathResolverCache implements PathResolverCache
 
     public String getPath(String key)
     {
-        return (String) cache.get(key);
+        return cache.get(key);
     }
 
     public String removePath(String key)
     {
-        return (String) cache.remove(key);
+        return cache.remove(key);
     }
 
     public void clear()
