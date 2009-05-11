@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.decoration.caches;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class HashMapPathResolverCache implements PathResolverCache
     
     public HashMapPathResolverCache()
     {
-        this.cache = new HashMap();
+        this.cache = Collections.synchronizedMap(new HashMap());
     }
 
     public void addPath(String key, String path)
