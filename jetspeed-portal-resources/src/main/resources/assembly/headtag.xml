@@ -71,7 +71,7 @@
         <entry key="decoration.portlet">
           <!-- default portlet decoration for desktop
             this is used when a selected portlet decoration does not support desktop -->
-          <value>tigris</value>
+          <value>jetspeed</value>
         </entry>
 
         <!-- page navigation -->
