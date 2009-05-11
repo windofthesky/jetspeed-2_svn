@@ -355,6 +355,10 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
             if (!"guest".equals(userName))
             {
+                if (ipAddress == null)
+                {
+                    ipAddress = "";
+                }
                 synchronized (currentUsers)
                 {
                 	UserStats userStats = null;
@@ -426,7 +430,11 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             if (!"guest".equals(userName))
             {
                 currentUserCount = currentUserCount + 1;
-
+                
+                if (ipAddress == null)
+                {
+                    ipAddress = "";
+                }
                 synchronized (currentUsers)
                 {
                 	
