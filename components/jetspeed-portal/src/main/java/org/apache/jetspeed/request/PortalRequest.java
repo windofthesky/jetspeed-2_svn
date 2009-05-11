@@ -46,7 +46,7 @@ import org.apache.jetspeed.container.invoker.ContainerRequiredRequestResponseWra
  * @author <a href="mailto:ate@douma.nu">Ate Douma</a>
  * @version $Id$
  */
-public class PortalRequest extends HttpServletRequestWrapper implements ContainerRequiredRequestResponseWrapper
+public class PortalRequest extends HttpServletRequestWrapper
 {
     private final String      contextPath;
     private final String      servletPath;
