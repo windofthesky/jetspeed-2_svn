@@ -83,19 +83,6 @@
        </filterset>
     </move>
 
-  	<echo>Configuring log directories</echo>
-    <delete dir="${installDir}/webapps/jetspeed/WEB-INF/logs" />
-    <move file="${installDir}/webapps/jetspeed/WEB-INF/conf/Log4j.properties" 
-        tofile="${installDir}/webapps/jetspeed/WEB-INF/conf/Log4j.properties.unfiltered"/>
-    <move file="${installDir}/webapps/jetspeed/WEB-INF/conf/Log4j.properties.unfiltered" 
-        tofile="${installDir}/webapps/jetspeed/WEB-INF/conf/Log4j.properties"
-       	overwrite="true">
-		 <!-- note that the $ is escaped here -->
-       <filterset begintoken="$${applicationRoot}" endtoken="logs/">
-         <filter token="/" value="$${applicationRoot}/../../logs/jetspeed/" />
-       </filterset>
-    </move>
-
     <echo>Setting up the Jetspeed database (if selected)</echo>
     <ant antfile="${installDir}/database/build.xml" target="${setupDBAntTarget}" dir="${installDir}/database" />
 
