@@ -86,8 +86,8 @@
               <bundleDir>/lib</bundleDir>
             </jarModule>
             <jarModule>                      
-              <groupId>javax.portlet</groupId>
-              <artifactId>portlet-api</artifactId>
+              <groupId>org.apache.portals</groupId>
+              <artifactId>portlet-api_2.0_spec</artifactId>
               <bundleDir>/lib</bundleDir>
             </jarModule>
             <jarModule>                      

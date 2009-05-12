@@ -318,7 +318,7 @@
     <org.apache.portals.applications.apa-demo.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-demo.version>
     <org.apache.portals.applications.apa-webcontent.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-webcontent.version>
     <oro.version>2.0.8</oro.version>
-    <portlet-api.version>2.0</portlet-api.version>
+    <portals.portlet2-api-spec.version>1.0-SNAPSHOT</portals.portlet2-api-spec.version>
     <regexp.version>1.2</regexp.version>
     <rome.version>0.8</rome.version>
     <saxpath.version>1.0-FCS</saxpath.version>
@@ -566,9 +566,9 @@
 
       <!-- Standard APIs -->
       <dependency>
-        <groupId>javax.portlet</groupId>
-        <artifactId>portlet-api</artifactId>
-        <version>${portlet-api.version}</version>
+        <groupId>org.apache.portals</groupId>
+        <artifactId>portlet-api_2.0_spec</artifactId>
+        <version>${portals.portlet2-api-spec.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -1329,8 +1329,8 @@
 
     <!-- Provided Dependencies -->
     <dependency>
-      <groupId>javax.portlet</groupId>
-      <artifactId>portlet-api</artifactId>
+      <groupId>org.apache.portals</groupId>
+      <artifactId>portlet-api_2.0_spec</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
