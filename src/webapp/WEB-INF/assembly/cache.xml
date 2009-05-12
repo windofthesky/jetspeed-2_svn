@@ -110,7 +110,7 @@
 	<bean id="decorationConfigurationCache"
 		class="org.apache.jetspeed.cache.impl.EhCacheImpl">
 		<constructor-arg>
-			<ref bean="ehDesktopContentCache" />
+			<ref bean="ehDecorationConfigurationCache" />
 		</constructor-arg>
 	</bean>
 
