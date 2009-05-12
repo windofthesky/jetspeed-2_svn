@@ -270,6 +270,13 @@
         <value>dojo.widget.TabContainer</value>
         <value>dojo.widget.AccordionContainer</value>
         <value>dojo.widget.Menu2</value>
+        
+        <value>dojo.widget.LayoutContainer</value>
+        <value>dojo.widget.ContentPane</value>
+        <value>dojo.widget.SplitContainer</value>
+        <value>dojo.widget.Checkbox</value>
+        <value>dojo.widget.Dialog</value>
+        <value>dojo.widget.Button</value>
       </list>
     </constructor-arg>
   </bean>
@@ -284,6 +291,8 @@
         <value>jetspeed.widget.PortalAccordionContainer</value>
         <value>jetspeed.widget.PortalBreadcrumbContainer</value>
         <value>jetspeed.widget.PortalTooltipManager</value>
+        
+        <value>jetspeed.widget.EditorTable</value>
       </list>
     </constructor-arg>
   </bean>
