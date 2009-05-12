@@ -127,7 +127,7 @@
     <bean id="decorationConfigurationCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
         <meta key="j2:cat" value="default or cache" />
         <constructor-arg>
-            <ref bean="ehDesktopContentCache" />
+            <ref bean="ehDecorationConfigurationCache" />
         </constructor-arg>
     </bean>
     
