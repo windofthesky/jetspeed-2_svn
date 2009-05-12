@@ -22,7 +22,14 @@ limitations under the License.
   <title>Map Demo</title>
 
   <fragment id="public.map.21" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="public.map.22" type="portlet" name="demo::GoogleMapsPortlet"/>
+     <fragment id="public.map.23" type="portlet" name="demo::AddressEventPortlet">
+            <property name="row" value="0"></property>
+            <property name="column" value="0"></property>
+     </fragment>        
+     <fragment id="public.map.22" type="portlet" name="demo::GoogleMapsPortlet">
+            <property name="row" value="1"></property>
+            <property name="column" value="1"></property>
+     </fragment>
   </fragment>
 
 </page>
