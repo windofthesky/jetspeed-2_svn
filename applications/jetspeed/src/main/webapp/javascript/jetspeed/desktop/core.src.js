@@ -600,7 +600,7 @@ jetspeed.contributeHeadElements = function( headElements )
                         var found = false;
                         for (var j = 0; j < headTagElemsByMergeHintArray.length; j++)
                         {
-                            var existingLine = headTagElemsByMergeHintArray.textContent;
+                            var existingLine = headTagElemsByMergeHintArray[j].textContent;
                             if (existingLine && existingLine.indexOf(lines[i]) >= 0)
                             {
                                 found = true;
@@ -4141,7 +4141,11 @@ jetspeed.om.PortletCL.prototype =
             offset += "</JS_PORTLET_HEAD_ELEMENTS>".length;
             headElementsContent = portletContent.substring( 0, offset );
             portletContent = portletContent.substring( offset );
-            jetspeed.contributeHeadElements( dojo.dom.createDocumentFromText( headElementsContent ).documentElement );
+            var reEmpty = /^<JS_PORTLET_HEAD_ELEMENTS>\s*<\/JS_PORTLET_HEAD_ELEMENTS>$/;
+            if (!reEmpty.test(headElementsContent))
+            {
+                jetspeed.contributeHeadElements( dojo.dom.createDocumentFromText( headElementsContent ).documentElement );
+            }
         }
         var portletTitle = null;
         if ( http != null )
