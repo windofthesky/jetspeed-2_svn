@@ -262,7 +262,7 @@
               <dependency>
                 <groupId>org.apache.portals.applications</groupId>
                 <artifactId>apa-logging</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${org.apache.portals.applications.apa-logging.version}</version>
               </dependency>
 
               <!-- plugin own dependencies -->
@@ -466,19 +466,19 @@
               <dependency>
                 <groupId>org.apache.portals.applications</groupId>
                 <artifactId>apa-rss-war</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${org.apache.portals.applications.apa-rss.version}</version>
                 <type>war</type>
               </dependency>
               <dependency>
                 <groupId>org.apache.portals.applications</groupId>
                 <artifactId>apa-demo</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${org.apache.portals.applications.apa-demo.version}</version>
                 <type>war</type>
               </dependency>
               <dependency>
                 <groupId>org.apache.portals.applications</groupId>
                 <artifactId>apa-webcontent-war</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${org.apache.portals.applications.apa-webcontent.version}</version>
                 <type>war</type>
               </dependency>
 
@@ -486,7 +486,7 @@
               <dependency>
                 <groupId>org.apache.portals.applications</groupId>
                 <artifactId>apa-logging</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${org.apache.portals.applications.apa-logging.version}</version>
               </dependency>
               
               <!-- plugin own dependencies -->
