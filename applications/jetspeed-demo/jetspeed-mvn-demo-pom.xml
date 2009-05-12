@@ -347,7 +347,20 @@
                       <artifact>org.apache.portals.jetspeed-2:j2-admin:war</artifact>
                       <delete>./j2-admin</delete>
                     </deployment>
+                    <!-- logging -->
+                    <deployment>
+                      <artifact>org.apache.portals.applications:apa-logging:jar</artifact>
+                      <destination>server-lib</destination>
+                    </deployment>
                   </deployments>
+                  <edits>
+                    <!-- logging -->
+                    <edit>
+                      <targetName>server.xml</targetName>
+                      <destination>server-conf</destination>
+                      <editorClassName>org.apache.portals.applications.logging.tomcat.ServerXMLConfigurer</editorClassName>
+                    </edit>
+                  </edits>
                 </configuration>
               </execution>
             </executions>
@@ -408,6 +421,12 @@
                 <artifactId>j2-admin</artifactId>
                 <version>${org.apache.portals.jetspeed.version}</version>
                 <type>war</type>
+              </dependency>
+              <!-- logging -->
+              <dependency>
+                <groupId>org.apache.portals.applications</groupId>
+                <artifactId>apa-logging</artifactId>
+                <version>1.0-SNAPSHOT</version>
               </dependency>
 
               <!-- plugin own dependencies -->
@@ -596,7 +615,20 @@
                       <infuse>true</infuse>
                       <delete>./webcontent</delete>
                     </deployment>
+                    <!-- logging -->
+                    <deployment>
+                      <artifact>org.apache.portals.applications:apa-logging:jar</artifact>
+                      <destination>server-lib</destination>
+                    </deployment>
                   </deployments>
+                  <edits>
+                    <!-- logging -->
+                    <edit>
+                      <targetName>server.xml</targetName>
+                      <destination>server-conf</destination>
+                      <editorClassName>org.apache.portals.applications.logging.tomcat.ServerXMLConfigurer</editorClassName>
+                    </edit>
+                  </edits>
                 </configuration>
               </execution>
             </executions>
@@ -676,6 +708,12 @@
                 <artifactId>apa-webcontent-war</artifactId>
                 <version>1.0-SNAPSHOT</version>
                 <type>war</type>
+              </dependency>
+              <!-- logging -->
+              <dependency>
+                <groupId>org.apache.portals.applications</groupId>
+                <artifactId>apa-logging</artifactId>
+                <version>1.0-SNAPSHOT</version>
               </dependency>
 
               <!-- plugin own dependencies -->

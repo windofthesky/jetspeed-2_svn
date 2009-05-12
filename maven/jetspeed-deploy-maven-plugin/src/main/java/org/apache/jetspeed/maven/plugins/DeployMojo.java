@@ -24,6 +24,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -104,6 +108,13 @@ public class DeployMojo extends AbstractMojo
         private String contextName;
     }
     
+    public static class Edit
+    {
+        private String destination;
+        private String targetName;
+        private String editorClassName;
+    }
+    
     /**
      * The target base directory.
      * @parameter
@@ -152,6 +163,11 @@ public class DeployMojo extends AbstractMojo
      * @parameter
      */
     private String profile;
+
+    /**
+     * @parameter
+     */
+    private Edit[] edits;
 
     private Artifacts artifacts;
     
@@ -486,6 +502,90 @@ public class DeployMojo extends AbstractMojo
                 }
             }
         }
+
+        if (edits != null)
+        {
+            for (int i = 0; i < edits.length; i++)
+            {
+                Edit edit = edits[i];
+                
+                // validate edit
+                if (edit.destination == null)
+                {
+                    throw new MojoExecutionException("Required edit destination not specified");
+                }
+                if (edit.targetName == null)
+                {
+                    throw new MojoExecutionException("Required edit targetName not specified");
+                }
+                if (edit.editorClassName == null)
+                {
+                    throw new MojoExecutionException("Required edit editorClassName not specified");
+                }
+                
+                // instantiate editor class and find method that takes a single
+                // file attribute to edit
+                Class<?> editorClass = null;
+                try
+                {
+                    editorClass = Class.forName(edit.editorClassName);
+                }
+                catch (ClassNotFoundException cnfe)
+                {
+                    throw new MojoExecutionException("Cannot load editor class: "+cnfe, cnfe);
+                }
+                try
+                {
+                    editorClass.getConstructor(new Class<?>[0]);
+                }
+                catch (NoSuchMethodException nsme)
+                {
+                    throw new MojoExecutionException("Cannot find default constructor for "+editorClass);                    
+                }
+                Method editorMethod = null;
+                Method [] editorMethods = editorClass.getDeclaredMethods();
+                for (int j = 0; ((editorMethod == null) && (j < editorMethods.length)); j++)
+                {
+                    Method method = editorMethods[j];
+                    Type [] parameterTypes = method.getGenericParameterTypes();
+                    Type returnType = method.getGenericReturnType();
+                    int modifiers = method.getModifiers();
+                    if ((parameterTypes.length == 1) && (parameterTypes[0] == File.class) && (returnType == Void.TYPE) && Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers))
+                    {
+                        editorMethod = method;
+                    }
+                }
+                if (editorMethod == null)
+                {
+                    throw new MojoExecutionException("Cannot find editor method in "+editorClass+" with signature: public void method(java.io.File file)");
+                }
+                
+                // validate file destination and targetName
+                File targetDir = new File(targetBaseDir, (String)destMap.get(edit.destination));
+                File editTargetFile = new File(targetDir, edit.targetName);
+                if (!editTargetFile.isFile() || !editTargetFile.canRead() || !editTargetFile.canWrite())
+                {
+                    throw new MojoExecutionException("Cannot find, read, or write target file to edit: "+editTargetFile);                    
+                }
+                
+                // instantiate editor and invoke editor to edit target file
+                try
+                {
+                    Object editorInstance = editorClass.newInstance();
+                    editorMethod.invoke(editorInstance, editTargetFile);
+
+                    getLog().info("  editing in "+edit.destination+": "+edit.targetName+" using "+editorClass.getSimpleName()+"."+editorMethod.getName()+"()");
+                }
+                catch (InvocationTargetException ite)
+                {
+                    throw new MojoExecutionException("Exception thrown by editor method: "+editorClass.getName()+"."+editorMethod.getName()+"("+editTargetFile+"): "+ite.getTargetException(), ite.getTargetException());
+                }
+                catch (Exception e)
+                {
+                    throw new MojoExecutionException("Failed to instantiate or invoke editor method: "+editorClass.getName()+"."+editorMethod.getName()+"("+editTargetFile+"): "+e, e);
+                }
+            }
+        }
     }
 
 	private static String getValue(String value, String defaultValue)
@@ -707,6 +807,14 @@ public class DeployMojo extends AbstractMojo
 	        {
 	            destMap.put("local", ((String)destMap.get("deploy"))+"/local");
 	        }
+            if (!destMap.containsKey("server-conf"))
+            {
+                destMap.put("server-conf", "conf");
+            }
+            if (!destMap.containsKey("server-lib"))
+            {
+                destMap.put("server-lib","server/lib");
+            }
     	}
     	else if (profile.equals(PROFILE_TOMCAT6))
         {
@@ -729,6 +837,14 @@ public class DeployMojo extends AbstractMojo
             if (!destMap.containsKey("local"))
             {
                 destMap.put("local", ((String)destMap.get("deploy"))+"/local");
+            }
+            if (!destMap.containsKey("server-conf"))
+            {
+                destMap.put("server-conf", "conf");
+            }
+            if (!destMap.containsKey("server-lib"))
+            {
+                destMap.put("server-lib", "lib");
             }
     	}
     }
