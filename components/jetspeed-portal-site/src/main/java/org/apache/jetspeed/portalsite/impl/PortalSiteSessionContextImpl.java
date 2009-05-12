@@ -1248,6 +1248,9 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             }
         }
 
+        // clear session context state
+        clearSessionProfileLocators();
+
         // log binding event
         if (log.isDebugEnabled())
         {
