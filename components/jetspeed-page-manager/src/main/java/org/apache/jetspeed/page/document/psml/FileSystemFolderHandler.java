@@ -715,31 +715,35 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
      */
     public void refresh( FileCacheEntry entry ) throws Exception
     {
-        if (entry.getDocument() instanceof Folder )
+        if (entry.getDocument() instanceof Folder)
         {
             Folder folder = (Folder) entry.getDocument();            
             entry.setDocument(getFolder(folder.getPath(), false));
-            if (((AbstractNode)folder).getParent(false) != null)
+            Node parentNode = ((AbstractNode)folder).getParent(false);
+            if (parentNode != null)
             {
-                FileCacheEntry parentEntry = fileCache.get(((AbstractNode)folder).getParent(false).getPath());
+                FileCacheEntry parentEntry = fileCache.get(parentNode.getPath());
                 refresh(parentEntry);                
             }
         }
-        else if(entry.getDocument() instanceof Document)
+        else if (entry.getDocument() instanceof Document)
         {
             Document doc = (Document) entry.getDocument();
             if (doc.getType().equals(FolderMetaDataImpl.DOCUMENT_TYPE))
             {
-                FileCacheEntry folderEntry = fileCache.get(((AbstractNode)doc).getParent().getPath());
-                refresh(folderEntry);
+                Node folderNode = ((AbstractNode)doc).getParent(false);
+                if (folderNode != null)
+                {                
+                    FileCacheEntry folderEntry = fileCache.get(folderNode.getPath());
+                    refresh(folderEntry);
+                }
             }
         }
         
-        if(entry.getDocument() instanceof Reset)
+        if (entry.getDocument() instanceof Reset)
         {
             ((Reset)entry.getDocument()).reset();
         }
-
     }
 
     /**

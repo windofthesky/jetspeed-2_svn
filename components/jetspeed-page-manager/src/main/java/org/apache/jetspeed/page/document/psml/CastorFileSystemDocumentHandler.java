@@ -707,20 +707,16 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         if (entry.getDocument() instanceof Document && ((Document) entry.getDocument()).getPath().endsWith(documentType))
         {
             Document document = (Document) entry.getDocument();
-            Document freshDoc = getDocument(document.getPath(), false);
             Node parent = ((AbstractNode)document).getParent(false);
- 
-            freshDoc.setParent(parent);
-            if(parent instanceof FolderImpl)
+            if (parent instanceof FolderImpl)
             {
-                FolderImpl folder = (FolderImpl) parent;
-                folder.getAllNodes().add(freshDoc);
+                Document freshDoc = getDocument(document.getPath(), false);
+                freshDoc.setParent(parent);
+                ((FolderImpl)parent).getAllNodes().add(freshDoc);
+                freshDoc.setPath(document.getPath());
+                entry.setDocument(freshDoc);
             }
-            
-            freshDoc.setPath(document.getPath());
-            entry.setDocument(freshDoc);            
         }
-
     }
 
     /**
