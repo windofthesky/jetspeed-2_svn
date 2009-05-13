@@ -112,14 +112,15 @@
             <phase>package</phase>
             <configuration>
               <tasks>
+                <echo>Building with Ant version: ${ant.version}</echo>
                 <!-- unpackage EAR -->
                 <delete dir="${project.build.directory}/package-skinny-wars"/>
                 <unjar src="${project.build.directory}/${project.build.finalName}.ear" dest="${project.build.directory}/package-skinny-wars"/>
                 
                 <!-- 
-                  JS2-973: Websphere 6.1/IBM JDK5 workaround voor "java.lang.TypeNotPresentException: Type javax.xml.bind.annotation.XmlRootElement not present" bug.
+                  JS2-973: Websphere 6.1/IBM JDK5 workaround for "java.lang.TypeNotPresentException: Type javax.xml.bind.annotation.XmlRootElement not present" bug.
                   This is a recognized issue, see for instance: https://issues.apache.org/jira/browse/TUSCANY-2519
-                  Workaround is extracting the jaxb-api-2.1.jar from the Jetspeed Portal war and move it to the shared jars within the ear.                  
+                  Workaround is extracting the jaxb-api-2.1.jar from the Jetspeed Portal war and move it to the shared jars within the ear.
                 -->
                 <mkdir dir="${project.build.directory}/package-skinny-wars/tmp"/>
                 <unzip src="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" dest="${project.build.directory}/package-skinny-wars/lib">
@@ -167,6 +168,14 @@
             </goals>
           </execution>
         </executions>
+        <dependencies>
+          <!-- force ant version for plugin -->
+          <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>${ant.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
