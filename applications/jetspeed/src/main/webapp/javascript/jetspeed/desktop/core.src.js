@@ -572,13 +572,13 @@ jetspeed.contributeHeadElements = function( headElements )
                 {
                     var headTagElemsByMergeHintArray = headTagElemsByMergeHint[mergeHint];
                     var lines = childNode.text.split(/\n/);
-                    for (var i = 0; i < lines.length; i++)
+                    for (var j = 0; j < lines.length; j++)
                     {
                         var found = false;
-                        for (var j = 0; j < headTagElemsByMergeHintArray.length; j++)
+                        for (var k = 0; k < headTagElemsByMergeHintArray.length; k++)
                         {
-                            var existingLine = headTagElemsByMergeHintArray[j].text;
-                            if (existingLine && existingLine.indexOf(lines[i]) >= 0)
+                            var existingLine = headTagElemsByMergeHintArray[k].text;
+                            if (existingLine && existingLine.indexOf(lines[j]) >= 0)
                             {
                                 found = true;
                                 break;
@@ -587,7 +587,7 @@ jetspeed.contributeHeadElements = function( headElements )
                         if (!found)
                         {
                             var lastLine = headTagElemsByMergeHintArray[headTagElemsByMergeHintArray.length - 1].text;
-                            headTagElemsByMergeHintArray[headTagElemsByMergeHintArray.length - 1].text = (lastLine ? lastLine + "\r\n": "") + lines[i];
+                            headTagElemsByMergeHintArray[headTagElemsByMergeHintArray.length - 1].text = (lastLine ? lastLine + "\r\n": "") + lines[j];
                         }
                     }
                 }
@@ -595,13 +595,13 @@ jetspeed.contributeHeadElements = function( headElements )
                 {
                     var headTagElemsByMergeHintArray = headTagElemsByMergeHint[mergeHint];
                     var lines = childNode.textContent.split(/\n/);
-                    for (var i = 0; i < lines.length; i++)
+                    for (var j = 0; j < lines.length; j++)
                     {
                         var found = false;
-                        for (var j = 0; j < headTagElemsByMergeHintArray.length; j++)
+                        for (var k = 0; k < headTagElemsByMergeHintArray.length; k++)
                         {
-                            var existingLine = headTagElemsByMergeHintArray[j].textContent;
-                            if (existingLine && existingLine.indexOf(lines[i]) >= 0)
+                            var existingLine = headTagElemsByMergeHintArray[k].textContent;
+                            if (existingLine && existingLine.indexOf(lines[j]) >= 0)
                             {
                                 found = true;
                                 break;
@@ -610,7 +610,7 @@ jetspeed.contributeHeadElements = function( headElements )
                         if (!found)
                         {
                             var lastLine = headTagElemsByMergeHintArray[headTagElemsByMergeHintArray.length - 1].textContent;
-                            headTagElemsByMergeHintArray[headTagElemsByMergeHintArray.length - 1].textContent = (lastLine ? lastLine + "\r\n": "") + lines[i];
+                            headTagElemsByMergeHintArray[headTagElemsByMergeHintArray.length - 1].textContent = (lastLine ? lastLine + "\r\n": "") + lines[j];
                         }
                     }
                 }
