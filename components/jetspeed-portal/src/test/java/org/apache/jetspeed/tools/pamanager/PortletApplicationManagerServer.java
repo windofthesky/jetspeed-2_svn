@@ -165,9 +165,12 @@ public class PortletApplicationManagerServer
      */
     public void startPortletApplication() throws RegistryException
     {
-        DirectoryHelper portletApplicationDir = new DirectoryHelper(new File(baseDir+"/src/test/testdata/"+TestPortletApplicationManager.CONTEXT_NAME));
-        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        portletApplicationManager.startPortletApplication(TestPortletApplicationManager.CONTEXT_NAME, TestPortletApplicationManager.CONTEXT_PATH, portletApplicationDir, contextClassLoader);
+        if (portletApplicationManager.isStarted())
+        {
+            DirectoryHelper portletApplicationDir = new DirectoryHelper(new File(baseDir+"/src/test/testdata/"+TestPortletApplicationManager.CONTEXT_NAME));
+            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+            portletApplicationManager.startPortletApplication(TestPortletApplicationManager.CONTEXT_NAME, TestPortletApplicationManager.CONTEXT_PATH, portletApplicationDir, contextClassLoader);
+        }
     }
 
     /**
@@ -177,7 +180,10 @@ public class PortletApplicationManagerServer
      */
     public void stopPortletApplication() throws RegistryException
     {
-        portletApplicationManager.stopPortletApplication(TestPortletApplicationManager.CONTEXT_NAME);
+        if (portletApplicationManager.isStarted())
+        {
+            portletApplicationManager.stopPortletApplication(TestPortletApplicationManager.CONTEXT_NAME);
+        }
     }
     
     /**
@@ -187,7 +193,10 @@ public class PortletApplicationManagerServer
      */
     public void unregisterPortletApplication() throws RegistryException
     {
-        portletApplicationManager.unregisterPortletApplication(TestPortletApplicationManager.CONTEXT_NAME);
+        if (portletApplicationManager.isStarted())
+        {
+            portletApplicationManager.unregisterPortletApplication(TestPortletApplicationManager.CONTEXT_NAME);
+        }
     }
     
     /**

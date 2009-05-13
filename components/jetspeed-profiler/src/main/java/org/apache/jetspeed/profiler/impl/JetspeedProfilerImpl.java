@@ -67,6 +67,9 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     /** Profiler context session attribute name */
     public final static String PROFILER_CONTEXT_ATTRIBUTE_NAME = "org.apache.jetspeed.profiler.ProfilerContext";
     
+    /** Default guest principal name */
+    public final static String DEFAULT_GUEST_PRINCIPAL_NAME = "guest";
+    
     /** Default rule principal name */
     public final static String DEFAULT_RULE_PRINCIPAL_NAME = "*";
     
@@ -806,7 +809,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
             if ((profilerContext == null) || (profilerContext.getPrincipal() != principal))
             {
                 // setup/reset profiler context
-                context.setSessionAttribute(PROFILER_CONTEXT_ATTRIBUTE_NAME, new ProfilerContext(principal));
+                context.setSessionAttribute(PROFILER_CONTEXT_ATTRIBUTE_NAME, new ProfilerContext(this, principal));
             }
         }
         catch (Exception e)
@@ -899,20 +902,29 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
      * 
      * Class used to track session lifetime within profiler implementation
      * so that cached profiler rule information per principal can be evicted
-     * from cache on session end.
+     * from cache on session end. Note that this serializable class must be
+     * static to prevent owning JetspeedProfilerImpl from being persisted
+     * in the session.
      */
-    public class ProfilerContext implements HttpSessionActivationListener, HttpSessionBindingListener, Serializable
+    public static class ProfilerContext implements HttpSessionActivationListener, HttpSessionBindingListener, Serializable
     {
+        private static final long serialVersionUID = 1L;
+        
+        private transient JetspeedProfilerImpl profiler;
         private transient Principal principal;
+        private transient boolean guestPrincipal;
         
         /**
          * Construct new profiler context with specified principal.
          * 
+         * @param profiler profiler implementation
          * @param principal profiler context principal
          */
-        private ProfilerContext(Principal principal)
+        private ProfilerContext(JetspeedProfilerImpl profiler, Principal principal)
         {
+            this.profiler = profiler;
             this.principal = principal;
+            this.guestPrincipal = ((principal != null) && principal.getName().equals(profiler.getGuestPrincipalName()));
         }
         
         /**
@@ -960,20 +972,24 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
          */
         private void evictPrincipal()
         {
-            // evict cached principal rules on session end
-            if (principal != null)
+            // profiler can be null for reactivated sessions
+            if (profiler != null)
             {
-                evictCachedPrincipalRules(principal.getName(), false);
-            }
-            principal = null;
-            
-            // evict default and guest principal rules periodically
-            long now = System.currentTimeMillis();
-            if (now-lastDefaultGuestReapTime > DEFAULT_AND_GUEST_RULE_REAPING_INTERVAL)
-            {
-                lastDefaultGuestReapTime = now;
-                evictCachedPrincipalRules(getGuestPrincipalName(), true);
-                evictCachedPrincipalRules(DEFAULT_RULE_PRINCIPAL_NAME, true);
+                // evict cached principal rules on session end
+                if ((principal != null) && !guestPrincipal)
+                {
+                    profiler.evictCachedPrincipalRules(principal.getName(), false);
+                }
+                principal = null;
+
+                // evict default and guest principal rules periodically
+                long now = System.currentTimeMillis();
+                if (now-profiler.lastDefaultGuestReapTime > DEFAULT_AND_GUEST_RULE_REAPING_INTERVAL)
+                {
+                    profiler.lastDefaultGuestReapTime = now;
+                    profiler.evictCachedPrincipalRules(profiler.getGuestPrincipalName(), true);
+                    profiler.evictCachedPrincipalRules(DEFAULT_RULE_PRINCIPAL_NAME, true);
+                }
             }
         }
         
@@ -998,11 +1014,15 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
         // lazily access configured guest principal name 
         if (guestPrincipalName == null)
         {
-            guestPrincipalName = "guest";
+            guestPrincipalName = DEFAULT_GUEST_PRINCIPAL_NAME;
             PortalConfiguration config = Jetspeed.getConfiguration();
             if (config != null)
             {
-                guestPrincipalName = config.getString("default.user.principal");
+                String configGuestPrincipalName = config.getString("default.user.principal");
+                if (configGuestPrincipalName != null)
+                {
+                    guestPrincipalName = configGuestPrincipalName;
+                }
             }
         }
         return guestPrincipalName;

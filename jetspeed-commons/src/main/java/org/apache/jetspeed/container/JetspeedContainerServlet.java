@@ -404,7 +404,7 @@ public class JetspeedContainerServlet extends HttpServlet
                     if (services != null)
                     {
                         PortletApplicationManagement pam = (PortletApplicationManagement) services.getService("PAM");
-                        if (pam != null)
+                        if ((pam != null) && pam.isStarted())
                         {
                             getServletContext().log(STOP_MSG + contextName);
                             try
