@@ -293,6 +293,8 @@
         <value>jetspeed.widget.PortalTooltipManager</value>
         
         <value>jetspeed.widget.EditorTable</value>
+        <value>jetspeed.common</value>
+        <value>jetspeed.selector</value>
       </list>
     </constructor-arg>
   </bean>
