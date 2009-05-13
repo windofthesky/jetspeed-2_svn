@@ -49,6 +49,6 @@
 		</fragment>
 	</fragment>
 	<security-constraints>
-		<security-constraints-ref>public-edit</security-constraints-ref>
+		<security-constraints-ref>user-edit</security-constraints-ref>
 	</security-constraints>
 </page>
