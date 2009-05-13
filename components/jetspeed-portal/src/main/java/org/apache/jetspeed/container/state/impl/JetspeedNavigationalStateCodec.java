@@ -767,7 +767,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
      * Decodes a Base64 encoded string.
      * 
      * Because the encoded string is used in an URL
-     * the two '/' and '=' which has some significance in an URL
+     * the three '+', '/' and '=' which has some significance in an URL
      * are encoded on top of the Base64 encoding and are first translated back before decoding.
      * 
      * @param value
@@ -777,7 +777,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
     protected String decodeParameters(String value, String characterEncoding)
     throws UnsupportedEncodingException
     {
-        value = value.replace('-','/').replace('_','=');
+        value = value.replace('-','/').replace('_','=').replace('.','+');
         if ( characterEncoding != null )
         {
             return new String(Base64.decodeBase64(value.getBytes(characterEncoding)), characterEncoding);
@@ -792,7 +792,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
      * Encodes a string with Base64.
      * 
      * Because the encoded string is used in an URL
-     * the two '/' and '=' which has some significance in an URL
+     * the three '+', '/' and '=' which has some significance in an URL
      * are encoded on top of/after the Base64 encoding
      *  
      * @param value
@@ -809,7 +809,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         {
             value = new String(Base64.encodeBase64(value.getBytes()));
         }
-        return value.replace('/','-').replace('=','_');
+        return value.replace('/','-').replace('=','_').replace('+','.');
     }
 
     protected String encodeArgument( String argument, char terminator )
