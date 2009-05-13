@@ -182,6 +182,10 @@
                       <file>${project.build.directory}/resources/tomcat/context.xml</file>
                       <destination>context</destination>
                     </deployment>
+                    <deployment>
+                      <file>${project.build.directory}/../etc/tomcat/conf/tomcat-users.xml</file>
+                      <destination>server-conf</destination>
+                    </deployment>
                     <!-- admin pa -->
                     <deployment>
                       <artifact>org.apache.portals.jetspeed-2:j2-admin:war</artifact>
@@ -367,6 +371,10 @@
                       <file>${project.build.directory}/resources/tomcat/context.xml</file>
                       <destination>context</destination>
                     </deployment>
+                    <deployment>
+                      <file>${project.build.directory}/../etc/tomcat/conf/tomcat-users.xml</file>
+                      <destination>server-conf</destination>
+                    </deployment>                    
                     <!-- admin pa -->
                     <deployment>
                       <artifact>org.apache.portals.jetspeed-2:j2-admin:war</artifact>
