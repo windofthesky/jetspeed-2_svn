@@ -295,6 +295,10 @@
         <value>jetspeed.widget.EditorTable</value>
         <value>jetspeed.common</value>
         <value>jetspeed.selector</value>
+        <value>jetspeed.widget.LayoutEditPane</value>
+        <value>jetspeed.widget.PageEditPane</value>
+        <value>jetspeed.widget.PageEditor</value>
+        <value>jetspeed.widget.PortalTooltipManager</value>
       </list>
     </constructor-arg>
   </bean>
