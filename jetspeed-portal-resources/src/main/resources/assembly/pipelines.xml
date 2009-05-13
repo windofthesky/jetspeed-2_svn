@@ -676,6 +676,7 @@
         <ref bean="portalURLValve" />
         <ref bean="securityValve" />
         <ref bean="localizationValve" />
+        <ref bean="passwordCredentialValve" />
         <ref bean="profilerValve" />
         <ref bean="refreshUserHomepageValve" />
         <ref bean="containerValve" />
