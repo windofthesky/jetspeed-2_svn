@@ -17,16 +17,10 @@ limitations under the License.
 
 /*  begin jetspeed desktop settings  */
 
-.layout-jetspeed .dojoTab div{
-color: white;
-}
-
 .layout-jetspeed #jetspeedPageControls {
     float: right;
     width: 100px;
 }
-
-.layout-jetspeed #jetspeed-menu-pages{position: relative; bottom: 0px; left: 0px;}
 
 .layout-jetspeed #portalBreadcrumbList {
     float: left;
@@ -39,20 +33,21 @@ color: white;
     width: 11px;
 }
 
-
 /*  end jetspeed desktop settings  */
 
 
-/*  begin layout decorator tigris additions  */
+/*  begin layout decorator jetspeed additions  */
 
 .layout-jetspeed #breadcrumbs {
     height: 20px;
+    width: auto;
+    
     voice-family: "\"}\"";
     voice-family: inherit;
+    
     padding: 3px;
     padding-left: 10px;
     padding-top: 8px;
-    width: auto;
 }
 .layout-jetspeed #breadcrumbs a{
 color:#666666;
@@ -60,11 +55,9 @@ font-size:11px;
 text-decoration:underline;
 }
 
-.layout-jetspeed .dojoAccordionPane .label{border: none}
-/*  end layout decorator tigris additions  */
+/*  end layout decorator jetspeed additions  */
 
-
-/*  begin layout decorator tigris embellishments  */
+/*  begin layout decorator jetspeed embellishments  */
 
 .layout-jetspeed #main {
     clear: both;
@@ -116,16 +109,4 @@ text-decoration:underline;
 
 .js-showloading-imgcontainer {
     padding-top: 4px;
-}
-
-.layout-jetspeed .jetspeed-menu-pages{margin-top: 25px;}
-
-body .layout-jetspeed .dojoTab div{color: white;
-font-size: inherit; font-weight: normal;
-padding-top: 7px;
-padding-bottom: 7px;
-}
-
-body .layout-jetspeed .dojoTabPaneWrapper {
-border: none;
 }
