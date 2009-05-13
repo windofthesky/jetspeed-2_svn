@@ -219,7 +219,7 @@ limitations under the License.
 }
 
 .jetspeed .portlet-section-alternate {
-    background: none;
+    background: #eeeeff;
     border-bottom:1px solid #dedede;
     padding:2px;
     text-align: left;

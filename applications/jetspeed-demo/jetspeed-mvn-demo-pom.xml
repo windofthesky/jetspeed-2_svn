@@ -615,6 +615,13 @@
                       <infuse>true</infuse>
                       <delete>./webcontent</delete>
                     </deployment>
+                    <deployment>
+                      <artifact>org.apache.portals.applications:apa-dbbrowser-war:war</artifact>
+                      <targetName>dbbrowser.war</targetName>
+                      <infuse>true</infuse>
+                      <delete>./dbbrowser</delete>
+                    </deployment>
+
                     <!-- logging -->
                     <deployment>
                       <artifact>org.apache.portals.applications:apa-logging:jar</artifact>
@@ -707,6 +714,12 @@
                 <groupId>org.apache.portals.applications</groupId>
                 <artifactId>apa-webcontent-war</artifactId>
                 <version>${org.apache.portals.applications.apa-webcontent.version}</version>
+                <type>war</type>
+              </dependency>
+              <dependency>
+                <groupId>org.apache.portals.applications</groupId>
+                <artifactId>apa-dbbrowser-war</artifactId>
+                <version>${org.apache.portals.applications.apa-dbbrowser.version}</version>
                 <type>war</type>
               </dependency>
               <!-- logging -->

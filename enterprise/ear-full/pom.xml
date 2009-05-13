@@ -56,6 +56,11 @@
       <artifactId>apa-webcontent-war</artifactId>
       <type>war</type>
     </dependency>
+    <dependency>
+      <groupId>org.apache.portals.applications</groupId>
+      <artifactId>apa-dbbrowser-war</artifactId>
+      <type>war</type>
+    </dependency>
   </dependencies>
 
   <!-- POM build -->
@@ -92,6 +97,11 @@
               <groupId>org.apache.portals.applications</groupId>
               <artifactId>apa-webcontent-war</artifactId>
               <contextRoot>/webcontent</contextRoot>
+            </webModule>                       
+            <webModule>
+              <groupId>org.apache.portals.applications</groupId>
+              <artifactId>apa-dbbrowser-war</artifactId>
+              <contextRoot>/dbbrowser</contextRoot>
             </webModule>                       
 
             <!-- skinny wars classpath lib jars -->
@@ -202,6 +212,11 @@
                     <attribute name="Class-Path" value="${war.manifest.classpath}"/>
                   </manifest>
                 </jar>
+                <jar destfile="${project.build.directory}/package-skinny-wars/apa-dbbrowser-war-${org.apache.portals.applications.apa-dbbrowser.version}.war" update="true">
+                  <manifest>
+                    <attribute name="Class-Path" value="${war.manifest.classpath}"/>
+                  </manifest>
+                </jar>
                 
                 <!-- Offline deployment infusion of generic APA wars for Jetspeed-2 -->
                 <java classname="org.apache.jetspeed.tools.deploy.JetspeedDeploy">
@@ -217,6 +232,11 @@
                 <java classname="org.apache.jetspeed.tools.deploy.JetspeedDeploy">
                    <arg value="${project.build.directory}/package-skinny-wars/apa-webcontent-war-${org.apache.portals.applications.apa-webcontent.version}.war"/>
                    <arg value="${project.build.directory}/package-skinny-wars/apa-webcontent-war-${org.apache.portals.applications.apa-webcontent.version}.war"/>
+                   <arg value="webcontent"/>
+                </java>
+                <java classname="org.apache.jetspeed.tools.deploy.JetspeedDeploy">
+                   <arg value="${project.build.directory}/package-skinny-wars/apa-dbbrowser-war-${org.apache.portals.applications.apa-dbbrowser.version}.war"/>
+                   <arg value="${project.build.directory}/package-skinny-wars/apa-dbbrowser-war-${org.apache.portals.applications.apa-dbbrowser.version}.war"/>
                    <arg value="webcontent"/>
                 </java>
                 

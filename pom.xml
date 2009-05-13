@@ -318,6 +318,8 @@
     <org.apache.portals.applications.apa-logging.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-logging.version>
     <org.apache.portals.applications.apa-rss.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-rss.version>
     <org.apache.portals.applications.apa-webcontent.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-webcontent.version>
+    <org.apache.portals.applications.apa-dbbrowser.version>1.0-SNAPSHOT</org.apache.portals.applications.apa-dbbrowser.version>
+
     <oro.version>2.0.8</oro.version>
     <portals.portlet2-api-spec.version>1.0</portals.portlet2-api-spec.version>
     <regexp.version>1.2</regexp.version>
@@ -563,6 +565,12 @@
         <artifactId>apa-webcontent-war</artifactId>
         <type>war</type>
         <version>${org.apache.portals.applications.apa-webcontent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.portals.applications</groupId>
+        <artifactId>apa-dbbrowser-war</artifactId>
+        <type>war</type>
+        <version>${org.apache.portals.applications.apa-dbbrowser.version}</version>
       </dependency>
 
       <!-- Standard APIs -->

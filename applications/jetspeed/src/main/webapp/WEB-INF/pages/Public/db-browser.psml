@@ -27,8 +27,12 @@ limitations under the License.
   <metadata name="title" xml:lang="zh-TW">DB流覽器示例</metadata>
   <metadata name="title" xml:lang="ko">DB 브라우저 데모</metadata>
 
-  <fragment id="dbb-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-     <fragment id="dbb-101" type="portlet" name="dbbrowser::DbBrowserExample">
+  <fragment id="dbb-10" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+     <fragment id="dbb-1000" type="portlet" name="dbbrowser::CitiesDatabase">
+      <property layout="TwoColumns" name="row" value="1" />
+      <property layout="TwoColumns" name="column" value="0" />
+     </fragment>
+     <fragment id="dbb-1001" type="portlet" name="dbbrowser::CountriesDatabase">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
      </fragment>
