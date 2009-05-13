@@ -34,7 +34,7 @@ limitations under the License.
 
   <document-order>public.psml</document-order>
   <document-order>db-browser.psml</document-order>
-  <document-order>content.psml</document-order>
+  <document-order>map.psml</document-order>
 
   <security-constraints>
     <security-constraints-ref>public-edit</security-constraints-ref>
