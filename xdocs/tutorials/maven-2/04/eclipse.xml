@@ -64,8 +64,8 @@ mvn eclipse:eclipse
 	<p>
 	Now lets import these new projects. From the eclipse menu, select File->Import:
 	</p>
-	<img src="../images/import-project.png"/>	
-	<img src="../images/import-project2.png"/>		
+	<img src="tutorials/images/import-project.png"/>	
+	<img src="tutorials/images/import-project2.png"/>		
 	<p>
 	Repeat for both the applications/express-demo project.
 	</p>
@@ -73,19 +73,19 @@ mvn eclipse:eclipse
 	Next, lets setup a classpath variable to point at the Maven Repo, effectively resolving the jars for Eclipse.
 	In Eclipse, go to Window->Preferences->Java->Build Path->Classpath Variables->New...:
 	</p>
-	<img src="../images/eclipse-classpath.png"/>	
+	<img src="tutorials/images/eclipse-classpath.png"/>	
 	  <p>
 	If you would like to work with the Jetspeed source from the SVN Trunk, you will need to install the Subversion Plugin for Eclipse.
 	After doing so, simply check out the project using the Subversion plugin:
 	  </p>	
-	<img src="../images/svn1.png"/>	
-	<img src="../images/svn2.png"/>			  
-	<img src="../images/svn3.png"/>			  	
+	<img src="tutorials/images/svn1.png"/>	
+	<img src="tutorials/images/svn2.png"/>			  
+	<img src="tutorials/images/svn3.png"/>			  	
 	  <p>
 	We are now ready to start developing with Eclipse. 
 	  </p>
 	  <p>	  
-	    <a href='overview.html'>Previous</a> <a href='hello.html'>Next</a>
+	    <a href='tutorials/maven-2/04/overview.html'>Previous</a> <a href='tutorials/maven-2/04/hello.html'>Next</a>
 	  </p>            	   
 	  </section>
 	</body>

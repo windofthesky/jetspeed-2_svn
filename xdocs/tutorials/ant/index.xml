@@ -113,6 +113,16 @@
 					</ul>
 				</p>
 			</subsection>
+			<subsection name='Download'>
+				<p>
+					The tutorial can be downloaded for use locally. See the distribution page for details:
+				</p>
+				<ul>
+					<li>
+						<a href="tutorials/ant/references/tutorial_distribution.html">Download</a>
+					</li>
+			</ul>
+			</subsection>
 			<subsection name='Prerequisites'>
 				<p>
 					The tutorial requires the following software
@@ -120,27 +130,27 @@
 				</p>
 				<ul>
 					<li>
-						<a href="refences/java.html">Java</a>
+						<a href="tutorials/ant/references/java.html">Java</a>
 						1.4 or higher. Java 5 is recommended.
 					</li>
 					<li>
-						<a href="refences/eclipse.html">Eclipse</a>
+						<a href="tutorials/ant/references/eclipse.html">Eclipse</a>
 						3.2.2 or higher
 					</li>
 					<li>WTP Eclipse plug-in</li>
 					<li>
-						<a href="refences/ant.html">Ant</a>
+						<a href="tutorials/ant/references/ant.html">Ant</a>
 						1.7.1 or higher
 					</li>
 					<li>
-						<a href="06/databases.html">Database</a>
+						<a href="tutorials/ant/06/databases.html">Database</a>
 						- The tutorial uses
 						<a href="http://db.apache.org/derby">Derby</a>
 						which is included the tutorial.
 					</li>
 					<li>
 						The tutorial includes its own built-in
-						<a href="06/servlet.html">servlet engine</a>
+						<a href="tutorials/ant/06/servlet.html">servlet engine</a>
 					</li>
 
 				</ul>
@@ -151,7 +161,7 @@
 			</subsection>
 			<p>
 				If you are familiar with Eclipse, Ant and Java you can
-				<a href='01/first-steps.html'>
+				<a href='tutorials/ant/01/first-steps.html'>
 					start work on the tutorial.
 				</a>
 				Otherwise, take some time to review the pre-requisite
@@ -159,7 +169,7 @@
 			</p>
 			<p>
 				You might also want to take a quick look at the
-				<a href="knowledge.html">skills profile</a>
+				<a href="tutorials/ant/knowledge.html">skills profile</a>
 				that this tutorial assumes.
 
 			</p>

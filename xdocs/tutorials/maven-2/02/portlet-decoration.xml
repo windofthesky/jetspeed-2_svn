@@ -37,7 +37,7 @@
       Jetspeed comes with several portlet decorations out of the box. The default page decorator for 
       most pages is called <i>tigris</i>. It looks like this:
       </p>
-      <img src="../images/tigris-portlet.png"/>
+      <img src="tutorials/images/tigris-portlet.png"/>
       <p>
       We are going to create a new decorator for this tutorial.
       This new decorator can be copied into our project from the <i>/JetspeedTutorial/resources/decorations/portlet/express-portlet/</i> directory.
@@ -64,7 +64,7 @@ xcopy /s ..\..\resources\decorations\portlet\express-portlet\* portal\src\webapp
      creates a new color variation on an existing window decorator.
 	  </p>	      
 	  <p>
-	    <a href='page-decoration.html'>Previous</a> <a href='desktop-theme.html'>Next</a>
+	    <a href='tutorials/maven-2/02/page-decoration.html'>Previous</a> <a href='tutorials/maven-2/02/desktop-theme.html'>Next</a>
 	  </p>	      	  
  </section>	  
 </body>

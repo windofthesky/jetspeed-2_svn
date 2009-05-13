@@ -61,7 +61,7 @@
 				<i>blue</i>
 				. It looks like this:
 			</p>
-			<img src="../images/theme.png" />
+			<img src="tutorials/images/theme.png" />
 			<p>
 				We are going to create a new desktop theme for this
 				tutorial. This new theme can be copied into our project
@@ -195,8 +195,8 @@ xcopy /s ..\..\resources\desktop-themes\express\* portal\src\webapp\desktop-them
 				</p>
 			</subsection>
 			<p>
-				<a href='portlet-decoration.html'>Previous</a>
-				<a href='default-page.html'>Next</a>
+				<a href='tutorials/ant/02/portlet-decoration.html'>Previous</a>
+				<a href='tutorials/ant/02/default-page.html'>Next</a>
 			</p>
 		</section>
 	</body>

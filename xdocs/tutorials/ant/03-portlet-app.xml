@@ -92,7 +92,7 @@ mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2
 				directory, you will find a number of files that are the
 				basic template for any useful portlet application:
 			</p>
-			<img src="../images/src-dir.png" />
+			<img src="tutorials/images/src-dir.png" />
 			<p>
 				Here you will find the portlet and servlet deployment
 				descriptors:
@@ -110,8 +110,8 @@ mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2
 			</source>
 
 			<p>
-				<a href='../02/deploy-custom.html'>Previous</a>
-				<a href='build-it.html'>Next</a>
+				<a href='tutorials/ant/02/deploy-custom.html'>Previous</a>
+				<a href='tutorials/ant/03/build-it.html'>Next</a>
 			</p>
 		</section>
 	</body>

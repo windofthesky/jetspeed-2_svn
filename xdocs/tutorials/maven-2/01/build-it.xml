@@ -59,7 +59,7 @@ mvn -P tomcat,min
       Now that we've built and deployed the portal, lets start up the application server...
       </p>	
 	  <p>
-	    <a href='genapp.html'>Previous</a> <a href='run-it.html'>Next</a>
+	    <a href='tutorials/maven-2/01/genapp.html'>Previous</a> <a href='tutorials/maven-2/01/run-it.html'>Next</a>
 	  </p>            
     </section>
   </body>

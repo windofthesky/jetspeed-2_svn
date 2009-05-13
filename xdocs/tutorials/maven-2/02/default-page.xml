@@ -58,7 +58,7 @@ copy  ..\..\resources\pages\default-page.psml portal\src\webapp\WEB-INF\pages
      </source>	  	  	   	
      <p>Go ahead and save that file. We are now ready to deploy your changes to the portal</p>  
 	  <p>
-	    <a href='desktop-theme.html'>Previous</a> <a href='deploy-custom.html'>Next</a>
+	    <a href='tutorials/maven-2/02/desktop-theme.html'>Previous</a> <a href='tutorials/maven-2/02/deploy-custom.html'>Next</a>
 	  </p>	        
 	  </section>	  
 	</body>

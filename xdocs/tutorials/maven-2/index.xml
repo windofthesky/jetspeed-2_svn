@@ -50,9 +50,9 @@
 	  <p>
 	    Before getting started with the tutorial, review the Custom Build commands available to you:
 	    <ul>
-	    <li><a href='build-commands.html'>Build Commands</a></li>
-	    <li><a href='project-generation.html'>Project Generation Archetypes</a></li>
-	    <li><a href='project-directory.html'>Project Directory Overview</a></li>
+	    <li><a href='tutorials/maven-2/build-commands.html'>Build Commands</a></li>
+	    <li><a href='tutorials/maven-2/project-generation.html'>Project Generation Archetypes</a></li>
+	    <li><a href='tutorials/maven-2/project-directory.html'>Project Directory Overview</a></li>
 	  	</ul>
 	  </p>
 	  </subsection>	  
@@ -65,7 +65,7 @@
 	    to the portal as we progress through the tutorial.
 	  </p>
 	  <p>
-	    To get started with the tutorial, click here: <a href='01/first-steps.html'>Start Tutorial</a>
+	    To get started with the tutorial, click here: <a href='tutorials/maven-2/01/first-steps.html'>Start Tutorial</a>
 	  </p>
 	  </subsection>
 	  </section>

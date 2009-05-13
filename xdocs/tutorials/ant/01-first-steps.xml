@@ -31,11 +31,11 @@
 		<section name="Installing Java, Eclipse and Ant">
 			<p>
 				If you have not already done so, install
-				<a href="../references/java.html">Java</a>
+				<a href="tutorials/ant/references/java.html">Java</a>
 				,
-				<a href="../references/ant.html">Ant</a>
+				<a href="tutorials/ant/references/ant.html">Ant</a>
 				and
-				<a href="../references/eclipse.html">
+				<a href="tutorials/ant/references/eclipse.html">
 					Eclipse.
 					<a />
 				</a>
@@ -46,14 +46,14 @@
 				You can download the JetExpress source code from
 				<a href="http://people.apache.org/~taylor/tutorial/">Tutorial Download Location</a>. Additionally, you will need to download a Jetspeed final release installer.
 			</p></div>
-			<p>The distribution kit is described in more detail in the <a href="../references/tutorial_distribution.html">Tutorial Distribution Kit</a> document.</p>
+			<p>The distribution kit is described in more detail in the <a href="tutorials/ant/references/tutorial_distribution.html">Tutorial Distribution Kit</a> document.</p>
 			<p>
 				Once you have downloaded the distribution kit, expand the two projects: jetexpress, express-demo, directly into your Eclipse workspace.
 			</p>
 			<subsection name="Project Directory Structure">
 				<p>
 				The structure of the JetExpress project is described in
-					<a href='../references/project_directory.html'>
+					<a href='tutorials/ant/references/project_directory.html'>
 						Project Directory Overview.
 					</a>
 					Take some time to familiarize yourself with the structure.
@@ -83,7 +83,7 @@
 			<p>
 				Before getting started with the tutorial, review the Ant
 				targets that are available in the
-				<a href='../references/ant_targets.html'>
+				<a href='tutorials/ant/references/ant_targets.html'>
 					JetExpress tutorial's build.xml file.:
 				</a>
 			</p>			
@@ -91,7 +91,7 @@
 		<section name='Ant Properties'>
 			<p>There are a few critical properties that must be configured.
 			See the reference 
-				<a href='../references/ant_targets.html#Build Properties'>build.properties</a> which are also discussed below.
+				<a href='tutorials/ant/references/ant_targets.html#Build Properties'>build.properties</a> which are also discussed below.
 			</p>		
 		<subsection
 			name='Change the Jetspeed-2 Server (Tomcat) Location Property'>
@@ -118,7 +118,7 @@ installer.src.jar = /JetspeedTraining/installers/jetspeed-2.1.1-dev-installer.ja
    ]]>
 			</source>			
 			<p>
-				<a href='genapp.html'>Next</a>
+				<a href='tutorials/ant/01/genapp.html'>Next</a>
 			</p>					
 		</subsection>		
 		</section>

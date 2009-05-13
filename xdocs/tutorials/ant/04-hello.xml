@@ -37,13 +37,13 @@
 				<i>com.bluesunrise.portal.portlets.tutorial</i>
 				package, and create a new Java class:
 			</p>
-			<img src="../images/new-portlet.png" />
+			<img src="tutorials/antimages/new-portlet.png" />
 			<p>
 				You will see a new portlet in Eclipse named
 				BonjourWorld. Go ahead Override and Implement the
 				following methods:
 			</p>
-			<img src="../images/override-impl.png" />
+			<img src="tutorials/antimages/override-impl.png" />
 			<p>
 				Each one of these methods is associated with a portlet
 				mode. Lets make these methods actually do something.
@@ -96,8 +96,8 @@
 	     ]]>
 			</source>
 			<p>
-				<a href='overview.html'>Previous</a>
-				<a href='tutorial-psml.html'>Next</a>
+				<a href='tutorials/ant/04/eclipse.html'>Previous</a>
+				<a href='tutorials/ant/04/tutorial-psml.html'>Next</a>
 			</p>
 		</section>
 	</body>

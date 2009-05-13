@@ -64,7 +64,7 @@ mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2
         sample portlet. Under the <b>test</b> directory, you will find one unit test. Under the <b>webapp</b>
         directory, you will find a number of files that are the basic template for any useful portlet application:
      </p>
-     <img src="../images/src-dir.png"/>          
+     <img src="tutorials/images/src-dir.png"/>          
      <p>
        Here you will find the portlet and servlet deployment descriptors: <b>portlet.xml</b> and <b>web.xml</b>.
        Review the files in this directory. We are going to copy over some more sample portlets for the tutorial.
@@ -77,7 +77,7 @@ mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2
 	</source> 
      
 	  <p>
-	    <a href='../02/deploy-custom.html'>Previous</a> <a href='build-it.html'>Next</a>
+	    <a href='tutorials/maven-2/02/deploy-custom.html'>Previous</a> <a href='tutorials/maven-2/03/build-it.html'>Next</a>
 	  </p>            
     </section>
   </body>

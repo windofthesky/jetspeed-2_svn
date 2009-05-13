@@ -54,7 +54,7 @@ mvn archetype:create -DarchetypeGroupId=org.apache.portals.jetspeed-2
        can create a customized portal based upon Jetspeed, but with a different name, customized to meet your organization requirements.
       </p>	
 	  <p>
-	    <a href='first-steps.html'>Previous</a> <a href='build-it.html'>Next</a>
+	    <a href='tutorials/maven-2/01/first-steps.html'>Previous</a> <a href='tutorials/maven-2/01/build-it.html'>Next</a>
 	  </p>            
     </section>
   </body>

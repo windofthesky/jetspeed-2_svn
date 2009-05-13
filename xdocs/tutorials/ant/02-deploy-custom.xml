@@ -17,8 +17,8 @@
 -->
 <document>
 	<properties>
-		<title>Default Page</title>
-		<subtitle>Modifying the Default Page</subtitle>
+		<title>Deploying Decorations, Themes and Pages</title>
+		<subtitle>Deploying Decorations, Themes and Pages</subtitle>
 		<authors>
 			<person name="David Sean Taylor" email="taylor@apache.org" />
 			<person name="David Dyer"
@@ -28,58 +28,54 @@
 		</authors>
 	</properties>
 	<body>
-		<section name="Modifying the Default Page">
+		<section name="Deploying Decorations, Themes and Pages">
 			<p>
-				Now that we have created our decorators and themes, lets
-				put them to use on the default page. Lets get started
-				with customization of the default portal page
-				decoration. Copy in our sample default-page:
+				To deploy the new resources (decorations, themes, and
+				page) that we created in this section of the tutorial,
+				you could simply rebuild the portal by typing
+				<b>mvn -P tomcat,min</b>
+				. Or, if your portal is aleady up and running, a simpler
+				way is to automate the easy deployment tasks with Ant.
+				We have created a simple build.xml to copy over changed
+				portal resources:
 			</p>
 			<source>
 				<![CDATA[
 # Linux	 
 cd /JetspeedTraining/workspace/jetexpress
-cp ../../resources/pages/default-page.psml portal/src/webapp/WEB-INF/pages/
+cp ../../resources/build.xml .
 
 # Windows
 cd \JetspeedTraining\workspace\jetexpress
-copy  ..\..\resources\pages\default-page.psml portal\src\webapp\WEB-INF\pages
+copy  ..\..\resources\build.xml
      ]]>
 			</source>
 			<p>
-				Refresh your Eclipse project and edit the
-				default-page.psml. Make the following modifications
-				<ul>
-					<li>
-						for the layout-decorator, replace tigris with
-						<b>express-page</b>
-					</li>
-					<li>
-						for the portlet-decorator, replace tigris with
-						<b>express-portlet</b>
-					</li>
-					<li>
-						add a skin default attribute as
-						<b>skin="express"</b>
-						for the desktop theme
-					</li>
-				</ul>
+				To copy over the resources to the running portal, type:
 			</p>
 			<source>
 				<![CDATA[
-<page>
-  <defaults layout-decorator="express-page" 
-            portlet-decorator="express-portlet"
-            skin="express"/>	   	  
+ant	 
      ]]>
 			</source>
 			<p>
-				Go ahead and save that file. We are now ready to deploy
-				your changes to the portal
+				Refresh the portal home page,
+				<a href="http://localhost:8080/jetexpress/portal">
+					http://localhost:8080/jetexpress/portal
+				</a>
+				You should now see a portal with our new custom
+				decorators:
 			</p>
 			<p>
-				<a href='desktop-theme.html'>Previous</a>
-				<a href='deploy-custom.html'>Next</a>
+				<img src="tutorials/images/jetexpress-portal.png" />
+			</p>
+			<p>and desktop theme:</p>
+			<p>
+				<img src="tutorials/images/jetexpress-desktop.png" />
+			</p>
+			<p>
+				<a href='tutorials/ant/02/default-page.html'>Previous</a>
+				<a href='tutorials/ant/03/portlet-app.html'>Next</a>
 			</p>
 		</section>
 	</body>

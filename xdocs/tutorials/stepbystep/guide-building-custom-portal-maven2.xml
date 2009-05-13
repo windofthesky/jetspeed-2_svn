@@ -146,11 +146,13 @@
 					<li>The context name of the portal</li>
 				</ul>
 				</p>
+<!-- 
 				<p>
 				Here is what the customized portal will look like after it is built:
 				<br/>
-				<img src="images/custom-portal-build.png"/>
+				<img src="stepbystep/images/custom-portal-build.png"/>
 				</p>
+ -->				
 				<p>
 				As you can see, it doesn’t look like the default Jetspeed portal that you can download from Apache. Custom builds are best for developers to integrate their own portlet applications and portal features into a customized build environment.
 				</p>
@@ -312,7 +314,7 @@
 			<h3>Step Four: create the default PSML pages</h3>
 			<p>
 			PSML pages go in the portal/src/webapp/WEB-INF/pages directory by default:
-			<img src="images/webinf-structure-psml.png"/>
+			<img src="stepbystep/images/webinf-structure-psml.png"/>
 			</p>
 			<p>
 			Usually each portal has a set of default PSML pages. The users will create their own pages as they use the system.
@@ -320,7 +322,7 @@
 			<h3>Step Five: create the custom decorators</h3>
 			<p>
 			Decorators go in the <i>portal/src/webapp/decorators</i> directory by default:	
-			<img src="images/webinf-structure-decorators.png"/>
+			<img src="stepbystep/images/webinf-structure-decorators.png"/>
 			</p>
 			<p>
 			Here we have two kinds of decorators: page (layout) and portlet decorators. We have defined one of each. The page decorator defines the skin for the pages in our portal. The portlet decorator defines the default skin for the portlets.
@@ -396,7 +398,7 @@
 			<code>http://localhost:8080/jetexpress-2</code>
 			</p>
 			<p>
-			<img src="images/startupscreen.png"/>
+			<img src="stepbystep/images/startupscreen.png"/>
 			</p>
 			<h3>Optional Step: enable automated EAR build</h3>
 			<p>

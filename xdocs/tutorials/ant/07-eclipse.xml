@@ -30,7 +30,7 @@
 	<body>
 		<section name="Eclipse Overview">
 			<p>
-				<a href="www.eclipse.org">Eclipse</a>
+				<a href="http://www.eclipse.org">Eclipse</a>
 				is an free IDE originally donated to the community by
 				IBM. It has become the most dominant IDE for developing
 				Java applications as well as applications in other
@@ -56,7 +56,7 @@
 					Eclipse does not have any environment variables of
 					its own but does want to find "JAVA_HOME" which
 					should point to your version of
-					<a href="java.html">Java.</a>
+					<a href="tutorials/ant/java.html">Java.</a>
 				</p>
 			</subsection>
 
@@ -64,7 +64,7 @@
 				<p>
 					If you start Eclipse and it runs, you have a good
 					installation. If not, refer to the
-					<a href="www.eclipse.org">Eclipse Site</a>
+					<a href="http://www.eclipse.org">Eclipse Site</a>
 					for help.
 				</p>
 			</subsection>

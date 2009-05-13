@@ -116,7 +116,7 @@
 					the Navigator view and selecting the Outline view
 					from the "Window" menu.</p>
 					<p>
-					<img src="../images/AntTargetOutline.png" />
+					<img src="tutorials/images/AntTargetOutline.png" />
 				</p>
 				<p>
 				Ant build files are a bit intimidating but are pretty easy to understand if they are well structured and you take the time to look at definitions carefully.
