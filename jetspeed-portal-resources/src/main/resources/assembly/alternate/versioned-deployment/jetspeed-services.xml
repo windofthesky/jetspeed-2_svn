@@ -49,9 +49,11 @@
         <entry key="SSO">
           <ref bean="org.apache.jetspeed.sso.SSOProvider" />
         </entry>
+        <!-- PortletEntity is obsolete
         <entry key="EntityAccessor">
           <ref bean='org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent' />
         </entry>
+         -->
         <entry key="PortletFactory">
           <ref bean="portletFactory" />
         </entry>

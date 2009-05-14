@@ -107,6 +107,7 @@
         - but this is cleaner as there is no need to ever access the unwrapped object.
     -->
 
+    <!-- PortletEntity is obsolete 
     <bean id="portletEntityAccessImpl" class="org.apache.jetspeed.components.portletentity.PersistenceBrokerPortletEntityAccess">
         <constructor-arg>
             <ref bean="portletRegistry" />
@@ -120,14 +121,14 @@
         <property name="target">
             <ref bean="portletEntityAccessImpl" />
         </property>
-        <!--
+        <!-
             <property name="preInterceptors">
             <list>
             <ref bean="portletEntityCachingAdvisor"/>
             <ref bean="portletEntityRemoveFromCacheAdvisor"/>
             </list>
             </property>
-        -->
+        ->
         <property name="transactionAttributes">
             <props>
                 <prop key="remove*">PROPAGATION_REQUIRED</prop>
@@ -136,5 +137,6 @@
             </props>
         </property>
     </bean>
+    -->
     
 </beans>

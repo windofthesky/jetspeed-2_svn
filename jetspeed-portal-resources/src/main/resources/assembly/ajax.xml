@@ -28,12 +28,14 @@
         <entry key="portletRegistry.getPortletApplication">
           <value>org.apache.jetspeed.components.portletregistry.PortletRegistry</value>
         </entry>
+        <!-- PortletEntity is obsolete 
         <entry key="entityAccess.getPortletEntities">
           <value>org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent</value>
         </entry>
         <entry key="entityAccess.getPortletEntity">
           <value>org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent</value>
         </entry>
+        -->
       </map>
     </constructor-arg>
     <constructor-arg>
@@ -62,12 +64,14 @@
         <entry key="portletRegistry.getPortletApplication">
           <value>/ajax/portlet_definitions.ajax</value>
         </entry>
+        <!-- PortletEntity is obsolete 
         <entry key="entityAccess.getPortletEntities">
           <value>/ajax/portlet_entities.ajax</value>
         </entry>
         <entry key="entityAccess.getPortletEntity">
           <value>/ajax/portlet_entity.ajax</value>
         </entry>
+        -->
       </map>
     </constructor-arg>
   </bean>

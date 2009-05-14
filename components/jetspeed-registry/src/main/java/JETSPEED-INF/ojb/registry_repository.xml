@@ -851,7 +851,7 @@
 
  <!--
    - P O R T L E T  E N T I T Y
- -->
+   
      <class-descriptor
       class="org.apache.jetspeed.components.portletentity.PortletEntityImpl"
       table="PORTLET_ENTITY"
@@ -888,6 +888,7 @@
       />
 
   </class-descriptor>
+ -->
 
    <!--
    - P O R T L E T   P R E F E R E N C E S

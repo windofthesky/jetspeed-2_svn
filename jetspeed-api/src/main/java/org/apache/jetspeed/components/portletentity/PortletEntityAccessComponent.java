@@ -30,7 +30,7 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id: PortletEntityAccessComponent.java,v 1.8 2005/04/29 13:59:46 weaver Exp $
- *
+ * @obsolete Pluto no longer provides a PortletEntity interface and Jetspeed no longer uses it. 
  */
 public interface PortletEntityAccessComponent
 {

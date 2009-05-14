@@ -126,6 +126,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <excludes>
+                        <!-- PortletEntity usage is obsolete -->
+                        <exclude>**/TestPortletEntityDAO.java</exclude>
                         <!--
                             The following tests have been aggregated into
                             TestRegistryDirectAll because the individual

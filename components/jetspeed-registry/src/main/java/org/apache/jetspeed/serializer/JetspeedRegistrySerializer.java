@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent;
 import org.apache.jetspeed.components.portletpreferences.JetspeedPreferenceImpl;
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
@@ -51,7 +50,6 @@ import org.slf4j.Logger;
  */
 public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSerializer
 {
-    protected PortletEntityAccessComponent entityAccess;
     protected PortletRegistry registry;
     protected PortletPreferencesProvider prefsProvider;
     protected SearchEngine searchEngine;
@@ -61,11 +59,10 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
      * @param entityAccess
      * @param searchEngine
      */
-    public JetspeedRegistrySerializer(PortletRegistry registry, PortletEntityAccessComponent entityAccess, PortletPreferencesProvider prefsProvider,
+    public JetspeedRegistrySerializer(PortletRegistry registry, PortletPreferencesProvider prefsProvider,
                                       SearchEngine searchEngine)
     {
         this.registry = registry;
-        this.entityAccess = entityAccess;
         this.prefsProvider = prefsProvider;
         this.searchEngine = searchEngine;
     }
@@ -102,7 +99,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES))
         {
-            log.info("deleting applications and entities");
+            log.info("deleting applications");
             try
             {
                 for (PortletApplication pa : registry.getPortletApplications())
@@ -112,10 +109,6 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                     {
                         searchEngine.remove(pa);
                         searchEngine.remove(portlets);
-                    }
-                    for (PortletDefinition pd : portlets)
-                    {
-                        entityAccess.removePortletEntities(pd);
                     }
                     registry.removeApplication(pa);
                 }

@@ -22,15 +22,14 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * @version $Id$
- *
+ * @obsolete Pluto no longer provides a PortletEntity interface and Jetspeed no longer uses it. 
  */
-public interface PortletEntity extends org.apache.pluto.container.PortletEntity
+public interface PortletEntity // extends org.apache.pluto.container.PortletEntity
 {
     Long getOid();
     String getId();
     void setId(String id);
     
-    // TODO: temporary replacement for old api PortletWindowList - this should be removed too shortly
     void setPortletWindow(PortletWindow window);
 
     PortletDefinition getPortletDefinition();
@@ -39,6 +38,5 @@ public interface PortletEntity extends org.apache.pluto.container.PortletEntity
     String getPortletUniqueName();
 
     void setFragment(Fragment fragment);
-    Fragment getFragment();
-    
+    Fragment getFragment();    
 }

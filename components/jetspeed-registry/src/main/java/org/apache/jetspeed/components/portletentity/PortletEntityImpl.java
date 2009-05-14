@@ -29,6 +29,7 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id: PortletEntityImpl.java,v 1.9 2005/04/29 13:59:08 weaver Exp $
+ * @obsolete
  */
 public class PortletEntityImpl implements PortletEntity
 {   

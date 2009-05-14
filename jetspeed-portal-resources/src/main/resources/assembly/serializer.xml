@@ -26,9 +26,8 @@
         </bean>
         <bean class="org.apache.jetspeed.serializer.JetspeedRegistrySerializer">
           <constructor-arg index="0" ref="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
-          <constructor-arg index="1" ref="org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent" />
-          <constructor-arg index="2" ref="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" />
-          <constructor-arg index="3" ref="org.apache.jetspeed.search.SearchEngine" />
+          <constructor-arg index="1" ref="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" />
+          <constructor-arg index="2" ref="org.apache.jetspeed.search.SearchEngine" />
         </bean>
         <!-- 
           <bean class="org.apache.jetspeed.serializer.JetspeedUserTemplateSerializer">

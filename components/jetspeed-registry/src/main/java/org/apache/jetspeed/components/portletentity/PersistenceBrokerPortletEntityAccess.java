@@ -40,6 +40,7 @@ import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
  * 
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver </a>
  * @version $Id: PersistenceBrokerPortletEntityAccess.java,v 1.5 2005/04/29 13:59:08 weaver Exp $
+ * @obsolete
  *  
  */
 public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSupport

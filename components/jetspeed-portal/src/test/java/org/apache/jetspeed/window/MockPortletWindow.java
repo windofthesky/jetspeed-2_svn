@@ -32,7 +32,6 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.KeyValue;
-import org.apache.pluto.container.PortletEntity;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.pluto.container.PortletResponseContext;
 import org.w3c.dom.Element;
@@ -151,15 +150,6 @@ public class MockPortletWindow implements PortletWindow
     {
         // TODO Auto-generated method stub
         return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.pluto.container.PortletWindow#getPortletEntity()
-     */
-    public PortletEntity getPortletEntity()
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     /* (non-Javadoc)

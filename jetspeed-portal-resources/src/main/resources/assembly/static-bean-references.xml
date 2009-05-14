@@ -29,6 +29,7 @@
     </property>
   </bean>
 
+  <!-- PortletEntity is obsolete
   <bean id="_portletEntityImplPortletRegistryInitializer"
     class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
     <meta key="j2:cat" value="default or registry" />
@@ -39,6 +40,7 @@
       <ref bean="portletRegistry" />
     </property>
   </bean>
+   -->
 
   <bean id="_abstractBaseElementInitializer"
     class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">

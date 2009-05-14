@@ -40,7 +40,6 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.KeyValue;
-import org.apache.pluto.container.PortletEntity;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.pluto.container.PortletResponseContext;
 import org.w3c.dom.Element;
@@ -55,7 +54,7 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id$
  **/
-public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletWindowID, RenderTrackable
+public class PortletWindowImpl implements PortletWindow, PortletWindowID, RenderTrackable
 {
     private static final long serialVersionUID = 6578938580906866201L;
     
@@ -146,11 +145,6 @@ public class PortletWindowImpl implements PortletWindow, PortletEntity, PortletW
         return fragment;
     }
     
-    public PortletEntity getPortletEntity()
-    {
-        return pd != null ? this : null;
-    }
-
     /**
      * Checks if the content is instantly rendered from JPT.
      */

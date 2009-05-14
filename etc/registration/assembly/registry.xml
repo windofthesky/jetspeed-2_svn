@@ -64,6 +64,7 @@
         </property>
     </bean>
 
+    <!-- PortletEntity is obsolete
     <bean id="portletEntityAccessImpl" class="org.apache.jetspeed.components.portletentity.PersistenceBrokerPortletEntityAccess">
         <constructor-arg>
             <ref bean="portletRegistry" />
@@ -77,14 +78,14 @@
         <property name="target">
             <ref bean="portletEntityAccessImpl" />
         </property>
-        <!--
+        <!-
             <property name="preInterceptors">
             <list>
             <ref bean="portletEntityCachingAdvisor"/>
             <ref bean="portletEntityRemoveFromCacheAdvisor"/>
             </list>
             </property>
-        -->
+        ->
         <property name="transactionAttributes">
             <props>
                 <prop key="remove*">PROPAGATION_REQUIRED</prop>
@@ -94,7 +95,7 @@
         </property>
     </bean>
     
-  <!-- Inject Portlet Entity Proxy into Portlet Entity impl -->
+  <!- Inject Portlet Entity Proxy into Portlet Entity impl ->
   <bean id="injectEntityAccessProxy" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
       <property name="targetObject"><ref bean="portletEntityAccessImpl"/></property>
       <property name="targetMethod"><value>setEntityAccessProxy</value></property>
@@ -104,5 +105,5 @@
           </list>
       </property>
   </bean>
-    
+  -->  
 </beans>

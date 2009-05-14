@@ -89,7 +89,7 @@ public class TestRegistryDirectAll extends AbstractRegistryTest
         UserAttribute ua = app.addUserAttribute("user.name.family");
         ua.addDescription(lang).setDescription("User Last Name");
 
-        app.addJetspeedServiceReference("PortletEntityAccessComponent");
+//        app.addJetspeedServiceReference("PortletEntityAccessComponent");
         app.addJetspeedServiceReference("PortletRegistryComponent");
 
         addDublinCore(app.getMetadata());

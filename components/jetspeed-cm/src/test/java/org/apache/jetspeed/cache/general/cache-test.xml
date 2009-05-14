@@ -19,10 +19,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
     
-  <!--
-    - Application context definition for PortletEntity using Apache OJB.
-	-->
-     
      <!-- define our caching service.  This one uses a simple hashmap and counts method access
      	- for testing purposes 
        -->

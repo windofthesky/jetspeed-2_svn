@@ -50,9 +50,11 @@
         <entry key="SSO">
           <ref bean="org.apache.jetspeed.sso.SSOManager" />
           </entry>
+        <!-- PortletEntity is obsolete 
         <entry key="EntityAccessor">
           <ref bean='org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent' />
         </entry>
+        -->
         <!-- ApplicationServerManager currently only supported for Tomcat. Comment out for others like JBoss -->
         <entry key="ApplicationServerManager">
           <ref bean="org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager" />

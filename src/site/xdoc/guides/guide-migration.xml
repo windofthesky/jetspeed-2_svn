@@ -42,6 +42,9 @@
               <td>SECURITY_GROUP_ROLE</td>
             </tr>
             <tr>
+              <td>PORTLET_ENTITY</td>              
+            </tr>
+            <tr>
               <td>PREFS_NODE</td>
             </tr>
             <tr>
@@ -155,27 +158,6 @@
               <td>MODIFY</td>
               <td>LONGVARCHAR, Required</td>
               <td>LONGVARCHAR, Not required</td>
-            </tr>
-            <tr>
-              <td>PORTLET_ENTITY</td>
-              <td>ID</td>
-              <td>MODIFY</td>
-              <td>VARCHAR(255), Required</td>
-              <td>VARCHAR(80), Required</td>
-            </tr>
-            <tr>
-              <td>PORTLET_ENTITY</td>
-              <td>APP_NAME</td>
-              <td>MODIFY</td>
-              <td>VARCHAR(255), Required</td>
-              <td>VARCHAR(80), Required</td>
-            </tr>
-            <tr>
-              <td>PORTLET_ENTITY</td>
-              <td>PORTLET_NAME</td>
-              <td>MODIFY</td>
-              <td>VARCHAR(255), Required</td>
-              <td>VARCHAR(80), Required</td>
             </tr>
             <tr>
               <td>SECURITY_PRINCIPAL</td>
@@ -460,14 +442,6 @@
                     <th>Referencing table</th>
                     <th>Referencing column(s)</th>
                     <th>Cascade</th>
-                </tr>
-                <tr>
-                    <td>PORTLET_PREFERENCE_VALUE</td> 
-                    <td>FK_PORTLET_ENTITY</td>
-                    <td>ENTITY_ID</td>
-                    <td>PORTLET_ENTITY</td>
-                    <td>ID</td>
-                    <td>CASCADE DELETE</td>
                 </tr>
             </table>
         </subsection>                         

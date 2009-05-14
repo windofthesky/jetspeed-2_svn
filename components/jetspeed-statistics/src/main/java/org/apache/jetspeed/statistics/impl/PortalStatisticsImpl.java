@@ -57,7 +57,7 @@ import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
  * 
  * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer </a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
- * @version $Id: TestPortletEntityDAO.java,v 1.3 2005/05/24 14:43:19 ate Exp $
+ * @version $Id$
  */
 public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         PortalStatistics
