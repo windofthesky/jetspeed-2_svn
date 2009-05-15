@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project name="Jetspeed 2">
+  <publishDate format="d MMMM yyyy"/>
+  <bannerLeft>
+    <name>Jetspeed 2 Enterprise Portal</name>
+    <src>images/jetspeed-logo.gif</src>            
+    <href>http://portals.apache.org/jetspeed-2/</href>
+  </bannerLeft>
+  <skin>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
+    <artifactId>jetspeed-maven-skin</artifactId>
+    <version>2.2-SNAPSHOT</version>
+  </skin>
+  <body>
+  
+    <links>
+      <item name="Applications" href="http://portals.apache.org/applications/" />
+      <item name="Portals" href="http://portals.apache.org/" />
+      <item name="Jetspeed-2.1.3" href="http://portals.apache.org/jetspeed-2.1.3/" />
+      <!-- TODO: During build, pdf docs need to be generated. 
+      <item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />
+      -->      
+    </links>
+
+    <menu name="Essentials">
+        <item name="Welcome" href="index.html" />    
+        <item name="Features" href="features.html" />
+        <item name="Getting Started" href="getting-started.html" />
+       	<item name="Jetspeed Online Demos" href="demo.html"/>                    
+    </menu>
+        
+   	<menu name="Get Jetspeed">
+   		<item name="Download" href="download.html" />
+   		<item name="Installer Instructions" href="getting-started-installer.html" />
+   		<item name="Release Notes" href="release-notes.html" />
+   	</menu>
+   	
+   	<menu name="Documentation Guides">
+   		<item name="Users Guide" href="usersguide/index.html" />
+   		<item name="Administrators Guide" href="adminguide/index.html" />
+   		<item name="Deployment Guide" href="deployguide/index.html" />
+   		<item name="Build Guide" href="buildguide/index.html" />
+   		<item name="Developers Guide" href="devguide/index.html" />
+        <item name="Jetspeed Applications" href="applications/index.html"/>             		
+   	</menu>
+
+	<menu name="Migration">
+   		<item name="Migration Guide" href="guide-migration.html" />
+        <item name="Jetspeed-1 Migration Guideline" href="j1-migration.html" />
+        <item name="For Jetspeed-1 Users" href="j1-users.html" />
+    </menu>
+
+   	<menu name="APIs">
+   		<item name="Jetspeed-2 Java API" href="apidocs/index.html" />
+   		<item name="Jetspeed-2 AJAX API" href="devguide/guide-ajax-api.html" />
+   	</menu>
+   	
+   	<menu name="Tutorials">
+        <item name="Jetspeed 2.2 Maven Tutorial" href="tutorial/index.html" />
+   	</menu>
+    
+    <menu name="Community">
+        <item name="Supporting Projects" href="supporting-projects.html" />
+        <item name="Who Uses J2?" href="who-uses-j2.html" />
+        <item name="Portlets Community" href="portlets-community.html" />
+        <item name="How to Help?" href="how-to-help.html" />
+    </menu>
+    
+    <menu name="Support"> 	
+        <item name="Mailing List" href="mail-lists.html" />
+        <item name="Bug Database" href="issue-tracking.html" />
+        <item name="Wiki" href="http://wiki.apache.org/portals/Jetspeed2" />
+        <item name='FAQ' href='faq.html'/>
+    </menu>
+
+    <menu name="Translation"> 	
+        <item name="Japanese" href="http://jetspeed-japan.sourceforge.jp/jetspeed-2-trans/ja/index.html" />
+    </menu>
+    
+    <menu name='Project Info'>
+    	<item name="Project Summary" href="project-summary.html"/>
+    	<item name="Jetspeed Team" href="team-list.html"/>
+    	<item name="Source Repository" href="source-repository.html"/>
+    	<item name="Dependencies" href="dependencies.html"/>
+    	<item name="Coverage" href="dependency-convergence.html"/>
+    </menu>
+    
+  </body>
+</project>
