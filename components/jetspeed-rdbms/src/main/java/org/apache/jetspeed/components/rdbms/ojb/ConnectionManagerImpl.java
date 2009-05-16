@@ -81,54 +81,8 @@ public class ConnectionManagerImpl implements ConnectionManagerIF
     {
         this.broker = broker;
         this.pbKey = broker.getPBKey();
-        this.jcd = MetadataManager.getInstance().connectionRepository().getDescriptor(pbKey);        
-        ConnectionPoolDescriptor cpd = jcd.getConnectionPoolDescriptor();        
-        if (cpd != null && cpd.getConnectionFactory() != null)
-        {
-            connectionFactory = (ConnectionFactory)connectionFactories.get(cpd.getConnectionFactory());
-            if ( connectionFactory == null )
-            {
-                try
-                {
-                    if (Boolean.valueOf(this.jcd.getAttribute("org.apache.jetspeed.engineScoped", "false")).booleanValue()) {
-                        ClassLoader cl = Thread.currentThread().getContextClassLoader();                
-                        try
-                        {
-                            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-                            connectionFactory = (ConnectionFactory)
-                                ClassHelper.newInstance (cpd.getConnectionFactory(), true);
-                            connectionFactories.put(cpd.getConnectionFactory(), connectionFactory);
-                        }
-                        finally
-                        {
-                            Thread.currentThread().setContextClassLoader(cl);
-                            connectionFactories.put(cpd.getConnectionFactory(), connectionFactory);
-                        }
-                    }
-                    else
-                    {
-                        connectionFactory = (ConnectionFactory)
-                        ClassHelper.newInstance (cpd.getConnectionFactory(), true);
-                    }
-                }
-                catch (InstantiationException e)
-                {
-                    String err = "Can't instantiate class " + cpd.getConnectionFactory();
-                    log.error(err, e);
-                    throw (IllegalStateException)(new IllegalStateException(err)).initCause(e);
-                }
-                catch (IllegalAccessException e)
-                {
-                    String err = "Can't instantiate class " + cpd.getConnectionFactory();
-                    log.error(err, e);
-                    throw (IllegalStateException)(new IllegalStateException(err)).initCause(e);
-                }
-            }
-        }
-        else 
-        {                
-            this.connectionFactory = ConnectionFactoryFactory.getInstance().createConnectionFactory();
-        }
+        this.jcd = MetadataManager.getInstance().connectionRepository().getDescriptor(pbKey);
+        this.connectionFactory = setupConnectionFactory(jcd);
         this.platform = PlatformFactory.getPlatformFor(jcd);
         /*
         by default batch mode is not enabled and after use of a PB
@@ -138,6 +92,65 @@ public class ConnectionManagerImpl implements ConnectionManagerIF
         unexpected behaviour
         */
         setBatchMode(false);
+
+        // save connection manager instance
+        ConnectionManagerManagementBean.addConnectionManager(this);
+    }
+    
+    /**
+     * Construct new connection factory.
+     * 
+     * @param jcd JDBC connection descriptor
+     * @return
+     */
+    private static ConnectionFactory setupConnectionFactory(JdbcConnectionDescriptor jcd)
+    {
+        ConnectionFactory cf = null;
+        ConnectionPoolDescriptor cpd = jcd.getConnectionPoolDescriptor();        
+        if (cpd != null && cpd.getConnectionFactory() != null)
+        {
+            cf = (ConnectionFactory)connectionFactories.get(cpd.getConnectionFactory());
+            if ( cf == null )
+            {
+                try
+                {
+                    if (Boolean.valueOf(jcd.getAttribute("org.apache.jetspeed.engineScoped", "false")).booleanValue()) {
+                        ClassLoader cl = Thread.currentThread().getContextClassLoader();                
+                        try
+                        {
+                            Thread.currentThread().setContextClassLoader(ConnectionManagerImpl.class.getClassLoader());
+                            cf = (ConnectionFactory) ClassHelper.newInstance(cpd.getConnectionFactory(), true);
+                            connectionFactories.put(cpd.getConnectionFactory(), cf);
+                        }
+                        finally
+                        {
+                            Thread.currentThread().setContextClassLoader(cl);
+                            cf = (ConnectionFactory) ClassHelper.newInstance(cpd.getConnectionFactory(), true);
+                            connectionFactories.put(cpd.getConnectionFactory(), cf);
+                        }
+                    }
+                    else
+                    {
+                        cf = (ConnectionFactory) ClassHelper.newInstance(cpd.getConnectionFactory(), true);
+                    }
+                }
+                catch (InstantiationException e)
+                {
+                    String err = "Can't instantiate class " + cpd.getConnectionFactory();
+                    throw (IllegalStateException)(new IllegalStateException(err)).initCause(e);
+                }
+                catch (IllegalAccessException e)
+                {
+                    String err = "Can't instantiate class " + cpd.getConnectionFactory();
+                    throw (IllegalStateException)(new IllegalStateException(err)).initCause(e);
+                }
+            }
+        }
+        else 
+        {                
+            cf = (ConnectionFactory) ConnectionFactoryFactory.getInstance().createNewInstance();
+        }
+        return cf;
     }
 
     /**
@@ -484,5 +497,32 @@ public class ConnectionManagerImpl implements ConnectionManagerIF
         {
             batchCon.clearBatch();
         }
+    }
+    
+    /**
+     * Reset cached connection and connection factory.
+     */
+    protected void reset()
+    {
+        // roll back and/or release cached connection
+        if (isInLocalTransaction())
+        {
+            localRollback();
+        }
+        else
+        {
+            releaseConnection();
+        }
+        // reset connection factory
+        connectionFactory = setupConnectionFactory(jcd);
+    }
+
+    /**
+     * Reset cached connection factories.
+     */
+    protected static void resetConnectionFactories()
+    {
+        // clear cached connection factories
+        connectionFactories.clear();
     }
 }
