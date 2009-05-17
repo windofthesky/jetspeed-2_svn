@@ -29,11 +29,9 @@
            <value>com.fmr</value>
          </list>
        </property>
-    </bean>
+   </bean>
        		
-    <bean id="ojbConnectionManagement" class="org.apache.jetspeed.components.rdbms.ojb.ConnectionManagerManagementBean" />
-
-    <bean id="ojbConfigurer" class="org.springframework.orm.ojb.support.LocalOjbConfigurer" depends-on="ojbConnectionManagement" />
+    <bean id="ojbConfigurer" class="org.springframework.orm.ojb.support.LocalOjbConfigurer"/> 
 
     <!-- 
          Dynamically configures Database Platform for OJB by looking at the connection string

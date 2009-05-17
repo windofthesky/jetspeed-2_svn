@@ -27,9 +27,7 @@
     <property name="jndiName" value="java:comp/env/jdbc/jetspeed" />
   </bean>
 
-  <bean id="ojbConnectionManagement" class="org.apache.jetspeed.components.rdbms.ojb.ConnectionManagerManagementBean" />
-
-  <bean id="ojbConfigurer" class="org.springframework.orm.ojb.support.LocalOjbConfigurer" depends-on="ojbConnectionManagement" />
+  <bean id="ojbConfigurer" class="org.springframework.orm.ojb.support.LocalOjbConfigurer" />
 
   <!-- 
     Dynamically configures Database Platform for OJB by looking at the connection string
