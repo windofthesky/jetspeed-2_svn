@@ -81,7 +81,17 @@ public abstract class BaseAggregatorImpl
     protected void renderMaximizedWindow( RequestContext context, ContentPage page, ContentFragment layoutContentFragment, 
                                           PortletWindow window )
     {
-        PortletWindow layoutWindow = context.getPortletWindow(layoutContentFragment);
+        boolean maxedLayout = false;
+        PortletWindow layoutWindow;
+        if (window.getFragment().getId().equals(layoutContentFragment.getId()))
+        {
+            layoutWindow = window;
+            maxedLayout = true;
+        }
+        else
+        {
+            layoutWindow = context.getPortletWindow(layoutContentFragment);
+        }
         
         layoutWindow.setAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE, window.getFragment());
         layoutWindow.setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootContentFragment());
@@ -89,7 +99,10 @@ public abstract class BaseAggregatorImpl
         try
         {
             renderer.renderNow(window.getFragment(), context);
-            renderer.renderNow(layoutContentFragment, context);
+            if (!maxedLayout)
+            {
+                renderer.renderNow(layoutContentFragment, context);
+            }
         }
         catch (Exception e)
         {
