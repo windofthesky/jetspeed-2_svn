@@ -37,6 +37,7 @@ import org.apache.jetspeed.serializer.objects.JSRuleCriterion;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterions;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
 import org.apache.jetspeed.serializer.objects.JSPrincipal;
+import org.apache.jetspeed.serializer.objects.JSUser;
 
 /**
  * JetspeedProfilerSerializer - Profiler component serializer
@@ -200,7 +201,36 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
                 eUser.printStackTrace();
             }
         }
-        
+        for (JSUser _user : snapshot.getOldUsers())
+        {
+            try
+            {
+                User user = userManager.getUser(_user.getName());
+                
+                for (JSPrincipalRule pr : _user.getRules())
+                {
+                    ProfilingRule pRule = pm.getRule(pr.getRule());
+    
+                    try
+                    {
+                        PrincipalRule p1 = pm.createPrincipalRule();
+                        p1.setLocatorName(pr.getLocator());
+                        p1.setProfilingRule(pRule);
+                        p1.setPrincipalName(user.getName());
+                        pm.storePrincipalRule(p1);
+                    }
+                    catch (Exception eRole)
+                    {
+                        eRole.printStackTrace();
+                    }
+                }
+            }
+            catch (Exception eUser)
+            {
+                eUser.printStackTrace();
+            }
+            
+        }
         log.debug("recreateUserPrincipalRules - done");
     }
 
