@@ -201,6 +201,14 @@
   </developers>
 
   <repositories>
+    <!-- Temporary staging repository providing Pluto 2.0.0 artifacts under VOTE for release
+         Will be removed again after the VOTE has passed and the staging repository promoted
+    -->
+    <repository>
+      <id>repository.apache.org.portals-staging-027</id>
+      <name>Apache Portals Staging Repository For Pluto 2.0.0</name>
+      <url>https://repository.apache.org/content/repositories/portals-staging-027</url>
+    </repository>
     <!-- Temporary staging repository providing APA artifacts under VOTE for release
          Will be removed again after the VOTE has passed and the staging repository promoted
     -->
@@ -315,7 +323,7 @@
     <myfaces.version>1.1.5</myfaces.version>
     <ojb.version>1.0.3</ojb.version>
     <org.apache.derby.version>10.3.2.1</org.apache.derby.version>
-    <org.apache.pluto.version>2.0.0-SNAPSHOT</org.apache.pluto.version>
+    <org.apache.pluto.version>2.0.0</org.apache.pluto.version>
     <org.apache.portals.bridges.common.version>1.0.4</org.apache.portals.bridges.common.version>
     <org.apache.portals.bridges.frameworks.version>1.0.4</org.apache.portals.bridges.frameworks.version>
     <org.apache.portals.bridges.velocity.version>1.0.4</org.apache.portals.bridges.velocity.version>
