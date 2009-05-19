@@ -33,7 +33,7 @@ limitations under the License.
     	</fragment>                                
     	<fragment id="jsabout-13" type="portlet" name="j2-admin::JetspeedDeveloper">
       		<property layout="TwoColumns" name="row" value="1" />
-      		<property layout="TwoColumns" name="column" value="1" />
+      		<property layout="TwoColumns" name="column" value="0" />
     	</fragment>                                
     </fragment>
 </page>
