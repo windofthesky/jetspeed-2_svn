@@ -327,6 +327,12 @@
 			<credentials password="devmgr" enabled="TRUE"/>
 			<roles>user,dev,devmgr</roles>
 			<groups></groups>
+			<SecurityAttributes>
+				<SecurityAttribute readonly='false'>
+					<name value="org.apache.jetspeed.profiler.refreshUserHomepage"/>
+					<value value="true"/>
+				</SecurityAttribute>
+			</SecurityAttributes>
 			<userinfo>
 				<preference>
 					<name value="user.name.given"/>
