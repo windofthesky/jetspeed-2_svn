@@ -426,7 +426,7 @@
                       ${dollar}{project.build.directory}/${dollar}{portal.unpacked.dir}
                     </applicationRootPath>
                     <files>
-                      <file>${dollar}{project.build.directory}/db/seed/j2-seed.xml</file>
+                      <file>${dollar}{project.build.directory}/db/seed/${dollar}{seed.file}</file>
                     </files>
                     <initProperties>
                       <org.apache.jetspeed.database.user>${dollar}{org.apache.jetspeed.production.database.user}</org.apache.jetspeed.database.user>

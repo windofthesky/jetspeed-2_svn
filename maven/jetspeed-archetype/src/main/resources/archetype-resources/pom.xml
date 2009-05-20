@@ -147,6 +147,9 @@
                 <name>portal</name>
                 <dir>@rootdir@/${artifactId}-portal</dir>
                 <profiles>seed</profiles>
+                <properties>
+                    <seed.file>j2-seed.xml</seed.file>
+                </properties>
               </target>
               <target>
                 <id>portal-seed-dbpsml</id>
