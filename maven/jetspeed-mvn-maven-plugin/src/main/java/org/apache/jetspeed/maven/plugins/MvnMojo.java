@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -62,6 +64,42 @@ import org.codehaus.plexus.util.interpolation.RegexBasedInterpolator;
  */
 public class MvnMojo extends AbstractMojo
 {
+    private static final Comparator<List<Target>> targetListComparator = new Comparator<List<Target>>()
+    {
+        public int compare(List<Target> o1, List<Target> o2)
+        {
+            for (Target t1 : o1)
+            {
+                for (Target t2 : o2)
+                {
+                    if (t1.id == t2.id)
+                    {
+                        return -1;
+                    }
+                }
+            }
+            for (Target t2 : o2)
+            {
+                for (Target t1 : o1)
+                {
+                    if (t1.id == t2.id)
+                    {
+                        return 1;
+                    }
+                }
+            }
+            if (o1.size() == o2.size())
+            {
+                return 0;
+            }
+            else if (o1.size() < o2.size())
+            {
+                return -1;
+            }
+            return 1;
+        }
+    };
+    
     public static class Target
     {
         public Target()
@@ -117,6 +155,11 @@ public class MvnMojo extends AbstractMojo
      * @parameter expression="${target}"
      */
     protected String target;
+    
+    /**
+     * @parameter expression="${list}"
+     */
+    protected String list;
     
     /**
      * @parameter
@@ -197,7 +240,6 @@ public class MvnMojo extends AbstractMojo
             
             for (Target t : targets)
             {
-                System.out.println("Processing target: "+t);
                 t.init();
                 if (t.id == null)
                 {
@@ -223,6 +265,51 @@ public class MvnMojo extends AbstractMojo
                 i++;
             }
         }
+        
+        if (list != null)
+        {
+            ArrayList<List<Target>> lists = new ArrayList<List<Target>>();
+            int maxLength = 0;
+            for (Target t : targets)
+            {
+                if (t.id.length() > maxLength)
+                {
+                    maxLength = t.id.length();
+                }
+                lists.add(resolveTargets(targetsMap, null, t.id));
+            }
+            Collections.sort(lists, targetListComparator);
+            
+            Target t;
+            StringBuffer buffer = new StringBuffer();
+            
+            System.out.println();
+            System.out.println("Available jetspeed:mvn targets:");
+            for (List<Target> targetsList : lists)
+            {
+                t = targetsList.get(targetsList.size()-1);
+                buffer.setLength(0);                
+                buffer.append("  "+t.id);
+                for (int i = t.id.length(); i < maxLength; i++)
+                {
+                    buffer.append(" ");
+                }
+                buffer.append(" [");
+                for (int i = 0, size = targetsList.size(); i < size; i++)
+                {
+                    buffer.append(targetsList.get(i).id);
+                    if (i <size-1)
+                    {
+                        buffer.append(", ");
+                    }
+                }
+                buffer.append("]");
+                System.out.println(buffer.toString());
+            }
+            System.out.println();
+            return;
+        }
+        
         String targetId = target;
         if (StringUtils.isEmpty(targetId) || targetId.equals("true"))
         {
