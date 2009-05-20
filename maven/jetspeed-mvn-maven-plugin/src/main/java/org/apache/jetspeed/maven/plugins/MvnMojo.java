@@ -317,7 +317,8 @@ public class MvnMojo extends AbstractMojo
         }
         if (targetId == null)
         {
-            throw new MojoFailureException("Specify a target (id) on the commandline using -Dtarget=<id> or define a defaultTarget in the plugin configuration.");
+            throw new MojoFailureException("Specify a target on the commandline using -Dtarget=<name> or define a defaultTarget in the plugin configuration.\n"
+                                           +"Use parameter -Dlist to show the list of available targets.");
         }
         
         List<Target> targetsList = resolveTargets(targetsMap, null, targetId);
