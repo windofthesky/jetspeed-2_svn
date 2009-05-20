@@ -748,8 +748,9 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         JetspeedPreferencesMap userPreferences = new JetspeedPreferencesMap();
         String appName = portletdefinition.getApplication().getName();
         String portletName = portletdefinition.getPortletName();
-
-        CacheElement cachedDefaults = preferenceCache.get(getEntityPreferenceKey(appName, portletName,windowId));
+        
+        String userCacheKey = getUserPreferenceKey(appName, portletName,windowId, userName);
+        CacheElement cachedDefaults = preferenceCache.get(userCacheKey);
         if (cachedDefaults != null)
         {
             userPreferences = (JetspeedPreferencesMap) cachedDefaults.getContent();
@@ -771,7 +772,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
                 value.setReadOnly(preference.isReadOnly());
                 userPreferences.put(preference.getName(), value);
             }
-            preferenceCache.put(preferenceCache.createElement(getEntityPreferenceKey(appName, portletName,windowId), userPreferences));
+            preferenceCache.put(preferenceCache.createElement(userCacheKey, userPreferences));
         }
         return userPreferences;
     }
