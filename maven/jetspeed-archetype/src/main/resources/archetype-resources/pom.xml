@@ -31,8 +31,9 @@
   <packaging>pom</packaging>
 
   <properties>
-    <org.apache.portals.jetspeed.version>2.2-SNAPSHOT</org.apache.portals.jetspeed.version>
-    <org.apache.pluto.version>2.0.0-SNAPSHOT</org.apache.pluto.version>
+    <org.apache.portals.jetspeed.version>2.2.0-SNAPSHOT</org.apache.portals.jetspeed.version>
+    <org.apache.pluto.version>2.0.0</org.apache.pluto.version>
+    <org.apache.portals.applications.apa-logging.version>1.0</org.apache.portals.applications.apa-logging.version>
     <ccpp.version>1.0</ccpp.version>
     <org.apache.portals.bridges.common.version>1.0.4</org.apache.portals.bridges.common.version>
     <servlet-api.version>2.4</servlet-api.version>
