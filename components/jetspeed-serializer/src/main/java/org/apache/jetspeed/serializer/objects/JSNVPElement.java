@@ -17,22 +17,30 @@
 
 package org.apache.jetspeed.serializer.objects;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import javolution.xml.XMLFormat;
+import javolution.xml.sax.Attributes;
 import javolution.xml.stream.XMLStreamException;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
 public class JSNVPElement
 {
-
+    private static final String READONLY = "readonly";
+    private static final String NULLVALUE = "nullValue";
+    private static final String NAME = "name";
+    private static final String VALUE = "value";
+    
     private String key;
 
     private String value;
     
     private String [] values;
 
-    private boolean nullValue;
-    private boolean isReadOnly;
+    private Map<String, String> attributes = new LinkedHashMap<String, String>();
 
     public JSNVPElement()
     {
@@ -43,7 +51,7 @@ public class JSNVPElement
         this.key = key;
         this.value = value;
     }
-
+    
     private static final XMLFormat XML = new XMLFormat(JSNVPElement.class)
     {
 
@@ -57,23 +65,40 @@ public class JSNVPElement
                 throws XMLStreamException
         {
             JSNVPElement e = (JSNVPElement) o;
-            // xml.add((String) g.get(_key), _key, String.class);
-            xml.setAttribute("readonly",String.valueOf(e.isReadOnly()));
-            xml.add(e.key, "name", String.class);
-            if (e.nullValue)
+            xml.setAttribute(READONLY, e.isReadOnly() ? "true" : "false");
+            for (Map.Entry<String,String> entry : e.attributes.entrySet())
             {
-                xml.setAttribute("nullValue", true);
-            } else
-            {
-                if(null!=e.getValues())
+                if (entry.getKey().equals(READONLY) || entry.getKey().equals(NULLVALUE))
                 {
-                    for(int count=0;count<e.getValues().length;count++)
+                    ; // skip
+                }
+                else
+                {
+                    xml.setAttribute(entry.getKey(), entry.getValue());
+                }
+            }
+            xml.setAttribute(NAME, e.key);
+            if (e.isNullValue())
+            {
+                xml.setAttribute(NULLVALUE, "true");
+            }
+            else if (e.getValue() != null)
+            {
+                xml.setAttribute(VALUE, e.value);
+            }            
+            else if (e.values != null)
+            {
+                if (e.values.length == 1)
+                {
+                    xml.setAttribute(VALUE, e.values[0]);
+                }
+                else
+                {
+                    for(int count=0;count<e.values.length;count++)
                     {
-                        xml.add(e.getValues()[count], "value", String.class);
+                        xml.add(e.values[count], VALUE, String.class);
                     }
-                }else{
-                    xml.add(e.value, "value", String.class);       
-                }             
+                }
             }
         }
 
@@ -82,20 +107,51 @@ public class JSNVPElement
             try
             {
                 JSNVPElement g = (JSNVPElement) o;
-                g.isReadOnly  = Boolean.parseBoolean(xml.getAttribute("readonly", "false"));
-                g.key = StringEscapeUtils.unescapeHtml((String) xml.get("name",
-                        String.class));
-                g.value = StringEscapeUtils.unescapeHtml((String) xml.get(
-                        "value", String.class));                
-                // DST: not sure what Ate was doing here, but it breaks things
-                // we also need to add upport for multiple values and 'readonly', but its not clear what this null value does for us
-                //                g.nullValue = xml.getAttribute("nullValue", false);                
-                //if (!g.nullValue)
-                //{
-                // g.value =
-                // StringEscapeUtils.unescapeHtml((String)xml.get("value",
-                // String.class));
-                // }
+                Attributes attribs = xml.getAttributes();
+
+                for (int i = 0, len = attribs.getLength(); i < len; i++)
+                {
+                    try
+                    {
+                        String _key = StringEscapeUtils.unescapeHtml(attribs.getLocalName(i).toString());
+                        String _value = StringEscapeUtils.unescapeHtml(attribs.getValue(i).toString());
+                        g.setAttribute(_key,_value);
+                    } catch (Exception e)
+                    {
+                        /**
+                         * while annoying invalid entries in the file should be
+                         * just disregarded
+                         */
+                        e.printStackTrace();
+                    }
+                }
+                
+                g.key = g.getAttributes().get("name");
+                if (g.key == null)
+                {
+                    g.key = StringEscapeUtils.unescapeHtml((String) xml.get("name",String.class));
+                }                
+                
+                if (g.key != null && !g.isNullValue())
+                {
+                    g.value = g.getAttributes().get("value");
+                    if (g.value == null)
+                    {
+                        ArrayList<String> strings = new ArrayList<String>();
+                        while (xml.hasNext())
+                        {
+                            strings.add(StringEscapeUtils.unescapeHtml((String) xml.get("value", String.class)));
+                        }
+                        if (strings.size() > 1)
+                        {
+                            g.values = strings.toArray(new String[strings.size()]);
+                        }
+                        else
+                        {
+                            g.value = strings.get(0);
+                        }
+                    }
+                }
             } catch (Exception e)
             {
                 e.printStackTrace();
@@ -126,26 +182,91 @@ public class JSNVPElement
     public void setValue(String value)
     {
         this.value = value;
-        nullValue = value == null;
+        this.values = null;
+        setNullValue(value == null);
     }
     
     public void setValues(String [] values)
     {
+        this.value = null;
         this.values = values;
-        nullValue = values == null;
+        setNullValue(values == null);
     }
     /**
      * @return the isReadOnly
      */
     public boolean isReadOnly()
     {
-        return isReadOnly;
+        return attributes.get(READONLY) != null;
     }
     /**
      * @param isReadOnly the isReadOnly to set
      */
     public void setReadOnly(boolean isReadOnly)
     {
-        this.isReadOnly = isReadOnly;
+        if (isReadOnly)
+        {
+            attributes.put(READONLY, "true");
+        }
+        else
+        {
+            attributes.remove(READONLY);
+        }
+    }
+    
+    /**
+     * @return the isNullValue
+     */
+    public boolean isNullValue()
+    {
+        return attributes.get(NULLVALUE) != null;
+    }
+    /**
+     * @param isNullValue the isNullValue to set
+     */
+    public void setNullValue(boolean isNullValue)
+    {
+        if (isNullValue)
+        {
+            attributes.put(NULLVALUE, "true");
+        }
+        else
+        {
+            attributes.remove(NULLVALUE);
+        }
+    }
+
+    public Map<String, String> getAttributes()
+    {
+        return attributes;
+    }
+
+    public String getAttribute(String key)
+    {
+        return attributes.get(key);
+    }
+    
+    public void setAttribute(String key, String value)
+    {
+        if (key != null && value != null && key.trim().length() > 0 && value.trim().length() > 0)
+        {
+            if (READONLY.equals(key))
+            {
+                setReadOnly(Boolean.parseBoolean(value));
+            }
+            else if (NULLVALUE.equals(key))
+            {
+                setNullValue(Boolean.parseBoolean(value));
+            }
+            else
+            {
+                attributes.put(key,value);
+            }
+        }
+    }
+    
+    public void removeAttribute(String key)
+    {
+        attributes.remove(key);
     }
 }

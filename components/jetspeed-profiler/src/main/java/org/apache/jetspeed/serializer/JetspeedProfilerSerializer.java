@@ -28,6 +28,7 @@ import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
+import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.serializer.objects.JSPrincipalRule;
@@ -37,7 +38,6 @@ import org.apache.jetspeed.serializer.objects.JSRuleCriterion;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterions;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
 import org.apache.jetspeed.serializer.objects.JSPrincipal;
-import org.apache.jetspeed.serializer.objects.JSUser;
 
 /**
  * JetspeedProfilerSerializer - Profiler component serializer
@@ -172,65 +172,40 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
         log.debug("recreateUserPrincipalRules - started");
 
         // get Rules for each user
-        for (JSPrincipal _user : snapshot.getUsers())
+        for (JSPrincipal _user : snapshot.getPrincipals())
         {
-            try
+            if (JetspeedPrincipalType.USER.equals(_user.getType()))
             {
-                User user = userManager.getUser(_user.getName());
-                
-                for (JSPrincipalRule pr : _user.getRules())
+                try
                 {
-                    ProfilingRule pRule = pm.getRule(pr.getRule());
-    
-                    try
+                    User user = userManager.getUser(_user.getName());
+                    
+                    for (JSPrincipalRule pr : _user.getRules())
                     {
-                        PrincipalRule p1 = pm.createPrincipalRule();
-                        p1.setLocatorName(pr.getLocator());
-                        p1.setProfilingRule(pRule);
-                        p1.setPrincipalName(user.getName());
-                        pm.storePrincipalRule(p1);
-                    }
-                    catch (Exception eRole)
-                    {
-                        eRole.printStackTrace();
+                        ProfilingRule pRule = pm.getRule(pr.getRule());
+        
+                        try
+                        {
+                            PrincipalRule p1 = pm.createPrincipalRule();
+                            p1.setLocatorName(pr.getLocator());
+                            p1.setProfilingRule(pRule);
+                            p1.setPrincipalName(user.getName());
+                            pm.storePrincipalRule(p1);
+                        }
+                        catch (Exception eRole)
+                        {
+                            eRole.printStackTrace();
+                        }
                     }
                 }
-            }
-            catch (Exception eUser)
-            {
-                eUser.printStackTrace();
-            }
-        }
-        for (JSUser _user : snapshot.getOldUsers())
-        {
-            try
-            {
-                User user = userManager.getUser(_user.getName());
-                
-                for (JSPrincipalRule pr : _user.getRules())
+                catch (Exception eUser)
                 {
-                    ProfilingRule pRule = pm.getRule(pr.getRule());
-    
-                    try
-                    {
-                        PrincipalRule p1 = pm.createPrincipalRule();
-                        p1.setLocatorName(pr.getLocator());
-                        p1.setProfilingRule(pRule);
-                        p1.setPrincipalName(user.getName());
-                        pm.storePrincipalRule(p1);
-                    }
-                    catch (Exception eRole)
-                    {
-                        eRole.printStackTrace();
-                    }
+                    eUser.printStackTrace();
                 }
             }
-            catch (Exception eUser)
-            {
-                eUser.printStackTrace();
-            }
-            
+               
         }
+        
         log.debug("recreateUserPrincipalRules - done");
     }
 
@@ -386,16 +361,19 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
     {
         // get Rules for each user
         
-        for (JSPrincipal _user : snapshot.getUsers())
+        for (JSPrincipal _user : snapshot.getPrincipals())
         {
-            Principal principal = _user.getPrincipal();
-            
-            if (principal != null)
+            if (JetspeedPrincipalType.USER.equals(_user.getType()))
             {
-                for (PrincipalRule p1 : (Collection<PrincipalRule>) pm.getRulesForPrincipal(principal))
+                Principal principal = _user.getPrincipal();
+                
+                if (principal != null)
                 {
-                    JSPrincipalRule pr = new JSPrincipalRule(p1.getLocatorName(), p1.getProfilingRule().getId());
-                    _user.getRules().add(pr);
+                    for (PrincipalRule p1 : (Collection<PrincipalRule>) pm.getRulesForPrincipal(principal))
+                    {
+                        JSPrincipalRule pr = new JSPrincipalRule(p1.getLocatorName(), p1.getProfilingRule().getId());
+                        _user.getRules().add(pr);
+                    }
                 }
             }
         }

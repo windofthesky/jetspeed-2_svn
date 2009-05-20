@@ -28,7 +28,6 @@ import javolution.xml.stream.XMLStreamException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.jetspeed.security.Credential;
 import org.apache.jetspeed.security.SecurityAttribute;
-import org.apache.jetspeed.security.SecurityAttributeType;
 
 /**
  * Jetspeed Serialized (JS) JetspeedPrincipal
@@ -44,8 +43,8 @@ public class JSPrincipal
     private boolean enabled;
     private boolean readonly;
     private boolean removable;
-    private JSSecurityAttributes secAttrs;
-    private JSSecurityAttributes infoAttrs;
+    private boolean extendable;
+    private JSSecurityAttributes secAttrs = new JSSecurityAttributes();
     private JSPWAttributes pwData;
     private List<Credential> publicCredentials;
     private List<Credential> privateCredentials;
@@ -68,19 +67,19 @@ public class JSPrincipal
                 JSPrincipal p = (JSPrincipal) o;
                 xml.setAttribute("type", p.getType());
                 xml.setAttribute("name", p.getName());
-                xml.setAttribute("mapped", false);
-                xml.setAttribute("enabled", false);
-                xml.setAttribute("readonly", false);
-                xml.setAttribute("removable", false);
+                xml.setAttribute("mapped", p.isMapped());
+                xml.setAttribute("enabled", p.isEnabled());
+                xml.setAttribute("readonly", p.isReadonly());
+                xml.setAttribute("removable", p.isRemovable());
+                xml.setAttribute("extendable", p.isExtendable());
                 
                 if (p.pwData != null)
                     xml.add(p.pwData);
                 
                 if (p.secAttrs != null && p.secAttrs.size() > 0)
+                {
                     xml.add(p.secAttrs);
-                
-                if (p.infoAttrs != null && p.infoAttrs.size() > 0)
-                    xml.add(p.infoAttrs);
+                }
                 
                 if (p.rules != null && p.rules.size() > 0)
                     xml.add(p.rules);
@@ -99,9 +98,10 @@ public class JSPrincipal
                 p.setType(xml.getAttribute("type", ""));
                 p.setName(StringEscapeUtils.unescapeHtml(xml.getAttribute("name", "")));
                 p.mapped = xml.getAttribute("mapped", false);
-                p.enabled = xml.getAttribute("enabled", false);
+                p.enabled = xml.getAttribute("enabled", true);
                 p.readonly = xml.getAttribute("readonly", false);
-                p.removable = xml.getAttribute("removable", false);
+                p.removable = xml.getAttribute("removable", true);
+                p.extendable = xml.getAttribute("extendable", true);
                 
                 Object o1 = null;
                 while (xml.hasNext())
@@ -110,16 +110,7 @@ public class JSPrincipal
                     
                     if (o1 instanceof JSSecurityAttributes)
                     {
-                        JSSecurityAttributes sas = (JSSecurityAttributes) o1;
-                        
-                        if (SecurityAttributeType.JETSPEED_CATEGORY.equals(sas.getCategory()))
-                        {
-                            p.secAttrs = sas;
-                        }
-                        else if (SecurityAttributeType.INFO_CATEGORY.equals(sas.getCategory()))
-                        {
-                            p.infoAttrs = sas;
-                        }
+                        p.secAttrs = (JSSecurityAttributes)o1;
                     }
                     else if (o1 instanceof JSPWAttributes)
                     {
@@ -210,50 +201,36 @@ public class JSPrincipal
         this.removable = removable;
     }
     
+    public void setExtendable(boolean extendable)
+    {
+        this.extendable = extendable;
+    }
+    
+    public boolean isExtendable()
+    {
+        return extendable;
+    }
+    
     public JSSecurityAttributes getSecurityAttributes()
     {
         return this.secAttrs;
     }
     
-    public void setSecurityAttributes(JSSecurityAttributes secAttrs)
-    {
-        this.secAttrs = secAttrs;
-    }
-    
     public void setSecurityAttributes(Map<String, SecurityAttribute> sa)
     {
-        this.secAttrs = new JSSecurityAttributes(SecurityAttributeType.JETSPEED_CATEGORY);
-        
         for (Map.Entry<String, SecurityAttribute> e : sa.entrySet())
         {
             SecurityAttribute attrib = e.getValue();
             JSNVPElement element = new JSNVPElement(attrib.getName(), attrib.getStringValue());
-            this.secAttrs.add(element);
+            element.setReadOnly(attrib.isReadOnly());
+            element.setAttribute("datatype",attrib.getDataType().name());
+            element.setAttribute("registered",Boolean.toString(attrib.isRegistered()));
+            element.setAttribute("required",Boolean.toString(attrib.isRequired()));
+            element.setAttribute("category",attrib.getCategory());
+            secAttrs.add(element);
         }
     }
 
-    public JSSecurityAttributes getInfoAttributes()
-    {
-        return this.infoAttrs;
-    }
-    
-    public void setInfoAttributes(JSSecurityAttributes infoAttrs)
-    {
-        this.infoAttrs = infoAttrs;
-    }
-    
-    public void setInfoAttributes(Map<String, SecurityAttribute> sa)
-    {
-        this.infoAttrs = new JSSecurityAttributes(SecurityAttributeType.INFO_CATEGORY); 
-        
-        for (Map.Entry<String, SecurityAttribute> e : sa.entrySet())
-        {
-            SecurityAttribute attrib = e.getValue();
-            JSNVPElement element = new JSNVPElement(attrib.getName(), attrib.getStringValue());
-            this.infoAttrs.add(element);
-        }
-    }
-    
     public void setCredential(String name, char [] password, Date expirationDate, boolean isEnabled, boolean isExpired, boolean requireUpdate)
     {
         setName(name);

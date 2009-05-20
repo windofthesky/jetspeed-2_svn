@@ -18,7 +18,6 @@
 package org.apache.jetspeed.serializer.objects;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.serializer.JetspeedSerializedData;
 
 import javolution.xml.XMLFormat;
@@ -50,16 +49,10 @@ public class JSSnapshot implements JetspeedSerializedData
 
     private JSCapabilities capabilities;
     
-    private JSPrincipals roles;
-    
     private JSRoles oldRoles;
 
-    private JSPrincipals groups;
-    
     private JSGroups oldGroups;
 
-    private JSPrincipals users;
-    
     private JSUsers oldUsers;
     
     private JSPrincipals principals;
@@ -90,17 +83,12 @@ public class JSSnapshot implements JetspeedSerializedData
 
     public JSSnapshot()
     {
-        System.out.println(this.getClass().getName() + " created");
-
         mimeTypes = new JSMimeTypes();
         mediaTypes = new JSMediaTypes();
         clients = new JSClients();
         capabilities = new JSCapabilities();
-        roles = new JSPrincipals(JetspeedPrincipalType.ROLE);
         oldRoles = new JSRoles();
-        groups = new JSPrincipals(JetspeedPrincipalType.GROUP);
         oldGroups = new JSGroups();
-        users = new JSPrincipals(JetspeedPrincipalType.USER);
         oldUsers = new JSUsers();
         principals = new JSPrincipals();
         principalAssociations = new JSPrincipalAssociations();
@@ -218,23 +206,6 @@ public class JSSnapshot implements JetspeedSerializedData
     }
     
     /**
-     * @return Returns the groups.
-     */
-    public JSPrincipals getGroups()
-    {
-        return groups;
-    }
-
-    /**
-     * @param groups
-     *            The groups to set.
-     */
-    public void setGroups(JSPrincipals groups)
-    {
-        this.groups = groups;
-    }
-
-    /**
      * @return Returns the groups from old format.
      */
     public JSGroups getOldGroups()
@@ -252,23 +223,6 @@ public class JSSnapshot implements JetspeedSerializedData
     }
     
     /**
-     * @return Returns the roles.
-     */
-    public JSPrincipals getRoles()
-    {
-        return roles;
-    }
-
-    /**
-     * @param roles
-     *            The roles to set.
-     */
-    public void setRoles(JSPrincipals roles)
-    {
-        this.roles = roles;
-    }
-
-    /**
      * @return Returns the roles from old format.
      */
     public JSRoles getOldRoles()
@@ -285,14 +239,6 @@ public class JSSnapshot implements JetspeedSerializedData
         this.oldRoles = oldRoles;
     }
     
-    /**
-     * @return Returns the users.
-     */
-    public JSPrincipals getUsers()
-    {
-        return users;
-    }
-
     /**
      * @return Returns the users from old format.
      */
@@ -410,18 +356,6 @@ public class JSSnapshot implements JetspeedSerializedData
     public void setMimeTypes(JSMimeTypes mimeTypes)
     {
         this.mimeTypes = mimeTypes;
-    }
-
- 
- 
-
-    /**
-     * @param users
-     *            The users to set.
-     */
-    public void setUsers(JSPrincipals users)
-    {
-        this.users = users;
     }
 
     /**
@@ -553,25 +487,13 @@ public class JSSnapshot implements JetspeedSerializedData
                 {
                     xml.add(g.getOldRoles());
                 }
-                if ( !g.getRoles().isEmpty() )
-                {
-                    xml.add(g.getRoles());
-                }
                 if ( !g.getOldGroups().isEmpty() )
                 {
                     xml.add(g.getOldGroups());
                 }
-                if ( !g.getGroups().isEmpty() )
-                {
-                    xml.add(g.getGroups());
-                }
                 if ( !g.getOldUsers().isEmpty() )
                 {
                     xml.add(g.getOldUsers());
-                }
-                if ( !g.getUsers().isEmpty() )
-                {
-                    xml.add(g.getUsers());
                 }
                 if ( !g.getPrincipals().isEmpty() )
                 {
@@ -655,25 +577,7 @@ public class JSSnapshot implements JetspeedSerializedData
                         g.oldUsers = (JSUsers) o1;
                     else if (o1 instanceof JSPrincipals)
                     {
-                        JSPrincipals jsps = (JSPrincipals) o1;
-                        String principalType = jsps.getType();
-                        
-                        if (JetspeedPrincipalType.ROLE.equals(principalType))
-                        {
-                            g.roles = jsps;
-                        }
-                        else if (JetspeedPrincipalType.GROUP.equals(principalType))
-                        {
-                            g.groups = jsps;
-                        }
-                        else if (JetspeedPrincipalType.USER.equals(principalType))
-                        {
-                            g.users = jsps;
-                        }
-                        else if (principalType != null && !"".equals(principalType))
-                        {
-                            g.principals = jsps;
-                        }
+                        g.principals = (JSPrincipals) o1;
                     }
                     else if (o1 instanceof JSPrincipalAssociations)
                         g.principalAssociations = (JSPrincipalAssociations) o1;

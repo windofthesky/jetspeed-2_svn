@@ -22,6 +22,6 @@ public class JSUserAttributes extends JSNVPElements
 {
     public JSUserAttributes()
     {
-        super();
+        super("preference");
     }
 }

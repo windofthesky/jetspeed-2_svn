@@ -24,34 +24,50 @@ package org.apache.jetspeed.serializer.objects;
  * @author <a href="mailto:hajo@bluesunrsie.com">Hajo Birthelmer</a>
  * @version $Id: $
  */
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
 public class JSNVPElements
 {
-    private List<JSNVPElement> values = new ArrayList<JSNVPElement>();
+    private static final Comparator elementComparator = new Comparator<JSNVPElement>()
+    {
+
+        public int compare(JSNVPElement o1, JSNVPElement o2)
+        {
+            return o1.getKey().compareTo(o2.getKey());
+        }
+    };
+    private Set<JSNVPElement> values;
     
-    private String itemElementName = "preference";
+    private String itemElementName;
 
     public int size()
     {
     	return values.size();
     	
     }
+    
     public JSNVPElements()
     {
+        this("preference");
     }
     
     public JSNVPElements(String itemElementName)
     {
-        this();
+        this(itemElementName, elementComparator);
+    }
+ 
+    public JSNVPElements(String itemElementName, Comparator<JSNVPElement> comparator)
+    {
+        values = new TreeSet<JSNVPElement>(comparator);
         this.itemElementName = itemElementName;
     }
  
-    public List<JSNVPElement> getValues()
+    public Set<JSNVPElement> getValues()
 	{
 		return values;
 	}
@@ -101,7 +117,10 @@ public class JSNVPElements
                     // Allow any sub element as long as it has name-value pair. 
 					//JSNVPElement elem = (JSNVPElement)xml.get(g.getItemElementName(), JSNVPElement.class);
                     JSNVPElement elem = (JSNVPElement)xml.getNext();
-					g.add(elem);
+                    if (elem.getKey() != null)
+                    {
+                        g.add(elem);
+                    }
 				}
             } 
             catch (Exception e)
@@ -113,8 +132,5 @@ public class JSNVPElements
                 e.printStackTrace();
             }
         }
-    };
-
-
-    
+    };    
 }

@@ -18,8 +18,6 @@ package org.apache.jetspeed.serializer.objects;
 
 import java.util.ArrayList;
 
-import org.apache.jetspeed.security.JetspeedPrincipalType;
-
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
@@ -34,26 +32,8 @@ public class JSPrincipals extends ArrayList<JSPrincipal>
 {
     private static final long serialVersionUID = -5698435742048612881L;
     
-    private String type = JetspeedPrincipalType.USER;
-
     public JSPrincipals()
     {
-    }
-    
-    public JSPrincipals(String type)
-    {
-        this();
-        this.type = type;
-    }
-    
-    public String getType()
-    {
-        return this.type;
-    }
-    
-    public void setType(String type)
-    {
-        this.type = type;
     }
     
     /***************************************************************************
@@ -68,7 +48,6 @@ public class JSPrincipals extends ArrayList<JSPrincipal>
             try
             {
                 JSPrincipals g = (JSPrincipals) o;
-                xml.setAttribute("type", g.getType());
                 
                 for (JSPrincipal p : g)
                 {
@@ -87,7 +66,6 @@ public class JSPrincipals extends ArrayList<JSPrincipal>
             try
             {
                 JSPrincipals g = (JSPrincipals) o;
-                g.setType(xml.getAttribute("type", JetspeedPrincipalType.USER));
                 
                 while (xml.hasNext())
                 {

@@ -181,9 +181,8 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                 Map<String, PortletPreference> portletPreference = new HashMap<String, PortletPreference>();
                 JSEntityPreference preference = (JSEntityPreference) it.next();
                 String userName = preference.getPrincapalName();
-                for (int counter = 0; counter < preference.getPreferences().getValues().size(); counter++)
+                for (JSNVPElement element : preference.getPreferences().getValues())
                 {
-                    JSNVPElement element = preference.getPreferences().getValues().get(counter);
                     if (element.getValues() == null)
                     {
                         JetspeedPreferenceImpl pref = new JetspeedPreferenceImpl(element.getKey(), new String[] { element.getValue() });
@@ -329,11 +328,11 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
             JSEntityPreference userPreference = new JSEntityPreference();
             userPreference.setPrincapalName(userName);
             Iterator<String> preferences = userPreferences.keySet().iterator();
-            JSNVPElements v = new JSNVPElements();
+            JSNVPElements v = new JSNVPElements("preference");
             while (preferences.hasNext())
             {
                 String pKey = preferences.next();
-                PortletPreference portletPreference = (PortletPreference) userPreferences.get(pKey);
+                PortletPreference portletPreference = userPreferences.get(pKey);
                 JSNVPElement element = new JSNVPElement();
                 element.setKey(pKey);
                 element.setValues(portletPreference.getValues());

@@ -17,7 +17,7 @@
 
 package org.apache.jetspeed.serializer.objects;
 
-import org.apache.jetspeed.security.SecurityAttributeType;
+import java.util.Comparator;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
@@ -25,27 +25,28 @@ import javolution.xml.stream.XMLStreamException;
 
 public class JSSecurityAttributes extends JSNVPElements
 {
-    private String category = SecurityAttributeType.JETSPEED_CATEGORY;
+    private static final Comparator securityAttrComparator = new Comparator<JSNVPElement>()
+    {
+        public int compare(JSNVPElement o1, JSNVPElement o2)
+        {
+            int result = 0;
+            String o1Category = o1.getAttribute("category");
+            String o2Category = o2.getAttribute("category");
+            if (o1Category != null && o2Category != null)
+            {
+                result = o1Category.compareTo(o2Category);
+            }
+            if (result == 0)
+            {
+                result = o1.getKey().compareTo(o2.getKey());
+            }
+            return result;
+        }
+    };
     
     public JSSecurityAttributes()
     {
-        super("SecurityAttribute");
-    }
-    
-    public JSSecurityAttributes(String category)
-    {
-        this();
-        this.category = category;
-    }
-    
-    public String getCategory()
-    {
-        return this.category;
-    }
-    
-    public void setCategory(String category)
-    {
-        this.category = category;
+        super("SecurityAttribute", securityAttrComparator);
     }
     
     /***************************************************************************
@@ -63,7 +64,6 @@ public class JSSecurityAttributes extends JSNVPElements
             try
             {
                 JSSecurityAttributes g = (JSSecurityAttributes) o;
-                xml.setAttribute("category", g.getCategory());
                 
                 for (JSNVPElement element : g.getValues())
                 {
@@ -81,7 +81,6 @@ public class JSSecurityAttributes extends JSNVPElements
             try
             {
                 JSSecurityAttributes g = (JSSecurityAttributes) o;
-                g.setCategory(xml.getAttribute("category", SecurityAttributeType.JETSPEED_CATEGORY));
                 
                 while (xml.hasNext())
                 {
