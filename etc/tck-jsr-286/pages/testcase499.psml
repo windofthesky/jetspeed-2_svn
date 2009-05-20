@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 499 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletPreferences/URLClient.java#SetValuesIllegalArgumentExceptionTest</title>
-  <fragment id="tck-499" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-499-0" type="portlet" name="portlet_jp_PortletPreferences_web::SetValuesIllegalArgumentExceptionTestPortlet"/>
-  </fragment>
-</page>

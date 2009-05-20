@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 357 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletRequestDispatcher/SpecURLClient.java#RequestMethodsParameterMiscRenderIncludeTest</title>
-  <fragment id="tck-357" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-357-0" type="portlet" name="portlet_jp_PortletRequestDispatcher_web::RequestMethodsParameterMiscRenderIncludeTestPortlet"/>
-  </fragment>
-</page>

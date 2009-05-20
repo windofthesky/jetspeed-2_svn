@@ -31,6 +31,23 @@ import org.w3c.dom.NodeList;
  */
 public class JetspeedTCKJSR286ConfigGenerator
 {
+    private static String xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                                    + "<!--\n"
+                                    + "    Licensed to the Apache Software Foundation (ASF) under one or more\n"
+                                    + "    contributor license agreements.  See the NOTICE file distributed with\n"
+                                    + "    this work for additional information regarding copyright ownership.\n"
+                                    + "    The ASF licenses this file to You under the Apache License, Version 2.0\n"
+                                    + "    (the \"License\"); you may not use this file except in compliance with\n"
+                                    + "    the License.  You may obtain a copy of the License at\n"
+                                    + "\n"    
+                                    + "    http://www.apache.org/licenses/LICENSE-2.0\n"
+                                    + "\n"    
+                                    + "    Unless required by applicable law or agreed to in writing, software\n"
+                                    + "    distributed under the License is distributed on an \"AS IS\" BASIS,\n"
+                                    + "    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n"
+                                    + "    See the License for the specific language governing permissions and\n"
+                                    + "    limitations under the License.\n"
+                                    + "-->\n";        
     private static String pageHeader = "<page>\n"
                                        + "  <defaults layout-decorator=\"simple\" portlet-decorator=\"clear\"/>\n"
                                        + "  <title>TCK testcase {0} for test: {1}</title>\n"
@@ -50,7 +67,9 @@ public class JetspeedTCKJSR286ConfigGenerator
         Document doc = db.parse(new File(tckTestsFile));
         NodeList nodes = doc.getDocumentElement().getElementsByTagName("test_case");
         FileWriter urlMappingFile = new FileWriter(new File("jetspeedTestsToURLMapping.xml"));
-        urlMappingFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        
+        
+        urlMappingFile.write(xmlHeader);
         urlMappingFile.write("<test_case_urls xmlns=\"http://java.sun.com/xml/ns/portlet/portletTCKVendor_1_0.xsd\"\n");
         urlMappingFile.write("                xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n");
         urlMappingFile.write("                xsi:schemaLocation=\"http://java.sun.com/xml/ns/portlet/portletTCKVendor_1_0.xsd\n");
@@ -60,7 +79,7 @@ public class JetspeedTCKJSR286ConfigGenerator
         Element test_portlet;
         FileWriter psmlFile;
         String testName;
-        new File("pages").mkdirs();
+        new File("tck-jsr286").mkdirs();
         
         for (num = 0; num < nodes.getLength(); num++)
         {
@@ -96,7 +115,8 @@ public class JetspeedTCKJSR286ConfigGenerator
 
     private FileWriter createTestPage(String testName, int num) throws Exception
     {
-        FileWriter writer = new FileWriter(new File("pages/testcase" + num + ".psml"));
+        FileWriter writer = new FileWriter(new File("tck-jsr286/testcase" + num + ".psml"));
+        writer.write(xmlHeader);
         writer.write(MessageFormat.format(pageHeader, Integer.toString(num), testName));
         return writer;
     }

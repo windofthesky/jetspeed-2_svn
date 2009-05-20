@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 552 for test: com/sun/ts/tests/portlet/api/javax_portlet/EventRequest/SpecURLClient.java#CheckDestroyTest</title>
-  <fragment id="tck-552" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-552-0" type="portlet" name="portlet_jp_EventRequest_web::CheckDestroyTestPortlet"/>
-  </fragment>
-</page>

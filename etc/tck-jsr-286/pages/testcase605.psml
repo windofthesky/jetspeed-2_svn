@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 605 for test: com/sun/ts/tests/portlet/ee/taglib/SpecURLClient.java#ActionURLCopyCurrentRenderParametersAppendTest</title>
-  <fragment id="tck-605" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-605-0" type="portlet" name="portlet_jp_taglib_web::ActionURLCopyCurrentRenderParametersAppendTestPortlet"/>
-  </fragment>
-</page>

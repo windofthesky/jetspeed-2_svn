@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 98 for test: com/sun/ts/tests/portlet/api/javax_portlet/RenderRequest/SpecURLClient.java#CheckSingleParameterValuesTest</title>
-  <fragment id="tck-98" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-98-0" type="portlet" name="portlet_jp_RenderRequest_web::CheckSingleParameterValuesTestPortlet"/>
-  </fragment>
-</page>

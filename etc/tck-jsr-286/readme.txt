@@ -87,10 +87,9 @@ Running the JSR-286 TCK against Jetspeed-2 Enterprise Portal
    
      $TS_HOME/bin/tsant deploy.all -Dwebapp.dir=$CATALINA_HOME/webapps/jetspeed/WEB-INF/deploy
      
-  d) Copy the TCK test psml files to the jetspeed installation:
+  d) Unzip the TCK test psml files to the jetspeed installation:
   
-     mkdir $CATALINA/HOME/webapps/jetspeed/WEB-INF/pages/tck-jsr286
-     cp pages/*.psml $CATALINA_HOME/webapps/jetspeed/WEB-INF/pages/tck-jsr286/
+     unzip tck-jsr286-psml.zip $CATALINA/HOME/webapps/jetspeed/WEB-INF/pages/
      
   e) Startup Jetspeed once to ensure the TCK portlet applications are deployed
 

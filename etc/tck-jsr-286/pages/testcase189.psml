@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 189 for test: com/sun/ts/tests/portlet/api/javax_portlet/ActionResponse/URLClient.java#SetUndeclaredWindowStateTest</title>
-  <fragment id="tck-189" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-189-0" type="portlet" name="portlet_jp_ActionResponse_web::SetUndeclaredWindowStateTestPortlet"/>
-  </fragment>
-</page>

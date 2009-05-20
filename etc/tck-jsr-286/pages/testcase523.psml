@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 523 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletModeException/URLClient.java#PortletModeExceptionCtr1Test</title>
-  <fragment id="tck-523" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-523-0" type="portlet" name="portlet_jp_PortletModeException_web::PortletModeExceptionCtr1TestPortlet"/>
-  </fragment>
-</page>

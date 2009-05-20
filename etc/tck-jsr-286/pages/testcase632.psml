@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 632 for test: com/sun/ts/tests/portlet/ee/taglib/SpecURLClient.java#RenderURLVarTest</title>
-  <fragment id="tck-632" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-632-0" type="portlet" name="portlet_jp_taglib_web::RenderURLVarTestPortlet"/>
-  </fragment>
-</page>

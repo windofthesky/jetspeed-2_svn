@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 197 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletSession/SpecURLClient.java#ComparePortletAndHttpSessionTest</title>
-  <fragment id="tck-197" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-197-0" type="portlet" name="portlet_jp_PortletSession_web::ComparePortletAndHttpSessionTestPortlet"/>
-  </fragment>
-</page>

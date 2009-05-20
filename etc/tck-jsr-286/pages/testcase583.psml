@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 583 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletSessionPrivatescope/URLClient.java#RemoveAttributeIllegalStateTest</title>
-  <fragment id="tck-583" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-583-0" type="portlet" name="portlet_jp_PortletSession_privatescope_web::RemoveAttributeIllegalStateTestPortlet"/>
-  </fragment>
-</page>

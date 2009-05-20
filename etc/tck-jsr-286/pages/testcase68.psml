@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 68 for test: com/sun/ts/tests/portlet/api/javax_portlet/ActionRequest/URLClient.java#GetParameterMapTest</title>
-  <fragment id="tck-68" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-68-0" type="portlet" name="portlet_jp_ActionRequest_web::GetParameterMapTestPortlet"/>
-  </fragment>
-</page>

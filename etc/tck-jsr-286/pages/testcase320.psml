@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 320 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletRequestDispatcher/SpecURLClient.java#AccessToPathRenderIncludeTest</title>
-  <fragment id="tck-320" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-320-0" type="portlet" name="portlet_jp_PortletRequestDispatcher_web::AccessToPathRenderIncludeTestPortlet"/>
-  </fragment>
-</page>

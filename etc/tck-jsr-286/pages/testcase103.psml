@@ -1,8 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 103 for test: com/sun/ts/tests/portlet/api/javax_portlet/RenderRequest/SpecURLClient.java#GetPublicParameterTest</title>
-  <fragment id="tck-103" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-103-0" type="portlet" name="portlet_jp_RenderRequest_web::GetPublicParameterTestPortlet"/>
-    <fragment id="tck-103-1" type="portlet" name="portlet_jp_RenderRequest_web::GetPublicParameterTest_1_Portlet"/>
-  </fragment>
-</page>

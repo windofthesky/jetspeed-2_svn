@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 19 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletConfig/SpecURLClient.java#GetNoSupportedLocalesTest</title>
-  <fragment id="tck-19" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-19-0" type="portlet" name="portlet_jp_PortletConfig_web::GetNoSupportedLocalesTestPortlet"/>
-  </fragment>
-</page>

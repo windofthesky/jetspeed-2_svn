@@ -1,7 +1,0 @@
-<page>
-  <defaults layout-decorator="simple" portlet-decorator="clear"/>
-  <title>TCK testcase 393 for test: com/sun/ts/tests/portlet/api/javax_portlet/PortletRequestDispatcher/SpecURLClient.java#ResponseMethodsReturnNullRenderIncludeTest</title>
-  <fragment id="tck-393" type="layout" name="jetspeed-layouts::VelocityOneColumn">
-    <fragment id="tck-393-0" type="portlet" name="portlet_jp_PortletRequestDispatcher_web::ResponseMethodsReturnNullRenderIncludeTestPortlet"/>
-  </fragment>
-</page>
