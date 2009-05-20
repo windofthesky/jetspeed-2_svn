@@ -1546,6 +1546,18 @@
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
                 <profiles>seed</profiles>
+                <properties>
+                  <seed.file>j2-seed.xml</seed.file>
+                </properties>
+              </target>
+              <target>
+                <id>min-seed</id>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>seed</profiles>
+                <properties>
+                  <seed.file>min/j2-seed.xml</seed.file>
+                </properties>
               </target>
               <target>
                 <id>demo-seed-dbpsml</id>
@@ -1582,6 +1594,10 @@
               <target>
                 <id>demo-db</id>
                 <depends>proddb,demo-seed</depends>
+              </target>
+              <target>
+                <id>min-db</id>
+                <depends>proddb,min-seed</depends>
               </target>
               <target>
                 <id>demo-db-psml</id>
