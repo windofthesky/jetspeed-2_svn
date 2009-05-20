@@ -42,6 +42,10 @@
               <constructor-arg index="1" value="jetspeed" />
             </bean>
             <bean class="org.apache.jetspeed.security.impl.SecurityAttributeTypeImpl">
+              <constructor-arg index="0" value="org.apache.jetspeed.profiler.refreshUserHomepage" />
+              <constructor-arg index="1" value="jetspeed" />
+            </bean>
+            <bean class="org.apache.jetspeed.security.impl.SecurityAttributeTypeImpl">
               <constructor-arg index="0" value="user.name.given" />
               <constructor-arg index="1" value="info" />
             </bean>
