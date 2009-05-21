@@ -60,6 +60,40 @@
     <defaultGoal>install</defaultGoal>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <configuration>
+          <attach>false</attach>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!-- only include this in top level project poms -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <skipAssembly>true</skipAssembly>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!--
+          workaround for war processing of m-r-r-plugin causing the generated
+          NOTICE and LICENSE file to be put under WEB-INF/classes/META-INF
+        -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${build.finalName}</outputDirectory>
+              <attached>false</attached>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-deploy-maven-plugin</artifactId>
         <version>${org.apache.portals.jetspeed.version}</version>

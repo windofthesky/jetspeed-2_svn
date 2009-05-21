@@ -21,9 +21,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <prerequisites>
-    <maven>2.0.9</maven>
-  </prerequisites>
+
+  <parent>
+    <groupId>org.apache.portals</groupId>
+    <artifactId>portals-pom</artifactId>
+    <version>1.2</version>
+  </parent>
 
   <groupId>org.apache.portals.jetspeed-2</groupId>
   <artifactId>jetspeed-2</artifactId>
@@ -37,17 +40,6 @@
   <url>http://portals.apache.org/jetspeed-2</url>
   -->
 
-  <organization>
-    <name>Apache Software Foundation</name>
-    <url>http://portals.apache.org/</url>
-  </organization>
-  <licenses>
-    <license>
-      <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
   <issueManagement>
     <system>Jira</system>
     <url>http://issues.apache.org/jira/browse/JS2</url>
@@ -1458,14 +1450,6 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <!-- force maven-jar-plugin to 2.1 which fixes putting in the "correct" pom.xml in the jar
-            I'd like to be able to specify version range [2.1,) but that seems to be utterly broken :(
-          -->
-          <version>2.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
           <version>2.4</version>
           <configuration>
@@ -1475,7 +1459,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>2.0.3</version>
           <inherited>true</inherited>
           <executions>
             <execution>
@@ -1728,6 +1711,34 @@
       <!-- For building website documentation, there's no need to include modules. -->
       <modules/>
     </profile>
+
+    <profile>
+      <id>apache-release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <!--
+                "hack" to make it possible to override portals-pom-1.2 configuration using descriptorRef "project" which
+                (with the current version of the plugin doesn't produce what we need. This "hack" also requires setting
+                ignoreMissingDescriptor=true (below) See also: http://jira.codehaus.org/browse/MASSEMBLY-409
+              -->
+              <descriptorRefs>
+                <descriptorRef>dummy-does-not-exist</descriptorRef>
+              </descriptorRefs>
+              <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
+              <!-- our custom assembly descriptor producing -src archives and excludes velocity.log -->
+              <descriptors>
+                <descriptor>src/main/assembly/project-src.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 
 </project>
