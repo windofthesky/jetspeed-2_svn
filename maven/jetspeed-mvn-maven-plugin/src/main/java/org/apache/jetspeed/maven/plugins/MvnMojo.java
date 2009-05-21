@@ -225,7 +225,7 @@ public class MvnMojo extends AbstractMojo
         else
         {
             MavenProject prj = project;
-            while (prj.hasParent())
+            while (prj.hasParent() && prj.getParent().getBasedir() != null)
             {
                 prj = prj.getParent();
             }
