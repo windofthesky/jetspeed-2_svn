@@ -19,12 +19,12 @@
 	<portlets>
 		<portlets>
 			<portlet id="demo" group="org.apache.portals.jetspeed"
-				version="2.1">
-				<portletSpecVersion>1.0</portletSpecVersion>
+				version="2.2">
+				<portletSpecVersion>2.0</portletSpecVersion>
 				<packaging>war</packaging>
 				<name>demo</name>
 				<description>Various Demo portlets from Apache Jetspeed</description>
-				<binaryURL>http://www.bluesunrise.com/rpa/jetspeed/2.1/demo.war</binaryURL>
+				<binaryURL>http://www.bluesunrise.com/rpa/jetspeed/2.2/demo.war</binaryURL>
 				<sourceURL />
 				<imageURL />
 				<license>
@@ -41,9 +41,9 @@
 					<locale>de</locale>
 					<locale>fr</locale>						
 				</locales>
-				<compiledJDKVersion>1.4</compiledJDKVersion>
-				<dateCreated>2007-02-27T07:05+09:00</dateCreated>
-				<dateModified>2007-02-27T07:05+09:00</dateModified>
+				<compiledJDKVersion>1.5</compiledJDKVersion>
+				<dateCreated>2009-05-20T18:23+09:00</dateCreated>
+				<dateModified>2009-05-20T18:23+09:00</dateModified>
 				<publisher>
 					<name>Apache Portals</name>
 					<url>http://portals.apache.org/</url>
@@ -51,12 +51,12 @@
 			</portlet>
 		</portlets>
 		<portlet id="j2-admin" group="org.apache.portals.jetspeed"
-			version="2.1">
-			<portletSpecVersion>1.0</portletSpecVersion>
+			version="2.2">
+			<portletSpecVersion>2.0</portletSpecVersion>
 			<packaging>war</packaging>
 			<name>j2-admin</name>
 			<description>Jetspeed Administration (only runs in Jetspeed Portal2.1)</description>
-			<binaryURL>http://www.bluesunrise.com/rpa/jetspeed/2.1/j2-admin.war</binaryURL>
+			<binaryURL>http://www.bluesunrise.com/rpa/jetspeed/2.2/j2-admin.war</binaryURL>
 			<sourceURL />
 			<imageURL />
 			<license>
@@ -69,43 +69,13 @@
 			</tags>
 			<locales>
 				<locale>en</locale>
-				<locale>ja</locale>
+ 				<locale>ja</locale>
 				<locale>zh</locale>
 				<locale>zh-TW</locale>
 			</locales>
-			<compiledJDKVersion>1.4</compiledJDKVersion>
-			<dateCreated>2007-02-27T07:05+09:00</dateCreated>
-			<dateModified>2007-02-27T07:05+09:00</dateModified>
-			<publisher>
-				<name>Apache Portals</name>
-				<url>http://portals.apache.org/</url>
-			</publisher>
-		</portlet>
-	</portlets>
-	<portlets>
-		<portlet id="jsf-demo" group="org.apache.portals.bridges"
-			version="2.1">
-			<portletSpecVersion>1.0</portletSpecVersion>
-			<packaging>war</packaging>
-			<name>jsf-demo</name>
-			<description>JSF Bridge Demo portlets from Apache Portals</description>
-			<binaryURL>http://www.bluesunrise.com/rpa/bridges/2.1/jsf-demo.war</binaryURL>
-			<sourceURL />
-			<imageURL />
-			<license>
-				<name>The Apache Software License, Version 2.0</name>
-				<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			</license>
-			<externalDependencies />
-			<tags>
-				<tag>jetspeed</tag>
-			</tags>
-			<locales>
-				<locale>en</locale>
-			</locales>
-			<compiledJDKVersion>1.4</compiledJDKVersion>
-			<dateCreated>2007-02-27T07:05+09:00</dateCreated>
-			<dateModified>2007-02-27T07:05+09:00</dateModified>
+			<compiledJDKVersion>1.5</compiledJDKVersion>
+			<dateCreated>2009-05-21T09:43+09:00</dateCreated>
+			<dateModified>2009-05-21T09:43+09:00</dateModified>
 			<publisher>
 				<name>Apache Portals</name>
 				<url>http://portals.apache.org/</url>
@@ -114,12 +84,12 @@
 	</portlets>
 	<portlets>
 		<portlet id="jpetstore" group="org.apache.portals.bridges"
-			version="2.1">
-			<portletSpecVersion>1.0</portletSpecVersion>
+			version="2.2">
+			<portletSpecVersion>2.0</portletSpecVersion>
 			<packaging>war</packaging>
 			<name>jpetstore</name>
 			<description>Struts Bridge Demo portlet (JPetstore) from Apache Portals</description>
-			<binaryURL>http://www.bluesunrise.com/rpa/bridges/2.1/jpetstore.war</binaryURL>
+			<binaryURL>http://www.bluesunrise.com/rpa/bridges/2.2/jpetstore.war</binaryURL>
 			<sourceURL />
 			<imageURL />
 			<license>
@@ -133,101 +103,9 @@
 			<locales>
 				<locale>en</locale>
 			</locales>
-			<compiledJDKVersion>1.4</compiledJDKVersion>
-			<dateCreated>2007-02-27T07:05+09:00</dateCreated>
-			<dateModified>2007-02-27T07:05+09:00</dateModified>
-			<publisher>
-				<name>Apache Portals</name>
-				<url>http://portals.apache.org/</url>
-			</publisher>
-		</portlet>
-	</portlets>	
-	<portlets>
-		<portlet id="perl" group="org.apache.portals.bridges"
-			version="2.1">
-			<portletSpecVersion>1.0</portletSpecVersion>
-			<packaging>war</packaging>
-			<name>perl</name>
-			<description>Perl Bridge Demo portlet from Apache Portals</description>
-			<binaryURL>http://www.bluesunrise.com/rpa/bridges/2.1/perl.war</binaryURL>
-			<sourceURL />
-			<imageURL />
-			<license>
-				<name>The Apache Software License, Version 2.0</name>
-				<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			</license>
-			<externalDependencies />
-			<tags>
-				<tag>jetspeed</tag>
-			</tags>
-			<locales>
-				<locale>en</locale>
-			</locales>
-			<compiledJDKVersion>1.4</compiledJDKVersion>
-			<dateCreated>2007-02-27T07:05+09:00</dateCreated>
-			<dateModified>2007-02-27T07:05+09:00</dateModified>
-			<publisher>
-				<name>Apache Portals</name>
-				<url>http://portals.apache.org/</url>
-			</publisher>
-		</portlet>
-	</portlets>	
-	<portlets>
-		<portlet id="php" group="org.apache.portals.bridges"
-			version="2.1">
-			<portletSpecVersion>1.0</portletSpecVersion>
-			<packaging>war</packaging>
-			<name>php</name>
-			<description>PHP Bridge Demo portlet from Apache Portals</description>
-			<binaryURL>http://www.bluesunrise.com/rpa/bridges/2.1/php.war</binaryURL>
-			<sourceURL />
-			<imageURL />
-			<license>
-				<name>The Apache Software License, Version 2.0</name>
-				<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			</license>
-			<externalDependencies />
-			<tags>
-				<tag>jetspeed</tag>
-				<tag>bridges</tag>
-			</tags>
-			<locales>
-				<locale>en</locale>
-			</locales>
-			<compiledJDKVersion>1.4</compiledJDKVersion>
-			<dateCreated>2007-02-27T07:05+09:00</dateCreated>
-			<dateModified>2007-02-27T07:05+09:00</dateModified>
-			<publisher>
-				<name>Apache Portals</name>
-				<url>http://portals.apache.org/</url>
-			</publisher>
-		</portlet>
-	</portlets>	
-	<portlets>
-		<portlet id="springmvc" group="org.apache.portals.bridges"
-			version="2.1">
-			<portletSpecVersion>1.0</portletSpecVersion>
-			<packaging>war</packaging>
-			<name>springmvc</name>
-			<description>Spring MVC Demo portlet from Apache Portals</description>
-			<binaryURL>http://www.bluesunrise.com/rpa/bridges/2.1/springmvc.war</binaryURL>
-			<sourceURL />
-			<imageURL />
-			<license>
-				<name>The Apache Software License, Version 2.0</name>
-				<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			</license>
-			<externalDependencies />
-			<tags>
-				<tag>jetspeed</tag>
-				<tag>bridges</tag>
-			</tags>
-			<locales>
-				<locale>en</locale>
-			</locales>
-			<compiledJDKVersion>1.4</compiledJDKVersion>
-			<dateCreated>2007-02-27T07:05+09:00</dateCreated>
-			<dateModified>2007-02-27T07:05+09:00</dateModified>
+			<compiledJDKVersion>1.5</compiledJDKVersion>
+			<dateCreated>2009-05-20T19:53+09:00</dateCreated>
+			<dateModified>2009-05-20T19:53+09:00</dateModified>
 			<publisher>
 				<name>Apache Portals</name>
 				<url>http://portals.apache.org/</url>
@@ -236,12 +114,12 @@
 	</portlets>	
 	<portlets>
 		<portlet id="rss" group="org.apache.portals.jetspeed"
-			version="2.1">
-			<portletSpecVersion>1.0</portletSpecVersion>
+			version="2.2">
+			<portletSpecVersion>2.0</portletSpecVersion>
 			<packaging>war</packaging>
 			<name>rss</name>
 			<description>RSS Portlets from Apache Jetspeed</description>
-			<binaryURL>http://www.bluesunrise.com/rpa/jetspeed/2.1/rss.war</binaryURL>
+			<binaryURL>http://www.bluesunrise.com/rpa/jetspeed/2.2/rss.war</binaryURL>
 			<sourceURL />
 			<imageURL />
 			<license>
@@ -255,9 +133,69 @@
 			<locales>
 				<locale>en</locale>
 			</locales>
-			<compiledJDKVersion>1.4</compiledJDKVersion>
-			<dateCreated>2007-02-27T07:05+09:00</dateCreated>
-			<dateModified>2007-02-27T07:05+09:00</dateModified>
+			<compiledJDKVersion>1.5</compiledJDKVersion>
+			<dateCreated>2009-05-20T18:24+09:00</dateCreated>
+			<dateModified>2009-05-20T18:24+09:00</dateModified>
+			<publisher>
+				<name>Apache Portals</name>
+				<url>http://portals.apache.org/</url>
+			</publisher>
+		</portlet>
+	</portlets>
+	<portlets>
+		<portlet id="dbbrowser" group="org.apache.portals.jetspeed"
+			version="2.2">
+			<portletSpecVersion>2.0</portletSpecVersion>
+			<packaging>war</packaging>
+			<name>dbbrowser</name>
+			<description>Database Browser from Apache Jetspeed</description>
+			<binaryURL>http://www.bluesunrise.com/rpa/jetspeed/2.2/dbbrowser.war</binaryURL>
+			<sourceURL />
+			<imageURL />
+			<license>
+				<name>The Apache Software License, Version 2.0</name>
+				<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			</license>
+			<externalDependencies />
+			<tags>
+				<tag>jetspeed</tag>
+			</tags>
+			<locales>
+				<locale>en</locale>
+			</locales>
+			<compiledJDKVersion>1.5</compiledJDKVersion>
+			<dateCreated>2009-05-20T18:21+09:00</dateCreated>
+			<dateModified>2009-05-20T18:21+09:00</dateModified>
+			<publisher>
+				<name>Apache Portals</name>
+				<url>http://portals.apache.org/</url>
+			</publisher>
+		</portlet>
+	</portlets>
+	<portlets>
+		<portlet id="webcontent" group="org.apache.portals.jetspeed"
+			version="2.2">
+			<portletSpecVersion>2.0</portletSpecVersion>
+			<packaging>war</packaging>
+			<name>webcontent</name>
+			<description>Web Content and IFrame Portlets from Apache Jetspeed</description>
+			<binaryURL>http://www.bluesunrise.com/rpa/jetspeed/2.2/webcontent.war</binaryURL>
+			<sourceURL />
+			<imageURL />
+			<license>
+				<name>The Apache Software License, Version 2.0</name>
+				<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			</license>
+			<externalDependencies />
+			<tags>
+				<tag>jetspeed</tag>
+			</tags>
+			<locales>
+				<locale>en</locale>
+			</locales>
+			<compiledJDKVersion>1.5</compiledJDKVersion>
+			<dateCreated>2009-05-20T18:25+09:00</dateCreated>
+			<dateModified>2009-05-20T18:25+09:00</dateModified>
 			<publisher>
 				<name>Apache Portals</name>
 				<url>http://portals.apache.org/</url>
