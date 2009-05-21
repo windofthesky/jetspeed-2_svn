@@ -495,6 +495,12 @@
                 <version>${org.apache.portals.applications.apa-webcontent.version}</version>
                 <type>war</type>
               </dependency>
+              <dependency>
+                <groupId>org.apache.portals.applications</groupId>
+                <artifactId>apa-dbbrowser-war</artifactId>
+                <version>${org.apache.portals.applications.apa-dbbrowser.version}</version>
+                <type>war</type>
+              </dependency>
 
               <!-- logging -->
               <dependency>
