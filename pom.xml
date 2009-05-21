@@ -1739,6 +1739,33 @@
       </build>
     </profile>
 
+    <profile>
+      <id>rat</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>rat-maven-plugin</artifactId>            
+            <configuration>
+              <excludes combine.children="append">
+                <exclude>docs/release/JETSPEED-2.0-ANNOUNCEMENT.txt</exclude>
+                <exclude>docs/release/JETSPEED-2.0-M1-README.txt</exclude>
+                <exclude>docs/release/JETSPEED-2.0-M2-README.txt</exclude>
+                <exclude>docs/release/JETSPEED-2.0-M3-README.txt</exclude>
+                <exclude>docs/release/JETSPEED-2.0-README.txt</exclude>
+                <exclude>docs/release/JETSPEED-2.1-ANNOUNCEMENT.txt</exclude>
+                <exclude>docs/release/JETSPEED-2.1-README.txt</exclude>
+                <exclude>docs/release/JETSPEED-2.1-TODO.txt</exclude>
+                <exclude>docs/release/RELEASE-NOTES-2.1.2.txt</exclude>
+                <exclude>docs/release/RELEASE-NOTES-2.1.3.txt</exclude>
+                <exclude>docs/release/RELEASE-TODO.txt</exclude>                
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 
 </project>
