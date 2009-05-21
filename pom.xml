@@ -1452,7 +1452,6 @@
                 <descriptorRef>dummy-does-not-exist</descriptorRef>
               </descriptorRefs>
               <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
-              <!-- our custom assembly descriptor producing -src archives and excludes velocity.log -->
             </configuration>
           </plugin>
         <plugin>
