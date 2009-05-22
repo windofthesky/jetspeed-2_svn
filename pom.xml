@@ -1710,6 +1710,15 @@
                 <descriptor>src/main/assembly/project-src.xml</descriptor>
               </descriptors>
             </configuration>
+            <executions>
+              <execution>
+                <id>make-project-assembly-source-release</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
