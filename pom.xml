@@ -1300,18 +1300,6 @@
     </dependencies>
   </dependencyManagement>
 
-  <distributionManagement>
-      <!-- A dummy repository just to keep the maven deploy plugin happy.
-           To deploy: use mvn deploy -DaltDeploymentRepository=serverId::default::url
-           See also : http://www.apache.org/dev/repository-faq.html
-                      http://maven.apache.org/plugins/maven-deploy-plugin/deploy-mojo.html
-      -->
-      <repository>
-        <id></id>
-        <url></url>
-      </repository>
-  </distributionManagement>
-
   <dependencies>
 
     <!-- Provided Dependencies -->
@@ -1439,21 +1427,41 @@
             </execution>
           </executions>
         </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-              <!--
-                "hack" to make it possible to override portals-pom-1.2 configuration using descriptorRef "project" which
-                (with the current version of the plugin doesn't produce what we need. This "hack" also requires setting
-                ignoreMissingDescriptor=true (below) See also: http://jira.codehaus.org/browse/MASSEMBLY-409
-              -->
-              <descriptorRefs>
-                <descriptorRef>dummy-does-not-exist</descriptorRef>
-              </descriptorRefs>
-              <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
-            </configuration>
-          </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <configuration>
+            <!--
+              "hack" to make it possible to override portals-pom-1.2 configuration using descriptorRef "project" which
+              (with the current version of the plugin doesn't produce what we need. This "hack" also requires setting
+              ignoreMissingDescriptor=true (below) See also: http://jira.codehaus.org/browse/MASSEMBLY-409
+            -->
+            <descriptorRefs>
+              <descriptorRef>dummy-does-not-exist</descriptorRef>
+            </descriptorRefs>
+            <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <configuration>
+            <useReleaseProfile>false</useReleaseProfile>
+            <goals>deploy</goals>
+            <arguments>-Papache-release</arguments>
+            <!--
+              override default "clean, verify" preparationGoals with just "install":
+              - clean: causes problems with bootstrapping usage of jetspeed-maven-plugins which would first need to be build
+              - verify: causes problems with dependencies in submodules on earlier build (but not yet installed) modules
+              - install: ensures modules artifacts are installed when build so later modules can have dependencies on them
+            -->
+            <preparationGoals>install</preparationGoals>
+            <!-- 
+              all submodules should get the parent version, so let the release plugin take care of this automatically
+             -->
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+          </configuration>
+        </plugin>
         <plugin>
           <!-- to ensure the jetspeed-portal-resources artifact is visible as plugin dependency
                when it itself is build during a full mvn install -P all (mvn bug?),
