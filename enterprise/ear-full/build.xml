@@ -34,6 +34,7 @@
     <antcall target="configurePSML" inheritall="true"/>
     <antcall target="configureWEBXML" inheritall="true"/>
     <antcall target="configureDBPM" inheritall="true"/>
+    <antcall target="configureAssembly" inheritall="true"/>
     <!-- reassemble jetspeed-demo portal application -->
     <delete file="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war"/>
     <zip destfile="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" basedir="${project.build.directory}/package-skinny-wars/websphere"/>
@@ -162,6 +163,11 @@
     <condition property="do.configureDBPM">
       <equals arg1="${configureDBPM}" arg2="true"/>
     </condition>
+  </target>
+
+  <!-- overlay assemblies: enable Websphere PortalRequestFactory -->
+  <target name="configureAssembly">
+    <copy file="${basedir}/src/main/webapp/WEB-INF/assembly/wps.xml" todir="${project.build.directory}/package-skinny-wars/websphere/WEB-INF/assembly" overwrite="true"/>
   </target>
 
 </project>
