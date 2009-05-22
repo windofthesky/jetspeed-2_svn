@@ -31,6 +31,7 @@
     <mkdir dir="${project.build.directory}/package-skinny-wars/websphere"/>
     <unzip src="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" dest="${project.build.directory}/package-skinny-wars/websphere"/>
     <!-- configure using conditional tasks -->
+    <antcall target="configureMinPSML" inheritall="true"/>
     <antcall target="configurePSML" inheritall="true"/>
     <antcall target="configureWEBXML" inheritall="true"/>
     <antcall target="configureDBPM" inheritall="true"/>
@@ -105,6 +106,12 @@
       </fileset>
     </copy>
     <delete dir="${project.build.directory}/package-skinny-wars/websphere-psml"/>
+  </target>
+
+  <!-- install min PSML pages -->
+  <target name="configureMinPSML">
+    <delete dir="${project.build.directory}/package-skinny-wars/websphere/WEB-INF/pages"/>
+    <move file="${project.build.directory}/package-skinny-wars/websphere/WEB-INF/min-pages" tofile="${project.build.directory}/package-skinny-wars/websphere/WEB-INF/pages"/>
   </target>
 
   <!-- overlay web.xml: enable PortalFilter -->
