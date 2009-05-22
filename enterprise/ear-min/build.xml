@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+    $Id:$
+  -->
+<project name="ear-min-package">
+
+  <!-- package EAR target -->
+  <target name="ear-min-package">
+    <echo>Building with Ant version: ${ant.version}</echo>
+
+    <!-- unpackage EAR -->
+    <delete dir="${project.build.directory}/package-skinny-wars"/>
+    <unjar src="${project.build.directory}/${project.build.finalName}.ear" dest="${project.build.directory}/package-skinny-wars"/>
+
+    <!-- configure jetspeed-demo portal application for Websphere -->
+    <mkdir dir="${project.build.directory}/package-skinny-wars/websphere"/>
+    <unzip src="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" dest="${project.build.directory}/package-skinny-wars/websphere"/>
+    <!-- configure using conditional tasks -->
+    <antcall target="configurePSML" inheritall="true"/>
+    <antcall target="configureWEBXML" inheritall="true"/>
+    <antcall target="configureDBPM" inheritall="true"/>
+    <!-- reassemble jetspeed-demo portal application -->
+    <delete file="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war"/>
+    <zip destfile="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" basedir="${project.build.directory}/package-skinny-wars/websphere"/>
+    <delete dir="${project.build.directory}/package-skinny-wars/websphere"/>
+    
+    <!-- 
+         JS2-973: Websphere 6.1/IBM JDK5 workaround for "java.lang.TypeNotPresentException: Type javax.xml.bind.annotation.XmlRootElement not present" bug.
+         This is a recognized issue, see for instance: https://issues.apache.org/jira/browse/TUSCANY-2519
+         Workaround is extracting the jaxb-api-2.1.jar from the Jetspeed Portal war and move it to the shared jars within the ear.
+      -->
+    <mkdir dir="${project.build.directory}/package-skinny-wars/tmp"/>
+    <unzip src="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" dest="${project.build.directory}/package-skinny-wars/lib">
+      <patternset>
+        <include name="WEB-INF/lib/jaxb-api-*.jar"/>
+      </patternset>
+      <mapper type="flatten"/>
+    </unzip>
+    <move file="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" todir="${project.build.directory}/package-skinny-wars/tmp"/>
+    <zip destfile="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war">
+      <zipfileset src="${project.build.directory}/package-skinny-wars/tmp/jetspeed-demo-${pom.version}.war">
+        <exclude name="WEB-INF/lib/jaxb-api-*.jar"/>
+      </zipfileset>
+    </zip>                
+    <delete dir="${project.build.directory}/package-skinny-wars/tmp"/>
+    <!--  end of JS2-973 workaround -->
+
+    <!-- determine skinny wars classpath from lib jars -->
+    <pathconvert pathsep=" " property="war.manifest.classpath">
+      <map from="${project.build.directory}${file.separator}package-skinny-wars${file.separator}" to=""/>
+      <path>
+        <fileset dir="${project.build.directory}/package-skinny-wars">
+          <include name="lib/*.jar"/>
+        </fileset>
+      </path>
+    </pathconvert>
+    <!-- set skinny wars classpath -->
+    <jar destfile="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" update="true">
+      <manifest>
+        <attribute name="Class-Path" value="${war.manifest.classpath}"/>
+      </manifest>
+    </jar>
+    <jar destfile="${project.build.directory}/package-skinny-wars/j2-admin-${pom.version}.war" update="true">
+      <manifest>
+        <attribute name="Class-Path" value="${war.manifest.classpath}"/>
+      </manifest>
+    </jar>
+
+    <!-- repackage EAR with skinny wars -->
+    <jar destfile="${project.build.directory}/${project.build.finalName}.ear" basedir="${project.build.directory}/package-skinny-wars" manifest="${project.build.directory}/package-skinny-wars/META-INF/MANIFEST.MF"/>
+    <delete dir="${project.build.directory}/package-skinny-wars"/>
+  </target>
+
+  <!-- jetspeed-demo configuration targets -->
+
+  <!-- modify *.psml: replace j2-admin::LoginPortlet with j2-admin::PortalLoginPortlet -->
+  <target name="configurePSML">
+    <mkdir dir="${project.build.directory}/package-skinny-wars/websphere-psml"/>
+    <copy todir="${project.build.directory}/package-skinny-wars/websphere-psml" overwrite="true">
+      <fileset dir="${project.build.directory}/package-skinny-wars/websphere">
+        <include name="**/*.psml"/>
+      </fileset>
+      <filterset begintoken="&quot;" endtoken="&quot;">
+        <filter token="j2-admin::LoginPortlet" value="&quot;j2-admin::PortalLoginPortlet&quot;"/>
+      </filterset>
+    </copy>
+    <copy todir="${project.build.directory}/package-skinny-wars/websphere" overwrite="true">
+      <fileset dir="${project.build.directory}/package-skinny-wars/websphere-psml">
+        <include name="**/*.psml"/>
+      </fileset>
+    </copy>
+    <delete dir="${project.build.directory}/package-skinny-wars/websphere-psml"/>
+  </target>
+
+  <!-- overlay web.xml: enable PortalFilter -->
+  <target name="configureWEBXML">
+    <copy file="${basedir}/src/main/webapp/WEB-INF/web.xml" todir="${project.build.directory}/package-skinny-wars/websphere/WEB-INF" overwrite="true"/>
+  </target>
+
+  <!-- overlay override.properties: enable DBPM -->
+  <target name="configureDBPM" depends="testConfigureDBPM" if="do.configureDBPM">
+    <copy file="${basedir}/src/main/webapp/WEB-INF/conf/override.properties" todir="${project.build.directory}/package-skinny-wars/websphere/WEB-INF/conf" overwrite="true"/>
+  </target>
+  <target name="testConfigureDBPM">
+    <condition property="do.configureDBPM">
+      <equals arg1="${configureDBPM}" arg2="true"/>
+    </condition>
+  </target>
+
+</project>
