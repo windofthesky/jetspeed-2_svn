@@ -74,6 +74,7 @@
                     <unzip src="resources/${tomcat.name}.zip" dest="${project.build.directory}"
                       overwrite="false"/>
 
+                    <delete file="${org.apache.jetspeed.portal.home}/NOTICE"/>
                     <delete file="${org.apache.jetspeed.portal.home}/bin/catalina.bat"/>
                     <delete file="${org.apache.jetspeed.portal.home}/bin/catalina.sh"/>
                     <delete file="${org.apache.jetspeed.portal.home}/conf/context.xml"/>

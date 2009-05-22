@@ -1733,9 +1733,11 @@
             <artifactId>rat-maven-plugin</artifactId>            
             <configuration>
               <excludes combine.children="append">
+                <exclude>jetspeed-mvn-settings.xml</exclude>                            
                 <exclude>MIT-LICENSE</exclude>                            
                 <exclude>JSCOOKMENU-LICENSE</exclude>              
                 <exclude>CREATIVECOMMONS-LICENSE</exclude>  
+                <exclude>JGOODIES-LICENSE</exclude>                            
                 <exclude>docs/release/JETSPEED-2.0-ANNOUNCEMENT.txt</exclude>
                 <exclude>docs/release/JETSPEED-2.0-M1-README.txt</exclude>
                 <exclude>docs/release/JETSPEED-2.0-M2-README.txt</exclude>
@@ -1753,9 +1755,17 @@
                 <exclude>applications/jetspeed/src/main/webapp/javascript/swfobject/swfobject.js</exclude>
                 <exclude>components/jetspeed-deploy-tools/src/main/java/org/apache/jetspeed/tools/deploy/web-app_2_3.dtd</exclude>
                 <exclude>components/jetspeed-registry/src/main/java/org/apache/jetspeed/descriptor/web-app_2_3.dtd</exclude>
-                <exclude>jetspeed-installer/etc/ant-installer/license/LICENSE-dom.txt</exclude>
-                <exclude>jetspeed-installer/etc/ant-installer/license/LICENSE-jgoodies.txt</exclude>
-                <exclude>jetspeed-installer/etc/ant-installer/license/LICENSE-xerces.txt</exclude>
+                <!-- temporary download resources folder -->
+                <exclude>jetspeed-installer/resources/*</exclude>
+                <exclude>jetspeed-installer/etc/tomcat/ASM-LICENSE</exclude>
+                <exclude>jetspeed-installer/etc/tomcat/CREATIVECOMMONS-LICENSE</exclude>
+                <exclude>jetspeed-installer/etc/tomcat/DOJO-LICENSE</exclude>
+                <exclude>jetspeed-installer/etc/tomcat/DOM4J-LICENSE</exclude>
+                <exclude>jetspeed-installer/etc/tomcat/JAVOLUTION-LICENSE</exclude>
+                <exclude>jetspeed-installer/etc/tomcat/JGOODIES-LICENSE</exclude>
+                <exclude>jetspeed-installer/etc/tomcat/JSCOOKMENU-LICENSE</exclude>
+                <exclude>jetspeed-installer/etc/tomcat/MIT-LICENSE</exclude>
+                <exclude>jetspeed-installer/etc/tomcat/SLF4J-LICENSE</exclude>
                 <exclude>applications/jetspeed/src/main/webapp/META-INF/ASM-LICENSE</exclude>
                 <exclude>applications/jetspeed/src/main/webapp/META-INF/CREATIVECOMMONS-LICENSE</exclude>
                 <exclude>applications/jetspeed/src/main/webapp/META-INF/DOJO-LICENSE</exclude>
