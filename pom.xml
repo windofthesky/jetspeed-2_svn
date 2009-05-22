@@ -1756,6 +1756,33 @@
                 <exclude>jetspeed-installer/etc/ant-installer/license/LICENSE-dom.txt</exclude>
                 <exclude>jetspeed-installer/etc/ant-installer/license/LICENSE-jgoodies.txt</exclude>
                 <exclude>jetspeed-installer/etc/ant-installer/license/LICENSE-xerces.txt</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/META-INF/ASM-LICENSE</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/META-INF/CREATIVECOMMONS-LICENSE</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/META-INF/DOJO-LICENSE</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/META-INF/DOM4J-LICENSE</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/META-INF/JAVOLUTION-LICENSE</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/META-INF/JAXB-LICENSE</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/META-INF/JSCOOKMENU-LICENSE</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/META-INF/MIT-LICENSE</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/META-INF/SLF4J-LICENSE</exclude>
+                <exclude>enterprise/ear-full/src/main/application/META-INF/ASM-LICENSE</exclude>
+                <exclude>enterprise/ear-full/src/main/application/META-INF/CREATIVECOMMONS-LICENSE</exclude>
+                <exclude>enterprise/ear-full/src/main/application/META-INF/DOJO-LICENSE</exclude>
+                <exclude>enterprise/ear-full/src/main/application/META-INF/DOM4J-LICENSE</exclude>
+                <exclude>enterprise/ear-full/src/main/application/META-INF/JAVOLUTION-LICENSE</exclude>
+                <exclude>enterprise/ear-full/src/main/application/META-INF/JAXB-LICENSE</exclude>
+                <exclude>enterprise/ear-full/src/main/application/META-INF/JSCOOKMENU-LICENSE</exclude>
+                <exclude>enterprise/ear-full/src/main/application/META-INF/MIT-LICENSE</exclude>
+                <exclude>enterprise/ear-full/src/main/application/META-INF/SLF4J-LICENSE</exclude>
+                <exclude>enterprise/ear-min/src/main/application/META-INF/ASM-LICENSE</exclude>
+                <exclude>enterprise/ear-min/src/main/application/META-INF/CREATIVECOMMONS-LICENSE</exclude>
+                <exclude>enterprise/ear-min/src/main/application/META-INF/DOJO-LICENSE</exclude>
+                <exclude>enterprise/ear-min/src/main/application/META-INF/DOM4J-LICENSE</exclude>
+                <exclude>enterprise/ear-min/src/main/application/META-INF/JAVOLUTION-LICENSE</exclude>
+                <exclude>enterprise/ear-min/src/main/application/META-INF/JAXB-LICENSE</exclude>
+                <exclude>enterprise/ear-min/src/main/application/META-INF/JSCOOKMENU-LICENSE</exclude>
+                <exclude>enterprise/ear-min/src/main/application/META-INF/MIT-LICENSE</exclude>
+                <exclude>enterprise/ear-min/src/main/application/META-INF/SLF4J-LICENSE</exclude>
               </excludes> 
             </configuration>
           </plugin>
