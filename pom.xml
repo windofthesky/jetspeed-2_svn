@@ -1725,6 +1725,9 @@
             <artifactId>rat-maven-plugin</artifactId>            
             <configuration>
               <excludes combine.children="append">
+                <exclude>MIT-LICENSE</exclude>                            
+                <exclude>JSCOOKMENU-LICENSE</exclude>              
+                <exclude>CREATIVECOMMONS-LICENSE</exclude>  
                 <exclude>docs/release/JETSPEED-2.0-ANNOUNCEMENT.txt</exclude>
                 <exclude>docs/release/JETSPEED-2.0-M1-README.txt</exclude>
                 <exclude>docs/release/JETSPEED-2.0-M2-README.txt</exclude>
@@ -1735,8 +1738,17 @@
                 <exclude>docs/release/JETSPEED-2.1-TODO.txt</exclude>
                 <exclude>docs/release/RELEASE-NOTES-2.1.2.txt</exclude>
                 <exclude>docs/release/RELEASE-NOTES-2.1.3.txt</exclude>
-                <exclude>docs/release/RELEASE-TODO.txt</exclude>                
-              </excludes>
+                <exclude>docs/release/RELEASE-TODO.txt</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/decorations/layout/jscookmenu/scripts/JSCookMenu.js</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/images/portlets/small/COPYING</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/javascript/swfobject/expressInstall.swf</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/javascript/swfobject/swfobject.js</exclude>
+                <exclude>components/jetspeed-deploy-tools/src/main/java/org/apache/jetspeed/tools/deploy/web-app_2_3.dtd</exclude>
+                <exclude>components/jetspeed-registry/src/main/java/org/apache/jetspeed/descriptor/web-app_2_3.dtd</exclude>
+                <exclude>jetspeed-installer/etc/ant-installer/license/LICENSE-dom.txt</exclude>
+                <exclude>jetspeed-installer/etc/ant-installer/license/LICENSE-jgoodies.txt</exclude>
+                <exclude>jetspeed-installer/etc/ant-installer/license/LICENSE-xerces.txt</exclude>
+              </excludes> 
             </configuration>
           </plugin>
         </plugins>
