@@ -40,6 +40,7 @@
 	<property name="_jdbc.driver.class" value="${jdbc.driver.class}" />
 
 	<property name="jetspeedWebInfDir" value="${basedir}/../webapps/${portalName}/WEB-INF" />
+    <property name="org.apache.portals.logdir" value="${basedir}/../logs" />
 
 	<target name="setupDB">
 
@@ -204,6 +205,7 @@
 	        <sysproperty key="org.apache.jetspeed.database.password" value="${_db.password}"/>
 	        <sysproperty key="org.apache.jetspeed.database.url" value="${_jdbc.url}"/>
 	        <sysproperty key="org.apache.jetspeed.database.driver" value="${_jdbc.driver.class}"/>
+            <sysproperty key="org.apache.portals.logdir" value="${org.apache.portals.logdir}"/>
 	        	
 			<arg line="-I &quot;${basedir}/resources/j2-seed.xml&quot; 
               -a &quot;${basedir}/../webapps/${portalName}&quot;
@@ -236,6 +238,7 @@
           <sysproperty key="org.apache.jetspeed.database.password" value="${_db.password}"/>
           <sysproperty key="org.apache.jetspeed.database.url" value="${_jdbc.url}"/>
           <sysproperty key="org.apache.jetspeed.database.driver" value="${_jdbc.driver.class}"/>
+          <sysproperty key="org.apache.portals.logdir" value="${org.apache.portals.logdir}"/>
 
 	      <arg
 	        line="-I &quot;/&quot;

@@ -23,11 +23,11 @@
   "http://antinstaller.sourceforge.net/dtd/antinstall-config-0.8.dtd">
 -->
 
-<installer ui="swing,text" verbose="false" lookAndFeel="jgoodies" name="Jetspeed Enterprise Portal 2.2-SNAPSHOT Installer"
+<installer ui="swing,text" verbose="false" lookAndFeel="jgoodies" name="Jetspeed Enterprise Portal 2.2.0-SNAPSHOT Installer"
   windowIcon="/resources/feather-small.png" defaultImageResource="/resources/Jetspeed_blue_med.png" minJavaVersion="1.5"
   wide="700:250" antialiased="true">
 
-  <page type="input" name="intro" displayText="Welcome to the Jetspeed Enterprise Portal 2.2-SNAPSHOT">
+  <page type="input" name="intro" displayText="Welcome to the Jetspeed Enterprise Portal 2.2.0-SNAPSHOT">
     <comment displayText="" />
     <comment displayText="This installer will guide you through setting up the Jetspeed Portal." />
   </page>
@@ -35,15 +35,15 @@
   <page type="license" name="license" displayText="License conditions" resource="/LICENSE-ant-install.txt"></page>
 
   <page type="input" name="properties" displayText="Installation location">
-    <directory property="installDir" defaultValue="${java.user.home}/Jetspeed-2.2-SNAPSHOT"
-      defaultValueWin="C:\Apache\Jetspeed-2.2-SNAPSHOT" displayText="Select an installation directory" create="true"
+    <directory property="installDir" defaultValue="${java.user.home}/Jetspeed-2.2.0-SNAPSHOT"
+      defaultValueWin="C:\Apache\Jetspeed-2.2.0-SNAPSHOT" displayText="Select an installation directory" create="true"
       checkExists="true" />
     <comment displayText=""/>
     <comment displayText="Warning: on Windows, the location must not contain spaces." bold="true"/>
   </page>
 
   <page type="input" name="requiredComponents" displayText="Components selection">
-    <comment displayText="Jetspeed Enterprise Portal version 2.2-SNAPSHOT" bold="true" />
+    <comment displayText="Jetspeed Enterprise Portal version 2.2.0-SNAPSHOT" bold="true" />
     <target displayText="Tomcat 6.0.18 Webserver" target="install" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Portal" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Layout Portlets" property="dummy" defaultValue="true" force="true" />

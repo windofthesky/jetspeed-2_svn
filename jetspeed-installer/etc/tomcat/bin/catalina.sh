@@ -27,7 +27,7 @@
 #                   the same directory that CATALINA_HOME points to.
 #
 #   CATALINA_OPTS   (Optional) Java runtime options used when the "start",
-#                   "stop", or "run" command is executed.
+#                   or "run" command is executed.
 #
 #   CATALINA_TMPDIR (Optional) Directory path location of temporary directory
 #                   the JVM should use (java.io.tmpdir).  Defaults to
@@ -47,6 +47,18 @@
 #
 #   JPDA_ADDRESS    (Optional) Java runtime options used when the "jpda start"
 #                   command is executed. The default is 8000.
+#
+#   JPDA_SUSPEND    (Optional) Java runtime options used when the "jpda start"
+#                   command is executed. Specifies whether JVM should suspend
+#                   execution immediately after startup. Default is "n".
+#
+#   JPDA_OPTS       (Optional) Java runtime options used when the "jpda start"
+#                   command is executed. If used, JPDA_TRANSPORT, JPDA_ADDRESS,
+#                   and JPDA_SUSPEND are ignored. Thus, all required jpda
+#                   options MUST be specified. The default is:
+#
+#                   -Xdebug -Xrunjdwp:transport=$JPDA_TRANSPORT,
+#                       address=$JPDA_ADDRESS,server=y,suspend=$JPDA_SUSPEND
 #
 #   JSSE_HOME       (Optional) May point at your Java Secure Sockets Extension
 #                   (JSSE) installation, whose JAR files will be added to the
@@ -89,7 +101,9 @@ PRGDIR=`dirname "$PRG"`
 # Only set CATALINA_HOME if not already set
 [ -z "$CATALINA_HOME" ] && CATALINA_HOME=`cd "$PRGDIR/.." ; pwd`
 
-if [ -r "$CATALINA_HOME"/bin/setenv.sh ]; then
+if [ -r "$CATALINA_BASE"/bin/setenv.sh ]; then
+  . "$CATALINA_BASE"/bin/setenv.sh
+elif [ -r "$CATALINA_HOME"/bin/setenv.sh ]; then
   . "$CATALINA_HOME"/bin/setenv.sh
 fi
 
@@ -138,7 +152,7 @@ fi
 if [ -n "$JSSE_HOME" ]; then
   CLASSPATH="$CLASSPATH":"$JSSE_HOME"/lib/jcert.jar:"$JSSE_HOME"/lib/jnet.jar:"$JSSE_HOME"/lib/jsse.jar
 fi
-CLASSPATH="$CLASSPATH":"$CATALINA_HOME"/bin/bootstrap.jar:"$CATALINA_HOME"/bin/commons-logging-api.jar
+CLASSPATH="$CLASSPATH":"$CATALINA_HOME"/bin/bootstrap.jar
 
 if [ -z "$CATALINA_BASE" ] ; then
   CATALINA_BASE="$CATALINA_HOME"
@@ -168,8 +182,9 @@ if $cygwin; then
 fi
 
 # Set juli LogManager if it is present
-if [ -r "$CATALINA_HOME"/bin/tomcat-juli.jar ]; then
-  JAVA_OPTS="$JAVA_OPTS "-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager" "-Djava.util.logging.config.file="$CATALINA_BASE/conf/logging.properties"
+if [ -r "$CATALINA_BASE"/conf/logging.properties ]; then
+  JAVA_OPTS="$JAVA_OPTS -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager"
+  LOGGING_CONFIG="-Djava.util.logging.config.file=$CATALINA_BASE/conf/logging.properties"
 fi
 
 # ----- Execute The Requested Command -----------------------------------------
@@ -193,8 +208,11 @@ if [ "$1" = "jpda" ] ; then
   if [ -z "$JPDA_ADDRESS" ]; then
     JPDA_ADDRESS="8000"
   fi
+  if [ -z "$JPDA_SUSPEND" ]; then
+    JPDA_SUSPEND="n"
+  fi
   if [ -z "$JPDA_OPTS" ]; then
-    JPDA_OPTS="-Xdebug -Xrunjdwp:transport=$JPDA_TRANSPORT,address=$JPDA_ADDRESS,server=y,suspend=n"
+    JPDA_OPTS="-agentlib:jdwp=transport=$JPDA_TRANSPORT,address=$JPDA_ADDRESS,server=y,suspend=$JPDA_SUSPEND"
   fi
   CATALINA_OPTS="$CATALINA_OPTS $JPDA_OPTS"
   shift
@@ -209,9 +227,9 @@ if [ "$1" = "debug" ] ; then
     if [ "$1" = "-security" ] ; then
       echo "Using Security Manager"
       shift
-      exec "$_RUNJDB" $JAVA_OPTS $CATALINA_OPTS \
+      exec "$_RUNJDB" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
         -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-        -sourcepath "$CATALINA_HOME"/../../jakarta-tomcat-catalina/catalina/src/share \
+        -sourcepath "$CATALINA_HOME"/../../java \
         -Djava.security.manager \
         -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
         -Dcatalina.base="$CATALINA_BASE" \
@@ -219,9 +237,9 @@ if [ "$1" = "debug" ] ; then
         -Djava.io.tmpdir="$CATALINA_TMPDIR" \
         org.apache.catalina.startup.Bootstrap "$@" start
     else
-      exec "$_RUNJDB" $JAVA_OPTS $CATALINA_OPTS \
+      exec "$_RUNJDB" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
         -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-        -sourcepath "$CATALINA_HOME"/../../jakarta-tomcat-catalina/catalina/src/share \
+        -sourcepath "$CATALINA_HOME"/../../java \
         -Dcatalina.base="$CATALINA_BASE" \
         -Dcatalina.home="$CATALINA_HOME" \
         -Djava.io.tmpdir="$CATALINA_TMPDIR" \
@@ -235,7 +253,7 @@ elif [ "$1" = "run" ]; then
   if [ "$1" = "-security" ] ; then
     echo "Using Security Manager"
     shift
-    exec "$_RUNJAVA" $JAVA_OPTS $CATALINA_OPTS \
+    exec "$_RUNJAVA" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
       -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
       -Djava.security.manager \
       -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
@@ -244,7 +262,7 @@ elif [ "$1" = "run" ]; then
       -Djava.io.tmpdir="$CATALINA_TMPDIR" \
       org.apache.catalina.startup.Bootstrap "$@" start
   else
-    exec "$_RUNJAVA" $JAVA_OPTS $CATALINA_OPTS \
+    exec "$_RUNJAVA" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
       -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
       -Dcatalina.base="$CATALINA_BASE" \
       -Dcatalina.home="$CATALINA_HOME" \
@@ -259,7 +277,7 @@ elif [ "$1" = "start" ] ; then
   if [ "$1" = "-security" ] ; then
     echo "Using Security Manager"
     shift
-    "$_RUNJAVA" $JAVA_OPTS $CATALINA_OPTS \
+    "$_RUNJAVA" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
       -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
       -Djava.security.manager \
       -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
@@ -273,7 +291,7 @@ elif [ "$1" = "start" ] ; then
         echo $! > $CATALINA_PID
       fi
   else
-    "$_RUNJAVA" $JAVA_OPTS $CATALINA_OPTS \
+    "$_RUNJAVA" $JAVA_OPTS "$LOGGING_CONFIG" $CATALINA_OPTS \
       -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
       -Dcatalina.base="$CATALINA_BASE" \
       -Dcatalina.home="$CATALINA_HOME" \
@@ -295,7 +313,7 @@ elif [ "$1" = "stop" ] ; then
     FORCE=1
   fi
 
-  "$_RUNJAVA" $JAVA_OPTS $CATALINA_OPTS \
+  "$_RUNJAVA" $JAVA_OPTS \
     -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
     -Dcatalina.base="$CATALINA_BASE" \
     -Dcatalina.home="$CATALINA_HOME" \
@@ -314,7 +332,7 @@ elif [ "$1" = "stop" ] ; then
 elif [ "$1" = "version" ] ; then
 
     "$_RUNJAVA"   \
-      -classpath "$CATALINA_HOME/server/lib/catalina.jar" \
+      -classpath "$CATALINA_HOME/lib/catalina.jar" \
       org.apache.catalina.util.ServerInfo
 
 else

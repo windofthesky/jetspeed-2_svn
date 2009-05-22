@@ -14,7 +14,6 @@ rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 rem See the License for the specific language governing permissions and
 rem limitations under the License.
 
-@echo off
 if "%OS%" == "Windows_NT" setlocal
 rem ---------------------------------------------------------------------------
 rem Start/Stop Script for the CATALINA Server
@@ -28,7 +27,7 @@ rem                   of a Catalina installation.  If not present, resolves to
 rem                   the same directory that CATALINA_HOME points to.
 rem
 rem   CATALINA_OPTS   (Optional) Java runtime options used when the "start",
-rem                   "stop", or "run" command is executed.
+rem                   or "run" command is executed.
 rem
 rem   CATALINA_TMPDIR (Optional) Directory path location of temporary directory
 rem                   the JVM should use (java.io.tmpdir).  Defaults to
@@ -37,7 +36,7 @@ rem
 rem   JAVA_HOME       Must point at your Java Development Kit installation.
 rem                   Required to run the with the "debug" argument.
 rem
-rem   JRE_HOME        Must point at your Java Development Kit installation.
+rem   JRE_HOME        Must point at your Java Runtime installation.
 rem                   Defaults to JAVA_HOME if empty.
 rem
 rem   JAVA_OPTS       (Optional) Java runtime options used when the "start",
@@ -53,7 +52,19 @@ rem
 rem   JPDA_ADDRESS    (Optional) Java runtime options used when the "jpda start"
 rem                   command is executed. The default is "jdbconn".
 rem
-rem $Id: catalina.bat 355227 2005-12-08 21:44:16Z keith $
+rem   JPDA_SUSPEND    (Optional) Java runtime options used when the "jpda start"
+rem                   command is executed. Specifies whether JVM should suspend
+rem                   execution immediately after startup. Default is "n".
+rem
+rem   JPDA_OPTS       (Optional) Java runtime options used when the "jpda start"
+rem                   command is executed. If used, JPDA_TRANSPORT, JPDA_ADDRESS,
+rem                   and JPDA_SUSPEND are ignored. Thus, all required jpda
+rem                   options MUST be specified. The default is:
+rem
+rem                   -Xdebug -Xrunjdwp:transport=%JPDA_TRANSPORT%,
+rem                       address=%JPDA_ADDRESS%,server=y,suspend=%JPDA_SUSPEND%
+rem
+rem $Id: catalina.bat 656834 2008-05-15 21:04:04Z markt $
 rem ---------------------------------------------------------------------------
 
 set JAVA_OPTS=%JAVA_OPTS% -Xmx256m
@@ -74,7 +85,12 @@ goto end
 :okHome
 
 rem Get standard environment variables
+if "%CATALINA_BASE%" == "" goto gotSetenvHome
+if exist "%CATALINA_BASE%\bin\setenv.bat" call "%CATALINA_BASE%\bin\setenv.bat"
+goto gotSetenvBase
+:gotSetenvHome
 if exist "%CATALINA_HOME%\bin\setenv.bat" call "%CATALINA_HOME%\bin\setenv.bat"
+:gotSetenvBase
 
 rem Get standard Java environment variables
 if exist "%CATALINA_HOME%\bin\setclasspath.bat" goto okSetclasspath
@@ -100,7 +116,7 @@ if not "%CATALINA_TMPDIR%" == "" goto gotTmpdir
 set CATALINA_TMPDIR=%CATALINA_BASE%\temp
 :gotTmpdir
 
-if not exist "%CATALINA_HOME%\bin\tomcat-juli.jar" goto noJuli
+if not exist "%CATALINA_BASE%\conf\logging.properties" goto noJuli
 set JAVA_OPTS=%JAVA_OPTS% -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.util.logging.config.file="%CATALINA_BASE%\conf\logging.properties"
 :noJuli
 
@@ -131,6 +147,12 @@ set JPDA_TRANSPORT=dt_shmem
 if not "%JPDA_ADDRESS%" == "" goto gotJpdaAddress
 set JPDA_ADDRESS=jdbconn
 :gotJpdaAddress
+if not "%JPDA_SUSPEND%" == "" goto gotJpdaSuspend
+set JPDA_SUSPEND=n
+:gotJpdaSuspend
+if not "%JPDA_OPTS%" == "" goto gotJpdaOpts
+set JPDA_OPTS=-agentlib:jdwp=transport=%JPDA_TRANSPORT%,address=%JPDA_ADDRESS%,server=y,suspend=%JPDA_SUSPEND%
+:gotJpdaOpts
 shift
 :noJpda
 
@@ -156,7 +178,7 @@ goto end
 :doDebug
 shift
 set _EXECJAVA=%_RUNJDB%
-set DEBUG_OPTS=-sourcepath "%CATALINA_HOME%\..\..\jakarta-tomcat-catalina\catalina\src\share"
+set DEBUG_OPTS=-sourcepath "%CATALINA_HOME%\..\..\java"
 if not ""%1"" == ""-security"" goto execCmd
 shift
 echo Using Security Manager
@@ -188,10 +210,11 @@ goto execCmd
 :doStop
 shift
 set ACTION=stop
+set CATALINA_OPTS=
 goto execCmd
 
 :doVersion
-%_EXECJAVA% -classpath "%CATALINA_HOME%\server\lib\catalina.jar" org.apache.catalina.util.ServerInfo
+%_EXECJAVA% -classpath "%CATALINA_HOME%\lib\catalina.jar" org.apache.catalina.util.ServerInfo
 goto end
 
 
@@ -215,10 +238,10 @@ goto end
 goto end
 :doJpda
 if not "%SECURITY_POLICY_FILE%" == "" goto doSecurityJpda
-%_EXECJAVA% %JAVA_OPTS% %CATALINA_OPTS% -Xdebug -Xrunjdwp:transport=%JPDA_TRANSPORT%,address=%JPDA_ADDRESS%,server=y,suspend=n %DEBUG_OPTS% -Djava.endorsed.dirs="%JAVA_ENDORSED_DIRS%" -classpath "%CLASSPATH%" -Dcatalina.base="%CATALINA_BASE%" -Dcatalina.home="%CATALINA_HOME%" -Djava.io.tmpdir="%CATALINA_TMPDIR%" %MAINCLASS% %CMD_LINE_ARGS% %ACTION%
+%_EXECJAVA% %JAVA_OPTS% %CATALINA_OPTS% %JPDA_OPTS% %DEBUG_OPTS% -Djava.endorsed.dirs="%JAVA_ENDORSED_DIRS%" -classpath "%CLASSPATH%" -Dcatalina.base="%CATALINA_BASE%" -Dcatalina.home="%CATALINA_HOME%" -Djava.io.tmpdir="%CATALINA_TMPDIR%" %MAINCLASS% %CMD_LINE_ARGS% %ACTION%
 goto end
 :doSecurityJpda
-%_EXECJAVA% %JAVA_OPTS% %CATALINA_OPTS% -Xdebug -Xrunjdwp:transport=%JPDA_TRANSPORT%,address=%JPDA_ADDRESS%,server=y,suspend=n %DEBUG_OPTS% -Djava.endorsed.dirs="%JAVA_ENDORSED_DIRS%" -classpath "%CLASSPATH%" -Djava.security.manager -Djava.security.policy=="%SECURITY_POLICY_FILE%" -Dcatalina.base="%CATALINA_BASE%" -Dcatalina.home="%CATALINA_HOME%" -Djava.io.tmpdir="%CATALINA_TMPDIR%" %MAINCLASS% %CMD_LINE_ARGS% %ACTION%
+%_EXECJAVA% %JAVA_OPTS% %CATALINA_OPTS% %JPDA_OPTS% %DEBUG_OPTS% -Djava.endorsed.dirs="%JAVA_ENDORSED_DIRS%" -classpath "%CLASSPATH%" -Djava.security.manager -Djava.security.policy=="%SECURITY_POLICY_FILE%" -Dcatalina.base="%CATALINA_BASE%" -Dcatalina.home="%CATALINA_HOME%" -Djava.io.tmpdir="%CATALINA_TMPDIR%" %MAINCLASS% %CMD_LINE_ARGS% %ACTION%
 goto end
 
 :end

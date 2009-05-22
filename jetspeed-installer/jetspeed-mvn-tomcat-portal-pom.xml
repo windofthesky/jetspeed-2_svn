@@ -74,8 +74,14 @@
                     <unzip src="resources/${tomcat.name}.zip" dest="${project.build.directory}"
                       overwrite="false"/>
 
+                    <delete file="${org.apache.jetspeed.portal.home}/bin/catalina.bat"/>
+                    <delete file="${org.apache.jetspeed.portal.home}/bin/catalina.sh"/>
+                    <delete file="${org.apache.jetspeed.portal.home}/conf/context.xml"/>
+                    <delete file="${org.apache.jetspeed.portal.home}/conf/server.xml"/>
+                    <delete file="${org.apache.jetspeed.portal.home}/conf/tomcat-users.xml"/>
                     <delete dir="${org.apache.jetspeed.portal.home}/webapps/examples"/>
                     <delete dir="${org.apache.jetspeed.portal.home}/webapps/docs"/>
+                    <delete dir="${org.apache.jetspeed.portal.home}/webapps/ROOT"/>
                   </tasks>
                 </configuration>
                 <goals>
@@ -182,8 +188,9 @@
                       <file>${project.build.directory}/resources/tomcat/context.xml</file>
                       <destination>context</destination>
                     </deployment>
+                    <!-- Tomcat server conf override -->
                     <deployment>
-                      <file>${project.build.directory}/../etc/tomcat/conf/tomcat-users.xml</file>
+                      <file>${project.build.directory}/../etc/tomcat/conf/server.xml</file>
                       <destination>server-conf</destination>
                     </deployment>
                     <!-- admin pa -->
@@ -371,8 +378,9 @@
                       <file>${project.build.directory}/resources/tomcat/context.xml</file>
                       <destination>context</destination>
                     </deployment>
+                    <!-- Tomcat server conf override -->
                     <deployment>
-                      <file>${project.build.directory}/../etc/tomcat/conf/tomcat-users.xml</file>
+                      <file>${project.build.directory}/../etc/tomcat/conf/server.xml</file>
                       <destination>server-conf</destination>
                     </deployment>                    
                     <!-- admin pa -->
