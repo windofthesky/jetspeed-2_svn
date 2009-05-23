@@ -31,7 +31,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <org.apache.portals.jetspeed.version>2.2.0</org.apache.portals.jetspeed.version>
+    <org.apache.portals.jetspeed.version>2.2.1-SNAPSHOT</org.apache.portals.jetspeed.version>
     <org.apache.pluto.version>2.0.0</org.apache.pluto.version>
     <org.apache.portals.applications.apa-logging.version>1.0</org.apache.portals.applications.apa-logging.version>
     <ccpp.version>1.0</ccpp.version>
