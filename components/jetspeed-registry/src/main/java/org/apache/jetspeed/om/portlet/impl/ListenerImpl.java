@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.portlet.PortletURLGenerationListener;
-
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.DisplayName;
 import org.apache.jetspeed.om.portlet.Listener;
@@ -35,11 +33,11 @@ import org.apache.jetspeed.util.JetspeedLocale;
  */
 public class ListenerImpl implements Listener, Serializable
 {
+    private static final long serialVersionUID = 1L;
+    
     protected String listenerClass;
     protected List<Description> descriptions;
     protected List<DisplayName> displayNames;
-    protected PortletURLGenerationListener listenerInstance;
-
     
     public String getListenerClass()
     {
