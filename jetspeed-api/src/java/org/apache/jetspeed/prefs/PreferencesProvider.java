@@ -115,11 +115,11 @@ public interface PreferencesProvider
     Collection lookupPreference(String nodeName, String propertyName, String propertyValue);
 
     /**
-     * Initializes the preferences node
+     * Initializes the preferences node by executing configured preloads.
      * 
      * @throws Exception
      */
-    void init() throws Exception;
+    void preload() throws Exception;
 
     /**
      * Preload preferences for specified portlet application.

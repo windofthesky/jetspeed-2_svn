@@ -562,17 +562,42 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         return new PropertyImpl(node.getNodeId(), name, value);
     }
 
-    public void init() throws Exception
+    public void preload() throws Exception
     {
-        super.init();
+        // ensure base root preference nodes exist
+        Node systemRoot = null;
+        if (!nodeExists("/", PreferencesImpl.SYSTEM_NODE_TYPE))
+        {
+            systemRoot = createNode(null, "", PreferencesImpl.SYSTEM_NODE_TYPE, "/");
+        }
+        else
+        {
+            systemRoot = getNode("/", PreferencesImpl.SYSTEM_NODE_TYPE);
+        }
+        if (!nodeExists("/" + MutablePortletApplication.PREFS_ROOT, PreferencesImpl.SYSTEM_NODE_TYPE))
+        {
+            createNode(systemRoot, MutablePortletApplication.PREFS_ROOT, PreferencesImpl.SYSTEM_NODE_TYPE, "/" + MutablePortletApplication.PREFS_ROOT);
+        }
+        if (!nodeExists("/" + MutablePortletEntity.PORTLET_ENTITY_ROOT, PreferencesImpl.SYSTEM_NODE_TYPE))
+        {
+            createNode(systemRoot, MutablePortletEntity.PORTLET_ENTITY_ROOT, PreferencesImpl.SYSTEM_NODE_TYPE, "/" + MutablePortletEntity.PORTLET_ENTITY_ROOT);
+        }
+        if (!nodeExists("/", PreferencesImpl.USER_NODE_TYPE))
+        {
+            createNode(null, "", PreferencesImpl.USER_NODE_TYPE, "/");
+        }
+        // preload portlet application
         Iterator apps = this.preloadedApplications.iterator();
         while (apps.hasNext())
         {
             String appName = (String)apps.next();
             preloadApplicationPreferences(appName);
         }
+        // preload portlet entities
         if (preloadEntities)
+        {
             preloadAllEntities();
+        }
     }
     
     public void preloadApplicationPreferences(String portletApplicationName) throws NodeDoesNotExistException

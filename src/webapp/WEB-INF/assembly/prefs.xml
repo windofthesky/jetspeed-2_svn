@@ -46,6 +46,7 @@
         </property>
         <property name="transactionAttributes">
             <props>
+                <prop key="preload">PROPAGATION_REQUIRED</prop>
                 <prop key="createNode*">PROPAGATION_REQUIRED</prop>
                 <prop key="storeNode*">PROPAGATION_REQUIRED</prop>
                 <prop key="removeNode*">PROPAGATION_REQUIRED</prop>
@@ -54,9 +55,15 @@
         </property>
     </bean>
 
+   <!-- preload preferences provider within transaction -->
+   <bean id="preloadPrefsProvider" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject"><ref bean="prefsProvider"/></property>
+        <property name="targetMethod"><value>preload</value></property>
+    </bean>    
+
     <!-- PreferencesFactory implementation -->
    <bean id="java.util.prefs.PreferencesFactory" class="org.apache.jetspeed.prefs.impl.PreferencesFactoryImpl"
-         name="prefsFactory" init-method="init" destroy-method="destroy">
+         name="prefsFactory" depends-on="preloadPrefsProvider" init-method="init" destroy-method="destroy">
         <!-- dummy constructor argument to distinguish it from the default constructor invoked by the Java Preferences itself --> 
         <constructor-arg><value>1</value></constructor-arg>    
         <property name="prefsProvider">
