@@ -19,233 +19,302 @@
 -->
 <project name="JetspeedDatabaseSetup" default="setupDB" basedir=".">
 
-	<property file="${basedir}/database.properties" />
-	<property file="build.properties" />
+    <property file="${basedir}/database.properties" />
+    <property file="build.properties" />
 
-	<condition property="_db.username" value="">
-		<equals arg1="${db.type}" arg2="derby" />
-	</condition>
-	<property name="_db.username" value="${db.username}" />
-	<condition property="_db.password" value="">
-		<equals arg1="${db.type}" arg2="derby" />
-	</condition>
-	<property name="_db.password" value="${db.password}" />
-	<condition property="_jdbc.url" value="jdbc:derby:${basedir}/derby/productiondb;create=true">
-		<equals arg1="${db.type}" arg2="derby" />
-	</condition>
-	<property name="_jdbc.url" value="${jdbc.url}" />
-	<condition property="_jdbc.driver.class" value="org.apache.derby.jdbc.EmbeddedDriver">
-		<equals arg1="${db.type}" arg2="derby" />
-	</condition>
-	<property name="_jdbc.driver.class" value="${jdbc.driver.class}" />
+    <condition property="_db.username" value="">
+        <equals arg1="${db.type}" arg2="derby" />
+    </condition>
+    <property name="_db.username" value="${db.username}" />
+    <condition property="_db.password" value="">
+        <equals arg1="${db.type}" arg2="derby" />
+    </condition>
+    <property name="_db.password" value="${db.password}" />
+    <condition property="_jdbc.url" value="jdbc:derby:${basedir}/derby/productiondb;create=true">
+        <equals arg1="${db.type}" arg2="derby" />
+    </condition>
+    <property name="_jdbc.url" value="${jdbc.url}" />
+    <condition property="_jdbc.driver.class" value="org.apache.derby.jdbc.EmbeddedDriver">
+        <equals arg1="${db.type}" arg2="derby" />
+    </condition>
+    <property name="_jdbc.driver.class" value="${jdbc.driver.class}" />
 
-	<property name="jetspeedWebInfDir" value="${basedir}/../webapps/${portalName}/WEB-INF" />
+    <property name="jetspeedWebInfDir" value="${basedir}/../webapps/${portalName}/WEB-INF" />
     <property name="org.apache.portals.logdir" value="${basedir}/../logs" />
 
-	<target name="setupDB">
+    <path id="installationClasspath">
+        <fileset dir="${basedir}/../lib">
+            <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${jetspeedWebInfDir}/lib">
+            <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${basedir}/lib">
+            <include name="**/*.jar" />
+        </fileset>
+        <pathelement location="${basedir}/../lib" />
+        <pathelement location="${jetspeedWebInfDir}/classes" />
+    </path>
 
-		<echo>Setting up the Jetspeed database for ${db.type}</echo>
+    <property name="org.apache.jetspeed.database.user" value="${_db.username}"/>
+    <property name="org.apache.jetspeed.database.password" value="${_db.password}"/>
+    <property name="org.apache.jetspeed.database.url" value="${_jdbc.url}"/>
+    <property name="org.apache.jetspeed.database.driver" value="${_jdbc.driver.class}"/>
+    <property name="org.apache.portals.logdir" value="${org.apache.portals.logdir}"/>
+    <propertyset id="installationProps">
+        <propertyref name="org.apache.jetspeed.database.user"/>
+        <propertyref name="org.apache.jetspeed.database.password"/>
+        <propertyref name="org.apache.jetspeed.database.url"/>
+        <propertyref name="org.apache.jetspeed.database.driver"/>
+        <propertyref name="org.apache.portals.logdir"/>
+    </propertyset>
 
-		<echo>All existing Jetspeed data is going to be deleted from the database.</echo>
-		<echo>
-		</echo>
-		<echo>Selected database configuration:</echo>
-		<echo>
-		</echo>
-		<echo>database type: ${db.type}</echo>
-		<echo>username: ${_db.username}</echo>
-		<echo>jdbc url: ${_jdbc.url}</echo>
-		<echo>
-		</echo>
-		<echo>Make sure that the appropriate jdbc driver jar for the ${db.type} database is placed in the Tomcat shared/lib folder.</echo>
-		<echo>For using the Derby database, the correct driver jar is available in the lib folder.</echo>
-		<echo>
-		</echo>
-		<echo>Also make sure Tomcat is not running before continuing.</echo>
-		<echo>
-		</echo>
-		<input validargs="y,n" defaultvalue="n" addproperty="do.continue">Are you sure to continue?</input>
-		<condition property="failSetup">
-			<equals arg1="n" arg2="${do.continue}" />
-		</condition>
+    <target name="setupDB">
 
-		<antcall target="checkInput" />
+        <echo>Setting up the Jetspeed database for ${db.type}</echo>
 
-	</target>
+        <echo>All existing Jetspeed data is going to be deleted from the database.</echo>
+        <echo>
+        </echo>
+        <echo>Selected database configuration:</echo>
+        <echo>
+        </echo>
+        <echo>database type: ${db.type}</echo>
+        <echo>username: ${_db.username}</echo>
+        <echo>jdbc url: ${_jdbc.url}</echo>
+        <echo>
+        </echo>
+        <echo>Make sure that the appropriate jdbc driver jar for the ${db.type} database is placed in the Tomcat shared/lib folder.</echo>
+        <echo>For using the Derby database, the correct driver jar is available in the lib folder.</echo>
+        <echo>
+        </echo>
+        <echo>Also make sure Tomcat is not running before continuing.</echo>
+        <echo>
+        </echo>
+        <input validargs="y,n" defaultvalue="n" addproperty="do.continue">Are you sure to continue?</input>
+        <condition property="failSetup">
+            <equals arg1="n" arg2="${do.continue}" />
+        </condition>
 
-	<target name="runSetupDB" depends="checkDerby,checkImportPsml,generateStandardDB,generateDerbyDB,copyJetspeedContext,filterSpringFilterKey,seedDB,dbPsml" />
+        <antcall target="checkInput" />
 
-	<target name="runSetupNoDB" depends="checkImportPsml,copyJetspeedContext,filterSpringFilterKey" />
+    </target>
 
-	<target name="checkInput" unless="failSetup">
-		<antcall target="runSetupDB" />
-	</target>
+    <target name="runSetupDB" depends="checkDerby,checkImportPsml,generateStandardDB,generateDerbyDB,copyJetspeedContext,filterSpringFilterKey,seedDB,dbPsml" />
 
-	<target name="checkDerby">
-		<condition property="_derby">
-			<equals arg1="${db.type}" arg2="derby" />
-		</condition>
-	</target>
+    <target name="runSetupNoDB" depends="checkImportPsml,copyJetspeedContext,filterSpringFilterKey" />
 
-	<target name="checkImportPsml">
-		<condition property="_doImportPsml">
-			<equals arg1="${dbImportPsml}" arg2="true" />
-		</condition>
-	</target>
+    <target name="initDB" depends="checkDerby" unless="_derby">
 
-	<target name="generateDerbyDB" if="_derby">
-		<delete dir="${basedir}/derby/productiondb" quiet="true" />
-		<echo>Executing file ${basedir}/derby/create-schema.sql</echo>
+        <echo>Initialize Jetspeed database</echo>
 
-		<java classname="org.apache.jetspeed.anttasks.ExecuteJavaSQL" fork="yes">
-			<classpath>
-				<fileset dir="${basedir}/../lib">
-					<include name="**/*.jar" />
-				</fileset>
-				<fileset dir="${jetspeedWebInfDir}/lib">
-					<include name="**/*.jar" />
-				</fileset>
-				<fileset dir="${basedir}/lib">
-					<include name="**/*.jar" />
-				</fileset>
-				<pathelement location="${basedir}/../lib" />
-				<pathelement location="${jetspeedWebInfDir}/classes" />
-			</classpath>
-			<arg line="driver=&quot;${_jdbc.driver.class}&quot; 
-	          url=&quot;${_jdbc.url}&quot;
-	          userid=&quot;${_db.username}&quot; 
-	          password=&quot;{_db.password}&quot;
-	          src=&quot;${basedir}/derby/create-schema.sql&quot; autocommit=true
-	          onerror=abort" />
-		</java>
-	</target>
+        <antcall target="generateStandardDB" />
 
-	<target name="generateStandardDB" unless="_derby">
-		<echo>Cleaning up possible existing database</echo>
+        <echo>Initialize Jetspeed database complete!</echo>
 
-		<sql driver="${_jdbc.driver.class}" url="${_jdbc.url}" userid="${_db.username}" password="${_db.password}" src="${basedir}/${db.type}/drop-schema.sql" autocommit="true" onerror="continue" print="no" output="setup.log">
-			<classpath>
-				<fileset dir="${basedir}/../lib">
-					<include name="**/*.jar" />
-				</fileset>
-			</classpath>
-		</sql>
+    </target>
 
-		<echo>Starting database generation</echo>
-		<sql driver="${_jdbc.driver.class}" url="${_jdbc.url}" userid="${_db.username}" password="${_db.password}" src="${basedir}/${db.type}/create-schema.sql">
-			<classpath>
-				<fileset dir="${basedir}/../lib">
-					<include name="**/*.jar" />
-				</fileset>
-			</classpath>
-		</sql>
-		<echo>Database generation done!</echo>
+    <target name="exportDB" depends="checkDerby" unless="_derby" if="exportDataDir">
 
-	</target>
+        <echo>Export Jetspeed database to ${exportDataDir}/j2-data.xml</echo>
 
-	<target name="copyJetspeedContext">
-		<copy file="resources/${portalName}.xml" tofile="${basedir}/../conf/Catalina/localhost/${portalName}.xml" overwrite="true">
-
-			<!-- note that the $ is escaped here -->
-			<filterset begintoken="$${" endtoken="}">
-				<filter token="org.apache.jetspeed.production.database.user" value="${_db.username}" />
-				<filter token="org.apache.jetspeed.production.database.password" value="${_db.password}" />
-				<filter token="org.apache.jetspeed.production.database.driver" value="${_jdbc.driver.class}" />
-				<filter token="org.apache.jetspeed.production.database.url" value="${_jdbc.url}" />
-			</filterset>
-		</copy>
-	</target>
-
-	<target name="filterSpringFilterKey">
-		<delete quiet="true" file="${jetspeedWebInfDir}/conf/spring-filter-key.properties" />
-
-		<!-- Ant's if/else simulation, _doImportPsml has been set before -->
-		<antcall target="filterSpringFilterKey_db"/>
-		<antcall target="filterSpringFilterKey_file"/>
-	</target>
-
-	<target name="filterSpringFilterKey_db" if="_doImportPsml">
-		<copy file="resources/spring-filter-key.properties" todir="${jetspeedWebInfDir}/conf/">
-			<!-- note that the $ is escaped here -->
-			<filterset begintoken="$${" endtoken="}">
-				<filter token="org.apache.jetspeed.spring.filter.key" value="portal.dbPageManager" />
-			</filterset>
-		</copy>
-	</target>
-
-	<target name="filterSpringFilterKey_file" unless="_doImportPsml">
-		<copy file="resources/spring-filter-key.properties" todir="${jetspeedWebInfDir}/conf/">
-			<!-- note that the $ is escaped here -->
-			<filterset begintoken="$${" endtoken="}">
-				<filter token="org.apache.jetspeed.spring.filter.key" value="portal" />
-			</filterset>
-		</copy>
-	</target>
-
-	<target name="seedDB">
-
-		<echo>Seeding the database</echo>
-
-		<java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes">
-			<classpath>
-				<fileset dir="${basedir}/../lib">
-					<include name="**/*.jar" />
-				</fileset>
-				<fileset dir="${jetspeedWebInfDir}/lib">
-					<include name="**/*.jar" />
-				</fileset>
-				<fileset dir="${basedir}/lib">
-					<include name="**/*.jar" />
-				</fileset>
-				<pathelement location="${basedir}/../lib" />
-				<pathelement location="${jetspeedWebInfDir}/classes" />
-			</classpath>
-
-            <sysproperty key="org.apache.jetspeed.database.user" value="${_db.username}"/>
-	        <sysproperty key="org.apache.jetspeed.database.password" value="${_db.password}"/>
-	        <sysproperty key="org.apache.jetspeed.database.url" value="${_jdbc.url}"/>
-	        <sysproperty key="org.apache.jetspeed.database.driver" value="${_jdbc.driver.class}"/>
-            <sysproperty key="org.apache.portals.logdir" value="${org.apache.portals.logdir}"/>
-	        	
-			<arg line="-I &quot;${basedir}/resources/j2-seed.xml&quot; 
+        <mkdir dir="${exportDataDir}"/>
+        <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes">
+            <classpath refid="installationClasspath"/>
+            <syspropertyset refid="installationProps"/>
+            <arg line="-E &quot;${exportDataDir}/j2-data.xml&quot; 
               -a &quot;${basedir}/../webapps/${portalName}&quot;
-      		  -c &quot;serializer&quot;
-      	      -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
-		</java>
+              -c &quot;serializer&quot;
+              -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
+        </java>
 
-	</target>
+        <echo>Export Jetspeed database pages to ${exportDataDir}/pages</echo>
 
-	<target name="dbPsml" if="_doImportPsml">
+        <mkdir dir="${exportDataDir}/pages"/>
+        <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes">
+            <classpath refid="installationClasspath"/>
+            <syspropertyset refid="installationProps"/>
+            <arg line="-E &quot;/&quot;
+              -a &quot;${basedir}/../webapps/${portalName}&quot;
+              -c &quot;pageSerializer&quot;
+              -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;
+              -psml &quot;${exportDataDir}/pages&quot;" />
+        </java>
+        <condition property="_exportedPages">
+            <or>
+                <available file="${exportDataDir}/pages/folder.metadata" type="file"/>
+                <available file="${exportDataDir}/pages/page.security" type="file"/>
+                <available file="${exportDataDir}/pages/_user" type="dir"/>
+                <available file="${exportDataDir}/pages/__subsite-root" type="dir"/>
+                <available file="${exportDataDir}/pages/system" type="dir"/>
+                <available file="${exportDataDir}/pages/Administrative" type="dir"/>
+            </or>
+        </condition>
+        <antcall target="cleanupExportedPages"/>
 
-	    <echo>Importing psml into the database</echo>
+        <echo>Export Jetspeed database complete!</echo>
 
-	    <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes">
-	      <classpath>
-			<fileset dir="${basedir}/../lib">
-				<include name="**/*.jar" />
-			</fileset>
-			<fileset dir="${jetspeedWebInfDir}/lib">
-				<include name="**/*.jar" />
-			</fileset>
-			<fileset dir="${basedir}/lib">
-				<include name="**/*.jar" />
-			</fileset>
-			<pathelement location="${basedir}/../lib" />
-			<pathelement location="${jetspeedWebInfDir}/classes" />
-	      </classpath>
+    </target>
 
-          <sysproperty key="org.apache.jetspeed.database.user" value="${_db.username}"/>
-          <sysproperty key="org.apache.jetspeed.database.password" value="${_db.password}"/>
-          <sysproperty key="org.apache.jetspeed.database.url" value="${_jdbc.url}"/>
-          <sysproperty key="org.apache.jetspeed.database.driver" value="${_jdbc.driver.class}"/>
-          <sysproperty key="org.apache.portals.logdir" value="${org.apache.portals.logdir}"/>
+    <target name="cleanupExportedPages" unless="_exportedPages">
+        <delete dir="${exportDataDir}/pages"/>
+    </target>
 
-	      <arg
-	        line="-I &quot;/&quot;
-	              -a &quot;${basedir}/../webapps/${portalName}&quot;
-	      		  -c &quot;pageSerializer&quot;
-	      	      -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
-	    </java>
-	</target>
+    <target name="importDB" depends="checkDerby" unless="_derby" if="importDataDir">
+
+        <echo>Import Jetspeed database from ${importDataDir}/j2-data.xml</echo>
+
+        <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes">
+            <classpath refid="installationClasspath"/>
+            <syspropertyset refid="installationProps"/>
+            <arg line="-I &quot;${importDataDir}/j2-data.xml&quot; 
+              -a &quot;${basedir}/../webapps/${portalName}&quot;
+              -c &quot;serializer&quot;
+              -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
+        </java>
+
+        <echo>Import Jetspeed database pages from ${importDataDir}/pages</echo>
+
+        <available file="${importDataDir}/pages" type="dir" property="_importPages"/>
+        <antcall target="importPages"/>
+
+        <echo>Import Jetspeed database complete!</echo>
+
+    </target>
+
+    <target name="importPages" if="_importPages">
+        <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes">
+            <classpath refid="installationClasspath"/>
+            <syspropertyset refid="installationProps"/>
+            <arg line="-I &quot;/&quot;
+              -a &quot;${basedir}/../webapps/${portalName}&quot;
+              -c &quot;pageSerializer&quot;
+              -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;
+              -psml &quot;${importDataDir}/pages&quot;" />
+        </java>
+    </target>
+
+    <target name="checkInput" unless="failSetup">
+        <antcall target="runSetupDB" />
+    </target>
+
+    <target name="checkDerby">
+        <condition property="_derby">
+            <equals arg1="${db.type}" arg2="derby" />
+        </condition>
+    </target>
+
+    <target name="checkImportPsml">
+        <condition property="_doImportPsml">
+            <equals arg1="${dbImportPsml}" arg2="true" />
+        </condition>
+    </target>
+
+    <target name="generateDerbyDB" if="_derby">
+        <delete dir="${basedir}/derby/productiondb" quiet="true" />
+        <echo>Executing file ${basedir}/derby/create-schema.sql</echo>
+
+        <java classname="org.apache.jetspeed.anttasks.ExecuteJavaSQL" fork="yes">
+            <classpath refid="installationClasspath"/>
+            <arg line="driver=&quot;${_jdbc.driver.class}&quot; 
+              url=&quot;${_jdbc.url}&quot;
+              userid=&quot;${_db.username}&quot; 
+              password=&quot;{_db.password}&quot;
+              src=&quot;${basedir}/derby/create-schema.sql&quot; autocommit=true
+              onerror=abort" />
+        </java>
+    </target>
+
+    <target name="generateStandardDB" unless="_derby">
+
+        <echo>Cleaning up possible existing database</echo>
+        <sql driver="${_jdbc.driver.class}" url="${_jdbc.url}" userid="${_db.username}" password="${_db.password}" src="${basedir}/${db.type}/drop-schema.sql" autocommit="true" onerror="continue" print="no" output="setup.log">
+            <classpath>
+                <fileset dir="${basedir}/../lib">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+        </sql>
+
+        <echo>Starting database generation</echo>
+        <sql driver="${_jdbc.driver.class}" url="${_jdbc.url}" userid="${_db.username}" password="${_db.password}" src="${basedir}/${db.type}/create-schema.sql">
+            <classpath>
+                <fileset dir="${basedir}/../lib">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+        </sql>
+        <echo>Database generation done!</echo>
+
+    </target>
+
+    <target name="copyJetspeedContext">
+        <copy file="resources/${portalName}.xml" tofile="${basedir}/../conf/Catalina/localhost/${portalName}.xml" overwrite="true">
+
+            <!-- note that the $ is escaped here -->
+            <filterset begintoken="$${" endtoken="}">
+                <filter token="org.apache.jetspeed.production.database.user" value="${_db.username}" />
+                <filter token="org.apache.jetspeed.production.database.password" value="${_db.password}" />
+                <filter token="org.apache.jetspeed.production.database.driver" value="${_jdbc.driver.class}" />
+                <filter token="org.apache.jetspeed.production.database.url" value="${_jdbc.url}" />
+            </filterset>
+        </copy>
+    </target>
+
+    <target name="filterSpringFilterKey">
+        <delete quiet="true" file="${jetspeedWebInfDir}/conf/spring-filter-key.properties" />
+
+        <!-- Ant's if/else simulation, _doImportPsml has been set before -->
+        <antcall target="filterSpringFilterKey_db"/>
+        <antcall target="filterSpringFilterKey_file"/>
+    </target>
+
+    <target name="filterSpringFilterKey_db" if="_doImportPsml">
+        <copy file="resources/spring-filter-key.properties" todir="${jetspeedWebInfDir}/conf/">
+            <!-- note that the $ is escaped here -->
+            <filterset begintoken="$${" endtoken="}">
+                <filter token="org.apache.jetspeed.spring.filter.key" value="portal.dbPageManager" />
+            </filterset>
+        </copy>
+    </target>
+
+    <target name="filterSpringFilterKey_file" unless="_doImportPsml">
+        <copy file="resources/spring-filter-key.properties" todir="${jetspeedWebInfDir}/conf/">
+            <!-- note that the $ is escaped here -->
+            <filterset begintoken="$${" endtoken="}">
+                <filter token="org.apache.jetspeed.spring.filter.key" value="portal" />
+            </filterset>
+        </copy>
+    </target>
+
+    <target name="seedDB">
+
+        <echo>Seeding the database</echo>
+
+        <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes">
+            <classpath refid="installationClasspath"/>
+            <syspropertyset refid="installationProps"/>
+            <arg line="-I &quot;${basedir}/resources/j2-seed.xml&quot; 
+              -a &quot;${basedir}/../webapps/${portalName}&quot;
+              -c &quot;serializer&quot;
+              -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
+        </java>
+
+    </target>
+
+    <target name="dbPsml" if="_doImportPsml">
+
+        <echo>Importing psml into the database</echo>
+
+        <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes">
+            <classpath refid="installationClasspath"/>
+            <syspropertyset refid="installationProps"/>
+            <arg line="-I &quot;/&quot;
+              -a &quot;${basedir}/../webapps/${portalName}&quot;
+              -c &quot;pageSerializer&quot;
+              -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
+        </java>
+
+    </target>
 
 </project>

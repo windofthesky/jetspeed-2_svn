@@ -23,12 +23,13 @@
 
   <property file="ant.install.properties" />
 
-  <target name="install">
-    <echo>Starting the installation</echo>
+  <target name="setupInstallation">
 
+    <echo>Starting the installation</echo>
     <condition property="jdk15Installed">
       <equals arg1="${ant.java.version}" arg2="1.5" />
     </condition>
+    <mkdir dir="${installDir}"/>
 
     <echo>Deleting all content from the installation target directory</echo>
     <delete includeemptydirs="true">
@@ -50,14 +51,12 @@
     </delete>
     <chmod perm="700" dir="${installDir}/bin" includes="**/*.sh" />
 
-   	<echo>Setting up the database configuration</echo>
+    <echo>Setting up the database configuration</echo>
     <condition property="jdbcjar" value="${installDir}/database/lib/derby-10.3.2.1.jar">
       <equals arg1="${jdbc.driver.jar}" arg2="" />
     </condition>
-    
     <property name="jdbcjar" value="${jdbc.driver.jar}" />
     <copy failonerror="false" todir="${installDir}/lib" file="${jdbcjar}" />
-
     <move file="${installDir}/database/database.properties.template" tofile="${installDir}/database/database.properties"
       overwrite="true">
       <filterset begintoken="@" endtoken="@">
@@ -70,25 +69,29 @@
       </filterset>
     </move>
 
-  	<echo>Moving pages out of jetspeed webapp</echo>
+  </target>
+
+  <target name="install" depends="setupInstallation">
+
+    <echo>Moving pages out of jetspeed webapp</echo>
     <move file="${installDir}/webapps/jetspeed/WEB-INF/pages" todir="${installDir}" />
     <move file="${installDir}/webapps/jetspeed/WEB-INF/conf/jetspeed.properties" 
         tofile="${installDir}/webapps/jetspeed/WEB-INF/conf/jetspeed.properties.unfiltered"/>
     <move file="${installDir}/webapps/jetspeed/WEB-INF/conf/jetspeed.properties.unfiltered" 
         tofile="${installDir}/webapps/jetspeed/WEB-INF/conf/jetspeed.properties"
-       	overwrite="true">
-		 <!-- note that the $ is escaped here -->
+        overwrite="true">
+         <!-- note that the $ is escaped here -->
        <filterset begintoken="psml.pages.path" endtoken="$${applicationRoot}/WEB-INF/pages">
          <filter token=" = " value="psml.pages.path = $${applicationRoot}/../../pages" />
        </filterset>
     </move>
 
     <echo>Setting up the Jetspeed database (if selected)</echo>
-    <ant antfile="${installDir}/database/build.xml" target="${setupDBAntTarget}" dir="${installDir}/database" />
+    <ant antfile="${installDir}/database/build.xml" target="${setupDBAntTarget}" dir="${installDir}/database" inheritAll="true" />
 
- </target>
+  </target>
 
-  <target name="antinstaller-checkdb" depends="">
+  <target name="antinstaller-checkdb">
 
     <checkConnection driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}" password="${dbPassword}">
       <classpath>
@@ -96,6 +99,41 @@
       </classpath>
     </checkConnection>
     <antinstaller-property name="dbvalid" value="true" />
+
+  </target>
+
+  <target name="initdb" depends="setupInstallation">
+
+    <echo>Reset and initialize Jetspeed database</echo>
+    <ant antfile="${installDir}/database/build.xml" target="initDB" dir="${installDir}/database" inheritAll="true" />
+
+    <echo>Deleting temporary installation target directory</echo>
+    <delete dir="${installDir}"/>
+
+  </target>
+
+  <target name="exportdb" depends="setupInstallation">
+
+    <echo>Export all data from Jetspeed database</echo>
+    <mkdir dir="${exportDataDir}"/>
+    <delete includeemptydirs="true">
+      <fileset dir="${exportDataDir}" includes="**/*"/>
+    </delete>
+    <ant antfile="${installDir}/database/build.xml" target="exportDB" dir="${installDir}/database" inheritAll="true" />
+
+    <echo>Deleting temporary installation target directory</echo>
+    <delete dir="${installDir}"/>
+
+  </target>
+
+  <target name="importdb" depends="setupInstallation">
+
+    <echo>Import all data into Jetspeed database</echo>
+    <ant antfile="${installDir}/database/build.xml" target="importDB" dir="${installDir}/database" inheritAll="true" />
+
+    <echo>Deleting temporary installation target directory</echo>
+    <delete dir="${installDir}"/>
+
   </target>
 
 </project>
