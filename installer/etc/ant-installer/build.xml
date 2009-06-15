@@ -23,12 +23,13 @@
 
   <property file="ant.install.properties" />
 
-  <target name="install">
-    <echo>Starting the installation</echo>
+  <target name="setupInstallation">
 
+    <echo>Starting the installation</echo>
     <condition property="jdk15Installed">
       <equals arg1="${ant.java.version}" arg2="1.5" />
     </condition>
+    <mkdir dir="${installDir}"/>
 
     <echo>Deleting all content from the installation target directory</echo>
     <delete includeemptydirs="true">
@@ -55,8 +56,6 @@
     <condition property="jdbcjar" value="${installDir}/database/lib/derby-10.1.1.0.jar">
       <equals arg1="${jdbc.driver.jar}" arg2="" />
     </condition>
-<!--    <copy file="${installDir}/webapps/${portalName}/WEB-INF/assembly/page-manager.xml" tofile="${installDir}/webapps/${portalName}/WEB-INF/assembly/alternate/fs-page-manager.xml"/>
-  -->
     <property name="jdbcjar" value="${jdbc.driver.jar}" />
     <copy failonerror="false" todir="${installDir}/shared/lib" file="${jdbcjar}" />
 
@@ -71,8 +70,14 @@
         <filter token="dbImportPsml" value="${dbImportPsml}" />
       </filterset>
     </move>
+
+  </target>
+
+  <target name="install" depends="setupInstallation">
+
     <echo>Setting up the Jetspeed database (if selected)</echo>
     <ant antfile="${installDir}/database/build.xml" target="${setupDBAntTarget}" dir="${installDir}/database" />
+
   </target>
 
   <target name="antinstaller-checkdb" depends="">
@@ -83,6 +88,41 @@
       </classpath>
     </checkConnection>
     <antinstaller-property name="dbvalid" value="true" />
+
+  </target>
+
+  <target name="initdb" depends="setupInstallation">
+
+    <echo>Reset and initialize Jetspeed database</echo>
+    <ant antfile="${installDir}/database/build.xml" target="initDB" dir="${installDir}/database" inheritAll="true" />
+
+    <echo>Deleting temporary installation target directory</echo>
+    <delete dir="${installDir}"/>
+
+  </target>
+
+  <target name="exportdb" depends="setupInstallation">
+
+    <echo>Export all data from Jetspeed database</echo>
+    <mkdir dir="${exportDataDir}"/>
+    <delete includeemptydirs="true">
+      <fileset dir="${exportDataDir}" includes="**/*"/>
+    </delete>
+    <ant antfile="${installDir}/database/build.xml" target="exportDB" dir="${installDir}/database" inheritAll="true" />
+
+    <echo>Deleting temporary installation target directory</echo>
+    <delete dir="${installDir}"/>
+
+  </target>
+
+  <target name="importdb" depends="setupInstallation">
+
+    <echo>Import all data into Jetspeed database</echo>
+    <ant antfile="${installDir}/database/build.xml" target="importDB" dir="${installDir}/database" inheritAll="true" />
+
+    <echo>Deleting temporary installation target directory</echo>
+    <delete dir="${installDir}"/>
+
   </target>
 
 </project>
