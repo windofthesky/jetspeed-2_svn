@@ -145,6 +145,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
             // use space as word separator
             title = title.replace('_', ' ');
             title = title.replace('-', ' ');
+            title = title.trim();
             // use title case for title words
             int wordIndex = -1;
             do

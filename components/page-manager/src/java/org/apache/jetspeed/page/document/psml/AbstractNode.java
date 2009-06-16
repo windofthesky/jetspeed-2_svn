@@ -258,6 +258,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
             }
             titleName = titleName.replace('_', ' ');
             titleName = titleName.replace('-', ' ');
+            titleName = titleName.trim();
             int wordIndex = -1;
             do
             {
