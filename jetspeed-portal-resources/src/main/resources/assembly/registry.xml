@@ -122,10 +122,18 @@
     </property>
     <property name="transactionAttributes">
       <props>
+        <prop key="preload">PROPAGATION_REQUIRED</prop>
         <prop key="store*">PROPAGATION_REQUIRED</prop>
         <prop key="*">PROPAGATION_SUPPORTS</prop>
       </props>
     </property>
+  </bean>
+
+  <!-- preload preferences provider within transaction -->
+  <bean id="preloadPortletPreferencesProvider" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <meta key="j2:cat" value="default or registry" />
+    <property name="targetObject"><ref bean="portletPreferencesProvider"/></property>
+    <property name="targetMethod"><value>preload</value></property>
   </bean>
 
   <!--

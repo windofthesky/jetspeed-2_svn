@@ -36,6 +36,12 @@ import org.apache.pluto.container.PortletPreferencesService;
 public interface PortletPreferencesProvider extends PortletPreferencesService
 {
     /**
+     * Initializes the preferences node by executing configured preloads.
+     * @throws Exception
+     */
+    void preload() throws Exception;
+    
+    /**
      * Preload all preferences for the given portlet application name into the preferences cache
      * @param portletApplicationName
      */

@@ -116,6 +116,10 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         this.preloadEntities = preloadEntities;
     }
     
+    public void init()
+    {
+    }
+
     public void destroy()
     {
         preferenceCache = null;
@@ -450,7 +454,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         }
     }
 
-    public void init() throws Exception
+    public void preload() throws Exception
     {
         if (preloadedApplications != null)
         {
