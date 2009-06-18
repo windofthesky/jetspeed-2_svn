@@ -20,6 +20,7 @@ import java.util.Iterator;
 
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
@@ -166,36 +167,51 @@ public class PageSerializerImpl implements PageSerializer
      */
     private Result execute(PageManager src, PageManager dest, Context context, boolean importing) throws JetspeedException
     {
-        context.logger.info("Starting " + (context.all ? "complete" : "") + " " + (importing?"import":"export") + " of folder: " + context.folder
-                + " (overwriting folders: " + context.overwriteFolders + ", pages: " + context.overwritePages + ")");
-        processFolder(src.getFolder(context.folder), dest, context);
-
-        if (context.all)
+        Folder folder = null;
+        try
         {
-            // create the root page security
-            PageSecurity sourcePageSecurity = null;
-            try
-            {
-                sourcePageSecurity = src.getPageSecurity();
-            }
-            catch (DocumentNotFoundException e)
-            {
-                // skip over it, not found
-            }
-
-            if (sourcePageSecurity != null)
-            {
-                context.logger.info((importing?"Importing":"Exporting")+" page security");
-                PageSecurity rootSecurity = dest.copyPageSecurity(sourcePageSecurity);
-                dest.updatePageSecurity(rootSecurity);
-            }
-            else
-            {
-                context.logger.info("Skipping page security: not found");
-            }
+            folder = src.getFolder(context.folder);
         }
-        context.logger.info((importing?"Import":"Export")+" finished: processed " + context.folderCount + " folder(s), " + context.pageCount
-                + " page(s), " + context.linkCount + " link(s).");
+        catch (FolderNotFoundException fnfe)
+        {
+        }
+        if (folder != null)
+        {
+            context.logger.info("Starting " + (context.all ? "complete" : "") + " " + (importing?"import":"export") + " of folder: " + context.folder
+                                + " (overwriting folders: " + context.overwriteFolders + ", pages: " + context.overwritePages + ")");
+            processFolder(folder, dest, context);
+
+            if (context.all)
+            {
+                // create the root page security
+                PageSecurity sourcePageSecurity = null;
+                try
+                {
+                    sourcePageSecurity = src.getPageSecurity();
+                }
+                catch (DocumentNotFoundException e)
+                {
+                    // skip over it, not found
+                }
+
+                if (sourcePageSecurity != null)
+                {
+                    context.logger.info((importing?"Importing":"Exporting")+" page security");
+                    PageSecurity rootSecurity = dest.copyPageSecurity(sourcePageSecurity);
+                    dest.updatePageSecurity(rootSecurity);
+                }
+                else
+                {
+                    context.logger.info("Skipping page security: not found");
+                }
+            }
+            context.logger.info((importing?"Import":"Export")+" finished: processed " + context.folderCount + " folder(s), " + context.pageCount
+                                + " page(s), " + context.linkCount + " link(s).");
+        }
+        else
+        {
+            context.logger.info((importing?"Import":"Export")+" skipped: "+context.folder+" not found.");
+        }
         context.logger = null;
         return context;
     }
