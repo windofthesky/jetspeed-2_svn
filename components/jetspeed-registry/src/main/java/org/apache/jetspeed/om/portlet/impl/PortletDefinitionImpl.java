@@ -46,6 +46,7 @@ import org.apache.jetspeed.om.portlet.SupportedPublicRenderParameter;
 import org.apache.jetspeed.om.portlet.Supports;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
@@ -209,21 +210,23 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return lang;
     }
     
+    @SuppressWarnings("unchecked")
     public List<Language> getLanguages()
     {
         if ( languages == null )
         {
-            languages = new ArrayList<Language>();
+            languages = CollectionUtils.createList();
         }
         return languages;
     }
     
+    @SuppressWarnings("unchecked")
     public Language addLanguage(Locale locale)
     {
         // ensure languages exist
         if ( languages == null )
         {
-            languages = new ArrayList<Language>();
+            languages = CollectionUtils.createList();
         }
         
         for (Language l : languages)
@@ -285,11 +288,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         preferenceValidatorClassname = string;
     }
 
+    @SuppressWarnings("unchecked")
     public GenericMetadata getMetadata()
     {
         if (metadataFields == null)
         {
-            metadataFields = new ArrayList<LocalizedField>();
+            metadataFields = CollectionUtils.createCollection();
         }
 
         GenericMetadata metadata = new PortletDefinitionMetadataImpl();
@@ -426,11 +430,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<ContainerRuntimeOption> getContainerRuntimeOptions()
     {
         if (containerRuntimeOptions == null)
         {
-            containerRuntimeOptions = new ArrayList<ContainerRuntimeOption>();
+            containerRuntimeOptions = CollectionUtils.createList();
         }
         return containerRuntimeOptions;
     }
@@ -458,11 +463,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<SecurityRoleRef> getSecurityRoleRefs()
     {
         if (securityRoleRefs == null)
         {
-            securityRoleRefs = new ArrayList<SecurityRoleRef>();
+            securityRoleRefs = CollectionUtils.createList();
         }
         return securityRoleRefs;
     }
@@ -496,11 +502,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return null;
     }
     
+    @SuppressWarnings("unchecked")
     public List<Supports> getSupports()
     {
         if (supports == null)
         {
-            supports = new ArrayList<Supports>();
+            supports = CollectionUtils.createList();
         }
         return supports;
     }
@@ -536,11 +543,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         // noop: use addLanguage(Locale) instead
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getSupportedPublicRenderParameters()
     {
         if (supportedPublicRenderParameters == null)
         {
-            supportedPublicRenderParameters = new ArrayList<SupportedPublicRenderParameter>();
+            supportedPublicRenderParameters = CollectionUtils.createList();
         }
         List<String> params = new ArrayList<String>();
         for (SupportedPublicRenderParameter param : this.supportedPublicRenderParameters)
@@ -550,11 +558,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return params;
     }
     
+    @SuppressWarnings("unchecked")
     public void addSupportedPublicRenderParameter(String identifier)
     {
         if (supportedPublicRenderParameters == null)
         {
-            supportedPublicRenderParameters = new ArrayList<SupportedPublicRenderParameter>();
+            supportedPublicRenderParameters = CollectionUtils.createList();
         }
         for (SupportedPublicRenderParameter param : this.supportedPublicRenderParameters)
         {
@@ -596,11 +605,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<Description> getDescriptions()
     {
         if (descriptions == null)
         {
-            descriptions = new ArrayList<Description>();
+            descriptions = CollectionUtils.createList();
         }
         return descriptions;
     }
@@ -625,11 +635,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return (DisplayName)JetspeedLocale.getBestLocalizedObject(getDisplayNames(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<DisplayName> getDisplayNames()
     {
         if (displayNames == null)
         {
-            displayNames = new ArrayList<DisplayName>();
+            displayNames = CollectionUtils.createList();
         }
         return displayNames;
     }
@@ -660,11 +671,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<InitParam> getInitParams()
     {
         if (initParams == null)
         {
-            initParams = new ArrayList<InitParam>();
+            initParams = CollectionUtils.createList();
         }
         return initParams;
     }
@@ -681,11 +693,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return param;
     }
     
+    @SuppressWarnings("unchecked")
     public List<EventDefinitionReference> getSupportedProcessingEvents()
     {
         if (supportedProcessingEvents == null)
         {
-            supportedProcessingEvents = new ArrayList<EventDefinitionReference>();            
+            supportedProcessingEvents = CollectionUtils.createList();            
         }
         return supportedProcessingEvents;
     }
@@ -711,11 +724,12 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return this.addSupportedProcessingEvent(qname);
     }
          
+    @SuppressWarnings("unchecked")
     public List<EventDefinitionReference> getSupportedPublishingEvents()
     {
         if (supportedPublishingEvents == null)
         {
-            supportedPublishingEvents = new ArrayList<EventDefinitionReference>();            
+            supportedPublishingEvents = CollectionUtils.createList();            
         }
         return supportedPublishingEvents;
     }    

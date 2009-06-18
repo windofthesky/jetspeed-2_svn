@@ -16,8 +16,9 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
-import java.util.ArrayList;
 import java.util.Collection;
+
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 /**
  * <p>
@@ -117,11 +118,12 @@ public class DatabasePreference
         return id;
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<DatabasePreferenceValue> getPreferenceValues()
     {
         if (values == null)
         {
-            values = new ArrayList<DatabasePreferenceValue>();
+            values = CollectionUtils.createCollection();
         }
         return values;
     }

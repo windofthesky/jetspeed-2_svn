@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.jetspeed.om.portlet.FilterMapping;
 import org.apache.jetspeed.om.portlet.FilteredPortlet;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 /**
  * @version $Id$
@@ -43,11 +44,12 @@ public class FilterMappingImpl implements FilterMapping, Serializable
         filterName = value;
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getPortletNames()
     {
         if (portletNames == null)
         {
-            portletNames = new ArrayList<FilteredPortlet>();
+            portletNames = CollectionUtils.createList();
         }
         List<String> result = new ArrayList<String>();
         for (FilteredPortlet fp : portletNames)
@@ -57,11 +59,12 @@ public class FilterMappingImpl implements FilterMapping, Serializable
         return result;        
     }
     
+    @SuppressWarnings("unchecked")
     public void addPortletName(String name)
     {
         if (portletNames == null)
         {
-            portletNames = new ArrayList<FilteredPortlet>();
+            portletNames = CollectionUtils.createList();
         }
         for (FilteredPortlet fp : this.portletNames)
         {

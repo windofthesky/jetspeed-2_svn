@@ -349,18 +349,17 @@ public class PersistenceBrokerPortletRegistry
         {
             throw new FailedToStorePortletDefinitionException("Cannot clone to portlet named " + newPortletName + ", name already exists"); 
         }
+
+        // create new portlet in source portlet application
+        PortletDefinition copy = source.getApplication().addPortlet(newPortletName);
         
-        PortletDefinitionImpl copy = new PortletDefinitionImpl();
+        // First set display name
         
-        // First set the name and display name
-        
-        copy.setPortletName(newPortletName);
         DisplayName displayName = copy.addDisplayName(JetspeedLocale.getDefaultLocale().getLanguage());
         displayName.setDisplayName(newPortletName);
         
         // And, then, copy all attributes
         
-        copy.setApplication(source.getApplication());
         copy.setPortletClass(source.getPortletClass());
         copy.setResourceBundle(source.getResourceBundle());
         copy.setPreferenceValidatorClassname(source.getPreferenceValidatorClassname());
@@ -451,7 +450,6 @@ public class PersistenceBrokerPortletRegistry
         copy.getSupportedPublicRenderParameters().addAll(source.getSupportedPublicRenderParameters());
         
         //savePortletDefinition(copy);
-        source.getApplication().getPortlets().add(copy);
         try
         {
             updatePortletApplication(source.getApplication());

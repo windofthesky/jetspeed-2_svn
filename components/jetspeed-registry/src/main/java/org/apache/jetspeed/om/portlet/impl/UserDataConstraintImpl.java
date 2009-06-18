@@ -18,13 +18,13 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.UserDataConstraint;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 /**
  * @version $Id$
@@ -40,11 +40,12 @@ public class UserDataConstraintImpl implements UserDataConstraint, Serializable
         return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<Description> getDescriptions()
     {
         if (descriptions == null)
         {
-            descriptions = new ArrayList<Description>();
+            descriptions = CollectionUtils.createList();
         }
         return descriptions;
     }

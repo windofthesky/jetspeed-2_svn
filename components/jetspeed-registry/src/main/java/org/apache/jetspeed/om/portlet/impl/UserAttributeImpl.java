@@ -16,13 +16,13 @@
  */
 package org.apache.jetspeed.om.portlet.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 /**
  * <p>User attribute implementation.</p>
@@ -53,11 +53,12 @@ public class UserAttributeImpl implements UserAttribute
         return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<Description> getDescriptions()
     {
         if (descriptions == null)
         {
-            descriptions = new ArrayList<Description>();
+            descriptions = CollectionUtils.createList();
         }
         return descriptions;
     }

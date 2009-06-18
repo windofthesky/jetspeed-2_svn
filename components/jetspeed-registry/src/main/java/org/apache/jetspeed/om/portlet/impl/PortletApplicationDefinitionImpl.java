@@ -53,6 +53,7 @@ import org.apache.jetspeed.om.portlet.SecurityRole;
 import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
@@ -107,7 +108,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     private List<ContainerRuntimeOption> containerRuntimeOptions;
 
     private List<UserAttributeRef> userAttributeRefs;
-    private List<JetspeedServiceReference> services = new ArrayList<JetspeedServiceReference>();
+    private List<JetspeedServiceReference> services;
 
     private List<LocaleEncodingMapping> localeEncodingMappingList;
     
@@ -249,11 +250,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     /**
      * @see org.apache.jetspeed.om.portlet.PortletApplication#getMetadata()
      */
+    @SuppressWarnings("unchecked")
     public GenericMetadata getMetadata()
     {
         if(metadataFields == null)
         {
-            metadataFields = new ArrayList<LocalizedField>();
+            metadataFields = CollectionUtils.createCollection();
         }
         
         GenericMetadata metadata = new PortletApplicationMetadataImpl();
@@ -267,11 +269,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<Description> getDescriptions()
     {
         if (descriptions == null)
         {
-            descriptions = new ArrayList<Description>();
+            descriptions = CollectionUtils.createList();
         }
         return descriptions;
     }
@@ -295,11 +298,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return (DisplayName)JetspeedLocale.getBestLocalizedObject(getDisplayNames(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<DisplayName> getDisplayNames()
     {
         if (displayNames == null)
         {
-            displayNames = new ArrayList<DisplayName>();
+            displayNames = CollectionUtils.createList();
         }
         return displayNames;
     }
@@ -318,11 +322,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return d;
     }
 
+    @SuppressWarnings("unchecked")
     public List<SecurityRole> getSecurityRoles()
     {
         if (roles == null)
         {
-            roles = new ArrayList<SecurityRole>();
+            roles = CollectionUtils.createList();
         }
         return roles;
     }
@@ -354,11 +359,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<PortletDefinition> getPortlets()
     {
         if (portlets == null)
         {
-            portlets = new ArrayList<PortletDefinition>();
+            portlets = CollectionUtils.createList();
         }
         return portlets;
     }
@@ -376,11 +382,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return portlet;
     }
 
+    @SuppressWarnings("unchecked")
     public List<EventDefinition> getEventDefinitions()
     {
         if (eventDefinitions == null)
         {
-            eventDefinitions = new ArrayList<EventDefinition>();
+            eventDefinitions = CollectionUtils.createList();
         }
         return eventDefinitions;
     }
@@ -418,11 +425,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<PublicRenderParameter> getPublicRenderParameters()
     {
         if (publicRenderParameters == null)
         {
-            publicRenderParameters = new ArrayList<PublicRenderParameter>();
+            publicRenderParameters = CollectionUtils.createList();
         }
         return publicRenderParameters;
     }
@@ -492,11 +500,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
     }
     
+    @SuppressWarnings("unchecked")
     public List<CustomPortletMode> getCustomPortletModes()
     {
         if (customPortletModes == null)
         {
-            customPortletModes = new ArrayList<CustomPortletMode>();
+            customPortletModes = CollectionUtils.createList();
         }
         return customPortletModes;
     }
@@ -546,11 +555,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;            
     }
     
+    @SuppressWarnings("unchecked")
     public List<CustomWindowState> getCustomWindowStates()
     {
         if (customWindowStates == null)
         {
-            customWindowStates = new ArrayList<CustomWindowState>();
+            customWindowStates = CollectionUtils.createList();
         }
         return customWindowStates;
     }
@@ -655,11 +665,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<UserAttribute> getUserAttributes()
     {
         if (userAttributes == null)
         {
-            userAttributes = new ArrayList<UserAttribute>();
+            userAttributes = CollectionUtils.createList();
         }
         return userAttributes;
     }
@@ -688,11 +699,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<UserAttributeRef> getUserAttributeRefs()
     {
         if (userAttributeRefs == null)
         {
-            userAttributeRefs = new ArrayList<UserAttributeRef>();
+            userAttributeRefs = CollectionUtils.createList();
         }
         return userAttributeRefs;
     }
@@ -709,11 +721,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return uar;        
     }
 
+    @SuppressWarnings("unchecked")
     public List<SecurityConstraint> getSecurityConstraints()
     {
         if (securityConstraints == null)
         {
-            securityConstraints = new ArrayList<SecurityConstraint>();
+            securityConstraints = CollectionUtils.createList();
         }
         return securityConstraints;
     }
@@ -774,11 +787,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<Filter> getFilters()
     {
         if (filters == null)
         {
-            filters = new ArrayList<Filter>();
+            filters = CollectionUtils.createList();
         }
         return filters;
     }
@@ -807,11 +821,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<FilterMapping> getFilterMappings()
     {
         if (filterMappings == null)
         {
-            filterMappings = new ArrayList<FilterMapping>();
+            filterMappings = CollectionUtils.createList();
         }
         return filterMappings;
     }
@@ -828,11 +843,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return fm;        
     }
 
+    @SuppressWarnings("unchecked")
     public List<Listener> getListeners()
     {
         if (listeners == null)
         {
-            listeners = new ArrayList<Listener>();
+            listeners = CollectionUtils.createList();
         }
         return listeners;
     }
@@ -864,11 +880,12 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<ContainerRuntimeOption> getContainerRuntimeOptions()
     {
         if (containerRuntimeOptions == null)
         {
-            containerRuntimeOptions = new ArrayList<ContainerRuntimeOption>();
+            containerRuntimeOptions = CollectionUtils.createList();
         }
         return containerRuntimeOptions;
     }
@@ -905,20 +922,22 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return localeEncodingMappings;
     }
     
+    @SuppressWarnings("unchecked")
     public void addLocaleEncodingMapping(Locale locale, String encoding)
     {
         if (localeEncodingMappingList == null)
         {
-            localeEncodingMappingList = new ArrayList<LocaleEncodingMapping>();
+            localeEncodingMappingList = CollectionUtils.createList();
         }
         localeEncodingMappingList.add(new LocaleEncodingMappingImpl(locale, encoding));
     }
     
+    @SuppressWarnings("unchecked")
     public List<JetspeedServiceReference> getJetspeedServices()
     {
         if (services == null)
         {
-            this.services = new ArrayList<JetspeedServiceReference>();
+            this.services = CollectionUtils.createList();
         }
         return services;
     }

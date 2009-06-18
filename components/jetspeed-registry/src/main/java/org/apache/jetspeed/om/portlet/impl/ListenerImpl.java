@@ -18,7 +18,6 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,6 +25,7 @@ import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.DisplayName;
 import org.apache.jetspeed.om.portlet.Listener;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 /**
  * @version $Id$
@@ -54,11 +54,12 @@ public class ListenerImpl implements Listener, Serializable
         return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<Description> getDescriptions()
     {
         if (descriptions == null)
         {
-            descriptions = new ArrayList<Description>();
+            descriptions = CollectionUtils.createList();
         }
         return descriptions;
     }
@@ -82,11 +83,12 @@ public class ListenerImpl implements Listener, Serializable
         return (DisplayName)JetspeedLocale.getBestLocalizedObject(getDisplayNames(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<DisplayName> getDisplayNames()
     {
         if (displayNames == null)
         {
-            displayNames = new ArrayList<DisplayName>();
+            displayNames = CollectionUtils.createList();
         }
         return displayNames;
     }

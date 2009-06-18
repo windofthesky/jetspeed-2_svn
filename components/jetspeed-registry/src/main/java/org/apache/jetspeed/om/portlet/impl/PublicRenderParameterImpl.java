@@ -28,6 +28,7 @@ import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.PortletQName;
 import org.apache.jetspeed.om.portlet.PublicRenderParameter;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 /**
  * @version $Id$
@@ -160,11 +161,12 @@ public class PublicRenderParameterImpl implements PublicRenderParameter, Seriali
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     public void addAlias(QName alias)
     {       
         if (aliases == null)
         {
-            aliases = new ArrayList<ParameterAliasImpl>();
+            aliases = CollectionUtils.createList();
         }
         if (!containsAlias(alias))
         {
@@ -188,11 +190,12 @@ public class PublicRenderParameterImpl implements PublicRenderParameter, Seriali
         return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<Description> getDescriptions()
     {
         if (descriptions == null)
         {
-            descriptions = new ArrayList<Description>();
+            descriptions = CollectionUtils.createList();
         }
         return descriptions;
     }

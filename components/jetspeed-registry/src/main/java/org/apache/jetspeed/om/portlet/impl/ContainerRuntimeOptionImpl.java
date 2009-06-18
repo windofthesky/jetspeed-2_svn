@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.ContainerRuntimeOptionValue;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 /**
  * @version $Id$
@@ -53,12 +54,13 @@ public class ContainerRuntimeOptionImpl implements ContainerRuntimeOption, Seria
     {
         this.name = name;
     }
-
+    
+    @SuppressWarnings("unchecked")
     public void addValue(String value)
     {
         if (values == null)
         {
-            values = new ArrayList<ContainerRuntimeOptionValue>();
+            values = CollectionUtils.createList();
         }
         for (ContainerRuntimeOptionValue param : this.values)
         {
@@ -70,11 +72,12 @@ public class ContainerRuntimeOptionImpl implements ContainerRuntimeOption, Seria
         values.add(new ContainerRuntimeOptionValueImpl(value));                
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getValues()
     {
         if (values == null)
         {
-            values = new ArrayList<ContainerRuntimeOptionValue>();
+            values = CollectionUtils.createList();
         }
         List<String> vals = new ArrayList<String>();
         for (ContainerRuntimeOptionValue v : this.values)

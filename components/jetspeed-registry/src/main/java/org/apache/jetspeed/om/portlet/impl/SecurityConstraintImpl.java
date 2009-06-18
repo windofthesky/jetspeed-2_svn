@@ -28,6 +28,7 @@ import org.apache.jetspeed.om.portlet.SecuredPortlet;
 import org.apache.jetspeed.om.portlet.SecurityConstraint;
 import org.apache.jetspeed.om.portlet.UserDataConstraint;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 /**
  * @version $Id$
@@ -44,11 +45,12 @@ public class SecurityConstraintImpl implements SecurityConstraint, Serializable
         return (DisplayName)JetspeedLocale.getBestLocalizedObject(getDisplayNames(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<DisplayName> getDisplayNames()
     {
         if (displayNames == null)
         {
-            displayNames = new ArrayList<DisplayName>();
+            displayNames = CollectionUtils.createList();
         }
         return displayNames;
     }
@@ -67,11 +69,12 @@ public class SecurityConstraintImpl implements SecurityConstraint, Serializable
         return d;
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getPortletNames()
     {
         if (portletNames == null)
         {
-            portletNames = new ArrayList<SecuredPortlet>();
+            portletNames = CollectionUtils.createList();
         }
         List<String> result = new ArrayList<String>();
         for (SecuredPortlet sp : portletNames)
@@ -81,11 +84,12 @@ public class SecurityConstraintImpl implements SecurityConstraint, Serializable
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     public void addPortletName(String portletName)
     {
         if (portletNames == null)
         {
-            portletNames = new ArrayList<SecuredPortlet>();
+            portletNames = CollectionUtils.createList();
         }
         for (SecuredPortlet sp : portletNames)
         {

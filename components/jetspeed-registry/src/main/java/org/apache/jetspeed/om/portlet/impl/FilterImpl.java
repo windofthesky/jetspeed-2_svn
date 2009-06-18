@@ -30,6 +30,7 @@ import org.apache.jetspeed.om.portlet.Filter;
 import org.apache.jetspeed.om.portlet.FilterLifecycle;
 import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 /**
  * @version $Id$
@@ -49,12 +50,13 @@ public class FilterImpl implements Filter, Serializable
     {
         return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
     }
-    
+
+    @SuppressWarnings("unchecked")
     public List<Description> getDescriptions()
     {
         if (descriptions == null)
         {
-            descriptions = new ArrayList<Description>();
+            descriptions = CollectionUtils.createList();
         }
         return descriptions;
     }
@@ -78,11 +80,12 @@ public class FilterImpl implements Filter, Serializable
         return (DisplayName)JetspeedLocale.getBestLocalizedObject(getDisplayNames(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<DisplayName> getDisplayNames()
     {
         if (displayNames == null)
         {
-            displayNames = new ArrayList<DisplayName>();
+            displayNames = CollectionUtils.createList();
         }
         return displayNames;
     }
@@ -121,11 +124,12 @@ public class FilterImpl implements Filter, Serializable
         filterClass = value;
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getLifecycles()
     {
         if (lifecycles == null)
         {
-            lifecycles = new ArrayList<FilterLifecycle>();
+            lifecycles = CollectionUtils.createList();
         }
         List<String> result = new ArrayList<String>();
         for (FilterLifecycle flc : lifecycles)
@@ -135,11 +139,12 @@ public class FilterImpl implements Filter, Serializable
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     public void addLifecycle(String name)
     {
         if (lifecycles == null)
         {
-            lifecycles = new ArrayList<FilterLifecycle>();
+            lifecycles = CollectionUtils.createList();
         }
         for (FilterLifecycle flc : this.lifecycles)
         {
@@ -163,11 +168,12 @@ public class FilterImpl implements Filter, Serializable
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<InitParam> getInitParams()
     {
         if (initParams == null)
         {
-            initParams = new ArrayList<InitParam>();
+            initParams = CollectionUtils.createList();
         }
         return initParams;
     }

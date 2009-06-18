@@ -18,7 +18,6 @@
 package org.apache.jetspeed.om.portlet.impl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,7 +25,7 @@ import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.util.HashCodeBuilder;
 import org.apache.jetspeed.util.JetspeedLocale;
-
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 /**
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
@@ -90,12 +89,13 @@ public class InitParamImpl implements InitParam, Serializable
     {
         return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
     }
-    
+
+    @SuppressWarnings("unchecked")
     public List<Description> getDescriptions()
     {
         if (descriptions == null)
         {
-            descriptions = new ArrayList<Description>();
+            descriptions = CollectionUtils.createList();
         }
         return descriptions;
     }

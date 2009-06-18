@@ -57,6 +57,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareCollection"
       >
          <inverse-foreignkey field-ref="folderId"/>
       </collection-descriptor>
@@ -176,6 +177,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="folderId"/>
@@ -187,6 +189,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="folderId"/>
@@ -198,6 +201,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="sortOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="folderId"/>
@@ -209,6 +213,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="name" sort="ASC"/>
          <inverse-foreignkey field-ref="folderId"/>
@@ -487,6 +492,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareCollection"
       >
          <inverse-foreignkey field-ref="menuId"/>
       </collection-descriptor>
@@ -497,6 +503,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="elementOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="parentId"/>
@@ -717,6 +724,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareCollection"
       >
          <inverse-foreignkey field-ref="menuId"/>
       </collection-descriptor>
@@ -801,6 +809,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <inverse-foreignkey field-ref="pageId"/>
       </collection-descriptor>
@@ -811,6 +820,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareCollection"
       >
          <inverse-foreignkey field-ref="pageId"/>
       </collection-descriptor>
@@ -930,6 +940,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="pageId"/>
@@ -941,6 +952,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="pageId"/>
@@ -952,6 +964,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="name" sort="ASC"/>
          <inverse-foreignkey field-ref="pageId"/>
@@ -1199,6 +1212,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareCollection"
       >
          <inverse-foreignkey field-ref="menuId"/>
       </collection-descriptor>
@@ -1209,6 +1223,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="elementOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="parentId"/>
@@ -1429,6 +1444,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareCollection"
       >
          <inverse-foreignkey field-ref="menuId"/>
       </collection-descriptor>
@@ -1501,6 +1517,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="id" sort="ASC"/>
          <inverse-foreignkey field-ref="parentId"/>
@@ -1645,6 +1662,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="fragmentId"/>
@@ -1656,6 +1674,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="fragmentId"/>
@@ -1667,6 +1686,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="name" sort="ASC"/>
          <inverse-foreignkey field-ref="fragmentId"/>
@@ -1797,6 +1817,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <inverse-foreignkey field-ref="prefId"/>
       </collection-descriptor>
@@ -1873,6 +1894,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareCollection"
       >
          <inverse-foreignkey field-ref="pageId"/>
       </collection-descriptor>
@@ -1992,6 +2014,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="pageId"/>
@@ -2003,6 +2026,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="pageId"/>
@@ -2241,6 +2265,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="name" sort="ASC"/>
          <inverse-foreignkey field-ref="pageSecurityId"/>
@@ -2252,6 +2277,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="pageSecurityId"/>
@@ -2289,6 +2315,7 @@
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
       >
          <orderby name="applyOrder" sort="ASC"/>
          <inverse-foreignkey field-ref="constraintsDefId"/>

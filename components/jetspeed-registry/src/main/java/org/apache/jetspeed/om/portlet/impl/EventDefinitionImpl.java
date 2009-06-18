@@ -28,6 +28,7 @@ import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.EventDefinition;
 import org.apache.jetspeed.om.portlet.PortletQName;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 /**
  * @version $Id$
@@ -57,11 +58,12 @@ public class EventDefinitionImpl implements EventDefinition, Serializable
         return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<Description> getDescriptions()
     {
         if (descriptions == null)
         {
-            descriptions = new ArrayList<Description>();
+            descriptions = CollectionUtils.createList();
         }
         return descriptions;
     }
@@ -131,12 +133,13 @@ public class EventDefinitionImpl implements EventDefinition, Serializable
         }
         return result;
     }
-    
+
+    @SuppressWarnings("unchecked")
     public void addAlias(QName alias)
     {       
         if (aliases == null)
         {
-            aliases = new ArrayList<EventAliasImpl>();
+            aliases = CollectionUtils.createList();
         }
         if (!containsAlias(alias))
         {

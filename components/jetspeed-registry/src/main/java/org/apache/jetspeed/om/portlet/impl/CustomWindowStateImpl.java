@@ -16,7 +16,6 @@
 */
 package org.apache.jetspeed.om.portlet.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,6 +24,7 @@ import javax.portlet.WindowState;
 import org.apache.jetspeed.om.portlet.CustomWindowState;
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 public class CustomWindowStateImpl implements CustomWindowState
 {
@@ -97,11 +97,12 @@ public class CustomWindowStateImpl implements CustomWindowState
         return (Description)JetspeedLocale.getBestLocalizedObject(getDescriptions(), locale);
     }
     
+    @SuppressWarnings("unchecked")
     public List<Description> getDescriptions()
     {
         if (descriptions == null)
         {
-            descriptions = new ArrayList<Description>();
+            descriptions = CollectionUtils.createList();
         }
         return descriptions;
     }
