@@ -21,6 +21,7 @@ import java.util.Iterator;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
@@ -118,25 +119,36 @@ public class PageImporter
     public void fullImport()
     throws JetspeedException
     {
-        Folder fsRoot = sourceManager.getFolder(rootFolder);                
-        importFolder(fsRoot);
-        
-        
-        // create the root page security
-        PageSecurity sourcePageSecurity = null;
+        // get root folder
+        Folder fsRoot = null;
         try
         {
-            sourcePageSecurity = sourceManager.getPageSecurity();
+            fsRoot = sourceManager.getFolder(rootFolder);
         }
-        catch (DocumentNotFoundException e)
+        catch (FolderNotFoundException fnfe)
         {
-            // skip over it, not found
         }
-        
-        if (sourcePageSecurity != null)
+        if (fsRoot != null)
         {
-            PageSecurity rootSecurity = destManager.copyPageSecurity(sourcePageSecurity);        
-            destManager.updatePageSecurity(rootSecurity);
+            // import root folder
+            importFolder(fsRoot);
+
+            // create the root page security
+            PageSecurity sourcePageSecurity = null;
+            try
+            {
+                sourcePageSecurity = sourceManager.getPageSecurity();
+            }
+            catch (DocumentNotFoundException e)
+            {
+                // skip over it, not found
+            }
+
+            if (sourcePageSecurity != null)
+            {
+                PageSecurity rootSecurity = destManager.copyPageSecurity(sourcePageSecurity);
+                destManager.updatePageSecurity(rootSecurity);
+            }
         }
     }
 
