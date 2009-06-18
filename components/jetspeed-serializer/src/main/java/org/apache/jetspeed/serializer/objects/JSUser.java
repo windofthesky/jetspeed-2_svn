@@ -376,6 +376,15 @@ public class JSUser
 		                g.attributes  = (JSSecurityAttributes) o1;
                     else if (o1 instanceof JSPrincipalRules)
 	                    g.rules  = (JSPrincipalRules) o1;
+                    else if (o1 instanceof JSNVPElements)
+                    {
+                        g.attributes  = new JSSecurityAttributes();
+                        for (JSNVPElement element : ((JSNVPElements)o1).getValues())
+                        {
+                            JSNVPElement clonedElement = new JSNVPElement(element.getKey(), element.getValue());
+                            g.attributes.add(clonedElement);
+                        }
+                    }
                 }
             } 
             catch (Exception e)

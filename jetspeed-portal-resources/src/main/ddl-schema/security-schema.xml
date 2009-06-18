@@ -111,7 +111,8 @@ limitations under the License.
         <unique name="UIX_SECURITY_PERMISSION">
           <unique-column name="PERMISSION_TYPE" />
           <unique-column name="NAME" />
-        </unique>        
+          <unique-column name="ACTIONS" />
+        </unique>
     </table>
     
     <!--

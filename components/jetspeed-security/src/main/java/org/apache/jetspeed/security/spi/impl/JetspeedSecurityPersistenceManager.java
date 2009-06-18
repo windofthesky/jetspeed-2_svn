@@ -682,6 +682,7 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("type", permission.getType());
         criteria.addEqualTo("name", permission.getName());
+        criteria.addEqualTo("actions", permission.getActions());
         Query query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, criteria);
         return getPersistenceBrokerTemplate().getCount(query) == 1;
     }

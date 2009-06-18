@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.security.auth.Subject;
 
@@ -869,16 +870,21 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
             
             for (JetspeedPrincipal principal : principalManager.getPrincipals(""))
             {
+                Set<String> associationNames = new HashSet<String>();
                 for (JetspeedPrincipalAssociationType assocType : principalManager.getAssociationTypes())
                 {
-                    for (String otherPrincipalTypeName : copiedPrincipalTypes.keySet())
+                    String associationName = assocType.getAssociationName();
+                    if (associationNames.add(associationName))
                     {
-                        otherPrincipalManager = this.principalManagerProvider.getManager(this.principalManagerProvider.getPrincipalType(otherPrincipalTypeName));
-                        
-                        for (JetspeedPrincipal toPrincipal : otherPrincipalManager.getAssociatedFrom(principal.getName(), principal.getType(), assocType.getAssociationName()))
+                        for (String otherPrincipalTypeName : copiedPrincipalTypes.keySet())
                         {
-                            JSPrincipalAssociation jsAssoc = createJSPrincipalAssociation(assocType, principal, toPrincipal);
-                            snapshot.addPrincipalAssociation(jsAssoc);
+                            otherPrincipalManager = this.principalManagerProvider.getManager(this.principalManagerProvider.getPrincipalType(otherPrincipalTypeName));
+                            
+                            for (JetspeedPrincipal toPrincipal : otherPrincipalManager.getAssociatedFrom(principal.getName(), principal.getType(), associationName))
+                            {
+                                JSPrincipalAssociation jsAssoc = createJSPrincipalAssociation(associationName, principal, toPrincipal);
+                                snapshot.addPrincipalAssociation(jsAssoc);
+                            }
                         }
                     }
                 }
@@ -886,10 +892,10 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         }
     }
     
-    private JSPrincipalAssociation createJSPrincipalAssociation(JetspeedPrincipalAssociationType assocType, JetspeedPrincipal from, JetspeedPrincipal to)
+    private JSPrincipalAssociation createJSPrincipalAssociation(String associationName, JetspeedPrincipal from, JetspeedPrincipal to)
     {
         JSPrincipalAssociation jsAssoc = new JSPrincipalAssociation();
-        jsAssoc.setName(assocType.getAssociationName());
+        jsAssoc.setName(associationName);
         jsAssoc.setFromType(from.getType().getName());
         jsAssoc.setFromName(from.getName());
         jsAssoc.setToType(to.getType().getName());
@@ -989,7 +995,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         _jsPrincipal.setRemovable(principal.isRemovable());
         _jsPrincipal.setExtendable(principal.isExtendable());
         
-        if (JetspeedPrincipalType.USER.equals(principal.getType()))
+        if (JetspeedPrincipalType.USER.equals(principal.getType().getName()))
         {
             Credential credential = userManager.getPasswordCredential((User) principal);
             Subject subject = userManager.getSubject((User) principal);
