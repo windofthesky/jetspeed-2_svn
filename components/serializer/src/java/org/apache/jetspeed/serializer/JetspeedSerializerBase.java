@@ -64,7 +64,7 @@ public abstract class JetspeedSerializerBase
     /** current indent for XML files - defaults to tab */
     private String currentIndent = null;
 
-    private static String ENCODING_STRING = "JETSPEED 2.1 - 2006";
+    private static String ENCODING_STRING = "JETSPEED-SERIALIZER-ENCODING";
     private static String JETSPEED = "JETSPEED";
     
     protected final ComponentManager getCM()

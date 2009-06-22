@@ -130,7 +130,7 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
     int refCouter = 0;
 
  
-    private static String ENCODING_STRING = "JETSPEED 2.1 - 2006";
+    private static String ENCODING_STRING = "JETSPEED-SERIALIZER-ENCODING";
     private static String JETSPEED = "JETSPEED";
     
     
