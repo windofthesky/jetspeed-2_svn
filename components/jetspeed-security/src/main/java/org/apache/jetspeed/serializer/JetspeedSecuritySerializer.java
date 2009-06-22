@@ -79,7 +79,7 @@ import org.apache.jetspeed.serializer.objects.JSUserUsers;
  */
 public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSerializer
 {
-    private static String ENCODING_STRING = "JETSPEED 2.2 - 2009";
+    private static String ENCODING_STRING = "JETSPEED-SERIALIZER-ENCODING";
     private static String JETSPEED = "JETSPEED";
 
     private static class ImportRefs
@@ -411,8 +411,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                         if (password != null && password.length() > 0)
                         {
                             PasswordCredential pwc = userManager.getPasswordCredential(user);
-                            pwc.setPassword(null, password);
-                            pwc.setEncoded((passwordEncoding == JetspeedSerializer.PASSTHRU_REQUIRED));
+                            pwc.setPassword(password, (passwordEncoding == JetspeedSerializer.PASSTHRU_REQUIRED));
                             userManager.storePasswordCredential(pwc);
                         }
                         log.debug("add User done ");
