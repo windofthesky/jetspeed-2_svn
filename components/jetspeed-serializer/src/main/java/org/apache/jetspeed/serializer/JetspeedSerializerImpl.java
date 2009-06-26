@@ -69,6 +69,10 @@ import org.apache.jetspeed.serializer.objects.JSSecurityAttributes;
 import org.apache.jetspeed.serializer.objects.JSSecurityDomain;
 import org.apache.jetspeed.serializer.objects.JSSecurityDomains;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
+import org.apache.jetspeed.serializer.objects.JSSSOSite;
+import org.apache.jetspeed.serializer.objects.JSSSOSiteRemoteUser;
+import org.apache.jetspeed.serializer.objects.JSSSOSiteRemoteUsers;
+import org.apache.jetspeed.serializer.objects.JSSSOSites;
 import org.apache.jetspeed.serializer.objects.JSUser;
 import org.apache.jetspeed.serializer.objects.JSUserAttributes;
 import org.apache.jetspeed.serializer.objects.JSUserGroups;
@@ -233,6 +237,11 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         binding.setAlias(JSEntityPreferences.class, "Settings");
         binding.setAlias(JSSecurityDomains.class, "SecurityDomains");
         binding.setAlias(JSSecurityDomain.class, "SecurityDomain");
+
+        binding.setAlias(JSSSOSite.class, "Site");
+        binding.setAlias(JSSSOSiteRemoteUser.class, "RemoteUser");
+        binding.setAlias(JSSSOSiteRemoteUsers.class, "RemoteUsers");
+        binding.setAlias(JSSSOSites.class, "SSOSites");
 
         binding.setAlias(String.class, "String");
         binding.setAlias(Integer.class, "int");

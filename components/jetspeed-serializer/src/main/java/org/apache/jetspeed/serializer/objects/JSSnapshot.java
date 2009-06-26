@@ -68,8 +68,10 @@ public class JSSnapshot implements JetspeedSerializedData
     private JSApplications applications;
     
     private JSSecurityDomains securityDomains;
-    
 
+    private JSSSOSites ssoSites;
+
+    
     /**
      * check the software version and subvversion against the saved
      * version...and verify whether it is compatible...
@@ -96,6 +98,7 @@ public class JSSnapshot implements JetspeedSerializedData
         rules = new JSProfilingRules();
         applications = new JSApplications();
         securityDomains=new JSSecurityDomains();
+        ssoSites = new JSSSOSites();
     }
 
     public JSSnapshot(String name)
@@ -434,6 +437,23 @@ public class JSSnapshot implements JetspeedSerializedData
         this.securityDomains = securityDomains;
     }
 
+    /**
+     * @return Returns the SSOSites.
+     */
+    public JSSSOSites getSSOSites()
+    {
+        return ssoSites;
+    }
+
+    /**
+     * @param sites
+     *            The SSO sites to set.
+     */
+    public void setSSOSites(JSSSOSites sites)
+    {
+        this.ssoSites = sites;
+    }
+
 
     /***************************************************************************
      * SERIALIZER
@@ -519,6 +539,10 @@ public class JSSnapshot implements JetspeedSerializedData
                 {
                     xml.add(g.getSecurityDomains());
                 }
+                if ( !g.getSSOSites().isEmpty() )
+                {
+                    xml.add(g.getSSOSites());
+                }
             }
             catch (Exception e)
             {
@@ -589,6 +613,8 @@ public class JSSnapshot implements JetspeedSerializedData
                         g.applications = (JSApplications) o1;
                     else if (o1 instanceof JSSecurityDomains)
                         g.securityDomains = (JSSecurityDomains) o1;
+                    else if (o1 instanceof JSSSOSites)
+                        g.ssoSites = (JSSSOSites) o1;
                 }
             }
             catch (Exception e)

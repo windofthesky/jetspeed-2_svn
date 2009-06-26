@@ -148,7 +148,7 @@ public class SSOClientImpl implements SSOClient
         httpClient.getState().setCredentials(
                 site.getRealm(),
                 url.getHost(),
-                new UsernamePasswordCredentials(credential.getUserName(),  this.unscramble(credential.getPassword()))
+                new UsernamePasswordCredentials(credential.getUserName(), SSOUtils.unscramble(credential.getPassword()))
             );
      // Build URL if it's Form authentication
         StringBuffer siteURL = new StringBuffer(site.getURL());
@@ -156,7 +156,7 @@ public class SSOClientImpl implements SSOClient
         // Check if it's form based or ChallengeResponse
         if (site.isFormAuthentication())
         {
-            siteURL.append("?").append(site.getFormUserField()).append("=").append(credential.getUserName()).append("&").append(site.getFormPwdField()).append("=").append(this.unscramble(credential.getPassword()));
+            siteURL.append("?").append(site.getFormUserField()).append("=").append(credential.getUserName()).append("&").append(site.getFormPwdField()).append("=").append(SSOUtils.unscramble(credential.getPassword()));
         }
         
         get.setDoAuthentication( true );
@@ -171,27 +171,4 @@ public class SSOClientImpl implements SSOClient
         }
         return status;      
     }
-        
-    static char[] scrambler ="Jestspeed-2 is getting ready for release".toCharArray();
-    
-    private char[] xor(char[] a, char[]b)
-    {
-        int len = Math.min(a.length, b.length);
-        char[] result = new char[len];
-        for(int i=0; i<len;i++)
-        {
-            result[i] = (char) (a[i] ^ b[i]);
-        }
-        return result;
-    }
-    
-    private String unscramble(String pwd)
-    {
-        byte[] bytes = pwd.getBytes();
-        bytes = Base64.decodeBase64(bytes);
-        String chars = new String(bytes);
-        String unscrambled = new String(xor(chars.toCharArray(), scrambler));
-        return unscrambled;
-    }
-    
 }
