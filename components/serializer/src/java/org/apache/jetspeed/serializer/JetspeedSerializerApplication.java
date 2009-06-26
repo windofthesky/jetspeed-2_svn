@@ -47,8 +47,8 @@ import org.apache.log4j.Logger;
  *      CAPABILITIES - extract/import capabilities
  *      PROFILE = extract/import profile settings (for export requires USER)
  *      PERMISSIONS = extract/import permissions 
- *      PREFS = extract/import  portlet preferences (ignored if any of the above is set)
  *      SSO = extract/import sso sites
+ *      PREFS = extract/import  portlet preferences (ignored if any of the above is set)
  *      
  *      NOOVERWRITE = don't overwrite existing file (for export)
  *      BACKUP = backup before process

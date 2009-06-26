@@ -61,8 +61,17 @@
 		{
 			permissions.value='n';
 		}						
-		var names = new Array("users", "profiles","capabilities", "permissions");
-		var values = new Array(users.value,profiling.value,capabilities.value,permissions.value);
+		var sso = document.getElementById('sso');
+		if(sso.checked)
+		{
+			sso.value='y';
+		}				
+		else
+		{
+			sso.value='n';
+		}						
+		var names = new Array("users", "profiles","capabilities", "permissions", "sso");
+		var values = new Array(users.value,profiling.value,capabilities.value,permissions.value,sso.value);
 		ajaxInvoke("jetspeedexport", names, values, new exportHandler() );     		
 	}
 	function buildPrefsquery()
@@ -187,8 +196,12 @@
           Capabilities (Mimetypes, mediatypes, capabilities,clients)</td>		  
 	  </tr>
       <tr>
-        <td colspan="2"><input type="checkbox" name="permissions"  id="permissions" value="n">
+        <td colspan="2"><input type="checkbox" name="permissions" id="permissions" value="n">
           Permissions</td>
+      </tr>
+      <tr>
+        <td colspan="2"><input type="checkbox" name="sso" id="sso" value="n">
+          SSO</td>
       </tr>	  
 	  <tr>
 		  <td><input type="button" value="Export" onClick="javascript:buildExportquery();"></td>
@@ -223,7 +236,7 @@
 #else
   <td class="portlet-msg-info">$!msg</td>
 #end
-</tr>	       
+</tr>
 #end
       <tr>
         <td>Choose file to import 

@@ -85,6 +85,8 @@ public class JetspeedDataImporter extends AbstractDojoVelocityPortlet
 
     private HashMap rulesMap = new HashMap();
 
+    private HashMap ssoMap = new HashMap();
+
     int refCouter = 0;
 
     private static String ENCODING_STRING = "JETSPEED-SERIALIZER-ENCODING";
@@ -242,6 +244,7 @@ public class JetspeedDataImporter extends AbstractDojoVelocityPortlet
             settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES,
                     Boolean.TRUE);
             settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER, Boolean.TRUE);
+            settings.put(JetspeedSerializer.KEY_PROCESS_SSO, Boolean.TRUE);
             settings.put(JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES,
                     Boolean.TRUE);
             settings.put(JetspeedSerializer.KEY_OVERWRITE_EXISTING,

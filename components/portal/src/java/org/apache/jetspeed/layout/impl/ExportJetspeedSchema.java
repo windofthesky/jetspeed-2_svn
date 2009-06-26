@@ -56,6 +56,7 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
     private static final String PERMISSIONS = "permissions";
     private static final String PROFILES = "profiles";
     private static final String CAPABILITIES = "capabilities";
+    private static final String SSO = "sso";
     private static final String PREFS = "prefs";
 
     String pathSeprator = System.getProperty("file.separator");
@@ -97,6 +98,8 @@ public class ExportJetspeedSchema extends BaseGetResourceAction implements
                         getNonNullActionParameter(requestContext, PERMISSIONS).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
                 settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER, 
                         getNonNullActionParameter(requestContext, PROFILES).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
+                settings.put(JetspeedSerializer.KEY_PROCESS_SSO, 
+                        getNonNullActionParameter(requestContext, SSO).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
                 settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, 
                         getNonNullActionParameter(requestContext, CAPABILITIES).equalsIgnoreCase("y") ? Boolean.TRUE : Boolean.FALSE);
             }
