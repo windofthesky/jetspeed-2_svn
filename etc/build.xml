@@ -476,6 +476,7 @@ limitations under the License.
             <include name="capabilities.xml"/>           
             <include name="prefs.xml"/>           
             <include name="profiler.xml"/>        
+            <include name="sso.xml"/>        
             <include name="transaction.xml"/> 
           	<include name="cache.xml" />
           </fileset>
@@ -526,6 +527,9 @@ limitations under the License.
                         version="${org.apache.jetspeed.deploy.version}"/>
             <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
                         artifactId="jetspeed-profiler"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-sso"
                         version="${org.apache.jetspeed.deploy.version}"/>
             <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
                         artifactId="jetspeed-registry"

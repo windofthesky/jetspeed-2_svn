@@ -50,8 +50,10 @@ import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.om.InternalCredential;
 import org.apache.jetspeed.security.om.InternalPermission;
 import org.apache.jetspeed.security.om.InternalPrincipal;
+import org.apache.jetspeed.security.om.InternalUserPrincipal;
 import org.apache.jetspeed.security.spi.PasswordCredentialProvider;
 import org.apache.jetspeed.serializer.objects.JSCapabilities;
 import org.apache.jetspeed.serializer.objects.JSCapability;
@@ -79,12 +81,19 @@ import org.apache.jetspeed.serializer.objects.JSRuleCriterion;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterions;
 import org.apache.jetspeed.serializer.objects.JSSeedData;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
+import org.apache.jetspeed.serializer.objects.JSSSOSite;
+import org.apache.jetspeed.serializer.objects.JSSSOSiteRemoteUser;
+import org.apache.jetspeed.serializer.objects.JSSSOSiteRemoteUsers;
+import org.apache.jetspeed.serializer.objects.JSSSOSites;
 import org.apache.jetspeed.serializer.objects.JSUser;
 import org.apache.jetspeed.serializer.objects.JSUserAttributes;
 import org.apache.jetspeed.serializer.objects.JSUserGroups;
 import org.apache.jetspeed.serializer.objects.JSUserRoles;
 import org.apache.jetspeed.serializer.objects.JSUserUsers;
 import org.apache.jetspeed.serializer.objects.JSUsers;
+import org.apache.jetspeed.sso.SSOException;
+import org.apache.jetspeed.sso.SSOProvider;
+import org.apache.jetspeed.sso.SSOSite;
 
 /**
  * Jetspeed Serializer
@@ -126,6 +135,8 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
     private HashMap permissionMap = new HashMap();
 
     private HashMap rulesMap = new HashMap();
+
+    private HashMap ssoSitesMap = new HashMap();
 
     int refCouter = 0;
 
@@ -192,6 +203,7 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
         setSetting(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, true);
         setSetting(JetspeedSerializer.KEY_PROCESS_PROFILER, true);
         setSetting(JetspeedSerializer.KEY_PROCESS_PERMISSIONS, true);
+        setSetting(JetspeedSerializer.KEY_PROCESS_SSO, true);
         setSetting(JetspeedSerializer.KEY_OVERWRITE_EXISTING, true);
         setSetting(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS, true);
     }
@@ -926,6 +938,19 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
         }  
     }
     
+    private void importSSO()
+    {
+        System.out.println("importSSO - processing");
+        try
+        {
+            recreateSSOSites();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }  
+    }
+
 
     /**
      * The workhorse for importing data
@@ -970,6 +995,12 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
         {
             logMe("permissions, rules etc. skipped ");
             recreatePermissions();            
+        }        
+
+        if (this.getSetting(JetspeedSerializer.KEY_PROCESS_SSO))        
+        {
+            logMe("importing sso");
+            this.importSSO();            
         }        
     }
 
@@ -1019,6 +1050,13 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
         } else
             logMe(" permissions skipped");
         
+        if (this.getSetting(JetspeedSerializer.KEY_PROCESS_SSO))
+        {
+            logMe("collecting sso sites");
+            this.getSSOSites();
+        } else
+            logMe(" sso skipped");
+        
     }
 
     /**
@@ -1066,6 +1104,11 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
         binding.setAlias(Integer.class, "int");
         
         binding.setAlias(JSPWAttributes.class,"credentials");
+
+        binding.setAlias(JSSSOSite.class, "Site");
+        binding.setAlias(JSSSOSiteRemoteUser.class, "RemoteUser");
+        binding.setAlias(JSSSOSiteRemoteUsers.class, "RemoteUsers");
+        binding.setAlias(JSSSOSites.class, "SSOSites");
 
         binding.setClassAttribute(null);
 
@@ -1860,6 +1903,112 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
     }
     
     /**
+     * Create the SSO Site Wrapper
+     * 
+     * @param s sso site
+     * @return sso site wrapper
+     */
+    private JSSSOSite createSSOSite(SSOSite s)
+    {
+        JSSSOSite site = new JSSSOSite();
+        site.setName(s.getName());
+        site.setSiteURL(s.getSiteURL());
+        site.setAllowUserSet(s.isAllowUserSet());
+        site.setCertificateRequired(s.isCertificateRequired());
+        site.setChallengeResponseAuthentication(s.isChallengeResponseAuthentication());
+        site.setRealm(s.getRealm());
+        site.setFormAuthentication(s.isFormAuthentication());
+        site.setFormUserField(s.getFormUserField());
+        site.setFormPwdField(s.getFormPwdField());
+
+        Iterator rupIter = s.getRemotePrincipals().iterator();
+        while (rupIter.hasNext())
+        {
+            InternalUserPrincipal rup = (InternalUserPrincipal)rupIter.next();
+            InternalCredential rupCredential = null;
+            Collection rupCredentials = rup.getCredentials();
+            if (rupCredentials != null)
+            {
+                rupCredential = (InternalCredential)rupCredentials.iterator().next();
+            }
+            if (rupCredential != null)
+            {
+                String rupPath = rup.getFullPath();
+                String rupPrincipalType = null;
+                String rupPrincipalName = null;
+                String rupName = null;
+                String [] names = null;
+                if (rupPath.startsWith("/sso/") && rupPath.contains("/user/"))
+                {
+                    rupPrincipalType = "user";
+                    names = rupPath.replaceAll("^/sso/[0-9]+/user/", "").split("/");
+                }
+                else if (rupPath.startsWith("/sso/") && rupPath.contains("/group/"))
+                {
+                    rupPrincipalType = "group";
+                    names = rupPath.replaceAll("^/sso/[0-9]+/group/", "").split("/");
+                }
+                if ((names != null) && (names.length == 2))
+                {
+                    rupPrincipalName = names[0];
+                    rupName = names[1];
+                }
+                if ((rupPrincipalType != null) && (rupPrincipalName != null) && (rupPrincipalName.length() > 0) && (rupName != null) && (rupName.length() > 0))
+                {
+                    JSSSOSiteRemoteUser siteRemoteUser = new JSSSOSiteRemoteUser();
+                    siteRemoteUser.setPrincipalName(rupPrincipalName);
+                    siteRemoteUser.setPrincipalType(rupPrincipalType);
+                    siteRemoteUser.setUserCredential(rupName, rupCredential.getValue().toCharArray());
+                    site.addRemoteUser(siteRemoteUser);
+                }
+            }
+        }
+            
+        return site;
+    }
+
+    /**
+     * extract SSO sites and save in snapshot file
+     * 
+     * @throws SerializerException
+     */
+    private void getSSOSites() throws SerializerException
+    {
+        SSOProvider ssoProvider = (SSOProvider) getCM().getComponent("org.apache.jetspeed.sso.SSOProvider");
+        if (ssoProvider == null)
+        {
+            throw new SerializerException(SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST.create("org.apache.jetspeed.sso.SSOProvider"));
+        }
+
+        Iterator list = null;
+        try
+        {
+            list = ssoProvider.getSites("");
+        }
+        catch (Exception e)
+        {
+            throw new SerializerException(SerializerException.GET_EXISTING_OBJECTS.create(new String[]{"SSOSites", e.getMessage()}));
+        }
+        while (list.hasNext())
+        {
+            try
+            {
+                SSOSite s = (SSOSite) list.next();                
+                if (!(ssoSitesMap.containsKey(s.getSiteURL())))
+                {
+                    JSSSOSite site = createSSOSite(s);
+                    ssoSitesMap.put(site.getSiteURL(), site);
+                    ((JSSeedData)getSnapshot()).getSSOSites().add(site);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new SerializerException(SerializerException.CREATE_SERIALIZED_OBJECT_FAILED.create(new String[]{"SSOSites", e.getMessage()}));
+            }
+        }
+    }
+    
+    /**
      * ++++++++++++++++++++++++++++++HELPERS
      * +++++++++++++++++++++++++++++++++++++++++++++
      */
@@ -2001,5 +2150,95 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
 	    }	
 
 
+    /**
+     * Construct SSO site from (JS) SSOSite.
+     * 
+     * @param ssoProvider SSO provider
+     * @param site SSO site
+     * @param s existing SSO site
+     * @return created SSO site
+     * @throws SerializerException
+     * @throws SSOException
+     */
+    private SSOSite recreateSSOSite(SSOProvider ssoProvider, JSSSOSite site, SSOSite s) throws SerializerException, SSOException
+    {
+        if (s != null)
+        {
+            ssoProvider.removeSite(s);
+        }
+        
+        ssoProvider.addSite(site.getName(), site.getSiteURL());
+        s = ssoProvider.getSite(site.getSiteURL());
+        s.setAllowUserSet(site.isAllowUserSet());
+        s.setCertificateRequired(site.isCertificateRequired());
+        s.setChallengeResponseAuthentication(site.isChallengeResponseAuthentication());
+        s.setRealm(site.getRealm());
+        s.setFormAuthentication(site.isFormAuthentication());
+        s.setFormUserField(site.getFormUserField());
+        s.setFormPwdField(site.getFormPwdField());
 
+        if (site.getRemoteUsers() != null)
+        {
+            Iterator ruIter = site.getRemoteUsers().iterator();
+            while (ruIter.hasNext())
+            {
+                JSSSOSiteRemoteUser rUser = (JSSSOSiteRemoteUser)ruIter.next();
+                if (rUser.getPassword() != null)
+                {
+                    String pName = rUser.getPrincipalName();
+                    String pFullPath = "/"+rUser.getPrincipalType()+"/"+pName;
+                    String rName = rUser.getName();
+                    String rPassword = new String(rUser.getPassword());
+                    ssoProvider.addCredentialsForSite(s, pFullPath, pName, rName, rPassword);
+                }
+            }
+        }
+        
+        return s;
+    }
+    
+    /**
+     * Create imported SSO sites.
+     * 
+     * @throws SerializerException
+     */
+    private void recreateSSOSites() throws SerializerException
+    {
+        logMe("recreateSSOSites - processing");
+        
+        SSOProvider ssoProvider = (SSOProvider) getCM().getComponent("org.apache.jetspeed.sso.SSOProvider");
+        if (ssoProvider == null)
+        {
+            throw new SerializerException(SerializerException.COMPONENTMANAGER_DOES_NOT_EXIST.create("org.apache.jetspeed.sso.SSOProvider"));
+        }
+
+        JSSSOSites sites = ((JSSeedData)getSnapshot()).getSSOSites();
+        if ((sites != null) && (sites.size() > 0))
+        {
+            Iterator sitesIter = sites.iterator();
+            while (sitesIter.hasNext())
+            {
+                JSSSOSite site = (JSSSOSite)sitesIter.next();
+                try
+                {
+                    SSOSite s = ssoProvider.getSite(site.getSiteURL());
+                    if ((s == null) || getSetting(JetspeedSerializer.KEY_OVERWRITE_EXISTING))
+                    {
+                        s = recreateSSOSite(ssoProvider, site, s);
+                        ssoProvider.updateSite(s);        
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new SerializerException(SerializerException.CREATE_OBJECT_FAILED.create("SSOSite",e.getLocalizedMessage()));
+                }
+            }
+        }
+        else
+        {
+            logMe("NO SSO SITES?????");
+        }
+        
+        logMe("recreateSSOSites - done");        
+    }   
 }

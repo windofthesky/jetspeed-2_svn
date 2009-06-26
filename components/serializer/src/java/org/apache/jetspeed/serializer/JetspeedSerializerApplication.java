@@ -48,6 +48,7 @@ import org.apache.log4j.Logger;
  *      PROFILE = extract/import profile settings (for export requires USER)
  *      PERMISSIONS = extract/import permissions 
  *      PREFS = extract/import  portlet preferences (ignored if any of the above is set)
+ *      SSO = extract/import sso sites
  *      
  *      NOOVERWRITE = don't overwrite existing file (for export)
  *      BACKUP = backup before process
@@ -264,6 +265,7 @@ public class JetspeedSerializerApplication implements JetspeedSerializerFactory
             settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, Boolean.FALSE);
             settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER, Boolean.FALSE);
             settings.put(JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES, Boolean.FALSE);
+            settings.put(JetspeedSerializer.KEY_PROCESS_SSO, Boolean.FALSE);
             settings.put(JetspeedSerializer.KEY_OVERWRITE_EXISTING, Boolean.TRUE);
             settings.put(JetspeedSerializer.KEY_BACKUP_BEFORE_PROCESS, Boolean.FALSE);            
             String[] optionSet = getTokens(options);
@@ -279,6 +281,7 @@ public class JetspeedSerializerApplication implements JetspeedSerializerFactory
                     settings.put(JetspeedSerializer.KEY_PROCESS_CAPABILITIES, Boolean.TRUE);
                     settings.put(JetspeedSerializer.KEY_PROCESS_PROFILER, Boolean.TRUE);
                     settings.put(JetspeedSerializer.KEY_PROCESS_PERMISSIONS, Boolean.TRUE);                    
+                    settings.put(JetspeedSerializer.KEY_PROCESS_SSO, Boolean.TRUE);                    
                     settings.put(JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES, Boolean.FALSE);
                     processHelper = 1;
                 }
@@ -306,6 +309,11 @@ public class JetspeedSerializerApplication implements JetspeedSerializerFactory
                 } else if (o.equalsIgnoreCase("PERMISSIONS"))
                 {
                     settings.put(JetspeedSerializer.KEY_PROCESS_PERMISSIONS,
+                            Boolean.TRUE);
+                    processHelper = 1;                    
+                } else if (o.equalsIgnoreCase("SSO"))
+                {
+                    settings.put(JetspeedSerializer.KEY_PROCESS_SSO,
                             Boolean.TRUE);
                     processHelper = 1;                    
                 } else if (o.equalsIgnoreCase("NOOVERWRITE"))
@@ -344,8 +352,7 @@ public class JetspeedSerializerApplication implements JetspeedSerializerFactory
 			throw new IllegalArgumentException(
 					"Can't proceed without a valid database user");
 
-        
-        
+
         HashMap context = new HashMap();
  
 		context.put(SpringJNDIStarter.DATASOURCE_DRIVER, driverClass);

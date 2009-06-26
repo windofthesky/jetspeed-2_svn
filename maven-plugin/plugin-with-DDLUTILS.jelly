@@ -920,6 +920,7 @@ PLEASE CONTACT taylor@apache.org for more information
 				<include name="prefs.xml"/>           
 				<include name="profiler.xml"/>   
 				<include name="registry.xml"/>       
+				<include name="sso.xml"/>       
 				<include name="transaction.xml"/>           
 		      </fileset>
 		     </copy>
@@ -1780,6 +1781,7 @@ Index: maven-plugin/plugin.jelly
 +				<include name="prefs.xml"/>           
 +				<include name="profiler.xml"/>         
 +	            <include name="registry.xml"/>       
++	            <include name="sso.xml"/>       
 +  				<include name="transaction.xml"/>           
 +		      </fileset>
 +		     </copy>

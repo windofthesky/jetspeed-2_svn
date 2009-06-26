@@ -138,6 +138,18 @@ public interface SSOProvider
      */
     public void addCredentialsForSite(SSOSite ssoSite, Subject subject, String remoteUser, String pwd) 
     throws SSOException;
+
+    /**
+     * Add credentials inside a transaction using existing ssoSite for specified principal
+     * @param ssoSite
+     * @param principalFullPath
+     * @param principalName
+     * @param remoteUser
+     * @param scrambledPwd
+     * @throws SSOException
+     */
+    public void addCredentialsForSite(SSOSite ssoSite, String principalFullPath, String principalName, String remoteUser, String scrambledPwd)
+    throws SSOException; 
     
     /**
      * removeCredentialsForSite()

@@ -43,7 +43,7 @@ public class SSOSiteImpl implements SSOSite {
 	private boolean	isAllowUserSet;
 	private boolean isCertificateRequired;
 	
-	private boolean	isChallangeResponseAuthentication;
+	private boolean	isChallengeResponseAuthentication;
 	
 	/* Realm used to do ChallengeResponse Authentication */
 	private String	realm;
@@ -260,13 +260,13 @@ public class SSOSiteImpl implements SSOSite {
 		this.formUserField = formUserField;
 	}
 
-	public boolean isChallangeResponseAuthentication() {
-		return isChallangeResponseAuthentication;
+	public boolean isChallengeResponseAuthentication() {
+		return isChallengeResponseAuthentication;
 	}
 
 	public void setChallengeResponseAuthentication(
-			boolean isChallangeResponseAuthentication) {
-		this.isChallangeResponseAuthentication = isChallangeResponseAuthentication;
+			boolean isChallengeResponseAuthentication) {
+		this.isChallengeResponseAuthentication = isChallengeResponseAuthentication;
 	}
 
 	public boolean isFormAuthentication() {

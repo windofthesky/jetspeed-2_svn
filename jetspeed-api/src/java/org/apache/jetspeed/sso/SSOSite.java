@@ -130,7 +130,7 @@ public interface SSOSite {
      */
     public void setChallengeResponseAuthentication(boolean isChallengeResponseAuthentication);
     
-    public boolean isChallangeResponseAuthentication();
+    public boolean isChallengeResponseAuthentication();
 	public boolean isFormAuthentication();
 
 	public String getFormPwdField();

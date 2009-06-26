@@ -87,6 +87,9 @@ public interface JetspeedSerializer
     public final static String KEY_BACKUP_BEFORE_PROCESS = "backup_before_process"
             .intern();
 
+    public final static String KEY_PROCESS_SSO = "process_sso"
+        .intern();
+
     /** export/import instructions secondary*/
     public final static String KEY_PROCESS_ENTITIES = "process_entities".intern();
     public final static String KEY_PROCESS_PREFERENCES = "process_preferences".intern();

@@ -339,6 +339,7 @@
         <include name="capabilities.xml" />
         <include name="prefs.xml" />
         <include name="profiler.xml" />
+        <include name="sso.xml" />
         <include name="transaction.xml" />
         <include name="cache.xml" />
       </fileset>

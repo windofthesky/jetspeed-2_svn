@@ -83,7 +83,7 @@ limitations under the License.
     </dependency>            
 
 
-  <dependency>
+    <dependency>
       <id>org.apache.portals.jetspeed-2:jetspeed-profiler</id>
       <version>${jetspeed.version}</version>
       <properties>
@@ -91,6 +91,13 @@ limitations under the License.
       </properties>                            
     </dependency>            
 
+    <dependency>
+      <id>org.apache.portals.jetspeed-2:jetspeed-sso</id>
+      <version>${jetspeed.version}</version>
+      <properties>
+         <war.bundle>true</war.bundle>
+      </properties>                            
+    </dependency>            
 
     <dependency>
       <id>org.apache.portals.jetspeed-2:jetspeed-locator</id>

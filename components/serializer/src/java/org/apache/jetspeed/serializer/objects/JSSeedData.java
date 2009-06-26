@@ -50,6 +50,8 @@ public class JSSeedData extends JSSnapshot
     private JSProfilingRules rules;
 
     private String defaultRule;
+    
+    private JSSSOSites ssoSites;
 
     /**
      * check the software version and subvversion against the saved
@@ -98,6 +100,7 @@ public class JSSeedData extends JSSnapshot
         users = new JSUsers();
         permissions = new JSPermissions();
         rules = new JSProfilingRules();
+        ssoSites = new JSSSOSites();
     }
 
  
@@ -136,6 +139,7 @@ public class JSSeedData extends JSSnapshot
                 xml.add(g.getPermissions());
                 xml.add(g.getRules());
 
+                xml.add(g.getSSOSites());
             } catch (Exception e)
             {
                 e.printStackTrace();
@@ -175,6 +179,8 @@ public class JSSeedData extends JSSnapshot
                         g.permissions = (JSPermissions) o1;
                     else if (o1 instanceof JSProfilingRules)
                         g.rules = (JSProfilingRules) o1;
+                    else if (o1 instanceof JSSSOSites)
+                        g.ssoSites = (JSSSOSites) o1;
                 }
             } catch (Exception e)
             {
@@ -377,4 +383,20 @@ public class JSSeedData extends JSSnapshot
         this.defaultRule = defaultRule;
     }
 
+    /**
+     * @return Returns the SSOSites.
+     */
+    public JSSSOSites getSSOSites()
+    {
+        return ssoSites;
+    }
+
+    /**
+     * @param sites
+     *            The SSO sites to set.
+     */
+    public void setSSOSites(JSSSOSites sites)
+    {
+        this.ssoSites = sites;
+    }
 }

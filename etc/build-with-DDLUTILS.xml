@@ -590,6 +590,7 @@ limitations under the License.
             <include name="capabilities.xml"/>           
             <include name="prefs.xml"/>           
             <include name="profiler.xml"/>  
+            <include name="sso.xml"/>  
             <include name="jetspeed-spring.xml"/>  
             <include name="registry.xml"/>       
             <include name="transaction.xml"/>           
@@ -631,6 +632,9 @@ limitations under the License.
                         version="${org.apache.jetspeed.deploy.version}"/>
             <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
                         artifactId="jetspeed-profiler"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-sso"
                         version="${org.apache.jetspeed.deploy.version}"/>
             <dependency groupId="portlet-api"
                  		artifactId="portlet-api"
@@ -1693,6 +1697,7 @@ Index: etc/build.xml
 +            <include name="profiler.xml"/>           
 +            <include name="jetspeed-spring.xml"/>  
 +            <include name="registry.xml"/>       
++            <include name="sso.xml"/>       
 +            <include name="transaction.xml"/>           
 +          </fileset>
 +         </copy>

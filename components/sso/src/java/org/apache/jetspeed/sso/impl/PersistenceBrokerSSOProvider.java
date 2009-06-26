@@ -448,12 +448,11 @@ public class PersistenceBrokerSSOProvider extends
 	}
 
 	/* addCredential()
-		 * Adds credentials for a user to the site. If the site doesn't exist it will be created
+	 * Adds credentials for a user to the site. If the site doesn't exist it will be created
 	 * @see org.apache.jetspeed.sso.SSOProvider#addCredentialsForSite(javax.security.auth.Subject, java.lang.String, java.lang.String)
 	 */
-	public void addCredentialsForSite(Subject subject, String remoteUser, String site, String pwd)
-			throws SSOException {
-		
+	public void addCredentialsForSite(Subject subject, String remoteUser, String site, String pwd) throws SSOException
+	{
 		// Check if an entry for the site already exists otherwise create a new one
 		SSOSite ssoSite = getSSOSiteObject(site);
 		if (ssoSite == null)
@@ -469,98 +468,17 @@ public class PersistenceBrokerSSOProvider extends
 			ssoSite.setFormAuthentication(false);
 			
 			// Store the site so that we get a valid SSOSiteID
-			try
-	         {
-	             getPersistenceBrokerTemplate().store(ssoSite);
-	          }
-	         catch (Exception e)
-	         {
-	         	e.printStackTrace();
-	            throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString() );
-	         }
+	        updateSite(ssoSite);
 		}
 		
-		// Get the Principal information (logged in user)
+		// Get the Principal information, (logged in user), and add
+		// principals and credentials as needed
 		String fullPath = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getFullPath();
 		String principalName = ((BasePrincipal)SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getName();
-		
-		// Add an entry for the principal to the site if it doesn't exist
-		SSOPrincipal principal = this.getPrincipalForSite(ssoSite, fullPath);
-		
-		if (principal == null )
-		{
-		    principal = getSSOPrincipal(fullPath);
-		    ssoSite.addPrincipal(principal);
-		}
-		else
-		{
-		    // Check if the entry the user likes to update exists already
-		    Collection remoteForSite = ssoSite.getRemotePrincipals();
-		    Collection principalsForSite = ssoSite.getPrincipals();
-		    
-		    if ( remoteForSite != null && principalsForSite != null)
-		    {
-		        Collection remoteForPrincipals = this.getRemotePrincipalsForPrincipal(principalsForSite, fullPath);
-		        if ( remoteForPrincipals != null)
-		        {
-			        if (findRemoteMatch(remoteForPrincipals, remoteForSite) != null )
-			        {
-			            // Entry exists can't to an add has to call update
-			            throw new SSOException(SSOException.REMOTE_PRINCIPAL_EXISTS_CALL_UPDATE);
-			        }
-		        }
-		    }
-		}
-		
-		if (principal == null)
-			throw new SSOException(SSOException.FAILED_ADDING_PRINCIPAL_TO_MAPPING_TABLE_FOR_SITE);
-		
-		// Create a remote principal and credentials
-		InternalUserPrincipalImpl remotePrincipal = new InternalUserPrincipalImpl(remoteUser);
-		
-		/*
-		 * The RemotePrincipal (class InternalUserPrincipal) will have a fullPath that identifies the entry as an SSO credential.
-		 * The entry has to be unique for a site and principal  (GROUP -or- USER ) an therefore it needs to be encoded as following:
-		 * The convention for the path is the following: /sso/SiteID/{user|group}/{user name | group name}/remote user name
-		 */
-		if ( fullPath.indexOf("/group/") > -1)
-		    remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId() + "/group/"+  principalName + "/" + remoteUser);
-		else
-		    remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId() + "/user/"+ principalName + "/" + remoteUser);
-		
-		// New credential object for remote principal
-		 InternalCredentialImpl credential = 
-            new InternalCredentialImpl(remotePrincipal.getPrincipalId(),
-            		this.scramble(pwd), 0, DefaultPasswordCredentialImpl.class.getName());
-		 
-		 if ( remotePrincipal.getCredentials() == null)
-		 	remotePrincipal.setCredentials(new ArrayList(0));
-		 
-		remotePrincipal.getCredentials().add( credential);
-		
-		// Add it to Principals remotePrincipals list
-		principal.addRemotePrincipal(remotePrincipal);
-
-		// Update the site remotePrincipals list
-		ssoSite.getRemotePrincipals().add(remotePrincipal);
-		
+	    addCredentialsForSite(ssoSite, fullPath, principalName, remoteUser, scramble(pwd)); 
 		 	
 		// Update database and reset cache
-		 try
-         {
-             getPersistenceBrokerTemplate().store(ssoSite);
-             
-             // Persist Principal/Remote
-     		getPersistenceBrokerTemplate().store(principal);
-          }
-         catch (Exception e)
-         {
-         	e.printStackTrace();
-            throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString() );
-         }
-         
-         // Add to site
-         this.mapSite.put(site, ssoSite);
+	    updateSite(ssoSite);
 	}
 
 	/* (non-Javadoc)
@@ -1037,7 +955,14 @@ public class PersistenceBrokerSSOProvider extends
         filter.addEqualTo("siteURL", siteUrl);
         Query query = QueryFactory.newQuery(SSOSiteImpl.class, filter);
         SSOSite site = (SSOSite) getPersistenceBrokerTemplate().getObjectByQuery(query);
-        this.mapSite.put(siteUrl, site);
+        if (site != null)
+        {    
+            this.mapSite.put(siteUrl, site);
+        }
+        else
+        {
+            this.mapSite.remove(siteUrl);            
+        }
         return site;       
     }
     
@@ -1148,7 +1073,7 @@ public class PersistenceBrokerSSOProvider extends
         try
         {
             getPersistenceBrokerTemplate().delete(site);
-            this.mapSite.remove(site);
+            this.mapSite.remove(site.getSiteURL());
 
         }
         catch (Exception e)
@@ -1437,22 +1362,31 @@ public class PersistenceBrokerSSOProvider extends
     	return result;
     }
 
-    public void addCredentialsForSite(SSOSite ssoSite, Subject subject, String remoteUser, String pwd)
-    throws SSOException 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.sso.SSOProvider#addCredentialsForSite(org.apache.jetspeed.sso.SSOSite, javax.security.auth.Subject, java.lang.String, java.lang.String)
+     */
+    public void addCredentialsForSite(SSOSite ssoSite, Subject subject, String remoteUser, String pwd) throws SSOException 
     {
-        String fullPath = ((BasePrincipal) SecurityHelper.getBestPrincipal(
-                subject, UserPrincipal.class)).getFullPath();
-        String principalName = ((BasePrincipal) SecurityHelper
-                .getBestPrincipal(subject, UserPrincipal.class)).getName();
+        String fullPath = ((BasePrincipal) SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getFullPath();
+        String principalName = ((BasePrincipal) SecurityHelper.getBestPrincipal(subject, UserPrincipal.class)).getName();
 
+        addCredentialsForSite(ssoSite, fullPath, principalName, remoteUser, scramble(pwd));
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.sso.SSOProvider#addCredentialsForSite(org.apache.jetspeed.sso.SSOSite, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void addCredentialsForSite(SSOSite ssoSite, String principalFullPath, String principalName, String remoteUser, String scrambledPwd) throws SSOException 
+    {
         // Add an entry for the principal to the site if it doesn't exist
-        SSOPrincipal principal = this.getPrincipalForSite(ssoSite, fullPath);
+        SSOPrincipal principal = getPrincipalForSite(ssoSite, principalFullPath);
 
         if (principal == null)
         {
-            principal = getSSOPrincipal(fullPath);
+            principal = getSSOPrincipal(principalFullPath);
             ssoSite.addPrincipal(principal);
-        } else
+        }
+        else
         {
             // Check if the entry the user likes to update exists already
             Collection remoteForSite = ssoSite.getRemotePrincipals();
@@ -1460,28 +1394,24 @@ public class PersistenceBrokerSSOProvider extends
 
             if (remoteForSite != null && principalsForSite != null)
             {
-                Collection remoteForPrincipals = this
-                        .getRemotePrincipalsForPrincipal(principalsForSite,
-                                fullPath);
+                Collection remoteForPrincipals = getRemotePrincipalsForPrincipal(principalsForSite, principalFullPath);
                 if (remoteForPrincipals != null)
                 {
                     if (findRemoteMatch(remoteForPrincipals, remoteForSite) != null)
                     {
                         // Entry exists can't to an add has to call update
-                        throw new SSOException(
-                                SSOException.REMOTE_PRINCIPAL_EXISTS_CALL_UPDATE);
+                        throw new SSOException(SSOException.REMOTE_PRINCIPAL_EXISTS_CALL_UPDATE);
                     }
                 }
             }
         }
-
         if (principal == null)
-            throw new SSOException(
-                    SSOException.FAILED_ADDING_PRINCIPAL_TO_MAPPING_TABLE_FOR_SITE);
+        {
+            throw new SSOException(SSOException.FAILED_ADDING_PRINCIPAL_TO_MAPPING_TABLE_FOR_SITE);
+        }
 
         // Create a remote principal and credentials
-        InternalUserPrincipalImpl remotePrincipal = new InternalUserPrincipalImpl(
-                remoteUser);
+        InternalUserPrincipalImpl remotePrincipal = new InternalUserPrincipalImpl(remoteUser);
 
         /*
          * The RemotePrincipal (class InternalUserPrincipal) will have a
@@ -1491,21 +1421,21 @@ public class PersistenceBrokerSSOProvider extends
          * path is the following: /sso/SiteID/{user|group}/{user name | group
          * name}/remote user name
          */
-        if (fullPath.indexOf("/group/") > -1)
-            remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId()
-                    + "/group/" + principalName + "/" + remoteUser);
+        if (principalFullPath.indexOf("/group/") > -1)
+        {
+            remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId() + "/group/" + principalName + "/" + remoteUser);
+        }
         else
-            remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId()
-                    + "/user/" + principalName + "/" + remoteUser);
+        {
+            remotePrincipal.setFullPath("/sso/" + ssoSite.getSiteId() + "/user/" + principalName + "/" + remoteUser);
+        }
 
         // New credential object for remote principal
-        InternalCredentialImpl credential = new InternalCredentialImpl(
-                remotePrincipal.getPrincipalId(), this.scramble(pwd), 0,
-                DefaultPasswordCredentialImpl.class.getName());
-
+        InternalCredentialImpl credential = new InternalCredentialImpl(remotePrincipal.getPrincipalId(), scrambledPwd, 0, DefaultPasswordCredentialImpl.class.getName());
         if (remotePrincipal.getCredentials() == null)
+        {
             remotePrincipal.setCredentials(new ArrayList(0));
-
+        }
         remotePrincipal.getCredentials().add(credential);
 
         // Add it to Principals remotePrincipals list
@@ -1514,7 +1444,7 @@ public class PersistenceBrokerSSOProvider extends
         // Update the site remotePrincipals list
         ssoSite.getRemotePrincipals().add(remotePrincipal);
 
-        // Update database and reset cache
+        // Update principal in database, (defer site update)
         try
         {
             getPersistenceBrokerTemplate().store(principal);
@@ -1522,8 +1452,7 @@ public class PersistenceBrokerSSOProvider extends
         catch (Exception e)
         {
             e.printStackTrace();
-            throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB
-                    + e.toString());
+            throw new SSOException(SSOException.FAILED_STORING_SITE_INFO_IN_DB + e.toString());
         }
     }
 

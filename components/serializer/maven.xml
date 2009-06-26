@@ -33,6 +33,7 @@
         <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/security-spi.xml'/>
         <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/security-spi-atn.xml'/>
         <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/security-spi-atz.xml'/>
+        <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/sso.xml'/>
         <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/transaction.xml'/>        
         <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/prefs.xml'/>                
         <copy todir='${maven.build.dir}/assembly/' file='../../src/webapp/WEB-INF/assembly/cache.xml'/>                        	        	
