@@ -146,6 +146,7 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsTo.associationName", associationName);
         criteria.addEqualTo("associationsTo.from.name", principalFromName);
+        criteria.addEqualTo("associationsTo.from.type", from.getName());
         criteria.addEqualTo("type", to.getName());
         criteria.addEqualTo("associationsTo.from.domainId", fromSecurityDomain);
         criteria.addEqualTo("domainId", toSecurityDomain);
@@ -165,6 +166,7 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("associationsFrom.associationName", associationName);
         criteria.addEqualTo("associationsFrom.to.name", principalToName);
         criteria.addEqualTo("type", from.getName());
+        criteria.addEqualTo("associationsFrom.to.type", to.getName());
         criteria.addEqualTo("associationsFrom.to.domainId", toSecurityDomain);
         criteria.addEqualTo("domainId", fromSecurityDomain);
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
@@ -182,6 +184,7 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsTo.associationName", associationName);
         criteria.addEqualTo("associationsTo.from.id", principalFromId);
+        criteria.addEqualTo("associationsTo.from.type", from.getName());
         criteria.addEqualTo("type", to.getName());
         criteria.addEqualTo("associationsTo.from.domainId", fromSecurityDomain);
         criteria.addEqualTo("domainId", toSecurityDomain);
@@ -201,6 +204,7 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("associationsFrom.associationName", associationName);
         criteria.addEqualTo("associationsFrom.to.id", principalToId);
         criteria.addEqualTo("type", from.getName());
+        criteria.addEqualTo("associationsFrom.to.type", to.getName());
         criteria.addEqualTo("associationsFrom.to.domainId", toSecurityDomain);
         criteria.addEqualTo("domainId", fromSecurityDomain);
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
@@ -218,6 +222,7 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsTo.associationName", associationName);
         criteria.addEqualTo("associationsTo.from.name", principalFromName);
+        criteria.addEqualTo("associationsTo.from.type", from.getName());
         criteria.addEqualTo("type", to.getName());
         criteria.addEqualTo("associationsTo.from.domainId", fromSecurityDomain);
         criteria.addEqualTo("domainId", toSecurityDomain);
@@ -242,6 +247,7 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("associationsTo.associationName", associationName);
         criteria.addEqualTo("associationsTo.from.id", principalFromId);
+        criteria.addEqualTo("associationsTo.from.type", from.getName());
         criteria.addEqualTo("type", to.getName());
         criteria.addEqualTo("associationsTo.from.domainId", fromSecurityDomain);
         criteria.addEqualTo("domainId", toSecurityDomain);
@@ -267,6 +273,7 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("associationsFrom.associationName", associationName);
         criteria.addEqualTo("associationsFrom.to.name", principalToName);
         criteria.addEqualTo("type", from.getName());
+        criteria.addEqualTo("associationsFrom.to.type", to.getName());
         criteria.addEqualTo("associationsFrom.to.domainId", toSecurityDomain);
         criteria.addEqualTo("domainId", fromSecurityDomain);
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
@@ -291,6 +298,7 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("associationsFrom.associationName", associationName);
         criteria.addEqualTo("associationsFrom.to.id", principalToId);
         criteria.addEqualTo("type", from.getName());
+        criteria.addEqualTo("associationsFrom.to.type", to.getName());
         criteria.addEqualTo("associationsFrom.to.domainId", toSecurityDomain);
         criteria.addEqualTo("domainId", fromSecurityDomain);
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
