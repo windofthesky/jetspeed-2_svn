@@ -128,7 +128,7 @@
               -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
         </java>
 
-        <echo>Export Jetspeed database pages to ${exportDataDir}/pages</echo>
+        <echo>Export Jetspeed database pages to ${exportDataDir}/pages directory</echo>
 
         <mkdir dir="${exportDataDir}/pages"/>
         <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes">
@@ -162,6 +162,19 @@
 
     <target name="importDB" depends="checkDerby" unless="_derby" if="importDataDir">
 
+        <available file="${importDataDir}/j2-data.xml" type="file" property="_importData"/>
+        <antcall target="importData"/>
+        <available file="${importDataDir}/j2-prefs-data.xml" type="file" property="_importPrefs"/>
+        <antcall target="importPrefs"/>
+        <available file="${importDataDir}/pages" type="dir" property="_importPages"/>
+        <antcall target="importPages"/>
+
+        <echo>Import Jetspeed database complete!</echo>
+
+    </target>
+
+    <target name="importData" if="_importData">
+
         <echo>Import Jetspeed database from ${importDataDir}/j2-data.xml</echo>
 
         <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes">
@@ -172,17 +185,26 @@
               -c &quot;serializer&quot;
               -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
         </java>
+    </target>
 
-        <echo>Import Jetspeed database pages from ${importDataDir}/pages</echo>
+    <target name="importPrefs" if="_importPrefs">
 
-        <available file="${importDataDir}/pages" type="dir" property="_importPages"/>
-        <antcall target="importPages"/>
+        <echo>Import Jetspeed database from ${importDataDir}/j2-prefs-data.xml</echo>
 
-        <echo>Import Jetspeed database complete!</echo>
-
+        <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes">
+            <classpath refid="installationClasspath"/>
+            <syspropertyset refid="installationProps"/>
+            <arg line="-I &quot;${importDataDir}/j2-prefs-data.xml&quot; 
+              -a &quot;${basedir}/../webapps/${portalName}&quot;
+              -c &quot;serializer&quot;
+              -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
+        </java>
     </target>
 
     <target name="importPages" if="_importPages">
+
+        <echo>Import Jetspeed database pages from ${importDataDir}/pages directory</echo>
+
         <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>

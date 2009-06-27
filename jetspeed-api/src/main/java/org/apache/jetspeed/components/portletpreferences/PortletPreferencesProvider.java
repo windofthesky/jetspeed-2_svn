@@ -158,13 +158,23 @@ public interface PortletPreferencesProvider extends PortletPreferencesService
     public Map<String,PortletPreference>getUserPreferences(PortletDefinition portletdefinition,String windowId,String userName);
     
     /**
-     * Store entity preferences contained in the map parameter for a given window and username 
+     * Store portlet definition entity preferences contained in the map parameter
+     * for a given window and username 
      * @param portletdefinition
      * @param windowId
      * @param userName
      * @param map
      */
-    public void storePortletPreference(PortletDefinition portletdefinition,String windowId,String userName, Map<String, PortletPreference> map);
+    public void storePortletPreference(PortletDefinition portletdefinition, String windowId, String userName, Map<String,PortletPreference> map);
 
-
+    /**
+     * Store portlet entity preferences contained in the map parameter for a given
+     * window and username 
+     * @param appName
+     * @param portletName
+     * @param windowId
+     * @param userName
+     * @param map
+     */
+    public void storePortletPreference(String appName, String portletName, String windowId, String userName, Map<String,PortletPreference> map);
 }

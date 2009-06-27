@@ -78,7 +78,8 @@ public interface JetspeedSerializer
     String KEY_EXPORT_INDENTATION = "export_indentation";
     
     /**<p> the main tag in the XML file */
-    String TAG_SNAPSHOT = "Snapshot"; 
+    String DEFAULT_TAG_SNAPSHOT_NAME = "Snapshot"; 
+    String [] TAG_SNAPSHOT_NAMES = new String[] {DEFAULT_TAG_SNAPSHOT_NAME, "SecondaryData"}; 
     
     List getSerializers();
     Map getDefaultSettings();

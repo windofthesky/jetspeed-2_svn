@@ -803,11 +803,21 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         return userNames;
     }
 
-    public void storePortletPreference(org.apache.jetspeed.om.portlet.PortletDefinition portletdefinition, String windowId, String userName,
-                                       Map<String, PortletPreference> map)
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider#storePortletPreference(org.apache.jetspeed.om.portlet.PortletDefinition, java.lang.String, java.lang.String, java.util.Map)
+     */
+    public void storePortletPreference(org.apache.jetspeed.om.portlet.PortletDefinition portletdefinition, String windowId, String userName, Map<String, PortletPreference> map)
     {
         String appName = portletdefinition.getApplication().getName();
         String portletName = portletdefinition.getPortletName();
+        storePortletPreference(appName, portletName, windowId, userName, map);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider#storePortletPreference(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.Map)
+     */
+    public void storePortletPreference(String appName, String portletName, String windowId, String userName, Map<String, PortletPreference> map)
+    {
         // always read in to get a fresh copy for merge
         Criteria c = new Criteria();
         c.addEqualTo("dtype", DISCRIMINATOR_USER);

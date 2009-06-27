@@ -44,7 +44,7 @@ public class JSNVPElement
 
     public JSNVPElement()
     {
-    };
+    }
 
     public JSNVPElement(String key, String value)
     {

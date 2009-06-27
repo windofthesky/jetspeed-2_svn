@@ -33,6 +33,7 @@ import org.apache.jetspeed.serializer.objects.JSApplications;
 import org.apache.jetspeed.serializer.objects.JSEntities;
 import org.apache.jetspeed.serializer.objects.JSEntity;
 import org.apache.jetspeed.serializer.objects.JSEntityPreference;
+import org.apache.jetspeed.serializer.objects.JSEntityPreferenceCompat;
 import org.apache.jetspeed.serializer.objects.JSEntityPreferences;
 import org.apache.jetspeed.serializer.objects.JSNVPElement;
 import org.apache.jetspeed.serializer.objects.JSNVPElements;
@@ -125,24 +126,29 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         JSApplications applications = snapshot.getApplications();
         if (applications == null)
         {
-            System.out.println("NO DATA!!!!!!");
             return;
         }
-        Iterator it = applications.iterator();
-        while (it.hasNext())
-        {
-            JSApplication app = (JSApplication) it.next();
-            PortletApplication portletApp = registry.getPortletApplication(app.getName());
-            if (portletApp != null)
+
+		// import preferences for registered portlets if applications
+		// have been registered; otherwise, import all preferences
+		boolean importAll = registry.getPortletApplications().isEmpty();
+		if (!applications.isEmpty())
+		{
+            Iterator it = applications.iterator();
+            while (it.hasNext())
             {
-                importPA(app, portletApp, settings, log);
+                JSApplication app = (JSApplication) it.next();
+                PortletApplication portletApp = registry.getPortletApplication(app.getName());
+		        if ((portletApp != null) || importAll)
+                {
+                    importPA(app, portletApp, settings, log);
+                }
             }
         }
     }
 
     void importPA(JSApplication app, PortletApplication pa, Map settings, Logger log) throws SerializerException
     {
-        System.out.println("--processed PA " + pa.getName());
         /**
          * while more PAs for each portletDef list:entityMan:getPortletEntity(pd)
          */
@@ -150,38 +156,59 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         while (pi.hasNext())
         {
             JSPortlet portlet = (JSPortlet) pi.next();
-            PortletDefinition pd = pa.getPortlet(portlet.getName());
-            if (pd != null)
-            {
-                importPD(portlet, pd, settings, log);
+			if (pa != null)
+			{
+                PortletDefinition pd = pa.getPortlet(portlet.getName());
+                if (pd != null)
+                {
+                    importPD(app, portlet, pd, settings, log);
+                }
             }
+			else
+			{
+                importPD(app, portlet, null, settings, log);			    
+			}
         }
     }
 
-    private void importPD(JSPortlet portlet, PortletDefinition pd, Map settings, Logger log) throws SerializerException
+    private void importPD(JSApplication app, JSPortlet portlet, PortletDefinition pd, Map settings, Logger log) throws SerializerException
     {
         Iterator it = portlet.getEntities().iterator();
         while (it.hasNext())
         {
             JSEntity entity = (JSEntity) it.next();
-            importEntityPref(pd, entity, settings, log);
+            importEntityPref(app, portlet, entity, pd, settings, log);
         }
     }
 
-    private void importEntityPref(PortletDefinition pd, JSEntity entity, Map settings, Logger log)
+    private void importEntityPref(JSApplication app, JSPortlet portlet, JSEntity entity, PortletDefinition pd, Map settings, Logger log)
     {
         JSEntityPreferences preferences = entity.getEntityPreferences();
         if ((preferences == null) || (preferences.size() == 0))
             return;
+
         try
         {
             Iterator it = preferences.iterator();
             while (it.hasNext())
             {
                 Map<String, PortletPreference> portletPreference = new HashMap<String, PortletPreference>();
-                JSEntityPreference preference = (JSEntityPreference) it.next();
-                String userName = preference.getPrincapalName();
-                for (JSNVPElement element : preference.getPreferences().getValues())
+                Object preference = it.next();
+                String userName = null;
+                JSNVPElements preferenceElements = null;
+                if (preference instanceof JSEntityPreference)
+                {
+                    JSEntityPreference pref = (JSEntityPreference)preference;
+                    userName = pref.getPrincapalName();
+                    preferenceElements = pref.getPreferences();
+                }
+                else if (preference instanceof JSEntityPreferenceCompat)
+                {
+                    JSEntityPreferenceCompat pref = (JSEntityPreferenceCompat)preference;
+                    userName = pref.getName();
+                    preferenceElements = pref.getPreferences();                    
+                }
+                for (JSNVPElement element : preferenceElements.getValues())
                 {
                     if (element.getValues() == null)
                     {
@@ -198,7 +225,14 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                 }
                 if (portletPreference.size() > 0)
                 {
-                    prefsProvider.storePortletPreference(pd, entity.getId(), userName, portletPreference);
+                    if (pd != null)
+                    {
+                        prefsProvider.storePortletPreference(pd, entity.getId(), userName, portletPreference);
+                    }
+                    else
+                    {
+                        prefsProvider.storePortletPreference(app.getName(), portlet.getName(), entity.getId(), userName, portletPreference);
+                    }
                 }
             }
         }

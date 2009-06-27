@@ -39,6 +39,7 @@ import org.apache.jetspeed.serializer.objects.JSClientMimeTypes;
 import org.apache.jetspeed.serializer.objects.JSClients;
 import org.apache.jetspeed.serializer.objects.JSEntities;
 import org.apache.jetspeed.serializer.objects.JSEntity;
+import org.apache.jetspeed.serializer.objects.JSEntityPreferenceCompat;
 import org.apache.jetspeed.serializer.objects.JSEntityPreference;
 import org.apache.jetspeed.serializer.objects.JSEntityPreferences;
 import org.apache.jetspeed.serializer.objects.JSGroup;
@@ -121,11 +122,31 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     public void importData(String filename, Map settings) throws SerializerException
     {
         Map processSettings = getProcessSettings(settings);
-        JSSnapshot snapshot = readSnapshot(filename);
-
-        if (snapshot == null)
-            throw new SerializerException(SerializerException.FILE_PROCESSING_ERROR.create(new String[] { filename,
-                    "Snapshot is NULL" }));
+        JSSnapshot snapshot = null;
+        SerializerException snapshotException = null;
+        for (int i = 0; ((i < TAG_SNAPSHOT_NAMES.length) && (snapshot == null)); i++)
+        {
+            String snapshotTagName = TAG_SNAPSHOT_NAMES[i];
+            try
+            {
+                snapshot = readSnapshot(filename, snapshotTagName);
+            }
+            catch (SerializerException se)
+            {
+                if (snapshotException == null)
+                {
+                    snapshotException = se;
+                }
+            }
+        }
+        if (snapshotException != null)
+        {
+            throw snapshotException;
+        }
+        else if (snapshot == null)
+        {
+            throw new SerializerException(SerializerException.FILE_PROCESSING_ERROR.create(new String[] { filename, "Snapshot is NULL" }));
+        }
 
         if (!(snapshot.checkVersion()))
             throw new SerializerException(SerializerException.INCOMPETIBLE_VERSION.create(new String[] { filename,
@@ -231,9 +252,9 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         binding.setAlias(JSPortlets.class, "Portlets");
         binding.setAlias(JSEntity.class, "Entity");
         binding.setAlias(JSEntities.class, "Entities");
+        binding.setAlias(JSEntityPreferenceCompat.class, "Principal");        
         binding.setAlias(JSEntityPreference.class, "EntityPreference");
         binding.setAlias(JSEntityPreferences.class, "EntityPreferences");
-        //binding.setAlias(JSEntityPreference.class, "Principal");
         binding.setAlias(JSEntityPreferences.class, "Settings");
         binding.setAlias(JSSecurityDomains.class, "SecurityDomains");
         binding.setAlias(JSSecurityDomain.class, "SecurityDomain");
@@ -249,7 +270,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         binding.setClassAttribute(null);
     }
 
-    protected JSSnapshot readSnapshot(String importFileName) throws SerializerException
+    protected JSSnapshot readSnapshot(String importFileName, String snapshotTagName) throws SerializerException
     {
         XMLObjectReader reader = null;
         JSSnapshot snap = null;
@@ -270,11 +291,10 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         {
             if (this.binding != null)
                 reader.setBinding(this.binding);
-            snap = (JSSnapshot) reader.read(TAG_SNAPSHOT, JSSnapshot.class);
+            snap = (JSSnapshot) reader.read(snapshotTagName, JSSnapshot.class);
         }
         catch (Exception e)
         {
-            e.printStackTrace();
             new SerializerException(SerializerException.FILE_PROCESSING_ERROR.create(new String[] { importFileName,
                     e.getMessage() }));
         }
@@ -315,7 +335,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         try
         {
             log.debug("*********Writing data*********");
-            writer.write(snapshot, TAG_SNAPSHOT, JSSnapshot.class);
+            writer.write(snapshot, DEFAULT_TAG_SNAPSHOT_NAME, JSSnapshot.class);
 
         }
         catch (Exception e)
