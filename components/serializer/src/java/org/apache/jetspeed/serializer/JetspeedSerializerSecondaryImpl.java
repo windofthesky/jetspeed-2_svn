@@ -191,8 +191,6 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 					entities.add(jsEntity);
 
 			}
-			System.out.println("-----processedAnyEntities for PD="
-					+ pd.getName());
 			portlet.setEntities(entities);
 			return portlet;
 
@@ -215,8 +213,6 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 		{
 			if (!(Preferences.userRoot().nodeExists(rootForEntity)))
 			{
-				// System.out.println("No preferences exist for entity "+
-				// entity.getId());
 				return jsEntity;
 			}
 
@@ -233,8 +229,6 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 					if (permission != null)
 						permissions.add(permission);
 				}
-				System.out.println("processed preferences for entity="
-						+ entity.getId());
 				jsEntity.setEntityPreferences(permissions);
 				return jsEntity;
 				// processPreferenceNode(entity,prefNode,null);
@@ -301,8 +295,6 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 	{
 
 		JSApplication app = new JSApplication();
-		System.out.println("--processed PA " + pa.getName() + " with id="
-				+ pa.getId());
 		app.setID(pa.getId().toString());
 		app.setName(pa.getName());
 		/**
@@ -322,13 +314,8 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 				JSPortlet p = exportPD(pd);
 				if (p != null)
 				{
-					System.out.println("--processed PA " + pa.getName()
-							+ " with pd=" + pd.getName());
 					portlets.add(p);
-				} else
-					System.out.println("--processed PA " + pa.getName()
-							+ " with NULL pd=" + pd.getName());
-
+				}
 			} catch (Exception e)
 			{
 				throw new SerializerException(
@@ -491,31 +478,32 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 							.create("org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent"));
 		
 		JSApplications applications = ((JSSecondaryData)this.getSnapshot()).getApplications();
-
 		if (applications == null)
 		{
-			System.out.println("NO DATA!!!!!!");
 			return;
 		}
-		Iterator it = applications.iterator();
-		while (it.hasNext())
+
+		// import preferences for registered portlets if applications
+		// have been registered; otherwise, import all preferences
+		boolean importAll = registry.getPortletApplications().isEmpty();
+		if (!applications.isEmpty())
 		{
-			JSApplication app = (JSApplication)it.next();
-			MutablePortletApplication portletApp = registry.getPortletApplication(app.getName());
-			if (portletApp != null)
-			{
-				importPA(app,portletApp);
-			}
+		    Iterator it = applications.iterator();
+		    while (it.hasNext())
+		    {
+		        JSApplication app = (JSApplication)it.next();
+		        MutablePortletApplication portletApp = registry.getPortletApplication(app.getName());
+		        if ((portletApp != null) || importAll)
+		        {
+		            importPA(app,portletApp);
+		        }
+		    }
 		}
 	}
 
 	void importPA(JSApplication app, MutablePortletApplication pa)
 	throws SerializerException
 	{
-
-		
-		System.out.println("--processed PA " + pa.getName() + " with id="
-		+ pa.getId());
 		/**
 		 * while more PAs for each portletDef
 		 * list:entityMan:getPortletEntity(pd)
@@ -525,10 +513,17 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 		while (pi.hasNext())
 		{
 			JSPortlet portlet = (JSPortlet)pi.next();
-			PortletDefinition pd  = pa.getPortletDefinitionByName(portlet.getName());
-			if (pd != null)
+			if (pa != null)
 			{
-				importPD(portlet,pd); 
+			    PortletDefinition pd  = pa.getPortletDefinitionByName(portlet.getName());
+			    if (pd != null)
+			    {
+			        importPD(portlet,pd); 
+			    }
+			}
+			else
+			{
+                importPD(portlet,null);			    
 			}
 		}
 	}
@@ -541,26 +536,31 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 		while (it.hasNext())
 		{
 			JSEntity entity = (JSEntity)it.next();
-			MutablePortletEntity portletEntity = entityAccess.getPortletEntity(entity.getId());
-			if (portletEntity == null)
+			if (pd != null)
 			{
-				portletEntity = entityAccess.newPortletEntityInstance(pd, entity.getId());
-				try
-				{
-					entityAccess.storePortletEntity(portletEntity);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
+			    MutablePortletEntity portletEntity = entityAccess.getPortletEntity(entity.getId());
+			    if (portletEntity == null)
+			    {
+			        portletEntity = entityAccess.newPortletEntityInstance(pd, entity.getId());
+			        try
+			        {
+			            entityAccess.storePortletEntity(portletEntity);
+			        }
+			        catch (Exception e)
+			        {
+			            e.printStackTrace();
+			        }
+			    }
+			    importEntityPref(entity, portletEntity);
 			}
-			// check preferences
-			
-			importEntityPref(entity , portletEntity);
+			else
+			{
+                importEntityPref(entity, null);			    
+			}
 		}
 	}
 
-	private void importEntityPref(JSEntity entity , MutablePortletEntity portletEntity)
+	private void importEntityPref(JSEntity entity, MutablePortletEntity portletEntity)
 	{
 
 		// do I carry any preferences?
@@ -570,9 +570,9 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 		
 		
 		//since I do have preferences let us make sure we have a root node
-		
+		String entityId = ((portletEntity != null) ? portletEntity.getId().toString() : entity.getId().toString());
 		String rootForEntity = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/"
-				+ portletEntity.getId();
+				+ entityId;
 		try
 		{
 			Preferences.userRoot().node(rootForEntity); // will create it if it doesn't exist
@@ -584,7 +584,7 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 				JSEntityPreference preference = (JSEntityPreference)it.next();
 				
 				// do we have preferences for this one?
-				importPreferenceNode(preference,portletEntity);
+				importPreferenceNode(preference,entityId);
 			}
 			
 		
@@ -596,13 +596,13 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 
 	}
 
-	private void importPreferenceNode(JSEntityPreference preference, MutablePortletEntity entity)
+    private void importPreferenceNode(JSEntityPreference preference, String entityId)
 	{
 
 		String child = preference.getName();
 		
 		String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/"
-				+ entity.getId() + "/" + child + "/"
+				+ entityId + "/" + child + "/"
 				+ PrefsPreference.PORTLET_PREFERENCES_ROOT;
 		Preferences prefNode = Preferences.userRoot().node(prefNodePath);
 
@@ -624,11 +624,9 @@ public class JetspeedSerializerSecondaryImpl extends JetspeedSerializerBase
 				Preference p = preferenceSet.get(key);
 				if ((p == null) || (overwrite))
 				{
-					
 					Vector v = new Vector();
 					v.add(value);
 					preferenceSet.add(key, v);
-System.out.println("Entity " + entity.getId() + " updated with preference " + key + "=" + value);					
 				}
 			}
 			preferenceSet.flush();

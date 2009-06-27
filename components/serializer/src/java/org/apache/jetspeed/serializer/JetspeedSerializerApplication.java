@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
  * <p>-b bootPath : directory to Spring boot files,   overwrite the default assembly/boot/ or bootPath  property in properties file)</p>  
  * <p>-c configPath : directory to Spring config files,   overwrite the default assembly/ or configPath property in properties file)</p>
  * 
- * <p>-O optionstring : overwrite default "ALL,REPLACE"</p>
+ * <p>-O optionstring : overwrite default "ALL"</p>
  * <p>optionstring: 
  *      ALL - extract/import all (with exception of PREFERENCES)
  *      USER - extract/import users, groups, roles

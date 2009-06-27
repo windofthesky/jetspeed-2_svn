@@ -133,12 +133,13 @@
 
   <target name="exportDB" depends="checkDerby,setupAssemblyAndPaths,setupImportClasses" unless="_derby" if="exportDataDir">
 
-    <echo>Export Jetspeed database to ${exportDataDir}/j2-data.xml</echo>
+    <echo>Export Jetspeed database to ${exportDataDir}/j2-prefs-data.xml</echo>
 
     <mkdir dir="${exportDataDir}"/>
     <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
       <classpath refid="assemblyClasspath"/>
       <arg line="-E &quot;${exportDataDir}/j2-data.xml&quot; 
+        -O &quot;ALL&quot;
         -a &quot;${basedir}/../webapps/${portalName}&quot;
         -b &quot;file:${basedir}/assembly/boot/&quot;
         -c &quot;file:${basedir}/assembly/&quot;
@@ -148,7 +149,22 @@
         -dp &quot;${_db.password}&quot;" />
     </java>
 
-    <echo>Export Jetspeed database pages to ${exportDataDir}/pages</echo>
+    <echo>Export Jetspeed database to ${exportDataDir}/j2-prefs-data.xml</echo>
+
+    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
+      <classpath refid="assemblyClasspath"/>
+      <arg line="-E &quot;${exportDataDir}/j2-prefs-data.xml&quot;
+        -O &quot;PREFS&quot;
+        -a &quot;${basedir}/../webapps/${portalName}&quot;
+        -b &quot;file:${basedir}/assembly/boot/&quot;
+        -c &quot;file:${basedir}/assembly/&quot;
+        -dc &quot;${_jdbc.driver.class}&quot;
+        -ds &quot;${_jdbc.url}&quot;
+        -du &quot;${_db.username}&quot;
+        -dp &quot;${_db.password}&quot;" />
+    </java>
+
+    <echo>Export Jetspeed database pages to ${exportDataDir}/pages directory</echo>
 
     <mkdir dir="${exportDataDir}/pages"/>
     <property name="org.apache.jetspeed.page.import.configuration" value="${basedir}/import/export.properties"/>
@@ -180,11 +196,25 @@
 
   <target name="importDB" depends="checkDerby,setupAssemblyAndPaths,setupImportClasses" unless="_derby" if="importDataDir">
 
+    <available file="${importDataDir}/j2-data.xml" type="file" property="_importData"/>
+    <antcall target="importData"/>
+    <available file="${importDataDir}/j2-prefs-data.xml" type="file" property="_importPrefs"/>
+    <antcall target="importPrefs"/>
+    <available file="${importDataDir}/pages" type="dir" property="_importPages"/>
+    <antcall target="importPages"/>
+
+    <echo>Import Jetspeed database complete!</echo>
+
+  </target>
+
+  <target name="importData" if="_importData">
+
     <echo>Import Jetspeed database from ${importDataDir}/j2-data.xml</echo>
 
     <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
       <classpath refid="assemblyClasspath"/>
       <arg line="-I &quot;${importDataDir}/j2-data.xml&quot; 
+        -O &quot;ALL&quot;
         -a &quot;${basedir}/../webapps/${portalName}&quot;
         -b &quot;file:${basedir}/assembly/boot/&quot;
         -c &quot;file:${basedir}/assembly/&quot;
@@ -193,17 +223,30 @@
         -du &quot;${_db.username}&quot;
         -dp &quot;${_db.password}&quot;" />
     </java>
+  </target>
 
-    <echo>Import Jetspeed database pages from ${importDataDir}/pages</echo>
+  <target name="importPrefs" if="_importPrefs">
 
-    <available file="${importDataDir}/pages" type="dir" property="_importPages"/>
-    <antcall target="importPages"/>
+    <echo>Import Jetspeed database from ${importDataDir}/j2-prefs-data.xml</echo>
 
-    <echo>Import Jetspeed database complete!</echo>
-
+    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
+      <classpath refid="assemblyClasspath"/>
+      <arg line="-I &quot;${importDataDir}/j2-prefs-data.xml&quot; 
+        -O &quot;PREFS&quot;
+        -a &quot;${basedir}/../webapps/${portalName}&quot;
+        -b &quot;file:${basedir}/assembly/boot/&quot;
+        -c &quot;file:${basedir}/assembly/&quot;
+        -dc &quot;${_jdbc.driver.class}&quot;
+        -ds &quot;${_jdbc.url}&quot;
+        -du &quot;${_db.username}&quot;
+        -dp &quot;${_db.password}&quot;" />
+    </java>
   </target>
 
   <target name="importPages" if="_importPages">
+
+    <echo>Import Jetspeed database pages from ${importDataDir}/pages directory</echo>
+
     <property name="org.apache.jetspeed.page.import.configuration" value="${basedir}/import/import.properties"/>
     <property name="org.apache.jetspeed.page.import.pages" value="${importDataDir}/pages"/>
     <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="${basedir}">

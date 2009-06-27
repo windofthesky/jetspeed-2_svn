@@ -64,7 +64,6 @@ public class JSSecondaryData extends JSSnapshot
     public JSSecondaryData()
     {
     	super();
-        System.out.println("JSSecondaryData Class created");
     }
 
     public JSSecondaryData(String name)
