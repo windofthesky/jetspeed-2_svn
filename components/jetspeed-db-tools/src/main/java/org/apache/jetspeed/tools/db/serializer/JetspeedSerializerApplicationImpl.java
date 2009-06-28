@@ -253,7 +253,7 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
             {
                 if (exportName == null)
                 {
-                    exportName = JetspeedSerializer.TAG_SNAPSHOT;
+                    exportName = JetspeedSerializer.DEFAULT_TAG_SNAPSHOT_NAME;
                 }
                 serializer.exportData(exportName, exportFile, settings);
             }

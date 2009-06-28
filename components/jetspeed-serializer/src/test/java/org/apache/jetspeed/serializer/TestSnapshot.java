@@ -41,7 +41,7 @@ public class TestSnapshot extends JetspeedTestCase
     	List<JetspeedComponentSerializer> serializers = new LinkedList<JetspeedComponentSerializer>();
     	Map<String,String> settings = new HashMap<String,String>();
     	JetspeedSerializerImpl serializer = new JetspeedSerializerImpl(serializers, settings);    
-    	JSSnapshot snapshot = serializer.readSnapshot("j2-seed.xml");
+    	JSSnapshot snapshot = serializer.readSnapshot("j2-seed.xml", JetspeedSerializer.DEFAULT_TAG_SNAPSHOT_NAME);
     	assertNotNull(snapshot);
     }
 }
