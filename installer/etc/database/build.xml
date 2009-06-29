@@ -136,7 +136,7 @@
     <echo>Export Jetspeed database to ${exportDataDir}/j2-prefs-data.xml</echo>
 
     <mkdir dir="${exportDataDir}"/>
-    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
+    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
       <classpath refid="assemblyClasspath"/>
       <arg line="-E &quot;${exportDataDir}/j2-data.xml&quot; 
         -O &quot;ALL&quot;
@@ -151,7 +151,7 @@
 
     <echo>Export Jetspeed database to ${exportDataDir}/j2-prefs-data.xml</echo>
 
-    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
+    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
       <classpath refid="assemblyClasspath"/>
       <arg line="-E &quot;${exportDataDir}/j2-prefs-data.xml&quot;
         -O &quot;PREFS&quot;
@@ -169,7 +169,7 @@
     <mkdir dir="${exportDataDir}/pages"/>
     <property name="org.apache.jetspeed.page.import.configuration" value="${basedir}/import/export.properties"/>
     <property name="org.apache.jetspeed.page.import.pages" value="${exportDataDir}/pages"/>
-    <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="${basedir}">
+    <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="${basedir}" maxmemory="${jvmMaxMemory}" failonerror="yes">
       <classpath refid="import-classpath"/>
       <syspropertyset refid="import.syspropertyset.id"/>
     </java>
@@ -211,7 +211,7 @@
 
     <echo>Import Jetspeed database from ${importDataDir}/j2-data.xml</echo>
 
-    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
+    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
       <classpath refid="assemblyClasspath"/>
       <arg line="-I &quot;${importDataDir}/j2-data.xml&quot; 
         -O &quot;ALL&quot;
@@ -229,7 +229,7 @@
 
     <echo>Import Jetspeed database from ${importDataDir}/j2-prefs-data.xml</echo>
 
-    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
+    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
       <classpath refid="assemblyClasspath"/>
       <arg line="-I &quot;${importDataDir}/j2-prefs-data.xml&quot; 
         -O &quot;PREFS&quot;
@@ -249,7 +249,7 @@
 
     <property name="org.apache.jetspeed.page.import.configuration" value="${basedir}/import/import.properties"/>
     <property name="org.apache.jetspeed.page.import.pages" value="${importDataDir}/pages"/>
-    <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="${basedir}">
+    <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="${basedir}" maxmemory="${jvmMaxMemory}" failonerror="yes">
       <classpath refid="import-classpath"/>
       <syspropertyset refid="import.syspropertyset.id"/>
     </java>
@@ -357,7 +357,7 @@
   <target name="seedDB" depends="setupAssemblyAndPaths">
 
     <echo>Seeding the database</echo>
-    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes">
+    <java classname="org.apache.jetspeed.serializer.JetspeedSerializerApplication" fork="yes" failonerror="yes">
       <classpath refid="assemblyClasspath"/>
       <arg line="-I &quot;${basedir}/j2-seed.xml&quot; 
         -a &quot;${basedir}/../webapps/${portalName}&quot;
@@ -409,7 +409,7 @@
 
   <target name='sqlDerbyDB'>
     <echo>Excuting file: ${databaseScript}</echo>
-    <java classname="org.apache.jetspeed.anttasks.ExecuteJavaSQL" fork="yes">
+    <java classname="org.apache.jetspeed.anttasks.ExecuteJavaSQL" fork="yes" failonerror="yes">
       <classpath>
         <fileset dir="${basedir}/../shared/lib">
           <include name="**/*.jar" />
@@ -464,7 +464,7 @@
     <echo>Importing database pages</echo>
     <property name="org.apache.jetspeed.page.import.configuration" value="${basedir}/import/import.properties"/>
     <property name="org.apache.jetspeed.page.import.pages" value="${jetspeedWebinfDir}/pages"/>
-    <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="${basedir}">
+    <java classname="org.apache.jetspeed.page.PageImporter" fork="yes" dir="${basedir}" failonerror="yes">
       <classpath refid="import-classpath"/>
       <syspropertyset refid="import.syspropertyset.id"/>
     </java>
