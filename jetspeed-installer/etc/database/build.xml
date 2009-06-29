@@ -119,7 +119,7 @@
         <echo>Export Jetspeed database to ${exportDataDir}/j2-data.xml</echo>
 
         <mkdir dir="${exportDataDir}"/>
-        <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes">
+        <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>
             <arg line="-E &quot;${exportDataDir}/j2-data.xml&quot; 
@@ -131,7 +131,7 @@
         <echo>Export Jetspeed database pages to ${exportDataDir}/pages directory</echo>
 
         <mkdir dir="${exportDataDir}/pages"/>
-        <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes">
+        <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>
             <arg line="-E &quot;/&quot;
@@ -177,7 +177,7 @@
 
         <echo>Import Jetspeed database from ${importDataDir}/j2-data.xml</echo>
 
-        <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes">
+        <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>
             <arg line="-I &quot;${importDataDir}/j2-data.xml&quot; 
@@ -191,7 +191,7 @@
 
         <echo>Import Jetspeed database from ${importDataDir}/j2-prefs-data.xml</echo>
 
-        <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes">
+        <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>
             <arg line="-I &quot;${importDataDir}/j2-prefs-data.xml&quot; 
@@ -205,7 +205,7 @@
 
         <echo>Import Jetspeed database pages from ${importDataDir}/pages directory</echo>
 
-        <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes">
+        <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>
             <arg line="-I &quot;/&quot;
@@ -236,7 +236,7 @@
         <delete dir="${basedir}/derby/productiondb" quiet="true" />
         <echo>Executing file ${basedir}/derby/create-schema.sql</echo>
 
-        <java classname="org.apache.jetspeed.anttasks.ExecuteJavaSQL" fork="yes">
+        <java classname="org.apache.jetspeed.anttasks.ExecuteJavaSQL" fork="yes" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <arg line="driver=&quot;${_jdbc.driver.class}&quot; 
               url=&quot;${_jdbc.url}&quot;
@@ -313,7 +313,7 @@
 
         <echo>Seeding the database</echo>
 
-        <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes">
+        <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>
             <arg line="-I &quot;${basedir}/resources/j2-seed.xml&quot; 
@@ -328,7 +328,7 @@
 
         <echo>Importing psml into the database</echo>
 
-        <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes">
+        <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>
             <arg line="-I &quot;/&quot;
