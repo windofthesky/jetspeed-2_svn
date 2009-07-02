@@ -76,7 +76,7 @@ limitations under the License.
     </bean>
 
   <!-- Inject PAM Proxy into PAM implementation -->
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+  <bean id="PAMInjector" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject">
       <ref bean="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" />
     </property>
@@ -92,7 +92,7 @@ limitations under the License.
 
   <!-- Portlet Application and Decorator deployment event listeners -->
   <bean id="portletAppDeploymentListener" 
-  	   class="org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener"   	   
+  	   class="org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener"  depends-on="PAMInjector"   	   
   > 	
   	   <constructor-arg index="0"><ref bean="PAM"/></constructor-arg>
   	   <constructor-arg index="1"><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
@@ -118,8 +118,7 @@ limitations under the License.
    -->
   <bean id="deploymentManager" 
   	   class="org.apache.jetspeed.deployment.impl.StandardDeploymentManager" 
-  	   init-method="start" destroy-method="stop"
-  >  	   
+  	   init-method="start" destroy-method="stop">  	   
        <constructor-arg ><value>${autodeployment.staging.dir}/local</value></constructor-arg>
        <constructor-arg type="long" ><value>${autodeployment.delay}</value></constructor-arg>
        <constructor-arg >
