@@ -95,7 +95,7 @@ limitations under the License.
     </bean>
 
   <!-- Inject PAM Proxy into PAM implementation -->
-  <bean id="PAMInjector" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+  <bean id="injectPAMProxyIntoPAM" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject">
       <ref bean="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" />
     </property>
@@ -111,7 +111,7 @@ limitations under the License.
 
   <!-- Portlet Application and Decorator deployment event listeners -->
   <bean id="portletAppDeploymentListener" 
-  	   class="org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener" depends-on="PAMInjector"   	   
+  	   class="org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener" depends-on="injectPAMProxyIntoPAM"   	   
   > 	
   	   <constructor-arg index="0"><ref bean="PAM"/></constructor-arg>
   	   <constructor-arg index="1"><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
@@ -126,7 +126,7 @@ limitations under the License.
   >  	   
   </bean>
   <bean id="decoratorDeploymentListener" 
-  	   class="org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener"   	   
+  	   class="org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener" depends-on="injectPAMProxyIntoPAM"
   > 	
        <constructor-arg ><value>${applicationRoot}/decorations</value></constructor-arg>
   </bean>
