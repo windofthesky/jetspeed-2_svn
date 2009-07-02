@@ -136,7 +136,7 @@
   </bean>
 
   <!-- Portlet Application and Decorator deployment event listeners -->
-  <bean id="portletAppDeploymentListener" class="org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener">
+  <bean id="portletAppDeploymentListener" class="org.apache.jetspeed.deployment.impl.DeployPortletAppEventListener" depends-on="injectPAMProxyIntoPAM">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="PAM" />
@@ -162,7 +162,7 @@
     class="org.apache.jetspeed.deployment.simpleregistry.impl.InMemoryRegistryImpl">
     <meta key="j2:cat" value="default" />
   </bean>
-  <bean id="decoratorDeploymentListener" class="org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener">
+  <bean id="decoratorDeploymentListener" class="org.apache.jetspeed.deployment.impl.DeployDecoratorEventListener" depends-on="injectPAMProxyIntoPAM">
     <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>${portal.core.decorations.path}</value>
@@ -174,7 +174,7 @@
     DeploymentEventListeners registered to it.
   -->
   <bean id="deploymentManager" class="org.apache.jetspeed.deployment.impl.StandardDeploymentManager" init-method="start"
-    destroy-method="stop" depends-on="injectPAMProxyIntoPAM">
+    destroy-method="stop">
     <meta key="j2:cat" value="default" />
     <constructor-arg>
       <value>${autodeployment.staging.dir},${autodeployment.staging.dir}/local</value>
