@@ -16,7 +16,9 @@
  */
 package org.apache.jetspeed.util;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -133,6 +135,34 @@ public class TestDOMUtils extends TestCase
         
         stringified = DOMUtils.stringifyElement((org.dom4j.Element) element);
         
+        System.out.println("stringified: " + stringified);
+        assertTrue("element name is different.", stringified.contains("<script "));
+        assertTrue("id attribute does not exist.", stringified.contains("id=\"my-test-javascript\""));
+        assertTrue("type attribute does not exist.", stringified.contains("type=\"text/javascript\""));
+        assertTrue("the text content is wrong.", stringified.contains("alert("));
+        assertTrue("the text content is wrong.", stringified.contains("Hello, World!"));
+    }
+    
+    public void testDOM4JWriting() throws Exception 
+    {
+        org.w3c.dom.Element element = DOMUtils.createSerializableElement("script");
+        element.setAttribute("id", "my-test-javascript");
+        element.setAttribute("type", "text/javascript");
+        element.setTextContent("alert('<Hello, World!>');");
+        
+        String stringified = null;
+        StringWriter writer = new StringWriter(80);
+        
+        try 
+        {
+            DOMElementWriter domWriter = new DOMElementWriter();
+            domWriter.write(element, writer, 0, "  ");
+        } 
+        catch (IOException e) 
+        {
+        }
+
+        stringified = writer.toString();
         System.out.println("stringified: " + stringified);
         assertTrue("element name is different.", stringified.contains("<script "));
         assertTrue("id attribute does not exist.", stringified.contains("id=\"my-test-javascript\""));

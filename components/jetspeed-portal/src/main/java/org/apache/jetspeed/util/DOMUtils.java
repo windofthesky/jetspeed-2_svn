@@ -19,16 +19,15 @@ package org.apache.jetspeed.util;
 import java.io.IOException;
 import java.io.StringWriter;
 
+import org.apache.jetspeed.util.dom.DOMElementImpl;
 import org.dom4j.dom.DOMCDATA;
 import org.dom4j.dom.DOMComment;
-import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.dom.DOMText;
 import org.dom4j.io.HTMLWriter;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -53,42 +52,7 @@ public class DOMUtils
     
     public static org.w3c.dom.Element createSerializableElement(String tagName)
     {
-        // Note: Because the DOMElement of dom4j (v1.6.1) is built on DOM Level2 API,
-        // it does not have implementations on setTextContent() and getTextContent() of
-        // org.w3c.dom.Node interface.
-        // However, Jetspeed is supporting Java 1.5 from v2.2, we need to provide this
-        // to allow the methods invocations.
-        // Also, because dom4j DOMElement does not support getOwnerDocument(),
-        // we need to provide the method to allow portlet codes to create nodes with document.
-        
-        return new DOMElement(tagName)
-        {
-            private static final long serialVersionUID = 1L;
-            
-            private Document document;
-            
-            @Override
-            public Document getOwnerDocument() 
-            {
-                if (document == null)
-                {
-                    document = new DOMDocument(this);
-                }
-                
-                return document;
-            }
-
-            public void setTextContent(String textContent)
-            {
-                setText(textContent);
-            }
-            
-            public String getTextContent()
-            {
-                return getText();
-            }
-        };
-        
+        return new DOMElementImpl(tagName);
     }
     
     public static org.w3c.dom.Element convertToSerializableElement(org.w3c.dom.Element element)

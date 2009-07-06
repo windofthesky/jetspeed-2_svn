@@ -103,7 +103,36 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
     
     public Element createElement(String tagName) throws DOMException
     {
-        return DOMUtils.createSerializableElement(tagName);
+        Element element = null;
+        
+        // Currently, Jetspeed uses dom4j to create a serializable dom element.
+        // However, dom4j depends on Class.forName() to manage singleton, which
+        // results another org.dom4j.DocumentFactory singleton which comes from another
+        // classloader such as PA's or common's.
+        // Therefore, we need to switch back to the portal's classloader during creation.
+        
+        ClassLoader paCL = Thread.currentThread().getContextClassLoader();
+        ClassLoader portalCL = JetspeedRequestContext.class.getClassLoader();
+        boolean switchCLs = (paCL != portalCL);
+        
+        try 
+        {
+            if (switchCLs)
+            {
+                Thread.currentThread().setContextClassLoader(portalCL);
+            }
+            
+            element = DOMUtils.createSerializableElement(tagName);
+        } 
+        finally 
+        {
+            if (switchCLs)
+            {
+                Thread.currentThread().setContextClassLoader(paCL);
+            }
+        }
+        
+        return element;
     }
 
     public void close()
