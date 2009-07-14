@@ -27,10 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.collections.MultiMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.jetspeed.search.BaseParsedObject;
 import org.apache.jetspeed.search.HandlerFactory;
 import org.apache.jetspeed.search.ObjectHandler;
@@ -50,10 +48,12 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto: jford@apache.org">Jeremy Ford</a>
- *
+ * @version $Id$
  */
 public class SearchEngineImpl implements SearchEngine
 {
@@ -85,7 +85,8 @@ public class SearchEngineImpl implements SearchEngine
         {
             if (rootIndexDir.exists())
             {
-                log.error("Failed to open Portal Registry indexes in " + rootIndexDir.getPath(), e);
+                log.warn("Failed to open Portal Registry indexes in {}. {}", 
+                          rootIndexDir.getPath(), e);
             }
             try
             {
@@ -604,8 +605,8 @@ public class SearchEngineImpl implements SearchEngine
     {
         try
         {
-            MultiMap multiKeywords = new MultiHashMap();
-            MultiMap multiFields = new MultiHashMap();
+            MultiMap multiKeywords = new MultiValueMap();
+            MultiMap multiFields = new MultiValueMap();
             HashMap fieldMap = new HashMap();
             
             Field classNameField = doc.getField(ParsedObject.FIELDNAME_CLASSNAME);
