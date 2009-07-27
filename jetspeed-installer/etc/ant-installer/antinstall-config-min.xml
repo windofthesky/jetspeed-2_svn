@@ -203,7 +203,7 @@
   <page type="input" name="oracle10" displayText="Oracle Database connection parameters" ifProperty="${dbName}=oracle10">
     <hidden property="checkdb" value="true" />
     <hidden property="dbvalid" value="false" />
-    <hidden property="dbDisplayName" value="Oracle 10"/>
+    <hidden property="dbDisplayName" value="Oracle 10 or higher"/>
 
     <comment displayText="Please fill in the fields below for connecting to the Oracle database." />
 
