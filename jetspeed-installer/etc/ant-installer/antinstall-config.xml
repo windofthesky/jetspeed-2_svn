@@ -106,7 +106,8 @@
       <option text="MSSQL" value="mssql" />
       <option text="MySql" value="mysql" />
       <option text="PostgreSQL" value="postgres" />
-      <option text="Oracle (9i or higher)" value="oracle" />
+      <option text="Oracle 9" value="oracle9" />
+      <option text="Oracle 10 or higher" value="oracle10" />
       <option text="SapDB" value="sapdb" />
       <option text="Manual database setup" value="manual" />
     </select>
@@ -124,7 +125,8 @@
       <option text="MSSQL" value="mssql" />
       <option text="MySql" value="mysql" />
       <option text="PostgreSQL" value="postgres" />
-      <option text="Oracle (9i or higher)" value="oracle" />
+      <option text="Oracle 9" value="oracle9" />
+      <option text="Oracle 10 or higher" value="oracle10" />
       <option text="SapDB" value="sapdb" />
     </select>
   </page>
@@ -183,10 +185,10 @@
       displayText="JDBC driver" checkExists="true" />
   </page>
 
-  <page type="input" name="oracle" displayText="Oracle Database connection parameters" ifProperty="${dbName}=oracle">
+  <page type="input" name="oracle9" displayText="Oracle Database connection parameters" ifProperty="${dbName}=oracle9">
     <hidden property="checkdb" value="true" />
     <hidden property="dbvalid" value="false" />
-    <hidden property="dbDisplayName" value="Oracle"/>
+    <hidden property="dbDisplayName" value="Oracle 9"/>
 
     <comment displayText="Please fill in the fields below for connecting to the Oracle database." />
 
@@ -200,7 +202,25 @@
     <file property="jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}ojdbc14.jar"
       displayText="JDBC driver" checkExists="true" />
   </page>
+  
+  <page type="input" name="oracle10" displayText="Oracle Database connection parameters" ifProperty="${dbName}=oracle10">
+    <hidden property="checkdb" value="true" />
+    <hidden property="dbvalid" value="false" />
+    <hidden property="dbDisplayName" value="Oracle 10 or higher"/>
 
+    <comment displayText="Please fill in the fields below for connecting to the Oracle database." />
+
+    <text property="dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="jdbcUrl" displayText="JDBC Connection String"
+      defaultValue="jdbc:oracle:thin:@localhost:1521:&lt;instance&gt;" />
+    <text property="jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="oracle.jdbc.driver.OracleDriver" />
+
+    <file property="jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}ojdbc14.jar"
+      displayText="JDBC driver" checkExists="true" />
+  </page>
+  
   <page type="input" name="mssql" displayText="Microsoft SQL Server connection parameters"
     ifProperty="${dbName}=mssql">
     <hidden property="checkdb" value="true" />
