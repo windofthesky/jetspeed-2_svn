@@ -16,7 +16,9 @@
  */
 package org.apache.jetspeed.profiler.impl;
 
+import java.io.Serializable;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,9 +27,15 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpSessionActivationListener;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
+import javax.servlet.http.HttpSessionEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
@@ -57,6 +65,18 @@ import org.springframework.beans.factory.BeanFactoryAware;
 public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport 
         implements Profiler, BeanFactoryAware
 {
+    /** Profiler context session attribute name */
+    public final static String PROFILER_CONTEXT_ATTRIBUTE_NAME = "org.apache.jetspeed.profiler.ProfilerContext";
+    
+    /** Default guest principal name */
+    public final static String DEFAULT_GUEST_PRINCIPAL_NAME = "guest";
+    
+    /** Default rule principal name */
+    public final static String DEFAULT_RULE_PRINCIPAL_NAME = "*";
+    
+    /** Default and guest rule cache reaping interval */
+    public final static long DEFAULT_AND_GUEST_RULE_REAPING_INTERVAL = 30000;
+
     /** The default rule. */
     public final static String DEFAULT_RULE = "j1";
     
@@ -64,9 +84,14 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     protected final static Log log = LogFactory.getLog(JetspeedProfilerImpl.class);
 
     /**
-     * This is the princapl that is used if there are no principal to rule associations for the current principal
+     * This is the principal that is used if there are no principal to rule associations for the current principal
      */
-    public final static Principal DEFAULT_RULE_PRINCIPAL = new UserPrincipalImpl("*");
+    public final static Principal DEFAULT_RULE_PRINCIPAL = new Principal() {
+        public String getName()
+        {
+            return DEFAULT_RULE_PRINCIPAL_NAME;
+        }
+    };
 
     /** The default locator class implementation */
     private String locatorBean = "ProfileLocator";
@@ -88,9 +113,14 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     /** The configured default rule for this portal */
     private String defaultRule = DEFAULT_RULE;
 
+    /** list of transient and persistent rules cached by principal and locator name */
     private Map principalRules = Collections.synchronizedMap(new HashMap());
 
+    /** list of persistent rules cached by principal */
     private Map rulesPerPrincipal = Collections.synchronizedMap(new HashMap());
+
+    /** list of all transient and persistent rules cached by principal */
+    private Map allRulesPerPrincipal = Collections.synchronizedMap(new HashMap());
 
     private ProfileResolvers resolvers;
 
@@ -101,6 +131,12 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
      * added support for bean factory to create profile rules
      */
     private BeanFactory beanFactory;
+    
+    /** last default and guest reap time */
+    private volatile long lastDefaultGuestReapTime = System.currentTimeMillis();
+    
+    /** configured guest principal name */
+    private String guestPrincipalName;
 
     public JetspeedProfilerImpl(String repositoryPath,
             ProfileResolvers resolvers)
@@ -207,6 +243,9 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
             throw new ProfilerException(msg);
         }
 
+        // setup/maintain profiler context for session end notification
+        setupProfilerContext(context);        
+
         // find a profiling rule for this principal
         ProfilingRule rule = getRuleForPrincipal(principal, locatorName);
         if (null == rule)
@@ -230,7 +269,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     public ProfileLocator getDefaultProfile(RequestContext context,
             String locatorName) throws ProfilerException
     {
-
+        // find a profiling rule for the default principal
         ProfilingRule rule = getRuleForPrincipal(DEFAULT_RULE_PRINCIPAL,
                 locatorName);
         if (null == rule)
@@ -294,6 +333,8 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
             pr.setProfilingRule(rule);
             principalRules.put(makePrincipalRuleKey(principal.getName(),
                     locatorName), pr);
+            // track cached principal rules
+            trackCachedPrincipalRulesPut(principal.getName(), pr);
         } else
         {
             // Get the associated rule
@@ -352,7 +393,10 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
         getPersistenceBrokerTemplate().store(pr);
         principalRules.put(makePrincipalRuleKey(principal.getName(),
                 locatorName), pr);
-        this.rulesPerPrincipal.remove(principal.getName());
+        // track cached principal rules
+        trackCachedPrincipalRulesPut(principal.getName(), pr);
+        // reset persistent rules per principal
+        rulesPerPrincipal.remove(principal.getName());
     }
 
     private String makePrincipalRuleKey(String principal, String locator)
@@ -380,9 +424,11 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
 
         pr = (PrincipalRule) getPersistenceBrokerTemplate().getObjectByQuery(
                 QueryFactory.newQuery(getPrincipalRuleClass(), c));
+        if (pr != null) pr.getProfilingRule().setResolvers(resolvers);
 
         principalRules.put(makePrincipalRuleKey(principal, locatorName), pr);
-        if (pr != null) pr.getProfilingRule().setResolvers(resolvers);
+        // track cached principal rules
+        trackCachedPrincipalRulesPut(principal, pr);
         return pr;
     }
 
@@ -496,6 +542,10 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     public Map getProfileLocators(RequestContext context, Principal principal)
             throws ProfilerException
     {
+        // setup/maintain profiler context for session end notification
+        setupProfilerContext(context);
+        
+        // get profile locators
         Map locators = new HashMap();
         Collection rules = getRulesForPrincipal(principal);
 
@@ -512,6 +562,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     public Map getDefaultProfileLocators(RequestContext context)
             throws ProfilerException
     {
+        // get default profile locators
         Map locators = new HashMap();
 
         Collection rules = getRulesForPrincipal(DEFAULT_RULE_PRINCIPAL);
@@ -566,9 +617,13 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
             throws ProfilerException
     {
         getPersistenceBrokerTemplate().delete(rule);
+        // reset persistent rules per principal
         rulesPerPrincipal.remove(rule.getPrincipalName());
         String key = this.makePrincipalRuleKey(rule.getPrincipalName(), rule.getLocatorName());
-        principalRules.remove(key);                
+        // remove individual rule
+        principalRules.remove(key);
+        // track cached principal rules
+        trackCachedPrincipalRulesRemoved(rule.getPrincipalName(), rule);
     }
 
     /*
@@ -733,5 +788,245 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
         }
 
     }
+    
+    /**
+     * Setup and maintain profiler context to be used to reap rule caches
+     * for principals on session end.
+     * 
+     * @param context request context
+     * @throws ProfilerException when subject or principal not available
+     */
+    private void setupProfilerContext(RequestContext context) throws ProfilerException
+    {
+        // validate profiler context
+        ProfilerContext profilerContext = (ProfilerContext) context.getSessionAttribute(PROFILER_CONTEXT_ATTRIBUTE_NAME);
+        try
+        {
+            // access session principal and test for change
+            Principal principal = SecurityHelper.getBestPrincipal(context.getSubject(), UserPrincipal.class);
+            if (principal == null)
+            {
+                throw new NullPointerException("Principal not found");
+            }
+            if ((profilerContext == null) || (profilerContext.getPrincipal() != principal))
+            {
+                // setup/reset profiler context
+                context.setSessionAttribute(PROFILER_CONTEXT_ATTRIBUTE_NAME, new ProfilerContext(this, principal));
+            }
+        }
+        catch (Exception e)
+        {
+            String message = "Unable to access principal in pipeline: "+e;
+            log.error(message, e);
+            throw new ProfilerException(message, e);
+        }
+    }
+    
+    /**
+     * Track all put rules, (persistent and transient), cached for a principal.
+     * 
+     * @param principalName name of principal rules is cached under
+     * @param rule rule cached
+     */
+    private void trackCachedPrincipalRulesPut(String principalName, PrincipalRule rule)
+    {
+        if (rule != null)
+        {
+            // maintain list of all rules cached per principal
+            synchronized (allRulesPerPrincipal)
+            {
+                Collection allRules = (Collection)allRulesPerPrincipal.get(principalName);
+                if (allRules == null)
+                {
+                    allRules = new ArrayList(4);
+                    allRulesPerPrincipal.put(principalName, allRules);
+                }
+                allRules.add(rule);
+            }
+        }
+    }
 
+    /**
+     * Track all removed rules, (persistent and transient), cached for a principal.
+     * 
+     * @param principalName name of principal rules is cached under
+     * @param rule rule cached
+     */
+    private void trackCachedPrincipalRulesRemoved(String principalName, PrincipalRule rule)
+    {
+        if (rule != null)
+        {
+            // maintain list of all rules cached per principal
+            synchronized (allRulesPerPrincipal)
+            {
+                Collection allRules = (Collection)allRulesPerPrincipal.get(principalName);
+                if (allRules != null)
+                {
+                    allRules.remove(rule);
+                }
+            }
+        }
+    }
+
+    /**
+     * Evict cached profiler rule information for principal.
+     * 
+     * @param principalName cached profiler rule key
+     * @param force force eviction of guest and default rules
+     */
+    private void evictCachedPrincipalRules(String principalName, boolean force)
+    {
+        if (principalName != null)
+        {
+            // do not evict guest and default principal profiler rules by
+            // default since they would be evicted all too frequently
+            if (force || (!principalName.equals(getGuestPrincipalName()) && !principalName.equals(DEFAULT_RULE_PRINCIPAL_NAME)))
+            {
+                // evict cached profiler rules
+                Collection rules = (Collection)allRulesPerPrincipal.remove(principalName);
+                if (rules != null)
+                {
+                    rulesPerPrincipal.remove(principalName);
+                    Iterator it = rules.iterator();
+                    while (it.hasNext())
+                    {
+                        PrincipalRule rule = (PrincipalRule)it.next();
+                        String key = this.makePrincipalRuleKey(rule.getPrincipalName(), rule.getLocatorName());
+                        principalRules.remove(key);
+                    }
+                }
+            }
+        }
+    }
+        
+    /**
+     * ProfilerContext
+     * 
+     * Class used to track session lifetime within profiler implementation
+     * so that cached profiler rule information per principal can be evicted
+     * from cache on session end. Note that this serializable class must be
+     * static to prevent owning JetspeedProfilerImpl from being persisted
+     * in the session.
+     */
+    public static class ProfilerContext implements HttpSessionActivationListener, HttpSessionBindingListener, Serializable
+    {
+        private static final long serialVersionUID = 1L;
+        
+        private transient JetspeedProfilerImpl profiler;
+        private transient Principal principal;
+        private transient boolean guestPrincipal;
+        
+        /**
+         * Construct new profiler context with specified principal.
+         * 
+         * @param profiler profiler implementation
+         * @param principal profiler context principal
+         */
+        private ProfilerContext(JetspeedProfilerImpl profiler, Principal principal)
+        {
+            this.profiler = profiler;
+            this.principal = principal;
+            this.guestPrincipal = ((principal != null) && principal.getName().equals(profiler.getGuestPrincipalName()));
+        }
+        
+        /**
+         * Notification that the session has just been activated.
+         *
+         * @param event session activation event
+         */
+        public void sessionDidActivate(HttpSessionEvent event)
+        {
+        }
+
+        /**
+         * Notification that the session is about to be passivated.
+         *
+         * @param event session activation event
+         */
+        public void sessionWillPassivate(HttpSessionEvent event)
+        {
+            evictPrincipal();            
+        }
+ 
+        /**
+         * Notifies this context that it is being bound to
+         * a session and identifies the session.
+         *
+         * @param event session binding event
+         */
+        public void valueBound(HttpSessionBindingEvent event)
+        {
+        }
+
+        /**
+         * Notifies this context that it is being unbound
+         * from a session and identifies the session.
+         *
+         * @param event session binding event
+         */
+        public void valueUnbound(HttpSessionBindingEvent event)
+        {
+            evictPrincipal();
+        }  
+
+        /**
+         * Evict cached principal rules.
+         */
+        private void evictPrincipal()
+        {
+            // profiler can be null for reactivated sessions
+            if (profiler != null)
+            {
+                // evict cached principal rules on session end
+                if ((principal != null) && !guestPrincipal)
+                {
+                    profiler.evictCachedPrincipalRules(principal.getName(), false);
+                }
+                principal = null;
+
+                // evict default and guest principal rules periodically
+                long now = System.currentTimeMillis();
+                if (now-profiler.lastDefaultGuestReapTime > DEFAULT_AND_GUEST_RULE_REAPING_INTERVAL)
+                {
+                    profiler.lastDefaultGuestReapTime = now;
+                    profiler.evictCachedPrincipalRules(profiler.getGuestPrincipalName(), true);
+                    profiler.evictCachedPrincipalRules(DEFAULT_RULE_PRINCIPAL_NAME, true);
+                }
+            }
+        }
+        
+        /**
+         * Get context principal.
+         * 
+         * @return context principal
+         */
+        private Principal getPrincipal()
+        {
+            return principal;
+        }
+    }
+
+    /**
+     * Get configured guest principal name.
+     * 
+     * @return guest principal name
+     */
+    private String getGuestPrincipalName()
+    {
+        // lazily access configured guest principal name 
+        if (guestPrincipalName == null)
+        {
+            guestPrincipalName = DEFAULT_GUEST_PRINCIPAL_NAME;
+            PortalConfiguration config = Jetspeed.getConfiguration();
+            if (config != null)
+            {
+                String configGuestPrincipalName = config.getString("default.user.principal");
+                if (configGuestPrincipalName != null)
+                {
+                    guestPrincipalName = configGuestPrincipalName;
+                }
+            }
+        }
+        return guestPrincipalName;
+    }
 }
