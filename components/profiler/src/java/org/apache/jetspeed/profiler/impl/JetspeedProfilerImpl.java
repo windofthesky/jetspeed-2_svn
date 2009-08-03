@@ -86,12 +86,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
     /**
      * This is the principal that is used if there are no principal to rule associations for the current principal
      */
-    public final static Principal DEFAULT_RULE_PRINCIPAL = new Principal() {
-        public String getName()
-        {
-            return DEFAULT_RULE_PRINCIPAL_NAME;
-        }
-    };
+    public final static Principal DEFAULT_RULE_PRINCIPAL = new UserPrincipalImpl(DEFAULT_RULE_PRINCIPAL_NAME);
 
     /** The default locator class implementation */
     private String locatorBean = "ProfileLocator";
