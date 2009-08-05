@@ -33,7 +33,7 @@ limitations under the License.
    <p>   
  	<%
  	JetspeedCacheMonitor cacheMonitor = (JetspeedCacheMonitor)portletConfig.getPortletContext().getAttribute(CommonPortletServices.CPS_CACHE_MONITOR);
- 	List<CacheMonitorState> states = cacheMonitor.snapshotStatistics();
+ 	List states = cacheMonitor.snapshotStatistics();
   	%>
 <table style="border-collapse: collapse; width: 350px; margin-top: 8px; float: left;">
 	<tr>
