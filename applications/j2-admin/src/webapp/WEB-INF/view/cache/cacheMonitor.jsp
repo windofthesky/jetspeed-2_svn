@@ -15,6 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 --%>
+<%@page import="java.util.Iterator"%>
 <%@page import="java.util.List"%>
 <%@page import="java.text.DecimalFormat"%>
 <%@page import="java.text.NumberFormat"%>
@@ -50,7 +51,7 @@ limitations under the License.
       <th class="portlet-section-subheader" style="text-align: right"><fmt:message key="cachemonitor.label.disksize"/></td>
       <th class="portlet-section-subheader" style="text-align: right"><fmt:message key="cachemonitor.label.avgget"/></td>
       <th class="portlet-section-subheader" style="text-align: right"><fmt:message key="cachemonitor.label.hits"/></td>
-      <th class="portlet-section-subheader"style="text-align: right"><fmt:message key="cachemonitor.label.misses"/></td>
+      <th class="portlet-section-subheader" style="text-align: right"><fmt:message key="cachemonitor.label.misses"/></td>
       <th class="portlet-section-subheader" style="text-align: right"><fmt:message key="cachemonitor.label.evictions"/></td>
       <th class="portlet-section-subheader">&nbsp;</td>
       <th class="portlet-section-subheader" style="text-align: right"><fmt:message key="cachemonitor.label.inmemsize"/></td>
@@ -62,10 +63,10 @@ limitations under the License.
 NumberFormat pf = new DecimalFormat("##0.000");
 NumberFormat nf = new DecimalFormat("###,###,##0");
 
-for (CacheMonitorState state : states)
+for (Iterator statesIter = states.iterator(); statesIter.hasNext();)
 {
+    CacheMonitorState state = (CacheMonitorState)statesIter.next();
 %>     
-	
      <tr>
        <td class="portlet-section-body"><%=state.getCacheName()%></td>
 	   <td class="portlet-section-body" style="text-align: right"><%=nf.format(state.getMaxElementsInMemory())%></td>
