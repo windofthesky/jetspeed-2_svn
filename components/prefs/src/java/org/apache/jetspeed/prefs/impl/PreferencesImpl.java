@@ -54,8 +54,6 @@ public class PreferencesImpl extends AbstractPreferences
     /** Logger. */
     private static final Log log = LogFactory.getLog(PreferencesImpl.class);
 
-    PreferencesImpl parent;
-    
     PreferencesProviderWrapper ppw;
 
     String nodeName;
@@ -78,7 +76,6 @@ public class PreferencesImpl extends AbstractPreferences
     PreferencesImpl(PreferencesImpl parent, PreferencesProviderWrapper ppw, String nodeName, int nodeType) throws IllegalStateException
     {
         super(parent, nodeName);
-        this.parent = parent;
         this.ppw = ppw;
         this.nodeName = nodeName;
         this.nodeType = nodeType;
@@ -284,9 +281,10 @@ public class PreferencesImpl extends AbstractPreferences
         {
             try
             {
-                if (parent != null)
+                Preferences parent = parent();
+                if ((parent != null) && (parent instanceof PreferencesImpl))
                 {
-                    node = ppw.provider().createNode(parent.getNode(), nodeName, nodeType, absolutePath());
+                    node = ppw.provider().createNode(((PreferencesImpl)parent).getNode(), nodeName, nodeType, absolutePath());
                 }
                 else
                 {
