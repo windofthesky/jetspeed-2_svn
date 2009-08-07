@@ -87,8 +87,8 @@ public class PreferencesFactoryImpl implements PreferencesFactory
             // which can be disposed at once for all
             PreferencesProviderWrapper ppw = new PreferencesProviderWrapper(preferencesProvider);
             preferencesProvider = null;
-            userRoot = new PreferencesImpl(null, ppw, "", PreferencesImpl.USER_NODE_TYPE);
-            systemRoot = new PreferencesImpl(null, ppw, "", PreferencesImpl.SYSTEM_NODE_TYPE);
+            userRoot = new PreferencesImpl(ppw, "/", PreferencesImpl.USER_NODE_TYPE);
+            systemRoot = new PreferencesImpl(ppw, "/", PreferencesImpl.SYSTEM_NODE_TYPE);
             // set/update the Java Preferences userRoot and systeRoot PreferencesRootWrapper instances
             ((Observer)Preferences.userRoot()).update(null, userRoot);
             ((Observer)Preferences.systemRoot()).update(null, systemRoot);
@@ -103,7 +103,7 @@ public class PreferencesFactoryImpl implements PreferencesFactory
     {
         ((Observer) Preferences.userRoot()).update(null, null);
         ((Observer) Preferences.systemRoot()).update(null, null);
-        userRoot.ppw.dispose();
+        userRoot.getProvider().dispose();
         userRoot = null;
         systemRoot = null;
     }        
