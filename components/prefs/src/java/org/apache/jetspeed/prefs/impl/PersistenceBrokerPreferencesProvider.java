@@ -240,7 +240,12 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         NodeCache hit = getNode(key.getCacheKey());
         if (hit != null)
         {
-            return hit.getNode();
+            NodeImplProxy proxy = hit.getNode();
+            if (proxy.getNode() == null)
+            {
+                throw new NodeDoesNotExistException("No node of type " + nodeType + "found at path: " + fullPath);
+            }
+            return proxy;
         }
 
         Criteria c = new Criteria();
@@ -254,10 +259,10 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         	NodeImplProxy proxy = new NodeImplProxy(nodeObj);
             addToCache(new NodeCache(proxy));
             return proxy;
-           
         }
         else
         {
+            addToCache(new NodeCache(new NodeImplProxy(fullPath, nodeType)));
             throw new NodeDoesNotExistException("No node of type " + nodeType + "found at path: " + fullPath);
         }
     }
@@ -282,6 +287,9 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         }
         else
         {
+            proxy.setNode(null);
+            proxy.setFullPath(fullPath);
+            addToCache(new NodeCache(new NodeImplProxy(fullPath, nodeType)));
             throw new NodeDoesNotExistException("No node of type " + nodeType + "found at path: " + fullPath);
         }
     }
@@ -292,8 +300,12 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     public boolean nodeExists(String fullPath, int nodeType)
     {
         NodeCache key = new NodeCache(fullPath, nodeType);
-        if (preferenceCache.isKeyInCache(key))
-        	return true;
+        NodeCache hit = getNode(key.getCacheKey());
+        if (hit != null)
+        {
+            NodeImplProxy proxy = hit.getNode();
+            return (proxy.getNode() != null);
+        }
         Criteria c = new Criteria();
         c.addEqualTo("fullPath", fullPath);
         c.addEqualTo("nodeType", new Integer(nodeType));
@@ -308,6 +320,7 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
         }
         else
         {
+            addToCache(new NodeCache(new NodeImplProxy(fullPath, nodeType)));
             return false;
         }
     }
@@ -318,20 +331,31 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
     public Node createNode(Node parent, String nodeName, int nodeType, String fullPath)
             throws FailedToCreateNodeException, NodeAlreadyExistsException
     {
-        if (nodeExists(fullPath, nodeType))
+        // clear cache for node to be created and any children
+        NodeCache key = new NodeCache(fullPath, nodeType);
+        if (preferenceCache.removeQuiet(key.getCacheKey()))
+        {
+            clearCachedNodeAndAllChildren(fullPath);
+        }
+        // check to see if node exists in persistent store        
+        Criteria c = new Criteria();
+        c.addEqualTo("fullPath", fullPath);
+        c.addEqualTo("nodeType", new Integer(nodeType));
+        Query query = QueryFactory.newQuery(NodeImpl.class, c);
+        Node nodeObj = (Node) getPersistenceBrokerTemplate().getObjectByQuery(query);
+        if (null != nodeObj)
         {
             throw new NodeAlreadyExistsException("Node of type " + nodeType + " already exists at path " + fullPath);
         }
         else
         {
+            // create new node and cache
             Long parentNodeId = null;
             if (null != parent)
             {
                 parentNodeId = new Long(parent.getNodeId());
             }
-
-            Node nodeObj = new NodeImpl(parentNodeId, nodeName, nodeType, fullPath);
-
+            nodeObj = new NodeImpl(parentNodeId, nodeName, nodeType, fullPath);
             try
             {
                 getPersistenceBrokerTemplate().store(nodeObj);
@@ -344,7 +368,6 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
                 throw new FailedToCreateNodeException("Failed to create node of type " + nodeType + " for the path "
                         + fullPath + ".  " + e.toString(), e);
             }
-
         }
     }
   
@@ -514,6 +537,8 @@ public class PersistenceBrokerPreferencesProvider extends InitablePersistenceBro
             	parentKey.getChildren().remove(key.getCacheKey());
             }
         }
+        clearCachedNodeAndAllChildren(node.getFullPath());
+        addToCache(new NodeCache(new NodeImplProxy(node.getFullPath(), node.getNodeType())));        
     }
     
     /**

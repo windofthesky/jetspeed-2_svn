@@ -26,6 +26,8 @@ import org.apache.jetspeed.prefs.om.Node;
 public class NodeImplProxy implements  Node
 {
     private Node node = null;
+    private String fullPath = null;
+    private int nodeType = -1;
     private boolean dirty = false;
     private static PersistenceBrokerPreferencesProvider provider;
 
@@ -37,57 +39,110 @@ public class NodeImplProxy implements  Node
 
 	public Timestamp getCreationDate()
 	{
-		return getNode().getCreationDate();
-		}
+        Node node = getNode();
+        if (node != null)
+        {
+            return node.getCreationDate();
+        }
+        throw new RuntimeException("Node not defined, getCreationDate() invoked on negative cache entry");
+	}
 
 	public String getFullPath()
 	{
-		return getNode().getFullPath();
+        Node node = getNode();
+        if (node != null)
+        {
+            return node.getFullPath();
+        }
+        return fullPath;
 	}
 
 	public Timestamp getModifiedDate()
 	{
-		return getNode().getModifiedDate();
+        Node node = getNode();
+        if (node != null)
+        {
+            return node.getModifiedDate();
+        }
+        throw new RuntimeException("Node not defined, getModifiedDate() invoked on negative cache entry");
 	}
 
 	public long getNodeId()
 	{
-		return getNode().getNodeId();
+        Node node = getNode();
+        if (node != null)
+        {
+            return node.getNodeId();
+        }
+        throw new RuntimeException("Node not defined, getNodeId() invoked on negative cache entry");
 	}
 
 	public Collection getNodeKeys()
 	{
-		return getNode().getNodeKeys();
+        Node node = getNode();
+        if (node != null)
+        {
+            return node.getNodeKeys();
+        }
+        throw new RuntimeException("Node not defined, getNodeKeys() invoked on negative cache entry");
 	}
 
 	public String getNodeName()
 	{
-		return getNode().getNodeName();
+        Node node = getNode();
+        if (node != null)
+        {
+            return node.getNodeName();
+        }
+        throw new RuntimeException("Node not defined, getNodeName() invoked on negative cache entry");
 	}
 
 	public Collection getNodeProperties()
 	{
-		return getNode().getNodeProperties();	
+        Node node = getNode();
+        if (node != null)
+        {
+            return node.getNodeProperties();	
+        }
+        throw new RuntimeException("Node not defined, getNodeProperties() invoked on negative cache entry");
 	}
 
 	public int getNodeType()
 	{
-		return getNode().getNodeType();
+        Node node = getNode();
+        if (node != null)
+        {
+            return node.getNodeType();
+        }
+        return nodeType;
 	}
 
 	public Long getParentNodeId()
 	{
-		return getNode().getParentNodeId();
+        Node node = getNode();
+        if (node != null)
+        {
+            return node.getParentNodeId();
+        }
+        throw new RuntimeException("Node not defined, getParentNodeId() invoked on negative cache entry");
 	}
 
 	public void setCreationDate(Timestamp creationDate)
 	{
-		getNode().setCreationDate(creationDate);		
+	    getNode().setCreationDate(creationDate);		
 	}
 
 	public void setFullPath(String fullPath)
 	{
-		getNode().setFullPath(fullPath);		
+	    Node node = getNode();
+	    if (node != null)
+	    {
+	        node.setFullPath(fullPath);
+	    }
+	    else
+	    {
+	        this.fullPath = fullPath;
+	    }
 	}
 
 	public void setModifiedDate(Timestamp modifiedDate)
@@ -108,7 +163,6 @@ public class NodeImplProxy implements  Node
 	public void setNodeName(String nodeName)
 	{
 		getNode().setNodeName(nodeName);
-		
 	}
 
 	public void setNodeProperties(Collection nodeProperties)
@@ -118,7 +172,15 @@ public class NodeImplProxy implements  Node
 
 	public void setNodeType(int nodeType)
 	{
-		getNode().setNodeType(nodeType);		
+        Node node = getNode();
+        if (node != null)
+        {
+            node.setNodeType(nodeType);
+        }
+        else
+        {
+            this.nodeType = nodeType;
+        }
 	}
 
 	public void setParentNodeId(Long parentNodeId)
@@ -129,6 +191,12 @@ public class NodeImplProxy implements  Node
 	public NodeImplProxy(Node node)
     {
         this.node = node;
+    }
+
+    public NodeImplProxy(String fullPath, int nodeType)
+    {
+        this.fullPath = fullPath;
+        this.nodeType = nodeType;
     }
 
     public static void setProvider(PersistenceBrokerPreferencesProvider p)
@@ -152,6 +220,8 @@ public class NodeImplProxy implements  Node
     public void setNode(Node node)
     {
     	this.node = node;
+        this.fullPath = null;
+        this.nodeType = -1;
     }
 
     protected void reset()
