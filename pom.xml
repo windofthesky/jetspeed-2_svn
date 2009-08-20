@@ -193,14 +193,6 @@
   </developers>
 
   <repositories>
-    <!-- Temporary staging repository providing Pluto 2.0.0 artifacts under VOTE for release
-         Will be removed again after the VOTE has passed and the staging repository promoted
-    -->
-    <repository>
-      <id>repository.apache.org.portals-staging-027</id>
-      <name>Apache Portals Staging Repository For Pluto 2.0.0</name>
-      <url>https://repository.apache.org/content/repositories/portals-staging-027</url>
-    </repository>
     <repository>
       <id>com.bluesunrise.m2</id>
       <name>Maven2 BlueSunrise</name>
