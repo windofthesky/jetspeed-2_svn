@@ -129,6 +129,11 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     private transient String pipeline = "";
     
     /**
+     * locatorsLastUpdateCheck - time stamp of last locators update check.
+     */
+    private transient long locatorsLastUpdateCheck;
+
+    /**
      * PortalSiteSessionContextImpl - constructor
      *
      * @param pageManager PageManager component instance
@@ -277,13 +282,13 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         // clear all history entries for fallback
                         // request path in advance to make fallback
                         // page selection more predictable
-                        Iterator folderIter = getFolderPageHistory().keySet().iterator();
-                        while (folderIter.hasNext())
+                        Iterator folderPathIter = getFolderPageHistory().keySet().iterator();
+                        while (folderPathIter.hasNext())
                         {
-                            Folder folder = (Folder)folderIter.next();
-                            if (folder.getUrl().equals(fallbackRequestPath))
+                            String folderPath = (String)folderPathIter.next();
+                            if (folderPath.equals(fallbackRequestPath))
                             {
-                                folderIter.remove();
+                                folderPathIter.remove();
                                 break;
                             }
                         }
@@ -538,21 +543,34 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 {
                     Page requestPage = null;
 
-                    // attempt to lookup last visited page by folder proxy
-                    // path, (proxies are hashed by their path), contains
-                    // test must be performed since identical paths may
-                    // occur in multiple site views
+                    // attempt to lookup last visited page by folder path;
+                    // page id test must be performed since identical paths
+                    // may occur in multiple site views
                     if (useHistory)
                     {
-                        requestPage = (Page)getFolderPageHistory().get(requestFolder);
-                        if ((requestPage != null) && requestFolderPages.contains(requestPage))
+                        String requestPageId = (String)getFolderPageHistory().get(requestFolder.getPath());
+                        if (requestPageId != null)
                         {
-                            // log selected request page
-                            if (log.isDebugEnabled())
+                            // find page by id in request folder pages
+                            Iterator requestFolderPagesIter = requestFolderPages.iterator();
+                            while ((requestPage == null) && (requestFolderPagesIter.hasNext()))
                             {
-                                log.debug("Selected folder historical page: path=" + view.getManagedPage(requestPage).getPath());
+                                Page requestFolderPage = (Page)requestFolderPagesIter.next();
+                                if (requestPageId.equals(requestFolderPage.getId()))
+                                {
+                                    requestPage = requestFolderPage;
+                                }
                             }
-                            return requestPage;
+                            
+                            // log selected request page
+                            if (requestPage != null)
+                            {
+                                if (log.isDebugEnabled())
+                                {
+                                    log.debug("Selected folder historical page: path=" + view.getManagedPage(requestPage).getPath());
+                                }
+                                return requestPage;
+                            }
                         }
                     }
                     
@@ -569,13 +587,12 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         }
                         try
                         {
-                            // save last visited non-hidden page for folder proxy
-                            // path, (proxies are hashed by their path), and
-                            // return default page
+                            // save last visited non-hidden page for folder path
+                            // and return default page
                             requestPage = requestFolder.getPage(defaultPageName);
                             if (!requestPage.isHidden())
                             {
-                                getFolderPageHistory().put(requestFolder, requestPage);
+                                getFolderPageHistory().put(requestFolder.getPath(), requestPage.getId());
                             }
                             
                             // log selected request page
@@ -599,12 +616,11 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     
                     // default page not available, select first page
                     // proxy in request folder; save last visited
-                    // non-hidden page for folder proxy path, (proxies
-                    // are hashed by their path), and return default page
+                    // non-hidden page for folder path and return default page
                     requestPage = (Page)requestFolderPages.iterator().next();
                     if (!requestPage.isHidden())
                     {
-                        getFolderPageHistory().put(requestFolder, requestPage);
+                        getFolderPageHistory().put(requestFolder.getPath(), requestPage.getId());
                     }
 
                     // log selected request page
@@ -619,13 +635,12 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             {
                 Page requestPage = (Page)requestNode;
                 
-                // save last visited non-hidden page for folder proxy
-                // path, (proxies are hashed by their path), and
-                // return matched page
+                // save last visited non-hidden page for folder path
+                // and return matched page
                 Folder requestFolder = (Folder)requestPage.getParent();
                 if (!requestPage.isHidden())
                 {
-                	getFolderPageHistory().put(requestFolder, requestPage);
+                	getFolderPageHistory().put(requestFolder.getPath(), requestPage.getId());
                 }
 
                 // log selected request page
@@ -729,6 +744,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     userPrincipal = currentUserPrincipal;
                     updated = true;
                 }
+                locatorsLastUpdateCheck = System.currentTimeMillis();
             }
 
             // log session context setup and update
@@ -759,11 +775,11 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 {
                     debug.append("Updated stale");
                 }
-                debug.append(" context: user=" + userPrincipal + ", profileLocators=(");
-                if (profileLocators != null)
+                debug.append(" context: user=" + currentUserPrincipal + ", profileLocators=(");
+                if (requestProfileLocators != null)
                 {
                     boolean firstEntry = true;
-                    Iterator entriesIter = profileLocators.entrySet().iterator();
+                    Iterator entriesIter = requestProfileLocators.entrySet().iterator();
                     while (entriesIter.hasNext())
                     {
                         Map.Entry entry = (Map.Entry)entriesIter.next();
@@ -801,23 +817,20 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     /**
      * clearSessionProfileLocators - clear cache session profile locators
      */
-    private void clearSessionProfileLocators()
+    private synchronized void clearSessionProfileLocators()
     {
         // clear cached session profile locators, view,
         // folder page history, menu definition locators,
         // and stale flag
-        synchronized (this)
+        profileLocators = null;
+        userPrincipal = null;
+        siteView = null;
+        folderPageHistory = null;
+        if (menuDefinitionLocatorCache != null)
         {
-            profileLocators = null;
-            userPrincipal = null;
-            siteView = null;
-            folderPageHistory = null;
-            if (menuDefinitionLocatorCache != null)
-            {
-                menuDefinitionLocatorCache.clear();
-            }
-            stale = false;
+            menuDefinitionLocatorCache.clear();
         }
+        stale = false;
     }
 
     /**
@@ -828,18 +841,27 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public SiteView getSiteView()
     {
-        if ((siteView == null) && (pageManager != null) && (profileLocators != null))
+        // get or create site view
+        SiteView view = null;
+        boolean viewCreated = false;
+        synchronized (this)
         {
-            // create new site view
-            siteView = new SiteView(pageManager, profileLocators);
-
-            // log site view creation
-            if (log.isDebugEnabled())
+            if ((siteView == null) && (pageManager != null) && (profileLocators != null))
             {
-                log.debug("Created site view: search paths=" + siteView.getSearchPathsString());
+                // create new site view
+                siteView = new SiteView(pageManager, profileLocators);
+                viewCreated = true;
             }
+            view = siteView;
         }
-        return siteView;
+        
+        // log site view creation
+        if (viewCreated && log.isDebugEnabled())
+        {
+            log.debug("Created site view: search paths=" + view.getSearchPathsString());
+        }
+        
+        return view;
     }
 
     /**
@@ -861,7 +883,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public boolean isValid()
     {
-        // existant transient page manager implies valid context 
+        // existent transient page manager implies valid context 
         return (pageManager != null);
     }
 
@@ -1111,12 +1133,8 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     }
     */
 
-    /**
-     * newNode - invoked when the definition of a node is
-     *           created by the page manager or when the
-     *           node creation is otherwise detected
-     *
-     * @param node new managed node if known
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManagerEventListener#newNode(org.apache.jetspeed.page.document.Node)
      */
     public void newNode(Node node)
     {
@@ -1124,12 +1142,8 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         updatedNode(node);
     }
 
-    /**
-     * updatedNode - invoked when the definition of a node is
-     *               updated by the page manager or when the
-     *               node modification is otherwise detected
-     *
-     * @param node updated managed node if known
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManagerEventListener#updatedNode(org.apache.jetspeed.page.document.Node)
      */
     public void updatedNode(Node node)
     {
@@ -1153,17 +1167,27 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         }
     }
 
-    /**
-     * removedNode - invoked when the definition of a node is
-     *               removed by the page manager or when the
-     *               node removal is otherwise detected
-     *
-     * @param node removed managed node if known
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManagerEventListener#removedNode(org.apache.jetspeed.page.document.Node)
      */
     public void removedNode(Node node)
     {
         // equivalent to node updated event
         updatedNode(node);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManagerEventListener#reapNodes(long)
+     */
+    public synchronized void reapNodes(long interval)
+    {
+        // reap page manager nodes for idle sessions to free
+        // system resources; the site view will be lazily
+        // recalculated if the session is resumed
+        if ((locatorsLastUpdateCheck > 0) && (System.currentTimeMillis()-locatorsLastUpdateCheck > interval))
+        {
+            siteView = null;
+        }
     }
 
     /**
@@ -1238,18 +1262,18 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public void valueUnbound(HttpSessionBindingEvent event)
     {
-        // unsubscribe this session context to page manager events
         synchronized (this)
         {
+            // unsubscribe this session context to page manager events
             if (subscribed && (pageManager != null))
             {
                 pageManager.removeListener(this);
                 subscribed = false;
             }
-        }
 
-        // clear session context state
-        clearSessionProfileLocators();
+            // clear session context state
+            clearSessionProfileLocators();
+        }
 
         // log binding event
         if (log.isDebugEnabled())
@@ -1258,7 +1282,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         }
     }
 
-	private Map getFolderPageHistory()
+	private synchronized Map getFolderPageHistory()
     {
 		if (folderPageHistory == null)
         {

@@ -53,4 +53,13 @@ public interface PageManagerEventListener
      * @param node removed managed node if known
      */
     void removedNode(Node node);
+    
+    /**
+     * reapNodes - periodically invoked by page manager to
+     *             indicate lifetime of node references should
+     *             be checked to see if they should be reaped
+     *
+     * @param interval reap nodes interval
+     */
+    void reapNodes(long interval);
 }

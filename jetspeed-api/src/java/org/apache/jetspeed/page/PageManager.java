@@ -58,22 +58,25 @@ public interface PageManager
     public String SERVICE_NAME = "PageManager";
     
     /**
-     * <p>
-     * getConstraintsEnabled
-     * </p>
+     * Get constraints enabled.
      *
      * @return enabled indicator
      */
     public boolean getConstraintsEnabled();
 
     /**
-     * <p>
-     * getPermissionsEnabled
-     * </p>
+     * Get permissions enabled.
      *
      * @return enabled indicator
      */
     public boolean getPermissionsEnabled();
+
+    /**
+     * Get node reaping interval.
+     *
+     * @return reaping interval
+     */
+    public long getNodeReapingInterval();
 
     /**
      * Creates a new empty Page instance

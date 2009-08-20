@@ -57,10 +57,13 @@ public abstract class AbstractPageManager
 {
     private final static Log log = LogFactory.getLog(AbstractPageManager.class);
     
+    private final static long DEFAULT_NODE_REAPING_INTERVAL = 300000;
+    
     private final static String FOLDER_NODE_TYPE = "folder";
     private final static String PAGE_NODE_TYPE = "page";
     private final static String FRAGMENT_NODE_TYPE = "fragment";
     private final static String LINK_NODE_TYPE = "link";
+    
     protected Class fragmentClass;
     protected Class pageClass;
     protected Class folderClass;
@@ -91,11 +94,38 @@ public abstract class AbstractPageManager
     private boolean constraintsEnabled;
 
     private List listeners = new LinkedList();
+    
+    private long nodeReapingInterval = DEFAULT_NODE_REAPING_INTERVAL;
 
     public AbstractPageManager(boolean permissionsEnabled, boolean constraintsEnabled)
-    {    
+    {
         this.permissionsEnabled = permissionsEnabled;
         this.constraintsEnabled = constraintsEnabled;
+        // start node reaping deamon thread
+        if (this.nodeReapingInterval > 0)
+        {
+            Thread nodeReapingThread = new Thread(new Runnable()
+            {
+                public void run()
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            // wait for reap interval and invoke reaping
+                            // notification on page manager event listeners
+                            Thread.sleep(nodeReapingInterval);
+                            notifyReapNodes();
+                        }
+                        catch (InterruptedException ie)
+                        {
+                        }
+                    }                        
+                }
+            }, "PageManagerNodeReapingThread");
+            nodeReapingThread.setDaemon(true);
+            nodeReapingThread.start();
+        }
     }
     
     public AbstractPageManager(boolean permissionsEnabled, boolean constraintsEnabled, Map modelClasses)
@@ -127,30 +157,28 @@ public abstract class AbstractPageManager
         this.fragmentPreferenceClass = (Class)modelClasses.get("FragmentPreferenceImpl");
     }
     
-    /**
-     * <p>
-     * getPermissionsEnabled
-     * </p>
-     *
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getPermissionsEnabled()
-     * @return
      */
     public boolean getPermissionsEnabled()
     {
         return permissionsEnabled;
     }
 
-    /**
-     * <p>
-     * getConstraintsEnabled
-     * </p>
-     *
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getConstraintsEnabled()
-     * @return
      */
     public boolean getConstraintsEnabled()
     {
         return constraintsEnabled;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getNodeReapingInterval()
+     */
+    public long getNodeReapingInterval()
+    {
+        return nodeReapingInterval;
     }
 
     /* (non-Javadoc)
@@ -784,6 +812,34 @@ public abstract class AbstractPageManager
             try
             {
                 listener.removedNode(node);
+            }
+            catch (Exception e)
+            {
+                log.error("Failed to notify page manager event listener", e);
+            }
+        }
+    }
+        
+    /**
+     * notifyReapNodes - notify page manager event listeners of
+     *                   reap nodes event
+     */
+    public void notifyReapNodes()
+    {
+        // copy listeners list to reduce synchronization deadlock
+        List listenersList = null;
+        synchronized (listeners)
+        {
+            listenersList = new ArrayList(listeners);
+        }
+        // notify listeners
+        Iterator listenersIter = listenersList.iterator();
+        while (listenersIter.hasNext())
+        {
+            PageManagerEventListener listener = (PageManagerEventListener)listenersIter.next();
+            try
+            {
+                listener.reapNodes(nodeReapingInterval);
             }
             catch (Exception e)
             {
