@@ -54,18 +54,24 @@ public class JetspeedContextRewriter
                     root = document.getDocumentElement();
                 }   
                 
-                // set Context path
-                String pathAttribute = root.getAttribute("path");
-                if ((pathAttribute.equals("")) || !pathAttribute.equals("/" + portletApplication))
+                if (root.hasAttribute("path"))
                 {
-                    root.setAttribute("path", "/" + portletApplication);
+                    // set Context path
+                    String pathAttribute = root.getAttribute("path");
+                    if ((pathAttribute.equals("")) || !pathAttribute.equals("/" + portletApplication))
+                    {
+                        root.setAttribute("path", "/" + portletApplication);
+                    }
                 }
                 
-                // set Context docBase
-                String docBaseAttribute = root.getAttribute("docBase");
-                if ((docBaseAttribute.equals("")) || !docBaseAttribute.equals(portletApplication))
+                if (root.hasAttribute("docBase"))
                 {
-                    root.setAttribute("docBase", portletApplication);
+                    // set Context docBase
+                    String docBaseAttribute = root.getAttribute("docBase");
+                    if ((docBaseAttribute.equals("")) || !docBaseAttribute.equals(portletApplication))
+                    {
+                        root.setAttribute("docBase", portletApplication);
+                    }
                 }
             }
             catch (Exception e)
