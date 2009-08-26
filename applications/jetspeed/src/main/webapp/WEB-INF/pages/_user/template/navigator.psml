@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<page id="_user-template-navigator.psml"
+    xmlns="http://portals.apache.org/jetspeed"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
+
+  <fragment id="_jsNavigator-1000" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="_jsNavigator-1001" type="portlet" name="j2-admin::JetspeedNavigator">
+  	        <property name="z" value="201.0"></property>
+            <property name="row" value="1"></property>
+            <property name="width" value="267.0"></property>
+            <property name="height" value="388.0"></property>
+            <property name="column" value="0"></property>
+            <property name="y" value="104.0"></property>
+            <property name="x" value="1.0"></property>
+            <property name="jsdesktop" value="staticpos=false;fitheight=false"></property>                        
+    </fragment>
+    <fragment id="_jsToolbox-1001" type="portlet" name="j2-admin::JetspeedToolbox">
+  	        <property name="z" value="201.0"></property>
+            <property name="row" value="1"></property>
+            <property name="width" value="267.0"></property>
+            <property name="height" value="388.0"></property>
+            <property name="column" value="0"></property>
+            <property name="y" value="500.0"></property>
+            <property name="x" value="1.0"></property>
+            <property name="jsdesktop" value="staticpos=false;fitheight=false"></property>                        
+    </fragment>
+
+  </fragment>
+
+</page>

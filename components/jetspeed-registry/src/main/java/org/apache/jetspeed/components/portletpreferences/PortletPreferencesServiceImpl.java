@@ -576,7 +576,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     {
         JetspeedPreferencesMap entityMap = new JetspeedPreferencesMap();
         List<FragmentPreference> fragmentPrefs = window.getFragment().getPreferences();
-        if (fragmentPrefs.size() > 0)
+        if (fragmentPrefs != null && fragmentPrefs.size() > 0)
         {
             entityMap = new JetspeedPreferencesMap();                 
             for (FragmentPreference fragmentPref : fragmentPrefs)

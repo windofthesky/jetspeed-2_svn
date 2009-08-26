@@ -50,23 +50,31 @@ limitations under the License.
 <div class="header">
 <h1 class="logo">Jetspeed 2</h1>
 <div class="menu">
-#set($pagesStandardMenu = $site.getMenu("pages"))#if(!$pagesStandardMenu.empty)
-#includeTabsNavigation($pagesStandardMenu $LEFT_TO_RIGHT)
-#end
+## #set($pagesStandardMenu = $site.getMenu("pages"))## #if(!$pagesStandardMenu.empty)
+## #includeTabsNavigation($pagesStandardMenu $LEFT_TO_RIGHT)
+## #end
+<ul class="tabs">
+<li><a href="">PublicEnvironment</a></li>
+<li><a href="">CollaborationEnvironment</a></li>
+</ul>
 </div>
 </div>
     <!-- Content Table -->
     <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
-        <tr>
-            
+        <tr>            
             <!-- Left Navigations Menu Table Data -->
             #set($navigationsStandardMenu = $site.getMenu("navigations"))
-
             #if(!$navigationsStandardMenu.empty)
             <td valign="top" id="leftcol" >
                 <div id="navcolumn">
                     <table cellpadding="0" cellspacing="4" border="0" width="100%">
-                        #includeLinksWithIconNavigation($navigationsStandardMenu $TOP_TO_BOTTOM)
+##                        #includeLinksWithIconNavigation($navigationsStandardMenu $TOP_TO_BOTTOM)
+					<tr><td class="portlet jetspeed">
+                        $jetspeed.renderPortletWindow("_JetspeedNavigator", "j2-admin::JetspeedNavigator")
+                    </td></tr>
+					<tr><td class="portlet jetspeed">
+                        $jetspeed.renderPortletWindow("_JetspeedToolbox", "j2-admin::JetspeedToolbox")
+                    </td></tr>
                     </table>
                 </div>
             </td>

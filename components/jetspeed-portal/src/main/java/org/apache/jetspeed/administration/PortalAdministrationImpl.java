@@ -455,7 +455,12 @@ public class PortalAdministrationImpl implements PortalAdministration
         RequestContext context = (RequestContext)
             request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
         String baseUrl = context.getPortalURL().getBaseURL();
-        String jetspeedPath = adminUtil.concatenatePaths(baseUrl, context.getPortalURL().getBasePath());
+        String basePath = context.getPortalURL().getBasePath();
+        if (basePath != null && basePath.endsWith("/action"))
+        {
+            basePath = basePath.replace("/action", "/desktop");
+        }
+        String jetspeedPath = adminUtil.concatenatePaths(baseUrl, basePath);
         if (path == null)
             return jetspeedPath;
         return adminUtil.concatenatePaths(jetspeedPath, response.encodeURL(path));

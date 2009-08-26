@@ -814,7 +814,11 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
                 throw new IllegalArgumentException("Parameter windowId and portletUniqueName are both required");
             }
             RequestContext context = getRequestContext();
-            PortletWindow window = context.getInstantlyCreatedPortletWindow(windowId, portletUniqueName);
+            PortletWindow window = context.getPortletWindow(windowId);
+            if (window == null)
+            {
+                window = context.getInstantlyCreatedPortletWindow(windowId, portletUniqueName);
+            }
             if (window.isValid())
             {
                 PortletWindow currentPortletWindow = context.getCurrentPortletWindow();

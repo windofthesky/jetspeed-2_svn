@@ -18,6 +18,7 @@ package org.apache.jetspeed.locator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,7 +42,7 @@ public class JetspeedTemplateLocator implements TemplateLocator
     private static final String PATH_SEPARATOR = "/";
 
     /** the template root directories, all application root relative */
-    private List roots;
+    private List<String> roots;
     
     /** Root of the application running this locator */
     private String appRoot;
@@ -396,5 +397,11 @@ public class JetspeedTemplateLocator implements TemplateLocator
                 }
             }
         }
+    }
+    
+    public List<String> getTemplateRoots()
+    {
+        List<String> result = new ArrayList<String>(this.roots);
+        return result;
     }
 }

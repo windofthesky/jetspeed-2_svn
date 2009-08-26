@@ -32,9 +32,13 @@ import org.apache.jetspeed.decoration.DecorationValve;
 import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
@@ -88,12 +92,16 @@ public class GetPageAction
             // Run the Decoration valve to get actions
             decorationValve.invoke( requestContext, null );
             
-            Page page = requestContext.getPage();
+            Page page = requestContext.getPage();                        
             String pageName = getActionParameter( requestContext, PAGE );
             if ( pageName != null )
             {
                 page = retrievePage( requestContext, pageName );
             }
+            
+            // ** DST: DEMO: Hack
+            insertNavigator(page);           
+            
             resultMap.put( STATUS, status );
             resultMap.put( PAGE, page );
             
@@ -267,4 +275,57 @@ public class GetPageAction
             }
         }
     }
+    
+    private void insertNavigator(Page page)
+    {
+        Page nav;
+        try
+        {
+            Fragment root = page.getRootFragment();
+            boolean found = findFragment(root);
+            if (!found)
+            {
+                nav = this.pageManager.getPage("/_user/template/navigator.psml");
+                List<Fragment> navFragments = nav.getRootFragment().getFragments();
+                Fragment source1 = navFragments.get(0);
+                root.getFragments().add(0, source1);
+                Fragment source2 = navFragments.get(1);
+                root.getFragments().add(1, source2);
+                // save?
+            }
+        }
+        catch (PageNotFoundException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (NodeException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }        
+    }
+    
+    private boolean findFragment(Fragment f)
+    {
+        List<Fragment> fragments = f.getFragments();
+        
+        //if ("_jsNavigator-1001".equals(f.getId())) // BUG: won't work on db psml
+        if ("j2-admin::JetspeedNavigator".equals(f.getName()) || "j2-admin::JetspeedToolbox".equals(f.getName()))
+        {
+            return true;
+        }
+        
+        if (fragments != null && !fragments.isEmpty())
+        {
+            for (Fragment child : fragments)
+            {
+                boolean found = findFragment(child);
+                if (found)
+                    return true;
+            }
+        }
+        return false;
+    }
+    
 }

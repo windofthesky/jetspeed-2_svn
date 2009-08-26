@@ -478,8 +478,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
             catch (IOException e)
             {
                 String msg = "Invalid PA WAR for " + contextName;
-                if (!silent || log.isDebugEnabled())
+                //if (!silent || log.isDebugEnabled())
                 {
+                    e.printStackTrace();
                     log.error(msg, e);
                 }
                 if ( paClassLoader == null )

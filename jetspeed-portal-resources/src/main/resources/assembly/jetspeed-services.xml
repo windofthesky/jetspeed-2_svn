@@ -137,6 +137,9 @@
         <entry key="CacheMonitor">
         	<ref bean="org.apache.jetspeed.cache.CacheMonitor" />
         </entry>
+        <entry key="SpacesService">
+        	<ref bean="org.apache.jetspeed.services.Spaces" />
+        </entry> 
         <!--<entry key="SecurityAttributesProvider">
           <ref bean="org.apache.jetspeed.security.attributes.SecurityAttributesProvider" />
           </entry>-->

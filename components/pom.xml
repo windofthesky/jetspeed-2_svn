@@ -53,6 +53,7 @@
         <module>jetspeed-search</module>
         <module>jetspeed-security</module>
         <module>jetspeed-serializer</module>
+        <module>jetspeed-spaces</module>
         <module>jetspeed-sso</module>
         <module>jetspeed-statistics</module>
         <module>jetspeed-utils</module>

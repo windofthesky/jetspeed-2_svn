@@ -308,7 +308,8 @@ limitations under the License.
 	     class="portal-layout-column portal-layout-column-${layoutType}-${columnIndex}" 
 	     style="float:${columnFloat}; width:${columnWidth};">
 	     
-	  #foreach($f in $column)  	     
+	  #foreach($f in $column)
+	  #if ($f.getName() != "j2-admin::JetspeedNavigator" && $f.getName() != "j2-admin::JetspeedToolbox")  	     
       ## Set up coordinates for this fragment
       #set($coords = $columnLayout.getCoordinate($f))	  
       #set($col = $coords.x)
@@ -381,6 +382,7 @@ limitations under the License.
 			    $f.renderedContent			
 		    #end
 		  </div>
+		  #end
 		#end
 	</div>
 	#set ($columnIndex = $columnIndex + 1)  

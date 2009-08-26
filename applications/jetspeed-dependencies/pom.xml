@@ -109,6 +109,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
+      <artifactId>jetspeed-spaces</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-serializer</artifactId>
     </dependency>
     <dependency>

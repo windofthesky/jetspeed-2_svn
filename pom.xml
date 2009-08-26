@@ -401,6 +401,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.portals.jetspeed-2</groupId>
+        <artifactId>jetspeed-spaces</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-registry</artifactId>
         <version>${pom.version}</version>
       </dependency>

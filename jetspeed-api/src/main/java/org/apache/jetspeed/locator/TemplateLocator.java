@@ -17,6 +17,7 @@
 package org.apache.jetspeed.locator;
 
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * TemplateLocator interface
@@ -67,5 +68,11 @@ public interface TemplateLocator
      * @return The result list of {@link Template} objects matching the locator criteria.
      */
     public Iterator query(LocatorDescriptor locator);
+
+    /**
+     * Retrieves a list of template root directories for this locator
+     * @return a copy of the list of template root directories
+     */
+    public List<String> getTemplateRoots();
     
 }
