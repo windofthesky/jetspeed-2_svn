@@ -35,6 +35,7 @@ limitations under the License.
   <document-order>profiler.psml</document-order>
   <document-order>rpad.psml</document-order>
   <document-order>serializer.psml</document-order>
+  <document-order>spaces.psml</document-order>
 
   <menu name="page-navigations">
     <separator>
