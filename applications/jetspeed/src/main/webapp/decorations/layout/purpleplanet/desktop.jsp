@@ -1,4 +1,4 @@
-#*
+<%--
 Licensed to the Apache Software Foundation (ASF) under one or more
 contributor license agreements.  See the NOTICE file distributed with
 this work for additional information regarding copyright ownership.
@@ -13,51 +13,62 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-*#
-#*
-<!--  
-Would prefer: <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-Firefox shrinks dojoButton widths when they have images if the XHTML DOCTYPE is used; aside from that it would be the doctype choice
-Primary cause for setting doctype is to prevent IE (including IE7) from using too large of a baseline font-size
--->
-*#
+--%>
+<%@ page language="java" import="org.apache.jetspeed.desktop.JetspeedDesktopContext" session="true" %>
+<%@ page import="java.util.Enumeration"%>
+<%@ page import="org.apache.jetspeed.request.RequestContext"%>
+<%@ page import="org.apache.jetspeed.Jetspeed" %>
+<%@ page import="org.apache.jetspeed.PortalReservedParameters" %>
+<%@ page import="org.apache.jetspeed.om.page.Fragment" %>
+<%@ page import="org.apache.jetspeed.decoration.Theme" %>
+<%@ page import="org.apache.jetspeed.decoration.Decoration" %>
+<% 
+    JetspeedDesktopContext desktop = (JetspeedDesktopContext)request.getAttribute(JetspeedDesktopContext.DESKTOP_CONTEXT_ATTRIBUTE);
+    RequestContext requestContext = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
+
+    String layoutStyleClass = "layout-" + desktop.getLayoutDecorationName();
+%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html> <!-- .vm --> <!-- NOTE: do not use strict doctype - see dojo svn log for FloatingPane.js -->
+<html> <!-- .jsp --> <!-- NOTE: do not use strict doctype - see dojo svn log for FloatingPane.js -->
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
 <meta http-equiv="Content-style-type" content="text/css" />
 
-#desktopIncludeDojoHeaderContent()
+<%= desktop.getHeaderResource().getNamedContentForPrefix( "header.dojo" )%>
 
-#desktopIncludeHeaderContent()
+<%= desktop.getHeaderResource().getContent()%>
 
 </head>
 
-<body class="layout-${jetspeedDesktop.getLayoutDecorationName()}">
+<body class="<%= layoutStyleClass %>">
 <!-- Start Jetspeed Page -->
-<div class="layout-${jetspeedDesktop.getLayoutDecorationName()}" id="jetspeedPage">
+<div class="<%= layoutStyleClass %>" id="jetspeedPage">
 <div id="banner" style="position: static">    <!-- BOZO: set to absolute in stylesheet - don't know why - no apparent reason -->
- <div class="header">
-  <h1 class="logo">Jetspeed</h1>
-  <div class="menu">
-<ul class="tabs">
-#parse ($layoutDecoration.getResource("../environment.vm"))
-</ul>  
-##   <div class="tabs" widgetId="jetspeed-menu-pages" dojoType="jetspeed:PortalTabContainer"></div>
-  </div>
- </div>
+  <table>
+    <tr>
+      <td>
+        <div class='logo'>
+        <img src='<%= desktop.getLayoutBaseUrl("images/Jetspeed_blue_med.png") %>' alt="Logo" border="0"/>
+        </div>
+      </td>
+      <td>
+        <div align="right" id="login">
+          &nbsp;
+        </div>
+      </td>
+    </tr>
+  </table>
 </div>
+<div widgetId="jetspeed-menu-pages" dojoType="jetspeed:PortalTabContainer" style="width: 100%; margin-top: 2px; margin-left: -1px"></div>
+<div widgetId="jetspeed-menu-breadcrumbs" dojoType="jetspeed:PortalBreadcrumbContainer" style="width: 100%; margin-top: 2px; margin-left: -1px"></div>
 <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
 <tr>
 <td id="leftcol">
-## <div id="navcolumn">
-## <div widgetId="jetspeed-menu-navigations" dojoType="jetspeed:PortalAccordionContainer" style=""></div>
-## </div>
+<div widgetId="jetspeed-menu-navigations" dojoType="jetspeed:PortalAccordionContainer" style=""></div>
 </td>
 <td id="jetspeedDesktopCell">
-<div widgetId="jetspeed-menu-breadcrumbs" dojoType="jetspeed:PortalBreadcrumbContainer" style="margin-top: 2px; margin-left: -1px"></div>
 <!-- Start Jetspeed Desktop -->
-<div class="layout-${jetspeedDesktop.getLayoutDecorationName()}" id="jetspeedDesktop"></div>
+<div class="<%= layoutStyleClass %>" id="jetspeedDesktop"></div>
 <!-- End Jetspeed Desktop -->
 </td>
 </tr>
@@ -69,7 +80,7 @@ Primary cause for setting doctype is to prevent IE (including IE7) from using to
 </div>
 <!-- End Jetspeed Page -->
   <p>
-     <img src="$jetspeedDesktop.getLayoutBaseUrl('images/Jetspeed_blue_sm.png')" alt="Jetspeed 2 Powered" border="0" />
+     <img src='<%= desktop.getLayoutBaseUrl("images/Jetspeed_blue_sm.png") %>' alt="Jetspeed 2 Powered" border="0" />
     </p>
 <!-- page level loading indicator (associated with layout decoration resource: desktop.action.loadpage) -->
 <!-- js-showloading-img is controlled by desktop.loading.img* properties, but src still needs to be set in content due to IE quirks -->
@@ -81,7 +92,7 @@ Primary cause for setting doctype is to prevent IE (including IE7) from using to
                 <td class="js-showloading-middle">
                     <div>
                         <div class="js-showloading-content" id="js-showloading-content">Loading&#133;</div>
-                        <div class="js-showloading-imgcontainer"><img id="js-showloading-img" src="$jetspeedDesktop.getLayoutBaseUrl('images/desktop/loading/loaddots.gif')" border="0" /></div>
+                        <div class="js-showloading-imgcontainer"><img id="js-showloading-img" src='<%= desktop.getLayoutBaseUrl("images/desktop/loading/loaddots.gif") %>' border="0"/></div>
                     </div>
                 </td>
                 <td class="js-showloading-right"></td>

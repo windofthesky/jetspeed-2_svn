@@ -41,7 +41,7 @@ limitations under the License.
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
 <!-- Page Action Bar -->
 #if ($request.getUserPrincipal())
-<a class="layout-turbo-logout" href="#BaseHref()login/logout">Logout</a>
+<a class="layout-purpleplanet-logout" href="#BaseHref()login/logout">Logout</a>
 #end
 #PageActionBar()
 <!-- end of header -->
@@ -68,10 +68,10 @@ limitations under the License.
                 <div id="navcolumn">
                     <table cellpadding="0" cellspacing="4" border="0" width="100%">
 ##                        #includeLinksWithIconNavigation($navigationsStandardMenu $TOP_TO_BOTTOM)
-					<tr><td class="portlet turbo">
+					<tr><td class="portlet purpleplanet">
                         $jetspeed.renderPortletWindow("_JetspeedNavigator", "j2-admin::JetspeedNavigator")
                     </td></tr>
-					<tr><td class="portlet turbo">
+					<tr><td class="portlet purpleplanet">
                         $jetspeed.renderPortletWindow("_JetspeedToolbox", "j2-admin::JetspeedToolbox")
                     </td></tr>
                     </table>

@@ -54,8 +54,7 @@ limitations under the License.
 ## #includeTabsNavigation($pagesStandardMenu $LEFT_TO_RIGHT)
 ## #end
 <ul class="tabs">
-<li><a href="http://localhost:8080/basedemo/preview/portal">Preview</a></li>
-<li><a href="http://localhost:8080/basedemo/portal">Live!</a></li>
+#parse ($layoutDecoration.getResource("../environment.vm"))
 </ul>
 </div>
 </div>
