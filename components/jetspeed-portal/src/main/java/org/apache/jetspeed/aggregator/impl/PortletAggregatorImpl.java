@@ -100,8 +100,9 @@ public class PortletAggregatorImpl implements PortletAggregator
         {            
             context.getResponse().setHeader( "JS_PORTLET_TITLE", StringEscapeUtils.escapeHtml( contentFragment.getPortletContent().getTitle() ) );
         }
-
+        
         writeHeadElements(context, window);
+        
         context.getResponse().getWriter().write(contentFragment.getRenderedContent());
         PortletContent content = contentFragment.getPortletContent();
         
@@ -114,19 +115,20 @@ public class PortletAggregatorImpl implements PortletAggregator
     protected void writeHeadElements(RequestContext context, PortletWindow window) throws IOException
     {
         List<KeyValue<String, Element>> headElements = window.getHeadElements();
-        PrintWriter out = context.getResponse().getWriter();
 
-        out.println("<JS_PORTLET_HEAD_ELEMENTS>");
-        
         if (!headElements.isEmpty())
         {
+            PrintWriter out = context.getResponse().getWriter();
+            
+            out.println("<JS_PORTLET_HEAD_ELEMENTS>");
+            
             for (KeyValue<String, Element> kvPair : headElements)
             {
                 out.println(DOMUtils.stringifyElementToHtml(kvPair.getValue()));
             }
+            
+            out.print("</JS_PORTLET_HEAD_ELEMENTS>");
         }
-        
-        out.print("</JS_PORTLET_HEAD_ELEMENTS>");
     }
     
 }
