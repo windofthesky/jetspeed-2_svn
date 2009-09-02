@@ -115,10 +115,6 @@
           <artifactId>jetspeed-rdbms</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.portals.jetspeed-2</groupId>        
-          <module>jetspeed-spaces</module>
-        </exclusion>
-        <exclusion>
           <groupId>org.apache.portals.jetspeed-2</groupId>
           <artifactId>jetspeed-registry</artifactId>
         </exclusion>
