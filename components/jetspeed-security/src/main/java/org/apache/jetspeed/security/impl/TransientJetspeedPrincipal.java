@@ -176,4 +176,31 @@ public abstract class TransientJetspeedPrincipal implements JetspeedPrincipal, S
     public void setDomainId(Long domainId){
         this.domainId=domainId;
     }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object o)
+    {
+        if (o == this)
+        {
+            return true;
+        }
+        if (o instanceof JetspeedPrincipal)
+        {
+            JetspeedPrincipal other = (JetspeedPrincipal)o;
+            return (getName().equals(other.getName()) &&
+                    getType().equals(other.getType()) &&
+                    (((getDomainId() != null) ? getDomainId().longValue() : 0L) == ((other.getDomainId() != null) ? other.getDomainId().longValue() : 0L)));
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        return getName().hashCode()^getType().hashCode()^((getDomainId() != null) ? getDomainId().intValue() : 0);
+    }
 }
