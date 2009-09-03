@@ -407,7 +407,7 @@ color: #012d46;
 .layout-oldstyle .logo {
 text-indent: -9999px;   
 background: url("../images/Jetspeed_blue_med.png") no-repeat;
-background-position: 1x 1px;
+background-position: 1px 1px;
 height:35px;
 padding:1px;
 }
