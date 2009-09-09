@@ -80,7 +80,7 @@ import org.xml.sax.SAXException;
  * Jetspeed Descriptor service for loading portlet applications in a Jetspeed format.
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class JetspeedDescriptorServiceImpl implements JetspeedDescriptorService
 {
