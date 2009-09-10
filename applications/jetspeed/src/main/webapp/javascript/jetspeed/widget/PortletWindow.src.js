@@ -2896,7 +2896,30 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             this._handleDefaults(name+" failure\n "+err, "onExecError", "debug");
         }
     },
-
+    
+    _isUrlFromSameDomain: function( url )
+    {
+        var reUrl = /^https?\:\/\/([\w\.]+)[:/]?/i;
+        if (reUrl.test(url))
+        {
+            var targetDomain = RegExp.$1;
+            var hostName = window.location.hostname;
+            
+            if (hostName == targetDomain)
+            {
+                return true;
+            }
+            else
+            {
+                var baseDomain = hostName.replace(/^www\w*\./i, "");
+                if (targetDomain.lastIndexOf(baseDomain) == targetDomain.length - baseDomain.length) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    },
+    
     _executeScripts: function( scripts, djObj )
     {
         var jsObj = jetspeed;
@@ -2921,7 +2944,12 @@ dojo.extend( jetspeed.widget.PortletWindow, {
             var contents = null;
             try
             {
-                contents = djHostEnv.getText( uri, null, false );
+                // cross domain content retrieval is not allowed.
+                if ( this._isUrlFromSameDomain( uri ))
+                {
+                    contents = djHostEnv.getText( uri, null, false );
+                }
+                
     	        if ( contents )
                 {
                     //djHostEnv.loadedUris[uri] = true;
