@@ -2899,25 +2899,20 @@ dojo.extend( jetspeed.widget.PortletWindow, {
     
     _isUrlFromSameDomain: function( url )
     {
-        var reUrl = /^https?\:\/\/([\w\.]+)[:/]?/i;
+        var reUrl = /^https?\:\/\/([\w\.-]+)[:/]?/i;
         if (reUrl.test(url))
         {
             var targetDomain = RegExp.$1;
             var hostName = window.location.hostname;
-            
-            if (hostName == targetDomain)
-            {
-                return true;
-            }
-            else
+            if (hostName != targetDomain)
             {
                 var baseDomain = hostName.replace(/^www\w*\./i, "");
-                if (targetDomain.lastIndexOf(baseDomain) == targetDomain.length - baseDomain.length) {
-                    return true;
+                if (targetDomain.lastIndexOf(baseDomain) != targetDomain.length - baseDomain.length) {
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     },
     
     _executeScripts: function( scripts, djObj )
@@ -2948,6 +2943,10 @@ dojo.extend( jetspeed.widget.PortletWindow, {
                 if ( this._isUrlFromSameDomain( uri ))
                 {
                     contents = djHostEnv.getText( uri, null, false );
+                }
+                else
+                {
+                    djObj.debug( "Cannot retrieve script from the different domain for portlet [" + this.widgetId + "] url=" + uri );
                 }
                 
     	        if ( contents )
