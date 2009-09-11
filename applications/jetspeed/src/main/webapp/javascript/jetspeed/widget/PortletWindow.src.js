@@ -2899,7 +2899,7 @@ dojo.extend( jetspeed.widget.PortletWindow, {
     
     _isUrlFromSameDomain: function( url )
     {
-        var reUrl = /^https?\:\/\/([\w\.-]+)[:/]?/i;
+        var reUrl = /^https?\:\/\/([\w\.-]+)[:\/]?/i;
         if (reUrl.test(url))
         {
             var targetDomain = RegExp.$1;
