@@ -90,7 +90,7 @@ public class RewritableHttpReverseProxyServiceImpl implements HttpReverseProxySe
     private String hostHeaderValue;
     
     /**
-     * local base url
+     * forced local base url. e.g., "http://localhost:8080/jetspeed/webcontent".
      */
     private String localBaseURL;
     
@@ -239,7 +239,7 @@ public class RewritableHttpReverseProxyServiceImpl implements HttpReverseProxySe
             if (prependLocalBaseURL) {
                 redirectLocation = localBaseURL + localPath;
             } else {
-                redirectLocation = localPath;
+                redirectLocation = request.getContextPath() + request.getServletPath() + localPath;
             }
             
             response.sendRedirect(redirectLocation);
