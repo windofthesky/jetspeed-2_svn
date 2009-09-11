@@ -208,6 +208,13 @@ public class RewritableHttpReverseProxyServiceImpl implements HttpReverseProxySe
         // redirection should be adjusted with local host header...
         httpMethodForProxyRequest.setFollowRedirects(false);
         
+        String queryString = request.getQueryString();
+        
+        if (queryString != null)
+        {
+            httpMethodForProxyRequest.setQueryString(queryString);
+        }
+        
         setProxyRequestHeaders(httpMethodForProxyRequest, request);
         
         if (isPostMultipartMethod)
