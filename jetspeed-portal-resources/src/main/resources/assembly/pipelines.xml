@@ -428,7 +428,15 @@
       <value>true</value>
     </constructor-arg>
   </bean>
-
+  
+  <bean id="webContentProxyingValve"
+    class="org.apache.jetspeed.pipeline.valve.impl.WebContentProxyingValveImpl">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg index="0">
+      <ref bean="webContentProxyService" />
+    </constructor-arg>
+  </bean>
+  
   <bean id="portletApplicationValidator"
     class="org.apache.jetspeed.healthcheck.validators.PortletApplicationAvailableHeathCheckValidator">
     <meta key="j2:cat" value="default" />
@@ -773,7 +781,19 @@
       </list>
     </constructor-arg>
   </bean>
-
+  
+  <bean id="webcontent-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg>
+      <value>WebContentPipeline</value>
+    </constructor-arg>
+    <constructor-arg>
+      <list>
+        <ref bean="webContentProxyingValve" />
+      </list>
+    </constructor-arg>
+  </bean>
+  
   <bean id='pipeline-map' class='java.util.HashMap'>
     <meta key="j2:cat" value="default" />
     <constructor-arg>
@@ -818,6 +838,9 @@
         </entry>
         <entry key='/healthcheck'>
           <value>healthcheck-pipeline</value>
+        </entry>
+        <entry key='/webcontent'>
+          <value>webcontent-pipeline</value>
         </entry>
       </map>
     </constructor-arg>

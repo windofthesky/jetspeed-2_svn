@@ -406,6 +406,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.portals.jetspeed-2</groupId>
+        <artifactId>jetspeed-proxy</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-id-generator</artifactId>
         <version>${pom.version}</version>
       </dependency>
@@ -480,6 +485,11 @@
         <groupId>org.apache.portals.applications</groupId>
         <artifactId>apa-gems</artifactId>
         <version>${org.apache.portals.applications.apa-gems.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.portals.applications</groupId>
+        <artifactId>apa-webcontent-jar</artifactId>
+        <version>${org.apache.portals.applications.apa-webcontent.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.portals.jetspeed-2</groupId>

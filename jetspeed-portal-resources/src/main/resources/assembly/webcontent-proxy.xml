@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean id="reverseProxyPathMapperProvider" class="org.apache.jetspeed.proxy.impl.DefaultHttpReverseProxyPathMapperProviderImpl">
+    <constructor-arg index="0">
+      <list>
+        <bean class="org.apache.jetspeed.proxy.impl.DefaultHttpProxyPathMapperImpl">
+          <meta key="j2:cat" value="default" />
+          <constructor-arg index="0">
+            <value>/portals.apache.org/jetspeed-2</value>
+          </constructor-arg>
+          <constructor-arg index="1">
+            <value>http://portals.apache.org/jetspeed-2</value>
+          </constructor-arg>
+          <constructor-arg index="2">
+            <null/>
+          </constructor-arg>
+        </bean>
+        <!--
+        WARNING!
+          
+          It could be very dangerous in perspective of security to allow retrieving remote web content
+          by reverse-proxy components used here.
+          Also, if the remote web content provider does not allow content retrieving by reverse proxy, 
+          it could be illegal to serve remote web content by reverse-proxy components used here.
+          Use of any web content with this reverse-proxy components is on your own responsibility. 
+          
+          You have been warned.
+        -->
+        <!--
+        <bean class="org.apache.jetspeed.proxy.impl.DefaultHttpProxyPathMapperImpl">
+          <meta key="j2:cat" value="default" />
+          <constructor-arg index="0">
+            <value>/www.gmodules.com</value>
+          </constructor-arg>
+          <constructor-arg index="1">
+            <value>http://www.gmodules.com</value>
+          </constructor-arg>
+          <constructor-arg index="2">
+            <null/>
+          </constructor-arg>
+        </bean>
+        -->
+      </list>
+    </constructor-arg>
+  </bean>
+    
+  <bean id="webContentProxyService" class="org.apache.jetspeed.proxy.impl.RewritableHttpReverseProxyServiceImpl">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg index="0">
+      <ref bean="reverseProxyPathMapperProvider" />
+    </constructor-arg>
+  </bean>
+  
+</beans>

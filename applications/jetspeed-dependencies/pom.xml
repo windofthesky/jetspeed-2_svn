@@ -65,6 +65,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
+      <artifactId>jetspeed-proxy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-id-generator</artifactId>
     </dependency>
     <dependency>
