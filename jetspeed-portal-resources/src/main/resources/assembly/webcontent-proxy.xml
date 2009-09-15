@@ -21,19 +21,8 @@
   <bean id="reverseProxyPathMapperProvider" class="org.apache.jetspeed.proxy.impl.DefaultHttpReverseProxyPathMapperProviderImpl">
     <constructor-arg index="0">
       <list>
-        <bean class="org.apache.jetspeed.proxy.impl.DefaultHttpProxyPathMapperImpl">
-          <meta key="j2:cat" value="default" />
-          <constructor-arg index="0">
-            <value>/portals.apache.org/jetspeed-2</value>
-          </constructor-arg>
-          <constructor-arg index="1">
-            <value>http://portals.apache.org/jetspeed-2</value>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <null/>
-          </constructor-arg>
-        </bean>
         <!--
+        
         WARNING!
           
           It could be very dangerous in perspective of security to allow retrieving remote web content
@@ -43,21 +32,34 @@
           Use of any web content with this reverse-proxy components is on your own responsibility. 
           
           You have been warned.
+        
         -->
-        <!--
+        <!-- Reverse proxy setting for www.apache.org -->
         <bean class="org.apache.jetspeed.proxy.impl.DefaultHttpProxyPathMapperImpl">
           <meta key="j2:cat" value="default" />
           <constructor-arg index="0">
-            <value>/www.gmodules.com</value>
+            <value>/apache/</value>
           </constructor-arg>
           <constructor-arg index="1">
-            <value>http://www.gmodules.com</value>
+            <value>http://www.apache.org/</value>
           </constructor-arg>
           <constructor-arg index="2">
             <null/>
           </constructor-arg>
         </bean>
-        -->
+        <!-- Reverse proxy setting for portals.apache.org -->
+        <bean class="org.apache.jetspeed.proxy.impl.DefaultHttpProxyPathMapperImpl">
+          <meta key="j2:cat" value="default" />
+          <constructor-arg index="0">
+            <value>/portals/</value>
+          </constructor-arg>
+          <constructor-arg index="1">
+            <value>http://portals.apache.org/</value>
+          </constructor-arg>
+          <constructor-arg index="2">
+            <null/>
+          </constructor-arg>
+        </bean>
       </list>
     </constructor-arg>
   </bean>
