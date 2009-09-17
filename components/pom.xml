@@ -50,7 +50,6 @@
         <module>jetspeed-profiler</module>
         <module>jetspeed-rdbms</module>
         <module>jetspeed-registry</module>
-        <module>jetspeed-proxy</module>
         <module>jetspeed-search</module>
         <module>jetspeed-security</module>
         <module>jetspeed-serializer</module>

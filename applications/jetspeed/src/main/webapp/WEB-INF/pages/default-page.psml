@@ -59,7 +59,7 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="2" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="dp-9" type="portlet" name="webcontent::IFramePortlet" decorator="gray-gradient-noborder">
+    <fragment id="dp-9" type="portlet" name="webcontent::ReverseProxyIFramePortlet" decorator="gray-gradient-noborder">
       <property layout="TwoColumns" name="row" value="3" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
@@ -67,7 +67,7 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="4" />
       <property layout="TwoColumns" name="column" value="0" />
       <preference name="SRC">
-        <value>http://www.apache.org</value>
+        <value>http://www.apache.org/</value>
       </preference>
     </fragment>
     <fragment id="dp-17" type="portlet" name="demo::UserInfoTest">
