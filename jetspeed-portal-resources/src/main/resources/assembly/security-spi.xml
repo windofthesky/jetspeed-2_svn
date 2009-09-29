@@ -87,13 +87,13 @@
   </bean>
 
   <bean class="org.springframework.beans.factory.config.BeanReferenceFactoryBean">
-    <meta key="j2:cat" value="dbSecurity" />
+    <meta key="j2:cat" value="dbSecurity or ldapSecurity" />
     <meta key="j2:alias" value="org.apache.jetspeed.security.spi.SecurityDomainStorageManager" />
     <property name="targetBeanName" value="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
   </bean>
   
   <bean class="org.springframework.beans.factory.config.BeanReferenceFactoryBean">
-    <meta key="j2:cat" value="dbSecurity" />
+    <meta key="j2:cat" value="dbSecurity or ldapSecurity" />
     <meta key="j2:alias" value="org.apache.jetspeed.security.spi.SecurityDomainAccessManager" />
     <property name="targetBeanName" value="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
   </bean>
