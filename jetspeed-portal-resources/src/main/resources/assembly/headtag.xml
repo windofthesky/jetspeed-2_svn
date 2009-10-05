@@ -65,7 +65,7 @@
         <entry key="decoration.layout">
           <!-- default layout decoration for desktop
             this is used when a selected layout decoration does not support desktop -->
-          <value>blueocean</value>
+          <value>jetspeed</value>
         </entry>
 
         <entry key="decoration.portlet">
