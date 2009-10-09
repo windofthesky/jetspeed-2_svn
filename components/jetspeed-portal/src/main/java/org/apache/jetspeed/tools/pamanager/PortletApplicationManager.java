@@ -369,7 +369,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             {
                 log.error(msg, e);
             }
-            throw new RegistryException(msg);
+            throw new RegistryException(msg, e);
         }
 
         // register the portlet application
@@ -526,7 +526,12 @@ public class PortletApplicationManager implements PortletApplicationManagement
                         {
                             log.debug("Register new portlet application " + contextName + ".");
                         }
+                        
                         pa = registerPortletApplication(paWar, pa, paType, paClassLoader, silent);
+                    }
+                    catch (RegistryException e)
+                    {
+                        throw e;
                     }
                     catch (Exception e)
                     {
@@ -536,8 +541,8 @@ public class PortletApplicationManager implements PortletApplicationManagement
                         {
                             log.debug(msg);
                         }
-                        throw new RegistryException(msg);
                         
+                        throw new RegistryException(msg);
                     }
                 }
                 else

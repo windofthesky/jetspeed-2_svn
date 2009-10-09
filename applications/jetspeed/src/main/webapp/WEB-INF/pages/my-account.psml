@@ -33,6 +33,10 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
+    <fragment id="cpwd-3" type="portlet" name="j2-admin::SSOChangePasswordPortlet">
+      <property layout="TwoColumns" name="row" value="0" />
+      <property layout="TwoColumns" name="column" value="1" />
+    </fragment>
   </fragment>
 
   <security-constraints>
