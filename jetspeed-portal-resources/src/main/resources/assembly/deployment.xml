@@ -44,17 +44,13 @@
   <bean id="deployFactory" class="org.apache.jetspeed.tools.deploy.JetspeedDeployFactory">
     <meta key="j2:cat" value="default" />
   </bean>
-
+  
   <bean id="org.apache.jetspeed.descriptor.JetspeedDescriptorService"
         class="org.apache.jetspeed.descriptor.JetspeedDescriptorServiceImpl">
       <meta key="j2:cat" value="default"/>
-      <constructor-arg>
-        <bean class="org.apache.jetspeed.descriptor.JetspeedPortletAppDescriptorServiceImpl">
-          <constructor-arg><value>true</value></constructor-arg>
-        </bean>
-      </constructor-arg>
-  </bean>       
-
+      <constructor-arg><bean class="org.apache.pluto.container.impl.PortletAppDescriptorServiceImpl"/></constructor-arg>
+  </bean>
+  
   <bean id="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" class="org.apache.jetspeed.tools.pamanager.PortletApplicationManager" init-method="start"
     destroy-method="stop">
     <meta key="j2:cat" value="default" />
