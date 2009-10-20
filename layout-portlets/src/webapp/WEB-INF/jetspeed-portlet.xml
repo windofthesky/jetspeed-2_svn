@@ -26,7 +26,7 @@ limitations under the License.
     <dc:title xml:lang="en">Layout Portlets</dc:title>
     <dc:creator>J2 Team</dc:creator>
     <js:metadata name="layout-app">true</js:metadata>    
-    <js:metadata name="pa-version">2.1.3</js:metadata>
+    <js:metadata name="pa-version">2.1.4-SNAPSHOT</js:metadata>
 
 	<js:services>
 	    <js:service name='IdGenerator'/>

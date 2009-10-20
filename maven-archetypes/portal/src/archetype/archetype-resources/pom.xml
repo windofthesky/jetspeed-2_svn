@@ -108,7 +108,7 @@ limitations under the License.
             to ensure test isolation for spring test cases;
             specifically connection datasource management.
         -->
-        <org.apache.maven.plugins.maven-surefire-plugin.version>2.1.3</org.apache.maven.plugins.maven-surefire-plugin.version>
+        <org.apache.maven.plugins.maven-surefire-plugin.version>2.1.4-SNAPSHOT</org.apache.maven.plugins.maven-surefire-plugin.version>
         <torque.version>3.2-rc3</torque.version>
 
         <!-- Project Dependency Version Properties -->
@@ -123,7 +123,7 @@ limitations under the License.
         <org.apache.pluto.version>1.0.1</org.apache.pluto.version>
         <org.apache.portals.bridges.common.version>1.0.4</org.apache.portals.bridges.common.version>
         <org.apache.portals.bridges.velocity.version>1.0.4</org.apache.portals.bridges.velocity.version>
-        <org.apache.portals.jetspeed-2.version>2.1.3</org.apache.portals.jetspeed-2.version>
+        <org.apache.portals.jetspeed-2.version>2.1.4-SNAPSHOT</org.apache.portals.jetspeed-2.version>
         <org.apache.portals.jetspeed-2.groupid>org.apache.portals.jetspeed-2</org.apache.portals.jetspeed-2.groupid>
         <portlet-api.version>1.0</portlet-api.version>
         <taglibs-request.version>1.0.1</taglibs-request.version>
