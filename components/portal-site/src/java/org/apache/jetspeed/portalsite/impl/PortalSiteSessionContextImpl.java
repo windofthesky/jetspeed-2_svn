@@ -842,23 +842,47 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     public SiteView getSiteView()
     {
         // get or create site view
-        SiteView view = null;
-        boolean viewCreated = false;
-        synchronized (this)
+        SiteView view = siteView;
+        if (view == null)
         {
-            if ((siteView == null) && (pageManager != null) && (profileLocators != null))
+            // access site view and test for creation
+            boolean createView = false;
+            synchronized (this)
             {
-                // create new site view
-                siteView = new SiteView(pageManager, profileLocators);
-                viewCreated = true;
+                view = siteView;
+                createView = ((view == null) && (pageManager != null) && (profileLocators != null));
             }
-            view = siteView;
-        }
+
+            // create new site view if necessary
+            boolean viewCreated = false;
+            if (createView)
+            {
+                // create site view outside of synchronized state; this is
+                // required since construction of site view requires access
+                // to the page manager and page manager event notifications
+                // may arrive during construction of the site view which
+                // might then result in synchronized deadlock with page
+                // manager or page manager cache internals
+                view = new SiteView(pageManager, profileLocators);
+
+                // update site view if not already made available by another
+                // request thread
+                synchronized (this)
+                {
+                    if ((siteView == null) && (pageManager != null) && (profileLocators != null))
+                    {
+                        siteView = view;
+                        viewCreated = true;
+                    }
+                    view = siteView;
+                }
+            }
         
-        // log site view creation
-        if (viewCreated && log.isDebugEnabled())
-        {
-            log.debug("Created site view: search paths=" + view.getSearchPathsString());
+            // log site view creation
+            if (viewCreated && log.isDebugEnabled())
+            {
+                log.debug("Created site view: search paths=" + view.getSearchPathsString());
+            }
         }
         
         return view;
