@@ -199,11 +199,11 @@ public class JSSSOSite
 
                 g.setName(StringEscapeUtils.unescapeHtml(xml.getAttribute("name", (String)null)));
                 g.setSiteURL(StringEscapeUtils.unescapeHtml(xml.getAttribute("siteURL", (String)null)));
-                g.setAllowUserSet(Boolean.parseBoolean(StringEscapeUtils.unescapeHtml(xml.getAttribute("allowUserSet", "false"))));
-                g.setCertificateRequired(Boolean.parseBoolean(StringEscapeUtils.unescapeHtml(xml.getAttribute("certificateRequired", "false"))));
-                g.setChallengeResponseAuthentication(Boolean.parseBoolean(StringEscapeUtils.unescapeHtml(xml.getAttribute("challengeResponseAuthentication", "false"))));
+                g.setAllowUserSet(Boolean.valueOf(StringEscapeUtils.unescapeHtml(xml.getAttribute("allowUserSet", "false"))).booleanValue());
+                g.setCertificateRequired(Boolean.valueOf(StringEscapeUtils.unescapeHtml(xml.getAttribute("certificateRequired", "false"))).booleanValue());
+                g.setChallengeResponseAuthentication(Boolean.valueOf(StringEscapeUtils.unescapeHtml(xml.getAttribute("challengeResponseAuthentication", "false"))).booleanValue());
                 g.setRealm(StringEscapeUtils.unescapeHtml(xml.getAttribute("realm", (String)null)));
-                g.setFormAuthentication(Boolean.parseBoolean(StringEscapeUtils.unescapeHtml(xml.getAttribute("formAuthentication", "false"))));
+                g.setFormAuthentication(Boolean.valueOf(StringEscapeUtils.unescapeHtml(xml.getAttribute("formAuthentication", "false"))).booleanValue());
                 g.setFormUserField(StringEscapeUtils.unescapeHtml(xml.getAttribute("formUserField", (String)null)));
                 g.setFormPwdField(StringEscapeUtils.unescapeHtml(xml.getAttribute("formPwdField", (String)null)));
                 

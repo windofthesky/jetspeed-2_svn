@@ -1938,12 +1938,12 @@ public class JetspeedSerializerImpl extends JetspeedSerializerBase implements Je
                 String rupPrincipalName = null;
                 String rupName = null;
                 String [] names = null;
-                if (rupPath.startsWith("/sso/") && rupPath.contains("/user/"))
+                if (rupPath.startsWith("/sso/") && (rupPath.indexOf("/user/") != -1))
                 {
                     rupPrincipalType = "user";
                     names = rupPath.replaceAll("^/sso/[0-9]+/user/", "").split("/");
                 }
-                else if (rupPath.startsWith("/sso/") && rupPath.contains("/group/"))
+                else if (rupPath.startsWith("/sso/") && (rupPath.indexOf("/group/") != -1))
                 {
                     rupPrincipalType = "group";
                     names = rupPath.replaceAll("^/sso/[0-9]+/group/", "").split("/");
