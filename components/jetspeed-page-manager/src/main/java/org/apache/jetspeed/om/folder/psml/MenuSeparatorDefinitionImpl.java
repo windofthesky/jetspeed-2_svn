@@ -175,7 +175,7 @@ public class MenuSeparatorDefinitionImpl extends MenuMetadataImpl implements Men
             }
         }
     }
-    @Override
+
     public boolean equals(Object obj)
     {
         if (!(obj instanceof MenuSeparatorDefinition))
@@ -191,6 +191,5 @@ public class MenuSeparatorDefinitionImpl extends MenuMetadataImpl implements Men
             }
             return true;
         }
-    }
-    
+    }    
 }

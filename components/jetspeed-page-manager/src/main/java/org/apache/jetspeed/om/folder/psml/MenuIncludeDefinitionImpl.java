@@ -86,7 +86,6 @@ public class MenuIncludeDefinitionImpl implements MenuIncludeDefinition
         this.nest = nest;
     }
     
-    @Override
     public boolean equals(Object obj)
     {
         if (!(obj instanceof MenuIncludeDefinition))

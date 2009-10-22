@@ -42,6 +42,11 @@ import org.apache.jetspeed.portalsite.view.SiteViewProxy;
 public abstract class NodeProxy extends SiteViewProxy
 {
     /**
+     * URL_ENCODING - the name of a character encoding to be used in encoding path component name.
+     */
+    private static final String URL_ENCODING = "ISO-8859-1";
+    
+    /**
      * *_METHOD - Node method constants
      */
     protected static final Method EQUALS_METHOD = reflectMethod(Object.class, "equals", new Class[]{Object.class});
@@ -67,11 +72,6 @@ public abstract class NodeProxy extends SiteViewProxy
      */
     private String url;
 
-    /**
-     * urlEncoding - the name of a character encoding to be used in encoding path component name.
-     */
-    private String urlEncoding = "ISO-8859-1";;
-    
     /**
      * hidden - hidden status of this or parent node
      */
@@ -119,14 +119,13 @@ public abstract class NodeProxy extends SiteViewProxy
         if ((parent != null) && (name != null))
         {
             NodeProxy parentProxy = getNodeProxy(parent);
-            
             String parentPath = parentProxy.getPath();
             String parentUrl = parentProxy.getUrl();
             String urlEncodedName = name;
             
             try
             {
-                urlEncodedName = URLEncoder.encode(name, urlEncoding);
+                urlEncodedName = URLEncoder.encode(name, URL_ENCODING);
             }
             catch (UnsupportedEncodingException e)
             {

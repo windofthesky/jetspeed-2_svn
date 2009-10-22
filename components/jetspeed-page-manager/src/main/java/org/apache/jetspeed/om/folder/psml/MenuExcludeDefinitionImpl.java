@@ -20,7 +20,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 
 /**
- * This class implements the MenuExcludeDefinition interface in a persistent object form for use by the page manager component.
+ * This class implements the MenuExcludeDefinition
+ * interface in a persistent object form for use by
+ * the page manager component.
  * 
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
@@ -52,15 +54,13 @@ public class MenuExcludeDefinitionImpl implements MenuExcludeDefinition
     /**
      * setName - set menu name with options to exclude
      * 
-     * @param name
-     *            menu name
+     * @param name menu name
      */
     public void setName(String name)
     {
         this.name = name;
     }
 
-    @Override
     public boolean equals(Object obj)
     {
         if (!(obj instanceof MenuExcludeDefinition))

@@ -24,7 +24,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 
 /**
- * This class implements the MenuDefinition interface in a persistent object form for use by the page manager component.
+ * This class implements the MenuDefinition
+ * interface in a persistent object form for use by
+ * the page manager component.
  * 
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
@@ -35,46 +37,58 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
      * name - name of menu definition
      */
     private String name;
+
     /**
      * options - comma separated option paths specification for menu
      */
     private String options;
+
     /**
      * depth - depth of inclusion for folder options
      */
     private int depth;
+
     /**
      * paths - generate ordered path options for options
      */
     private boolean paths;
+
     /**
      * regexp - interpret specified optionsas regexp
      */
     private boolean regexp;
+
     /**
      * profile - profile locator name filter for options
      */
     private String profile;
+    
     /**
      * order - comma separated list of ordering patterns for options
      */
     private String order;
+    
     /**
      * skin - skin name for menu
      */
     private String skin;
+    
     /**
      * title - title for menu
      */
     private String title;
+
     /**
      * shortTitle - short title for menu
      */
     private String shortTitle;
+
     /**
-     * menuElements - ordered polymorphic list of menu options nested menu, separator, include, and exclude definitions
+     * menuElements - ordered polymorphic list of menu options nested
+     *                menu, separator, include, and exclude definitions
      */
     private List menuElements;
+
     /**
      * menuElementImpls - ordered homogeneous list of menu elements
      */
@@ -89,7 +103,7 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * getName - get menu name
-     * 
+     *
      * @return menu name
      */
     public String getName()
@@ -99,9 +113,8 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * setName - set menu name
-     * 
-     * @param name
-     *            menu name
+     *
+     * @param name menu name
      */
     public void setName(String name)
     {
@@ -110,7 +123,7 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * getOptions - get comma separated menu options if not specified as elements
-     * 
+     *
      * @return option paths specification
      */
     public String getOptions()
@@ -120,9 +133,8 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * setOptions - set comma separated menu options if not specified as elements
-     * 
-     * @param options
-     *            option paths specification
+     *
+     * @param options option paths specification
      */
     public void setOptions(String options)
     {
@@ -131,7 +143,7 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * getDepth - get depth of inclusion for folder menu options
-     * 
+     *
      * @return inclusion depth
      */
     public int getDepth()
@@ -141,9 +153,8 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * setDepth - set depth of inclusion for folder menu options
-     * 
-     * @param depth
-     *            inclusion depth
+     *
+     * @param depth inclusion depth
      */
     public void setDepth(int depth)
     {
@@ -152,28 +163,27 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * isPaths - get generate ordered path options for specified options
-     * 
+     *
      * @return paths options flag
      */
     public boolean isPaths()
     {
         return paths;
     }
-
+    
     /**
      * setPaths - set generate ordered path options for specified options
-     * 
-     * @param paths
-     *            paths options flag
+     *
+     * @param paths paths options flag
      */
     public void setPaths(boolean paths)
     {
         this.paths = paths;
     }
-
+    
     /**
      * isRegexp - get regexp flag for interpreting specified options
-     * 
+     *
      * @return regexp flag
      */
     public boolean isRegexp()
@@ -183,9 +193,8 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * setRegexp - set regexp flag for interpreting specified options
-     * 
-     * @param regexp
-     *            regexp flag
+     *
+     * @param regexp regexp flag
      */
     public void setRegexp(boolean regexp)
     {
@@ -194,7 +203,7 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * getProfile - get profile locator used to filter specified options
-     * 
+     *
      * @return profile locator name
      */
     public String getProfile()
@@ -204,9 +213,8 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * setProfile - set profile locator used to filter specified options
-     * 
-     * @param locatorName
-     *            profile locator name
+     *
+     * @param locatorName profile locator name
      */
     public void setProfile(String locatorName)
     {
@@ -215,7 +223,7 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * getOrder - get comma separated regexp ordering patterns for options
-     * 
+     *
      * @return ordering patterns list
      */
     public String getOrder()
@@ -225,9 +233,8 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * setOrder - set comma separated regexp ordering patterns for options
-     * 
-     * @param order
-     *            ordering patterns list
+     *
+     * @param order ordering patterns list
      */
     public void setOrder(String order)
     {
@@ -236,7 +243,7 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * getSkin - get skin name for menu
-     * 
+     *
      * @return skin name
      */
     public String getSkin()
@@ -246,9 +253,8 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * setSkin - set skin name for menu
-     * 
-     * @param name
-     *            skin name
+     *
+     * @param name skin name
      */
     public void setSkin(String name)
     {
@@ -257,7 +263,7 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * getTitle - get default title for menu
-     * 
+     *
      * @return title text
      */
     public String getTitle()
@@ -267,9 +273,8 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * setTitle - set default title for menu
-     * 
-     * @param title
-     *            title text
+     *
+     * @param title title text
      */
     public void setTitle(String title)
     {
@@ -278,19 +283,18 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * getShortTitle - get default short title for menu
-     * 
+     *
      * @return short title text
      */
     public String getShortTitle()
     {
-        return shortTitle;
+        return shortTitle; 
     }
 
     /**
      * setShortTitle - set default short title for menu
-     * 
-     * @param title
-     *            short title text
+     *
+     * @param title short title text
      */
     public void setShortTitle(String title)
     {
@@ -298,8 +302,10 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
     }
 
     /**
-     * getMenuElements - get ordered list of menu options, nested menus, separators, included menu, and excluded menu elements
-     * 
+     * getMenuElements - get ordered list of menu options,
+     *                   nested menus, separators, included
+     *                   menu, and excluded menu elements
+     *
      * @return element list
      */
     public List getMenuElements()
@@ -309,9 +315,8 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * setMenuElements - set ordered list of menu elements
-     * 
-     * @param elements
-     *            element list
+     *
+     * @param elements element list
      */
     public void setMenuElements(List elements)
     {
@@ -320,7 +325,7 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
 
     /**
      * getMenuElementImpls - get ordered list of wrapped menu elements
-     * 
+     *
      * @return element list
      */
     public List getMenuElementImpls()
@@ -329,10 +334,10 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
     }
 
     /**
-     * setMenuElementImpls - set ordered list of menu elements using a list of wrapped menu elements
-     * 
-     * @param elements
-     *            element list
+     * setMenuElementImpls - set ordered list of menu elements using
+     *                       a list of wrapped menu elements
+     *
+     * @param elements element list
      */
     public void setMenuElementImpls(List elements)
     {
@@ -340,12 +345,14 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
     }
 
     /**
-     * unmarshalled - notification that this instance has been loaded from the persistent store
+     * unmarshalled - notification that this instance has been
+     *                loaded from the persistent store
      */
     public void unmarshalled()
     {
         // notify super class implementation
         super.unmarshalled();
+
         // unwrap menu elements and propagate
         // unmarshalled notification
         if (menuElementImpls != null)
@@ -355,23 +362,25 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
             while (menuElementIter.hasNext())
             {
                 // unwrap menu element
-                Object menuElement = ((MenuElementImpl) menuElementIter.next()).getElement();
+                Object menuElement = ((MenuElementImpl)menuElementIter.next()).getElement();
                 menuElements.add(menuElement);
+
                 // propagate unmarshalled notification
                 if (menuElement instanceof MenuMetadataImpl)
                 {
-                    ((MenuMetadataImpl) menuElement).unmarshalled();
+                    ((MenuMetadataImpl)menuElement).unmarshalled();
                 }
             }
         }
         else
         {
-            menuElements = null;
+            menuElements = null;            
         }
     }
 
     /**
-     * marshalling - notification that this instance is to be saved to the persistent store
+     * marshalling - notification that this instance is to
+     *               be saved to the persistent store
      */
     public void marshalling()
     {
@@ -386,16 +395,17 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
                 // wrap menu element
                 Object menuElement = menuElementIter.next();
                 menuElementImpls.add(new MenuElementImpl(menuElement));
+
                 // propagate marshalling notification
                 if (menuElement instanceof MenuDefinitionImpl)
                 {
-                    ((MenuDefinitionImpl) menuElement).unmarshalled();
+                    ((MenuDefinitionImpl)menuElement).unmarshalled();
                 }
             }
         }
         else
         {
-            menuElementImpls = null;
+            menuElementImpls = null;            
         }
     }
 
@@ -403,7 +413,6 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
      * (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    @Override
     public boolean equals(Object obj)
     {
         if (!(obj instanceof MenuDefinition))

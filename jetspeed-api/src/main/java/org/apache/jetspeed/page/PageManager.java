@@ -76,6 +76,13 @@ public interface PageManager
     public boolean getPermissionsEnabled();
 
     /**
+     * Get node reaping interval.
+     *
+     * @return reaping interval
+     */
+    public long getNodeReapingInterval();
+
+    /**
      * Creates a new empty Page instance
      *
      * @return a newly created Page object

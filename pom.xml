@@ -258,6 +258,7 @@
     <!-- ddlutils svn r551445 with patch applied from http://issues.apache.org/jira/browse/DDLUTILS-75#action_12521579 -->
     <ddlutils.version>r551445-patched-75</ddlutils.version>
     <directory.version>0.9.3</directory.version>
+    <dom4j.version>1.6.1</dom4j.version>
     <ehcache.version>1.5.0</ehcache.version>
     <hsqldb.version>1.8.0.2</hsqldb.version>
     <javolution.version>4.0.2</javolution.version>
@@ -922,7 +923,7 @@
       <dependency>
         <groupId>dom4j</groupId>
         <artifactId>dom4j</artifactId>
-        <version>1.6.1</version>
+        <version>${dom4j.version}</version>
         <exclusions>
           <exclusion>
             <groupId>isorelax</groupId>

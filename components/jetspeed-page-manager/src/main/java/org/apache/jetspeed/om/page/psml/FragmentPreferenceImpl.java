@@ -16,10 +16,10 @@
  */
 package org.apache.jetspeed.om.page.psml;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jetspeed.om.preference.FragmentPreference;
-import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * 
@@ -59,7 +59,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
     {
         if (this.values == null)
         {
-            this.values = DatabasePageManagerUtils.createList();            
+            this.values = new ArrayList();            
         }
         return this.values;
     }

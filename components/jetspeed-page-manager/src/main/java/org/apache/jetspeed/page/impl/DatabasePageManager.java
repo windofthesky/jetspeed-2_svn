@@ -187,6 +187,14 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getNodeReapingInterval()
+     */
+    public long getNodeReapingInterval()
+    {
+        return delegator.getNodeReapingInterval();
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#newPage(java.lang.String)
      */
     public Page newPage(String path)

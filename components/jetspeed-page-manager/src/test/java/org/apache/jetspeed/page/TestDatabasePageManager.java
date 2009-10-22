@@ -84,6 +84,13 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         {
             removedNodeCount++;
         }
+
+        /* (non-Javadoc)
+         * @see org.apache.jetspeed.page.PageManagerEventListener#reapNodes(long)
+         */
+        public void reapNodes(long interval)
+        {
+        }
     }
 
     public static void main(String args[])
