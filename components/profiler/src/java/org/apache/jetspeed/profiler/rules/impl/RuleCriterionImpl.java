@@ -67,7 +67,7 @@ public class RuleCriterionImpl implements RuleCriterion
     			return false;
     	if (this.type != null)
     	{
-    		if (!(this.type.equals(r.getName())))
+    		if (!(this.type.equals(r.getType())))
     				return false;
     	}
     	else

@@ -665,6 +665,14 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.FolderHandler#shutdown()
+     */
+    public void shutdown()
+    {
+        // disconnect cache listener
+        fileCache.removeListener(this);
+    }    
 
     /**
      * <p>
@@ -711,9 +719,10 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         {
             Folder folder = (Folder) entry.getDocument();            
             entry.setDocument(getFolder(folder.getPath(), false));
-            if (((AbstractNode)folder).getParent(false) != null)
+            Node parentNode = ((AbstractNode)folder).getParent(false);
+            if (parentNode != null)
             {
-                FileCacheEntry parentEntry = fileCache.get(((AbstractNode)folder).getParent(false).getPath());
+                FileCacheEntry parentEntry = fileCache.get(parentNode.getPath());
                 refresh(parentEntry);                
             }
         }
@@ -722,8 +731,12 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
             Document doc = (Document) entry.getDocument();
             if (doc.getType().equals(FolderMetaDataImpl.DOCUMENT_TYPE))
             {
-                FileCacheEntry folderEntry = fileCache.get(((AbstractNode)doc).getParent().getPath());
-                refresh(folderEntry);
+                Node folderNode = ((AbstractNode)doc).getParent(false);
+                if (folderNode != null)
+                {                
+                    FileCacheEntry folderEntry = fileCache.get(folderNode.getPath());
+                    refresh(folderEntry);
+                }
             }
         }
         
@@ -731,7 +744,6 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         {
             ((Reset)entry.getDocument()).reset();
         }
-
     }
 
     /**

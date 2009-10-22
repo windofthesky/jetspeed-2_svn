@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.profiler.rules.FallbackCriterionResolver;
 import org.apache.jetspeed.profiler.rules.ProfileResolvers;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
@@ -78,8 +79,7 @@ public class RoleFallbackProfilingRule
                 resolver = getDefaultResolver();
             }
             String value = resolver.resolve(context, criterion);
-            if (value != null && (resolver instanceof RoleCriterionResolver ||
-                resolver instanceof GroupCriterionResolver))
+            if (value != null && (resolver instanceof FallbackCriterionResolver))                    
             {
                 StringTokenizer tokenizer = new StringTokenizer(value, StandardResolver.VALUE_DELIMITER);
                 while (tokenizer.hasMoreTokens())
@@ -132,20 +132,19 @@ public class RoleFallbackProfilingRule
                 String value = resolver.resolve(context, criterion);
                 boolean isControl = resolver.isControl(criterion);
                 boolean isNavigation = resolver.isNavigation(criterion);
-                if (value != null && (resolver instanceof RoleCriterionResolver ||
-                        resolver instanceof GroupCriterionResolver))
+                if (value != null && (resolver instanceof FallbackCriterionResolver)) 
+                {
+                    StringTokenizer tokenizer = new StringTokenizer(value, StandardResolver.VALUE_DELIMITER);
+                    while (tokenizer.hasMoreTokens())
                     {
-                        StringTokenizer tokenizer = new StringTokenizer(value, StandardResolver.VALUE_DELIMITER);
-                        while (tokenizer.hasMoreTokens())
-                        {
-                            String token = tokenizer.nextToken();
-                            locator.add(criterion, isControl, isNavigation, token);
-                        }
+                        String token = tokenizer.nextToken();
+                        locator.add(criterion, isControl, isNavigation, token);
                     }
-                    else
-                    {
-                        locator.add(criterion, isControl, isNavigation, value);
-                    }
+                }
+                else
+                {
+                    locator.add(criterion, isControl, isNavigation, value);
+                }
             }                
         }               
              

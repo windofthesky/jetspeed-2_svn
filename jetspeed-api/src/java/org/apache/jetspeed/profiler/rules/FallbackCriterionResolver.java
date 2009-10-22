@@ -14,23 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.profiler.rules.impl;
-
-import org.apache.jetspeed.profiler.rules.FallbackCriterionResolver;
+package org.apache.jetspeed.profiler.rules;
 
 /**
- * Standard Jetspeed-1 Group resolver.
- * It first looks at the value in the criterion record.
- * If it is null, it then falls back to a request parameter.
- * If it is null it gives up and returns null allowing subclasses
- * to continue processing.
+ * Represents any criterion that always falls back
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id$
+ * @version $Id: FallbackCriterionResolver.java 726976 2008-12-16 07:15:50Z taylor $
  */
-public class GroupCriterionResolver
-    extends PrincipalCriterionResolver
-    implements FallbackCriterionResolver
+public interface FallbackCriterionResolver extends RuleCriterionResolver
 {
-    private static final long serialVersionUID = 1L;
+
 }

@@ -17,6 +17,7 @@
 package org.apache.jetspeed.om.page.proxy;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -126,8 +127,15 @@ public class PageProxy extends NodeProxy implements InvocationHandler
             throw new RuntimeException("Page instance is immutable from proxy.");
         }
 
-        // attempt to invoke method on delegate Page instance
-        return m.invoke(page, args);
+        try
+        {
+            // attempt to invoke method on delegate Page instance
+            return m.invoke(page, args);
+        }
+        catch (InvocationTargetException ite)
+        {
+            throw ite.getTargetException();
+        }
     }
 
     /**
@@ -152,7 +160,7 @@ public class PageProxy extends NodeProxy implements InvocationHandler
         // folder menu definitions include standard menu definition
         // locator defaults
         mergeMenuDefinitionLocators(page.getMenuDefinitions(), page);
-        FolderProxy parentFolderProxy = (FolderProxy)Proxy.getInvocationHandler(getParent());
+        FolderProxy parentFolderProxy = FolderProxy.getFolderProxy(getParent());
         mergeMenuDefinitionLocators(parentFolderProxy.getMenuDefinitionLocators());
     }
 }

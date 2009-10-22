@@ -21,8 +21,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.ojb.broker.util.collections.RemovalAwareCollection;
-import org.apache.ojb.broker.util.collections.RemovalAwareList;
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 
 
 /**
@@ -44,14 +43,26 @@ public class DatabasePageManagerUtils
      * @see JS2-590
      * @return
      */
+
     public static final Collection createCollection()
     {
-        return java.util.Collections.synchronizedCollection(new RemovalAwareCollection());
+        // return synchronized manageable/removal aware collection;
+        // requires setting collection-class attributes for collection-
+        // descriptor OJB mappings:
+        //
+        // <collection-descriptor ... collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareCollection">
+        //
+        return CollectionUtils.createSynchronizedCollection();
     }
     
     public static final List createList()
     {
-        return java.util.Collections.synchronizedList(new RemovalAwareList());
-    }
-    
+        // return synchronized manageable/removal aware list;
+        // requires setting collection-class attributes for collection-
+        // descriptor OJB mappings:
+        //
+        // <collection-descriptor ... collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList">
+        //
+        return CollectionUtils.createSynchronizedList();
+    }    
 }

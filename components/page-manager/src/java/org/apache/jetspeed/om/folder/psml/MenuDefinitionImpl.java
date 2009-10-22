@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 
 /**
@@ -405,6 +406,37 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
         else
         {
             menuElementImpls = null;            
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof MenuDefinition))
+        {
+            return false;
+        }
+        else
+        {
+            
+            MenuDefinition definition = (MenuDefinition) obj;
+            if (!StringUtils.equals(definition.getName(),name) || !StringUtils.equals(definition.getOptions(),options) || definition.getDepth() != depth ||
+                definition.isPaths() != paths || definition.isRegexp() != regexp || !StringUtils.equals(definition.getProfile(),profile) ||
+                !StringUtils.equals(definition.getOrder(),order) || !StringUtils.equals(definition.getSkin(),skin) || !StringUtils.equals(definition.getTitle(),title))
+            {
+                return false;
+            }
+            if (definition.getMenuElements() != null && menuElements != null)
+            {
+                if (definition.getMenuElements().size() != menuElements.size())
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

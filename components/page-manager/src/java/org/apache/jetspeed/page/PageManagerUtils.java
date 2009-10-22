@@ -272,5 +272,72 @@ public class PageManagerUtils
             deepCopyFolder(pageManager, folder, newPath, null);
         }        
     }
+
+    /**
+     * Deep merge a folder
+     *  
+     * @param source source folder
+     * @param dest destination folder
+     */
+    public static void deepMergeFolder(PageManager pageManager, Folder srcFolder, String destinationPath, String owner)
+    throws NodeException
+    {
+        boolean found = true;
+        Folder dstFolder = null;
+        try
+        {
+            dstFolder = pageManager.getFolder(destinationPath);
+        }
+        catch (FolderNotFoundException e)
+        {
+            found = false;
+        }
+        if (!found)
+        {
+            dstFolder = pageManager.copyFolder(srcFolder, destinationPath);
+            if (owner != null)
+            {
+                SecurityConstraints constraints = dstFolder.getSecurityConstraints();
+                if (constraints == null)
+                {
+                    constraints = pageManager.newSecurityConstraints();
+                    dstFolder.setSecurityConstraints(constraints);
+                }
+                dstFolder.getSecurityConstraints().setOwner(owner);
+            }
+            pageManager.updateFolder(dstFolder);
+        }
+        Iterator pages = srcFolder.getPages().iterator();
+        while (pages.hasNext())
+        {
+            Page srcPage = (Page)pages.next();
+            String path = PageManagerUtils.concatenatePaths(destinationPath, srcPage.getName());
+            if (!pageManager.pageExists(path))
+            {
+                Page dstPage = pageManager.copyPage(srcPage, path);
+                pageManager.updatePage(dstPage);
+            }
+        }
+     
+        Iterator links = srcFolder.getLinks().iterator();
+        while (links.hasNext())
+        {
+            Link srcLink = (Link)links.next();
+            String path = PageManagerUtils.concatenatePaths(destinationPath, srcLink.getName());
+            if (!pageManager.linkExists(path))
+            {            
+                Link dstLink = pageManager.copyLink(srcLink, path);
+                pageManager.updateLink(dstLink);
+            }
+        }
+     
+        Iterator folders = srcFolder.getFolders().iterator();
+        while (folders.hasNext())
+        {
+            Folder folder = (Folder)folders.next();
+            String newPath = concatenatePaths(destinationPath, folder.getName()); 
+            deepMergeFolder(pageManager, folder, newPath, null);
+        }        
+    }
     
 }

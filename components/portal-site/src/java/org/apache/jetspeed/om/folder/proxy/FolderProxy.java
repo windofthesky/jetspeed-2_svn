@@ -17,6 +17,7 @@
 package org.apache.jetspeed.om.folder.proxy;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -294,8 +295,15 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             throw new RuntimeException("Folder instance is immutable from proxy.");
         }
 
-        // attempt to invoke method on delegate Folder instance
-        return m.invoke(defaultFolder, args);
+        try
+        {
+            // attempt to invoke method on delegate Folder instance
+            return m.invoke(defaultFolder, args);
+        }
+        catch (InvocationTargetException ite)
+        {
+            throw ite.getTargetException();
+        }
     }
 
     /**
@@ -551,6 +559,104 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     public Folder getDefaultFolder()
     {
         return defaultFolder;
+    }
+
+    /**
+     * checkAccessToFolderNotFound - checks security access to child folder
+     *                               nodes not found in aggregated children
+     *                               site view when accessed directly; folders
+     *                               part of the view are by definition
+     *                               accessible
+     *
+     * @throws SecurityException if view access to folder not granted
+     */
+    public void checkAccessToFolderNotFound(String folderName)
+    {
+        try
+        {
+            // check access on concrete child in all search folders
+            Iterator foldersIter = getSearchFolders().iterator();
+            while (foldersIter.hasNext())
+            {
+                // test access against child in search folder
+                SearchFolder searchFolder = (SearchFolder)foldersIter.next();
+                Folder folder = searchFolder.folder;
+                // ignore all folder access exceptions, (throws SecurityException on failed check access)
+                try
+                {
+                    folder.getFolder(folderName);
+                }
+                catch (DocumentException de)
+                {                    
+                }
+                catch (FolderNotFoundException fnfe)
+                {
+                }
+            }
+        }
+        catch (FolderNotFoundException fnfe)
+        {
+        }
+    }
+
+    /**
+     * checkAccessToNodeNotFound - checks security access to child node
+     *                             nodes not found in aggregated children
+     *                             site view when accessed directly; pages,
+     *                             folders, and links part of the view are
+     *                             by definition accessible
+     *
+     * @throws SecurityException if view access to node not granted
+     */
+    public void checkAccessToNodeNotFound(String nodeName)
+    {
+        try
+        {
+            // check access on concrete child in all search folders
+            Iterator foldersIter = getSearchFolders().iterator();
+            while (foldersIter.hasNext())
+            {
+                // test access against child in search folder
+                SearchFolder searchFolder = (SearchFolder)foldersIter.next();
+                Folder folder = searchFolder.folder;
+                // ignore all folder access exceptions, (throws SecurityException on failed check access)
+                try
+                {
+                    folder.getFolder(nodeName);
+                }
+                catch (DocumentException de)
+                {                    
+                }
+                catch (FolderNotFoundException fnfe)
+                {
+                }
+                // ignore all page access exceptions, (throws SecurityException on failed check access)
+                try
+                {
+                    folder.getPage(nodeName);
+                }
+                catch (NodeException ne)
+                {                    
+                }
+                catch (PageNotFoundException ne)
+                {                    
+                }
+                // ignore all link access exceptions, (throws SecurityException on failed check access)
+                try
+                {
+                    folder.getLink(nodeName);
+                }
+                catch (NodeException ne)
+                {                    
+                }
+                catch (DocumentNotFoundException ne)
+                {                    
+                }
+            }
+        }
+        catch (FolderNotFoundException fnfe)
+        {
+        }
     }
 
     /**
@@ -994,5 +1100,25 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             return inheritanceFolders;
         }
         throw new FolderNotFoundException("Inheritance folders at " + getPath() + " not found or accessible");
+    }
+
+    /**
+     * getFolderProxy - utility method to access FolderProxy handler
+     *                  from Folder proxy instance
+     *
+     * @param folder folder proxy instance
+     * @return folder proxy invocation handler instance
+     */
+    public static FolderProxy getFolderProxy(Object folder)
+    {
+        if ((folder != null) && Proxy.isProxyClass(folder.getClass()))
+        {
+            Object folderProxyHandler = Proxy.getInvocationHandler(folder);
+            if (folderProxyHandler instanceof FolderProxy)
+            {
+                return (FolderProxy)folderProxyHandler;
+            }
+        }
+        return null;
     }
 }

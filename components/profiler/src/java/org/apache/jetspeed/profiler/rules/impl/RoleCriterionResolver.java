@@ -16,14 +16,7 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
-import javax.security.auth.Subject;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.profiler.rules.RuleCriterion;
-import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.RolePrincipal;
+import org.apache.jetspeed.profiler.rules.FallbackCriterionResolver;
 
 /**
  * Standard Jetspeed-1 Role resolver (not role-based fallback).
@@ -36,40 +29,8 @@ import org.apache.jetspeed.security.RolePrincipal;
  * @version $Id$
  */
 public class RoleCriterionResolver
-    extends StandardResolver
-    implements RuleCriterionResolver
+    extends PrincipalCriterionResolver
+    implements FallbackCriterionResolver
 {
-    protected final static Log log = LogFactory.getLog(UserCriterionResolver.class);
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#resolve(org.apache.jetspeed.request.RequestContext, org.apache.jetspeed.profiler.rules.RuleCriterion)
-     */    
-    public String resolve(RequestContext context, RuleCriterion criterion)
-    {
-        String value = super.resolve(context, criterion);
-        if (value != null)
-        {
-            return value;
-        }
-            
-        Subject subject = context.getSubject();
-        if (subject == null)
-        {
-            String msg = "Invalid (null) Subject in request pipeline";
-            log.error(msg);
-            return null;
-        }
-            
-        return resolvePrincipals(context, criterion, subject, RolePrincipal.class);
-     }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#isControl()
-     */
-    public boolean isControl(RuleCriterion criterion)
-    {
-        return true;
-    }
-    
-    
+    private static final long serialVersionUID = 1L;
 }

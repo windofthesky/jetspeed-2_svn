@@ -537,6 +537,12 @@ public interface PageManager
      */
     public void reset();
 
+    /**
+     * shutdown - gracefully shutdown page manager and disconnect
+     * from other singleton components, (e.g. shared caches) 
+     */
+    public void shutdown();
+
     /** 
      * Copy the source page creating and returning a new copy of the page  
      * with the same portlet and fragment collection as the source

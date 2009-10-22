@@ -16,15 +16,9 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
-import java.security.Principal;
-import java.util.Iterator;
-
-import javax.security.auth.Subject;
-
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.SecurityHelper;
 
 /**
  * Standard Jetspeed-1 style resolver for criterion.
@@ -38,6 +32,7 @@ import org.apache.jetspeed.security.SecurityHelper;
  */
 public class StandardResolver implements RuleCriterionResolver
 {
+    private static final long serialVersionUID = 1L;
     public static final String VALUE_DELIMITER = ",";
     public static final String COMBO_DELIMITER = "-";
     
@@ -70,50 +65,5 @@ public class StandardResolver implements RuleCriterionResolver
     public boolean isNavigation(RuleCriterion criterion)
     {
         return false;
-    }
-    
-    protected String resolvePrincipals(RequestContext context, RuleCriterion criterion, Subject subject, Class classe)
-    {
-        StringBuffer result = new StringBuffer();
-        Iterator principals = SecurityHelper.getPrincipals(subject, classe).iterator();
-        int count = 0;
-        while (principals.hasNext())
-        {
-            Principal principal = (Principal)principals.next();
-            if (count > 0)
-            {
-                result.append(VALUE_DELIMITER);
-            }
-            result.append(principal.getName());
-            count++;
-        }
-        if (count == 0)
-        {
-            return null;
-        }
-        return result.toString();        
-    }
-
-    protected String combinePrincipals(RequestContext context, RuleCriterion criterion, Subject subject, Class classe)
-    {
-        StringBuffer result = new StringBuffer();
-        Iterator principals = SecurityHelper.getPrincipals(subject, classe).iterator();
-        int count = 0;
-        while (principals.hasNext())
-        {
-            Principal principal = (Principal)principals.next();
-            if (count > 0)
-            {
-                result.append(COMBO_DELIMITER);
-            }
-            result.append(principal.getName());
-            count++;
-        }
-        if (count == 0)
-        {
-            return null;
-        }
-        return result.toString();        
-    }
-    
+    }    
 }

@@ -16,7 +16,9 @@
  */
 package org.apache.jetspeed.om.folder.psml;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
+import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 
 /**
  * This class implements the MenuOptionsDefinition
@@ -208,5 +210,24 @@ public class MenuOptionsDefinitionImpl implements MenuOptionsDefinition
     public void setSkin(String name)
     {
         skin = name;
+    }
+
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof MenuOptionsDefinition))
+        {
+            return false;
+        }
+        else
+        {
+            MenuOptionsDefinition definition = (MenuOptionsDefinition) obj;
+            if (!StringUtils.equals(definition.getOptions(), options) || !StringUtils.equals(definition.getProfile(), profile) ||
+                !StringUtils.equals(definition.getOrder(), order) || !StringUtils.equals(definition.getSkin(), skin) || definition.getDepth() != depth ||
+                definition.isPaths() != paths || definition.isRegexp() != regexp)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

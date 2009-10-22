@@ -486,6 +486,7 @@
       <fileset dir="${importDir}" >
         <include name="db-ojb/*"/>
         <include name="log4j.properties"/>
+        <include name="castor.properties"/>
         <include name="assembly/import-page-manager.xml"/>
         <include name="assembly/repository-datasource-spring.xml"/>
       </fileset>

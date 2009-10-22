@@ -85,7 +85,8 @@ limitations under the License.
         <mkdir dir="\${basedir}/target/classes"/>
         <copy todir="\${basedir}/target/classes" flatten="on">
             <fileset dir="\${basedir}/../.." >
-                <include name="etc/serilaizer/log4j/log4j.properties"/>
+                <include name="etc/serializer/log4j/log4j.properties"/>
+                <include name="etc/serializer/castor/castor.properties"/>
                 <include name="etc/serializer/db-ojb/*"/>
                 <include name="etc/dbpsml/assembly/import-page-manager.xml"/>
                 <include name="etc/dbpsml/assembly/repository-datasource-spring.xml"/>

@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.om.folder.psml;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 
 /**
@@ -58,5 +59,22 @@ public class MenuExcludeDefinitionImpl implements MenuExcludeDefinition
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof MenuExcludeDefinition))
+        {
+            return false;
+        }
+        else
+        {
+            MenuExcludeDefinition definition = (MenuExcludeDefinition) obj;
+            if (!StringUtils.equals(definition.getName(), name))
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

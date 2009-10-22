@@ -83,10 +83,11 @@ limitations under the License.
         <antcall target="configure-min-resources"/>
         <antcall target="configure-full-resources"/>
 
-        <!-- Build OJB resources -->        
+        <!-- Build OJB and Castor resources -->        
         <mkdir dir="${basedir}/target/webapp/WEB-INF/classes"/>
         <copy todir="${basedir}/target/webapp/WEB-INF/classes">
             <fileset dir="${basedir}/../etc/db-ojb"/>
+            <fileset dir="${basedir}/../etc/castor"/>
         </copy>
 
     </target>

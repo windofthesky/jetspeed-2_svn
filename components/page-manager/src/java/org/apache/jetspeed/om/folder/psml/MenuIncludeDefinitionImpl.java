@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.om.folder.psml;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 
 /**
@@ -83,5 +84,22 @@ public class MenuIncludeDefinitionImpl implements MenuIncludeDefinition
     public void setNest(boolean nest)
     {
         this.nest = nest;
+    }
+
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof MenuIncludeDefinition))
+        {
+            return false;
+        }
+        else
+        {
+            MenuIncludeDefinition definition = (MenuIncludeDefinition) obj;
+            if (!StringUtils.equals(definition.getName(), name)|| definition.isNest()!=nest)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

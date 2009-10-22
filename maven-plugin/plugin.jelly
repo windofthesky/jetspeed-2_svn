@@ -35,6 +35,7 @@
     <attainGoal name="j2:portal.conf.sql"/>
     <attainGoal name="j2:portal.conf.ldap"/>
     <attainGoal name="j2:portal.conf.ojb"/>
+    <attainGoal name="j2:portal.conf.castor"/>
     <attainGoal name="j2:portal.conf.jetspeed"/>
     <attainGoal name="j2:portal.conf.tomcat"/>
   </goal>
@@ -46,6 +47,7 @@
     <attainGoal name="j2:portal.conf.sql"/>
     <attainGoal name="j2:portal.conf.ldap"/>
     <attainGoal name="j2:portal.conf.ojb"/>
+    <attainGoal name="j2:portal.conf.castor"/>
     <attainGoal name="j2:portal.conf.jetspeed"/>
     <attainGoal name="j2:portal.conf.tomcat"/>
   </goal>
@@ -240,6 +242,14 @@
     <mkdir dir="${portal.target.dir}/WEB-INF/classes"/>
     <copy todir="${portal.target.dir}/WEB-INF/classes" overwrite="true">
       <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/db-ojb"/>
+    </copy>
+  </goal>
+  
+  <goal name="j2:portal.conf.castor" prereqs="j2:_check.required.properties">
+    <j:set var="portal.target.dir" value="${org.apache.jetspeed.portal.home}/${org.apache.jetspeed.portal.target.dir}"/>      
+    <mkdir dir="${portal.target.dir}/WEB-INF/classes"/>
+    <copy todir="${portal.target.dir}/WEB-INF/classes" overwrite="true">
+      <fileset dir="${org.apache.jetspeed.plugin.root}/plugin-resources/castor"/>
     </copy>
   </goal>
   

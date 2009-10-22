@@ -37,7 +37,7 @@ import java.util.List;
  * @version $Id$
  *  
  */
-public class NodeOrderCompartaor implements Comparator
+public class NodeOrderComparator implements Comparator
 {
     private List nodeIndex;
     private String relativePath="";
@@ -45,7 +45,7 @@ public class NodeOrderCompartaor implements Comparator
     /**
      *  
      */
-    public NodeOrderCompartaor( List nodeIndex, String relativePath )
+    public NodeOrderComparator( List nodeIndex, String relativePath )
     {
         super();
         this.nodeIndex = nodeIndex;        

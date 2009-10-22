@@ -36,7 +36,6 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
-import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.psml.FolderImpl;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
@@ -48,11 +47,10 @@ import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.Serializer;
-import org.apache.xml.serialize.XMLSerializer;
 import org.castor.mapping.BindingType;
 import org.castor.mapping.MappingUnmarshaller;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.mapping.MappingLoader;
@@ -120,10 +118,9 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         verifyPath(documentRootDir);
         this.fileCache = fileCache;
         this.fileCache.addListener(this);
-        this.format = new OutputFormat();
-        format.setIndenting(true);
-        format.setIndent(4);
-        format.setEncoding(PSML_DOCUMENT_ENCODING);
+        this.format = new OutputFormat("    ", true, PSML_DOCUMENT_ENCODING);
+        this.format.setXHTML(true);
+        this.format.setExpandEmptyElements(false);
         
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser = factory.newSAXParser();
@@ -222,7 +219,6 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
                 documentImpl.setConstraintsEnabled(false);            
             }
             documentImpl.marshalling();
-            
             // marshal page to disk
             String fileName = path;        
             if (!fileName.endsWith(this.documentType))
@@ -236,8 +232,8 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             // polymorphic collection to strip artifical <menu-element>
             // tags enabling Castor XML binding; see JETSPEED-INF/castor/page-mapping.xml
             writer = new OutputStreamWriter(new FileOutputStream(f), PSML_DOCUMENT_ENCODING);
-            Serializer serializer = new XMLSerializer(writer, this.format);
-            final ContentHandler handler = serializer.asContentHandler();
+            XMLWriter xmlWriter = new XMLWriter(writer, this.format);
+            final ContentHandler handler = xmlWriter;
             
             Marshaller marshaller = new Marshaller(new ContentHandler()
                 {
@@ -711,20 +707,16 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         if (entry.getDocument() instanceof Document && ((Document) entry.getDocument()).getPath().endsWith(documentType))
         {
             Document document = (Document) entry.getDocument();
-            Document freshDoc = getDocument(document.getPath(), false);
             Node parent = ((AbstractNode)document).getParent(false);
- 
-            freshDoc.setParent(parent);
-            if(parent instanceof FolderImpl)
+            if (parent instanceof FolderImpl)
             {
-                FolderImpl folder = (FolderImpl) parent;
-                folder.getAllNodes().add(freshDoc);
+                Document freshDoc = getDocument(document.getPath(), false);
+                freshDoc.setParent(parent);
+                ((FolderImpl)parent).getAllNodes().add(freshDoc);
+                freshDoc.setPath(document.getPath());
+                entry.setDocument(freshDoc);
             }
-            
-            freshDoc.setPath(document.getPath());
-            entry.setDocument(freshDoc);            
         }
-
     }
 
     /**
@@ -781,4 +773,12 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         this.handlerFactory = factory;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.DocumentHandler#shutdown()
+     */
+    public void shutdown()
+    {
+        // disconnect cache listener
+        fileCache.removeListener(this);
+    }    
 }

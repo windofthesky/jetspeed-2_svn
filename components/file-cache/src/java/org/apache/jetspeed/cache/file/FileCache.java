@@ -227,6 +227,17 @@ public class FileCache implements java.util.Comparator
     }
 
     /**
+     * Remove a File Cache Event Listener 
+     *
+     * @param listener the event listener
+     */
+    public void removeListener(final FileCacheEventListener listener)
+    {
+        listeners.remove(listener);
+    }
+
+
+    /**
      * Start the file Scanner running at the current scan rate.
      *
      */

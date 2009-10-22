@@ -217,6 +217,7 @@
       <attainGoal name="j2:portal.conf.sql"/>
       <attainGoal name="j2:portal.conf.ldap"/>
       <attainGoal name="j2:portal.conf.ojb"/>
+      <attainGoal name="j2:portal.conf.castor"/>
 
       <attainGoal name="j2:portal.conf.jetspeed"/>
       <attainGoal name="j2:portal.conf.tomcat"/>
@@ -339,6 +340,8 @@
         </copy>        
         <copy todir='${maven.build.dir}/classes'
           file="./etc/log4j/log4j.properties"/>
+        <copy todir='${maven.build.dir}/classes'
+          file="./etc/castor/castor.properties"/>
         <copy todir='${maven.build.dir}/classes'>
           <fileset dir="./etc/db-ojb/"/>
         </copy>              
@@ -378,6 +381,8 @@
         </copy>                
         <copy todir='${maven.build.dir}/classes'
           file="./etc/log4j/log4j.properties"/>
+        <copy todir='${maven.build.dir}/classes'
+          file="./etc/castor/castor.properties"/>
         <copy todir='${maven.build.dir}/classes'>
           <fileset dir="./etc/db-ojb/"/>
         </copy>              

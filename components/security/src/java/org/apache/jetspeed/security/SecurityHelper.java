@@ -31,6 +31,7 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.security.impl.PrincipalsSet;
+import org.apache.jetspeed.security.impl.BasePrincipalImpl;
 import org.apache.jetspeed.security.impl.GroupPrincipalImpl;
 import org.apache.jetspeed.security.impl.RolePrincipalImpl;
 import org.apache.jetspeed.security.impl.UserPrincipalImpl;
@@ -214,6 +215,36 @@ public class SecurityHelper
         }
         return result;
     }
+
+    /**
+     * <p>
+     * Given a subject, finds all principals of the given JetspeedPrincipalType(JPT)  for that subject. If no principals
+     * of the given class is not found, null is returned.
+     * </p>
+     * 
+     * @param subject The subject supplying the principals.
+     * @param jptName the name of the Jetspeed Principal Type
+     * @return A List of all principals of type JetspeedPrincipal matching a JPT name parameter.
+     */
+    public static List getPrincipals(Subject subject, String jptName)
+    {
+        List result = new LinkedList();
+        Iterator principals = subject.getPrincipals().iterator();
+        while (principals.hasNext())
+        {
+            Principal p = (Principal) principals.next();
+            if (p instanceof BasePrincipalImpl)
+            {
+                if (("group".equals(jptName) && (p instanceof GroupPrincipalImpl)) ||
+                    ("role".equals(jptName) && (p instanceof RolePrincipalImpl)) ||
+                    ("user".equals(jptName) && (p instanceof UserPrincipalImpl)))
+                {
+                    result.add(p);
+                }
+            }
+        }
+        return result;
+    }    
 
     /**
      * <p>

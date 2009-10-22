@@ -80,6 +80,7 @@ limitations under the License.
         <mkdir dir="${basedir}/target/classes/archetype-resources/portal/src/webapp/WEB-INF/classes"/>
         <copy todir="${basedir}/target/classes/archetype-resources/portal/src/webapp/WEB-INF/classes">
             <fileset dir="${basedir}/../../etc/db-ojb"/>
+            <fileset dir="${basedir}/../../etc/castor"/>
         </copy>
         -->
 
@@ -137,6 +138,12 @@ limitations under the License.
         <copy todir="${basedir}/target/classes/archetype-resources/etc/serializer/log4j">
             <fileset dir="${basedir}/../../etc/log4j" >
                 <include name="log4j.properties"/>
+            </fileset>
+        </copy>
+      	<mkdir dir="${basedir}/target/classes/archetype-resources/etc/serializer/castor"/>
+        <copy todir="${basedir}/target/classes/archetype-resources/etc/serializer/castor">
+            <fileset dir="${basedir}/../../etc/castor" >
+                <include name="castor.properties"/>
             </fileset>
         </copy>
     	<mkdir dir="${basedir}/target/classes/archetype-resources/etc/serializer/db-ojb"/>

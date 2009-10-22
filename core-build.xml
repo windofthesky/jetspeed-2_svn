@@ -431,5 +431,13 @@ limitations under the License.
           </properties>
         </dependency>
         
-	  </dependencies>     
+        <dependency>
+          <groupId>dom4j</groupId>
+          <artifactId>dom4j</artifactId>
+          <version>1.6.1</version>
+          <properties>
+            <war.bundle>true</war.bundle>
+          </properties>
+        </dependency>
+	  </dependencies>  
 </project>

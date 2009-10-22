@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.om.folder.psml;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 
 /**
@@ -174,4 +175,21 @@ public class MenuSeparatorDefinitionImpl extends MenuMetadataImpl implements Men
             }
         }
     }
+
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof MenuSeparatorDefinition))
+        {
+            return false;
+        }
+        else
+        {
+            MenuSeparatorDefinition definition = (MenuSeparatorDefinition) obj;
+            if (!StringUtils.equals(definition.getTitle(), title)|| !StringUtils.equals(definition.getText(),text))
+            {
+                return false;
+            }
+            return true;
+        }
+    }    
 }

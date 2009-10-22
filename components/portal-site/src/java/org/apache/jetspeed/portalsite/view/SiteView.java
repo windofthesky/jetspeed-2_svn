@@ -738,6 +738,9 @@ public class SiteView
                     }
                     catch (NodeNotFoundException nnfe)
                     {
+                        // check security access to folder not found in site view
+                        FolderProxy.getFolderProxy(currentFolder).checkAccessToFolderNotFound(subfolder);
+                        // folder not found in site view
                         NodeNotFoundException nnfeWrapper = new NodeNotFoundException("Specified path " + path + " not found.");
                         nnfeWrapper.initCause(nnfe);
                         throw nnfeWrapper;
@@ -768,6 +771,9 @@ public class SiteView
                     nnfe.initCause(ne);
                     throw nnfe;
                 }
+                // check security access to folder node not found in site view
+                FolderProxy.getFolderProxy(currentFolder).checkAccessToNodeNotFound(currentPath);
+                // folder node not found in site view
                 throw new NodeNotFoundException("Specified path " + path + " not found or viewable/visible.");
             }
         }

@@ -803,7 +803,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     debug.append("null");
                 }
                 debug.append(")");
-                log.debug(debug);
+                log.debug(debug.toString());
             }
 
             // return valid
