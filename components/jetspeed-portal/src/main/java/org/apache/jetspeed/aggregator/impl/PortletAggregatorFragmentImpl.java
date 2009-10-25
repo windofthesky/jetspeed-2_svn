@@ -120,6 +120,13 @@ public class PortletAggregatorFragmentImpl implements Fragment
     {
         return id;
     }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setId(java.lang.String)
+     */
+    public void setId(String fragmentId)
+    {
+    }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseElement#getTitle()

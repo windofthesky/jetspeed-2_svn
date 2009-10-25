@@ -475,7 +475,18 @@ public abstract class BaseElementImpl implements BaseElement
      */
     public String getId()
     {
-        return Integer.toString(id);
+        // by default, return identity
+        return Integer.toString(getIdentity());
+    }
+    
+    /**
+     * Get implementation identity key.
+     * 
+     * @return identity key.
+     */
+    public int getIdentity()
+    {
+        return id;
     }
 
     /* (non-Javadoc)

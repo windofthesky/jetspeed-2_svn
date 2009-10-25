@@ -99,6 +99,14 @@ public interface Fragment extends BaseElement, java.io.Serializable
      public String HEIGHT_PROPERTY_NAME = "height";
 
     /**
+     * Sets the unique Id of this fragment. This id must be unique from the
+     * complete portal and must be suitable as a unique key.
+     *
+     * @param fragmentId the unique id of this fragment.
+     */
+    public void setId(String fragmentId);
+
+    /**
      * Returns the administrative name of this fragment. This name should map
      * to a component name in the component repository defined by the type
      * attribute.

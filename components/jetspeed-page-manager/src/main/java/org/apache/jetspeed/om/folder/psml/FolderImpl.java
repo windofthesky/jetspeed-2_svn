@@ -25,6 +25,7 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
@@ -913,17 +914,21 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     /**
      * unmarshalled - notification that this instance has been
      *                loaded from the persistent store
+     * @param generator id generator
+     * @return dirty flag
      */
-    public void unmarshalled()
+    public boolean unmarshalled(IdGenerator generator)
     {
         // notify super class implementation
-        super.unmarshalled();
+        boolean dirty = super.unmarshalled(generator);
 
         // default title of pages to name
         if (getTitle() == null)
         {
             setTitle(getTitleName());
         }
+        
+        return dirty;
     }
     
     public boolean isReserved()

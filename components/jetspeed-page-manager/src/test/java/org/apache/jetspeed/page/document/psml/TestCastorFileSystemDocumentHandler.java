@@ -26,6 +26,8 @@ import junit.framework.TestSuite;
 
 import net.sf.ehcache.CacheManager;
 
+import org.apache.jetspeed.idgenerator.IdGenerator;
+import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
@@ -60,9 +62,11 @@ public class TestCastorFileSystemDocumentHandler extends JetspeedTestCase
     {
         super.setUp();
 
+        IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
         cache = new FileCache(new EhCacheImpl(CacheManager.getInstance().getEhcache("pageFileCache")), 10);
         
         folderMetaDataDocumentHandler = new CastorFileSystemDocumentHandler(
+            idGen,
             "/JETSPEED-INF/castor/page-mapping.xml",
             "folder.metadata",
             FolderMetaDataImpl.class,

@@ -27,18 +27,21 @@
         <entry key=".psml">
           <bean class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
             <constructor-arg index="0">
-              <value>/JETSPEED-INF/castor/page-mapping.xml</value>
+              <ref bean="IdGenerator" />
             </constructor-arg>
             <constructor-arg index="1">
-              <value>.psml</value>
+              <value>/JETSPEED-INF/castor/page-mapping.xml</value>
             </constructor-arg>
             <constructor-arg index="2">
-              <value>org.apache.jetspeed.om.page.psml.PageImpl</value>
+              <value>.psml</value>
             </constructor-arg>
             <constructor-arg index="3">
-              <value>${psml.pages.path}</value>
+              <value>org.apache.jetspeed.om.page.psml.PageImpl</value>
             </constructor-arg>
             <constructor-arg index="4">
+              <value>${psml.pages.path}</value>
+            </constructor-arg>
+            <constructor-arg index="5">
               <ref bean="PageFileCache" />
             </constructor-arg>
           </bean>
@@ -46,18 +49,21 @@
         <entry key=".link">
           <bean class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
             <constructor-arg index="0">
-              <value>/JETSPEED-INF/castor/page-mapping.xml</value>
+              <ref bean="IdGenerator" />
             </constructor-arg>
             <constructor-arg index="1">
-              <value>.link</value>
+              <value>/JETSPEED-INF/castor/page-mapping.xml</value>
             </constructor-arg>
             <constructor-arg index="2">
-              <value>org.apache.jetspeed.om.page.psml.LinkImpl</value>
+              <value>.link</value>
             </constructor-arg>
             <constructor-arg index="3">
-              <value>${psml.pages.path}</value>
+              <value>org.apache.jetspeed.om.page.psml.LinkImpl</value>
             </constructor-arg>
             <constructor-arg index="4">
+              <value>${psml.pages.path}</value>
+            </constructor-arg>
+            <constructor-arg index="5">
               <ref bean="PageFileCache" />
             </constructor-arg>
           </bean>
@@ -65,18 +71,21 @@
         <entry key="folder.metadata">
           <bean class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
             <constructor-arg index="0">
-              <value>/JETSPEED-INF/castor/page-mapping.xml</value>
+              <ref bean="IdGenerator" />
             </constructor-arg>
             <constructor-arg index="1">
-              <value>folder.metadata</value>
+              <value>/JETSPEED-INF/castor/page-mapping.xml</value>
             </constructor-arg>
             <constructor-arg index="2">
-              <value>org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl</value>
+              <value>folder.metadata</value>
             </constructor-arg>
             <constructor-arg index="3">
-              <value>${psml.pages.path}</value>
+              <value>org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl</value>
             </constructor-arg>
             <constructor-arg index="4">
+              <value>${psml.pages.path}</value>
+            </constructor-arg>
+            <constructor-arg index="5">
               <ref bean="PageFileCache" />
             </constructor-arg>
           </bean>
@@ -84,18 +93,21 @@
         <entry key="page.security">
           <bean class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
             <constructor-arg index="0">
-              <value>/JETSPEED-INF/castor/page-mapping.xml</value>
+              <ref bean="IdGenerator" />
             </constructor-arg>
             <constructor-arg index="1">
-              <value>page.security</value>
+              <value>/JETSPEED-INF/castor/page-mapping.xml</value>
             </constructor-arg>
             <constructor-arg index="2">
-              <value>org.apache.jetspeed.om.page.psml.PageSecurityImpl</value>
+              <value>page.security</value>
             </constructor-arg>
             <constructor-arg index="3">
-              <value>${psml.pages.path}</value>
+              <value>org.apache.jetspeed.om.page.psml.PageSecurityImpl</value>
             </constructor-arg>
             <constructor-arg index="4">
+              <value>${psml.pages.path}</value>
+            </constructor-arg>
+            <constructor-arg index="5">
               <ref bean="PageFileCache" />
             </constructor-arg>
           </bean>
@@ -107,12 +119,15 @@
   <bean id="xmlFolderHandler" class="org.apache.jetspeed.page.document.psml.FileSystemFolderHandler">
     <meta key="j2:cat" value="xmlPageManager or pageSerializer" />
     <constructor-arg index="0">
-      <value>${psml.pages.path}</value>
+      <ref bean="IdGenerator" />
     </constructor-arg>
     <constructor-arg index="1">
-      <ref bean="xmlDocumentHandlerFactory" />
+      <value>${psml.pages.path}</value>
     </constructor-arg>
     <constructor-arg index="2">
+      <ref bean="xmlDocumentHandlerFactory" />
+    </constructor-arg>
+    <constructor-arg index="3">
       <ref bean="PageFileCache" />
     </constructor-arg>
   </bean>
@@ -151,20 +166,24 @@
     <constructor-arg index="0">
       <value>JETSPEED-INF/ojb/page-manager-repository.xml</value>
     </constructor-arg>
-    <!-- permissions security enabled flag, default=false -->
+    <!-- fragment id generator -->
     <constructor-arg index="1">
+      <ref bean="IdGenerator" />
+    </constructor-arg>
+    <!-- permissions security enabled flag, default=false -->
+    <constructor-arg index="2">
       <value>${page.manager.permissions.security}</value>
     </constructor-arg>
     <!-- constraints security enabled flag, default=true -->
-    <constructor-arg index="2">
+    <constructor-arg index="3">
       <value>${page.manager.constraints.security}</value>
     </constructor-arg>
     <!-- folder/page/link cache -->
-    <constructor-arg index="3">
+    <constructor-arg index="4">
       <ref bean="pageManagerOidCache"/>
     </constructor-arg>
     <!-- folder/page/link path cache -->
-    <constructor-arg index="4">
+    <constructor-arg index="5">
       <ref bean="pageManagerPathCache"/>
     </constructor-arg>
   </bean>

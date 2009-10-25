@@ -137,17 +137,17 @@ interface PageManagerTestShared
             IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
             FileCache cache = new FileCache(new EhCacheImpl( CacheManager.getInstance().getEhcache("pageFileCache")), 10);
             
-            DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Page.DOCUMENT_TYPE, PageImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
-            DocumentHandler linkHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", Link.DOCUMENT_TYPE, LinkImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
-            DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", FolderMetaDataImpl.DOCUMENT_TYPE, FolderMetaDataImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
-            DocumentHandler pageSecurityHandler = new CastorFileSystemDocumentHandler("/JETSPEED-INF/castor/page-mapping.xml", PageSecurityImpl.DOCUMENT_TYPE, PageSecurity.class, baseDir + "target/testdata/" + pagesDirName, cache);
+            DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler(idGen, "/JETSPEED-INF/castor/page-mapping.xml", Page.DOCUMENT_TYPE, PageImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
+            DocumentHandler linkHandler = new CastorFileSystemDocumentHandler(idGen, "/JETSPEED-INF/castor/page-mapping.xml", Link.DOCUMENT_TYPE, LinkImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
+            DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler(idGen, "/JETSPEED-INF/castor/page-mapping.xml", FolderMetaDataImpl.DOCUMENT_TYPE, FolderMetaDataImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
+            DocumentHandler pageSecurityHandler = new CastorFileSystemDocumentHandler(idGen, "/JETSPEED-INF/castor/page-mapping.xml", PageSecurityImpl.DOCUMENT_TYPE, PageSecurity.class, baseDir + "target/testdata/" + pagesDirName, cache);
             
             DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl();
             handlerFactory.registerDocumentHandler(psmlHandler);
             handlerFactory.registerDocumentHandler(linkHandler);
             handlerFactory.registerDocumentHandler(folderMetaDataHandler);
             handlerFactory.registerDocumentHandler(pageSecurityHandler);
-            FolderHandler folderHandler = new FileSystemFolderHandler(baseDir+"target/testdata/" + pagesDirName, handlerFactory, cache);
+            FolderHandler folderHandler = new FileSystemFolderHandler(idGen, baseDir+"target/testdata/" + pagesDirName, handlerFactory, cache);
 
             return new CastorXmlPageManager(idGen, handlerFactory, folderHandler, cache, permissionsEnabled, constraintsEnabled);
         }

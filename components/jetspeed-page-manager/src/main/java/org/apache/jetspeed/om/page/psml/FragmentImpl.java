@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.PageSecurity;
@@ -36,9 +37,6 @@ import org.apache.jetspeed.security.PermissionFactory;
  */
 public class FragmentImpl extends AbstractBaseElement implements Fragment, java.io.Serializable
 {
-
-	private static int fragment_id_counter = 0;
-	
     private String type = null;
 
     private String state = null;
@@ -79,16 +77,6 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
      */
     public FragmentImpl()
     {
-    }
-
-    public FragmentImpl(String id)
-    {
-    	if (id == null || id.length() == 0){
-    		setId(generateId());
-    		dirty=true;
-    	} else {
-    		setId(id);
-    	}    	
     }
 
     public String getType()
@@ -579,18 +567,27 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
     /**
      * unmarshalled - notification that this instance has been
      *                loaded from the persistent store
+     * @param generator id generator
+     * @return dirty flag
      */
-    public void unmarshalled()
+    public boolean unmarshalled(IdGenerator generator)
     {
         // notify super class implementation
-        super.unmarshalled();
-
+        boolean dirty = super.unmarshalled(generator);
+        
         // propagate unmarshalled notification
         // to all fragments
         Iterator fragmentIter = fragments.iterator();
         while (fragmentIter.hasNext())
         {
-            ((FragmentImpl)fragmentIter.next()).unmarshalled();
+            dirty = ((FragmentImpl)fragmentIter.next()).unmarshalled(generator) || dirty;
+        }
+
+        // generate id if required
+        if (getId() == null)
+        {
+            setId(generator.getNextPeid());
+            dirty = true;
         }
 
         // load the properties map from list
@@ -601,6 +598,8 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             PropertyImpl prop = (PropertyImpl) propsIter.next();
             propertiesMap.put(prop.getName(), prop.getValue());
         }
+        
+        return dirty;
     }
 
     /**
@@ -712,9 +711,5 @@ public class FragmentImpl extends AbstractBaseElement implements Fragment, java.
             }
         }
         return fragments;
-    }
-    
-    private synchronized static String generateId(){
-    	return new StringBuffer("F.").append(Long.toHexString(System.currentTimeMillis())).append(".").append(fragment_id_counter++).toString();
     }
 }

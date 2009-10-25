@@ -253,7 +253,7 @@ public class PageSerializerImpl implements PageSerializer
                 {
                     context.logger.info("overwriting page " + srcPage.getPath());
                     dest.removePage(dstPage);
-                    dstPage = dest.copyPage(srcPage, srcPage.getPath());
+                    dstPage = dest.copyPage(srcPage, srcPage.getPath(), true);
                     dest.updatePage(dstPage);
                     context.pageCount++;
                 }
@@ -265,7 +265,7 @@ public class PageSerializerImpl implements PageSerializer
             else
             {
                 context.logger.info("processing new page " + srcPage.getPath());
-                dstPage = dest.copyPage(srcPage, srcPage.getPath());
+                dstPage = dest.copyPage(srcPage, srcPage.getPath(), true);
                 dest.updatePage(dstPage);
                 context.pageCount++;
             }

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.page.PageSecurity;
@@ -487,20 +488,24 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
     /**
      * unmarshalled - notification that this instance has been
      *                loaded from the persistent store
+     * @param generator id generator
+     * @return dirty flag
      */
-    public void unmarshalled()
+    public boolean unmarshalled(IdGenerator generator)
     {
         // notify super class implementation
-        super.unmarshalled();
+        boolean dirty = super.unmarshalled(generator);
 
         // force metadata update after unmarshalled since
         // metadata collection can be side effected by
-        // unmarshalling colection accessors
+        // unmarshalling collection accessors
         Collection metadataFields = getMetadataFields();
         if (metadataFields != null)
         {
             setMetadataFields(metadataFields);
         }
+        
+        return dirty;
     }
 
 	public boolean isDirty() {

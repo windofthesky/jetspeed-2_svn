@@ -36,6 +36,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.psml.FolderImpl;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
@@ -87,6 +88,7 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
 
     private final static String PSML_DOCUMENT_ENCODING = "UTF-8";
 
+    protected IdGenerator generator;
     protected String documentType;
     protected Class expectedReturnType;
     protected String documentRoot;
@@ -100,6 +102,8 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
 
     /**
      * 
+     * @param generator
+     *            id generator for unmarshalled documents
      * @param mappingFile
      *            Castor mapping file. THe mapping file must be in the class
      *            path
@@ -107,10 +111,11 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
      * @param expectedReturnType
      * @throws FileNotFoundException
      */
-    public CastorFileSystemDocumentHandler( String mappingFile, String documentType, Class expectedReturnType,
+    public CastorFileSystemDocumentHandler( IdGenerator generator, String mappingFile, String documentType, Class expectedReturnType,
             String documentRoot, FileCache fileCache ) throws FileNotFoundException,SAXException,ParserConfigurationException, MappingException
     {
         super();
+        this.generator = generator;
         this.documentType = documentType;
         this.expectedReturnType = expectedReturnType;
         this.documentRoot = documentRoot;
@@ -135,10 +140,10 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         createCastorClassDescriptorResolver(mappingFile);
     }
     
-    public CastorFileSystemDocumentHandler( String mappingFile, String documentType, String expectedReturnType,
+    public CastorFileSystemDocumentHandler( IdGenerator generator, String mappingFile, String documentType, String expectedReturnType,
             String documentRoot, FileCache fileCache ) throws FileNotFoundException, ClassNotFoundException,SAXException,ParserConfigurationException, MappingException
     {
-        this(mappingFile, documentType, Class.forName(expectedReturnType), documentRoot, fileCache);
+        this(generator, mappingFile, documentType, Class.forName(expectedReturnType), documentRoot, fileCache);
     }
 
     /**
@@ -528,8 +533,8 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             documentImpl.setHandlerFactory(handlerFactory);
             documentImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
             documentImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
-            documentImpl.unmarshalled();
-            if (document.isDirty()){
+            boolean dirty = documentImpl.unmarshalled(generator);
+            if (dirty || document.isDirty()){
                 updateDocument(document, true);
                 document.setDirty(false);
             }

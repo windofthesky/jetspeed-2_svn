@@ -22,18 +22,21 @@
   <bean id="ImportPsmlDocumentHandler" class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
-      <value>/JETSPEED-INF/castor/page-mapping.xml</value>
+      <ref bean="ImportIdGenerator" />
     </constructor-arg>
     <constructor-arg index="1">
-      <value>.psml</value>
+      <value>/JETSPEED-INF/castor/page-mapping.xml</value>
     </constructor-arg>
     <constructor-arg index="2">
-      <value>org.apache.jetspeed.om.page.psml.PageImpl</value>
+      <value>.psml</value>
     </constructor-arg>
     <constructor-arg index="3">
-      <value>${java.io.tmpdir}</value>
+      <value>org.apache.jetspeed.om.page.psml.PageImpl</value>
     </constructor-arg>
     <constructor-arg index="4">
+      <value>${java.io.tmpdir}</value>
+    </constructor-arg>
+    <constructor-arg index="5">
       <ref bean="ImportPageFileCache" />
     </constructor-arg>
   </bean>
@@ -41,18 +44,21 @@
   <bean id="ImportLinkDocumentHandler" class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
-      <value>/JETSPEED-INF/castor/page-mapping.xml</value>
+      <ref bean="ImportIdGenerator" />
     </constructor-arg>
     <constructor-arg index="1">
-      <value>.link</value>
+      <value>/JETSPEED-INF/castor/page-mapping.xml</value>
     </constructor-arg>
     <constructor-arg index="2">
-      <value>org.apache.jetspeed.om.page.psml.LinkImpl</value>
+      <value>.link</value>
     </constructor-arg>
     <constructor-arg index="3">
-      <value>${java.io.tmpdir}</value>
+      <value>org.apache.jetspeed.om.page.psml.LinkImpl</value>
     </constructor-arg>
     <constructor-arg index="4">
+      <value>${java.io.tmpdir}</value>
+    </constructor-arg>
+    <constructor-arg index="5">
       <ref bean="ImportPageFileCache" />
     </constructor-arg>
   </bean>
@@ -61,18 +67,21 @@
     class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
-      <value>/JETSPEED-INF/castor/page-mapping.xml</value>
+      <ref bean="ImportIdGenerator" />
     </constructor-arg>
     <constructor-arg index="1">
-      <value>folder.metadata</value>
+      <value>/JETSPEED-INF/castor/page-mapping.xml</value>
     </constructor-arg>
     <constructor-arg index="2">
-      <value>org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl</value>
+      <value>folder.metadata</value>
     </constructor-arg>
     <constructor-arg index="3">
-      <value>${java.io.tmpdir}</value>
+      <value>org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl</value>
     </constructor-arg>
     <constructor-arg index="4">
+      <value>${java.io.tmpdir}</value>
+    </constructor-arg>
+    <constructor-arg index="5">
       <ref bean="ImportPageFileCache" />
     </constructor-arg>
   </bean>
@@ -81,18 +90,21 @@
     class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
-      <value>/JETSPEED-INF/castor/page-mapping.xml</value>
+      <ref bean="ImportIdGenerator" />
     </constructor-arg>
     <constructor-arg index="1">
-      <value>page.security</value>
+      <value>/JETSPEED-INF/castor/page-mapping.xml</value>
     </constructor-arg>
     <constructor-arg index="2">
-      <value>org.apache.jetspeed.om.page.psml.PageSecurityImpl</value>
+      <value>page.security</value>
     </constructor-arg>
     <constructor-arg index="3">
-      <value>${java.io.tmpdir}</value>
+      <value>org.apache.jetspeed.om.page.psml.PageSecurityImpl</value>
     </constructor-arg>
     <constructor-arg index="4">
+      <value>${java.io.tmpdir}</value>
+    </constructor-arg>
+    <constructor-arg index="5">
       <ref bean="ImportPageFileCache" />
     </constructor-arg>
   </bean>
@@ -120,12 +132,15 @@
   <bean id="ImportFolderHandler" class="org.apache.jetspeed.page.document.psml.FileSystemFolderHandler">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
-      <value>${java.io.tmpdir}</value>
+      <ref bean="ImportIdGenerator" />
     </constructor-arg>
     <constructor-arg index="1">
-      <ref bean="ImportDocumentHandlerFactory" />
+      <value>${java.io.tmpdir}</value>
     </constructor-arg>
     <constructor-arg index="2">
+      <ref bean="ImportDocumentHandlerFactory" />
+    </constructor-arg>
+    <constructor-arg index="3">
       <ref bean="ImportPageFileCache" />
     </constructor-arg>
   </bean>
