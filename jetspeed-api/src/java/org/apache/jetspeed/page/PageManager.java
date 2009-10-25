@@ -556,6 +556,18 @@ public interface PageManager
         throws NodeException;
 
     /** 
+     * Copy the source page creating and returning a new copy of the page  
+     * with the same portlet and fragment collection as the source.
+     * 
+     * @param source The source Page object to be copied 
+     * @param path a PSML normalized path to the new page to be created
+     * @param copyIds flag indicating whether to use new or copied ids
+     * @return a new Page object copied from the source
+     */
+    public Page copyPage(Page source, String path, boolean copyIds)
+        throws NodeException;
+
+    /** 
      * Copy the source link creating and returning a new copy of the link  
      * 
      * @param source The source Link object to be copied 
@@ -566,13 +578,12 @@ public interface PageManager
         throws NodeException;
 
     /** 
-     * Copy the source folder creating and returning a new copy of the folder  
-     * with the same content as the source
-     * All subobjects are created with new ids
+     * Copy the source folder creating and returning a new copy of the folder
+     * without copying any content from within the folder
      * 
      * @param source The source Folder object to be copied 
      * @param path a PSML normalized path to the new folder to be created
-     * @return a new Folder object copied from the source, with new subobject ids
+     * @return a new empty Folder object copied from the source
      */
     public Folder copyFolder(Folder source, String path) 
         throws NodeException;
@@ -587,6 +598,18 @@ public interface PageManager
      * @return a new Fragment object copied from the source
      */
     public Fragment copyFragment(Fragment source, String name) 
+        throws NodeException;
+
+    /** 
+     * Copy the source fragment creating and returning a new copy of the fragment  
+     * with the parameter collection as the source
+     * 
+     * @param source The source Fragment object to be copied 
+     * @param the new fragment name, can be the same as source fragment name
+     * @param copyIds flag indicating whether to use new or copied ids
+     * @return a new Fragment object copied from the source
+     */
+    public Fragment copyFragment(Fragment source, String name, boolean copyIds) 
         throws NodeException;
 
     /**
@@ -611,6 +634,44 @@ public interface PageManager
     public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
         throws NodeException;
 
+    /**
+     * Deep copy a folder. Copies a folder and all subcontents including
+     * other folders, subpages, links, menus, security, fragments. 
+     *  
+     * @param source source folder
+     * @param dest destination folder
+     * @param owner set owner of the new folder(s), or null for no owner
+     * @param copyIds flag indicating whether to use new or copied ids
+     * @throws NodeException if the root folder already exists
+     */
+    public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner, boolean copyIds)
+        throws NodeException;
+
+    /**
+     * Deep merges a source folder into a destination folder. Copies a folder and all subcontents including
+     * other folders, subpages, links, menus, security, fragments. If a destination resource already exists,
+     * it is skipped over without error.
+     *  
+     * @param source source folder
+     * @param dest destination folder
+     * @param owner set owner of the new folder(s), or null for no owner
+     */
+    public void deepMergeFolder(Folder srcFolder, String destinationPath, String owner)
+        throws NodeException;
+    
+    /**
+     * Deep merges a source folder into a destination folder. Copies a folder and all subcontents including
+     * other folders, subpages, links, menus, security, fragments. If a destination resource already exists,
+     * it is skipped over without error.
+     *  
+     * @param source source folder
+     * @param dest destination folder
+     * @param owner set owner of the new folder(s), or null for no owner
+     * @param copyIds flag indicating whether to use new or copied ids
+     */
+    public void deepMergeFolder(Folder srcFolder, String destinationPath, String owner, boolean copyIds)
+        throws NodeException;
+    
     /**
      * Retrieve a page for the given user name and page name
      * 

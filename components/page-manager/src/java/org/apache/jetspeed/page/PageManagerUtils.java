@@ -214,10 +214,13 @@ public class PageManagerUtils
     /**
      * Deep copy a folder
      *  
-     * @param source source folder
-     * @param dest destination folder
+     * @param pageManager target page manager
+     * @param srcFolder source folder
+     * @param destinationPath destination folder
+     * @param owner user name of owner or null
+     * @param copyIds flag indicating whether to copy ids
      */
-    public static void deepCopyFolder(PageManager pageManager, Folder srcFolder, String destinationPath, String owner)
+    public static void deepCopyFolder(PageManager pageManager, Folder srcFolder, String destinationPath, String owner, boolean copyIds)
     throws NodeException
     {
         boolean found = true;
@@ -251,7 +254,7 @@ public class PageManagerUtils
         {
             Page srcPage = (Page)pages.next();
             String path = PageManagerUtils.concatenatePaths(destinationPath, srcPage.getName());
-            Page dstPage = pageManager.copyPage(srcPage, path);
+            Page dstPage = pageManager.copyPage(srcPage, path, copyIds);
             pageManager.updatePage(dstPage);
         }
      
@@ -269,17 +272,20 @@ public class PageManagerUtils
         {
             Folder folder = (Folder)folders.next();
             String newPath = concatenatePaths(destinationPath, folder.getName()); 
-            deepCopyFolder(pageManager, folder, newPath, null);
+            deepCopyFolder(pageManager, folder, newPath, null, copyIds);
         }        
     }
 
     /**
      * Deep merge a folder
      *  
-     * @param source source folder
-     * @param dest destination folder
+     * @param pageManager target page manager
+     * @param srcFolder source folder
+     * @param destinationPath destination folder
+     * @param owner user name of owner or null
+     * @param copyIds flag indicating whether to copy ids on merge
      */
-    public static void deepMergeFolder(PageManager pageManager, Folder srcFolder, String destinationPath, String owner)
+    public static void deepMergeFolder(PageManager pageManager, Folder srcFolder, String destinationPath, String owner, boolean copyIds)
     throws NodeException
     {
         boolean found = true;
@@ -314,7 +320,7 @@ public class PageManagerUtils
             String path = PageManagerUtils.concatenatePaths(destinationPath, srcPage.getName());
             if (!pageManager.pageExists(path))
             {
-                Page dstPage = pageManager.copyPage(srcPage, path);
+                Page dstPage = pageManager.copyPage(srcPage, path, copyIds);
                 pageManager.updatePage(dstPage);
             }
         }
@@ -336,7 +342,7 @@ public class PageManagerUtils
         {
             Folder folder = (Folder)folders.next();
             String newPath = concatenatePaths(destinationPath, folder.getName()); 
-            deepMergeFolder(pageManager, folder, newPath, null);
+            deepMergeFolder(pageManager, folder, newPath, null, copyIds);
         }        
     }
     

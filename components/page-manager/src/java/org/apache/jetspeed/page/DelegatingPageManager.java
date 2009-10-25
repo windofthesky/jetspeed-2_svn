@@ -18,6 +18,7 @@ package org.apache.jetspeed.page;
 
 import java.util.Map;
 
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
@@ -44,11 +45,12 @@ import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 public class DelegatingPageManager extends AbstractPageManager
 {
     public DelegatingPageManager(
+            IdGenerator generator,
             boolean isPermissionsSecurity, 
             boolean isConstraintsSecurity,
             Map modelClasses)
     {
-        super(isPermissionsSecurity, isConstraintsSecurity, modelClasses);
+        super(generator, isPermissionsSecurity, isConstraintsSecurity, modelClasses);
     }
 
     /* (non-Javadoc)

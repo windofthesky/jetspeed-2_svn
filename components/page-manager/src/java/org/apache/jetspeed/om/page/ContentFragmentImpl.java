@@ -56,7 +56,7 @@ public class ContentFragmentImpl implements ContentFragment
         this.cachedFragments = cachedFragments;
         this.instantlyRendered = instantlyRendered;
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#getContentFragments()
      */
@@ -465,6 +465,14 @@ public class ContentFragmentImpl implements ContentFragment
     {
         
         return fragment.getTitle();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setId(java.lang.String)
+     */
+    public void setId(String fragmentId)
+    {
+        // cannot set fragment id from content fragment
     }
 
     /* (non-Javadoc)

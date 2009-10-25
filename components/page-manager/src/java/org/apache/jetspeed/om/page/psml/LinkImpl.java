@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.om.page.psml;
 
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.page.Link;
 
 /**
@@ -100,16 +101,20 @@ public class LinkImpl extends DocumentImpl implements Link
     /**
      * unmarshalled - notification that this instance has been
      *                loaded from the persistent store
+     * @param generator id generator
+     * @return dirty flag
      */
-    public void unmarshalled()
+    public boolean unmarshalled(IdGenerator generator)
     {
         // notify super class implementation
-        super.unmarshalled();
+        boolean dirty = super.unmarshalled(generator);
 
         // default title of pages to name
         if (getTitle() == null)
         {
             setTitle(getTitleName());
         }
+        
+        return dirty;
     }
 }

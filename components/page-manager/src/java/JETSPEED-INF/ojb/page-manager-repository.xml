@@ -1531,6 +1531,12 @@
       />
 
       <field-descriptor
+         name="fragmentId"
+         column="FRAGMENT_STRING_ID"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
          name="name"
          column="NAME"
          jdbc-type="VARCHAR"

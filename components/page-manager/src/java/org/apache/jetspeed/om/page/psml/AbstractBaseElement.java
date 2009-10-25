@@ -29,6 +29,7 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -666,10 +667,13 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     /**
      * unmarshalled - notification that this instance has been
      *                loaded from the persistent store
+     * @param generator id generator
+     * @return dirty flag
      */
-    public void unmarshalled()
+    public boolean unmarshalled(IdGenerator generator)
     {
         // by default, no action required
+        return false;
     }
 
     /**

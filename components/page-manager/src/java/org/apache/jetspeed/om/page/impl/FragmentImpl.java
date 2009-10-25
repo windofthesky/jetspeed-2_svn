@@ -37,6 +37,7 @@ import org.apache.jetspeed.security.FragmentPermission;
 public class FragmentImpl extends BaseElementImpl implements Fragment
 {
     private List fragments;
+    private String fragmentId;
     private String type;
     private String skin;
     private String decorator;
@@ -583,6 +584,26 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
             return page.getPermissionsEnabled();
         }
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getId()
+     */
+    public String getId()
+    {
+        if (fragmentId != null)
+        {
+            return fragmentId;
+        }
+        return super.getId();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setId(java.lang.String)
+     */
+    public void setId(String fragmentId)
+    {
+        this.fragmentId = fragmentId;
     }
 
     /* (non-Javadoc)

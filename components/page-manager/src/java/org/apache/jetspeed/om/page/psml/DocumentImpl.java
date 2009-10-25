@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.om.page.psml;
 
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.page.document.psml.AbstractNode;
 
@@ -38,20 +39,24 @@ public abstract class DocumentImpl extends AbstractNode implements Document
     private String version;
     private boolean dirty=false;
 
-	/**
+    /**
      * unmarshalled - notification that this instance has been
      *                loaded from the persistent store
+     * @param generator id generator
+     * @return dirty flag
      */
-    public void unmarshalled()
+    public boolean unmarshalled(IdGenerator generator)
     {
         // notify super class implementation
-        super.unmarshalled();
+        boolean dirty = super.unmarshalled(generator);
 
         // default version of pages to name
         if (getVersion() == null)
         {
             setVersion(getVersion());
         }
+        
+        return dirty;
     }
     /**
      * @return Returns the version.

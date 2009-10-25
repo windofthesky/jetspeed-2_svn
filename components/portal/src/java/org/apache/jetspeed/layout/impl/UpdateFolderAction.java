@@ -155,7 +155,7 @@ public class UpdateFolderAction
             	String destination = getActionParameter(requestContext, "destination");
             	String name = getActionParameter(requestContext, RESOURCE_NAME);            	
             	destination = destination + Folder.PATH_SEPARATOR + name;
-            	pageManager.deepCopyFolder(folder,destination,null);            	
+            	pageManager.deepCopyFolder(folder,destination,null,true);            	
             	pageManager.removeFolder(folder);
             }            
             else if (method.equals("remove"))

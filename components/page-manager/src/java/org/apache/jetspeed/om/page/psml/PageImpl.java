@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
@@ -388,11 +389,13 @@ public class PageImpl extends DocumentImpl implements Page
     /**
      * unmarshalled - notification that this instance has been
      *                loaded from the persistent store
+     * @param generator id generator
+     * @return dirty flag
      */
-    public void unmarshalled()
+    public boolean unmarshalled(IdGenerator generator)
     {
         // notify super class implementation
-        super.unmarshalled();
+        boolean dirty = super.unmarshalled(generator);
 
         // propagate unmarshalled notification
         // to all menu definitions
@@ -409,7 +412,7 @@ public class PageImpl extends DocumentImpl implements Page
         // to root fragment
         if (root != null)
         {
-            ((FragmentImpl)root).unmarshalled();
+            dirty = (((FragmentImpl)root).unmarshalled(generator) || dirty);
         }
 
         // default title of pages to name
@@ -417,6 +420,8 @@ public class PageImpl extends DocumentImpl implements Page
         {
             setTitle(getTitleName());
         }
+        
+        return dirty;
     }
 
     /**

@@ -1104,6 +1104,7 @@
 
 	<copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
       <fileset dir="${portal.webapp.dir.assembly}">
+        <include name="jetspeed-base.xml"/>
         <include name="security*.xml"/>
 		<include name="capabilities.xml"/>           
 		<include name="prefs.xml"/>           

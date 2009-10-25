@@ -27,6 +27,7 @@ import javax.security.auth.Subject;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -134,10 +135,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     
     private PageManager pageManagerProxy;
 
-    public DatabasePageManager(String repositoryPath, boolean isPermissionsSecurity, boolean isConstraintsSecurity, JetspeedCache oidCache, JetspeedCache pathCache)
+    public DatabasePageManager(String repositoryPath, IdGenerator generator, boolean isPermissionsSecurity, boolean isConstraintsSecurity, JetspeedCache oidCache, JetspeedCache pathCache)
     {
         super(repositoryPath);
-        delegator = new DelegatingPageManager(isPermissionsSecurity, isConstraintsSecurity, modelClasses);
+        delegator = new DelegatingPageManager(generator, isPermissionsSecurity, isConstraintsSecurity, modelClasses);
         DatabasePageManagerCache.cacheInit(oidCache, pathCache, this);
     }
 
@@ -670,7 +671,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for folders
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
             Collection folders = getPersistenceBrokerTemplate().getCollectionByQuery(query);
 
@@ -727,7 +728,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for pages
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             QueryByCriteria query = QueryFactory.newQuery(PageImpl.class, filter);
             Collection pages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
 
@@ -784,7 +785,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for links
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             QueryByCriteria query = QueryFactory.newQuery(LinkImpl.class, filter);
             Collection links = getPersistenceBrokerTemplate().getCollectionByQuery(query);
 
@@ -846,7 +847,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             {
                 // query for page security
                 Criteria filter = new Criteria();
-                filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
+                filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
                 QueryByCriteria query = QueryFactory.newQuery(PageSecurityImpl.class, filter);
                 PageSecurity document = (PageSecurity)getPersistenceBrokerTemplate().getObjectByQuery(query);
 
@@ -884,7 +885,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             // query for all nodes
             List all = DatabasePageManagerUtils.createList();
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
             Collection folders = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (folders != null)
@@ -1081,6 +1082,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // dereference folder in case proxy is supplied
             folder = (Folder)ProxyHelper.getRealObject(folder);
+            FolderImpl folderImpl = (FolderImpl)folder;
 
             // look up and set parent folder if required
             FolderImpl parent = (FolderImpl)folder.getParent();
@@ -1122,7 +1124,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             else
             {
                 // determine if folder is new by checking autoincrement id
-                boolean newFolder = folder.getId().equals("0");
+                boolean newFolder = (folderImpl.getIdentity() == 0);
 
                 // check for edit access on folder and parent folder
                 // if not being initially created; access is not
@@ -1135,7 +1137,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
                 // create root folder or update folder and mark cache transaction
                 storeEntity(folder, folderPath);
-                if (newFolder && !folder.getId().equals("0"))
+                if (newFolder && (folderImpl.getIdentity() != 0))
                 {
                     DatabasePageManagerCache.addTransaction(new TransactionedOperation(folderPath, TransactionedOperation.ADD_OPERATION));
                 }
@@ -1154,7 +1156,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 }
 
                 // notify page manager listeners
-                if (newFolder && !folder.getId().equals("0"))
+                if (newFolder && (folderImpl.getIdentity() != 0))
                 {
                     delegator.notifyNewNode(folder);
                 }
@@ -1168,7 +1170,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             if (deep)
             {
                 // update recursively, (breadth first)
-                updateFolderNodes((FolderImpl)folder);
+                updateFolderNodes(folderImpl);
             }
         }
         catch (FolderNotUpdatedException fnue)
@@ -1197,7 +1199,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // construct general node query criteria
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
 
             // update pages
             QueryByCriteria query = QueryFactory.newQuery(PageImpl.class, filter);
@@ -1310,7 +1312,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /**
-     * removeFolderNodes - recusively remove all folder nodes
+     * removeFolderNodes - recursively remove all folder nodes
      *
      * @param folderImpl folder whose nodes are to be removed
      * @param throws FolderNotRemovedException
@@ -1321,7 +1323,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // construct general node query criteria
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", Integer.valueOf(folderImpl.getId()));
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
 
             // remove folders first: depth first recursion
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
@@ -1703,6 +1705,15 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyPage(org.apache.jetspeed.om.page.Page, java.lang.String, boolean)
+     */
+    public Page copyPage(Page source, String path, boolean copyIds)
+    throws NodeException, PageNotUpdatedException
+    {
+        return this.delegator.copyPage(source, path, copyIds);
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#copyLink(org.apache.jetspeed.om.page.Link,java.lang.String)
      */
     public Link copyLink(Link source, String path)
@@ -1727,6 +1738,15 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     throws NodeException, PageNotUpdatedException
     {
         return this.delegator.copyFragment(source, name);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyFragment(org.apache.jetspeed.om.page.Fragment, java.lang.String, boolean)
+     */
+    public Fragment copyFragment(Fragment source, String name, boolean copyIds)
+    throws NodeException, PageNotUpdatedException
+    {
+        return this.delegator.copyFragment(source, name, copyIds);
     }
     
     /* (non-Javadoc)
@@ -1846,20 +1866,41 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#deepCopyFolder(org.apache.jetspeed.om.folder.Folder,java.lang.String,java.lang.String)
+     * @see org.apache.jetspeed.page.PageManager#deepCopyFolder(org.apache.jetspeed.om.folder.Folder, java.lang.String, java.lang.String)
      */
     public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
     throws NodeException, PageNotUpdatedException
     {
-        PageManagerUtils.deepCopyFolder(this, srcFolder, destinationPath, owner);
+        deepCopyFolder(srcFolder, destinationPath, owner, false);
     }
-    
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#deepCopyFolder(org.apache.jetspeed.om.folder.Folder, java.lang.String, java.lang.String, boolean)
+     */
+    public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner, boolean copyIds)
+    throws NodeException, PageNotUpdatedException
+    {
+        PageManagerUtils.deepCopyFolder(this, srcFolder, destinationPath, owner, copyIds);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#deepMergeFolder(org.apache.jetspeed.om.folder.Folder, java.lang.String, java.lang.String)
+     */
     public void deepMergeFolder(Folder srcFolder, String destinationPath, String owner)
     throws NodeException, PageNotUpdatedException
     {
-        PageManagerUtils.deepMergeFolder(this, srcFolder, destinationPath, owner);
+        deepMergeFolder(srcFolder, destinationPath, owner, false);
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#deepMergeFolder(org.apache.jetspeed.om.folder.Folder, java.lang.String, java.lang.String, boolean)
+     */
+    public void deepMergeFolder(Folder srcFolder, String destinationPath, String owner, boolean copyIds)
+    throws NodeException, PageNotUpdatedException
+    {
+        PageManagerUtils.deepMergeFolder(this, srcFolder, destinationPath, owner, copyIds);
+    }
+        
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#addPages(org.apache.jetspeed.om.page.Page[])
      */

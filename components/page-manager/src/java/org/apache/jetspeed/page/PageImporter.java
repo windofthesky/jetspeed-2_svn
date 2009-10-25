@@ -194,7 +194,7 @@ public class PageImporter
                 {
                     System.out.println("overwriting page " + srcPage.getPath());                            
                     destManager.removePage(dstPage);
-                    dstPage = destManager.copyPage(srcPage, srcPage.getPath());
+                    dstPage = destManager.copyPage(srcPage, srcPage.getPath(), true);
                     destManager.updatePage(dstPage);
                     pageCount++;                    
                 }
@@ -204,7 +204,7 @@ public class PageImporter
             else            
             {
                 System.out.println("importing new page " + srcPage.getPath());
-                dstPage = destManager.copyPage(srcPage, srcPage.getPath());
+                dstPage = destManager.copyPage(srcPage, srcPage.getPath(), true);
                 destManager.updatePage(dstPage);
                 pageCount++;
             }

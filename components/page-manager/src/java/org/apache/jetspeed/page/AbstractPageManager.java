@@ -26,6 +26,7 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
@@ -89,6 +90,8 @@ public abstract class AbstractPageManager
     protected Class securityConstraintsDefClass;
     protected Class fragmentPreferenceClass;
 
+    private IdGenerator generator;
+
     private boolean permissionsEnabled;
 
     private boolean constraintsEnabled;
@@ -97,8 +100,9 @@ public abstract class AbstractPageManager
     
     private long nodeReapingInterval = DEFAULT_NODE_REAPING_INTERVAL;
 
-    public AbstractPageManager(boolean permissionsEnabled, boolean constraintsEnabled)
+    public AbstractPageManager(IdGenerator generator, boolean permissionsEnabled, boolean constraintsEnabled)
     {
+        this.generator = generator;
         this.permissionsEnabled = permissionsEnabled;
         this.constraintsEnabled = constraintsEnabled;
         // start node reaping deamon thread
@@ -128,9 +132,9 @@ public abstract class AbstractPageManager
         }
     }
     
-    public AbstractPageManager(boolean permissionsEnabled, boolean constraintsEnabled, Map modelClasses)
+    public AbstractPageManager(IdGenerator generator, boolean permissionsEnabled, boolean constraintsEnabled, Map modelClasses)
     {
-        this(permissionsEnabled, constraintsEnabled);     
+        this(generator, permissionsEnabled, constraintsEnabled);     
 
         this.fragmentClass = (Class)modelClasses.get("FragmentImpl");
         this.pageClass = (Class)modelClasses.get("PageImpl");
@@ -293,7 +297,8 @@ public abstract class AbstractPageManager
         try
         {
             fragment = (Fragment)createObject(this.fragmentClass);
-            fragment.setType(Fragment.LAYOUT);          
+            fragment.setType(Fragment.LAYOUT);
+            fragment.setId(generator.getNextPeid());
         }
         catch (ClassCastException e)
         {
@@ -314,6 +319,7 @@ public abstract class AbstractPageManager
         {
             fragment = (Fragment)createObject(this.fragmentClass);
             fragment.setType(Fragment.PORTLET);          
+            fragment.setId(generator.getNextPeid());
         }
         catch (ClassCastException e)
         {
@@ -900,8 +906,20 @@ public abstract class AbstractPageManager
         return folder;
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyPage(org.apache.jetspeed.om.page.Page, java.lang.String)
+     */
     public Page copyPage(Page source, String path)
-    throws NodeException
+        throws NodeException
+    {
+        return copyPage(source, path, false);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyPage(org.apache.jetspeed.om.page.Page, java.lang.String, boolean)
+     */
+    public Page copyPage(Page source, String path, boolean copyIds)
+        throws NodeException
     {
         // create the new page and copy attributes
         Page page = newPage(path);
@@ -933,17 +951,33 @@ public abstract class AbstractPageManager
         }        
         
         // copy fragments
-        Fragment root = copyFragment(source.getRootFragment(), source.getRootFragment().getName());
+        Fragment root = copyFragment(source.getRootFragment(), source.getRootFragment().getName(), copyIds);
         page.setRootFragment(root);
         
         return page;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyFragment(org.apache.jetspeed.om.page.Fragment, java.lang.String)
+     */
     public Fragment copyFragment(Fragment source, String name)
-    throws NodeException
+        throws NodeException
+    {
+        return copyFragment(source, name, false);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyFragment(org.apache.jetspeed.om.page.Fragment, java.lang.String, boolean)
+     */
+    public Fragment copyFragment(Fragment source, String name, boolean copyIds)
+        throws NodeException
     {
         // create the new fragment and copy attributes
         Fragment copy = newFragment();
+        if (copyIds)
+        {
+            copy.setId(source.getId());
+        }
         copy.setDecorator(source.getDecorator());
         copy.setName(name);
         copy.setShortTitle(source.getShortTitle());
@@ -992,7 +1026,7 @@ public abstract class AbstractPageManager
         while (fragments.hasNext())
         {
             Fragment fragment = (Fragment)fragments.next();
-            Fragment copiedFragment = copyFragment(fragment, fragment.getName());
+            Fragment copiedFragment = copyFragment(fragment, fragment.getName(), copyIds);
             copy.getFragments().add(copiedFragment);
         }
         return copy;
@@ -1269,30 +1303,42 @@ public abstract class AbstractPageManager
         return security;
     }
     
-    /**
-     * Deep copy a folder
-     *  
-     * @param source source folder
-     * @param dest destination folder
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#deepCopyFolder(org.apache.jetspeed.om.folder.Folder, java.lang.String, java.lang.String)
      */
     public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner)
-    throws NodeException
+        throws NodeException
     {
-        PageManagerUtils.deepCopyFolder(this, srcFolder, destinationPath, owner);
+        deepCopyFolder(srcFolder, destinationPath, owner, false);
     }
-            
-    /**
-     * Deep merge a folder
-     *  
-     * @param source source folder
-     * @param dest destination folder
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#deepCopyFolder(org.apache.jetspeed.om.folder.Folder, java.lang.String, java.lang.String, boolean)
+     */
+    public void deepCopyFolder(Folder srcFolder, String destinationPath, String owner, boolean copyIds)
+        throws NodeException
+    {
+        PageManagerUtils.deepCopyFolder(this, srcFolder, destinationPath, owner, copyIds);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#deepMergeFolder(org.apache.jetspeed.om.folder.Folder, java.lang.String, java.lang.String)
      */
     public void deepMergeFolder(Folder srcFolder, String destinationPath, String owner)
-    throws NodeException
+        throws NodeException
     {
-        PageManagerUtils.deepMergeFolder(this, srcFolder, destinationPath, owner);
+        deepMergeFolder(srcFolder, destinationPath, owner, false);
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#deepMergeFolder(org.apache.jetspeed.om.folder.Folder, java.lang.String, java.lang.String, boolean)
+     */
+    public void deepMergeFolder(Folder srcFolder, String destinationPath, String owner, boolean copyIds)
+        throws NodeException
+    {
+        PageManagerUtils.deepMergeFolder(this, srcFolder, destinationPath, owner, copyIds);
+    }
+        
     public Page getUserPage(String userName, String pageName)
     throws PageNotFoundException, NodeException
     {

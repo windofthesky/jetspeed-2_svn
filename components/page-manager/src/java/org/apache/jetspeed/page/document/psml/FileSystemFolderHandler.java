@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
 import org.apache.jetspeed.cache.file.FileCacheEventListener;
+import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
@@ -35,7 +36,6 @@ import org.apache.jetspeed.om.folder.Reset;
 import org.apache.jetspeed.om.folder.psml.FolderImpl;
 import org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl;
 import org.apache.jetspeed.om.page.Document;
-
 import org.apache.jetspeed.page.document.DocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -63,6 +63,7 @@ import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 public class FileSystemFolderHandler implements FolderHandler, FileCacheEventListener
 {
 
+    private IdGenerator generator;
     private File documentRootDir;
     private DocumentHandler metadataDocHandler;
     private DocumentHandlerFactory handlerFactory;
@@ -82,6 +83,8 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
 
     /**
      * 
+     * @param generator
+     *            id generator for unmarshalled documents
      * @param documentRoot
      *            directory on file system to use as the root when locating
      *            folders
@@ -96,10 +99,11 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
      *             supports folder metadata (folder.metadata) in the
      *             <code>handlerFactory</code>.
      */
-    public FileSystemFolderHandler( String documentRoot, DocumentHandlerFactory handlerFactory, FileCache fileCache )
+    public FileSystemFolderHandler( IdGenerator generator, String documentRoot, DocumentHandlerFactory handlerFactory, FileCache fileCache )
             throws FileNotFoundException, UnsupportedDocumentTypeException
     {
         super();
+        this.generator = generator;
         this.documentRootDir = new File(documentRoot);
         verifyPath(documentRootDir);
         this.handlerFactory = handlerFactory;
@@ -213,7 +217,7 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
             }
 
             // folder unmarshalled
-            ((FolderImpl) folder).unmarshalled();
+            ((FolderImpl) folder).unmarshalled(generator);
 
             // add to cache
             if (fromCache)

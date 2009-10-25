@@ -26,6 +26,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.idgenerator.IdGenerator;
+import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
@@ -58,8 +60,11 @@ public class TestCastorFileSystemDocumentHandler extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
+
+        IdGenerator idGen = new JetspeedIdGenerator(65536,"P-","");
         
         folderMetaDataDocumentHandler = new CastorFileSystemDocumentHandler(
+            idGen,
             "/JETSPEED-INF/castor/page-mapping.xml",
             "folder.metadata",
             FolderMetaDataImpl.class,

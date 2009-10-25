@@ -117,6 +117,7 @@ limitations under the License.
     	<mkdir dir="${basedir}/target/classes/archetype-resources/etc/serializer/assembly"/>
             <copy todir="${basedir}/target/classes/archetype-resources/etc/serializer/assembly">
           <fileset dir="${basedir}/../../src/webapp/WEB-INF/assembly">
+            <include name="jetspeed-base.xml"/>
             <include name="security*.xml"/>
             <include name="capabilities.xml"/>           
             <include name="prefs.xml"/>           

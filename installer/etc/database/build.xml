@@ -378,6 +378,7 @@
 
     <copy todir="${basedir}/assembly" overwrite="true" failonerror="true">
       <fileset dir="${basedir}/../webapps/${portalName}/WEB-INF/assembly">
+        <include name="jetspeed-base.xml"/>
         <include name="security*.xml" />
         <include name="capabilities.xml" />
         <include name="prefs.xml" />

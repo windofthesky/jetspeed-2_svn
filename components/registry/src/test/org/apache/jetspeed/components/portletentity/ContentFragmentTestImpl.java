@@ -254,6 +254,14 @@ class ContentFragmentTestImpl implements Fragment, ContentFragment
         f.setSecurityConstraints(constraints);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#setId(java.lang.String)
+     */
+    public void setId(String fragmentId)
+    {
+        // cannot set fragment id from content fragment
+    }
+
     /**
      * @param title
      */

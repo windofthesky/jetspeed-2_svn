@@ -15,7 +15,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="j2-portlet-selector" hidden='true'
+<page id="role-j2-portlet-selector" hidden='true'
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
@@ -29,8 +29,8 @@ limitations under the License.
   <metadata name="title" xml:lang="zh">Portlet选择器</metadata>
   <metadata name="title" xml:lang="zh-TW">Portlet選擇器</metadata>
 
-  <fragment id="ss-portlet-selector" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
-    <fragment id="ss-portlet-selector-1" type="portlet" name="j2-admin::PortletSelector" >
+  <fragment id="role-ss-portlet-selector" type="layout" name="jetspeed-layouts::VelocityOneColumnNoActions">
+    <fragment id="role-ss-portlet-selector-1" type="portlet" name="j2-admin::PortletSelector" >
     </fragment>
   </fragment>
 </page>

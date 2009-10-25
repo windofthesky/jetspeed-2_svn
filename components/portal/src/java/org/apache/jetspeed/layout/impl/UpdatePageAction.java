@@ -181,7 +181,7 @@ public class UpdatePageAction
             	String destination = getActionParameter(requestContext, "destination");
             	String name = getActionParameter(requestContext, RESOURCE_NAME);            	
             	destination = destination + Folder.PATH_SEPARATOR + name;
-            	Page newPage = pageManager.copyPage(page, destination);
+            	Page newPage = pageManager.copyPage(page, destination, true);
             	pageManager.updatePage(newPage);
             	pageManager.removePage(page);
             } 

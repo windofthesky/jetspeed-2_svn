@@ -327,6 +327,7 @@ limitations under the License.
         <column name="FRAGMENT_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PARENT_ID" type="INTEGER"/>
         <column name="PAGE_ID" type="INTEGER"/>
+        <column name="FRAGMENT_STRING_ID" size="80" type="VARCHAR"/>
         <column name="NAME" size="100" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
         <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
@@ -360,6 +361,9 @@ limitations under the License.
         <index name="UN_FRAGMENT_1">
             <index-column name="PAGE_ID"/>
         </index>
+        <unique name="UN_FRAGMENT_2">
+            <unique-column name="FRAGMENT_STRING_ID"/>
+        </unique>
     </table>
 
     <table name="FRAGMENT_CONSTRAINT">

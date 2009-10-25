@@ -473,6 +473,7 @@ limitations under the License.
  	    <echo message="Running Jetspeed Seed Importer with -b ${temp.assembly.dir}/boot/ -c ${temp.assembly.dir}/ "/>
 <!--        <copy todir="${temp.assembly.dir}" overwrite="true" failonerror="true">
           <fileset dir="\${basedir}/../src/webapp/WEB-INF/assembly">
+            <include name="jetspeed-base.xml"/>
             <include name="security*.xml"/>
             <include name="capabilities.xml"/>           
             <include name="prefs.xml"/>           
@@ -556,6 +557,12 @@ limitations under the License.
             <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
                         artifactId="jetspeed-portal-site"
                         version="${org.apache.jetspeed.deploy.version}"/>        	
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-id-generator"
+                        version="${org.apache.jetspeed.deploy.version}"/>
+            <dependency groupId="${org.apache.jetspeed.deploy.groupid}"
+                        artifactId="jetspeed-file-cache"
+                        version="${org.apache.jetspeed.deploy.version}"/>
         </dependencies>
 
         <!-- create sysproperty set to configure import utility -->

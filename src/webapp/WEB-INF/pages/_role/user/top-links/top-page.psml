@@ -28,20 +28,20 @@ limitations under the License.
   <metadata name="title" xml:lang="zh-TW">[用戶] 頂層頁</metadata>
   <metadata name="title" xml:lang="ko">[사용자] 최상위 페이지</metadata>
 
-  <fragment id="utp-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="utp-2" type="portlet" name="j2-admin::LoginPortlet">
+  <fragment id="utp2-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
+    <fragment id="utp2-2" type="portlet" name="j2-admin::LoginPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>                                
-    <fragment id="utp-3" type="portlet" name="demo::UserInfoTest">
+    <fragment id="utp2-3" type="portlet" name="demo::UserInfoTest">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>    
-    <fragment id="utp-4" type="portlet" name="demo::BookmarkPortlet">
+    <fragment id="utp2-4" type="portlet" name="demo::BookmarkPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>    	
-    <fragment id="utp-5" type="portlet" name="jsf-demo::CalendarPortlet">
+    <fragment id="utp2-5" type="portlet" name="jsf-demo::CalendarPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>    		

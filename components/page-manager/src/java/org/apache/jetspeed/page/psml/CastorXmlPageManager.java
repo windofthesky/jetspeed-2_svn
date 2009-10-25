@@ -40,7 +40,6 @@ import org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.ContentPageImpl;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
@@ -110,7 +109,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         modelClasses.put("FragmentPreferenceImpl", FragmentPreferenceImpl.class);
     }
 
-    private IdGenerator generator = null;
     private DocumentHandlerFactory handlerFactory;
     private FolderHandler folderHandler;
     private FileCache fileCache;
@@ -119,8 +117,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                                  FolderHandler folderHandler, FileCache fileCache,
                                  boolean permissionsEnabled, boolean constraintsEnabled ) throws FileNotFoundException
     {
-        super(permissionsEnabled, constraintsEnabled, modelClasses);
-        this.generator = generator;
+        super(generator, permissionsEnabled, constraintsEnabled, modelClasses);
         handlerFactory.setPermissionsEnabled(permissionsEnabled);
         handlerFactory.setConstraintsEnabled(constraintsEnabled);
         this.handlerFactory = handlerFactory;
@@ -129,31 +126,6 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         this.fileCache.addListener(this);
     }
 
-    /**
-     * <p>
-     * newFragment
-     * </p>
-     * 
-     * @see org.apache.jetspeed.page.PageManager#newFragment()
-     * @return fragment
-     */
-    public Fragment newFragment()
-    {
-        // FragmentImpl requires generated ids
-        FragmentImpl fragment = (FragmentImpl)super.newFragment();
-        fragment.setId(generator.getNextPeid());
-        return fragment;
-    }
-
-    public Fragment newPortletFragment()
-    {
-        // FragmentImpl requires generated ids
-        FragmentImpl fragment = (FragmentImpl)super.newFragment();
-        fragment.setType(Fragment.PORTLET);
-        fragment.setId(generator.getNextPeid());
-        return fragment;
-    }
-        
     /**
      * <p>
      * getPage

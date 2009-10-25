@@ -88,7 +88,7 @@
   <class name="org.apache.jetspeed.om.page.psml.FragmentImpl">
     <map-to xml="fragment"/>
 
-    <field name="id" type="string" set-method="%1" get-method="getId">
+    <field name="id" type="string">
       <bind-xml name="id" node="attribute"/>
     </field>
 
