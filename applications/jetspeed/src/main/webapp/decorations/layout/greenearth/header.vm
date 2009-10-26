@@ -32,7 +32,7 @@ limitations under the License.
 
     <meta http-equiv="Content-type" content="#ContentType()" />
     <title>#PageTitle()</title>
-<link rel="shortcut icon" href="#BaseHref()decorations/layout/images/jetspeed.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="#BaseHref()images/jetspeed.jpg" type="image/x-icon" />
 #includeJavaScriptForHead()
 #IncludeStylesheets()
 
