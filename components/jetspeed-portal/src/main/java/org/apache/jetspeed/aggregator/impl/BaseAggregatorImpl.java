@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
@@ -109,6 +111,11 @@ public abstract class BaseAggregatorImpl
             log.error(e.getMessage(), e);
             window.getFragment().overrideRenderedContent("Sorry, but we were unable access the requested portlet. Send the following message to your portal admin:  "+  e.getMessage());
         }
+    }
+
+    public void renderContent(RequestContext context, ContentFragment root) throws JetspeedException, IOException
+    {
+        context.getResponse().getWriter().write(root.getRenderedContent());        
     }
     
 }

@@ -85,8 +85,7 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
             aggregateAndRender(root, context, page, true, null, null, null);
         }
         
-        // write all rendered content
-        context.getResponse().getWriter().write(root.getRenderedContent());
+        renderContent(context, root);
         
         if (null != window)
         {

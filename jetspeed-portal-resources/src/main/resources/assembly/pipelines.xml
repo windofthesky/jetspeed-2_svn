@@ -819,6 +819,9 @@
         <entry key='/healthcheck'>
           <value>healthcheck-pipeline</value>
         </entry>
+        <entry key='/ui'>
+          <value>jetui-pipeline</value>
+        </entry>
       </map>
     </constructor-arg>
   </bean>
@@ -826,5 +829,64 @@
   <bean id="debugValve" class="org.apache.jetspeed.pipeline.valve.impl.DebugValveImpl">
     <meta key="j2:cat" value="default" />
   </bean>
+
+  <bean id="jetui-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg>
+      <value>JetuiPipeline</value>
+    </constructor-arg>
+    <constructor-arg>
+      <list>
+        <ref bean="capabilityValve" />
+        <ref bean="portalURLValve" />
+        <ref bean="securityValve" />
+        <ref bean="localizationValve" />
+        <ref bean="passwordCredentialValve" />
+        <ref bean="loginValidationValve" />
+        <ref bean="profilerValve" />
+        <ref bean="refreshUserHomepageValve" />
+        <!--
+          JS2-806  
+        -->
+        <ref bean="pageHistoryValve" />
+        <ref bean="containerValve" />
+        <ref bean="actionValve" />
+        <ref bean="resourceValve" />
+        <!-- 
+          JS2-834
+          <ref bean="cleanupPortalURLValve"/>
+        -->
+        
+        <ref bean="DecorationValve" />
+        <ref bean="headerAggregatorValvePortal" />
+        <ref bean="jetuiValve" />
+        <ref bean="cleanUpValve" />
+      </list>
+    </constructor-arg>
+  </bean>
+  
+  <bean id="jetuiValve" class="org.apache.jetspeed.ui.JetuiValve" init-method="initialize">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg><ref bean="jetui" /></constructor-arg>
+    <constructor-arg><ref bean="jetuiAggregator" /></constructor-arg> 
+  </bean>
+
+  <bean id="jetui" class="org.apache.jetspeed.ui.Jetui">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg><ref bean="org.apache.jetspeed.aggregator.PortletRenderer"/></constructor-arg>
+    <constructor-arg><ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory"/></constructor-arg>
+    <constructor-arg><value>/WEB-INF/jetui/yui/jetui.jsp</value></constructor-arg>        
+  </bean>
+  
+   <bean id="jetuiAggregator" class="org.apache.jetspeed.ui.JetuiAggregatorImpl">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg index="0">
+      <ref bean="org.apache.jetspeed.aggregator.PortletRenderer" />
+    </constructor-arg>
+    <constructor-arg>
+      <ref bean="jetui" />
+    </constructor-arg>
+  </bean>
+    
 
 </beans>

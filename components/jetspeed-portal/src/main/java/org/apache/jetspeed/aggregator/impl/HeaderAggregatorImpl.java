@@ -1075,4 +1075,7 @@ public class HeaderAggregatorImpl implements PageAggregator
     {
         return this.baseUrlAccess;
     }
+    public void renderContent(RequestContext context, ContentFragment root) throws JetspeedException, IOException
+    {
+    }
 }

@@ -16,6 +16,12 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import java.io.IOException;
+
+import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.request.RequestContext;
+
 /**
  * Page aggregation handles pipeline requests for pages of portlets.
  *
@@ -24,4 +30,5 @@ package org.apache.jetspeed.aggregator;
  */
 public interface PageAggregator extends Aggregator 
 {
+    void renderContent(RequestContext rc, ContentFragment root) throws JetspeedException, IOException;
 }

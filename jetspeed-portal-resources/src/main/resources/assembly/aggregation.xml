@@ -204,4 +204,5 @@
     <!-- Uncomment this to HARD CODE your portal URL -->
     <!-- <constructor-arg><ref bean="BasePortalURL"/></constructor-arg>  -->
   </bean>
+
 </beans>

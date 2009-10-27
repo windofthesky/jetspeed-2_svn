@@ -78,7 +78,7 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
         }
         
         // write all rendered content
-        context.getResponse().getWriter().write(root.getRenderedContent());
+        renderContent(context, root);
         
         if (null != window)
         {
@@ -88,7 +88,7 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
         
         releaseBuffers(root, context);        
     }
-
+    
     @SuppressWarnings("unchecked")
     protected void aggregateAndRender( ContentFragment f, RequestContext context, ContentPage page )
     {
