@@ -1360,8 +1360,8 @@
             <source>1.5</source>
             <target>1.5</target>
             <debug>true</debug>
-            <showDeprecation>true</showDeprecation>
-            <showWarnings>true</showWarnings>
+            <showDeprecation>false</showDeprecation>
+            <showWarnings>false</showWarnings>
             <optimize>false</optimize>
           </configuration>
         </plugin>
@@ -1728,6 +1728,7 @@
               <excludes combine.children="append">
                 <exclude>jetspeed-mvn-settings.xml</exclude>                            
                 <exclude>MIT-LICENSE</exclude>                            
+                <exclude>YUI-LICENSE</exclude>                            
                 <exclude>JSCOOKMENU-LICENSE</exclude>              
                 <exclude>CREATIVECOMMONS-LICENSE</exclude>  
                 <exclude>JGOODIES-LICENSE</exclude>                            
@@ -1758,6 +1759,7 @@
                 <exclude>jetspeed-installer/etc/tomcat/JGOODIES-LICENSE</exclude>
                 <exclude>jetspeed-installer/etc/tomcat/JSCOOKMENU-LICENSE</exclude>
                 <exclude>jetspeed-installer/etc/tomcat/MIT-LICENSE</exclude>
+                <exclude>jetspeed-installer/etc/tomcat/YUI-LICENSE</exclude>
                 <exclude>jetspeed-installer/etc/tomcat/SLF4J-LICENSE</exclude>
                 <exclude>applications/jetspeed/src/main/webapp/META-INF/ASM-LICENSE</exclude>
                 <exclude>applications/jetspeed/src/main/webapp/META-INF/CREATIVECOMMONS-LICENSE</exclude>
@@ -1767,6 +1769,7 @@
                 <exclude>applications/jetspeed/src/main/webapp/META-INF/JAXB-LICENSE</exclude>
                 <exclude>applications/jetspeed/src/main/webapp/META-INF/JSCOOKMENU-LICENSE</exclude>
                 <exclude>applications/jetspeed/src/main/webapp/META-INF/MIT-LICENSE</exclude>
+                <exclude>applications/jetspeed/src/main/webapp/META-INF/YUI-LICENSE</exclude>
                 <exclude>applications/jetspeed/src/main/webapp/META-INF/SLF4J-LICENSE</exclude>
                 <exclude>enterprise/ear-full/src/main/application/META-INF/ASM-LICENSE</exclude>
                 <exclude>enterprise/ear-full/src/main/application/META-INF/CREATIVECOMMONS-LICENSE</exclude>
@@ -1776,6 +1779,7 @@
                 <exclude>enterprise/ear-full/src/main/application/META-INF/JAXB-LICENSE</exclude>
                 <exclude>enterprise/ear-full/src/main/application/META-INF/JSCOOKMENU-LICENSE</exclude>
                 <exclude>enterprise/ear-full/src/main/application/META-INF/MIT-LICENSE</exclude>
+                <exclude>enterprise/ear-full/src/main/application/META-INF/YUI-LICENSE</exclude>
                 <exclude>enterprise/ear-full/src/main/application/META-INF/SLF4J-LICENSE</exclude>
                 <exclude>enterprise/ear-min/src/main/application/META-INF/ASM-LICENSE</exclude>
                 <exclude>enterprise/ear-min/src/main/application/META-INF/CREATIVECOMMONS-LICENSE</exclude>

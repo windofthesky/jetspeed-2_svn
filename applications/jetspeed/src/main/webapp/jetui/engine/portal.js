@@ -166,13 +166,13 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
         });        
     });
     
-    var dropLayoutColumns = Y.Node.all('.portal-layout-column');
-    dropLayoutColumns.each(function(v, k) {
-    	var drop = new Y.DD.Drop({
-            node: v,
-            groups: ['portlets']            
-        });            	
-    });
+//    var dropLayoutColumns = Y.Node.all('.portal-layout-column');
+//    dropLayoutColumns.each(function(v, k) {
+//    	var drop = new Y.DD.Drop({
+//            node: v,
+//            groups: ['portlets']            
+//        });            	
+//    });
     
     Portal.prototype.toggleToolbar = function(toolbar, toggler, compareStyle) {
         toggler.toggleClass('jstbToggle1');
