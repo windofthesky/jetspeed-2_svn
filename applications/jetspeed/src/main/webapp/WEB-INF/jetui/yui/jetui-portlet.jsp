@@ -30,12 +30,15 @@ limitations under the License.
 <%
 	String content = (String)request.getAttribute("content");
 	String pageDec = (String)request.getAttribute("pageDec");
-	ContentFragment fragment = (ContentFragment)request.getAttribute("fragment");	
+	ContentFragment fragment = (ContentFragment)request.getAttribute("fragment");
+	String title = "";
+	if (fragment.getPortletContent() != null)
+	    title = fragment.getPortletContent().getTitle();
 %>
 	<div class="portal-layout-cell portal-layout-cell-OneColumn-1-0" id="<%=fragment.getId()%>" name="<%=fragment.getName()%>">
 		<div class="portlet <%=pageDec%>">
 		    <div class="PTitle" >
-	          <div class="PTitleContent"><%=fragment.getPortletContent().getTitle()%></div>
+	          <div class="PTitleContent"><%=title%></div>
 		  	    <div class="PActionBar">
 <%
 				    for(DecoratorAction action : (List<DecoratorAction>)fragment.getDecoration().getActions())
