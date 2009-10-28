@@ -231,9 +231,6 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
             drag = e.drag.get('node');
         var dragParent = drag.get('parentNode');
         var dropParent = drop.get('parentNode');
-
-		Y.log("HIT: " + drop.data.get('id'));
-        
         if (dropParent == portal.jstbLeft || dropParent == portal.jstbRight)
         {
           if (!dropParent.contains(drag)) {
