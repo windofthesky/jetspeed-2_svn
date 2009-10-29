@@ -421,6 +421,33 @@ z-index: 10;
 color: #fff;
 padding:2px;
 text-decoration:none;
+font-size:8pt;
+}
+
+.layout-jetspeed .layout-search {
+position: absolute; 
+right: 22px; top: 18px; 
+color: #000;
+padding:2px;
+text-decoration:none;
+}
+
+.layout-jetspeed .layout-search2 {
+position: absolute; 
+right: 3px; top: 21px; 
+}
+
+.layout-jetspeed .layout-statusarea {
+position: absolute; 
+right: 2px; top: 0px; 
+color: #fff;
+padding:2px;
+text-decoration:none;
+font-size:8pt;
+}
+.layyout-jetspeed .layout-statusarea A:visited,
+.layout-jetspeed .layout-statusarea A {
+color: #fff;
 }
 
 .layout-jetspeed .layout-jetspeed-logout:hover{
