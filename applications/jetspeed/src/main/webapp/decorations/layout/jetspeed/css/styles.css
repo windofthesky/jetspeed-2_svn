@@ -448,6 +448,7 @@ font-size:8pt;
 .layyout-jetspeed .layout-statusarea A:visited,
 .layout-jetspeed .layout-statusarea A {
 color: #fff;
+font-size:8pt;
 }
 
 .layout-jetspeed .layout-jetspeed-logout:hover{

@@ -39,6 +39,30 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
 		Y.log("toolbar  : " + this.get("toolbar"));		
 		Y.log("---------");
     };
+
+    ////////////////////////////////////////////////////
+    // the Layout Class
+    function Layout(config) {
+        Layout.superclass.constructor.call(this, config);
+    };
+    Y.extend(Layout, Y.Base, {
+    	initializer : function(cfg) { 
+   	 	},
+        destructor : function(cfg) { 
+   	 	}     	    	
+    });    
+    Layout.NAME = "layout";
+    Layout.ATTRS = {
+    	"name" : { value: "undefined" }, 
+        "id" : { value: "0" },
+        "nested" : { value : false }
+    };
+	Layout.prototype.info = function() {
+		Y.log("name: " + this.get("name"));
+		Y.log("id  : " + this.get("id"));		
+		Y.log("nested  : " + this.get("nested"));		
+		Y.log("---------");
+    };
     
     ////////////////////////////////////////////////////    
     // Create Navigator Portlet
@@ -60,10 +84,10 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
     
     ////////////////////////////////////////////////////    
     // setup toolbar docking area and togglers    
-    var lhsToggler = Y.get('#jstbLeftToggle');
-    var rhsToggler = Y.get('#jstbRightToggle');    
+    var lhsToggler = Y.one('#jstbLeftToggle');
+    var rhsToggler = Y.one('#jstbRightToggle');    
     // add fx plugin to docking area
-    portal.jstbLeft = Y.get('#jstbLeft').plug(Y.Plugin.NodeFX, {
+    portal.jstbLeft = Y.one('#jstbLeft').plug(Y.Plugin.NodeFX, {
         from: { width: 1 },
         to: {
             width: function(node) { // dynamic in case of change
@@ -73,7 +97,7 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
         easing: Y.Easing.easeOut,
         duration: 0.3
     });    
-    portal.jstbRight = Y.get('#jstbRight').plug(Y.Plugin.NodeFX, {
+    portal.jstbRight = Y.one('#jstbRight').plug(Y.Plugin.NodeFX, {
         from: { width: 1 },
         to: {
             width: function(node) { // dynamic in case of change
@@ -105,7 +129,7 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
 
     ////////////////////////////////////////////////////       
     // drag and drop
-    var nav = Y.get('#jsNavigator');
+    var nav = Y.one('#jsNavigator');
     nav.data = navigator;
     var ddNav = new Y.DD.Drag({
         node: nav,
@@ -117,13 +141,13 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
     ddNav.addHandle('.PTitle');
     nav.on('click', onClickToolbar);
 
-    var jetspeedZone = Y.get('#jetspeedZone');
+    var jetspeedZone = Y.one('#jetspeedZone');
     var jzDrop = new Y.DD.Drop({
         node: jetspeedZone,
         groups: ['toolbars']        
     });
     
-    var tb = Y.get('#jsToolbox');
+    var tb = Y.one('#jsToolbox');
     tb.data = toolbox;
     var ddToolbox = new Y.DD.Drag({
         node: tb,
@@ -136,22 +160,23 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
     tb.on('click', onClickToolbar);
     
     var drop = new Y.DD.Drop({
-        node: Y.get('#jstbLeft'),
+        node: Y.one('#jstbLeft'),
         groups: ['toolbars']
     });
     var drop = new Y.DD.Drop({
-        node: Y.get('#jstbRight'),
+        node: Y.one('#jstbRight'),
         groups: ['toolbars']        
     });
     
     var draggablePortlets = Y.Node.all('.portal-layout-cell');    
     draggablePortlets.each(function(v, k) {
-        var p = new Portlet();
-        p.set("name", v.getAttribute("name"));
-        p.set("id", v.getAttribute("id"));
-        p.set("toolbar", false);
-        p.set("detached", false);
-        v.data = p;
+        var portlet = new Portlet();
+        portlet.set("name", v.getAttribute("name"));
+        portlet.set("id", v.getAttribute("id"));
+        portlet.set("toolbar", false);
+        portlet.set("detached", false);
+        v.data = portlet;
+        //portlet.info();        
         var ddNav = new Y.DD.Drag({
             node: v,
             groups: ['portlets'],
@@ -166,13 +191,22 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
         });        
     });
     
-//    var dropLayoutColumns = Y.Node.all('.portal-layout-column');
-//    dropLayoutColumns.each(function(v, k) {
-//    	var drop = new Y.DD.Drop({
-//            node: v,
-//            groups: ['portlets']            
-//        });            	
-//    });
+    var dropLayouts = Y.Node.all('.portal-layout-column');
+    dropLayouts.each(function(v, k) {
+        var layout = new Layout();
+        layout.set("name", v.getAttribute("name"));
+        layout.set("id", v.getAttribute("id"));
+        layout.set("nested", false);
+        v.data = layout;
+        //layout.info();
+        if (v.get('children').size() == 0)
+        {
+	    	var drop = new Y.DD.Drop({
+	        node: v,
+	        groups: ['portlets']            
+	    	});
+        }
+    });
     
     Portal.prototype.toggleToolbar = function(toolbar, toggler, compareStyle) {
         toggler.toggleClass('jstbToggle1');
@@ -197,7 +231,6 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
             drag = e.drag.get('node');
         if (drag.data.get("toolbar"))
         {        	
-        	Y.log("drop hit of toolbar: " + drop.getAttribute('id'));
             if (drop == portal.jstbLeft || drop == portal.jstbRight)
             {
 	        	drag.setStyle('position', '');
@@ -225,6 +258,32 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
         }
     });
 	
+    Portal.prototype.moveToLayout = function(e)
+    {
+        var drop = e.drop.get('node'),
+        	drag = e.drag.get('node');
+        var dragParent = drag.get('parentNode');       
+    	drop.appendChild(drag);
+        if (dragParent.get('children').size() == 0)
+        {
+        	//node.plug(Y.Plugin.Drag);
+	    	var drop = new Y.DD.Drop({
+	        node: dragParent,
+	        groups: ['portlets']            
+	    	});
+        }
+        // BOZO: im manipulating internal DD structures, should find a way to detach the handler
+        var i = 0;
+        while (i < Y.DD.DDM.targets.length) {
+        	if (Y.DD.DDM.targets[i] == e.drop) {
+        		Y.DD.DDM.targets.splice(i, 1);
+        		break;
+        	}
+        	i++;
+        }
+        e.drop.unplug(Y.Plugin.Drop);
+    }
+
 	  Portal.prototype.movePortlet = function(e)
 	  {
         var drop = e.drop.get('node'),
@@ -241,7 +300,7 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
         {
         	if (goingUp)
         	{
-    			Y.log("going UP");
+    			//Y.log("going UP");
         		// var next = drop.get('previousSibling');
     			var prev = drop.previous();
                 if (prev == null)
@@ -260,18 +319,25 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
         		var next = drop.next();
                 if (next == null) 
                 {
-        			Y.log("going down APPEND");
+        			//Y.log("going down APPEND");
         			//drag.remove();
         			dropParent.appendChild(drag);
                 }
                 else
                 {
-        			Y.log("going down: " + next); //next.data.get('name'));
+        			//Y.log("going down: " + next); //next.data.get('name'));
         			//drag.remove();
         			dropParent.insertBefore(drag, next);
                 }
         	}
         }
+        if (dragParent.get('children').size() == 0)
+        {
+	    	var drop = new Y.DD.Drop({
+	        node: dragParent,
+	        groups: ['portlets']            
+	    	});
+        }        
     };    
 
     Y.DD.DDM.on('drag:end', function(e) {
@@ -380,18 +446,28 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
         else
         {
 	    	var region = e.drop.get('node').get('region');
-	    	var srcRegion = e.drag.get('node').get('region');
-	    	if (y >= srcRegion.top && y <= srcRegion.bottom && x >= srcRegion.left && x <= srcRegion.right)
+	    	if (e.drop.get('node').data.name == "portlet")
 	    	{
-//	    		Y.log("dragging over src");
-	    	}	    	
-	    	else if (y >= region.top && y <= region.bottom && x >= region.left && x <= region.right)
+		    	var srcRegion = e.drag.get('node').get('region');
+		    	if (y >= srcRegion.top && y <= srcRegion.bottom && x >= srcRegion.left && x <= srcRegion.right)
+		    	{
+	//	    		Y.log("dragging over src");
+		    	}	    	
+		    	else if (y >= region.top && y <= region.bottom && x >= region.left && x <= region.right)
+		    	{
+		    		//Y.log("**** HIT");
+		    		portal.isMoving = true;
+		    		portal.movePortlet(e); 
+		    		portal.isMoving = false;
+		    	}
+	    	}
+	    	else if (e.drop.get('node').data.name == "layout")
 	    	{
-	    		Y.log("**** HIT");
 	    		portal.isMoving = true;
-	    		portal.movePortlet(e); 
+	    		portal.moveToLayout(e);
 	    		portal.isMoving = false;
 	    	}
+	    	
         }
 		//Y.log("x,y = " + x + "," + y);
     	

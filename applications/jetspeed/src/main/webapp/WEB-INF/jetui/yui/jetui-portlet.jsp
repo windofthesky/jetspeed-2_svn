@@ -35,7 +35,7 @@ limitations under the License.
 	if (fragment.getPortletContent() != null)
 	    title = fragment.getPortletContent().getTitle();
 %>
-	<div class="portal-layout-cell portal-layout-cell-OneColumn-1-0" id="<%=fragment.getId()%>" name="<%=fragment.getName()%>">
+	<div class="portal-layout-cell" id="<%=fragment.getId()%>" name="<%=fragment.getName()%>">
 		<div class="portlet <%=pageDec%>">
 		    <div class="PTitle" >
 	          <div class="PTitleContent"><%=title%></div>

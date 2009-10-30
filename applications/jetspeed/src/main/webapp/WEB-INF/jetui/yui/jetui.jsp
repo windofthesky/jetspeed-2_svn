@@ -122,7 +122,7 @@ for (String style : jetui.getStyleSheets(rc))
 		// class="portal-layout-column portal-layout-column-${layoutType}-${columnIndex}"	        
 %>
 <div id="column_id_<%=index%>" 
-     class="portal-layout-column" 
+     class="portal-layout-column"
      style="float:<%=columnFloat%>; min-height: 100px; width:<%=columnWidth%>; background-color: #ffffff;">
 
 <%	    
