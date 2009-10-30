@@ -38,7 +38,7 @@ limitations under the License.
 	<div class="portal-layout-cell" id="<%=fragment.getId()%>" name="<%=fragment.getName()%>">
 		<div class="portlet <%=pageDec%>">
 		    <div class="PTitle" >
-	          <div class="PTitleContent"><%=title%></div>
+	          <div class="PTitleContent"><%=title%></div>               
 		  	    <div class="PActionBar">
 <%
 				    for(DecoratorAction action : (List<DecoratorAction>)fragment.getDecoration().getActions())
@@ -48,6 +48,11 @@ limitations under the License.
 				            target = "";
  %>			    
 			     <a href="<%=action.getAction()%>" title="<%=action.getName()%>" class="action portlet-action" <%=target%>><img src="<%=request.getContextPath()%>/<%=action.getLink()%>" alt="<%=action.getAlt()%>" border="0" /></a>
+<% } 
+if (request.getUserPrincipal() != null)
+{
+%>
+				 <span style='cursor: pointer; z-index: 1000;' id='jetspeed-close-<%=fragment.getId()%>' title="close" class="portlet-action-close"><img src="<%=request.getContextPath()%>/decorations/portlet/jetspeed/images/close.gif" alt="Close" border="0" /></span>				 
 <% } %>
 			    </div>
 		      </div>

@@ -1,5 +1,5 @@
 //Use loader to grab the modules needed
-YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', function(Y) {
+YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base', function(Y) {
 	//new Y.Console().render(); 
     //Make this an Event Target so we can bubble to it
     var Portal = function() {
@@ -207,7 +207,45 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
 	    	});
         }
     });
+
+    var onComplete = function(id, o, args) { 
+    	var id = id; // Transaction ID. 
+    	var data = o.responseText; // Response data. 
+    	var widgetId = args[0];
+    	Y.log("widget removed = " + widgetId);
+    	// now remove it from the dom
+    	var widget = Y.one("#" + widgetId);
+    	if (widget)
+    	{
+    		var parent = widget.get('parentNode');
+    		widget.remove();
+	        if (parent.get('children').size() == 0)
+	        {
+	        	//node.plug(Y.Plugin.Drag);
+		    	var drop = new Y.DD.Drop({
+		        node: parent,
+		        groups: ['portlets']            
+		    	});
+	        }
+    	}
+    };     
     
+    var onClickWindow = function(e) {
+    	var uri = document.location.href;
+    	uri = uri.replace("/ui", "/ajaxapi");
+    	var windowId =  e.currentTarget.getAttribute('id');
+    	windowId = windowId.replace("jetspeed-close-", "");
+    	var uri = uri + "?action=remove&id=" + windowId;
+    	Y.log("delete uri = " + uri);    	
+        Y.on('io:complete', onComplete, this, [windowId]); 
+        var request = Y.io(uri); 
+    };
+    
+    var closeWindows = Y.Node.all('.portlet-action-close');    
+    closeWindows.each(function(v, k) {
+        v.on('click', onClickWindow);
+    });
+        
     Portal.prototype.toggleToolbar = function(toolbar, toggler, compareStyle) {
         toggler.toggleClass('jstbToggle1');
         toggler.toggleClass('jstbToggle2');
@@ -281,6 +319,7 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'widget', fu
         	}
         	i++;
         }
+        // I don't think this is working
         e.drop.unplug(Y.Plugin.Drop);
     }
 
