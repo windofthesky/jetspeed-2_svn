@@ -34,7 +34,8 @@ limitations under the License.
   RequestContext rc = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
   Page portalPage = rc.getPage();
   ColumnLayout columnLayout = (ColumnLayout)request.getAttribute("columnLayout");
-  String navContent = jetui.renderPortletWindow("_JetspeedNavigator", "j2-admin::JetspeedNavigator", rc);
+  String navContent = jetui.renderPortletWindow("_PageNavigator", "j2-admin::PageNavigator", rc);
+  String spacesNavContent = jetui.renderPortletWindow("_SpaceNavigator", "j2-admin::SpaceNavigator", rc);
   String tbContent = jetui.renderPortletWindow("_JetspeedToolbox", "j2-admin::JetspeedToolbox", rc);
   String encoding = "text/html"; 
   if (response.getCharacterEncoding() != null)
@@ -66,16 +67,17 @@ for (String style : jetui.getStyleSheets(rc))
 <%}
 %>
 
-<body>
+<body class="yui-skin-sam">
 <div id='jetspeedZone'>
 <div id="layout-<%=pageDec%>" class="layout-<%=pageDec%>" >
 <div class="header">
 <h1 class="logo">Jetspeed 2</h1>
+<span id="environments-menu" class="layout-horizontal-menu yui-menu yui-menu-horizontal yui-menubuttonnav"><%=spacesNavContent%></span>
 <div class="menu">
 &nbsp;<span style='position: absolute; left: 0px' id='jstbLeftToggle' class='jstbToggle1'></span><span id='jstbRightToggle' class='jstbToggle2' style='position: absolute; right: 0px'></span>
 </div>
 <%if (request.getUserPrincipal() != null) {%>
-<span class="layout-statusarea">David Sean Taylor | Profile | Tasks (5) | Notifications (2) | <a href="<%=request.getContextPath()%>/login/logout">Log out</a></span>
+<span class="layout-statusarea"><b>David Sean Taylor</b> | Profile | Tasks (5) | Notifications (2) | <a href="<%=request.getContextPath()%>/login/logout">Log out</a></span>
 <% } %>
 <!-- <span class="layout-search"><input type='text' size='14'/></span><span class="layout-search2"><img height='18' src="<%=request.getContextPath()%>/images/search.png"/></span>  -->
 </div> <!-- end header -->
@@ -98,59 +100,59 @@ for (String style : jetui.getStyleSheets(rc))
 <td id='jsMainarea' class='jsMainarea'>
 <div id="jsFragments" class="portal-nested-layout portal-nested-layout-TwoColumns">
 <%
-	ContentFragment maximized = (ContentFragment)request.getAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
-	if (maximized != null)
-	{
-		String content = jetui.getRenderedContent(maximized, rc);
-		request.setAttribute("content", content);
-		request.setAttribute("pageDec", pageDec);
-		request.setAttribute("fragment", maximized);
+    ContentFragment maximized = (ContentFragment)request.getAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
+    if (maximized != null)
+    {
+        String content = jetui.getRenderedContent(maximized, rc);
+        request.setAttribute("content", content);
+        request.setAttribute("pageDec", pageDec);
+        request.setAttribute("fragment", maximized);
 		request.setAttribute("coordinate", columnLayout.getCoordinate(maximized));		
 %>
 <div id="column_id_0>" 
      class="portal-layout-column" 
      style="float:left; width:100%; background-color: #ffffff;">
 <jsp:include page="jetui-portlet.jsp"/>
-</div>	
-<%	
-	}
-	else
-	{
-		int index = 0;
-		for (Collection<Fragment> collections : columnLayout.getColumns())
-		{
-		    String columnFloat = columnLayout.getColumnFloat(index);
-		    String columnWidth = columnLayout.getColumnWidth(index);
-		// class="portal-layout-column portal-layout-column-${layoutType}-${columnIndex}"	        
+</div>  
+<%  
+    }
+    else
+    {
+        int index = 0;
+        for (Collection<Fragment> collections : columnLayout.getColumns())
+        {
+            String columnFloat = columnLayout.getColumnFloat(index);
+            String columnWidth = columnLayout.getColumnWidth(index);
+        // class="portal-layout-column portal-layout-column-${layoutType}-${columnIndex}"           
 %>
 <div id="column_id_<%=index%>" 
      class="portal-layout-column" column='<%=index%>'
      style="float:<%=columnFloat%>; min-height: 100px; width:<%=columnWidth%>; background-color: #ffffff;">
 
-<%	    
-			int subindex = 0;
-		    for (Fragment fragment : collections)
-		    {
-		        if (!(fragment.getName().equals("j2-admin::JetspeedToolbox") || fragment.getName().equals("j2-admin::JetspeedNavigator")))
-		        {
-		    		//String content = jetui.renderPortletWindow(fragment.getId(), fragment.getName(), rc);
-		    		String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
-		    		request.setAttribute("content", content);
-		    		request.setAttribute("pageDec", pageDec);
-		    		request.setAttribute("fragment", fragment);		 
-		    		request.setAttribute("coordinate", columnLayout.getCoordinate(fragment));
+<%      
+            int subindex = 0;
+            for (Fragment fragment : collections)
+            {
+                if (!(fragment.getName().equals("j2-admin::JetspeedToolbox") || fragment.getName().equals("j2-admin::JetspeedNavigator")))
+                {
+                    //String content = jetui.renderPortletWindow(fragment.getId(), fragment.getName(), rc);
+                    String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
+                    request.setAttribute("content", content);
+                    request.setAttribute("pageDec", pageDec);
+                    request.setAttribute("fragment", fragment);      
+                    request.setAttribute("coordinate", columnLayout.getCoordinate(fragment));
 %>
 <jsp:include page="jetui-portlet.jsp"/>
-<%	    	
-					subindex++;
-		        }
-		    }
-		    index++;
+<%          
+                    subindex++;
+                }
+            }
+            index++;
 %>
 </div>
 <%
-		}
-	}
+        }
+    }
 %>
 </div>
 </td>

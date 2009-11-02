@@ -436,9 +436,16 @@ position: absolute;
 right: 3px; top: 21px; 
 }
 
+.layout-greenearth .layout-horizontal-menu {
+position:absolute;
+display:none;
+left:300px;
+top:10px;
+}
+
 .layout-greenearth .layout-statusarea {
 position: absolute; 
-right: 2px; top: 0px; 
+right: 2px; top: 10px; 
 color: #fff;
 padding:2px;
 text-decoration:none;

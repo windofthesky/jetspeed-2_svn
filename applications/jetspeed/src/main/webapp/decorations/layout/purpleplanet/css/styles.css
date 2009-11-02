@@ -182,19 +182,19 @@ background-position: 0px -30px
 }
 
 .layout-purpleplanet .menu {
-	background:url(../images/blue_gradient.png) #3A0058;
-	padding:1px;
-	border-top:1px solid #fff;
+    background:url(../images/blue_gradient.png) #3A0058;
+    padding:1px;
+    border-top:1px solid #fff;
 }
 
 .layout-purpleplanet .menu a {
-	color:#fff;
+    color:#fff;
    text-decoration:none;
 }
 
 .layout-purpleplanet .menu a:hover {
-	color:#fff;
-	text-decoration:underline;
+    color:#fff;
+    text-decoration:underline;
 }
 
 .layout-purpleplanet .tabs {
@@ -398,10 +398,10 @@ color: #012d46;
 }
 
 .layout-purpleplanet .header {
-	width:100%;
-	background:#32004b;
-	border-bottom:4px solid #9933ff;
-	margin:0px;
+    width:100%;
+    background:#32004b;
+    border-bottom:4px solid #9933ff;
+    margin:0px;
 }
 
 .layout-purpleplanet .logo {
@@ -436,9 +436,16 @@ position: absolute;
 right: 3px; top: 21px; 
 }
 
+.layout-purpleplanet .layout-horizontal-menu {
+position:absolute;
+display:none;
+left:300px;
+top:10px;
+}
+
 .layout-purpleplanet .layout-statusarea {
 position: absolute; 
-right: 2px; top: 0px; 
+right: 2px; top: 10px; 
 color: #fff;
 padding:2px;
 text-decoration:none;

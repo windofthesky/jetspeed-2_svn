@@ -1,5 +1,18 @@
 //Use loader to grab the modules needed
-YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'node-base', function(Y) {
+YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'node-base', 'node-menunav', function(Y) {
+	
+	//	Retrieve the Node instance representing the root menu
+	//	(<div id="environments-menu">) and call the "plug" method
+	//	passing in a reference to the MenuNav Node Plugin.
+
+	var menu = Y.one("#environments-menu");
+
+	menu.plug(Y.Plugin.NodeMenuNav);
+
+	//	Show the menu now that it is ready
+
+	menu.setStyle("display","inline");
+	
 	//new Y.Console().render(); 
     //Make this an Event Target so we can bubble to it
     var Portal = function() {
@@ -73,8 +86,8 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
     ////////////////////////////////////////////////////    
     // Create Navigator Portlet
     var navigator = new Portlet();
-    navigator.set("name", "j2-admin::JetspeedNavigator");
-    navigator.set("id", "_JetspeedNavigator");
+    navigator.set("name", "j2-admin::PageNavigator");
+    navigator.set("id", "_PageNavigator");
     navigator.set("toolbar", true);
     navigator.set("detached", false);
     var toolbox = new Portlet();

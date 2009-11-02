@@ -398,10 +398,10 @@ color: #012d46;
 }
 
 .layout-jetspeed .header {
-	width:100%;
-	background:#000;
-	border-bottom:4px solid #eef0f0;
-	margin:0px;
+    width:100%;
+    background:#000;
+    border-bottom:4px solid #eef0f0;
+    margin:0px;
 }
 
 .layout-jetspeed .logo {
@@ -437,9 +437,16 @@ position: absolute;
 right: 3px; top: 21px; 
 }
 
+.layout-jetspeed .layout-horizontal-menu {
+position:absolute;
+display:none;
+left:300px;
+top:10px;
+}
+
 .layout-jetspeed .layout-statusarea {
 position: absolute; 
-right: 2px; top: 0px; 
+right: 2px; top: 10px; 
 color: #fff;
 padding:2px;
 text-decoration:none;
@@ -597,4 +604,3 @@ font-weight: bold;
     margin-left: 0px;
     clear: both;
 }
-
