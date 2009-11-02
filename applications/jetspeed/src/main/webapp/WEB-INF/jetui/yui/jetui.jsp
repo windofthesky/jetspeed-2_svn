@@ -105,6 +105,7 @@ for (String style : jetui.getStyleSheets(rc))
 		request.setAttribute("content", content);
 		request.setAttribute("pageDec", pageDec);
 		request.setAttribute("fragment", maximized);
+		request.setAttribute("coordinate", columnLayout.getCoordinate(maximized));		
 %>
 <div id="column_id_0>" 
      class="portal-layout-column" 
