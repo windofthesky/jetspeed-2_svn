@@ -23,6 +23,7 @@ limitations under the License.
 <%@ page import="org.apache.jetspeed.request.RequestContext" %>
 <%@ page import="org.apache.jetspeed.om.page.Page" %>
 <%@ page import="org.apache.jetspeed.om.page.ContentFragment" %>
+<%@ page import="org.apache.jetspeed.om.page.Fragment" %>
 <%@ page import="org.apache.jetspeed.portlets.layout.ColumnLayout" %>
 <%@ page import="org.apache.jetspeed.om.page.ContentFragment" %>
 <%@ page import="org.apache.jetspeed.decoration.DecoratorAction" %>
@@ -115,28 +116,28 @@ for (String style : jetui.getStyleSheets(rc))
 	else
 	{
 		int index = 0;
-		for (Object collections : columnLayout.getColumns())
+		for (Collection<Fragment> collections : columnLayout.getColumns())
 		{
 		    String columnFloat = columnLayout.getColumnFloat(index);
 		    String columnWidth = columnLayout.getColumnWidth(index);
 		// class="portal-layout-column portal-layout-column-${layoutType}-${columnIndex}"	        
 %>
 <div id="column_id_<%=index%>" 
-     class="portal-layout-column"
+     class="portal-layout-column" column='<%=index%>'
      style="float:<%=columnFloat%>; min-height: 100px; width:<%=columnWidth%>; background-color: #ffffff;">
 
 <%	    
 			int subindex = 0;
-		    Collection<ContentFragment> columns = (Collection<ContentFragment>)collections;
-		    for (ContentFragment fragment : columns)
+		    for (Fragment fragment : collections)
 		    {
 		        if (!(fragment.getName().equals("j2-admin::JetspeedToolbox") || fragment.getName().equals("j2-admin::JetspeedNavigator")))
 		        {
 		    		//String content = jetui.renderPortletWindow(fragment.getId(), fragment.getName(), rc);
-		    		String content = jetui.getRenderedContent(fragment, rc);
+		    		String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
 		    		request.setAttribute("content", content);
 		    		request.setAttribute("pageDec", pageDec);
-		    		request.setAttribute("fragment", fragment);		    		
+		    		request.setAttribute("fragment", fragment);		 
+		    		request.setAttribute("coordinate", columnLayout.getCoordinate(fragment));
 %>
 <jsp:include page="jetui-portlet.jsp"/>
 <%	    	

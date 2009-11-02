@@ -24,6 +24,7 @@ limitations under the License.
 <%@ page import="org.apache.jetspeed.om.page.Page" %>
 <%@ page import="org.apache.jetspeed.om.page.ContentFragment" %>
 <%@ page import="org.apache.jetspeed.portlets.layout.ColumnLayout" %>
+<%@ page import="org.apache.jetspeed.portlets.layout.LayoutCoordinate" %>
 <%@ page import="org.apache.jetspeed.om.page.ContentFragment" %>
 <%@ page import="org.apache.jetspeed.decoration.DecoratorAction" %>
 <%@ page import="org.apache.jetspeed.PortalReservedParameters" %>
@@ -31,11 +32,12 @@ limitations under the License.
 	String content = (String)request.getAttribute("content");
 	String pageDec = (String)request.getAttribute("pageDec");
 	ContentFragment fragment = (ContentFragment)request.getAttribute("fragment");
+	LayoutCoordinate coordinate = (LayoutCoordinate)request.getAttribute("coordinate");
 	String title = "";
 	if (fragment.getPortletContent() != null)
 	    title = fragment.getPortletContent().getTitle();
 %>
-	<div class="portal-layout-cell" id="<%=fragment.getId()%>" name="<%=fragment.getName()%>">
+	<div class="portal-layout-cell" id="<%=fragment.getId()%>" name="<%=fragment.getName()%>" column="<%=coordinate.getX()%>" row="<%=coordinate.getY()%>">
 		<div class="portlet <%=pageDec%>">
 		    <div class="PTitle" >
 	          <div class="PTitleContent"><%=title%></div>               

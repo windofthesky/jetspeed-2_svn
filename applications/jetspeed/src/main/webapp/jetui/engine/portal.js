@@ -1,5 +1,5 @@
 //Use loader to grab the modules needed
-YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base', function(Y) {
+YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'node-base', function(Y) {
 	//new Y.Console().render(); 
     //Make this an Event Target so we can bubble to it
     var Portal = function() {
@@ -31,12 +31,15 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base',
     	"name" : { value: "undefined" }, 
         "id" : { value: "0" },
         "toolbar" : { value : false },
-        "detached" : { value : false }
+        "detached" : { value : false },
+        "column" : { value : 0 },
+        "row" : { value : 0 }
     };
 	Portlet.prototype.info = function() {
 		Y.log("name: " + this.get("name"));
 		Y.log("id  : " + this.get("id"));		
 		Y.log("toolbar  : " + this.get("toolbar"));		
+		Y.log("col, row  : " + this.get("column") + "," + this.get("row"));		
 		Y.log("---------");
     };
 
@@ -55,12 +58,15 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base',
     Layout.ATTRS = {
     	"name" : { value: "undefined" }, 
         "id" : { value: "0" },
-        "nested" : { value : false }
+        "nested" : { value : false },
+        "column" : { value : 0 },
+        "row" : { value : 0 }
     };
 	Layout.prototype.info = function() {
 		Y.log("name: " + this.get("name"));
 		Y.log("id  : " + this.get("id"));		
 		Y.log("nested  : " + this.get("nested"));		
+		Y.log("col, row  : " + this.get("column") + "," + this.get("row"));		
 		Y.log("---------");
     };
     
@@ -175,8 +181,9 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base',
         portlet.set("id", v.getAttribute("id"));
         portlet.set("toolbar", false);
         portlet.set("detached", false);
+        portlet.set("column", v.getAttribute("column"));
+        portlet.set("row", v.getAttribute("row"));
         v.data = portlet;
-        //portlet.info();        
         var ddNav = new Y.DD.Drag({
             node: v,
             groups: ['portlets'],
@@ -189,6 +196,7 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base',
             node: v,
             groups: ['portlets', 'toolbars']            
         });        
+    	//portlet.info();
     });
     
     var dropLayouts = Y.Node.all('.portal-layout-column');
@@ -197,6 +205,8 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base',
         layout.set("name", v.getAttribute("name"));
         layout.set("id", v.getAttribute("id"));
         layout.set("nested", false);
+        layout.set("column", v.getAttribute("column"));        
+        layout.set("row", 0);
         v.data = layout;
         //layout.info();
         if (v.get('children').size() == 0)
@@ -208,11 +218,10 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base',
         }
     });
 
-    var onComplete = function(id, o, args) { 
+    var onRemoveComplete = function(id, o, args) { 
     	var id = id; // Transaction ID. 
     	var data = o.responseText; // Response data. 
     	var widgetId = args[0];
-    	Y.log("widget removed = " + widgetId);
     	// now remove it from the dom
     	var widget = Y.one("#" + widgetId);
     	if (widget)
@@ -230,20 +239,19 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base',
     	}
     };     
     
-    var onClickWindow = function(e) {
+    var onClickRemove = function(e) {
     	var uri = document.location.href;
     	uri = uri.replace("/ui", "/ajaxapi");
     	var windowId =  e.currentTarget.getAttribute('id');
     	windowId = windowId.replace("jetspeed-close-", "");
     	var uri = uri + "?action=remove&id=" + windowId;
-    	Y.log("delete uri = " + uri);    	
-        Y.on('io:complete', onComplete, this, [windowId]); 
+        Y.on('io:complete', onRemoveComplete, this, [windowId]); 
         var request = Y.io(uri); 
     };
-    
+
     var closeWindows = Y.Node.all('.portlet-action-close');    
     closeWindows.each(function(v, k) {
-        v.on('click', onClickWindow);
+        v.on('click', onClickRemove);
     });
         
     Portal.prototype.toggleToolbar = function(toolbar, toggler, compareStyle) {
@@ -261,11 +269,10 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base',
         }	        
         toolbar.fx.set('reverse', !toolbar.fx.get('reverse')); // toggle reverse 
         toolbar.fx.run();
-	};
-	    
+	};	   
     
 	Y.DD.DDM.on('drag:drophit', function(e) {
-        var drop = e.drop.get('node'),
+		var drop = e.drop.get('node'),
             drag = e.drag.get('node');
         if (drag.data.get("toolbar"))
         {        	
@@ -293,6 +300,9 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base',
 				    }
 				}              				
             }
+        }
+        else
+        {
         }
     });
 	
@@ -379,6 +389,17 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base',
         }        
     };    
 
+    var onMoveComplete = function(id, o, args) { 
+    	var id = id; // Transaction ID. 
+    	var data = o.responseText; // Response data.
+    	Y.log("move result = " + data);
+    	var dataIn = Y.DataType.XML.parse(data),
+    		schema = {  resultListLocator: "status", resultFields: [{key:"status"}] },
+    		dataOut = Y.DataSchema.XML.apply(schema, dataIn);
+		Y.log("data = " + dataOut)                
+    	var widgetId = args[0];
+    };     
+    
     Y.DD.DDM.on('drag:end', function(e) {
         var drag = e.target;
         if (drag.target) {
@@ -399,7 +420,43 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'cookie', 'json', 'node-base',
         //drag.get('node').setStyle('border', '');                
         drag.get('node').removeClass('moving');
         drag.get('dragNode').set('innerHTML', '');
+
+        persistMove(drag.get('node'));
     });
+    
+    var persistMove = function(drag) {
+        if (drag.data.get("toolbar") == false) {
+        	var uri = document.location.href;
+        	uri = uri.replace("/ui", "/ajaxapi");
+        	var windowId =  drag.getAttribute('id');
+        	var oldColumn = drag.data.get('column');
+        	var oldRow = drag.data.get('row');        	
+    		var dragParent = drag.get('parentNode');
+        	var parentColumn = dragParent.data.get('column');
+        	if (parentColumn != oldColumn)
+        	{
+        		reallocateColumn(oldColumn); // moved from different column
+        		drag.data.set('column', parentColumn);
+        	}
+        	reallocateColumn(parentColumn);
+        	var uri = uri + "?action=moveabs&id=" + windowId + "&col=" + drag.data.get('column') + "&row=" + drag.data.get('row');
+            Y.on('io:complete', onMoveComplete, this, [windowId]); 
+            var request = Y.io(uri);         	    	
+        }    	
+    };
+	var reallocateColumn = function(column) {
+	    var columns = Y.Node.all('.portal-layout-column');
+	    columns.each(function(v, k) {
+	    	if (v.data.get('column') == column)
+	    	{
+	    		var row = 0;
+    			v.get('children').each(function(v,k) {
+	    			v.data.set('row', row);
+	    			row++;
+	    		}, row);
+	    	}
+	    });
+	};    
     
     Y.DD.DDM.on('drag:start', function(e) {
         var drag = e.target;

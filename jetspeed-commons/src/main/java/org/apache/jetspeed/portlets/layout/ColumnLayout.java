@@ -69,6 +69,8 @@ import org.apache.jetspeed.om.page.Fragment;
  */
 public class ColumnLayout implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     /** Percentage widths gutter width */
     private final static double PERCENTAGE_WIDTH_GUTTER = 0.01;
 
@@ -80,7 +82,7 @@ public class ColumnLayout implements Serializable
     private final int numberOfColumns;
     
     /** SortedMap of Columns (which are also sorted maps */
-    private final SortedMap columns;
+    private final SortedMap<Integer, SortedMap<Integer, Fragment>> columns;
     
     /** Width settings for eacah column */
     private final String[] columnWidths;
@@ -89,10 +91,10 @@ public class ColumnLayout implements Serializable
     private final int[] nextRowNumber;
     
     /** maps Fragments (key) to it's current LayoutCoordinate (value) in this layout */
-    private final Map coordinates;
+    private final Map<Fragment, LayoutCoordinate> coordinates;
     
     /** All of the LayoutEventListeners registered to this layout */
-    private final List eventListeners;
+    private final List<LayoutEventListener> eventListeners;
 
     /**
      * 
@@ -113,14 +115,14 @@ public class ColumnLayout implements Serializable
     {
         this.numberOfColumns = numberOfColumns;
         this.columnWidths = columnWidths;
-        eventListeners = new ArrayList();
+        eventListeners = new ArrayList<LayoutEventListener>();
 
-        columns = new TreeMap();
-        coordinates = new HashMap();
+        columns = new TreeMap<Integer, SortedMap<Integer, Fragment>>();
+        coordinates = new HashMap<Fragment, LayoutCoordinate>();
 
         for (int i = 0; i < numberOfColumns; i++)
         {
-            columns.put(new Integer(i), new TreeMap());
+            columns.put(new Integer(i), new TreeMap<Integer, Fragment>());
         }
 
         nextRowNumber = new int[numberOfColumns];
@@ -152,10 +154,10 @@ public class ColumnLayout implements Serializable
      *            are used.
      * @throws LayoutEventException
      */
-    public ColumnLayout(int numberOfColumns, String layoutType, Collection fragments, String[] columnWidths) throws LayoutEventException
+    public ColumnLayout(int numberOfColumns, String layoutType, Collection<Fragment> fragments, String[] columnWidths) throws LayoutEventException
     {
         this(numberOfColumns, layoutType, columnWidths);
-        Iterator fragmentsItr = fragments.iterator();
+        Iterator<Fragment> fragmentsItr = fragments.iterator();
         try
         {
             while (fragmentsItr.hasNext())
@@ -238,7 +240,7 @@ public class ColumnLayout implements Serializable
      * @throws InvalidLayoutLocationException
      *             if the column is outisde of the constraints of this layout
      */
-    public Collection getColumn(int columnNumber) throws InvalidLayoutLocationException
+    public Collection<Fragment> getColumn(int columnNumber) throws InvalidLayoutLocationException
     {
         return Collections.unmodifiableCollection(getColumnMap(columnNumber).values());
     }
@@ -312,15 +314,13 @@ public class ColumnLayout implements Serializable
      *         Collection objects) in order within this layout. All Collections
      *         are immutable.
      */
-    public Collection getColumns()
+    public Collection<Collection<Fragment>> getColumns()
     {
-        ArrayList columnList = new ArrayList(getNumberOfColumns());
-        Iterator itr = columns.values().iterator();
-        while (itr.hasNext())
+        ArrayList<Collection<Fragment>> columnList = new ArrayList<Collection<Fragment>>(getNumberOfColumns());
+        for (SortedMap<Integer, Fragment> map : columns.values())
         {
-            columnList.add(Collections.unmodifiableCollection(((Map) itr.next()).values()));
+            columnList.add(Collections.unmodifiableCollection(map.values()));
         }
-
         return Collections.unmodifiableCollection(columnList);
     }
     
@@ -342,7 +342,7 @@ public class ColumnLayout implements Serializable
      * this ColumnLayout in no sepcific order.
      * @return Immutable Collection of Fragments.
      */
-    public Collection getFragments()
+    public Collection<Fragment> getFragments()
     {
         return Collections.unmodifiableCollection(coordinates.keySet());
     }
@@ -360,7 +360,7 @@ public class ColumnLayout implements Serializable
     public Fragment getFragmentAt(int columnNumber, int rowNumber) throws EmptyLayoutLocationException,
             InvalidLayoutLocationException
     {
-        SortedMap column = getColumnMap(columnNumber);
+        SortedMap<Integer, Fragment> column = getColumnMap(columnNumber);
         Integer rowInteger = new Integer(rowNumber);
         if (column.containsKey(rowInteger))
         {
@@ -404,7 +404,7 @@ public class ColumnLayout implements Serializable
      * 
      * @return The last column in this layout.  The Collection is immutable.
      */
-    public Collection getLastColumn() 
+    public Collection<Fragment> getLastColumn() 
     {
         try
         {
@@ -422,7 +422,7 @@ public class ColumnLayout implements Serializable
      * 
      * @return The last column in this layout.  The Collection is immutable.
      */
-    public Collection getFirstColumn()
+    public Collection<Fragment> getFirstColumn()
     {
         try
         {
@@ -646,7 +646,7 @@ public class ColumnLayout implements Serializable
     protected void doMove(Fragment fragment, LayoutCoordinate oldCoordinate, LayoutCoordinate newCoordinate)
             throws InvalidLayoutLocationException, LayoutEventException
     {
-        SortedMap oldColumn = getColumnMap(oldCoordinate.getX());
+        SortedMap<Integer, Fragment> oldColumn = getColumnMap(oldCoordinate.getX());
         oldColumn.remove(new Integer(oldCoordinate.getY()));
         coordinates.remove(fragment);
 
@@ -686,7 +686,7 @@ public class ColumnLayout implements Serializable
      */
     protected void doAdd(int columnNumber, int rowNumber, Fragment fragment) throws InvalidLayoutLocationException, LayoutEventException
     {
-        SortedMap column = getColumnMap(columnNumber);
+        SortedMap<Integer, Fragment> column = getColumnMap(columnNumber);
     
         Integer rowInteger = new Integer(rowNumber);
         LayoutCoordinate targetCoordinate = new LayoutCoordinate(columnNumber, rowNumber);
@@ -719,17 +719,17 @@ public class ColumnLayout implements Serializable
      * SortedMap.
      * 
      * @param columnNumber
-     * @return
+     * @return SortedMap<Integer, Fragment>
      * @throws InvalidLayoutLocationException if the <code>columnNumber</code> resides
      * outside the bounds of this layout.
      */
-    protected final SortedMap getColumnMap(int columnNumber) throws InvalidLayoutLocationException
+    protected final SortedMap<Integer, Fragment> getColumnMap(int columnNumber) throws InvalidLayoutLocationException
     {
-        Integer columnNumberIneteger = new Integer(columnNumber);
+        Integer columnNumberInteger = new Integer(columnNumber);
 
-        if (columns.containsKey(columnNumberIneteger))
+        if (columns.containsKey(columnNumberInteger))
         {
-            return ((SortedMap) columns.get(columnNumberIneteger));
+            return columns.get(columnNumberInteger);
         }
         else
         {
@@ -807,10 +807,8 @@ public class ColumnLayout implements Serializable
      */
     protected final void processEvent(LayoutEvent event) throws LayoutEventException
     {
-        Iterator itr = eventListeners.iterator();
-        while(itr.hasNext())
+        for (LayoutEventListener eventListener : eventListeners)
         {
-            LayoutEventListener eventListener = (LayoutEventListener) itr.next();
             eventListener.handleEvent(event);
         }
         
