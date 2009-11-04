@@ -74,7 +74,7 @@ for (String style : jetui.getStyleSheets(rc))
 <h1 class="logo">Jetspeed 2</h1>
 <span id="environments-menu" class="layout-horizontal-menu yui-menu yui-menu-horizontal yui-menubuttonnav"><%=spacesNavContent%></span>
 <div class="menu">
-&nbsp;<span style='position: absolute; left: 0px' id='jstbLeftToggle' class='jstbToggle1'></span><span id='jstbRightToggle' class='jstbToggle2' style='position: absolute; right: 0px'></span>
+&nbsp;<span style='position: absolute; left: 0px; top: 50px;' id='jstbLeftToggle' class='jstbToggle1'></span><span id='jstbRightToggle' class='jstbToggle2' style='position: absolute; right: 0px; top: 50px;'></span>
 </div>
 <%if (request.getUserPrincipal() != null) {%>
 <span class="layout-statusarea"><b>David Sean Taylor</b> | Profile | Tasks (5) | Notifications (2) | <a href="<%=request.getContextPath()%>/login/logout">Log out</a></span>
@@ -86,14 +86,16 @@ for (String style : jetui.getStyleSheets(rc))
 <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
 <tr>         
 <td>
-<div id='jstbLeft' class='jsLeftToolbar'> 
-<div id="jsNavigator" class="portlet <%=pageDec%>">
+<div id='jstbLeft' class='jsLeftToolbar'>
+<div id='jsNavigator' class='xportal-layout-cell'>
+<div id="jsNavigator2" class="portlet <%=pageDec%>">
     <div class="PTitle" >
       <div class="PTitleContent">Navigator</div>
     </div>
     <div class="PContentBorder">
       <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span><%=navContent %></div>
     </div>
+</div>
 </div>
 </div>
 </td>
@@ -127,7 +129,7 @@ for (String style : jetui.getStyleSheets(rc))
 %>
 <div id="column_id_<%=index%>" 
      class="portal-layout-column" column='<%=index%>'
-     style="float:<%=columnFloat%>; min-height: 100px; width:<%=columnWidth%>; background-color: #ffffff;">
+     style="float:<%=columnFloat%>; min-height: 100px; width:<%=columnWidth%>;">
 
 <%      
             int subindex = 0;
@@ -158,15 +160,17 @@ for (String style : jetui.getStyleSheets(rc))
 </td>
 <td>
 <div id='jstbRight' class='jsRightToolbar'>
-<div id="jsToolbox" class="portlet <%=pageDec%>">
+<div id='jsToolbox' class='xportal-layout-cell'>
+<div id="jsToolbox2" class="portlet <%=pageDec%>">
     <div class="PTitle" >
       <div class="PTitleContent">Toolbox</div>
     </div>
     <div class="PContentBorder">
-      <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span><%=tbContent %></div>
+      <div class="PContent"><%=tbContent %></div>
     </div>
 </div>
 </div> 
+</div>
 </td>
 </tr>
 </table>

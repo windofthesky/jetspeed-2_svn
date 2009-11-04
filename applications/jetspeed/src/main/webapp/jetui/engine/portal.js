@@ -478,8 +478,11 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
 //        }
         var dragNode = drag.get('dragNode');
         dragNode.set('innerHTML', drag.get('node').get('innerHTML'));
-        dragNode.setStyle('opacity','.5');
-        dragNode.setAttribute('class', 'portlet purpleplanet');
+        Y.log("class is " + drag.get('node').getAttribute('class'));
+        Y.log("node is " + drag.get('node').getAttribute('id'));
+
+        //        dragNode.setStyle('opacity','.5');
+//        dragNode.setAttribute('class', 'portlet purpleplanet');
 
         if (drag.get('node').data.get("toolbar"))
         {

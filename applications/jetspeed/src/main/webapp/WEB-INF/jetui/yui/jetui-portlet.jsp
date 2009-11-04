@@ -59,7 +59,7 @@ if (request.getUserPrincipal() != null)
 			    </div>
 		      </div>
 		       <div class="PContentBorder">
-		         <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span><%=content%></div>
+		         <div class="PContent"><%=content%></div>
 		       </div>
 		    </div>
           </div>
