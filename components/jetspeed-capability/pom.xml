@@ -19,12 +19,12 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  
+
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
     <maven>2.0.9</maven>
   </prerequisites>
-  
+
   <artifactId>jetspeed-capability</artifactId>
   <name>Jetspeed-2 Capability Components</name>
   <description>
@@ -38,9 +38,9 @@
     <version>2.2.1-SNAPSHOT</version>
   </parent>
   <packaging>jar</packaging>
-  
+
   <dependencies>
-    
+
     <!-- Build Dependencies -->
     <dependency>
       <groupId>${pom.groupId}</groupId>
@@ -59,7 +59,7 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>${pom.groupId}</groupId>
       <artifactId>jetspeed-cm</artifactId>
@@ -80,10 +80,10 @@
       <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
       <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
       <scope>test</scope>
-    </dependency>      
+    </dependency>
   </dependencies>
-  
-    <build>
+
+  <build>
     <plugins>
       <plugin>
         <groupId>${pom.groupId}</groupId>
@@ -97,26 +97,33 @@
             </goals>
             <phase>process-test-resources</phase>
             <configuration>
-               <skip>${maven.test.skip}</skip>
-               <unpack>
-                 <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
-                   <resources>
-                       <resource>
-                           <path>assembly</path>
-                           <include>capabilities.xml,transaction.xml,boot/datasource.xml</include>
-                       </resource>
-                     <resource>
-                           <path>db-ojb</path>
-                       </resource>
-                       <resource>
-                           <path>seed/min</path>
-                           <include>j2-seed.xml</include>
-                       </resource>
-                   </resources>
+              <skip>${skipTests}</skip>
+              <unpack>
+                <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
+                <resources>
+                  <resource>
+                    <path>assembly</path>
+                    <include>capabilities.xml,transaction.xml,boot/datasource.xml</include>
+                  </resource>
+                  <resource>
+                    <path>db-ojb</path>
+                  </resource>
+                  <resource>
+                    <path>seed/min</path>
+                    <include>j2-seed.xml</include>
+                  </resource>
+                </resources>
               </unpack>
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-portal-resources</artifactId>
+            <version>${pom.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
     <testResources>
@@ -126,5 +133,5 @@
       </testResource>
     </testResources>
   </build>
-  
+
 </project>

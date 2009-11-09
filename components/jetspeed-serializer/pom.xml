@@ -18,198 +18,192 @@
     $Id$
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    
-    <modelVersion>4.0.0</modelVersion>
-    <prerequisites>
-        <maven>2.0.9</maven>
-    </prerequisites>
-    
-    <artifactId>jetspeed-serializer</artifactId>
-    <name>Jetspeed-2 Serializer</name>
-    <description>Jetspeed-2 Serializer</description>
-    <parent>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
-        <artifactId>components</artifactId>
-        <version>2.2.1-SNAPSHOT</version>
-    </parent>
-    <packaging>jar</packaging>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <!-- Dependencies -->
+  <modelVersion>4.0.0</modelVersion>
+  <prerequisites>
+    <maven>2.0.9</maven>
+  </prerequisites>
 
-    <dependencies>
+  <artifactId>jetspeed-serializer</artifactId>
+  <name>Jetspeed-2 Serializer</name>
+  <description>Jetspeed-2 Serializer</description>
+  <parent>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
+    <artifactId>components</artifactId>
+    <version>2.2.1-SNAPSHOT</version>
+  </parent>
+  <packaging>jar</packaging>
 
-        <!-- Build Dependencies -->
-        <dependency>
+  <!-- Dependencies -->
+
+  <dependencies>
+
+    <!-- Build Dependencies -->
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-commons</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils-bean-collections</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>dom4j</groupId>
+          <artifactId>dom4j</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>javolution</groupId>
+      <artifactId>javolution</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ddlutils</groupId>
+      <artifactId>ddlutils</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>dom4j</groupId>
+          <artifactId>dom4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>stax</groupId>
+          <artifactId>stax-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!--
+      The following commented out dependencies are necessary to run the TestSerializer unit test. However, since this
+      brings in circular dependency references to the build (breaking the build), I have commented out the
+      TestSerializer as well as disabling the test <dependency> <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-registry</artifactId> <scope>test</scope> </dependency> <dependency>
+      <groupId>${pom.groupId}</groupId> <artifactId>jetspeed-capability</artifactId> <scope>test</scope> </dependency>
+
+      <dependency> <groupId>${pom.groupId}</groupId> <artifactId>jetspeed-profiler</artifactId> <scope>test</scope>
+      </dependency>
+    -->
+    <dependency>
+      <groupId>tyrex</groupId>
+      <artifactId>tyrex</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
+      <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
+      <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-cm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/TestSerializer.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-unpack-maven-plugin</artifactId>
+        <version>${pom.version}</version>
+        <executions>
+          <execution>
+            <id>unpack-test-resources</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>process-test-resources</phase>
+            <configuration>
+              <skip>${skipTests}</skip>
+              <unpack>
+                <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
+                <resources>
+                  <resource>
+                    <path>assembly</path>
+                    <include>*.xml,boot/*.xml</include>
+                    <destination>assembly</destination>
+                  </resource>
+                  <resource>
+                    <path>db-ojb</path>
+                  </resource>
+                  <resource>
+                    <path>conf/jetspeed</path>
+                    <include>*.properties</include>
+                  </resource>
+                  <resource>
+                    <path>seed</path>
+                    <include>*.xml</include>
+                  </resource>
+                </resources>
+              </unpack>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>        
-        <dependency>
-            <groupId>commons-configuration</groupId>
-            <artifactId>commons-configuration</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-beanutils</groupId>
-                    <artifactId>commons-beanutils-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-beanutils</groupId>
-                    <artifactId>commons-beanutils-bean-collections</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>dom4j</groupId>
-                    <artifactId>dom4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>javolution</groupId>
-            <artifactId>javolution</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ddlutils</groupId>
-            <artifactId>ddlutils</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>dom4j</groupId>
-                    <artifactId>dom4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>stax</groupId>
-                    <artifactId>stax-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        
-        <!-- 
-        The following commented out dependencies are necessary to run the TestSerializer unit test. However,
-         since this brings in circular dependency references to the build (breaking the build),
-        I have commented out the TestSerializer as well as disabling the test
-       
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-registry</artifactId>
-            <scope>test</scope>
-        </dependency>
+            <artifactId>jetspeed-portal-resources</artifactId>
+            <version>${pom.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+  </build>
 
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-capability</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-profiler</artifactId>
-            <scope>test</scope>
-        </dependency>
-         -->
-        <dependency>
-            <groupId>tyrex</groupId>
-            <artifactId>tyrex</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
-            <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
-            <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-        	<groupId>${pom.groupId}</groupId>
-        	<artifactId>jetspeed-cm</artifactId>
-        </dependency>      
-        <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-          <scope>test</scope>
-        </dependency>
-        
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/TestSerializer.java</exclude>                    
-					</excludes>
-				</configuration>                
-            </plugin>
-            <plugin>
-                <groupId>${pom.groupId}</groupId>
-                <artifactId>jetspeed-unpack-maven-plugin</artifactId>
-                <version>${pom.version}</version>
-                <executions>
-                    <execution>
-                        <id>unpack-test-resources</id>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <phase>process-test-resources</phase>
-                        <configuration>
-                            <skip>${maven.test.skip}</skip>
-                            <unpack>
-                                <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
-                                <resources>
-                                    <resource>
-                                        <path>assembly</path>
-                                        <include>*.xml,boot/*.xml</include>
-                                        <destination>assembly</destination>
-                                    </resource>
-                                    <resource>
-                                        <path>db-ojb</path>
-                                    </resource>
-                                    <resource>
-                                        <path>conf/jetspeed</path>
-                                        <include>*.properties</include>                                        
-                                    </resource>                                    
-                                    <resource>
-                                        <path>seed</path>
-                                        <include>*.xml</include>                                        
-                                    </resource>                                    
-                                </resources>
-                            </unpack>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>            
-		</plugins>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-            </testResource>
-        </testResources>
-	</build>
-	
 </project>

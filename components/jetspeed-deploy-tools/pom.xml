@@ -72,6 +72,13 @@
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-portal-resources</artifactId>
+            <version>${pom.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

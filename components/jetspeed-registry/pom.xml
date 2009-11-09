@@ -18,170 +18,169 @@
     $Id$
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    
-    <modelVersion>4.0.0</modelVersion>
-    <prerequisites>
-        <maven>2.0.9</maven>
-    </prerequisites>
-    
-    <artifactId>jetspeed-registry</artifactId>
-    <name>Jetspeed-2 Registry Components</name>
-    <description>Jetspeed-2 Registry Components</description>
-    <parent>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
-        <artifactId>components</artifactId>
-        <version>2.2.1-SNAPSHOT</version>
-    </parent>
-    <packaging>jar</packaging>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <!-- Dependencies -->
+  <modelVersion>4.0.0</modelVersion>
+  <prerequisites>
+    <maven>2.0.9</maven>
+  </prerequisites>
 
-    <dependencies>
+  <artifactId>jetspeed-registry</artifactId>
+  <name>Jetspeed-2 Registry Components</name>
+  <description>Jetspeed-2 Registry Components</description>
+  <parent>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
+    <artifactId>components</artifactId>
+    <version>2.2.1-SNAPSHOT</version>
+  </parent>
+  <packaging>jar</packaging>
 
-        <!-- Build Dependencies -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-rdbms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-portlet-factory</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-search</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-serializer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-        </dependency>
+  <!-- Dependencies -->
 
-        <!-- Test Dependencies -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-file-cache</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
-            <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
-            <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
-            <scope>test</scope>
-        </dependency>      
-        <dependency>
-            <groupId>jmock</groupId>
-            <artifactId>jmock</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!--
-            Note: tyrex and junit is normally required only for test, but 
-            in this case, abstract test cases are included in the
-            component build... this should probably be fixed...
-            for now, assume that junit will be provided if these
-            test classes are used.
-        -->
-        <dependency>
-            <groupId>tyrex</groupId>
-            <artifactId>tyrex</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        
-    </dependencies>
+  <dependencies>
+
+    <!-- Build Dependencies -->
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-commons</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-rdbms</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-portlet-factory</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-search</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-serializer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
+
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-file-cache</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
+      <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
+      <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!--
+      Note: tyrex and junit is normally required only for test, but in this case, abstract test cases are included in
+      the component build... this should probably be fixed... for now, assume that junit will be provided if these test
+      classes are used.
+    -->
+    <dependency>
+      <groupId>tyrex</groupId>
+      <artifactId>tyrex</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
 
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <!-- PortletEntity usage is obsolete -->
-                        <exclude>**/TestPortletEntityDAO.java</exclude>
-                        <!--
-                            The following tests have been aggregated into
-                            TestRegistryDirectAll because the individual
-                            tests do not get executed in a predictable
-                            order by maven/junit. For example, on Linux
-                            FC4, these tests were repeatably executed
-                            in this order:
-                            TestRegistryDirectPart1a
-                            TestRegistryDirectPart2a
-                            TestRegistryDirectPart1b
-                            Obviously, the component unit tests then failed.
-                        -->
-                        <exclude>**/TestRegistryDirectPart1a.java</exclude>
-                        <exclude>**/TestRegistryDirectPart1b.java</exclude>
-                        <exclude>**/TestRegistryDirectPart2a.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>${pom.groupId}</groupId>
-                <artifactId>jetspeed-unpack-maven-plugin</artifactId>
-                <version>${pom.version}</version>
-                <executions>
-                    <execution>
-                        <id>unpack-test-resources</id>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <phase>process-test-resources</phase>
-                        <configuration>
-                            <skip>${maven.test.skip}</skip>
-                            <unpack>
-                                <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
-                                <resources>
-                                    <resource>
-                                        <path>assembly</path>
-                                        <include>transaction.xml,static-bean-references.xml,boot/datasource.xml</include>
-                                    </resource>
-                                    <resource>
-                                        <path>db-ojb</path>
-                                    </resource>
-                                </resources>
-                            </unpack>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-            </testResource>
-        </testResources>
-    </build>
-    
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <!-- PortletEntity usage is obsolete -->
+            <exclude>**/TestPortletEntityDAO.java</exclude>
+            <!--
+              The following tests have been aggregated into TestRegistryDirectAll because the individual tests do not
+              get executed in a predictable order by maven/junit. For example, on Linux FC4, these tests were repeatably
+              executed in this order: TestRegistryDirectPart1a TestRegistryDirectPart2a TestRegistryDirectPart1b
+              Obviously, the component unit tests then failed.
+            -->
+            <exclude>**/TestRegistryDirectPart1a.java</exclude>
+            <exclude>**/TestRegistryDirectPart1b.java</exclude>
+            <exclude>**/TestRegistryDirectPart2a.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-unpack-maven-plugin</artifactId>
+        <version>${pom.version}</version>
+        <executions>
+          <execution>
+            <id>unpack-test-resources</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>process-test-resources</phase>
+            <configuration>
+              <skip>${skipTests}</skip>
+              <unpack>
+                <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
+                <resources>
+                  <resource>
+                    <path>assembly</path>
+                    <include>transaction.xml,static-bean-references.xml,boot/datasource.xml</include>
+                  </resource>
+                  <resource>
+                    <path>db-ojb</path>
+                  </resource>
+                </resources>
+              </unpack>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-portal-resources</artifactId>
+            <version>${pom.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+  </build>
+
 </project>

@@ -18,184 +18,189 @@
     $Id$
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    
-    <modelVersion>4.0.0</modelVersion>
-    <prerequisites>
-        <maven>2.0.9</maven>
-    </prerequisites>
-    
-    <artifactId>jetspeed-security</artifactId>
-    <name>Jetspeed-2 Security Components</name>
-    <description>Jetspeed-2 Security Components</description>
-    <parent>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
-        <artifactId>components</artifactId>
-        <version>2.2.1-SNAPSHOT</version>
-    </parent>
-    <packaging>jar</packaging>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <!-- Dependencies -->
+  <modelVersion>4.0.0</modelVersion>
+  <prerequisites>
+    <maven>2.0.9</maven>
+  </prerequisites>
 
-    <dependencies>
+  <artifactId>jetspeed-security</artifactId>
+  <name>Jetspeed-2 Security Components</name>
+  <description>Jetspeed-2 Security Components</description>
+  <parent>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
+    <artifactId>components</artifactId>
+    <version>2.2.1-SNAPSHOT</version>
+  </parent>
+  <packaging>jar</packaging>
 
-        <!-- Build Dependencies -->
-        <dependency>
+  <!-- Dependencies -->
+
+  <dependencies>
+
+    <!-- Build Dependencies -->
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-commons</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-rdbms</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-serializer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
+    <!-- for spring-core we require JCL -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-file-cache</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
+      <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
+      <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!--
+      Note: tyrex and junit is normally required only for test, but in this case, abstract test cases are included in
+      the component build... this should probably be fixed... for now, assume that junit will be provided if these test
+      classes are used.
+    -->
+    <dependency>
+      <groupId>tyrex</groupId>
+      <artifactId>tyrex</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <artifactId>spring-ldap</artifactId>
+      <groupId>org.springframework.ldap</groupId>
+      <classifier>all</classifier>
+    </dependency>
+
+    <dependency>
+      <artifactId>apacheds-server-unit</artifactId>
+      <groupId>org.apache.directory.server</groupId>
+      <version>1.5.3</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- used by Apache DS -->
+    <dependency>
+      <artifactId>slf4j-jdk14</artifactId>
+      <groupId>org.slf4j</groupId>
+      <version>1.4.3</version>
+      <scope>test</scope>
+    </dependency>
+
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/spi/ldap/**.java</exclude>
+            <exclude>**/spi/TestDefaultJetspeedSynchronizer.java</exclude>
+            <exclude>**/spi/TestPasswordHistoryInterceptor.java</exclude>
+            <exclude>**/spi/TestPasswordExpirationAndMaxAuthenticationFailuresInterceptor.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-unpack-maven-plugin</artifactId>
+        <version>${pom.version}</version>
+        <executions>
+          <execution>
+            <id>unpack-test-resources</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>process-test-resources</phase>
+            <configuration>
+              <skip>${skipTests}</skip>
+              <unpack>
+                <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
+                <resources>
+                  <resource>
+                    <path>assembly</path>
+                    <include>transaction.xml,security-*.xml,static-bean-references.xml,boot/datasource.xml</include>
+                  </resource>
+                  <resource>
+                    <path>db-ojb</path>
+                  </resource>
+                </resources>
+              </unpack>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-rdbms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-serializer</artifactId>
-        </dependency>
-        <dependency>        
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
-        <!-- for spring-core we require JCL -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>        
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
+            <artifactId>jetspeed-portal-resources</artifactId>
+            <version>${pom.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+      <testResource>
+        <directory>src/test/java</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
+  </build>
 
-        <!-- Test Dependencies -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-file-cache</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-          <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${org.apache.jetspeed.test.jdbc.driver.groupId}</groupId>
-            <artifactId>${org.apache.jetspeed.test.jdbc.driver.artifactId}</artifactId>
-            <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
-            <scope>test</scope>
-        </dependency>      
-        <!--
-            Note: tyrex and junit is normally required only for test, but 
-            in this case, abstract test cases are included in the
-            component build... this should probably be fixed...
-            for now, assume that junit will be provided if these
-            test classes are used.
-        -->
-        <dependency>
-            <groupId>tyrex</groupId>
-            <artifactId>tyrex</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        
-        <dependency>      
-            <artifactId>spring-ldap</artifactId>
-            <groupId>org.springframework.ldap</groupId>
-            <classifier>all</classifier>
-        </dependency>
-
-        <dependency>      
-            <artifactId>apacheds-server-unit</artifactId>
-            <groupId>org.apache.directory.server</groupId>
-            <version>1.5.3</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <!-- used by Apache DS -->
-        <dependency>      
-            <artifactId>slf4j-jdk14</artifactId>
-            <groupId>org.slf4j</groupId>
-            <version>1.4.3</version>
-            <scope>test</scope>
-        </dependency>
-        
-        
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/spi/ldap/**.java</exclude>
-                        <exclude>**/spi/TestDefaultJetspeedSynchronizer.java</exclude>
-                        <exclude>**/spi/TestPasswordHistoryInterceptor.java</exclude>
-                        <exclude>**/spi/TestPasswordExpirationAndMaxAuthenticationFailuresInterceptor.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>${pom.groupId}</groupId>
-                <artifactId>jetspeed-unpack-maven-plugin</artifactId>
-                <version>${pom.version}</version>
-                <executions>
-                    <execution>
-                        <id>unpack-test-resources</id>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <phase>process-test-resources</phase>
-                        <configuration>
-                            <skip>${maven.test.skip}</skip>
-                            <unpack>
-                                <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
-                                <resources>
-                                    <resource>
-                                        <path>assembly</path>
-                                        <include>transaction.xml,security-*.xml,static-bean-references.xml,boot/datasource.xml</include>
-                                    </resource>
-                                    <resource>
-                                        <path>db-ojb</path>
-                                    </resource>
-                                </resources>
-                            </unpack>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-            </testResource>
-            <testResource>
-                <directory>src/test/java</directory>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </testResource>
-        </testResources>
-    </build>
-    
 </project>

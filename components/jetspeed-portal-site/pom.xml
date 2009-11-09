@@ -18,109 +18,116 @@
     $Id$
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    
-    <modelVersion>4.0.0</modelVersion>
-    <prerequisites>
-        <maven>2.0.9</maven>
-    </prerequisites>
-    
-    <artifactId>jetspeed-portal-site</artifactId>
-    <name>Jetspeed-2 Portal Site</name>
-    <description>Portal Site component implementation.</description>
-    <parent>
-        <groupId>org.apache.portals.jetspeed-2</groupId>
-        <artifactId>components</artifactId>
-        <version>2.2.1-SNAPSHOT</version>
-    </parent>
-    <packaging>jar</packaging>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <!-- Dependencies -->
+  <modelVersion>4.0.0</modelVersion>
+  <prerequisites>
+    <maven>2.0.9</maven>
+  </prerequisites>
 
-    <dependencies>
+  <artifactId>jetspeed-portal-site</artifactId>
+  <name>Jetspeed-2 Portal Site</name>
+  <description>Portal Site component implementation.</description>
+  <parent>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
+    <artifactId>components</artifactId>
+    <version>2.2.1-SNAPSHOT</version>
+  </parent>
+  <packaging>jar</packaging>
 
-        <!-- Build Dependencies -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-commons</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        
-        <!-- Test Dependencies -->
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-cm</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-profiler</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-id-generator</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-file-cache</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${pom.groupId}</groupId>
-            <artifactId>jetspeed-page-manager</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-          <scope>test</scope>
-        </dependency>
-    </dependencies>
+  <!-- Dependencies -->
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>${pom.groupId}</groupId>
-                <artifactId>jetspeed-unpack-maven-plugin</artifactId>
-                <version>${pom.version}</version>
-                <executions>
-                    <execution>
-                        <id>unpack-test-resources</id>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <phase>process-test-resources</phase>
-                        <configuration>
-                            <skip>${maven.test.skip}</skip>
-                            <unpack>
-                                <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
-                                <resources>
-                                    <resource>
-                                        <path>assembly</path>
-                                        <include>boot/datasource.xml</include>
-                                    </resource>
-                                    <resource>
-                                        <path>db-ojb</path>
-                                        <include>ehcache.xml</include>
-                                    </resource>
-                                </resources>
-                            </unpack>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-    
+  <dependencies>
+
+    <!-- Build Dependencies -->
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-commons</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-cm</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-profiler</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-id-generator</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-file-cache</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-page-manager</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-unpack-maven-plugin</artifactId>
+        <version>${pom.version}</version>
+        <executions>
+          <execution>
+            <id>unpack-test-resources</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>process-test-resources</phase>
+            <configuration>
+              <skip>${skipTests}</skip>
+              <unpack>
+                <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
+                <resources>
+                  <resource>
+                    <path>assembly</path>
+                    <include>boot/datasource.xml</include>
+                  </resource>
+                  <resource>
+                    <path>db-ojb</path>
+                    <include>ehcache.xml</include>
+                  </resource>
+                </resources>
+              </unpack>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-portal-resources</artifactId>
+            <version>${pom.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

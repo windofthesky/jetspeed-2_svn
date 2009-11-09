@@ -1465,7 +1465,7 @@
           <version>${pom.version}</version>
           <dependencies>
             <dependency>
-              <groupId>${groupId}</groupId>
+              <groupId>${pom.groupId}</groupId>
               <artifactId>jetspeed-portal-resources</artifactId>
               <version>${pom.version}</version>
             </dependency>
