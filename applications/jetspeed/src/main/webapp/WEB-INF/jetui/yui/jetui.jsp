@@ -37,13 +37,14 @@ limitations under the License.
   String navContent = jetui.renderPortletWindow("_PageNavigator", "j2-admin::PageNavigator", rc);
   String spacesNavContent = jetui.renderPortletWindow("_SpaceNavigator", "j2-admin::SpaceNavigator", rc);
   String tbContent = jetui.renderPortletWindow("_JetspeedToolbox", "j2-admin::JetspeedToolbox", rc);
+  String breadcrumbs = jetui.renderPortletWindow("_BreadcrumbMenu", "j2-admin::BreadcrumbMenu", rc);
   String encoding = "text/html"; 
   if (response.getCharacterEncoding() != null)
   {
       encoding += "; charset=" + response.getCharacterEncoding();
   }
   String baseUrl = jetui.getBaseURL(rc);
-  String pageDec = jetui.getTheme(rc).getPageLayoutDecoration().getName();
+  String pageDec = jetui.getTheme(rc).getPageLayoutDecoration().getName();  
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -100,6 +101,7 @@ for (String style : jetui.getStyleSheets(rc))
 </div>
 </td>
 <td id='jsMainarea' class='jsMainarea'>
+<div class="PContent"><span style="line-height:0.005px;">&nbsp;</span><%=breadcrumbs%></div>
 <div id="jsFragments" class="portal-nested-layout portal-nested-layout-TwoColumns">
 <%
     ContentFragment maximized = (ContentFragment)request.getAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
@@ -107,9 +109,12 @@ for (String style : jetui.getStyleSheets(rc))
     {
         String content = jetui.getRenderedContent(maximized, rc);
         request.setAttribute("content", content);
-        request.setAttribute("pageDec", pageDec);
+        String decorator = maximized.getDecorator();
+		if (decorator == null)
+		    decorator = pageDec;
+        request.setAttribute("decorator", decorator);
         request.setAttribute("fragment", maximized);
-		request.setAttribute("coordinate", columnLayout.getCoordinate(maximized));		
+		request.setAttribute("coordinate", columnLayout.getCoordinate(maximized));
 %>
 <div id="column_id_0>" 
      class="portal-layout-column" 
@@ -139,8 +144,11 @@ for (String style : jetui.getStyleSheets(rc))
                 {
                     //String content = jetui.renderPortletWindow(fragment.getId(), fragment.getName(), rc);
                     String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
-                    request.setAttribute("content", content);
-                    request.setAttribute("pageDec", pageDec);
+                    request.setAttribute("content", content);                    
+                    String decorator = fragment.getDecorator(); 
+            		if (decorator == null)
+            		    decorator = pageDec;
+                    request.setAttribute("decorator", decorator);                    
                     request.setAttribute("fragment", fragment);      
                     request.setAttribute("coordinate", columnLayout.getCoordinate(fragment));
 %>
