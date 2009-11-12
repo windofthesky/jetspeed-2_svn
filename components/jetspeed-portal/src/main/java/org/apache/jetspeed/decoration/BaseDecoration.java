@@ -30,6 +30,8 @@ import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.jetspeed.decoration.Decoration.ActionsOption;
+import org.apache.jetspeed.decoration.Decoration.TitleOption;
 import org.apache.jetspeed.util.Path;
 
 /**
@@ -63,6 +65,26 @@ public class BaseDecoration implements Decoration, Serializable
     private String currentModeAction;
     private String currentStateAction;
     private boolean supportsDesktop;
+    private Decoration.ActionsOption actionsOption = ActionsOption.SHOW;
+    private Decoration.TitleOption titleOption = TitleOption.SHOW;
+    private String dragHandleOption;
+    
+    static final String[] ACTIONS_NAMES = 
+    {
+        "show", "hide", "dropdown", "hover"    
+    };
+    static final ActionsOption[] ACTIONS_VALUES = 
+    {
+        ActionsOption.SHOW, ActionsOption.HIDE, ActionsOption.DROPDOWN, ActionsOption.HOVER     
+    };
+    static final String[] TITLE_NAMES = 
+    {
+        "show", "hide"    
+    };
+    static final TitleOption[] TITLE_VALUES = 
+    {
+        TitleOption.SHOW, TitleOption.HIDE     
+    };
     
     /**
      * 
@@ -81,8 +103,34 @@ public class BaseDecoration implements Decoration, Serializable
         this.baseClientPath= baseClientPath;
         this.cache = cache;
         
-        this.name = config.getProperty( "name" );      
-        
+        this.name = config.getProperty( "name" );
+        String temp = config.getProperty(Decoration.OPTION_ACTIONS);
+        if (temp != null)
+        {
+            for (int ix = 0; ix < ACTIONS_NAMES.length; ix++)
+            {
+                if (temp.equalsIgnoreCase(ACTIONS_NAMES[ix]))
+                {
+                    this.actionsOption = ACTIONS_VALUES[ix];
+                    break;
+                }
+            }
+        }
+        temp = config.getProperty(Decoration.OPTION_TITLE);
+        if (temp != null)
+        {
+            for (int ix = 0; ix < TITLE_NAMES.length; ix++)
+            {
+                if (temp.equalsIgnoreCase(TITLE_NAMES[ix]))
+                {
+                    this.titleOption = TITLE_VALUES[ix];
+                    break;
+                }
+            }
+        }        
+        this.dragHandleOption = config.getProperty(Decoration.OPTION_DRAGHANDLE, ".PTitle");
+        if (dragHandleOption.equalsIgnoreCase("none"))
+            dragHandleOption = null;
         this.commonStylesheet = config.getProperty( "stylesheet", DEFAULT_COMMON_STYLE_SHEET );
         
         this.supportsDesktop = "true".equalsIgnoreCase( config.getProperty( Decoration.DESKTOP_SUPPORTED_PROPERTY ) );
@@ -293,4 +341,18 @@ public class BaseDecoration implements Decoration, Serializable
     {
         return this.supportsDesktop;
     }
+    
+    public ActionsOption getActionsOption()
+    {
+        return this.actionsOption;
+    }
+    public TitleOption getTitleOption()
+    {
+        return this.titleOption;
+    }
+    public String getDragHandle() // returns null for not supported
+    {
+        return this.getDragHandle();
+    }
+    
 }

@@ -53,6 +53,22 @@ public interface Decoration
     /** Property which specifies the directory name for resource bundle */
     String RESOURCES_DIRECTORY_NAME = "resources";
 
+    String OPTION_TITLE = "option.title";
+    String OPTION_ACTIONS = "option.actions";
+    String OPTION_DRAGHANDLE = "option.draghandle";
+    
+    enum ActionsOption 
+    {
+        SHOW, HIDE, DROPDOWN, HOVER
+    };
+    enum TitleOption 
+    {
+        SHOW, HIDE
+    };
+
+    ActionsOption getActionsOption();
+    TitleOption getTitleOption();
+    String getDragHandle(); // returns null for not supported
     
     /**
      * The name of this Decoration.
