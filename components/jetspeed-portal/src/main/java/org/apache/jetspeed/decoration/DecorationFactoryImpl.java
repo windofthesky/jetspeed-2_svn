@@ -289,7 +289,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
                 props.setProperty( "name", name );
             }
         }
-        catch ( Exception e )
+        catch ( Throwable e )
         {
             log.warn( "Failed to load the " + Decoration.CONFIG_FILE_NAME + " configuration file for decoration \"" + name + "\".", e );
             props.setProperty( "id", name );
@@ -346,7 +346,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
                 log.debug( "Could not locate the " + Decoration.CONFIG_DESKTOP_FILE_NAME + " configuration file for decoration \"" + name + "\".  This decoration may not exist." );
             }
         }
-        catch ( Exception e )
+        catch ( Throwable e )
         {
             log.warn( "Failed to load the " + Decoration.CONFIG_DESKTOP_FILE_NAME + " configuration file for decoration \"" + name + "\".", e );
         }
