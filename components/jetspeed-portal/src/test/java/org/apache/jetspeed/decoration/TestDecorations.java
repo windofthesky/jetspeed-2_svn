@@ -184,6 +184,7 @@ public class TestDecorations extends MockObjectTestCase
         expectAndReturn(portletDecorMock, "getStyleSheet", "/decorations/portlet/test/html/css/styles.css");
         expectAndReturn(portletDecorMock, "getStyleSheetPortal", null);
         portletDecorMock.expects(atLeastOnce()).method("getName").withNoArguments().will(returnValue("tigris"));
+        layoutMock.expects(atLeastOnce()).method("getName").withNoArguments().will(returnValue("tigris")); //DST
         
         fragmentMock.expects(once()).method("getId")
                                     .withNoArguments()
@@ -210,14 +211,14 @@ public class TestDecorations extends MockObjectTestCase
         verify();
     }
 
-    public void testDecortaionFactory()
+    public void testDecorationFactory()
     {      
         
         rvMock = new Mock(ResourceValidator.class);
         rv = (ResourceValidator)rvMock.proxy();
         rvMock.expects(atLeastOnce()).method("resourceExists")
                                      .withAnyArguments()
-                                     .will(returnValue(false));
+                                     .will(returnValue(true));
         
         // Define expected behavior
         Mock servletContextMock = new Mock(ServletContext.class);
