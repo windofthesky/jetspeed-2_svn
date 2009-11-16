@@ -143,9 +143,8 @@ public class Jetui
     public String includeHeaderResources(RequestContext context)
     {        
        HeaderResource hr = headerFactory.getHeaderResouce(context);
-       ContentFragment root = context.getPage().getRootContentFragment();
        StringBuffer result = new StringBuffer(hr.getContent());
-       List<KeyValue<String, Element>> headers = context.getPortletWindow(root).getHeadElements();
+       List<KeyValue<String, Element>> headers = context.getMergedHeadElements();
        for (KeyValue<String, Element> pair : headers)
        {
            if (!pair.getKey().equals("header.dojo.library.include"))

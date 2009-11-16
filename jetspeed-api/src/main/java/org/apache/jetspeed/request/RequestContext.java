@@ -17,6 +17,7 @@
 package org.apache.jetspeed.request;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -32,9 +33,11 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.util.KeyValue;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
+import org.w3c.dom.Element;
 
 /**
  * Portal Request Context is associated with each request
@@ -422,5 +425,12 @@ public interface RequestContext
      * Clears the request context from the current thread
      */
     void clearThreadContext();
+    
+    /**
+     * Merges and returns the head elements contributed by portlets. 
+     * @return
+     */
+    List<KeyValue<String, Element>> getMergedHeadElements();
+    
 }
 

@@ -18,7 +18,9 @@
 package org.apache.jetspeed.container.state;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -37,7 +39,9 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.KeyValue;
 import org.apache.jetspeed.window.MockPortletWindow;
+import org.w3c.dom.Element;
 
 /**
  * @version $Id$
@@ -500,5 +504,11 @@ public class MockRequestContext implements RequestContext
     {
         // TODO Auto-generated method stub
         return false;
-    }   
+    }
+    
+    public List<KeyValue<String, Element>> getMergedHeadElements()
+    {
+        return Collections.emptyList();
+    }
+
 }

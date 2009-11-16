@@ -857,7 +857,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
 
     public List<KeyValue<String, Element>> getHeadElements() throws Exception
     {
-        return getHeadElements(getCurrentFragment());
+        return requestContext.getMergedHeadElements();
     }
 
     public boolean isDojoEnabled(List<KeyValue<String, Element>> headElements)

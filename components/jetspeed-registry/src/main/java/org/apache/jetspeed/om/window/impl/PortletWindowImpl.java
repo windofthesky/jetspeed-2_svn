@@ -39,10 +39,13 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.HeadElementsUtils;
 import org.apache.jetspeed.util.KeyValue;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.pluto.container.PortletResponseContext;
 import org.w3c.dom.Element;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * <P>
@@ -297,123 +300,29 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Render
     @SuppressWarnings("unchecked")
     public List<KeyValue<String, Element>> getHeadElements()
     {
+        if (headElements == null && fragment != null && fragment.getPortletContent() != null)
+        {
+            PortletContent portletContent = fragment.getPortletContent();
+            
+            if (portletContent.isComplete())
+            {
+                // org.apache.commons.collections.list.TreeList is well-optimized for
+                // fast insertions at any index in the list.
+                // Refer to description in the javadoc for details.
+                headElements = new TreeList();
+                HeadElementsUtils.aggregateHeadElements(headElements, fragment);
+                HeadElementsUtils.mergeHeadElementsByHint(headElements);
+            }
+        }
+        
         if (headElements == null)
         {
-            // org.apache.commons.collections.list.TreeList is well-optimized for
-            // fast insertions at any index in the list.
-            // Refer to description in the javadoc for details.
-            headElements = new TreeList();
-            aggregateHeadElements(getFragment(), headElements);
-            mergeHeadElementsByHint(headElements);
+            return Collections.emptyList();
         }
-        
-        return headElements;
-    }
-    
-    private static void aggregateHeadElements( ContentFragment f, List<KeyValue<String, Element>> aggregatedHeadElements )
-    {
-        // TODO: Question: Does the aggregation order direction (top-down or bottom-up) need to be configurable?
-        
-        List<ContentFragment> contentFragments = (List<ContentFragment>) f.getContentFragments();
-        
-        if (contentFragments != null && !contentFragments.isEmpty())
+        else
         {
-            for (ContentFragment child : contentFragments)
-            {
-                if (!"hidden".equals(f.getState()))
-                {
-                    aggregateHeadElements(child, aggregatedHeadElements);
-                }
-            }
-        }
-
-        PortletContent portletContent = f.getPortletContent();
-        
-        // portletContent can be null if this method is invoked before the portlet window starts rendering
-        if (portletContent != null)
-        {
-            // Brief explanation on head element aggregation algorithm (Thanks to Ate for the brilliant ideas!):
-            // - Precondition: start from the zero as insertion index.
-            // - Rule1: if there already exists an element with the key, 
-            //              set the insertion index to the matching index + 1.
-            // - Rule2: if there's no existing element with the key, 
-            //              insert the element at the current insertion index 
-            //              and increase the insertion index.
-            
-            List<KeyValue<String, Element>> contentHeadElements = f.getPortletContent().getHeadElements();
-            
-            if (!contentHeadElements.isEmpty())
-            {
-                int insertionIndex = 0;
-                
-                for (KeyValue<String, Element> kvPair : contentHeadElements)
-                {
-                    int offset = aggregatedHeadElements.indexOf(kvPair);
-                    
-                    if (offset != -1)
-                    {
-                        insertionIndex = offset + 1;
-                    }
-                    else
-                    {
-                        aggregatedHeadElements.add(insertionIndex++, kvPair);
-                    }
-                }
-            }
+            return headElements;
         }
     }
     
-    private static void mergeHeadElementsByHint( List<KeyValue<String, Element>> headElements )
-    {
-        Map<String, Element> firstElementByMergeHint = new HashMap<String, Element>();
-        Map<String, Set<String>> mergedTextContents = new HashMap<String, Set<String>>();
-        
-        for (Iterator<KeyValue<String, Element>> it = headElements.iterator(); it.hasNext(); )
-        {
-            KeyValue<String, Element> kvPair = it.next();
-            Element element = kvPair.getValue();
-            
-            if (element.hasAttribute(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE))
-            {
-                String mergeHint = element.getAttribute(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE);
-                String textContent = element.getTextContent();
-                
-                if (textContent != null)
-                {
-                    textContent = textContent.trim();
-                }
-                
-                if (firstElementByMergeHint.containsKey(mergeHint))
-                {
-                    if (textContent != null && !"".equals(textContent))
-                    {
-                        Set<String> textContentSet = mergedTextContents.get(mergeHint);
-                        textContentSet.add(textContent);
-                    }
-                    
-                    it.remove();
-                }
-                else
-                {
-                    firstElementByMergeHint.put(mergeHint, element);
-                    Set<String> textContentSet = new TreeSet<String>();
-                    mergedTextContents.put(mergeHint, textContentSet);
-                    
-                    if (textContent != null && !"".equals(textContent))
-                    {
-                        textContentSet.add(textContent);
-                    }
-                }
-            }
-        }
-        
-        for (Map.Entry<String, Element> entry : firstElementByMergeHint.entrySet())
-        {
-            String mergeHint = entry.getKey();
-            Element firstElement = entry.getValue();
-            Set<String> textContentSet = mergedTextContents.get(mergeHint);
-            firstElement.setTextContent(StringUtils.join(textContentSet, "\r\n"));
-        }
-    }
-
 }

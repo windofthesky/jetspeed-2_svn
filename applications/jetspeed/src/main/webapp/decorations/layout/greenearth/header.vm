@@ -28,6 +28,10 @@ limitations under the License.
 <html>
 <head> 
 
+## To include head elements, portlet contents which are instantly added should be rendered before invoking includeHeaderResource.
+#set($navigatorPortletContent = $jetspeed.renderPortletWindow("_JetspeedNavigator", "j2-admin::JetspeedNavigator"))
+#set($toolboxPortletContent = $jetspeed.renderPortletWindow("_JetspeedToolbox", "j2-admin::JetspeedToolbox"))
+
 #includeHeaderResource()
 
     <meta http-equiv="Content-type" content="#ContentType()" />
@@ -69,10 +73,10 @@ limitations under the License.
                     <table cellpadding="0" cellspacing="4" border="0" width="100%">
 ##                        #includeLinksWithIconNavigation($navigationsStandardMenu $TOP_TO_BOTTOM)
 					<tr><td class="portlet greenearth">
-                        $jetspeed.renderPortletWindow("_JetspeedNavigator", "j2-admin::JetspeedNavigator")
+                        $navigatorPortletContent
                     </td></tr>
 					<tr><td class="portlet greenearth">
-                        $jetspeed.renderPortletWindow("_JetspeedToolbox", "j2-admin::JetspeedToolbox")
+                        $toolboxPortletContent
                     </td></tr>
                     </table>
                 </div>

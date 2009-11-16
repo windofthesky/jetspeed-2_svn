@@ -32,12 +32,10 @@ import org.apache.jetspeed.request.RequestContext;
 public class JetuiValve
        extends AbstractValve
 {
-    private Jetui ui;
     private PageAggregator aggregator;
     
-    public JetuiValve(Jetui ui, PageAggregator aggregator)
+    public JetuiValve(PageAggregator aggregator)
     {
-        this.ui = ui;
         this.aggregator = aggregator;
     }
 
