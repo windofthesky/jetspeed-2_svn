@@ -140,6 +140,9 @@
         <entry key="SpacesService">
         	<ref bean="org.apache.jetspeed.services.Spaces" />
         </entry> 
+        <entry key="PreferencesService">
+            <ref bean="org.apache.pluto.services.PreferencesService" />
+        </entry> 
         <!--<entry key="SecurityAttributesProvider">
           <ref bean="org.apache.jetspeed.security.attributes.SecurityAttributesProvider" />
           </entry>-->
