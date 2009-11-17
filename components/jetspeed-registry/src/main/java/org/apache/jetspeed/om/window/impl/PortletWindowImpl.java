@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.om.window.impl;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +40,6 @@ import org.apache.jetspeed.util.HeadElementsUtils;
 import org.apache.jetspeed.util.KeyValue;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.pluto.container.PortletResponseContext;
-import org.w3c.dom.Element;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * <P>

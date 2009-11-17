@@ -19,6 +19,7 @@ package org.apache.jetspeed.util;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -26,8 +27,6 @@ import java.util.Set;
 import org.apache.jetspeed.portlet.HeadElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * HeadElementUtils

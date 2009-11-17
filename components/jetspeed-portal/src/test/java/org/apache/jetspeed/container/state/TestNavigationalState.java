@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.container.state;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,8 +45,6 @@ import org.apache.jetspeed.window.MockPortletWindow;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpSession;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * TestPortletContainer

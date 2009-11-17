@@ -17,6 +17,7 @@
 
 package org.apache.jetspeed.window;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +36,6 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.KeyValue;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.pluto.container.PortletResponseContext;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @version $Id$
