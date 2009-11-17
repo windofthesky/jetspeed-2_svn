@@ -17,19 +17,17 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.io.CharArrayWriter;
-import java.io.NotSerializableException;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.list.TreeList;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.cache.ContentCacheKey;
-import org.apache.jetspeed.util.DOMUtils;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.util.DefaultKeyValue;
+import org.apache.jetspeed.util.HeadElementUtils;
 import org.apache.jetspeed.util.KeyValue;
-import org.w3c.dom.Element;
 
 
 public class PortletContentImpl implements PortletContent
@@ -46,7 +44,7 @@ public class PortletContentImpl implements PortletContent
      * The list container for all contributed head elements from this portlet content.
      * Because the insertion order might be important for web development, this container should be list instead of map.
      */
-    private List<KeyValue<String, Element>> headElements;
+    private List<KeyValue<String, HeadElement>> headElements;
     
     PortletContentImpl()
     {
@@ -174,7 +172,7 @@ public class PortletContentImpl implements PortletContent
     }
 
     @SuppressWarnings("unchecked")
-    public void addHeadElement(Element element, String keyHint) throws NotSerializableException
+    public void addHeadElement(HeadElement headElement, String keyHint)
     {
         if (this.headElements == null)
         {
@@ -184,11 +182,11 @@ public class PortletContentImpl implements PortletContent
             this.headElements = new TreeList();
         }
 
-        if (element == null)
+        if (headElement == null)
         {
             if (keyHint != null)
             {
-                KeyValue<String, Element> kvPair = new DefaultKeyValue(keyHint, null, true);
+                KeyValue<String, HeadElement> kvPair = new DefaultKeyValue(keyHint, null, true);
                 this.headElements.remove(kvPair);
             }
             else
@@ -201,28 +199,12 @@ public class PortletContentImpl implements PortletContent
             return;
         }
         
-        if (!(element instanceof Serializable))
-        {
-            throw new NotSerializableException("The element is not serializable.");
-        }
-        
         if (keyHint == null)
         {
-            // If element is dom4j's element, then we can use dom4j's serializer.
-            // Meanwhile, the element can be a serializable one which is not from dom4j.
-            // In the case, serialize the element to a string as a keyHint.
-            
-            if (element instanceof org.dom4j.Element) 
-            {
-                keyHint = DOMUtils.stringifyElement((org.dom4j.Element) element);
-            }
-            else
-            {
-                keyHint = DOMUtils.stringifyElement(element);
-            }
+            keyHint = HeadElementUtils.toHtmlString(headElement);
         }
 
-        KeyValue<String, Element> kvPair = new DefaultKeyValue(keyHint, element, true);
+        KeyValue<String, HeadElement> kvPair = new DefaultKeyValue(keyHint, headElement, true);
         
         if (!this.headElements.contains(kvPair))
         {
@@ -230,9 +212,9 @@ public class PortletContentImpl implements PortletContent
         }
     }
 
-    public List<KeyValue<String, Element>> getHeadElements()
+    public List<KeyValue<String, HeadElement>> getHeadElements()
     {
-        List<KeyValue<String, Element>> headElems = null;
+        List<KeyValue<String, HeadElement>> headElems = null;
         
         if (this.headElements != null) 
         {

@@ -35,8 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletRenderer;
@@ -49,14 +47,16 @@ import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.ArgUtil;
-import org.apache.jetspeed.util.DOMUtils;
+import org.apache.jetspeed.util.HeadElementUtils;
 import org.apache.jetspeed.util.KeyValue;
 import org.apache.jetspeed.util.Path;
 import org.apache.velocity.context.Context;
-import org.w3c.dom.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -845,24 +845,24 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         }
     }
 
-    public String getElementHtmlString(Element element)
+    public String getElementHtmlString(HeadElement headElement)
     {
-        return DOMUtils.stringifyElementToHtml(element);
+        return HeadElementUtils.toHtmlString(headElement);
     }
 
-    public List<KeyValue<String, Element>> getHeadElements(ContentFragment f) throws Exception
+    public List<KeyValue<String, HeadElement>> getHeadElements(ContentFragment f) throws Exception
     {
         return getPortletWindow(f).getHeadElements();
     }
 
-    public List<KeyValue<String, Element>> getHeadElements() throws Exception
+    public List<KeyValue<String, HeadElement>> getHeadElements() throws Exception
     {
         return requestContext.getMergedHeadElements();
     }
 
-    public boolean isDojoEnabled(List<KeyValue<String, Element>> headElements)
+    public boolean isDojoEnabled(List<KeyValue<String, HeadElement>> headElements)
     {
-        for (KeyValue<String, Element> kvPair : headElements)
+        for (KeyValue<String, HeadElement> kvPair : headElements)
         {
             if (HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_DOJO_LIBRARY_INCLUDE.equals(kvPair.getKey()))
             {

@@ -20,15 +20,18 @@ package org.apache.jetspeed.container.impl;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.providers.ResourceURLProviderImpl;
 import org.apache.jetspeed.request.JetspeedRequestContext;
-import org.apache.jetspeed.util.DOMUtils;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletResponseContext;
 import org.apache.pluto.container.ResourceURLProvider;
 import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
@@ -103,36 +106,19 @@ public abstract class PortletResponseContextImpl implements PortletResponseConte
     
     public Element createElement(String tagName) throws DOMException
     {
-        Element element = null;
+        DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder;
         
-        // Currently, Jetspeed uses dom4j to create a serializable dom element.
-        // However, dom4j depends on Class.forName() to manage singleton, which
-        // results another org.dom4j.DocumentFactory singleton which comes from another
-        // classloader such as PA's or common's.
-        // Therefore, we need to switch back to the portal's classloader during creation.
-        
-        ClassLoader paCL = Thread.currentThread().getContextClassLoader();
-        ClassLoader portalCL = JetspeedRequestContext.class.getClassLoader();
-        boolean switchCLs = (paCL != portalCL);
-        
-        try 
+        try
         {
-            if (switchCLs)
-            {
-                Thread.currentThread().setContextClassLoader(portalCL);
-            }
-            
-            element = DOMUtils.createSerializableElement(tagName);
-        } 
-        finally 
-        {
-            if (switchCLs)
-            {
-                Thread.currentThread().setContextClassLoader(paCL);
-            }
+            docBuilder = dbfac.newDocumentBuilder();
+            Document doc = docBuilder.newDocument();
+            return doc.createElement(tagName);
         }
-        
-        return element;
+        catch (ParserConfigurationException e)
+        {
+            throw new DOMException((short) 0, "Initialization failure");
+        }
     }
 
     public void close()

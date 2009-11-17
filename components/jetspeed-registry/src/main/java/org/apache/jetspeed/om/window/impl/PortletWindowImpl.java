@@ -17,11 +17,8 @@
 package org.apache.jetspeed.om.window.impl;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -29,7 +26,6 @@ import javax.portlet.PortletResponse;
 import javax.portlet.WindowState;
 
 import org.apache.commons.collections.list.TreeList;
-import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.RenderTrackable;
 import org.apache.jetspeed.container.PortletWindow;
@@ -37,7 +33,7 @@ import org.apache.jetspeed.container.PortletWindowID;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.HeadElementsUtils;
 import org.apache.jetspeed.util.KeyValue;
@@ -80,7 +76,7 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Render
     private PortletRequestContext portletRequestContext;
     private PortletResponse portletResponse;
     private PortletInstance portletInstance;
-    private List<KeyValue<String, Element>> headElements;
+    private List<KeyValue<String, HeadElement>> headElements;
 
     private boolean valid;
     
@@ -298,7 +294,7 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Render
     }
 
     @SuppressWarnings("unchecked")
-    public List<KeyValue<String, Element>> getHeadElements()
+    public List<KeyValue<String, HeadElement>> getHeadElements()
     {
         if (headElements == null && fragment != null && fragment.getPortletContent() != null)
         {

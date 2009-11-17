@@ -30,11 +30,11 @@ import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.pipeline.PipelineException;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.portlets.layout.ColumnLayout;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.util.DOMUtils;
+import org.apache.jetspeed.util.HeadElementUtils;
 import org.apache.jetspeed.util.KeyValue;
-import org.w3c.dom.Element;
 
 /**
  *
@@ -144,13 +144,13 @@ public class Jetui
     {        
        HeaderResource hr = headerFactory.getHeaderResouce(context);
        StringBuffer result = new StringBuffer(hr.getContent());
-       List<KeyValue<String, Element>> headers = context.getMergedHeadElements();
-       for (KeyValue<String, Element> pair : headers)
+       List<KeyValue<String, HeadElement>> headers = context.getMergedHeadElements();
+       for (KeyValue<String, HeadElement> pair : headers)
        {
            if (!pair.getKey().equals("header.dojo.library.include"))
            {
-               String element = DOMUtils.stringifyElementToHtml(pair.getValue());
-               result.append(element);
+               HeadElement headElement = pair.getValue();
+               result.append(HeadElementUtils.toHtmlString(headElement));
            }
        }
        return result.toString();

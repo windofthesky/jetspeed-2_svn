@@ -51,6 +51,7 @@ import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.portalsite.PortalSiteSessionContext;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
@@ -61,7 +62,6 @@ import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.jetspeed.util.KeyValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 
 /**
  * Jetspeed Request Context is associated with each portal request. The request
@@ -814,11 +814,11 @@ public class JetspeedRequestContext implements RequestContext
         rcc.setRequestContext(null);
     }
     
-    public List<KeyValue<String, Element>> getMergedHeadElements()
+    public List<KeyValue<String, HeadElement>> getMergedHeadElements()
     {
         ContentPage page = getPage();
         ContentFragment root = page.getRootContentFragment();
-        List<KeyValue<String, Element>> headElements = getPortletWindow(root).getHeadElements();
+        List<KeyValue<String, HeadElement>> headElements = getPortletWindow(root).getHeadElements();
         
         HttpSession session = getRequest().getSession();
         
@@ -858,7 +858,7 @@ public class JetspeedRequestContext implements RequestContext
             return headElements;
         }
         
-        List<KeyValue<String, Element>> mergedHeadElements = new TreeList(headElements);
+        List<KeyValue<String, HeadElement>> mergedHeadElements = new TreeList(headElements);
         
         for (String windowId : windowIds)
         {

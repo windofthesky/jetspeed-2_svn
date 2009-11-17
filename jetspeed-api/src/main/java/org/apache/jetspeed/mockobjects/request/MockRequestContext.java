@@ -38,10 +38,10 @@ import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.pipeline.Pipeline;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.KeyValue;
-import org.w3c.dom.Element;
 
 
 
@@ -602,7 +602,7 @@ public class MockRequestContext implements RequestContext
         return false;
     }
     
-    public List<KeyValue<String, Element>> getMergedHeadElements()
+    public List<KeyValue<String, HeadElement>> getMergedHeadElements()
     {
         return Collections.emptyList();
     }

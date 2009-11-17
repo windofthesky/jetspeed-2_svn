@@ -14,27 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.util.dom;
+package org.apache.jetspeed.portlet;
 
-import org.dom4j.dom.DOMAttributeNodeMap;
-import org.dom4j.dom.DOMElement;
-import org.w3c.dom.Node;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
 
-public class DOMAttributeNodeMapImpl extends DOMAttributeNodeMap
+/**
+ * HeadElement interface wrapping a head contribution element
+ * 
+ * @version $Id$
+ */
+public interface HeadElement extends Serializable
 {
     
-    private DOMElement element;
-
-    public DOMAttributeNodeMapImpl(DOMElement element)
-    {
-        super(element);
-        
-        this.element = element;
-    }
-
-    public Node item(int index)
-    {
-        return DOMNodeHelperImpl.asDOMAttr(element.attribute(index));
-    }
+    String getTagName();
+    
+    boolean hasAttribute(String name);
+    
+    String getAttribute(String name);
+    
+    Map<String, String> getAttributeMap();
+    
+    String getTextContent();
+    
+    void setTextContent(String textContent);
+    
+    boolean hasChildHeadElements();
+    
+    Collection<HeadElement> getChildHeadElements();
     
 }

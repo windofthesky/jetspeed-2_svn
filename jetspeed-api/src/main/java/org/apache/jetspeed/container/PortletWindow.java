@@ -26,11 +26,11 @@ import javax.portlet.PortletResponse;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.KeyValue;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.pluto.container.PortletResponseContext;
-import org.w3c.dom.Element;
 
 /**
  * @version $Id$
@@ -72,6 +72,6 @@ public interface PortletWindow extends org.apache.pluto.container.PortletWindow
      * 
      * @return
      */
-    List<KeyValue<String, Element>> getHeadElements();
+    List<KeyValue<String, HeadElement>> getHeadElements();
     
 }

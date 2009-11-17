@@ -30,11 +30,13 @@ import org.apache.jetspeed.container.PortletWindowID;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.KeyValue;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.pluto.container.PortletResponseContext;
-import org.w3c.dom.Element;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @version $Id$
@@ -239,9 +241,8 @@ public class MockPortletWindow implements PortletWindow
         return true;
     }
 
-    public List<KeyValue<String, Element>> getHeadElements()
+    public List<KeyValue<String, HeadElement>> getHeadElements()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return Collections.emptyList();
     }
 }

@@ -25,8 +25,8 @@ import java.util.TreeSet;
 
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
-import org.w3c.dom.Element;
 
 public class HeadElementsUtils
 {
@@ -36,7 +36,7 @@ public class HeadElementsUtils
     }
     
     @SuppressWarnings("unchecked")
-    public static void aggregateHeadElements(List<KeyValue<String, Element>> aggregatedHeadElements, ContentFragment contentFragment)
+    public static void aggregateHeadElements(List<KeyValue<String, HeadElement>> aggregatedHeadElements, ContentFragment contentFragment)
     {
         List<ContentFragment> childContentFragments = (List<ContentFragment>) contentFragment.getContentFragments();
         
@@ -60,7 +60,7 @@ public class HeadElementsUtils
         }
     }
     
-    public static void aggregateHeadElements(List<KeyValue<String, Element>> aggregatedHeadElements, List<KeyValue<String, Element>> headElements)
+    public static void aggregateHeadElements(List<KeyValue<String, HeadElement>> aggregatedHeadElements, List<KeyValue<String, HeadElement>> headElements)
     {
         // Brief explanation on head element aggregation algorithm (Thanks to Ate for the brilliant ideas!):
         // - Precondition: start from the zero as insertion index.
@@ -74,7 +74,7 @@ public class HeadElementsUtils
         {
             int insertionIndex = 0;
             
-            for (KeyValue<String, Element> kvPair : headElements)
+            for (KeyValue<String, HeadElement> kvPair : headElements)
             {
                 int offset = aggregatedHeadElements.indexOf(kvPair);
                 
@@ -90,15 +90,15 @@ public class HeadElementsUtils
         }
     }
     
-    public static void mergeHeadElementsByHint( List<KeyValue<String, Element>> headElements )
+    public static void mergeHeadElementsByHint( List<KeyValue<String, HeadElement>> headElements )
     {
-        Map<String, Element> firstElementByMergeHint = new HashMap<String, Element>();
+        Map<String, HeadElement> firstElementByMergeHint = new HashMap<String, HeadElement>();
         Map<String, Set<String>> mergedTextContents = new HashMap<String, Set<String>>();
         
-        for (Iterator<KeyValue<String, Element>> it = headElements.iterator(); it.hasNext(); )
+        for (Iterator<KeyValue<String, HeadElement>> it = headElements.iterator(); it.hasNext(); )
         {
-            KeyValue<String, Element> kvPair = it.next();
-            Element element = kvPair.getValue();
+            KeyValue<String, HeadElement> kvPair = it.next();
+            HeadElement element = kvPair.getValue();
             
             if (element.hasAttribute(HeaderPhaseSupportConstants.HEAD_ELEMENT_CONTRIBUTION_MERGE_HINT_ATTRIBUTE))
             {
@@ -134,10 +134,10 @@ public class HeadElementsUtils
             }
         }
         
-        for (Map.Entry<String, Element> entry : firstElementByMergeHint.entrySet())
+        for (Map.Entry<String, HeadElement> entry : firstElementByMergeHint.entrySet())
         {
             String mergeHint = entry.getKey();
-            Element firstElement = entry.getValue();
+            HeadElement firstElement = entry.getValue();
             Set<String> textContentSet = mergedTextContents.get(mergeHint);
             
             StringBuilder sb = new StringBuilder(80);

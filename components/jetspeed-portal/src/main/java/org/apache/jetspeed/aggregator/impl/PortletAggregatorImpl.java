@@ -28,10 +28,10 @@ import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.util.DOMUtils;
+import org.apache.jetspeed.util.HeadElementUtils;
 import org.apache.jetspeed.util.KeyValue;
-import org.w3c.dom.Element;
 
 /**
  * PortletAggregator builds the content required to render a single portlet.
@@ -114,7 +114,7 @@ public class PortletAggregatorImpl implements PortletAggregator
     
     protected void writeHeadElements(RequestContext context, PortletWindow window) throws IOException
     {
-        List<KeyValue<String, Element>> headElements = window.getHeadElements();
+        List<KeyValue<String, HeadElement>> headElements = window.getHeadElements();
 
         if (!headElements.isEmpty())
         {
@@ -122,9 +122,10 @@ public class PortletAggregatorImpl implements PortletAggregator
             
             out.println("<JS_PORTLET_HEAD_ELEMENTS>");
             
-            for (KeyValue<String, Element> kvPair : headElements)
+            for (KeyValue<String, HeadElement> kvPair : headElements)
             {
-                out.println(DOMUtils.stringifyElementToHtml(kvPair.getValue()));
+                HeadElement headElement = kvPair.getValue();
+                out.println(HeadElementUtils.toHtmlString(headElement));
             }
             
             out.print("</JS_PORTLET_HEAD_ELEMENTS>");

@@ -28,8 +28,8 @@ import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.util.KeyValue;
-import org.w3c.dom.Element;
 
 /**
  * JetspeedPowerTool
@@ -246,7 +246,7 @@ public interface JetspeedPowerTool
      * @param element
      * @return
      */
-    String getElementHtmlString(Element element);
+    String getElementHtmlString(HeadElement element);
     
     /**
      * Returns all the contributed head elements from the fragment and its child fragments.
@@ -254,20 +254,20 @@ public interface JetspeedPowerTool
      * @return
      * @throws Exception
      */
-    List<KeyValue<String, Element>> getHeadElements(ContentFragment f) throws Exception;;
+    List<KeyValue<String, HeadElement>> getHeadElements(ContentFragment f) throws Exception;;
 
     /**
      * Returns all the contributed head elements from the current fragment and its child fragments.
      * @return
      * @throws Exception
      */
-    List<KeyValue<String, Element>> getHeadElements() throws Exception;
+    List<KeyValue<String, HeadElement>> getHeadElements() throws Exception;
     
     /**
      * Returns true if head element has dojo library inclusion.
      * @param headElements
      * @return
      */
-    boolean isDojoEnabled(List<KeyValue<String, Element>> headElements);
+    boolean isDojoEnabled(List<KeyValue<String, HeadElement>> headElements);
     
 }

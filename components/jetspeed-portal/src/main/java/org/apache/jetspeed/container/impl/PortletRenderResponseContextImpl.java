@@ -18,10 +18,8 @@
 package org.apache.jetspeed.container.impl;
 
 import java.io.IOException;
-import java.io.NotSerializableException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.util.Collection;
 
 import javax.portlet.MimeResponse;
@@ -31,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.util.DOMUtils;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletRenderResponseContext;
@@ -136,30 +135,17 @@ public class PortletRenderResponseContextImpl extends PortletMimeResponseContext
     {
         if (MimeResponse.MARKUP_HEAD_ELEMENT.equals(key))
         {
-            Element headElement = null;
+            HeadElement headElement = null;
             
             // Note that element can be null.
             // According to the SPEC, the property with this key can be removed with null element.
             if (element != null)
             {
-                if (element instanceof Serializable)
-                {
-                    headElement = element;
-                }
-                else
-                {
-                    headElement = DOMUtils.convertToSerializableElement(element);
-                }
+                headElement = new HeadElementImpl(element);
             }
             
-            try
-            {
-                // ID attribute of element is used as keyHint for the head element if available.
-                this.portletContent.addHeadElement(headElement, DOMUtils.getIdAttribute(element));
-            }
-            catch (NotSerializableException e)
-            {
-            }
+            // ID attribute of element is used as keyHint for the head element if available.
+            this.portletContent.addHeadElement(headElement, DOMUtils.getIdAttribute(element));
         }
         else
         {

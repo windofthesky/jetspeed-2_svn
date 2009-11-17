@@ -16,13 +16,12 @@
 */
 package org.apache.jetspeed.aggregator;
 
-import java.io.NotSerializableException;
 import java.io.PrintWriter;
 import java.util.List;
 
 import org.apache.jetspeed.cache.ContentCacheKey;
+import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.util.KeyValue;
-import org.w3c.dom.Element;
 
 /**
  * <p>
@@ -122,9 +121,8 @@ public interface PortletContent
      * 
      * @param element
      * @param keyHint
-     * @throws NotSerializableException
      */
-    void addHeadElement(Element element, String keyHint) throws NotSerializableException;
+    void addHeadElement(HeadElement element, String keyHint);
     
     /**
      * Retrieves header element key value pairs to be contributed to the page.
@@ -132,7 +130,7 @@ public interface PortletContent
      * 
      * @return
      */
-    List<KeyValue<String, Element>> getHeadElements(); 
+    List<KeyValue<String, HeadElement>> getHeadElements(); 
     
     void reset();
     

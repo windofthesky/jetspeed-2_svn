@@ -16,16 +16,11 @@
  */
 package org.apache.jetspeed.util;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.StringWriter;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.SerializationUtils;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,34 +54,6 @@ public class TestDOMUtils extends TestCase
         assertTrue("the text content is wrong.", stringified.contains("Hello, World!"));
         assertTrue("the child element is wrong.", stringified.contains("<source id=\"my-test-javascript-source\">source is available.</source>"));
         
-        // Tests with element created by conversion from standard element to serializable element
-        
-        Element converted = (Element) DOMUtils.convertElement(element);
-        assertTrue("converted element is not serializable!", converted instanceof Serializable);
-        assertEquals("converted element name is wrong.", element.getNodeName(), converted.getNodeName());
-        
-        // Tests with element deserialized after serialization
-        
-        Element deserialized = (Element) SerializationUtils.clone((Serializable) converted);
-        assertEquals("deserialized element name is wrong.", converted.getNodeName(), deserialized.getNodeName());
-        stringified = DOMUtils.stringifyElement((org.dom4j.Element) deserialized);
-        System.out.println("deserialized element's stringified: " + stringified);
-        assertTrue("deserialized element name is different.", stringified.contains("<script "));
-        assertTrue("id attribute does not exist.", stringified.contains("id=\"my-test-javascript\""));
-        assertTrue("type attribute does not exist.", stringified.contains("type=\"text/javascript\""));
-        assertTrue("the text content is wrong.", stringified.contains("alert("));
-        assertTrue("the text content is wrong.", stringified.contains("Hello, World!"));
-        assertTrue("the child element is wrong.", stringified.contains("<source id=\"my-test-javascript-source\">source is available.</source>"));
-        
-        stringified = DOMUtils.stringifyElement((org.dom4j.Element) converted);
-        System.out.println("converted element's stringified: " + stringified);
-        assertTrue("converted element name is different.", stringified.contains("<script "));
-        assertTrue("id attribute does not exist.", stringified.contains("id=\"my-test-javascript\""));
-        assertTrue("type attribute does not exist.", stringified.contains("type=\"text/javascript\""));
-        assertTrue("the text content is wrong.", stringified.contains("alert("));
-        assertTrue("the text content is wrong.", stringified.contains("Hello, World!"));
-        assertTrue("the child element is wrong.", stringified.contains("<source id=\"my-test-javascript-source\">source is available.</source>"));
-        
         // Tests with element having CDATA child node
         // setTextContent() should replace the CDATA node.
         
@@ -106,69 +73,4 @@ public class TestDOMUtils extends TestCase
         assertTrue("the text content is wrong.", stringified.contains("Hello, World!"));
         assertTrue("the child element is wrong.", stringified.contains("<source id=\"my-test-javascript-source\">source is available.</source>"));
     }
-
-    public void testDOM4JElement() throws Exception
-    {
-        // Tests if setTextContent() is working 
-        // with our serializable element implementation which is based on dom4j
-        
-        org.w3c.dom.Element element = DOMUtils.createSerializableElement("script");
-        element.setAttribute("id", "my-test-javascript");
-        element.setAttribute("type", "text/javascript");
-        element.setTextContent("alert('<Hello, World!>');");
-        
-        String stringified = DOMUtils.stringifyElement((org.dom4j.Element) element);
-        
-        System.out.println("stringified: " + stringified);
-        assertTrue("element name is different.", stringified.contains("<script "));
-        assertTrue("id attribute does not exist.", stringified.contains("id=\"my-test-javascript\""));
-        assertTrue("type attribute does not exist.", stringified.contains("type=\"text/javascript\""));
-        assertTrue("the text content is wrong.", stringified.contains("alert("));
-        assertTrue("the text content is wrong.", stringified.contains("Hello, World!"));
-        
-        // Tests if getOwnerDocument() is working and it is possible to append text node
-        
-        element = DOMUtils.createSerializableElement("script");
-        element.setAttribute("id", "my-test-javascript");
-        element.setAttribute("type", "text/javascript");
-        element.appendChild(element.getOwnerDocument().createTextNode("alert('<Hello, World!>');"));
-        
-        stringified = DOMUtils.stringifyElement((org.dom4j.Element) element);
-        
-        System.out.println("stringified: " + stringified);
-        assertTrue("element name is different.", stringified.contains("<script "));
-        assertTrue("id attribute does not exist.", stringified.contains("id=\"my-test-javascript\""));
-        assertTrue("type attribute does not exist.", stringified.contains("type=\"text/javascript\""));
-        assertTrue("the text content is wrong.", stringified.contains("alert("));
-        assertTrue("the text content is wrong.", stringified.contains("Hello, World!"));
-    }
-    
-    public void testDOM4JWriting() throws Exception 
-    {
-        org.w3c.dom.Element element = DOMUtils.createSerializableElement("script");
-        element.setAttribute("id", "my-test-javascript");
-        element.setAttribute("type", "text/javascript");
-        element.setTextContent("alert('<Hello, World!>');");
-        
-        String stringified = null;
-        StringWriter writer = new StringWriter(80);
-        
-        try 
-        {
-            DOMElementWriter domWriter = new DOMElementWriter();
-            domWriter.write(element, writer, 0, "  ");
-        } 
-        catch (IOException e) 
-        {
-        }
-
-        stringified = writer.toString();
-        System.out.println("stringified: " + stringified);
-        assertTrue("element name is different.", stringified.contains("<script "));
-        assertTrue("id attribute does not exist.", stringified.contains("id=\"my-test-javascript\""));
-        assertTrue("type attribute does not exist.", stringified.contains("type=\"text/javascript\""));
-        assertTrue("the text content is wrong.", stringified.contains("alert("));
-        assertTrue("the text content is wrong.", stringified.contains("Hello, World!"));
-    }
-    
 }

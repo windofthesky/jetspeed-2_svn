@@ -28,16 +28,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.CapabilityMap;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.pipeline.Pipeline;
-import org.apache.jetspeed.profiler.Profiler;
-import org.apache.jetspeed.util.KeyValue;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.container.PortletWindow;
-import org.w3c.dom.Element;
+import org.apache.jetspeed.pipeline.Pipeline;
+import org.apache.jetspeed.portlet.HeadElement;
+import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.util.KeyValue;
 
 /**
  * Portal Request Context is associated with each request
@@ -430,7 +430,7 @@ public interface RequestContext
      * Merges and returns the head elements contributed by portlets. 
      * @return
      */
-    List<KeyValue<String, Element>> getMergedHeadElements();
+    List<KeyValue<String, HeadElement>> getMergedHeadElements();
     
 }
 
