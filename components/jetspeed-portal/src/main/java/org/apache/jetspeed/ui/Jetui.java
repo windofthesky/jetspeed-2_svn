@@ -31,6 +31,7 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.portlet.HeadElement;
+import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
 import org.apache.jetspeed.portlets.layout.ColumnLayout;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.HeadElementUtils;
@@ -147,7 +148,7 @@ public class Jetui
        List<KeyValue<String, HeadElement>> headers = context.getMergedHeadElements();
        for (KeyValue<String, HeadElement> pair : headers)
        {
-           if (!pair.getKey().equals("header.dojo.library.include"))
+           if (!HeaderPhaseSupportConstants.CONTAINER_HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_SET.contains(pair.getKey()))
            {
                HeadElement headElement = pair.getValue();
                result.append(HeadElementUtils.toHtmlString(headElement)).append('\n');

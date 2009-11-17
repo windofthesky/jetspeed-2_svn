@@ -16,6 +16,11 @@
  */
 package org.apache.jetspeed.portlet;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * This interface defines some constants for attribute name or value of contributed head elements.
  * This constant values are used by Jetspeed portal to optimize the head elements aggregation.
@@ -59,6 +64,17 @@ public interface HeaderPhaseSupportConstants
      * An ID attribute value for dojo library inclusion which can be used in head elements merging by portal.  
      */
     public static final String HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_DOJO_LIBRARY_INCLUDE = "header.dojo.library.include";
+    
+    /**
+     * An ID attribute value for YUI library inclusion which can be used in head elements merging by portal.  
+     */
+    public static final String HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_YUI_LIBRARY_INCLUDE = "header.yui.library.include";
+
+    /**
+     * ID attribute values set for script libraries included by the container.
+     */
+    public static final Set<String> CONTAINER_HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_SET = 
+        Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(new String [] { HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_DOJO_LIBRARY_INCLUDE, HEAD_ELEMENT_CONTRIBUTION_ELEMENT_ID_YUI_LIBRARY_INCLUDE})));
     
     /**
      * An attribute name of head element contributed to the portal page aggregation by a portlet.
