@@ -33,6 +33,7 @@ import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.PortletWindowID;
 import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.request.RequestContext;
@@ -298,14 +299,18 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Render
         {
             PortletContent portletContent = fragment.getPortletContent();
             
-            if (portletContent.isComplete())
+            if (portletContent.isComplete() || !Fragment.PORTLET.equals(fragment.getType()))
             {
                 // org.apache.commons.collections.list.TreeList is well-optimized for
                 // fast insertions at any index in the list.
                 // Refer to description in the javadoc for details.
                 headElements = new TreeList();
                 HeadElementsUtils.aggregateHeadElements(headElements, fragment);
-                HeadElementsUtils.mergeHeadElementsByHint(headElements);
+                
+                if (!headElements.isEmpty())
+                {
+                    HeadElementsUtils.mergeHeadElementsByHint(headElements);
+                }
             }
         }
         

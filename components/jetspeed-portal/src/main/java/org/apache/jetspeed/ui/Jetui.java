@@ -150,7 +150,7 @@ public class Jetui
            if (!pair.getKey().equals("header.dojo.library.include"))
            {
                HeadElement headElement = pair.getValue();
-               result.append(HeadElementUtils.toHtmlString(headElement));
+               result.append(HeadElementUtils.toHtmlString(headElement)).append('\n');
            }
        }
        return result.toString();
