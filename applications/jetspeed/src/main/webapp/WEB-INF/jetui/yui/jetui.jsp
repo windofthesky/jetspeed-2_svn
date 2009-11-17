@@ -32,6 +32,7 @@ limitations under the License.
 <%
   Jetui jetui = (Jetui)request.getAttribute("jetui");
   RequestContext rc = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
+  Map userInfo = jetui.getUserAttributes(rc);
   Page portalPage = rc.getPage();
   ColumnLayout columnLayout = (ColumnLayout)request.getAttribute("columnLayout");
   String navContent = jetui.renderPortletWindow("_PageNavigator", "j2-admin::PageNavigator", rc);
@@ -78,7 +79,7 @@ for (String style : jetui.getStyleSheets(rc))
 &nbsp;<span style='position: absolute; left: 0px; top: 50px;' id='jstbLeftToggle' class='jstbToggle1'></span><span id='jstbRightToggle' class='jstbToggle2' style='position: absolute; right: 0px; top: 50px;'></span>
 </div>
 <%if (request.getUserPrincipal() != null) {%>
-<span class="layout-statusarea"><b>David Sean Taylor</b> | Profile | Tasks (5) | Notifications (2) | <a href="<%=request.getContextPath()%>/login/logout">Log out</a></span>
+<span class="layout-statusarea"><b><%=userInfo.get("user.name.given")%> <%=userInfo.get("user.name.family")%></b> | Profile | Tasks (5) | Notifications (2) | <a href="<%=request.getContextPath()%>/login/logout">Log out</a></span>
 <% } %>
 <!-- <span class="layout-search"><input type='text' size='14'/></span><span class="layout-search2"><img height='18' src="<%=request.getContextPath()%>/images/search.png"/></span>  -->
 </div> <!-- end header -->
@@ -96,6 +97,7 @@ for (String style : jetui.getStyleSheets(rc))
     <div class="PContentBorder">
       <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span><%=navContent %></div>
     </div>
+<a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4b0265f81058c137"><img src="http://s7.addthis.com/static/btn/sm-share-en.gif" width="83" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pub=xa-4b0265f81058c137"></script>
 </div>
 </div>
 </div>

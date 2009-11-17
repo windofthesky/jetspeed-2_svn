@@ -17,7 +17,9 @@
 
 package org.apache.jetspeed.ui;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
@@ -34,6 +36,7 @@ import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
 import org.apache.jetspeed.portlets.layout.ColumnLayout;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.UserSubjectPrincipal;
 import org.apache.jetspeed.util.HeadElementUtils;
 import org.apache.jetspeed.util.KeyValue;
 
@@ -201,5 +204,20 @@ public class Jetui
             return "";
         }
     }
-  
+ 
+    public Map getUserAttributes(RequestContext rc)
+    {
+        Map map = null;
+        Principal principal = rc.getRequest().getUserPrincipal();
+        if (principal instanceof UserSubjectPrincipal)
+        {
+            UserSubjectPrincipal jp = (UserSubjectPrincipal)principal;
+            map = jp.getUser().getInfoMap();
+            if (map.get("user.name.given") == null)
+                map.put("user.name.given", "");
+            if (map.get("user.name.family") == null)
+                map.put("user.name.family", jp.getName());            
+        }
+        return map;
+    }
 }
