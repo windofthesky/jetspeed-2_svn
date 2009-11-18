@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.portlet.Language;
@@ -318,9 +319,9 @@ public class MockRequestContext implements RequestContext
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.request.RequestContext#locatePage(org.apache.jetspeed.profiler.Profiler, java.lang.String)
+     * @see org.apache.jetspeed.request.RequestContext#locatePage(org.apache.jetspeed.profiler.Profiler, org.apache.jetspeed.layout.PageLayoutComponent, java.lang.String)
      */
-    public ContentPage locatePage(Profiler profiler, String nonProfiledPath)
+    public ContentPage locatePage(Profiler profiler, PageLayoutComponent pageLayoutComponent, String nonProfiledPath)
     {
         // TODO Auto-generated method stub
         return null;

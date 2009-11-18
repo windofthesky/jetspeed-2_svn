@@ -19,10 +19,8 @@ package org.apache.jetspeed.layout;
 import javax.security.auth.Subject;
 
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.ContentPageImpl;
-import org.apache.jetspeed.om.page.psml.PageImpl;
+import org.apache.jetspeed.om.page.impl.ContentPageImpl;
+import org.apache.jetspeed.om.page.impl.ContentFragmentImpl;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
@@ -48,8 +46,7 @@ public class FragmentUtil
         // Build a request object and populate it with fragments
         RequestContext a_oRC = setupRequestContext("remove", "1234", "0", "0");
 
-        ContentPage a_oContentPage = new ContentPageImpl(setupPage());
-        a_oRC.setPage(a_oContentPage);
+        a_oRC.setPage(setupPage());
 
         return a_oRC;
     }
@@ -95,47 +92,42 @@ public class FragmentUtil
         
         a_oRC.setSubject(new Subject());
         
-        Page a_oPage = setupPage();
-        ContentPage a_oContentPage = new ContentPageImpl(a_oPage);
-
-        a_oRC.setPage(a_oContentPage);
+        a_oRC.setPage(setupPage());
 
         return a_oRC;
     }
 
     // Helper method
-    public static Page setupPage()
+    public static ContentPage setupPage()
     {
         // Prepare some fragments
-        Fragment a_oLayout = buildFragment("layout", "6", "layout", 0, 0);
-        Fragment a_oFrag1 = buildFragment("frag1", "1", "portlet", 0, 0);
-        Fragment a_oFrag2 = buildFragment("frag2", "2", "portlet", 0, 1); 
-        Fragment a_oFrag3 = buildFragment("frag3", "3", "portlet", 1, 0);
-        Fragment a_oFrag4 = buildFragment("frag4", "4", "portlet", 1, 1);
-        Fragment a_oFrag5 = buildFragment("frag5", "5", "portlet", 1, 2);
+        ContentFragmentImpl a_oLayout = buildFragment("layout", "6", "layout", 0, 0);
+        ContentFragmentImpl a_oFrag1 = buildFragment("frag1", "1", "portlet", 0, 0);
+        ContentFragmentImpl a_oFrag2 = buildFragment("frag2", "2", "portlet", 0, 1); 
+        ContentFragmentImpl a_oFrag3 = buildFragment("frag3", "3", "portlet", 1, 0);
+        ContentFragmentImpl a_oFrag4 = buildFragment("frag4", "4", "portlet", 1, 1);
+        ContentFragmentImpl a_oFrag5 = buildFragment("frag5", "5", "portlet", 1, 2);
         
-        LocalFragmentImpl a_oLocalLayout = (LocalFragmentImpl) a_oLayout;
-        a_oLocalLayout.addFragment(a_oFrag1);
-        a_oLocalLayout.addFragment(a_oFrag2);
-        a_oLocalLayout.addFragment(a_oFrag3);
-        a_oLocalLayout.addFragment(a_oFrag4);
-        a_oLocalLayout.addFragment(a_oFrag5);
+        a_oLayout.getFragments().add(a_oFrag1);
+        a_oLayout.getFragments().add(a_oFrag2);
+        a_oLayout.getFragments().add(a_oFrag3);
+        a_oLayout.getFragments().add(a_oFrag4);
+        a_oLayout.getFragments().add(a_oFrag5);
 
-        Page a_oPage = new PageImpl();
+        ContentPageImpl a_oPage = new ContentPageImpl();
         a_oPage.setRootFragment(a_oLayout);
 
         return a_oPage;
     }
 
-    public static Fragment buildFragment(String p_sName, String p_sId,
+    public static ContentFragmentImpl buildFragment(String p_sName, String p_sId,
             String p_sType, int p_iCol, int p_iRow)
     {
-        LocalFragmentImpl a_oFrag = new LocalFragmentImpl();
+        ContentFragmentImpl a_oFrag = new ContentFragmentImpl(p_sId);
         a_oFrag.setName(p_sName);
         a_oFrag.setType(p_sType);
         a_oFrag.setLayoutColumn(p_iCol);
         a_oFrag.setLayoutRow(p_iRow);
-        a_oFrag.setId(p_sId);
         return a_oFrag;
     }
     

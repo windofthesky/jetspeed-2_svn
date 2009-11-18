@@ -30,11 +30,11 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
  */
 class PageMenuDefinitionList extends AbstractList
 {
-    private PageImpl page;
+    private BasePageElementImpl page;
 
     private List removedMenuDefinitions;
 
-    PageMenuDefinitionList(PageImpl page)
+    PageMenuDefinitionList(BasePageElementImpl page)
     {
         super();
         this.page = page;

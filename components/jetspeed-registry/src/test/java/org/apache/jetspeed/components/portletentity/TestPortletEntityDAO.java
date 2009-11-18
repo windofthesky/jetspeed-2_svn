@@ -16,31 +16,24 @@
  */
 package org.apache.jetspeed.components.portletentity;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.components.portletentity.ContentFragmentTestImpl;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.engine.MockJetspeedEngine;
+import org.apache.jetspeed.om.page.impl.ContentFragmentImpl;
 import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.Preferences;
-import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 
 import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
-
-import org.jmock.Mock;
-import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
-import org.jmock.core.stub.ReturnStub;
 
 /**
  * <p>
@@ -104,13 +97,10 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         }
         assertNotNull("Portlet Def is null", pd);
 
-        Mock mockf1 = new Mock(Fragment.class);
-        mockf1.expects(new InvokeAtLeastOnceMatcher()).method("getName").will(new ReturnStub(pd.getUniqueName()));
-        mockf1.expects(new InvokeAtLeastOnceMatcher()).method("getId").will(new ReturnStub(TEST_ENTITY));
-        ContentFragment f1 = new ContentFragmentTestImpl((Fragment) mockf1.proxy(), new HashMap());
+        ContentFragmentImpl f1 = new ContentFragmentImpl(TEST_ENTITY);
+        f1.setName(pd.getUniqueName());
+        PortletEntity entity = entityAccess.generateEntityFromFragment(f1);
 
-        PortletEntity entity = entityAccess
-                .generateEntityFromFragment(new ContentFragmentTestImpl(f1, new HashMap()));
         // TODO: how to access prefs of entity??
         /*
         PreferenceSetComposite prefs = (PreferenceSetComposite) entity.getPreferenceSet();
@@ -200,37 +190,33 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         assertTrue(pref2.isValueSet());
         pref2.setValues(null);        
         assertFalse(pref2.isValueSet());
-        
+
         entity.store();
 
         prefs = (PreferenceSetComposite)entity.getPreferenceSet();
         pref2 = (PreferenceComposite) prefs.get("pref2");
 
         assertNull(pref2);
+        */
         
         PortletEntity entity2 = entityAccess.getPortletEntityForFragment(f1);
         assertTrue("entity id ", entity2.getId().toString().equals(TEST_ENTITY));
         assertNotNull("entity's portlet ", entity2.getPortletDefinition());
-        mockf1.verify();
-
-        Mock mockf2 = new Mock(Fragment.class);
-        mockf2.expects(new InvokeAtLeastOnceMatcher()).method("getName").will(new ReturnStub(pd.getUniqueName()));
-        ContentFragment f2 = new ContentFragmentTestImpl((Fragment) mockf2.proxy(), new HashMap());
 
         PortletEntity entity5 = entityAccess.newPortletEntityInstance(pd);
-
         System.out.println("before storing entity: " + entity5.getId());
 
         entityAccess.storePortletEntity(entity5);
         System.out.println("store done: " + entity5.getId());
-        mockf2.expects(new InvokeAtLeastOnceMatcher()).method("getId").will(new ReturnStub(entity5.getId().toString()));
+
+        ContentFragmentImpl f2 = new ContentFragmentImpl(TEST_ENTITY);
+        f2.setName(pd.getUniqueName());
 
         PortletEntity entity6 = entityAccess.getPortletEntityForFragment(f2);
         assertNotNull(entity6);
         System.out.println("reget : " + entity6.getId());
 
         entityAccess.removePortletEntity(entity6);
-        */
     }
 
     private void teardownTestData() throws Exception

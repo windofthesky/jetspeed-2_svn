@@ -30,7 +30,6 @@ import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
@@ -67,7 +66,7 @@ public class Jetui
             request.setAttribute("jetui", this);
             if (maximized == null)
             {
-                Fragment rootFragment = request.getPage().getRootFragment();
+                ContentFragment rootFragment = request.getPage().getRootFragment();
                 String jetspeedLayout = rootFragment.getName();
                 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // BOGUS: I would prefer to put all layout information directly in PSML, not in portlet.xml, right now its mixed

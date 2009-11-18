@@ -33,6 +33,9 @@
     <constructor-arg index='0'>
         <ref bean="org.apache.jetspeed.page.PageManager"/>        
     </constructor-arg>    	
+    <constructor-arg index='1'>
+        <ref bean="org.apache.jetspeed.layout.PageLayoutComponent"/>
+    </constructor-arg>
 </bean-->
 
 <bean id="AjaxSecurityConstraints"

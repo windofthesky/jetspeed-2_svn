@@ -16,37 +16,38 @@
 */
 package org.apache.jetspeed.portlets.layout;
 
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 
-public class PageManagerLayoutEventListener implements LayoutEventListener
+public class PageLayoutEventListener implements LayoutEventListener
 {
-    private final PageManager pageManager;
-    private final Page page;
-    
-    public PageManagerLayoutEventListener(PageManager pageManager, Page page, String layoutType)
+    public PageLayoutEventListener(String layoutType)
     {
-        this.pageManager = pageManager;
-        this.page = page;
     }
 
     public void handleEvent(LayoutEvent event) throws LayoutEventException
     {
         try
         {
-            if(event.getEventType() == LayoutEvent.ADDED)
+            if (event.getEventType() == LayoutEvent.ADDED)
             {
-                page.getRootFragment().getFragments().add(event.getFragment());
-                pageManager.updatePage(page);
+                ContentPage page = event.getPage();
+                ContentFragment fragment = event.getFragment();
+                if (fragment == null)
+                {
+                    page.addPortlet(event.getPortletType(), event.getPortletName());
+                }
+                else
+                {
+                    LayoutCoordinate coordinate = event.getNewCoordinate();
+                    page.addFragmentAtRowColumn(fragment, coordinate.getY(), coordinate.getX());                    
+                }
             }
             else
             {
-                Fragment fragment = event.getFragment();
                 LayoutCoordinate coordinate = event.getNewCoordinate();
-                fragment.getProperties().put(Fragment.COLUMN_PROPERTY_NAME, String.valueOf(coordinate.getX()));
-                fragment.getProperties().put(Fragment.ROW_PROPERTY_NAME, String.valueOf(coordinate.getY()));
-                pageManager.updatePage(page);
+                ContentFragment fragment = event.getFragment();
+                fragment.updateRowColumn(coordinate.getY(), coordinate.getX());
             }
         }
         catch (Exception e)
@@ -54,5 +55,4 @@ public class PageManagerLayoutEventListener implements LayoutEventListener
             throw new LayoutEventException("Unable to update page.", e);
         }
     }
-
 }

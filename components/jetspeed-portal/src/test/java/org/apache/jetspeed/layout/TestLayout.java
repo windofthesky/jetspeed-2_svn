@@ -287,7 +287,7 @@ public class TestLayout extends JetspeedTestCase
 
             valve.invoke(rc, null);
 
-            // Take a look at the response to verify a failiure
+            // Take a look at the response to verify a failure
             TestLayout.assertTrue("couldn't find value", FragmentUtil.findValue(rc,
                     "success"));
             TestLayout.assertTrue("couldn't find value", FragmentUtil.findValue(rc,

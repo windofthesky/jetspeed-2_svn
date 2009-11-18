@@ -966,7 +966,7 @@ public class HeaderAggregatorImpl implements PageAggregator
             throw new JetspeedException( "Failed to find PSML Pin ContentPageAggregator.build" );
         }
 
-        ContentFragment root = page.getRootContentFragment();
+        ContentFragment root = page.getRootFragment();
 
         if ( root == null )
         {

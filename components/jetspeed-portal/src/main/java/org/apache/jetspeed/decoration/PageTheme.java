@@ -28,8 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -41,7 +40,7 @@ import org.apache.jetspeed.request.RequestContext;
  */
 public class PageTheme implements Theme, Serializable
 {
-    private transient Page page;
+    private transient ContentPage page;
     private transient DecorationFactory decorationFactory;
     private transient RequestContext requestContext;
     private final Set styleSheets;
@@ -50,7 +49,7 @@ public class PageTheme implements Theme, Serializable
     private final Collection portletDecorationNames;
     private boolean invalidated = false;
         
-    public PageTheme(Page page, DecorationFactory decorationFactory, RequestContext requestContext)
+    public PageTheme(ContentPage page, DecorationFactory decorationFactory, RequestContext requestContext)
     {
         this.page = page;
         this.decorationFactory = decorationFactory;
@@ -92,13 +91,13 @@ public class PageTheme implements Theme, Serializable
      * @param fragment page fragment
      * @return fragment decoration
      */
-    private Decoration setupFragmentDecorations( Fragment fragment, boolean isRootLayout, HashMap portletDecorationNames, boolean isDesktopEnabled )
+    private Decoration setupFragmentDecorations( ContentFragment fragment, boolean isRootLayout, HashMap portletDecorationNames, boolean isDesktopEnabled )
     {
         // setup fragment decorations
         Decoration decoration = decorationFactory.getDecoration( page, fragment, requestContext );
         
         fragmentDecorations.put( fragment.getId(), decoration );
-        boolean isPortlet = ( ! isRootLayout && fragment.getType().equals( Fragment.PORTLET ) );
+        boolean isPortlet = ( ! isRootLayout && fragment.getType().equals( ContentFragment.PORTLET ) );
         
         if ( isPortlet || isRootLayout )
         {
@@ -137,7 +136,7 @@ public class PageTheme implements Theme, Serializable
             Iterator fragmentsIter = fragments.iterator();
             while ( fragmentsIter.hasNext() )
             {
-                setupFragmentDecorations( (Fragment)fragmentsIter.next(), false, portletDecorationNames, isDesktopEnabled );
+                setupFragmentDecorations( (ContentFragment)fragmentsIter.next(), false, portletDecorationNames, isDesktopEnabled );
             }
         }
 
@@ -150,7 +149,7 @@ public class PageTheme implements Theme, Serializable
         return styleSheets;
     }
 
-    public Decoration getDecoration( Fragment fragment )
+    public Decoration getDecoration( ContentFragment fragment )
     {
         return (Decoration) fragmentDecorations.get( fragment.getId() );
     }
@@ -165,21 +164,21 @@ public class PageTheme implements Theme, Serializable
         return layoutDecoration;
     }
 
-    public void init(Page page, DecorationFactory decoration, RequestContext context)
+    public void init(ContentPage page, DecorationFactory decoration, RequestContext context)
     {
         this.page = page;
         this.decorationFactory = decoration;
         this.requestContext = context;        
     }
     
-    public Page getPage()
+    public ContentPage getPage()
     {
         return page;
     }    
 
     public ContentPage getContentPage()
     {
-        return (ContentPage)page;
+        return page;
     }
 
     public boolean isInvalidated()

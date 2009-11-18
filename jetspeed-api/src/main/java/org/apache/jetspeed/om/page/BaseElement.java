@@ -32,34 +32,33 @@ public interface BaseElement extends SecuredResource
      *
      * @return the unique id of this element.
      */
-    public String getId();
+    String getId();
 
     /**
      * Returns the title in the default Locale
      *
      * @return the page title
      */
-    public String getTitle();
+    String getTitle();
 
     /**
      * Sets the title for the default Locale
      *
      * @param title the new title
      */
-    public void setTitle(String title);
+    void setTitle(String title);
 
     /**
      * Returns the short title in the default Locale
      *
      * @return the page short title
      */
-    public String getShortTitle();
+    String getShortTitle();
 
     /**
      * Sets the short title for the default Locale
      *
      * @param title the new title
      */
-    public void setShortTitle(String title);
-        
+    void setShortTitle(String title);
 }

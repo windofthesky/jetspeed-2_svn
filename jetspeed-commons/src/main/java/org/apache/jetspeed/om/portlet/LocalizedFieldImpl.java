@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.portlet.impl;
+package org.apache.jetspeed.om.portlet;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.portlet.LocalizedField;
@@ -103,6 +103,10 @@ public class LocalizedFieldImpl implements LocalizedField
 
             this.locale = new Locale(language, country, variant);
         }
+		else
+		{
+            this.locale = null;		    
+		}
     }
 
     public String getLanguage()

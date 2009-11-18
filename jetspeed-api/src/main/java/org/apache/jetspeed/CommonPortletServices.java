@@ -61,4 +61,5 @@ public interface CommonPortletServices
     public final static String CPS_AUTHENTICATION_PROVIDER = "cps:AuthenticationProvider";
     public final static String CPS_CACHE_MONITOR = "cps:CacheMonitor";
     public final static String CPS_SPACES_SERVICE = "cps:SpacesService";
+    public final static String CPS_PAGE_LAYOUT_COMPONENT = "cps:PageLayoutComponent";
 }

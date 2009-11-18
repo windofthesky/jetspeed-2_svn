@@ -39,8 +39,8 @@ import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
@@ -112,9 +112,9 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     {
         this.registry =  registry;
         this.decorationsPath = new Path( decorationsPath );
-        this.layoutDecorationsPath = getBasePath( Fragment.LAYOUT );
+        this.layoutDecorationsPath = getBasePath( ContentFragment.LAYOUT );
         this.layoutDecorationsPathStr = this.layoutDecorationsPath.toString();
-        this.portletDecorationsPath = getBasePath( Fragment.PORTLET );
+        this.portletDecorationsPath = getBasePath( ContentFragment.PORTLET );
         this.portletDecorationsPathStr = this.portletDecorationsPath.toString();
         this.validator = validator;
         this.decorationConfigurationCache = decorationConfigurationCache;
@@ -132,19 +132,19 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     	return decorationConfigurationCache;
     }
 
-    public Theme getTheme( Page page, RequestContext requestContext )
+    public Theme getTheme( ContentPage page, RequestContext requestContext )
     {
         return new PageTheme(page, this, requestContext);
     }
     
-    public Decoration getDecoration( Page page, Fragment fragment, RequestContext requestContext )
+    public Decoration getDecoration( ContentPage page, ContentFragment fragment, RequestContext requestContext )
     {
         String decorationName = getDefaultDecorationName( fragment, page );
         Decoration decoration;
 
         // use layout decoration for top level layout root fragments
         //    and use portlet decoration for all other fragments
-        boolean isLayout = fragment.getType().equals( Fragment.LAYOUT );
+        boolean isLayout = fragment.getType().equals( ContentFragment.LAYOUT );
         if ( isLayout )
         {
             decoration = getLayoutDecoration( decorationName, requestContext );
@@ -186,8 +186,8 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     public PortletDecoration getPortletDecoration( String name, RequestContext requestContext )
     {
         Path basePath = getPortletDecorationBasePath( name );
-        Path baseClientPath = createClientPath( name, basePath, requestContext, Fragment.PORTLET );
-        Properties configuration = getConfiguration( name, Fragment.PORTLET );
+        Path baseClientPath = createClientPath( name, basePath, requestContext, ContentFragment.PORTLET );
+        Properties configuration = getConfiguration( name, ContentFragment.PORTLET );
         SessionPathResolverCache sessionPathResolver = new SessionPathResolverCache( requestContext.getRequest().getSession() );
         return new PortletDecorationImpl( configuration, validator, basePath, baseClientPath, sessionPathResolver );
     }
@@ -195,8 +195,8 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     public LayoutDecoration getLayoutDecoration( String name, RequestContext requestContext )
     {
         Path basePath = getLayoutDecorationBasePath( name );
-        Path baseClientPath = createClientPath( name, basePath, requestContext, Fragment.LAYOUT );
-        Properties configuration = getConfiguration( name, Fragment.LAYOUT );
+        Path baseClientPath = createClientPath( name, basePath, requestContext, ContentFragment.LAYOUT );
+        Properties configuration = getConfiguration( name, ContentFragment.LAYOUT );
         SessionPathResolverCache sessionPathResolver = new SessionPathResolverCache( requestContext.getRequest().getSession() );
         return new LayoutDecorationImpl( configuration, validator, basePath, baseClientPath, sessionPathResolver );
     }    
@@ -217,7 +217,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     {
     	if ( decorationConfigurationCache == null )
     	{
-    		if ( type.equals( Fragment.PORTLET ) )
+    		if ( type.equals( ContentFragment.PORTLET ) )
     		{
     			return (Properties)this.portletDecoratorProperties.get( name );
     		}
@@ -235,7 +235,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     {
     	if ( decorationConfigurationCache == null )
     	{
-    		if ( type.equals( Fragment.PORTLET ) )
+    		if ( type.equals( ContentFragment.PORTLET ) )
     		{
     			this.portletDecoratorProperties.put( name, props );
     		}
@@ -426,18 +426,18 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      * @see Page
      * @see Fragment
      */
-    protected String getDefaultDecorationName(Fragment fragment, Page page)
+    protected String getDefaultDecorationName(ContentFragment fragment, ContentPage page)
     {
         // get specified decorator
         String decoration = fragment.getDecorator();
         if (decoration == null)
         {
-            if (fragment.getType().equals(Fragment.LAYOUT))
+            if (fragment.getType().equals(ContentFragment.LAYOUT))
             {
                 if (fragment.equals(page.getRootFragment()))
                 {
                     // use page specified layout decorator name
-                    decoration = page.getEffectiveDefaultDecorator(Fragment.LAYOUT);
+                    decoration = page.getEffectiveDefaultDecorator(ContentFragment.LAYOUT);
                     if (decoration == null)
                     {
                         decoration = this.defaultLayoutDecoration;
@@ -452,7 +452,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
             else
             {
                 // use page specified default portlet decorator name
-                decoration = page.getEffectiveDefaultDecorator(Fragment.PORTLET);
+                decoration = page.getEffectiveDefaultDecorator(ContentFragment.PORTLET);
                 if (decoration == null)
                 {
                     decoration = this.defaultPortletDecoration;

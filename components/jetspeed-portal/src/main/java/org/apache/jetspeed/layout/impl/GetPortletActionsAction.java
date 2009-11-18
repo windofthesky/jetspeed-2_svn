@@ -109,7 +109,7 @@ public class GetPortletActionsAction
                     }
                     getActionsForFragments.add( fragment );
                 }
-                getActionsForFragments.add( page.getRootContentFragment() );
+                getActionsForFragments.add( page.getRootFragment() );
             }
 
             // Run the Decoration valve to get actions

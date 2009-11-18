@@ -44,6 +44,7 @@
         <module>jetspeed-id-generator</module>
         <module>jetspeed-locator</module>
         <module>jetspeed-page-manager</module>
+        <module>jetspeed-page-layout</module>
         <module>jetspeed-portal</module>
         <module>jetspeed-portal-site</module>
         <module>jetspeed-portlet-factory</module>

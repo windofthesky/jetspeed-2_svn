@@ -65,7 +65,7 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
             throw new JetspeedException("Failed to find PSML Pin ContentPageAggregator.build");
         }
         
-        ContentFragment root = page.getRootContentFragment();
+        ContentFragment root = page.getRootFragment();
         
         if (root == null)
         {
@@ -115,9 +115,9 @@ public class AsyncPageAggregatorImpl extends BaseAggregatorImpl implements PageA
             layoutFragments = new ArrayList<ContentFragment>();
         }
 
-        if (f.getContentFragments() != null)
+        if (f.getFragments() != null)
         {
-            for (ContentFragment child : (List<ContentFragment>)f.getContentFragments())
+            for (ContentFragment child : (List<ContentFragment>)f.getFragments())
             {
                 if (!"hidden".equals(f.getState()))
                 {

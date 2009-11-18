@@ -16,8 +16,8 @@
  */
 package org.apache.jetspeed.layout;
 
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 
 /**
  * Handles portlet placement for client such as AJAX client side
@@ -38,7 +38,7 @@ public interface PortletPlacementContext
 	 * @return new coordinate location of the portlet
 	 * @throws PortletPlacementException
 	 */
-	public Coordinate moveAbsolute(Fragment fragment, Coordinate coordinate ) throws PortletPlacementException;
+	public Coordinate moveAbsolute(ContentFragment fragment, Coordinate coordinate ) throws PortletPlacementException;
 
 	/**
      * Move a portlet fragment to a new absolute position as specified in the Coordinate parameter.
@@ -49,7 +49,7 @@ public interface PortletPlacementContext
 	 * @return new coordinate location of the portlet
 	 * @throws PortletPlacementException
 	 */
-	public Coordinate moveAbsolute(Fragment fragment, Coordinate coordinate, boolean addFragment) throws PortletPlacementException;
+	public Coordinate moveAbsolute(ContentFragment fragment, Coordinate coordinate, boolean addFragment) throws PortletPlacementException;
 	
 	/**
      * Move a portlet relative to its current position UP one row.
@@ -58,7 +58,7 @@ public interface PortletPlacementContext
      * @return new coordinate location of the portlet
 	 * @throws PortletPlacementException
 	 */
-	public Coordinate moveUp(Fragment fragment) throws PortletPlacementException;
+	public Coordinate moveUp(ContentFragment fragment) throws PortletPlacementException;
 
     /**
      * Move a portlet relative to its current position DOWN one row.
@@ -67,7 +67,7 @@ public interface PortletPlacementContext
      * @return new coordinate location of the portlet
      * @throws PortletPlacementException
      */    
-	public Coordinate moveDown(Fragment fragment) throws PortletPlacementException;
+	public Coordinate moveDown(ContentFragment fragment) throws PortletPlacementException;
     
     /**
      * Move a portlet relative to its current position LEFT one column.
@@ -76,7 +76,7 @@ public interface PortletPlacementContext
      * @return new coordinate location of the portlet
      * @throws PortletPlacementException
      */        
-	public Coordinate moveLeft(Fragment fragment) throws PortletPlacementException;
+	public Coordinate moveLeft(ContentFragment fragment) throws PortletPlacementException;
     
     /**
      * Move a portlet relative to its current position RIGHT one column.
@@ -85,7 +85,7 @@ public interface PortletPlacementContext
      * @return new coordinate location of the portlet
      * @throws PortletPlacementException
      */            
-	public Coordinate moveRight(Fragment fragment) throws PortletPlacementException;
+	public Coordinate moveRight(ContentFragment fragment) throws PortletPlacementException;
     
 	/**
      * Add a portlet to its managed page.
@@ -95,7 +95,7 @@ public interface PortletPlacementContext
 	 * @return
 	 * @throws PortletPlacementException
 	 */
-	public Coordinate add(Fragment fragment, Coordinate coordinate) throws PortletPlacementException;
+	public Coordinate add(ContentFragment fragment, Coordinate coordinate) throws PortletPlacementException;
     
 	/**
      * Remove the specified fragment.
@@ -103,7 +103,7 @@ public interface PortletPlacementContext
 	 * @return
 	 * @throws PortletPlacementException
 	 */
-	public Coordinate remove(Fragment fragment) throws PortletPlacementException;
+	public Coordinate remove(ContentFragment fragment) throws PortletPlacementException;
     
     /**
      * retrieve the number of columns for the managed layout.
@@ -129,7 +129,7 @@ public interface PortletPlacementContext
 	 * @return the fragment associated to the given coordinate
 	 * @throws PortletPlacementException
 	 */
-	public Fragment getFragmentAtNewCoordinate(Coordinate coordinate) throws PortletPlacementException;
+	public ContentFragment getFragmentAtNewCoordinate(Coordinate coordinate) throws PortletPlacementException;
     
 	/**
      * Retrieve the old portlet fragment for the given coordinate (prior to placement).
@@ -138,7 +138,7 @@ public interface PortletPlacementContext
 	 * @return the fragment associated to the given coordinate
 	 * @throws PortletPlacementException
 	 */
-	public Fragment getFragmentAtOldCoordinate(Coordinate coordinate) throws PortletPlacementException;
+	public ContentFragment getFragmentAtOldCoordinate(Coordinate coordinate) throws PortletPlacementException;
     
 	/**
      * Retrieve a fragment by fragment id.
@@ -147,7 +147,7 @@ public interface PortletPlacementContext
 	 * @return The fragment associated with the given fragment id.
 	 * @throws PortletPlacementException
 	 */
-	public Fragment getFragmentById(String fragmentId) throws PortletPlacementException;
+	public ContentFragment getFragmentById(String fragmentId) throws PortletPlacementException;
     
     /**
      * Takes the internal portlet placement state and writes it back
@@ -155,6 +155,6 @@ public interface PortletPlacementContext
      * 
      * @return the managed page layout with updated fragment state.
      */
-    public Page syncPageFragments();
+    public ContentPage syncPageFragments();
         
 }

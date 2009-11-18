@@ -54,7 +54,7 @@ public abstract class BaseElementImpl implements BaseElement
 
     private boolean constraintsEnabled;
     private boolean permissionsEnabled;
-    private static PermissionFactory pf;
+    protected static PermissionFactory pf;
     
     public static void setPermissionsFactory(PermissionFactory pf)
     {

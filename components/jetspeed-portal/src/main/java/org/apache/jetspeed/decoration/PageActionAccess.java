@@ -22,10 +22,11 @@ import java.util.HashMap;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.om.page.ContentPage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.om.page.Page;
 
 /**
  * PageActionAccess
@@ -48,14 +49,14 @@ public class PageActionAccess implements PageEditAccess, Serializable
     private boolean editing;
     private HashMap fragmentActionAccess;
     
-    public PageActionAccess(boolean anonymous, Page page)
+    public PageActionAccess(boolean anonymous, ContentPage page)
     {
         this.anonymous = anonymous;        
         this.editAllowed = checkEditPage(page);
         this.fragmentActionAccess = new HashMap();
     }
     
-    public void checkReset(boolean anonymous, Page page)
+    public void checkReset(boolean anonymous, ContentPage page)
     {
         if (this.anonymous != anonymous)
         {
@@ -132,7 +133,7 @@ public class PageActionAccess implements PageEditAccess, Serializable
         }
     }
         
-    protected boolean checkEditPage(Page page)
+    protected boolean checkEditPage(ContentPage page)
     {
         boolean allowed = false;
         try

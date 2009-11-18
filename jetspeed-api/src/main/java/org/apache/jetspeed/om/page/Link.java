@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.om.page;
 
-
-
 /**
  * <p>
  * Link

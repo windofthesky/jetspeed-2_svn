@@ -24,6 +24,7 @@ import javax.security.auth.Subject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
@@ -46,13 +47,13 @@ public class PortletActionSecurityPathMergeBehavior
 {
     protected Logger log = LoggerFactory.getLogger(PortletActionSecurityPathMergeBehavior.class);
     
-    public PortletActionSecurityPathMergeBehavior( PageManager pageManager )
+    public PortletActionSecurityPathMergeBehavior( PageManager pageManager, PageLayoutComponent pageLayoutComponent )
     {
-    	this( pageManager, Boolean.FALSE );
+    	this( pageManager, pageLayoutComponent, Boolean.FALSE );
     }
-    public PortletActionSecurityPathMergeBehavior( PageManager pageManager, Boolean enableCreateUserPagesFromRolesOnEdit )
+    public PortletActionSecurityPathMergeBehavior( PageManager pageManager, PageLayoutComponent pageLayoutComponent, Boolean enableCreateUserPagesFromRolesOnEdit )
     {
-        super( pageManager, enableCreateUserPagesFromRolesOnEdit );
+        super( pageManager, pageLayoutComponent, enableCreateUserPagesFromRolesOnEdit );
     }
 
     public Subject getSubject(RequestContext context)

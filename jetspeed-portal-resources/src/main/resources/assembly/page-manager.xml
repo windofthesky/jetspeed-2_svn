@@ -46,6 +46,72 @@
             </constructor-arg>
           </bean>
         </entry>
+        <entry key=".tpsml">
+          <bean class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
+            <constructor-arg index="0">
+              <ref bean="IdGenerator" />
+            </constructor-arg>
+            <constructor-arg index="1">
+              <value>/JETSPEED-INF/castor/page-mapping.xml</value>
+            </constructor-arg>
+            <constructor-arg index="2">
+              <value>.tpsml</value>
+            </constructor-arg>
+            <constructor-arg index="3">
+              <value>org.apache.jetspeed.om.page.psml.PageTemplateImpl</value>
+            </constructor-arg>
+            <constructor-arg index="4">
+              <value>${psml.pages.path}</value>
+            </constructor-arg>
+            <constructor-arg index="5">
+              <ref bean="PageFileCache" />
+            </constructor-arg>
+          </bean>
+        </entry>
+        <entry key=".dpsml">
+          <bean class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
+            <constructor-arg index="0">
+              <ref bean="IdGenerator" />
+            </constructor-arg>
+            <constructor-arg index="1">
+              <value>/JETSPEED-INF/castor/page-mapping.xml</value>
+            </constructor-arg>
+            <constructor-arg index="2">
+              <value>.dpsml</value>
+            </constructor-arg>
+            <constructor-arg index="3">
+              <value>org.apache.jetspeed.om.page.psml.DynamicPageImpl</value>
+            </constructor-arg>
+            <constructor-arg index="4">
+              <value>${psml.pages.path}</value>
+            </constructor-arg>
+            <constructor-arg index="5">
+              <ref bean="PageFileCache" />
+            </constructor-arg>
+          </bean>
+        </entry>
+        <entry key=".fpsml">
+          <bean class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
+            <constructor-arg index="0">
+              <ref bean="IdGenerator" />
+            </constructor-arg>
+            <constructor-arg index="1">
+              <value>/JETSPEED-INF/castor/page-mapping.xml</value>
+            </constructor-arg>
+            <constructor-arg index="2">
+              <value>.fpsml</value>
+            </constructor-arg>
+            <constructor-arg index="3">
+              <value>org.apache.jetspeed.om.page.psml.FragmentDefinitionImpl</value>
+            </constructor-arg>
+            <constructor-arg index="4">
+              <value>${psml.pages.path}</value>
+            </constructor-arg>
+            <constructor-arg index="5">
+              <ref bean="PageFileCache" />
+            </constructor-arg>
+          </bean>
+        </entry>
         <entry key=".link">
           <bean class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler">
             <constructor-arg index="0">
@@ -209,6 +275,9 @@
         -->
         <prop key="*">PROPAGATION_REQUIRED</prop>
         <prop key="getPage*">PROPAGATION_SUPPORTS</prop>
+        <prop key="getPageTemplate*">PROPAGATION_SUPPORTS</prop>
+        <prop key="getDynamicPage*">PROPAGATION_SUPPORTS</prop>
+        <prop key="getFragmentDefinition*">PROPAGATION_SUPPORTS</prop>
         <prop key="getLink*">PROPAGATION_SUPPORTS</prop>
         <prop key="getFolder*">PROPAGATION_SUPPORTS</prop>
         <prop key="getContentPage">PROPAGATION_SUPPORTS</prop>
@@ -216,6 +285,9 @@
         <prop key="getUserFolder">PROPAGATION_SUPPORTS</prop>
         <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
         <prop key="removePage">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+        <prop key="removePageTemplate">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+        <prop key="removeDynamicPage">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+        <prop key="removeFragmentDefinition">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
         <prop key="removeFolder">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
         <prop key="removeLink">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
         <prop key="removePageSecurity">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
@@ -224,6 +296,9 @@
         <prop key="addPages">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
         <prop key="folderExists">PROPAGATION_SUPPORTS</prop>
         <prop key="pageExists">PROPAGATION_SUPPORTS</prop>
+        <prop key="pageTemplateExists">PROPAGATION_SUPPORTS</prop>
+        <prop key="dynamicPageExists">PROPAGATION_SUPPORTS</prop>
+        <prop key="fragmentDefinitionExists">PROPAGATION_SUPPORTS</prop>
         <prop key="linkExists">PROPAGATION_SUPPORTS</prop>
         <prop key="userFolderExists">PROPAGATION_SUPPORTS</prop>
         <prop key="userPageExists">PROPAGATION_SUPPORTS</prop>
@@ -320,6 +395,15 @@
     </constructor-arg>
     <constructor-arg index="1">
       <ref bean="dbPageManager" />
+    </constructor-arg>
+  </bean>
+
+  <!-- PageLayoutComponent -->
+  <bean id="org.apache.jetspeed.layout.PageLayoutComponent"
+    class="org.apache.jetspeed.layout.impl.PageLayoutComponentImpl">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg index="0">
+      <ref bean="org.apache.jetspeed.page.PageManager" />
     </constructor-arg>
   </bean>
 

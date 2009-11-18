@@ -32,6 +32,7 @@ import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
@@ -533,7 +534,10 @@ public class MockRequestContext implements RequestContext
         this.response = response;
     }
 
-    public ContentPage locatePage(Profiler profiler, String nonProfiledPath)
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.request.RequestContext#locatePage(org.apache.jetspeed.profiler.Profiler, org.apache.jetspeed.layout.PageLayoutComponent, java.lang.String)
+     */
+    public ContentPage locatePage(Profiler profiler, PageLayoutComponent pageLayoutComponent, String nonProfiledPath)
     {
         return null;
     }

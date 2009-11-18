@@ -21,14 +21,14 @@ import java.util.Map;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.request.RequestContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SessionNavigationalState, stores nav parameters in the session, not on URL
@@ -120,7 +120,7 @@ public class SessionNavigationalState extends AbstractNavigationalState
                         sessionStates = new PortletWindowSessionNavigationalStates(isRenderParameterStateFull());
                         session.setAttribute(NavigationalState.NAVSTATE_SESSION_KEY, sessionStates);
                     }
-                    Page page = context.getPage();
+                    ContentPage page = context.getPage();
                     // JS2-806
                     if (isClearPortletsModeAndWindowStateEnabled())
                     {

@@ -53,8 +53,8 @@ import org.apache.jetspeed.om.portlet.Supports;
  * Assigns decorations and page actions to all of the portlet Fragments within
  * the current request. 
  * 
- * @see org.apache.jetspeed.om.page.Fragment 
- * @see org.apache.jetspeed.om.page.Page
+ * @see org.apache.jetspeed.om.page.ContentFragment 
+ * @see org.apache.jetspeed.om.page.ContentPage
  * @see org.apache.jetspeed.decoration.Decoration
  * @see org.apache.jetspeed.decoration.LayoutDecoration
  * @see org.apache.jetspeed.decoration.PortletDecoration
@@ -148,13 +148,13 @@ public class DecorationValve extends AbstractValve implements Valve
 
         ContentPage page = requestContext.getPage();
 
-        // Globaly override all psml themes if override session attribute has been set
+        // Globally override all psml themes if override session attribute has been set
         if (requestContext
                 .getSessionAttribute(PortalReservedParameters.PAGE_THEME_OVERRIDE_ATTRIBUTE) != null)
         {
             String decoratorName = (String) requestContext
                     .getSessionAttribute(PortalReservedParameters.PAGE_THEME_OVERRIDE_ATTRIBUTE);
-            page.setDefaultDecorator(decoratorName, Fragment.LAYOUT);
+            page.overrideDefaultDecorator(decoratorName, Fragment.LAYOUT);
         }
         
         PageActionAccess pageActionAccess = (PageActionAccess)requestContext.getAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE);
@@ -191,7 +191,7 @@ public class DecorationValve extends AbstractValve implements Valve
             requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
             boolean solo = isSoloMode(requestContext);            
             SessionPathResolverCache sessionPathResolver = new SessionPathResolverCache( requestContext.getRequest().getSession() );
-            initDepthFragmentDecorations(requestContext, theme, page.getRootContentFragment(),
+            initDepthFragmentDecorations(requestContext, theme, page.getRootFragment(),
                                                     pageActionAccess, isAjaxRequest,
                                                     ((DecorationFactoryImpl) decorationFactory).getResourceValidator(),
                                                     sessionPathResolver, (theme.isInvalidated() && !solo));
@@ -215,7 +215,7 @@ public class DecorationValve extends AbstractValve implements Valve
         requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
         if ( fragments == null || fragments.size() == 0 )
         {
-            ContentFragment rootFragment = page.getRootContentFragment();
+            ContentFragment rootFragment = page.getRootFragment();
             initDepthFragments(requestContext, theme, rootFragment, pageActionAccess, isAjaxRequest, fragments);
         }
         else
@@ -547,7 +547,7 @@ public class DecorationValve extends AbstractValve implements Valve
                                       boolean isAjaxRequest,
                                       List collectFragments )
     {
-        final List contentFragments = fragment.getContentFragments();
+        final List contentFragments = fragment.getFragments();
         
         if(contentFragments != null && contentFragments.size() > 0)
         {
@@ -609,7 +609,7 @@ public class DecorationValve extends AbstractValve implements Valve
                                                 PathResolverCache pathResolverCache,
                                                 boolean reloadActionList)
     {
-        final List contentFragments = fragment.getContentFragments();
+        final List contentFragments = fragment.getFragments();
         
         if(contentFragments != null && contentFragments.size() > 0)
         {

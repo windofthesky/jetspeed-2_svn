@@ -55,6 +55,7 @@ limitations under the License.
       <fragment id="pe003" type="portlet" name="CustomerList"/>
       <fragment id="pe004" type="portlet" name="CustomerInfo"/>
     </fragment>
+    <fragment-reference id="f003" refid="test001"/>
   </fragment>
 
   <menu name="simple">

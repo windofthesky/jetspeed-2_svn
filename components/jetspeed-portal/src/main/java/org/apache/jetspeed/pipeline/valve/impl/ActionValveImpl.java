@@ -149,7 +149,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         {
             throw new JetspeedException("Failed to find PSML Pin ContentPageAggregator.build");
         }
-        ContentFragment root = page.getRootContentFragment();
+        ContentFragment root = page.getRootFragment();
         if (root == null)
         {
             throw new JetspeedException("No root ContentFragment found in ContentPage");
@@ -168,7 +168,7 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
         }
         else
         {
-            ContentFragment fragment = page.getContentFragmentById(actionWindow.getWindowId());
+            ContentFragment fragment = page.getFragmentById(actionWindow.getWindowId());
             
             if (fragment != null)
             {
@@ -203,9 +203,9 @@ public class ActionValveImpl extends AbstractValve implements ActionValve
    
     protected void notifyFragments(ContentFragment f, RequestContext context, ContentPage page)
     {
-        if (f.getContentFragments() != null && f.getContentFragments().size() > 0)
+        if (f.getFragments() != null && f.getFragments().size() > 0)
         {
-            for (Object child : f.getContentFragments())
+            for (Object child : f.getFragments())
             {
                 if (!"hidden".equals(f.getState()))
                 {

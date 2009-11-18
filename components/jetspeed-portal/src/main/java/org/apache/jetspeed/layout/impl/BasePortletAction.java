@@ -25,8 +25,8 @@ import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -138,16 +138,16 @@ public abstract class BasePortletAction
         return securityBehavior.createNewPageOnEdit(context);        
     }
     
-    public Fragment getFragmentIdFromLocation( int row, int column, Page page )
+    public ContentFragment getFragmentIdFromLocation( int row, int column, ContentPage page )
     {
     	return getFragmentIdFromLocation( row, column, page.getRootFragment() );
     }
-    public Fragment getFragmentIdFromLocation( int row, int column, Fragment parentFragment )
+    public ContentFragment getFragmentIdFromLocation( int row, int column, ContentFragment parentFragment )
     {
         Iterator fragments = parentFragment.getFragments().iterator();
         while ( fragments.hasNext() )
         {
-            Fragment fragment = (Fragment)fragments.next();
+            ContentFragment fragment = (ContentFragment)fragments.next();
             if ( fragment.getLayoutColumn() == column && fragment.getLayoutRow() == row )
             {
                 return fragment;
@@ -184,7 +184,7 @@ public abstract class BasePortletAction
         return result;
     }
     
-    public Fragment getParentFragmentById(String id, Fragment root)
+    public ContentFragment getParentFragmentById(String id, ContentFragment root)
     {
     	return NestedFragmentContext.getParentFragmentById( id, root );
     }    

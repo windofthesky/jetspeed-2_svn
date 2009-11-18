@@ -21,8 +21,8 @@ limitations under the License.
 <%@ page import="java.util.Map" %>
 <%@ page import="org.apache.jetspeed.ui.Jetui" %>
 <%@ page import="org.apache.jetspeed.request.RequestContext" %>
-<%@ page import="org.apache.jetspeed.om.page.Page" %>
 <%@ page import="org.apache.jetspeed.om.page.ContentFragment" %>
+<%@ page import="org.apache.jetspeed.om.page.ContentPage" %>
 <%@ page import="org.apache.jetspeed.portlets.layout.ColumnLayout" %>
 <%@ page import="org.apache.jetspeed.portlets.layout.LayoutCoordinate" %>
 <%@ page import="org.apache.jetspeed.om.page.ContentFragment" %>

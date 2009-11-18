@@ -27,8 +27,8 @@ import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.layout.PortletPlacementContext;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.request.RequestContext;
@@ -99,8 +99,8 @@ public class RemovePortletAction
             resultMap.put( PORTLETID, portletId );
             if ( false == checkAccess( requestContext, JetspeedActions.EDIT ) )
             {
-                Page page = requestContext.getPage();
-                Fragment fragment = page.getFragmentById( portletId );
+                ContentPage page = requestContext.getPage();
+                ContentFragment fragment = page.getFragmentById( portletId );
                 if ( fragment == null )
                 {
                     success = false;
@@ -129,10 +129,10 @@ public class RemovePortletAction
                 }
                 status = "refresh";
                 
-                Page newPage = requestContext.getPage();
+                ContentPage newPage = requestContext.getPage();
 
                 // using NestedFragmentContext, find portlet id for copy of target portlet in the new page 
-                Fragment newFragment = null;
+                ContentFragment newFragment = null;
                 try
                 {
                 	newFragment = removeFragmentContext.getFragmentOnNewPage( newPage, registry );
@@ -148,11 +148,11 @@ public class RemovePortletAction
             }
             
             // Use the Portlet Placement Manager to accomplish the removal
-            Page page = requestContext.getPage();
-            Fragment root = page.getRootFragment();
-            Fragment layoutContainerFragment = getParentFragmentById( portletId, root );
+            ContentPage page = requestContext.getPage();
+            ContentFragment root = page.getRootFragment();
+            ContentFragment layoutContainerFragment = getParentFragmentById( portletId, root );
             PortletPlacementContext placement = null;
-            Fragment fragment = null;
+            ContentFragment fragment = null;
             if ( layoutContainerFragment != null )
             {
             	placement = new PortletPlacementContextImpl( page, registry, layoutContainerFragment );
@@ -166,12 +166,8 @@ public class RemovePortletAction
             }
             placement.remove(fragment);
             page = placement.syncPageFragments();
-            page.removeFragmentById( fragment.getId() );
-            if (!batch)
-            {
-                if (pageManager != null)
-                    pageManager.updatePage( page );
-            }
+            page.removeFragment( fragment.getId() );
+
             // Build the results for the response
             resultMap.put( PORTLETID, portletId );            
             resultMap.put( STATUS, status );

@@ -772,11 +772,20 @@
 
    <!-- Page mapping -->
 
+   <class-descriptor class="org.apache.jetspeed.om.page.impl.BaseFragmentsElementImpl">
+      <object-cache class="org.apache.jetspeed.page.impl.DatabasePageManagerCache"/>
+
+      <extent-class class-ref="org.apache.jetspeed.om.page.impl.FragmentDefinitionImpl"/>
+      <extent-class class-ref="org.apache.jetspeed.om.page.impl.PageImpl"/>
+      <extent-class class-ref="org.apache.jetspeed.om.page.impl.PageTemplateImpl"/>
+      <extent-class class-ref="org.apache.jetspeed.om.page.impl.DynamicPageImpl"/>
+   </class-descriptor>
+
    <class-descriptor
-      class="org.apache.jetspeed.om.page.impl.PageImpl"
+      class="org.apache.jetspeed.om.page.impl.FragmentDefinitionImpl"
       table="PAGE"
    >
-      <object-cache class="org.apache.jetspeed.page.impl.DatabasePageManagerCache"/>
+      <!-- org.apache.jetspeed.om.page.impl.BaseFragmentsElementImpl mapping -->
 
       <field-descriptor
          name="id"
@@ -784,6 +793,12 @@
          jdbc-type="INTEGER"
          primarykey="true"
          autoincrement="true"
+      />
+
+      <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
       />
 
       <field-descriptor
@@ -805,7 +820,7 @@
 
       <collection-descriptor
           name="fragment"
-          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"
+          element-class-ref="org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl"
           auto-retrieve="true"
           auto-delete="object"
           auto-update="object"
@@ -852,31 +867,6 @@
       <field-descriptor
          name="shortTitle"
          column="SHORT_TITLE"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="hidden"
-         column="IS_HIDDEN"
-         jdbc-type="INTEGER"
-         conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
-      />
-
-      <field-descriptor
-         name="skin"
-         column="SKIN"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="defaultLayoutDecorator"
-         column="DEFAULT_LAYOUT_DECORATOR"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="defaultPortletDecorator"
-         column="DEFAULT_PORTLET_DECORATOR"
          jdbc-type="VARCHAR"
       />
 
@@ -958,6 +948,197 @@
          <inverse-foreignkey field-ref="pageId"/>
       </collection-descriptor>
 
+      <!-- org.apache.jetspeed.om.page.impl.FragmentDefinitionImpl mapping -->
+
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.PageImpl"
+      table="PAGE"
+   >
+      <!-- org.apache.jetspeed.om.page.impl.BaseFragmentsElementImpl mapping -->
+
+      <field-descriptor
+         name="id"
+         column="PAGE_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+        name="parentId"
+        column="PARENT_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <reference-descriptor
+          name="parent"
+          class-ref="org.apache.jetspeed.om.folder.impl.FolderImpl"
+          auto-retrieve="true"
+          auto-delete="link"
+          auto-update="link"
+          >
+         <foreignkey field-ref="parentId"/>
+      </reference-descriptor>
+
+      <collection-descriptor
+          name="fragment"
+          element-class-ref="org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="metadataFields"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageMetadataLocalizedFieldImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareCollection"
+      >
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <field-descriptor
+         name="path"
+         column="PATH"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="version"
+         column="VERSION"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="title"
+         column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="shortTitle"
+         column="SHORT_TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="subsite"
+         column="SUBSITE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="user"
+         column="USER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="role"
+         column="ROLE_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="group"
+         column="GROUP_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="mediatype"
+         column="MEDIATYPE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="locale"
+         column="LOCALE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedAttributeName"
+         column="EXT_ATTR_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedAttributeValue"
+         column="EXT_ATTR_VALUE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="constraints::owner"
+         column="OWNER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+          name="constraints::constraints"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageSecurityConstraintImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="constraints::constraintsRefs"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageSecurityConstraintsRef"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <!-- org.apache.jetspeed.om.page.impl.BasePageElementImpl mapping -->
+
+      <field-descriptor
+         name="skin"
+         column="SKIN"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="defaultLayoutDecorator"
+         column="DEFAULT_LAYOUT_DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="defaultPortletDecorator"
+         column="DEFAULT_PORTLET_DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+
       <collection-descriptor
           name="menus"
           element-class-ref="org.apache.jetspeed.om.page.impl.PageMenuDefinitionImpl"
@@ -969,6 +1150,438 @@
          <orderby name="name" sort="ASC"/>
          <inverse-foreignkey field-ref="pageId"/>
       </collection-descriptor>
+
+      <!-- org.apache.jetspeed.om.page.impl.BaseConcretePageElementImpl mapping -->
+
+      <field-descriptor
+         name="hidden"
+         column="IS_HIDDEN"
+         jdbc-type="INTEGER"
+         conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+      />
+
+      <!-- org.apache.jetspeed.om.page.impl.PageImpl mapping -->
+
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.PageTemplateImpl"
+      table="PAGE"
+   >
+      <!-- org.apache.jetspeed.om.page.impl.BaseFragmentsElementImpl mapping -->
+
+      <field-descriptor
+         name="id"
+         column="PAGE_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+        name="parentId"
+        column="PARENT_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <reference-descriptor
+          name="parent"
+          class-ref="org.apache.jetspeed.om.folder.impl.FolderImpl"
+          auto-retrieve="true"
+          auto-delete="link"
+          auto-update="link"
+          >
+         <foreignkey field-ref="parentId"/>
+      </reference-descriptor>
+
+      <collection-descriptor
+          name="fragment"
+          element-class-ref="org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="metadataFields"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageMetadataLocalizedFieldImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareCollection"
+      >
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <field-descriptor
+         name="path"
+         column="PATH"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="version"
+         column="VERSION"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="title"
+         column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="shortTitle"
+         column="SHORT_TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="subsite"
+         column="SUBSITE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="user"
+         column="USER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="role"
+         column="ROLE_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="group"
+         column="GROUP_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="mediatype"
+         column="MEDIATYPE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="locale"
+         column="LOCALE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedAttributeName"
+         column="EXT_ATTR_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedAttributeValue"
+         column="EXT_ATTR_VALUE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="constraints::owner"
+         column="OWNER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+          name="constraints::constraints"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageSecurityConstraintImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="constraints::constraintsRefs"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageSecurityConstraintsRef"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <!-- org.apache.jetspeed.om.page.impl.BasePageElementImpl mapping -->
+
+      <field-descriptor
+         name="skin"
+         column="SKIN"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="defaultLayoutDecorator"
+         column="DEFAULT_LAYOUT_DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="defaultPortletDecorator"
+         column="DEFAULT_PORTLET_DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+          name="menus"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageMenuDefinitionImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="name" sort="ASC"/>
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <!-- org.apache.jetspeed.om.page.impl.PageTemplateImpl mapping -->
+
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.DynamicPageImpl"
+      table="PAGE"
+   >
+      <!-- org.apache.jetspeed.om.page.impl.BaseFragmentsElementImpl mapping -->
+
+      <field-descriptor
+         name="id"
+         column="PAGE_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+        name="parentId"
+        column="PARENT_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <reference-descriptor
+          name="parent"
+          class-ref="org.apache.jetspeed.om.folder.impl.FolderImpl"
+          auto-retrieve="true"
+          auto-delete="link"
+          auto-update="link"
+          >
+         <foreignkey field-ref="parentId"/>
+      </reference-descriptor>
+
+      <collection-descriptor
+          name="fragment"
+          element-class-ref="org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="metadataFields"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageMetadataLocalizedFieldImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareCollection"
+      >
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <field-descriptor
+         name="path"
+         column="PATH"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="version"
+         column="VERSION"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="title"
+         column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="shortTitle"
+         column="SHORT_TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="subsite"
+         column="SUBSITE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="user"
+         column="USER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="role"
+         column="ROLE_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="group"
+         column="GROUP_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="mediatype"
+         column="MEDIATYPE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="locale"
+         column="LOCALE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedAttributeName"
+         column="EXT_ATTR_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedAttributeValue"
+         column="EXT_ATTR_VALUE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="constraints::owner"
+         column="OWNER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+          name="constraints::constraints"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageSecurityConstraintImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="constraints::constraintsRefs"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageSecurityConstraintsRef"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <!-- org.apache.jetspeed.om.page.impl.BasePageElementImpl mapping -->
+
+      <field-descriptor
+         name="skin"
+         column="SKIN"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="defaultLayoutDecorator"
+         column="DEFAULT_LAYOUT_DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="defaultPortletDecorator"
+         column="DEFAULT_PORTLET_DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+          name="menus"
+          element-class-ref="org.apache.jetspeed.om.page.impl.PageMenuDefinitionImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="name" sort="ASC"/>
+         <inverse-foreignkey field-ref="pageId"/>
+      </collection-descriptor>
+
+      <!-- org.apache.jetspeed.om.page.impl.BaseConcretePageElementImpl mapping -->
+
+      <field-descriptor
+         name="hidden"
+         column="IS_HIDDEN"
+         jdbc-type="INTEGER"
+         conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+      />
+
+      <!-- org.apache.jetspeed.om.page.impl.DynamicPageImpl mapping -->
+
+      <field-descriptor
+         name="pageType"
+         column="PAGE_TYPE"
+         jdbc-type="VARCHAR"
+      />
 
    </class-descriptor>
 
@@ -1492,10 +2105,18 @@
 
    <!-- Fragment mapping -->
 
+   <class-descriptor class="org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl">
+      <extent-class class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"/>
+      <extent-class class-ref="org.apache.jetspeed.om.page.impl.FragmentReferenceImpl"/>
+      <extent-class class-ref="org.apache.jetspeed.om.page.impl.PageFragmentImpl"/>
+   </class-descriptor>
+
    <class-descriptor
       class="org.apache.jetspeed.om.page.impl.FragmentImpl"
       table="FRAGMENT"
    >
+      <!-- org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl mapping -->
+
       <field-descriptor
          name="id"
          column="FRAGMENT_ID"
@@ -1505,23 +2126,17 @@
       />
 
       <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
         name="parentId"
         column="PARENT_ID"
         jdbc-type="INTEGER"
         access="anonymous"
       />
-
-      <collection-descriptor
-          name="fragments"
-          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentImpl"
-          auto-retrieve="true"
-          auto-delete="object"
-          auto-update="object"
-          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
-      >
-         <orderby name="id" sort="ASC"/>
-         <inverse-foreignkey field-ref="parentId"/>
-      </collection-descriptor>
 
       <field-descriptor
         name="pageId"
@@ -1537,12 +2152,6 @@
       />
 
       <field-descriptor
-         name="name"
-         column="NAME"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
          name="title"
          column="TITLE"
          jdbc-type="VARCHAR"
@@ -1551,12 +2160,6 @@
       <field-descriptor
          name="shortTitle"
          column="SHORT_TITLE"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="type"
-         column="TYPE"
          jdbc-type="VARCHAR"
       />
 
@@ -1697,6 +2300,426 @@
          <orderby name="name" sort="ASC"/>
          <inverse-foreignkey field-ref="fragmentId"/>
       </collection-descriptor>
+
+      <!-- org.apache.jetspeed.om.page.impl.FragmentImpl mapping -->
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="type"
+         column="TYPE"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+          name="fragments"
+          element-class-ref="org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="id" sort="ASC"/>
+         <inverse-foreignkey field-ref="parentId"/>
+      </collection-descriptor>
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.FragmentReferenceImpl"
+      table="FRAGMENT"
+   >
+      <!-- org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl mapping -->
+
+      <field-descriptor
+         name="id"
+         column="FRAGMENT_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+        name="parentId"
+        column="PARENT_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+        name="pageId"
+        column="PAGE_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="fragmentId"
+         column="FRAGMENT_STRING_ID"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="title"
+         column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="shortTitle"
+         column="SHORT_TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="skin"
+         column="SKIN"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="decorator"
+         column="DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="state"
+         column="STATE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="mode"
+         column="PMODE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="layoutRowProperty"
+         column="LAYOUT_ROW"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="layoutColumnProperty"
+         column="LAYOUT_COLUMN"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="layoutSizesProperty"
+         column="LAYOUT_SIZES"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="layoutXProperty"
+         column="LAYOUT_X"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="layoutYProperty"
+         column="LAYOUT_Y"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="layoutZProperty"
+         column="LAYOUT_Z"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="layoutWidthProperty"
+         column="LAYOUT_WIDTH"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="layoutHeightProperty"
+         column="LAYOUT_HEIGHT"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="extendedPropertyName1"
+         column="EXT_PROP_NAME_1"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedPropertyValue1"
+         column="EXT_PROP_VALUE_1"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedPropertyName2"
+         column="EXT_PROP_NAME_2"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedPropertyValue2"
+         column="EXT_PROP_VALUE_2"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="constraints::owner"
+         column="OWNER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+          name="constraints::constraints"
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentSecurityConstraintImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="fragmentId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="constraints::constraintsRefs"
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentSecurityConstraintsRef"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="fragmentId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="preferences"
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentPreferenceImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="name" sort="ASC"/>
+         <inverse-foreignkey field-ref="fragmentId"/>
+      </collection-descriptor>
+
+      <!-- org.apache.jetspeed.om.page.impl.FragmentReferenceImpl mapping -->
+
+      <field-descriptor
+         name="fragmentRefId"
+         column="FRAGMENT_STRING_REFID"
+         jdbc-type="VARCHAR"
+      />
+
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.PageFragmentImpl"
+      table="FRAGMENT"
+   >
+      <!-- org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl mapping -->
+
+      <field-descriptor
+         name="id"
+         column="FRAGMENT_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+         name="ojbConcreteClass"
+         column="CLASS_NAME"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+        name="parentId"
+        column="PARENT_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+        name="pageId"
+        column="PAGE_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="fragmentId"
+         column="FRAGMENT_STRING_ID"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="title"
+         column="TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="shortTitle"
+         column="SHORT_TITLE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="skin"
+         column="SKIN"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="decorator"
+         column="DECORATOR"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="state"
+         column="STATE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="mode"
+         column="PMODE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="layoutRowProperty"
+         column="LAYOUT_ROW"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="layoutColumnProperty"
+         column="LAYOUT_COLUMN"
+         jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="layoutSizesProperty"
+         column="LAYOUT_SIZES"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="layoutXProperty"
+         column="LAYOUT_X"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="layoutYProperty"
+         column="LAYOUT_Y"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="layoutZProperty"
+         column="LAYOUT_Z"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="layoutWidthProperty"
+         column="LAYOUT_WIDTH"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="layoutHeightProperty"
+         column="LAYOUT_HEIGHT"
+         jdbc-type="REAL"
+      />
+
+      <field-descriptor
+         name="extendedPropertyName1"
+         column="EXT_PROP_NAME_1"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedPropertyValue1"
+         column="EXT_PROP_VALUE_1"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedPropertyName2"
+         column="EXT_PROP_NAME_2"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="extendedPropertyValue2"
+         column="EXT_PROP_VALUE_2"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="constraints::owner"
+         column="OWNER_PRINCIPAL"
+         jdbc-type="VARCHAR"
+      />
+
+      <collection-descriptor
+          name="constraints::constraints"
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentSecurityConstraintImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="fragmentId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="constraints::constraintsRefs"
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentSecurityConstraintsRef"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="applyOrder" sort="ASC"/>
+         <inverse-foreignkey field-ref="fragmentId"/>
+      </collection-descriptor>
+
+      <collection-descriptor
+          name="preferences"
+          element-class-ref="org.apache.jetspeed.om.page.impl.FragmentPreferenceImpl"
+          auto-retrieve="true"
+          auto-delete="object"
+          auto-update="object"
+          collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"
+      >
+         <orderby name="name" sort="ASC"/>
+         <inverse-foreignkey field-ref="fragmentId"/>
+      </collection-descriptor>
+
+      <!-- org.apache.jetspeed.om.page.impl.PageFragmentImpl mapping -->
+
    </class-descriptor>
 
    <class-descriptor

@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.om.page;
 
-import org.apache.jetspeed.om.portlet.impl.LocalizedFieldImpl;
+import org.apache.jetspeed.om.portlet.LocalizedFieldImpl;
 import org.apache.jetspeed.util.JetspeedLongObjectID;
 
 /**

@@ -22,8 +22,8 @@ limitations under the License.
 <%@page import="org.apache.jetspeed.PortalReservedParameters"%>
 <%@page import="org.apache.jetspeed.decoration.Theme"%>
 <%@page import="org.apache.jetspeed.layout.JetspeedPowerTool"%>
-<%@page import="org.apache.jetspeed.om.page.Page"%>
 <%@page import="org.apache.jetspeed.om.page.ContentFragment"%>
+<%@page import="org.apache.jetspeed.om.page.ContentPage"%>
 <%@page import="org.apache.jetspeed.decoration.LayoutDecoration"%>
 <%@page import="org.apache.jetspeed.portlets.layout.ColumnLayout"%>
 <%@page import="org.apache.jetspeed.portalsite.PortalSiteRequestContext"%>
@@ -145,7 +145,7 @@ limitations under the License.
       pageContext.setAttribute("theme",_theme,REQ_SCOPE);
     
       //myPage
-      Page _myPage = _jpt.getPage();
+      ContentPage _myPage = _jpt.getPage();
       pageContext.setAttribute("myPage", _myPage, REQ_SCOPE);
     
       

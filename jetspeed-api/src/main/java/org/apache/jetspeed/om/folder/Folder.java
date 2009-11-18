@@ -18,9 +18,13 @@ package org.apache.jetspeed.om.folder;
 
 import java.util.List;
 
+import org.apache.jetspeed.om.common.SecuredResource;
+import org.apache.jetspeed.om.page.DynamicPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -35,7 +39,7 @@ import org.apache.jetspeed.page.document.NodeSet;
  * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
  * @version $Id$
  */
-public interface Folder extends Node
+public interface Folder extends Node, SecuredResource
 {
     String FOLDER_TYPE = "folder";
 
@@ -186,6 +190,45 @@ public interface Folder extends Node
     /**
      * 
      * <p>
+     * getPageTemplates
+     * </p>
+     *
+     * @return NodeSet of all the PageTemplates referenced by this Folder.
+     * @throws NodeException
+     * @throws PageNotFoundException if any of the PageTemplates referenced by this Folder
+     * could not be found.
+     */
+    NodeSet getPageTemplates() throws NodeException;
+    
+    /**
+     * 
+     * <p>
+     * getDynamicPages
+     * </p>
+     *
+     * @return NodeSet of all the DynamicPages referenced by this Folder.
+     * @throws NodeException
+     * @throws PageNotFoundException if any of the DynamicPages referenced by this Folder
+     * could not be found.
+     */
+    NodeSet getDynamicPages() throws NodeException;
+    
+    /**
+     * 
+     * <p>
+     * getFragmentDefinitions
+     * </p>
+     *
+     * @return NodeSet of all the FragmentDefinitions referenced by this Folder.
+     * @throws NodeException
+     * @throws PageNotFoundException if any of the FragmentDefinitions referenced by this Folder
+     * could not be found.
+     */
+    NodeSet getFragmentDefinitions() throws NodeException;
+    
+    /**
+     * 
+     * <p>
      * getPage
      * </p>
      *
@@ -196,6 +239,48 @@ public interface Folder extends Node
      * @throws NodeException
      */
     Page getPage(String name) throws PageNotFoundException, NodeException;
+    
+    /**
+     * 
+     * <p>
+     * getPageTemplate
+     * </p>
+     *
+     * @param name
+     * @return A PageTemplate referenced by this folder.
+     * @throws PageNotFoundException if the PageTemplate requested could not be found.
+     * @throws DocumentException
+     * @throws NodeException
+     */
+    PageTemplate getPageTemplate(String name) throws PageNotFoundException, NodeException;
+    
+    /**
+     * 
+     * <p>
+     * getDynamicPage
+     * </p>
+     *
+     * @param name
+     * @return A DynamicPage referenced by this folder.
+     * @throws PageNotFoundException if the DynamicPage requested could not be found.
+     * @throws DocumentException
+     * @throws NodeException
+     */
+    DynamicPage getDynamicPage(String name) throws PageNotFoundException, NodeException;
+    
+    /**
+     * 
+     * <p>
+     * getFragmentDefinition
+     * </p>
+     *
+     * @param name
+     * @return A FragmentDefinition referenced by this folder.
+     * @throws PageNotFoundException if the FragmentDefinition requested could not be found.
+     * @throws DocumentException
+     * @throws NodeException
+     */
+    FragmentDefinition getFragmentDefinition(String name) throws PageNotFoundException, NodeException;
     
     /**
      * 

@@ -14,15 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.jetspeed.om.page;
 
 /**
- * Interface for fragment reference objects
- *
- * @version $Id$
+ * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
+ * @version $Id:$
  */
-public interface Reference
+public interface BaseFragmentValidationListener
 {
-    // There are no Reference specific methods defined yet
+    /**
+     * Validate specified fragment.
+     * 
+     * @param fragmentElement fragment to validate
+     * @return validated flag
+     */
+    boolean validate(BaseFragmentElement fragmentElement);
+    
+    /**
+     * Validate all fragments.
+     * 
+     * @return validated flag.
+     */
+    boolean validate();
 }

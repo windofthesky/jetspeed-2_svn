@@ -35,15 +35,15 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.collections.list.TreeList;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.aggregator.impl.PortletAggregatorFragmentImpl;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.ContainerConstants;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.ContentFragmentImpl;
+import org.apache.jetspeed.om.page.impl.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.ContentPageImpl;
+import org.apache.jetspeed.om.page.impl.ContentPageImpl;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
@@ -566,7 +566,7 @@ public class JetspeedRequestContext implements RequestContext
         this.response = response;
     }
     
-    public ContentPage locatePage(Profiler profiler, String nonProfiledPath)
+    public ContentPage locatePage(Profiler profiler, PageLayoutComponent pageLayoutComponent, String nonProfiledPath)
     {
         try
         {
@@ -583,7 +583,7 @@ public class JetspeedRequestContext implements RequestContext
             }               
             PortalSiteSessionContext sessionContext = (PortalSiteSessionContext)getSessionAttribute(ProfilerValveImpl.PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);
             PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, true, true);
-            ContentPage cpage = new ContentPageImpl(requestContext.getManagedPage());
+            ContentPage cpage = pageLayoutComponent.newContentPage(requestContext.getManagedPage());
             //System.out.println("page is " + cpage.getPath());
             this.setPage(realPage);            
             this.setPath(pathSave);
@@ -645,8 +645,8 @@ public class JetspeedRequestContext implements RequestContext
         if (window == null)
         {
             // ensure RootContentFragment is initialized
-            getPage().getRootContentFragment(); 
-            ContentFragment fragment = getPage().getContentFragmentById(windowId);
+            getPage().getRootFragment(); 
+            ContentFragment fragment = getPage().getFragmentById(windowId);
             if (fragment == null)
             {
                 window = getInstantlyCreatedPortletWindow(windowId, null, false);
@@ -726,10 +726,11 @@ public class JetspeedRequestContext implements RequestContext
         
         if (portletUniqueName != null)
         {
-            Fragment fragment = new PortletAggregatorFragmentImpl(windowId);
+            // dynamically create instantly rendered content fragment and window
+            ContentFragmentImpl fragment = new ContentFragmentImpl(windowId, true);
             fragment.setType(Fragment.PORTLET);
             fragment.setName(portletUniqueName);
-            window = createPortletWindow(new ContentFragmentImpl(fragment, new HashMap(), true));
+            window = createPortletWindow(fragment);
             
             if (register && !registered && window.isValid())
             {
@@ -817,7 +818,7 @@ public class JetspeedRequestContext implements RequestContext
     public List<KeyValue<String, HeadElement>> getMergedHeadElements()
     {
         ContentPage page = getPage();
-        ContentFragment root = page.getRootContentFragment();
+        ContentFragment root = page.getRootFragment();
         List<KeyValue<String, HeadElement>> headElements = getPortletWindow(root).getHeadElements();
         
         HttpSession session = getRequest().getSession();

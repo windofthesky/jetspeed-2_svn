@@ -21,11 +21,9 @@ limitations under the License.
 <%@ page import="java.util.Map" %>
 <%@ page import="org.apache.jetspeed.ui.Jetui" %>
 <%@ page import="org.apache.jetspeed.request.RequestContext" %>
-<%@ page import="org.apache.jetspeed.om.page.Page" %>
 <%@ page import="org.apache.jetspeed.om.page.ContentFragment" %>
-<%@ page import="org.apache.jetspeed.om.page.Fragment" %>
+<%@ page import="org.apache.jetspeed.om.page.ContentPage" %>
 <%@ page import="org.apache.jetspeed.portlets.layout.ColumnLayout" %>
-<%@ page import="org.apache.jetspeed.om.page.ContentFragment" %>
 <%@ page import="org.apache.jetspeed.decoration.DecoratorAction" %>
 <%@ page import="org.apache.jetspeed.PortalReservedParameters" %>
 
@@ -33,7 +31,7 @@ limitations under the License.
   Jetui jetui = (Jetui)request.getAttribute("jetui");
   RequestContext rc = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
   Map userInfo = jetui.getUserAttributes(rc);
-  Page portalPage = rc.getPage();
+  ContentPage portalPage = rc.getPage();
   ColumnLayout columnLayout = (ColumnLayout)request.getAttribute("columnLayout");
   String navContent = jetui.renderPortletWindow("_PageNavigator", "j2-admin::PageNavigator", rc);
   String spacesNavContent = jetui.renderPortletWindow("_SpaceNavigator", "j2-admin::SpaceNavigator", rc);
@@ -128,7 +126,7 @@ for (String style : jetui.getStyleSheets(rc))
     else
     {
         int index = 0;
-        for (Collection<Fragment> collections : columnLayout.getColumns())
+        for (Collection<ContentFragment> collections : columnLayout.getColumns())
         {
             String columnFloat = columnLayout.getColumnFloat(index);
             String columnWidth = columnLayout.getColumnWidth(index);
@@ -140,7 +138,7 @@ for (String style : jetui.getStyleSheets(rc))
 
 <%      
             int subindex = 0;
-            for (Fragment fragment : collections)
+            for (ContentFragment fragment : collections)
             {
                 if (!(fragment.getName().equals("j2-admin::JetspeedToolbox") || fragment.getName().equals("j2-admin::JetspeedNavigator")))
                 {

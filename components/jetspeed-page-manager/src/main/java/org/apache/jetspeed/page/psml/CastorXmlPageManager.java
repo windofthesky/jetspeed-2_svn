@@ -38,18 +38,25 @@ import org.apache.jetspeed.om.folder.psml.MenuExcludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl;
-import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.ContentPageImpl;
+import org.apache.jetspeed.om.page.DynamicPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.om.page.psml.AbstractBaseFragmentsElement;
+import org.apache.jetspeed.om.page.psml.DynamicPageImpl;
+import org.apache.jetspeed.om.page.psml.FragmentDefinitionImpl;
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.FragmentPreferenceImpl;
+import org.apache.jetspeed.om.page.psml.FragmentReferenceImpl;
 import org.apache.jetspeed.om.page.psml.LinkImpl;
+import org.apache.jetspeed.om.page.psml.PageFragmentImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PageSecurityImpl;
+import org.apache.jetspeed.om.page.psml.PageTemplateImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.AbstractPageManager;
@@ -107,6 +114,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         modelClasses.put("PageSecuritySecurityConstraintImpl", SecurityConstraintImpl.class);
         modelClasses.put("SecurityConstraintsDefImpl", SecurityConstraintsDefImpl.class);
         modelClasses.put("FragmentPreferenceImpl", FragmentPreferenceImpl.class);
+        modelClasses.put("FragmentReferenceImpl", FragmentReferenceImpl.class);
+        modelClasses.put("PageFragmentImpl", PageFragmentImpl.class);
+        modelClasses.put("PageTemplateImpl", PageTemplateImpl.class);
+        modelClasses.put("DynamicPageImpl", DynamicPageImpl.class);
+        modelClasses.put("FragmentDefinitionImpl", FragmentDefinitionImpl.class);
     }
 
     private DocumentHandlerFactory handlerFactory;
@@ -154,6 +166,84 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 
     /**
      * <p>
+     * getPageTemplate
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.PageManager#getPageTemplate(java.lang.String)
+     * @param path
+     * @return page template
+     * @throws PageNotFoundException
+     * @throws NodeException
+     * @throws FolderNotFoundException
+     */
+    public PageTemplate getPageTemplate(String path) throws PageNotFoundException, NodeException
+    {
+        // get page template via folder, (access checked in Folder.getPageTemplate())
+        try
+        {
+            FolderImpl folder = getNodeFolder(path);
+            return folder.getPageTemplate(getNodeName(path));
+        }
+        catch (FolderNotFoundException fnfe)
+        {
+            throw new PageNotFoundException(fnfe.getMessage());
+        }
+    }
+
+    /**
+     * <p>
+     * getDynamicPage
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.PageManager#getDynamicPage(java.lang.String)
+     * @param path
+     * @return dynamic page
+     * @throws PageNotFoundException
+     * @throws NodeException
+     * @throws FolderNotFoundException
+     */
+    public DynamicPage getDynamicPage(String path) throws PageNotFoundException, NodeException
+    {
+        // get dynamic page via folder, (access checked in Folder.getDynamicPage())
+        try
+        {
+            FolderImpl folder = getNodeFolder(path);
+            return folder.getDynamicPage(getNodeName(path));
+        }
+        catch (FolderNotFoundException fnfe)
+        {
+            throw new PageNotFoundException(fnfe.getMessage());
+        }
+    }
+
+    /**
+     * <p>
+     * getFragmentDefinition
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.PageManager#getFragmentDefinition(java.lang.String)
+     * @param path
+     * @return dynamic page
+     * @throws PageNotFoundException
+     * @throws NodeException
+     * @throws FolderNotFoundException
+     */
+    public FragmentDefinition getFragmentDefinition(String path) throws PageNotFoundException, NodeException
+    {
+        // get fragment definition via folder, (access checked in Folder.getDynamicPage())
+        try
+        {
+            FolderImpl folder = getNodeFolder(path);
+            return folder.getFragmentDefinition(getNodeName(path));
+        }
+        catch (FolderNotFoundException fnfe)
+        {
+            throw new PageNotFoundException(fnfe.getMessage());
+        }
+    }
+
+    /**
+     * <p>
      * updatePage
      * </p>
      * 
@@ -161,75 +251,126 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public void updatePage(Page page) throws NodeException
     {
-        // unwrap page to be registered
-        if (page instanceof ContentPageImpl)
-        {
-            page = ((ContentPageImpl)page).getPage();
-        }
+        PageImpl pageImpl = (PageImpl)page;
+        updateFragmentsElement(pageImpl, Page.DOCUMENT_TYPE);
+    }
 
+    /**
+     * <p>
+     * updatePageTemplate
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#updatePageTemplate(org.apache.jetspeed.om.page.PageTemplate)
+     */
+    public void updatePageTemplate(PageTemplate pageTemplate) throws NodeException
+    {
+        PageTemplateImpl pageTemplateImpl = (PageTemplateImpl)pageTemplate;
+        updateFragmentsElement(pageTemplateImpl, PageTemplate.DOCUMENT_TYPE);
+    }
+
+    /**
+     * <p>
+     * updateDynamicPage
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#updateDynamicPage(org.apache.jetspeed.om.page.DynamicPage)
+     */
+    public void updateDynamicPage(DynamicPage dynamicPage) throws NodeException
+    {
+        DynamicPageImpl dynamicPageImpl = (DynamicPageImpl)dynamicPage;
+        updateFragmentsElement(dynamicPageImpl, DynamicPage.DOCUMENT_TYPE);
+    }
+
+    /**
+     * <p>
+     * updateFragmentDefinition
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#updateFragmentDefinition(org.apache.jetspeed.om.page.FragmentDefinition)
+     */
+    public void updateFragmentDefinition(FragmentDefinition fragmentDefinition) throws NodeException
+    {
+        FragmentDefinitionImpl fragmentDefinitionImpl = (FragmentDefinitionImpl)fragmentDefinition;
+        updateFragmentsElement(fragmentDefinitionImpl, FragmentDefinition.DOCUMENT_TYPE);
+    }
+
+    /**
+     * <p>
+     * updateFragmentsElement
+     * </p>
+     * 
+     * @param fragmentsElement generic fragments/page element implementation
+     * @param documentType document type
+     * @throws NodeException thrown on update error
+     */
+    public void updateFragmentsElement(AbstractBaseFragmentsElement fragmentsElement, String documentType) throws NodeException
+    {
         // make sure path and related members are set
-        if (page.getPath() != null)
+        if (fragmentsElement.getPath() != null)
         {
-            if (!page.getPath().equals(page.getId()))
+            if (!fragmentsElement.getPath().equals(fragmentsElement.getId()))
             {
-                log.error("Page paths and ids must match!");
-                return;
+                throw new NodeException("Fragments/page paths and ids must match!");
             }
         }
         else
         {
-            log.error("Page paths and ids must be set!");
-            return;
+            throw new NodeException("Fragments/page paths and ids must be set!");
+        }
+        
+        // validate fragments element
+        if (!fragmentsElement.validateFragments())
+        {
+            throw new NodeException("Fragments hierarchy invalid for fragments/page: " + fragmentsElement.getPath() + ", not updated.");
         }
 
         try
         {
             // set parent
-            boolean newPage = false;
-            FolderImpl parentFolder = getNodeFolder(page.getPath());
-            if (page.getParent() == null)
+            boolean newPageElement = false;
+            FolderImpl parentFolder = getNodeFolder(fragmentsElement.getPath());
+            if (fragmentsElement.getParent() == null)
             {
-                page.setParent(parentFolder);
-                newPage = true;
+                fragmentsElement.setParent(parentFolder);
+                newPageElement = true;
             }
 
             // enable permissions/constraints
-            PageImpl pageImpl = (PageImpl)page;
-            pageImpl.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
-            pageImpl.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
+            fragmentsElement.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
+            fragmentsElement.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
             
             // check for edit access
-            page.checkAccess(JetspeedActions.EDIT);
+            fragmentsElement.checkAccess(JetspeedActions.EDIT);
             
-            // update page
-            handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).updateDocument(page);
+            // update fragments/page
+            handlerFactory.getDocumentHandler(documentType).updateDocument(fragmentsElement);
             
             // update parent folder
             if (parentFolder != null)
             {
                 NodeSetImpl parentAllNodes = (NodeSetImpl)parentFolder.getAllNodes();
-                if (!parentAllNodes.contains(page))
+                if (!parentAllNodes.contains(fragmentsElement))
                 {
-                    // add new page
-                    parentAllNodes.add(page);
-                    newPage = true;
+                    // add new fragments/page element
+                    parentAllNodes.add(fragmentsElement);
+                    newPageElement = true;
                 }
-                else if (parentAllNodes.get(page.getPath()) != page)
+                else if (parentAllNodes.get(fragmentsElement.getPath()) != fragmentsElement)
                 {
-                    // remove stale page and add updated page
-                    parentAllNodes.remove(page);                
-                    parentAllNodes.add(page);
+                    // remove stale fragments/page element and add updated element
+                    parentAllNodes.remove(fragmentsElement);
+                    parentAllNodes.add(fragmentsElement);
                 }
             }
             
             // notify page manager listeners
-            if (newPage)
+            if (newPageElement)
             {
-                notifyNewNode(page);
+                notifyNewNode(fragmentsElement);
             }
             else
             {
-                notifyUpdatedNode(page);
+                notifyUpdatedNode(fragmentsElement);
             }
         }
         catch (FolderNotFoundException fnfe)
@@ -247,27 +388,75 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      */
     public void removePage(Page page) throws NodeException
     {
-        // unwrap page to be removed
-        if (page instanceof ContentPageImpl)
-        {
-            page = ((ContentPageImpl)page).getPage();
-        }
+        PageImpl pageImpl = (PageImpl)page;
+        removeFragmentsElement(pageImpl, Page.DOCUMENT_TYPE);
+    }
 
+    /**
+     * <p>
+     * removePageTemplate
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#removePageTemplate(org.apache.jetspeed.om.page.PageTemplate)
+     */
+    public void removePageTemplate(PageTemplate pageTemplate) throws NodeException
+    {
+        PageTemplateImpl pageTemplateImpl = (PageTemplateImpl)pageTemplate;
+        removeFragmentsElement(pageTemplateImpl, PageTemplate.DOCUMENT_TYPE);
+    }
+
+    /**
+     * <p>
+     * removeDynamicPage
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#removeDynamicPage(org.apache.jetspeed.om.page.DynamicPage)
+     */
+    public void removeDynamicPage(DynamicPage dynamicPage) throws NodeException
+    {
+        DynamicPageImpl dynamicPageImpl = (DynamicPageImpl)dynamicPage;
+        removeFragmentsElement(dynamicPageImpl, DynamicPage.DOCUMENT_TYPE);        
+    }
+
+    /**
+     * <p>
+     * removeFragmentDefinition
+     * </p>
+     * 
+     * @see org.apache.jetspeed.services.page.PageManagerService#removeFragmentDefinition(org.apache.jetspeed.om.page.FragmentDefinition)
+     */
+    public void removeFragmentDefinition(FragmentDefinition fragmentsDefinition) throws NodeException
+    {
+        FragmentDefinitionImpl fragmentsDefinitionImpl = (FragmentDefinitionImpl)fragmentsDefinition;
+        removeFragmentsElement(fragmentsDefinitionImpl, FragmentDefinition.DOCUMENT_TYPE);        
+    }
+
+    /**
+     * <p>
+     * removeFragmentsElement
+     * </p>
+     * 
+     * @param fragmentsElement generic fragments/page element implementation
+     * @param documentType document type
+     * @throws NodeException thrown on remove error
+     */
+    public void removeFragmentsElement(AbstractBaseFragmentsElement fragmentsElement, String documentType) throws NodeException
+    {
         // check for edit access
-        page.checkAccess(JetspeedActions.EDIT);
+        fragmentsElement.checkAccess(JetspeedActions.EDIT);
 
         try
         {
-            FolderImpl folder = getNodeFolder(page.getPath());
+            FolderImpl folder = getNodeFolder(fragmentsElement.getPath());
 
-            // remove page
-            handlerFactory.getDocumentHandler(Page.DOCUMENT_TYPE).removeDocument(page);
+            // remove fragments/page
+            handlerFactory.getDocumentHandler(documentType).removeDocument(fragmentsElement);
             
             // update folder
-            ((NodeSetImpl)folder.getAllNodes()).remove(page);
+            ((NodeSetImpl)folder.getAllNodes()).remove(fragmentsElement);
             
             // notify page manager listeners
-            notifyRemovedNode(page);
+            notifyRemovedNode(fragmentsElement);
         }
         catch (FolderNotFoundException fnfe)
         {
@@ -276,7 +465,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         catch (DocumentNotFoundException dnfe)
         {
             throw new NodeException(dnfe.getMessage());
-        }
+        }        
     }
 
     /**
@@ -633,6 +822,60 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     }
     
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPageTemplates(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getPageTemplates(Folder folder) throws NodeException
+    {
+        // delegate back to folder instance
+        return folder.getPageTemplates();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPageTemplate(org.apache.jetspeed.om.folder.Folder, java.lang.String)
+     */
+    public PageTemplate getPageTemplate(Folder folder, String name) throws PageNotFoundException, NodeException
+    {
+        // delegate back to folder instance
+        return folder.getPageTemplate(name);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getDynamicPages(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getDynamicPages(Folder folder) throws NodeException
+    {
+        // delegate back to folder instance
+        return folder.getDynamicPages();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getDynamicPage(org.apache.jetspeed.om.folder.Folder, java.lang.String)
+     */
+    public DynamicPage getDynamicPage(Folder folder, String name) throws PageNotFoundException, NodeException
+    {
+        // delegate back to folder instance
+        return folder.getDynamicPage(name);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getFragmentDefinitions(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getFragmentDefinitions(Folder folder) throws NodeException
+    {
+        // delegate back to folder instance
+        return folder.getFragmentDefinitions();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getFragmentDefinition(org.apache.jetspeed.om.folder.Folder, java.lang.String)
+     */
+    public FragmentDefinition getFragmentDefinition(Folder folder, String name) throws PageNotFoundException, NodeException
+    {
+        // delegate back to folder instance
+        return folder.getFragmentDefinition(name);
+    }
+    
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getLinks(org.apache.jetspeed.om.folder.Folder)
      */    
     public NodeSet getLinks(Folder folder) throws NodeException
@@ -775,7 +1018,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     }
 
     /**
-     * updateFolderNodes - recusively update all folder nodes
+     * updateFolderNodes - recursively update all folder nodes
      *
      * @param folderImpl folder whose nodes are to be updated
      * @param throws FolderNotUpdatedException
@@ -793,6 +1036,18 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
                 if (node instanceof Page)
                 {
                     updatePage((Page)node);
+                }
+                else if (node instanceof PageTemplate)
+                {
+                    updatePageTemplate((PageTemplate)node);
+                }
+                else if (node instanceof DynamicPage)
+                {
+                    updateDynamicPage((DynamicPage)node);
+                }
+                else if (node instanceof FragmentDefinition)
+                {
+                    updateFragmentDefinition((FragmentDefinition)node);
                 }
                 else if (node instanceof Link)
                 {
@@ -876,7 +1131,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         super.reset();
 
         // evict all from file cache to force subsequent
-        // refreshs from persistent store
+        // refreshes from persistent store
         fileCache.evictAll();
     }
 
@@ -979,25 +1234,11 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // this page manager
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#getContentPage(java.lang.String)
-     */
-    public ContentPage getContentPage(String path) throws PageNotFoundException, NodeException
-    {        
-        return new ContentPageImpl(getPage(path));
-    } 
-
-    public Page copy(Page source)
-    {
-        return null;
-    }
-    
     public int addPages(Page[] pages)
     throws NodeException
     {
         this.updatePage(pages[0]);
         this.updatePage(pages[1]);
         throw new NodeException("Its gonna blow captain!");
-    }
-    
+    }    
 }

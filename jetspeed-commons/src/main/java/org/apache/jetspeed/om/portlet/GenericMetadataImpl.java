@@ -14,16 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.om.portlet.impl;
+package org.apache.jetspeed.om.portlet;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Collections;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
-import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.LocalizedField;
+import org.apache.jetspeed.util.ArgUtil;
 
 /**
  * GenericMetadataImpl
@@ -37,9 +40,12 @@ import org.apache.jetspeed.om.portlet.LocalizedField;
 public abstract class GenericMetadataImpl implements GenericMetadata
 {   
     private Collection<LocalizedField> fields = null;
-    private transient MultiValueMap fieldMap = null;
+
+    private transient Map<String,Collection<LocalizedField>> fieldMap = null;
+
+    private transient Map<String,Map<Locale,LocalizedField>> localizedText = null;
     
-    private MultiValueMap getFieldMap(boolean create)
+    private Map<String,Collection<LocalizedField>> getFieldMap(boolean create)
     {
         if (fieldMap == null && create)
         {
@@ -47,13 +53,25 @@ public abstract class GenericMetadataImpl implements GenericMetadata
             {
                 if (fieldMap == null)
                 {
-                    fieldMap = new MultiValueMap();
+                    fieldMap = new HashMap<String,Collection<LocalizedField>>();
                 }
             }
         }
         return fieldMap;
     }
-
+    
+    private void addFieldMap(LocalizedField field)
+    {
+        Map<String,Collection<LocalizedField>> fieldMap = getFieldMap(true);
+        String fieldMapKey = field.getName();
+        Collection<LocalizedField> fields = fieldMap.get(fieldMapKey);
+        if (fields == null)
+        {
+            fields = new ArrayList<LocalizedField>();
+            fieldMap.put(fieldMapKey, fields);
+        }
+        fields.add(field);
+    }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.GenericMetadata#addField(java.util.Locale, java.lang.String, java.lang.String)
@@ -73,24 +91,23 @@ public abstract class GenericMetadataImpl implements GenericMetadata
      */
     public void addField(LocalizedField field)
     {
-        if(fields == null)
+        if (fields == null)
         {
             fields = new ArrayList<LocalizedField>();
-        }
-        
+        }        
         fields.add(field);
-        getFieldMap(true).put(field.getName(), field);
+        
+        addFieldMap(field);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.GenericMetadata#getFields(java.lang.String)
      */
-    @SuppressWarnings("unchecked")
     public Collection<LocalizedField> getFields(String name)
     {
     	//TODO:  return an immutable version?
-        MultiValueMap fieldMap = getFieldMap(false);
-        return (Collection<LocalizedField>)(fieldMap !=null ? fieldMap.get(name) : null);
+        Map<String,Collection<LocalizedField>> fieldMap = getFieldMap(false);
+        return (fieldMap !=null ? fieldMap.get(name) : null);
     }
 
     /* (non-Javadoc)
@@ -98,7 +115,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
      */
     public void setFields(String name, Collection<LocalizedField> values)
     {
-        MultiValueMap fieldMap = getFieldMap(false);
+        Map<String,Collection<LocalizedField>> fieldMap = getFieldMap(false);
         if (fieldMap != null)
         {
             fieldMap.remove(name);
@@ -120,7 +137,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
             while(iter.hasNext())
             {
                 LocalizedField field = (LocalizedField)iter.next();
-                getFieldMap(true).put(field.getName(), field);
+                addFieldMap(field);
             }
             
             fields.addAll(values);
@@ -142,7 +159,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
     {
         this.fields = fields;
 
-        MultiValueMap fieldMap = getFieldMap(false);
+        Map<String,Collection<LocalizedField>> fieldMap = getFieldMap(false);
         if (fieldMap != null)
         {
             fieldMap.clear();
@@ -156,7 +173,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
                 LocalizedField field = (LocalizedField)fieldIter.next();
                 if (field.getName() != null)
                 {
-                    getFieldMap(true).put(field.getName(), field);
+                    addFieldMap(field);
                 }
             }
         }
@@ -205,7 +222,7 @@ public abstract class GenericMetadataImpl implements GenericMetadata
         }
         
         // update field map
-        MultiValueMap fieldMap = getFieldMap(false);
+        Map<String,Collection<LocalizedField>> fieldMap = getFieldMap(false);
         if (fieldMap != null)
         {
             fieldMap.clear();
@@ -217,8 +234,61 @@ public abstract class GenericMetadataImpl implements GenericMetadata
             while (fieldIter.hasNext())
             {
                 LocalizedField field = (LocalizedField)fieldIter.next();
-                getFieldMap(true).put(field.getName(), field);
+                addFieldMap(field);
             }
         }
+    }
+    
+    /**
+     * getText - get localized text from metadata
+     * 
+     * @param name text name
+     * @param locale preferred locale
+     * @return localized text or null if not available
+     */
+    public String getText(String name, Locale locale)
+    {
+        // validate parameters
+        ArgUtil.assertNotNull(String.class, name, this, "getText(String, Locale)");
+        ArgUtil.assertNotNull(Locale.class, locale, this, "getText(String, Locale)");
+
+        // populate cache for named text by locale
+        Map<Locale,LocalizedField> namedLocalizedText = ((localizedText != null) ? localizedText.get(name) : null);
+        if ((namedLocalizedText == null) && (getFields() != null))
+        {
+            Collection<LocalizedField> fields = getFields(name);
+            if ((fields != null) && !fields.isEmpty())
+            {
+                namedLocalizedText = new HashMap<Locale,LocalizedField>(getFields().size());
+                if (localizedText == null)
+                {
+                    localizedText = Collections.synchronizedMap(new HashMap<String,Map<Locale,LocalizedField>>(getFields().size()));
+                }
+                localizedText.put(name, namedLocalizedText);
+                Iterator<LocalizedField> fieldsItr = fields.iterator();
+                while (fieldsItr.hasNext())
+                {
+                    LocalizedField field = fieldsItr.next();
+                    namedLocalizedText.put(field.getLocale(), field);
+                }
+            }
+        }
+
+        // retrieve cached named text by locale if found
+        if ((namedLocalizedText != null) && !namedLocalizedText.isEmpty())
+        {
+            // test locale
+            if (namedLocalizedText.containsKey(locale) )
+            {
+                return namedLocalizedText.get(locale).getValue().trim();
+            }
+            // test language only locale
+            Locale languageOnly = new Locale(locale.getLanguage());
+            if (namedLocalizedText.containsKey(languageOnly))
+            {
+                return namedLocalizedText.get(languageOnly).getValue().trim();
+            }
+        }
+        return null;
     }
 }

@@ -36,8 +36,8 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.state.NavigationalStateComponent;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.factory.PortletFactory;
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.mocks.ResourceLocatingServletContext;
-import org.apache.jetspeed.om.page.ContentPageImpl;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.page.PageManager;
@@ -197,8 +197,10 @@ public class TestAggregator extends JetspeedTestCase
                         PageManager pageManager = 
                             (PageManager) engine.getComponentManager().getComponent(PageManager.class);
                         Page page = pageManager.getPage(testPage);
+                        PageLayoutComponent pageLayoutComponent = 
+                            (PageLayoutComponent) engine.getComponentManager().getComponent(PageLayoutComponent.class);
                         assertNotNull(page);
-                        requestContext.setPage(new ContentPageImpl(page));
+                        requestContext.setPage(pageLayoutComponent.newContentPage(page));
 
                         if (!isParallelMode) {
                             pageAggregator.build(requestContext);

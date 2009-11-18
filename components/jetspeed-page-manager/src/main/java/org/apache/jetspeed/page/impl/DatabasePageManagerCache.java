@@ -79,7 +79,7 @@ public class DatabasePageManagerCache implements ObjectCache
                 final NodeImpl node = (NodeImpl)element;
                 // infuse node with page manager configuration
                 // or the page manager itself and add to the
-                // paths cache 
+                // paths cache
                 node.setConstraintsEnabled(constraintsEnabled);
                 node.setPermissionsEnabled(permissionsEnabled);
                 if (node instanceof FolderImpl)

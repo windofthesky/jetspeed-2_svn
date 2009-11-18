@@ -30,19 +30,15 @@ import javax.portlet.PreferencesValidator;
 import javax.portlet.ValidatorException;
 
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.jetspeed.om.preference.FragmentPreference;
-import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.ojb.broker.query.Criteria;
@@ -73,7 +69,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     protected static final String EMPTY_VALUE = "_";
     
     private PortletFactory portletFactory;
-    private PageManager pageManager;
+
     /**
      * Cache elements are stored as element type JetspeedPreferencesMap
      */
@@ -101,17 +97,10 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         this.preferenceCache = preferenceCache;
     }
     
-    public PortletPreferencesServiceImpl(PortletFactory portletFactory, JetspeedCache preferenceCache, PageManager pageManager)
-            throws ClassNotFoundException
-    {
-        this(portletFactory, preferenceCache);
-        this.pageManager = pageManager;
-    }
-    
-    public PortletPreferencesServiceImpl(PortletFactory portletFactory, JetspeedCache preferenceCache, PageManager pageManager, List<String> apps, boolean preloadEntities)
+    public PortletPreferencesServiceImpl(PortletFactory portletFactory, JetspeedCache preferenceCache, List<String> apps, boolean preloadEntities)
     throws ClassNotFoundException
     {
-        this(portletFactory, preferenceCache, pageManager);
+        this(portletFactory, preferenceCache);
         this.preloadedApplications = apps;
         this.preloadEntities = preloadEntities;
     }
@@ -242,10 +231,9 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         PortletWindow window = (PortletWindow)pw;
         if (request.getPortletMode().equals(JetspeedActions.EDIT_DEFAULTS_MODE))
         {
-            RequestContext rc = (RequestContext) request.getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
             try
             {
-                storeEntityPreferences(map, rc.getPage(), window);
+                storeEntityPreferences(map, window);
             }
             catch (PreferencesException e)
             {
@@ -600,29 +588,11 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
      * Jetspeed: PortletPreferencesProvider
      */        
     @SuppressWarnings("unchecked")
-    public void storeEntityPreferences(Map<String, PortletPreference> map, ContentPage page, PortletWindow window)
+    public void storeEntityPreferences(Map<String, PortletPreference> map, PortletWindow window)
             throws PreferencesException
     {
-        ContentFragment fragment = window.getFragment();
-        List<FragmentPreference> fragmentPrefs = fragment.getPreferences();
-        fragmentPrefs.clear();
         for (Entry<String, PortletPreference> entry : map.entrySet())
         {
-            String name = entry.getKey();
-            PortletPreference pref = entry.getValue();
-            FragmentPreference fp = pageManager.newFragmentPreference();
-            fp.setName(name);
-            fp.setReadOnly(pref.isReadOnly());
-            String [] values = pref.getValues();
-            if (values != null)
-            {
-                List<String> list = (List<String>)fp.getValueList();
-                for (String value : values)
-                {
-                    list.add(value);
-                }
-            }
-            fragmentPrefs.add(fp);
             org.apache.jetspeed.om.portlet.PortletDefinition pd = window.getPortletDefinition();
             String entityId = window.getPortletEntityId();            
             String appName = pd.getApplication().getName();
@@ -632,7 +602,8 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         }
         try
         {
-            pageManager.updatePage(page);
+            ContentFragment fragment = window.getFragment();
+            fragment.updatePreferences(map);
         }
         catch (Exception e)
         {

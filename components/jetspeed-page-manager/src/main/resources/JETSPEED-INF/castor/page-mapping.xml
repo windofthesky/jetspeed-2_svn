@@ -18,15 +18,10 @@
   limitations under the License.
 -->
 <mapping>
-  <class name="org.apache.jetspeed.om.page.psml.PageImpl">
-    <map-to xml="page"/>
+  <class name="org.apache.jetspeed.om.page.psml.AbstractBaseFragmentsElement">
 
     <field name="id" type="string">
       <bind-xml name="id" node="attribute"/>
-    </field>
-
-    <field name="hidden" type="boolean">
-      <bind-xml name="hidden" node="attribute"/>
     </field>
 
     <field name="securityConstraints"
@@ -46,20 +41,29 @@
       <bind-xml name="short-title"/>
     </field>
     
-    <field name="defaults"
-           type="org.apache.jetspeed.om.page.psml.DefaultsImpl">
-      <bind-xml name="defaults"/>
-    </field>
-
-    <field name="rootFragment"
-           type="org.apache.jetspeed.om.page.psml.FragmentImpl">
-      <bind-xml name="fragment"/>
+    <field name="rootFragmentElementImpl"
+           type="org.apache.jetspeed.om.page.psml.FragmentElementImpl">
+      <bind-xml name="fragment-element"/>
     </field>
 
     <field name="metadataFields"
            type="org.apache.jetspeed.om.page.PageLocalizedFieldImpl" 
            collection="collection">
       <bind-xml name="metadata"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.FragmentDefinitionImpl"
+         extends="org.apache.jetspeed.om.page.psml.AbstractBaseFragmentsElement">
+    <map-to xml="fragment-definition"/>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.AbstractBasePageElement"
+         extends="org.apache.jetspeed.om.page.psml.AbstractBaseFragmentsElement">
+
+    <field name="defaults"
+           type="org.apache.jetspeed.om.page.psml.DefaultsImpl">
+      <bind-xml name="defaults"/>
     </field>
 
     <field name="menuDefinitions"
@@ -68,7 +72,34 @@
       <bind-xml name="menu"/>
     </field>
   </class>
-  
+
+  <class name="org.apache.jetspeed.om.page.psml.AbstractBaseConcretePageElement"
+         extends="org.apache.jetspeed.om.page.psml.AbstractBasePageElement">
+
+    <field name="hidden" type="boolean">
+      <bind-xml name="hidden" node="attribute"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.PageImpl"
+         extends="org.apache.jetspeed.om.page.psml.AbstractBaseConcretePageElement">
+    <map-to xml="page"/>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.PageTemplateImpl"
+         extends="org.apache.jetspeed.om.page.psml.AbstractBasePageElement">
+    <map-to xml="page-template"/>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.DynamicPageImpl"
+         extends="org.apache.jetspeed.om.page.psml.AbstractBaseConcretePageElement">
+    <map-to xml="dynamic-page"/>
+
+    <field name="pageType" type="string">
+      <bind-xml name="type" node="attribute"/>
+    </field>
+  </class>
+
   <class name="org.apache.jetspeed.om.page.PageLocalizedFieldImpl">
     <map-to xml="metadata"/>
 
@@ -85,19 +116,29 @@
     </field>
   </class>
 
-  <class name="org.apache.jetspeed.om.page.psml.FragmentImpl">
-    <map-to xml="fragment"/>
+  <class name="org.apache.jetspeed.om.page.psml.FragmentElementImpl">
+    <map-to xml="fragment-element"/>
+
+    <field name="fragment"
+           type="org.apache.jetspeed.om.page.psml.FragmentImpl">
+      <bind-xml name="fragment"/>
+    </field>
+
+    <field name="fragmentReference"
+           type="org.apache.jetspeed.om.page.psml.FragmentReferenceImpl">
+      <bind-xml name="fragment-reference"/>
+    </field>
+
+    <field name="pageFragment"
+           type="org.apache.jetspeed.om.page.psml.PageFragmentImpl">
+      <bind-xml name="page-fragment"/>
+    </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.AbstractBaseFragmentElement">
 
     <field name="id" type="string">
       <bind-xml name="id" node="attribute"/>
-    </field>
-
-    <field name="type" type="string">
-      <bind-xml name="type" node="attribute"/>
-    </field>
-
-    <field name="name" type="string">
-      <bind-xml name="name" node="attribute"/>
     </field>
 
     <field name="skin" type="string">
@@ -129,12 +170,6 @@
       <bind-xml name="short-title"/>
     </field>
 
-    <field name="fragments"
-           type="org.apache.jetspeed.om.page.psml.FragmentImpl" 
-           collection="collection">
-      <bind-xml name="fragment"/>
-    </field>
-
     <field name="propertiesList"
            type="org.apache.jetspeed.om.page.psml.PropertyImpl" collection="arraylist">
       <bind-xml name="property"/>
@@ -144,6 +179,39 @@
            type="org.apache.jetspeed.om.page.psml.FragmentPreferenceImpl" collection="arraylist">
       <bind-xml name="preference"/>
     </field>
+  </class>
+
+  <class name="org.apache.jetspeed.om.page.psml.FragmentImpl"
+         extends="org.apache.jetspeed.om.page.psml.AbstractBaseFragmentElement">
+    <map-to xml="fragment"/>
+
+    <field name="type" type="string">
+      <bind-xml name="type" node="attribute"/>
+    </field>
+
+    <field name="name" type="string">
+      <bind-xml name="name" node="attribute"/>
+    </field>
+
+    <field name="fragmentElementImpls"
+           type="org.apache.jetspeed.om.page.psml.FragmentElementImpl" 
+           collection="collection">
+      <bind-xml name="fragment-element"/>
+    </field>
+  </class>
+    
+  <class name="org.apache.jetspeed.om.page.psml.FragmentReferenceImpl"
+         extends="org.apache.jetspeed.om.page.psml.AbstractBaseFragmentElement">
+    <map-to xml="fragment-reference"/>
+
+    <field name="refId" type="string">
+      <bind-xml name="refid" node="attribute"/>
+    </field>
+  </class>
+    
+  <class name="org.apache.jetspeed.om.page.psml.PageFragmentImpl"
+         extends="org.apache.jetspeed.om.page.psml.AbstractBaseFragmentElement">
+    <map-to xml="page-fragment"/>
   </class>
     
   <class name="org.apache.jetspeed.om.page.psml.LinkImpl">

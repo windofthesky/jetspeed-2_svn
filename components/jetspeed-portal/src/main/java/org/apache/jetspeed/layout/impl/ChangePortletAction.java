@@ -132,7 +132,7 @@ public class ChangePortletAction
             resultMap.put(FRAGMENTID, fragmentId);
             
             ContentPage page = requestContext.getPage();            
-            ContentFragment fragment = page.getContentFragmentById(fragmentId);
+            ContentFragment fragment = page.getFragmentById(fragmentId);
             
             if ( fragment == null )
             {
@@ -242,19 +242,10 @@ public class ChangePortletAction
 	                }
 	                navState.sync(requestContext);                                
 	            }
-	            
 	
 	            if (checkAccess(requestContext, JetspeedActions.EDIT))
 	            {
-	                if (requestedState != null)
-	                    fragment.setState(requestedState);
-	                if (requestedMode != null)
-	                    fragment.setMode(requestedMode);
-	                
-	                if (pageManager != null && !batch)
-	                {
-	                    pageManager.updatePage(page);
-	                }
+	                fragment.updateStateMode(requestedState, requestedMode);
 	            }
 	            
 	            //requestContext.getPortalURL().getNavigationalState().
@@ -290,7 +281,7 @@ public class ChangePortletAction
     //       *if* a pa defines a custom mode/state with a different name but
     //       mapped onto a internal (portal) mode/state 
     //       *then* first the real internal mode/state needs to be retrieved from the 
-    //       targetted portlet its application:
+    //       targeted portlet its application:
     //       o.a.j.om.common.portlet.PortletApplication.getMappedMode(customMode) and
     //       o.a.j.om.common.portlet.PortletApplication.getMappedState(customState)        
     

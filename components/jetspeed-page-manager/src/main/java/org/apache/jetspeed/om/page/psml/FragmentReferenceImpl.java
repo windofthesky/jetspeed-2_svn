@@ -17,16 +17,25 @@
 
 package org.apache.jetspeed.om.page.psml;
 
-import org.apache.jetspeed.om.page.Reference;
+import org.apache.jetspeed.om.page.FragmentReference;
 
-/**
- * @version $Id$
- */
-public class ReferenceImpl extends FragmentImpl implements Reference
+public class FragmentReferenceImpl extends AbstractBaseFragmentElement implements FragmentReference, java.io.Serializable
 {
-    public boolean isReference()
+    private String refId;
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.FragmentReference#getRefId()
+     */
+    public String getRefId()
     {
-        return true;
+        return refId;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.FragmentReference#setRefId(java.lang.String)
+     */
+    public void setRefId(String refId)
+    {
+        this.refId = refId;
     }
 }
-

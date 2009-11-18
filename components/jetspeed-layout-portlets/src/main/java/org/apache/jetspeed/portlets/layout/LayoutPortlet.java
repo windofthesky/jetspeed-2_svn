@@ -33,25 +33,24 @@ import javax.portlet.RenderResponse;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.capabilities.CapabilityMap;
-import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.JetspeedPowerTool;
 import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.velocity.JetspeedPowerToolFactory;
 import org.apache.jetspeed.container.PortletWindow;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  */
@@ -77,8 +76,6 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     /** Commons logging */
     protected final static Logger log = LoggerFactory.getLogger(LayoutPortlet.class);
     
-    protected PortletRegistry registry;
-    protected PageManager pageManager;
     protected JetspeedPowerToolFactory jptFactory;
     protected TemplateLocator templateLocator;
     protected TemplateLocator decorationLocator;
@@ -94,16 +91,6 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     {
         super.init(config);
         
-        registry = (PortletRegistry)getPortletContext().getAttribute(CommonPortletServices.CPS_REGISTRY_COMPONENT);
-        if (null == registry)
-        {
-            throw new PortletException("Failed to find the Portlet Registry on portlet initialization");
-        }        
-        pageManager = (PageManager)getPortletContext().getAttribute(CommonPortletServices.CPS_PAGE_MANAGER_COMPONENT);
-        if (null == pageManager)
-        {
-            throw new PortletException("Failed to find the Page Manager on portlet initialization");
-        }        
         jptFactory = (JetspeedPowerToolFactory)getPortletContext().getAttribute(CommonPortletServices.CPS_JETSPEED_POWERTOOL_FACTORY);
         if (null == jptFactory)
         {
@@ -307,103 +294,53 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     public void processAction(ActionRequest request, ActionResponse response)
     throws PortletException, IOException
     {
+        RequestContext requestContext = getRequestContext(request);
+        ContentPage requestPage = requestContext.getPage();       
+
         String page = request.getParameter("page");
-        String deleteFragmentId = request.getParameter("deleteId");
-        String portlets = request.getParameter("portlets");
-        if (deleteFragmentId != null && deleteFragmentId.length() > 0)
+        if ((page != null) && page.equals(requestPage.getId()))
         {
-            removeFragment(page, deleteFragmentId);
-        }
-        else if (portlets != null && portlets.length() > 0)
-        {
-            int count = 0;
-            StringTokenizer tokenizer = new StringTokenizer(portlets, ",");            
-            while (tokenizer.hasMoreTokens())
+            String deleteFragmentId = request.getParameter("deleteId");
+            String portlets = request.getParameter("portlets");
+            if (deleteFragmentId != null && deleteFragmentId.length() > 0)
             {
-                String portlet = tokenizer.nextToken();
                 try
                 {
-                    if (portlet.startsWith("box_"))
-                    {
-                        portlet = portlet.substring("box_".length());                        
-                        addPortletToPage(page, portlet);
-                        count++;
-                    }
+                    requestPage.removeFragment(deleteFragmentId);
                 }
                 catch (Exception e)
                 {
-                    log.error("failed to add portlet to page: " + portlet);
+                    log.error("failed to remove fragment from page: " + deleteFragmentId);
                 }
             }
-            
-        }       
+            else if (portlets != null && portlets.length() > 0)
+            {
+                StringTokenizer tokenizer = new StringTokenizer(portlets, ",");            
+                while (tokenizer.hasMoreTokens())
+                {
+                    String portlet = tokenizer.nextToken();
+                    try
+                    {
+                        if (portlet.startsWith("box_"))
+                        {
+                            portlet = portlet.substring("box_".length());
+                            requestPage.addPortlet(ContentFragment.PORTLET, portlet);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        log.error("failed to add portlet to page: " + portlet);
+                    }
+                }
+
+            }
+        }
+        else
+        {
+            log.error("failed to process action for current page: " + page + "!=" + requestPage.getId());            
+        }
     }
 
-    protected void removeFragment(String pageId, String fragmentId)
-    {
-        Page page = null;
-        try
-        {
-            page = pageManager.getPage(pageId);
-            
-        }
-        catch (Exception e)
-        {
-            log.error("failed to remove portlet " + fragmentId + " from page: " + pageId, e);
-        }
-        removeFragment(page,page.getRootFragment(), fragmentId);            
-    }
-    
-    protected void removeFragment(Page page, Fragment root, String fragmentId)
-    {
-        try
-        {
-            Fragment f = page.getFragmentById(fragmentId);
-            if ( f == null )
-            {
-                // ignore no longer existing fragment error
-                return;
-            }
-            root.getFragments().remove(f);
-            pageManager.updatePage(page);
-        }
-        catch (Exception e)
-        {
-            log.error("failed to remove portlet " + fragmentId + " from page: " + page, e);
-        }
-    }
-    
-    protected void addPortletToPage(String pageId, String portletId)
-    {
-        Page page = null;
-        try
-        {
-            page = pageManager.getContentPage(pageId);
-        }
-        catch (Exception e)
-        {
-            log.error("failed to add portlet " + portletId + " to page: " + pageId, e);
-        }
-        addPortletToPage(page, page.getRootFragment(), portletId);
-    }
-    
-    protected void addPortletToPage(Page page, Fragment root, String portletId)
-    {
-        try
-        {
-            Fragment fragment = pageManager.newFragment();
-            fragment.setType(Fragment.PORTLET);
-            fragment.setName(portletId);
-            
-            root.getFragments().add(fragment);
-            pageManager.updatePage(page);            
-        }
-        catch (Exception e)
-        {
-            log.error("failed to add portlet " + portletId + " to page: " + page, e);
-        }
-    }
-    
     /**
      * <p>
      * initJetspeedPowerTool
@@ -450,12 +387,12 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
      * @param maximized
      * @return
      */
-    protected Fragment getFragment( RenderRequest request, boolean maximized )
+    protected ContentFragment getFragment( RenderRequest request, boolean maximized )
     {
         String attribute = (maximized)
                 ? PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE
                 : PortalReservedParameters.FRAGMENT_ATTRIBUTE;
-        return (Fragment) request.getAttribute(attribute);       
+        return (ContentFragment) request.getAttribute(attribute);       
     }
    
     /**
@@ -463,9 +400,9 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
      * @param request
      * @return
      */
-    protected Fragment getMaximizedLayout( RenderRequest request )
+    protected ContentFragment getMaximizedLayout( RenderRequest request )
     {
-        return (Fragment) request.getAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
+        return (ContentFragment) request.getAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE);
     }
     
     /**
@@ -484,7 +421,27 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
         else
         {
             throw new IllegalStateException(
-                    "getRequestContext() failed as it appears that no RenderRequest is available within the RenderRequest");
+                    "getRequestContext() failed as it appears that no RequestContext is available within the RenderRequest");
+        }
+    }
+
+    /**
+     * 
+     * @param request
+     * @return
+     */
+    protected RequestContext getRequestContext( ActionRequest request )
+    {
+        RequestContext requestContext = (RequestContext) request
+                .getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
+        if (requestContext != null)
+        {
+            return requestContext;
+        }
+        else
+        {
+            throw new IllegalStateException(
+                    "getRequestContext() failed as it appears that no RequestContext is available within the ActionRequest");
         }
     }
 
@@ -554,7 +511,7 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
      * @throws TemplateLocatorException
      * @throws ConfigurationException
      */
-    public String decorateAndInclude(RenderRequest request, Fragment fragment, Page page) throws TemplateLocatorException, ConfigurationException
+    public String decorateAndInclude(RenderRequest request, ContentFragment fragment, ContentPage page) throws TemplateLocatorException, ConfigurationException
     {   
         String fragmentType = fragment.getType();
         String decorator = fragment.getDecorator();

@@ -22,8 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -35,9 +33,12 @@ import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.folder.Reset;
+import org.apache.jetspeed.om.page.DynamicPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.page.PageManagerUtils;
 import org.apache.jetspeed.page.PageNotFoundException;
@@ -54,6 +55,9 @@ import org.apache.jetspeed.page.document.psml.AbstractNode;
 import org.apache.jetspeed.page.document.psml.NodeOrderComparator;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
 import org.apache.jetspeed.security.PermissionFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * FolderImpl
@@ -73,7 +77,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     
     private static final Logger log = LoggerFactory.getLogger(FolderImpl.class);
 
-    private static PermissionFactory pf;
+    protected static PermissionFactory pf;
     
     public static void setPermissionsFactory(PermissionFactory pf)
     {
@@ -343,6 +347,210 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
 
     /**
      * <p>
+     * getPageTemplates
+     * </p>
+     * 
+     * @param checkAccess flag
+     * @return pages node set
+     * @throws NodeException
+     */
+    public NodeSet getPageTemplates(boolean checkAccess) throws NodeException
+    {
+        // get list of all template pages
+        NodeSet pageTemplates = getAllNodes().subset(PageTemplate.DOCUMENT_TYPE);
+
+        // filter node set by access
+        if (checkAccess)
+        {
+            pageTemplates = checkAccess(pageTemplates, JetspeedActions.VIEW);
+        }
+        return pageTemplates;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getPageTemplates()
+     */
+    public NodeSet getPageTemplates() throws NodeException
+    {
+        // by default enable access checks
+        return getPageTemplates(true);
+    }
+
+    /**
+     * <p>
+     * getPageTemplate
+     * </p>
+     * 
+     * @param name
+     * @param checkAccess flag
+     * @return page
+     * @throws PageNotFoundException
+     * @throws NodeException
+     */
+    public PageTemplate getPageTemplate(String name, boolean checkAccess) throws PageNotFoundException, NodeException
+    {
+        // get page template
+        PageTemplate pageTemplate = (PageTemplate) getAllNodes().subset(PageTemplate.DOCUMENT_TYPE).get(name);
+        if (pageTemplate == null)
+        {
+            throw new PageNotFoundException("Jetspeed PSML page template not found: " + name);
+        }
+
+        // check access
+        if (checkAccess)
+        {
+            pageTemplate.checkAccess(JetspeedActions.VIEW);
+        }
+        return pageTemplate;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getPageTemplate(java.lang.String)
+     */
+    public PageTemplate getPageTemplate(String name) throws PageNotFoundException, NodeException
+    {
+        // by default enable access checks
+        return getPageTemplate(name, true);
+    }
+
+    /**
+     * <p>
+     * getDynamicPages
+     * </p>
+     * 
+     * @param checkAccess flag
+     * @return pages node set
+     * @throws NodeException
+     */
+    public NodeSet getDynamicPages(boolean checkAccess) throws NodeException
+    {
+        // get list of all dynamic pages
+        NodeSet dynamicPages = getAllNodes().subset(DynamicPage.DOCUMENT_TYPE);
+
+        // filter node set by access
+        if (checkAccess)
+        {
+            dynamicPages = checkAccess(dynamicPages, JetspeedActions.VIEW);
+        }
+        return dynamicPages;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getDynamicPages()
+     */
+    public NodeSet getDynamicPages() throws NodeException
+    {
+        // by default enable access checks
+        return getDynamicPages(true);
+    }
+
+    /**
+     * <p>
+     * getDynamicPage
+     * </p>
+     * 
+     * @param name
+     * @param checkAccess flag
+     * @return page
+     * @throws PageNotFoundException
+     * @throws NodeException
+     */
+    public DynamicPage getDynamicPage(String name, boolean checkAccess) throws PageNotFoundException, NodeException
+    {
+        // get dynamic page
+        DynamicPage dynamicPage = (DynamicPage) getAllNodes().subset(DynamicPage.DOCUMENT_TYPE).get(name);
+        if (dynamicPage == null)
+        {
+            throw new PageNotFoundException("Jetspeed PSML dynamic page not found: " + name);
+        }
+
+        // check access
+        if (checkAccess)
+        {
+            dynamicPage.checkAccess(JetspeedActions.VIEW);
+        }
+        return dynamicPage;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getDynamicPage(java.lang.String)
+     */
+    public DynamicPage getDynamicPage(String name) throws PageNotFoundException, NodeException
+    {
+        // by default enable access checks
+        return getDynamicPage(name, true);
+    }
+    
+    /**
+     * <p>
+     * getFragmentDefinitions
+     * </p>
+     * 
+     * @param checkAccess flag
+     * @return pages node set
+     * @throws NodeException
+     */
+    public NodeSet getFragmentDefinitions(boolean checkAccess) throws NodeException
+    {
+        // get list of all fragment definitions
+        NodeSet fragmentDefinitions = getAllNodes().subset(FragmentDefinition.DOCUMENT_TYPE);
+
+        // filter node set by access
+        if (checkAccess)
+        {
+            fragmentDefinitions = checkAccess(fragmentDefinitions, JetspeedActions.VIEW);
+        }
+        return fragmentDefinitions;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getFragmentDefinitions()
+     */
+    public NodeSet getFragmentDefinitions() throws NodeException
+    {
+        // by default enable access checks
+        return getFragmentDefinitions(true);
+    }
+
+    /**
+     * <p>
+     * getFragmentDefinition
+     * </p>
+     * 
+     * @param name
+     * @param checkAccess flag
+     * @return page
+     * @throws PageNotFoundException
+     * @throws NodeException
+     */
+    public FragmentDefinition getFragmentDefinition(String name, boolean checkAccess) throws PageNotFoundException, NodeException
+    {
+        // get fragment definition
+        FragmentDefinition fragmentDefinition = (FragmentDefinition) getAllNodes().subset(FragmentDefinition.DOCUMENT_TYPE).get(name);
+        if (fragmentDefinition == null)
+        {
+            throw new PageNotFoundException("Jetspeed PSML fragment definition not found: " + name);
+        }
+
+        // check access
+        if (checkAccess)
+        {
+            fragmentDefinition.checkAccess(JetspeedActions.VIEW);
+        }
+        return fragmentDefinition;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getFragmentDefinition(java.lang.String)
+     */
+    public FragmentDefinition getFragmentDefinition(String name) throws PageNotFoundException, NodeException
+    {
+        // by default enable access checks
+        return getFragmentDefinition(name, true);
+    }
+    
+    /**
+     * <p>
      * getLinks
      * </p>
      * 
@@ -469,7 +677,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
             Node node = (Node)checkAccessIter.next();
             try
             {
-                ((AbstractNode) node).checkAccess(JetspeedActions.VIEW);
+                node.checkAccess(JetspeedActions.VIEW);
                 if (filteredNodes != null)
                 {
                     filteredNodes.add(node);
@@ -707,7 +915,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     public void checkPermissions(String path, int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check granted folder permissions unless the check is
-        // to be skipped due to explicity granted access
+        // to be skipped due to explicitly granted access
         if (!checkParentsOnly)
         {
             AccessController.checkPermission((Permission)pf.newPermission(pf.FOLDER_PERMISSION, path, mask));

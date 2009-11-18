@@ -83,26 +83,6 @@
     </property>
   </bean>
 
-  <bean id="_dbFragmentImplInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
-    <meta key="j2:cat" value="default or dbPageManager or pageSerializer" />
-    <property name="className" value="org.apache.jetspeed.om.page.impl.FragmentImpl" />
-    <property name="methodName" value="setPermissionsFactory" />
-    <property name="typeName" value="org.apache.jetspeed.security.PermissionFactory" />
-    <property name="value">
-      <ref bean="org.apache.jetspeed.security.PermissionManager" />
-    </property>
-  </bean>
-
-  <bean id="_xmlFragmentImplInitializer" class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
-    <meta key="j2:cat" value="default or xmlPageManager or pageSerializer" />
-    <property name="className" value="org.apache.jetspeed.om.page.psml.FragmentImpl" />
-    <property name="methodName" value="setPermissionsFactory" />
-    <property name="typeName" value="org.apache.jetspeed.security.PermissionFactory" />
-    <property name="value">
-      <ref bean="org.apache.jetspeed.security.PermissionManager" />
-    </property>
-  </bean>
-
   <bean id="_jetspeedPrincipalConcreteClassRowReaderInitializer"
     class="org.apache.jetspeed.components.LifecycleAwareStaticClassInitializer">
     <meta key="j2:cat" value="default or security" />

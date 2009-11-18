@@ -92,11 +92,12 @@ public class TestPageObjectModel extends TestCase
 
         Page page = buildBasePage();
         assertTrue(page.getId().equals("MyPageID"));
-        Fragment root = page.getRootFragment();
-        assertNotNull(root);
+        BaseFragmentElement rootFragmentElement = page.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        Fragment root = (Fragment)rootFragmentElement;
         assertTrue(root.getId().equals("Frag1"));
-        assertTrue(root.getType().equals(Fragment.LAYOUT));
         assertNull(root.getTitle());
+        assertTrue(root.getType().equals(Fragment.LAYOUT));
     }
 
     public void testFragmentManipulation() throws Exception
@@ -105,7 +106,9 @@ public class TestPageObjectModel extends TestCase
 
         // Build a page with a few fragments
         Page page = buildBasePage();
-        Fragment root = page.getRootFragment();
+        BaseFragmentElement rootFragmentElement = page.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        Fragment root = (Fragment)rootFragmentElement;
         assertNotNull(root.getFragments());
 
         FragmentImpl frag1 = new FragmentImpl();

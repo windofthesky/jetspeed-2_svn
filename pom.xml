@@ -470,6 +470,11 @@
         <artifactId>jetspeed-serializer</artifactId>
         <version>${pom.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
+        <artifactId>jetspeed-page-layout</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
 
       <!-- Portals Applications JARs -->
       <dependency>

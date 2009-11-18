@@ -16,14 +16,14 @@
  */
 package org.apache.jetspeed.container;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -63,7 +63,7 @@ public class PageHistoryValve extends AbstractValve
                 // create a session if not already created, necessary for Tomcat 5
                 request.getRequest().getSession(true);
                 
-                Page page = request.getPage();
+                ContentPage page = request.getPage();
                 String curPageId = page.getId();
                 
                 String prevPageId = (String) request.getSessionAttribute(SESSION_PREVIOUS_PAGEID_KEY);

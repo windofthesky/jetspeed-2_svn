@@ -19,7 +19,7 @@ limitations under the License.
 <%@ page import="org.apache.jetspeed.request.RequestContext"%>
 <%@ page import="org.apache.jetspeed.Jetspeed" %>
 <%@ page import="org.apache.jetspeed.PortalReservedParameters" %>
-<%@ page import="org.apache.jetspeed.om.page.Fragment" %>
+<%@ page import="org.apache.jetspeed.om.page.ContentFragment" %>
 <%@ page import="org.apache.jetspeed.decoration.Theme" %>
 <%@ page import="org.apache.jetspeed.decoration.Decoration" %>
 <% 

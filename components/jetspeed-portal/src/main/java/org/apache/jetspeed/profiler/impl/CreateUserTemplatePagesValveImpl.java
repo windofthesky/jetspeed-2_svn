@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.profiler.impl;
 
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.page.PageManager;
@@ -55,13 +56,15 @@ public class CreateUserTemplatePagesValveImpl extends ProfilerValveImpl
      *
      * @param profiler profiler component reference
      * @param portalSite portal site component reference
+     * @param pageLayoutComponent page layout component reference
      * @param requestFallback flag to enable root folder fallback
      * @param useHistory flag to enable selection of last visited folder page
      * @param pageManager pageManagerComponent reference
      */
-    public CreateUserTemplatePagesValveImpl(Profiler profiler, PortalSite portalSite, boolean requestFallback, boolean useHistoryPageManager, PageManager pageManager)
+    public CreateUserTemplatePagesValveImpl(Profiler profiler, PortalSite portalSite, PageLayoutComponent pageLayoutComponent,
+                                            boolean requestFallback, boolean useHistoryPageManager, PageManager pageManager)
     {
-        super(profiler, portalSite, requestFallback, useHistoryPageManager);
+        super(profiler, portalSite, pageLayoutComponent, requestFallback, useHistoryPageManager);
         this.pageManager = pageManager;
     }
     
@@ -70,13 +73,14 @@ public class CreateUserTemplatePagesValveImpl extends ProfilerValveImpl
      *
      * @param profiler profiler component reference
      * @param portalSite portal site component reference
+     * @param pageLayoutComponent page layout component reference
      * @param requestFallback flag to enable root folder fallback
      * @param pageManager pageManagerComponent reference
      */
-    public CreateUserTemplatePagesValveImpl(Profiler profiler, PortalSite portalSite, 
-                             boolean requestFallback, PageManager pageManager)
+    public CreateUserTemplatePagesValveImpl(Profiler profiler, PortalSite portalSite, PageLayoutComponent pageLayoutComponent,
+                                            boolean requestFallback, PageManager pageManager)
     {
-        super(profiler, portalSite, requestFallback);
+        super(profiler, portalSite, pageLayoutComponent, requestFallback);
         this.pageManager = pageManager;
     }
 
@@ -85,11 +89,12 @@ public class CreateUserTemplatePagesValveImpl extends ProfilerValveImpl
      *
      * @param profiler profiler component reference
      * @param portalSite portal site component reference
+     * @param pageLayoutComponent page layout component reference
      * @param pageManager pageManagerComponent reference
      */
-    public CreateUserTemplatePagesValveImpl(Profiler profiler, PortalSite portalSite, PageManager pageManager)
+    public CreateUserTemplatePagesValveImpl(Profiler profiler, PortalSite portalSite, PageLayoutComponent pageLayoutComponent, PageManager pageManager)
     {
-        super(profiler, portalSite);
+        super(profiler, portalSite, pageLayoutComponent);
         this.pageManager = pageManager;
     }
     

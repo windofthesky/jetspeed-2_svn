@@ -16,16 +16,20 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Locale;
+
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.page.ContentPageImpl;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstracted behavior of security checks for portlet actions
@@ -37,21 +41,23 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
 {
     protected Logger log = LoggerFactory.getLogger(PortletActionSecurityPathBehavior.class);    
     protected PageManager pageManager;
+    protected PageLayoutComponent pageLayoutComponent;
     private boolean enableCreateUserPagesFromRolesOnEdit;
     
-    public PortletActionSecurityPathBehavior(PageManager pageManager )
+    public PortletActionSecurityPathBehavior(PageManager pageManager, PageLayoutComponent pageLayoutComponent)
     {
-    	this( pageManager, Boolean.FALSE ) ;
+    	this( pageManager, pageLayoutComponent, Boolean.FALSE ) ;
     }
-    public PortletActionSecurityPathBehavior(PageManager pageManager, Boolean enableCreateUserPagesFromRolesOnEdit )
+    public PortletActionSecurityPathBehavior(PageManager pageManager, PageLayoutComponent pageLayoutComponent, Boolean enableCreateUserPagesFromRolesOnEdit )
     {
         this.pageManager = pageManager;
+        this.pageLayoutComponent = pageLayoutComponent;
         this.enableCreateUserPagesFromRolesOnEdit = ( enableCreateUserPagesFromRolesOnEdit == null ? false : enableCreateUserPagesFromRolesOnEdit.booleanValue() );
     }
 
     public boolean checkAccess(RequestContext context, String action)
     {
-        Page page = context.getPage();
+        ContentPage page = context.getPage();
         String path = page.getPath();
         if (path == null)
             return false;
@@ -88,21 +94,26 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
     	if ( ! this.enableCreateUserPagesFromRolesOnEdit )
     		return false ;
 
-        Page page = context.getPage();        
-        String pagePath = page.getPath();
+        ContentPage contentPage = context.getPage();
+        String pagePath = contentPage.getPath();
         try
         {
         	if ( isPageQualifiedForCreateNewPageOnEdit( pagePath ) )
             {
-        		String pageName = page.getName();
-                this.pageManager.createUserHomePagesFromRoles(context.getSubject());
-                page = this.pageManager.getPage(Folder.USER_FOLDER 
+        	    // create user home pages
+        		String pageName = contentPage.getName();
+                pageManager.createUserHomePagesFromRoles(context.getSubject());
+                Page page = pageManager.getPage(Folder.USER_FOLDER 
                                                 + context.getRequest().getUserPrincipal().getName()
                                                 + Folder.PATH_SEPARATOR 
                                                 + pageName);   // was Folder.FALLBACK_DEFAULT_PAGE prior to 2007-11-06
-                context.setPage(new ContentPageImpl(page));
+                
+                // TODO validate effectiveness of request context reset below
+                context.setPage(pageLayoutComponent.newContentPage(page));
+                context.getRequest().removeAttribute(ProfilerValveImpl.PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY);
+                context.getRequest().removeAttribute(ProfilerValveImpl.PROFILED_PAGE_CONTEXT_ATTR_KEY);
                 context.getRequest().getSession().removeAttribute(ProfilerValveImpl.PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);                
-            }            
+            }
         }
         catch (Exception e)
         {

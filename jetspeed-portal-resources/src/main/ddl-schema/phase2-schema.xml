@@ -58,7 +58,7 @@ limitations under the License.
         <column name="METADATA_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="FOLDER_ID" type="INTEGER" required="true"/>
         <column name="NAME" required="true" size="15" type="VARCHAR"/>
-        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
+        <column name="LOCALE" size="20" type="VARCHAR"/>
         <column name="VALUE" required="true" size="100" type="VARCHAR"/>
         <foreign-key foreignTable="FOLDER" name="FK_FOLDER_METADATA_1" onDelete="cascade">
             <reference foreign="FOLDER_ID" local="FOLDER_ID"/>
@@ -161,7 +161,7 @@ limitations under the License.
         <column name="METADATA_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="MENU_ID" type="INTEGER" required="true"/>
         <column name="NAME" required="true" size="15" type="VARCHAR"/>
-        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
+        <column name="LOCALE" size="20" type="VARCHAR"/>
         <column name="VALUE" required="true" size="100" type="VARCHAR"/>
         <foreign-key foreignTable="FOLDER_MENU" name="FK_FOLDER_MENU_METADATA_1" onDelete="cascade">
             <reference foreign="MENU_ID" local="MENU_ID"/>
@@ -183,13 +183,15 @@ limitations under the License.
 
     <table name="PAGE">
         <column name="PAGE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="CLASS_NAME" required="true" size="100" type="VARCHAR"/>
         <column name="PARENT_ID" type="INTEGER" required="true"/>
         <column name="PATH" required="true" size="240" type="VARCHAR"/>
+        <column name="PAGE_TYPE" size="40" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
-        <column name="VERSION" required="false" size="40" type="VARCHAR"/>        
+        <column name="VERSION" size="40" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
         <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
-        <column name="IS_HIDDEN" required="true" type="BOOLEANINT"/>
+        <column name="IS_HIDDEN" type="BOOLEANINT"/>
         <column name="SKIN" size="80" type="VARCHAR"/>
         <column name="DEFAULT_LAYOUT_DECORATOR" size="80" type="VARCHAR"/>
         <column name="DEFAULT_PORTLET_DECORATOR" size="80" type="VARCHAR"/>
@@ -217,7 +219,7 @@ limitations under the License.
         <column name="METADATA_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="PAGE_ID" type="INTEGER" required="true"/>
         <column name="NAME" required="true" size="15" type="VARCHAR"/>
-        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
+        <column name="LOCALE" size="20" type="VARCHAR"/>
         <column name="VALUE" required="true" size="100" type="VARCHAR"/>
         <foreign-key foreignTable="PAGE" name="FK_PAGE_METADATA_1" onDelete="cascade">
             <reference foreign="PAGE_ID" local="PAGE_ID"/>
@@ -303,7 +305,7 @@ limitations under the License.
         <column name="METADATA_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="MENU_ID" type="INTEGER" required="true"/>
         <column name="NAME" required="true" size="15" type="VARCHAR"/>
-        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
+        <column name="LOCALE" size="20" type="VARCHAR"/>
         <column name="VALUE" required="true" size="100" type="VARCHAR"/>
         <foreign-key foreignTable="PAGE_MENU" name="FK_PAGE_MENU_METADATA_1" onDelete="cascade">
             <reference foreign="MENU_ID" local="MENU_ID"/>
@@ -325,9 +327,11 @@ limitations under the License.
 
     <table name="FRAGMENT">
         <column name="FRAGMENT_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="CLASS_NAME" required="true" size="100" type="VARCHAR"/>
         <column name="PARENT_ID" type="INTEGER"/>
         <column name="PAGE_ID" type="INTEGER"/>
         <column name="FRAGMENT_STRING_ID" size="80" type="VARCHAR"/>
+        <column name="FRAGMENT_STRING_REFID" size="80" type="VARCHAR"/>
         <column name="NAME" size="100" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>
         <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
@@ -361,9 +365,12 @@ limitations under the License.
         <index name="UN_FRAGMENT_1">
             <index-column name="PAGE_ID"/>
         </index>
-        <unique name="UN_FRAGMENT_2">
-            <unique-column name="FRAGMENT_STRING_ID"/>
-        </unique>
+        <index name="IX_FRAGMENT_2">
+            <index-column name="FRAGMENT_STRING_REFID"/>
+        </index>
+        <index name="IX_FRAGMENT_3">
+            <index-column name="FRAGMENT_STRING_ID"/>
+        </index>
     </table>
 
     <table name="FRAGMENT_CONSTRAINT">
@@ -438,7 +445,7 @@ limitations under the License.
         <column name="PARENT_ID" type="INTEGER" required="true"/>
         <column name="PATH" required="true" size="240" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
-        <column name="VERSION" required="false" size="40" type="VARCHAR"/>        
+        <column name="VERSION" size="40" type="VARCHAR"/>        
         <column name="TITLE" size="100" type="VARCHAR"/>
         <column name="SHORT_TITLE" size="40" type="VARCHAR"/>
         <column name="IS_HIDDEN" required="true" type="BOOLEANINT"/>
@@ -469,7 +476,7 @@ limitations under the License.
         <column name="METADATA_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="LINK_ID" type="INTEGER" required="true"/>
         <column name="NAME" required="true" size="15" type="VARCHAR"/>
-        <column name="LOCALE" required="true" size="20" type="VARCHAR"/>
+        <column name="LOCALE" size="20" type="VARCHAR"/>
         <column name="VALUE" required="true" size="100" type="VARCHAR"/>
         <foreign-key foreignTable="LINK" name="FK_LINK_METADATA_1" onDelete="cascade">
             <reference foreign="LINK_ID" local="LINK_ID"/>
@@ -527,7 +534,7 @@ limitations under the License.
         <column name="PARENT_ID" type="INTEGER" required="true"/>
         <column name="PATH" required="true" size="240" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
-        <column name="VERSION" required="false" size="40" type="VARCHAR"/>                
+        <column name="VERSION" size="40" type="VARCHAR"/>                
         <column name="SUBSITE" size="40" type="VARCHAR"/>
         <column name="USER_PRINCIPAL" size="40" type="VARCHAR"/>
         <column name="ROLE_PRINCIPAL" size="40" type="VARCHAR"/>

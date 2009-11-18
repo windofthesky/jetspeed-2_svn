@@ -19,8 +19,8 @@ package org.apache.jetspeed.decoration;
 import java.util.Collection;
 import java.util.Set;
 
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -43,12 +43,12 @@ public interface Theme
      * Returns a a Decoration for the requested fragment.
      * 
      * @param fragment whose decoration we want to retrieve.
-     * @return Decroration for this fragment.
+     * @return Decoration for this fragment.
      * 
      * @see Decoration
      * @see Fragment
      */
-    Decoration getDecoration(Fragment fragment);
+    Decoration getDecoration(ContentFragment fragment);
     
     /**
      * Get a list of portlet decoration names used by 
@@ -76,7 +76,7 @@ public interface Theme
      * 
      * @param context
      */
-    void init(Page page, DecorationFactory decoration, RequestContext context);
+    void init(ContentPage page, DecorationFactory decoration, RequestContext context);
     
     boolean isInvalidated();
     

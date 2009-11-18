@@ -23,8 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PortletPlacementException;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
+
 /**
  * NestedFragmentContext
  * 
@@ -50,12 +51,12 @@ public class NestedFragmentContext
     protected static final Logger log = LoggerFactory.getLogger( NestedFragmentContext.class );
     protected static final String eol = System.getProperty( "line.separator" );
 	
-	private Fragment targetFragment;
-	private Fragment rootFragment;
-	private Page page;
+	private ContentFragment targetFragment;
+	private ContentFragment rootFragment;
+	private ContentPage page;
 	private List fragmentLevels;
 	
-	public NestedFragmentContext( Fragment targetFragment, Page page, PortletRegistry registry )
+	public NestedFragmentContext( ContentFragment targetFragment, ContentPage page, PortletRegistry registry )
 	    throws PortletPlacementException
 	{
 		this.targetFragment = targetFragment;
@@ -68,8 +69,8 @@ public class NestedFragmentContext
 	    throws PortletPlacementException
 	{
 		List nestedFragmentLevels = new ArrayList();
-		Fragment nextTarget = targetFragment;
-		Fragment nextParent = null;
+		ContentFragment nextTarget = targetFragment;
+		ContentFragment nextParent = null;
 		do
 		{
 			nextParent = NestedFragmentContext.getParentFragmentById( nextTarget.getId(), rootFragment );
@@ -93,14 +94,14 @@ public class NestedFragmentContext
 		this.fragmentLevels = nestedFragmentLevels;
 	}
 	
-	public Fragment getFragmentOnNewPage( Page newPage, PortletRegistry registry )
+	public ContentFragment getFragmentOnNewPage( ContentPage newPage, PortletRegistry registry )
 	    throws PortletPlacementException
 	{
-		Fragment newPageRootFragment = newPage.getRootFragment();
+		ContentFragment newPageRootFragment = newPage.getRootFragment();
 		
 		int depth = fragmentLevels.size();
 		
-		Fragment nextFragment = newPageRootFragment;
+		ContentFragment nextFragment = newPageRootFragment;
 		for ( int i = depth -1; i >= 0 ; i-- )
 		{
 			NestedFragmentLevel level = (NestedFragmentLevel)fragmentLevels.get(i);
@@ -152,10 +153,10 @@ public class NestedFragmentContext
 	{
 		private int childRow;
 		private int childCol;
-		private Fragment child;
-		private Fragment parent;
+		private ContentFragment child;
+		private ContentFragment parent;
 		
-		NestedFragmentLevel( Fragment child, Fragment parent, PortletRegistry registry )
+		NestedFragmentLevel( ContentFragment child, ContentFragment parent, PortletRegistry registry )
 		    throws PortletPlacementException
 		{
 			this.child = child;
@@ -173,11 +174,11 @@ public class NestedFragmentContext
 		{
 			return this.childCol;
 		}
-		protected Fragment getChild()
+		protected ContentFragment getChild()
 		{
 			return this.child;
 		}
-		protected Fragment getParent()
+		protected ContentFragment getParent()
 		{
 			return this.parent;
 		}
@@ -187,7 +188,7 @@ public class NestedFragmentContext
 		}
 	}
 	
-	public static Fragment getParentFragmentById( String id, Fragment parent )
+	public static ContentFragment getParentFragmentById( String id, ContentFragment parent )
     {   
         // find fragment by id, tracking fragment parent
         if ( id == null )
@@ -195,14 +196,14 @@ public class NestedFragmentContext
         	return null;
         }
 		
-		Fragment matchedParent = null;
+		ContentFragment matchedParent = null;
         if( parent != null ) 
         {
             // process the children
             List children = parent.getFragments();
             for( int i = 0, cSize = children.size() ; i < cSize ; i++) 
             {
-                Fragment childFrag = (Fragment)children.get( i );
+                ContentFragment childFrag = (ContentFragment)children.get( i );
                 if ( childFrag != null ) 
                 {
                     if ( id.equals( childFrag.getId() ) )

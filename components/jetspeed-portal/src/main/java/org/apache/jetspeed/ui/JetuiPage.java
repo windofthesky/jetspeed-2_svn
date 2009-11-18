@@ -21,8 +21,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 
 /**
  * Represents a page in a row/column oriented layout 
@@ -33,10 +33,10 @@ import org.apache.jetspeed.om.page.Page;
 public class JetuiPage implements Serializable
 {
     private static final long serialVersionUID = 1L;
-    private Vector<Fragment> columns = null;
+    private Vector<ContentFragment> columns = null;
     private int numberOfColumns = 1;
     
-    public JetuiPage(Page page)
+    public JetuiPage(ContentPage page)
     {
         String jetspeedLayout = page.getRootFragment().getName();
         if (jetspeedLayout.indexOf("Two") > -1)
@@ -47,16 +47,16 @@ public class JetuiPage implements Serializable
         {
             numberOfColumns = 3;
         }    
-        columns = new Vector<Fragment>(numberOfColumns);
+        columns = new Vector<ContentFragment>(numberOfColumns);
         buildColumns(page.getRootFragment());
     }
     
-    private boolean buildColumns(Fragment f)
+    private boolean buildColumns(ContentFragment f)
     {
-        List<Fragment> fragments = f.getFragments();
+        List<ContentFragment> fragments = f.getFragments();
         if (fragments != null && !fragments.isEmpty())
         {
-            for (Fragment child : fragments)
+            for (ContentFragment child : fragments)
             {
                 boolean found = buildColumns(child);
                 if (found)
@@ -66,9 +66,9 @@ public class JetuiPage implements Serializable
         return false;
     }
 
-    protected final int getColumn(Fragment fragment)
+    protected final int getColumn(ContentFragment fragment)
     {
-        String propertyValue = fragment.getProperty(Fragment.COLUMN_PROPERTY_NAME);
+        String propertyValue = fragment.getProperty(ContentFragment.COLUMN_PROPERTY_NAME);
         if (propertyValue != null)
         {
             int columnNumber = Integer.parseInt(propertyValue);

@@ -37,10 +37,18 @@ import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
+import org.apache.jetspeed.om.page.BasePageElement;
+import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageFragment;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.Node;
@@ -89,6 +97,11 @@ public abstract class AbstractPageManager
     protected Class pageSecuritySecurityConstraintClass;
     protected Class securityConstraintsDefClass;
     protected Class fragmentPreferenceClass;
+    protected Class fragmentReferenceClass;
+    protected Class pageFragmentClass;
+    protected Class pageTemplateClass;
+    protected Class dynamicPageClass;
+    protected Class fragmentDefinitionClass;
 
     private IdGenerator generator;
 
@@ -159,6 +172,11 @@ public abstract class AbstractPageManager
         this.pageSecuritySecurityConstraintClass = (Class)modelClasses.get("PageSecuritySecurityConstraintImpl");
         this.securityConstraintsDefClass = (Class)modelClasses.get("SecurityConstraintsDefImpl");
         this.fragmentPreferenceClass = (Class)modelClasses.get("FragmentPreferenceImpl");
+        this.fragmentReferenceClass = (Class)modelClasses.get("FragmentReferenceImpl");
+        this.pageFragmentClass = (Class)modelClasses.get("PageFragmentImpl");
+        this.pageTemplateClass = (Class)modelClasses.get("PageTemplateImpl");
+        this.dynamicPageClass = (Class)modelClasses.get("DynamicPageImpl");
+        this.fragmentDefinitionClass = (Class)modelClasses.get("FragmentDefinitionImpl");
     }
     
     /* (non-Javadoc)
@@ -216,6 +234,99 @@ public abstract class AbstractPageManager
         return page;        
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageTemplate(java.lang.String)
+     */
+    public PageTemplate newPageTemplate(String path)
+    {
+        PageTemplate pageTemplate = null;
+        try
+        {
+            // factory create the page template and set id/path
+            pageTemplate = (PageTemplate)createObject(this.pageTemplateClass);            
+            if (!path.startsWith(Folder.PATH_SEPARATOR))
+            {
+                path = Folder.PATH_SEPARATOR + path;
+            }
+            if (!path.endsWith(PageTemplate.DOCUMENT_TYPE))
+            {
+                path += Page.DOCUMENT_TYPE;
+            }
+            pageTemplate.setPath(path);
+            
+            // create the default fragment
+            pageTemplate.setRootFragment(newFragment());            
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create page template object for " + this.pageTemplateClass;
+            log.error(message, e);
+        }
+        return pageTemplate;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newDynamicPage(java.lang.String)
+     */
+    public DynamicPage newDynamicPage(String path)
+    {
+        DynamicPage dynamicPage = null;
+        try
+        {
+            // factory create the dynamic page and set id/path
+            dynamicPage = (DynamicPage)createObject(this.dynamicPageClass);            
+            if (!path.startsWith(Folder.PATH_SEPARATOR))
+            {
+                path = Folder.PATH_SEPARATOR + path;
+            }
+            if (!path.endsWith(DynamicPage.DOCUMENT_TYPE))
+            {
+                path += DynamicPage.DOCUMENT_TYPE;
+            }
+            dynamicPage.setPath(path);
+            
+            // create the default fragment
+            dynamicPage.setRootFragment(newFragment());            
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create dynamic page object for " + this.dynamicPageClass;
+            log.error(message, e);
+        }
+        return dynamicPage;        
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newFragmentDefinition(java.lang.String)
+     */
+    public FragmentDefinition newFragmentDefinition(String path)
+    {
+        FragmentDefinition fragmentDefinition = null;
+        try
+        {
+            // factory create the fragment definition and set id/path
+            fragmentDefinition = (FragmentDefinition)createObject(this.fragmentDefinitionClass);            
+            if (!path.startsWith(Folder.PATH_SEPARATOR))
+            {
+                path = Folder.PATH_SEPARATOR + path;
+            }
+            if (!path.endsWith(FragmentDefinition.DOCUMENT_TYPE))
+            {
+                path += FragmentDefinition.DOCUMENT_TYPE;
+            }
+            fragmentDefinition.setPath(path);
+            
+            // create the default portlet fragment
+            fragmentDefinition.setRootFragment(newPortletFragment());            
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create fragment definition object for " + this.dynamicPageClass;
+            log.error(message, e);
+        }
+        return fragmentDefinition;        
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#newFolder(java.lang.String)
      */
@@ -302,7 +413,7 @@ public abstract class AbstractPageManager
         }
         catch (ClassCastException e)
         {
-            String message = "Failed to create page object for " + this.pageClass;
+            String message = "Failed to create fragment object for " + this.fragmentClass;
             log.error(message, e);
             // throw new NodeException(message, e);
         }
@@ -323,7 +434,47 @@ public abstract class AbstractPageManager
         }
         catch (ClassCastException e)
         {
-            String message = "Failed to create page object for " + this.pageClass;
+            String message = "Failed to create fragment object for " + this.fragmentClass;
+            log.error(message, e);
+            // throw new NodeException(message, e);
+        }
+        return fragment;        
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newFragmentReference()
+     */
+    public FragmentReference newFragmentReference()
+    {
+        FragmentReference fragment = null;
+        try
+        {
+            fragment = (FragmentReference)createObject(this.fragmentReferenceClass);
+            fragment.setId(generator.getNextPeid());
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create page object for " + this.fragmentReferenceClass;
+            log.error(message, e);
+            // throw new NodeException(message, e);
+        }
+        return fragment;        
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageFragment()
+     */
+    public PageFragment newPageFragment()
+    {
+        PageFragment fragment = null;
+        try
+        {
+            fragment = (PageFragment)createObject(this.pageFragmentClass);
+            fragment.setId(generator.getNextPeid());
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create fragment object for " + this.pageFragmentClass;
             log.error(message, e);
             // throw new NodeException(message, e);
         }
@@ -862,6 +1013,9 @@ public abstract class AbstractPageManager
         }
     }
         
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyFolder(org.apache.jetspeed.om.folder.Folder, java.lang.String)
+     */
     public Folder copyFolder(Folder source, String path)
     throws NodeException
     {
@@ -923,44 +1077,135 @@ public abstract class AbstractPageManager
     {
         // create the new page and copy attributes
         Page page = newPage(path);
-        page.setTitle(source.getTitle());
-        page.setShortTitle(source.getShortTitle());
-        page.setVersion(source.getVersion());
-        page.setDefaultDecorator(source.getDefaultDecorator(Fragment.LAYOUT), Fragment.LAYOUT);
-        page.setDefaultDecorator(source.getDefaultDecorator(Fragment.PORTLET), Fragment.PORTLET);
-        page.setSkin(source.getSkin());
+        copyPageAttributes(source, copyIds, page);
         page.setHidden(source.isHidden());
+        return page;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyPageTemplate(org.apache.jetspeed.om.page.PageTemplate, java.lang.String)
+     */
+    public PageTemplate copyPageTemplate(PageTemplate source, String path)
+        throws NodeException
+    {
+        return copyPageTemplate(source, path, false);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyPageTemplate(org.apache.jetspeed.om.page.PageTemplate, java.lang.String, boolean)
+     */
+    public PageTemplate copyPageTemplate(PageTemplate source, String path, boolean copyIds)
+        throws NodeException
+    {
+        // create the new page template and copy attributes
+        PageTemplate pageTemplate = newPageTemplate(path);
+        copyPageAttributes(source, copyIds, pageTemplate);
+        return pageTemplate;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyDynamicPage(org.apache.jetspeed.om.page.DynamicPage, java.lang.String)
+     */
+    public DynamicPage copyDynamicPage(DynamicPage source, String path)
+        throws NodeException
+    {
+        return copyDynamicPage(source, path, false);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyDynamicPage(org.apache.jetspeed.om.page.DynamicPage, java.lang.String, boolean)
+     */
+    public DynamicPage copyDynamicPage(DynamicPage source, String path, boolean copyIds)
+        throws NodeException
+    {
+        // create the new dynamic page and copy attributes
+        DynamicPage dynamicPage = newDynamicPage(path);
+        copyPageAttributes(source, copyIds, dynamicPage);
+        dynamicPage.setHidden(source.isHidden());
+        dynamicPage.setPageType(source.getPageType());
+        return dynamicPage;
+    }
+
+    public FragmentDefinition copyFragmentDefinition(FragmentDefinition source, String path)
+        throws NodeException
+    {
+        return copyFragmentDefinition(source, path, false);
+    }
+    
+    public FragmentDefinition copyFragmentDefinition(FragmentDefinition source, String path, boolean copyIds)
+        throws NodeException
+    {
+        // create the new fragment definition and copy attributes
         
+        FragmentDefinition fragmentDefinition = newFragmentDefinition(path);
+        copyFragmentsAttributes(source, copyIds, fragmentDefinition);
+        return fragmentDefinition;
+    }
+
+    /**
+     * Copy shared fragments attributes.
+     * 
+     * @param source source fragments
+     * @param copyIds flag indicating whether to copy or preserve fragment ids
+     * @param dest destination fragments
+     * @throws NodeException on error creating fragments
+     */
+    protected void copyFragmentsAttributes(BaseFragmentsElement source, boolean copyIds, BaseFragmentsElement dest)
+        throws NodeException
+    {
+        // create the new page and copy attributes
+        dest.setTitle(source.getTitle());
+        dest.setShortTitle(source.getShortTitle());
+        dest.setVersion(source.getVersion());
+    
         // copy locale specific metadata
-        page.getMetadata().copyFields(source.getMetadata().getFields());
-        
+        dest.getMetadata().copyFields(source.getMetadata().getFields());
+    
         // copy security constraints
         SecurityConstraints srcSecurity = source.getSecurityConstraints();        
         if ((srcSecurity != null) && !srcSecurity.isEmpty())
         {
             SecurityConstraints copiedSecurity = copySecurityConstraints(PAGE_NODE_TYPE, srcSecurity);
-            page.setSecurityConstraints(copiedSecurity);
+            dest.setSecurityConstraints(copiedSecurity);
         }    
 
+        // copy fragments
+        BaseFragmentElement root = copyFragment(source.getRootFragment(), null, copyIds);
+        dest.setRootFragment(root);
+    }
+
+    /**
+     * Copy shared page attributes.
+     * 
+     * @param source source page
+     * @param copyIds flag indicating whether to copy or preserve fragment ids
+     * @param dest destination page
+     * @throws NodeException on error creating fragments
+     */
+    protected void copyPageAttributes(BasePageElement source, boolean copyIds, BasePageElement dest)
+        throws NodeException
+    {
+        // copy fragments attributes
+        copyFragmentsAttributes(source, copyIds, dest);
+        
+        // copy page attributes
+        dest.setDefaultDecorator(source.getDefaultDecorator(Fragment.LAYOUT), Fragment.LAYOUT);
+        dest.setDefaultDecorator(source.getDefaultDecorator(Fragment.PORTLET), Fragment.PORTLET);
+        dest.setSkin(source.getSkin());
+    
         // copy menu definitions
         List menus = source.getMenuDefinitions();
         if (menus != null)
         {
             List copiedMenus = copyMenuDefinitions(PAGE_NODE_TYPE, menus);
-            page.setMenuDefinitions(copiedMenus);
-        }        
-        
-        // copy fragments
-        Fragment root = copyFragment(source.getRootFragment(), source.getRootFragment().getName(), copyIds);
-        page.setRootFragment(root);
-        
-        return page;
+            dest.setMenuDefinitions(copiedMenus);
+        }
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#copyFragment(org.apache.jetspeed.om.page.Fragment, java.lang.String)
      */
-    public Fragment copyFragment(Fragment source, String name)
+    public BaseFragmentElement copyFragment(BaseFragmentElement source, String name)
         throws NodeException
     {
         return copyFragment(source, name, false);
@@ -969,21 +1214,36 @@ public abstract class AbstractPageManager
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#copyFragment(org.apache.jetspeed.om.page.Fragment, java.lang.String, boolean)
      */
-    public Fragment copyFragment(Fragment source, String name, boolean copyIds)
+    public BaseFragmentElement copyFragment(BaseFragmentElement source, String name, boolean copyIds)
         throws NodeException
     {
         // create the new fragment and copy attributes
-        Fragment copy = newFragment();
+        BaseFragmentElement copy;
+        if (source instanceof Fragment)
+        {
+            copy = newFragment();
+        }
+        else if (source instanceof FragmentReference)
+        {
+            copy = newFragmentReference();
+        }
+        else if (source instanceof PageFragment)
+        {
+            copy = newPageFragment();
+        }
+        else
+        {
+            throw new IllegalArgumentException("Unsupported fragment type: "+((source != null) ? source.getClass().getName() : "null"));
+        }
+
         if (copyIds)
         {
             copy.setId(source.getId());
         }
         copy.setDecorator(source.getDecorator());
-        copy.setName(name);
         copy.setShortTitle(source.getShortTitle());
         copy.setSkin(source.getSkin());
         copy.setTitle(source.getTitle());
-        copy.setType(source.getType());
         copy.setState(source.getState());
 
         // copy security constraints
@@ -992,7 +1252,7 @@ public abstract class AbstractPageManager
         {
             SecurityConstraints copiedSecurity = copySecurityConstraints(FRAGMENT_NODE_TYPE, srcSecurity);
             copy.setSecurityConstraints(copiedSecurity);
-        }    
+        }
         
         // copy properties
         Iterator props = source.getProperties().entrySet().iterator();
@@ -1021,17 +1281,39 @@ public abstract class AbstractPageManager
             copy.getPreferences().add(newPref);
         }
 
-        // recursively copy fragments
-        Iterator fragments = source.getFragments().iterator();
-        while (fragments.hasNext())
+        if (source instanceof Fragment)
         {
-            Fragment fragment = (Fragment)fragments.next();
-            Fragment copiedFragment = copyFragment(fragment, fragment.getName(), copyIds);
-            copy.getFragments().add(copiedFragment);
+            Fragment copyFragment = (Fragment)copy; 
+            Fragment sourceFragment = (Fragment)source; 
+            if (name == null)
+            {
+                name = sourceFragment.getName();
+            }
+            copyFragment.setName(name);
+            copyFragment.setType(sourceFragment.getType());
+
+            // recursively copy fragments
+            Iterator fragments = sourceFragment.getFragments().iterator();
+            while (fragments.hasNext())
+            {
+                BaseFragmentElement fragment = (BaseFragmentElement)fragments.next();
+                BaseFragmentElement copiedFragment = copyFragment(fragment, null, copyIds);
+                copyFragment.getFragments().add(copiedFragment);
+            }
         }
+        else if (source instanceof FragmentReference)
+        {
+            FragmentReference copyFragment = (FragmentReference)copy; 
+            FragmentReference sourceFragment = (FragmentReference)source;
+            copyFragment.setRefId(sourceFragment.getRefId());            
+        }
+
         return copy;
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyLink(org.apache.jetspeed.om.page.Link, java.lang.String)
+     */
     public Link copyLink(Link source, String path)
     throws NodeException
     {
@@ -1059,6 +1341,9 @@ public abstract class AbstractPageManager
         return link;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyPageSecurity(org.apache.jetspeed.om.page.PageSecurity)
+     */
     public PageSecurity copyPageSecurity(PageSecurity source) 
     throws NodeException
     {
@@ -1339,18 +1624,27 @@ public abstract class AbstractPageManager
         PageManagerUtils.deepMergeFolder(this, srcFolder, destinationPath, owner, copyIds);
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getUserPage(java.lang.String, java.lang.String)
+     */
     public Page getUserPage(String userName, String pageName)
     throws PageNotFoundException, NodeException
     {
         return this.getPage(Folder.USER_FOLDER + userName + Folder.PATH_SEPARATOR + pageName);
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getUserFolder(java.lang.String)
+     */
     public Folder getUserFolder(String userName) 
         throws FolderNotFoundException, InvalidFolderException, NodeException
     {
         return this.getFolder(Folder.USER_FOLDER + userName);        
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#folderExists(java.lang.String)
+     */
     public boolean folderExists(String folderName)
     {
         try
@@ -1363,6 +1657,10 @@ public abstract class AbstractPageManager
         }
         return true;
     }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#pageExists(java.lang.String)
+     */
     public boolean pageExists(String pageName)
     {
         try
@@ -1376,6 +1674,57 @@ public abstract class AbstractPageManager
         return true;
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#pageTemplateExists(java.lang.String)
+     */
+    public boolean pageTemplateExists(String pageName)
+    {
+        try
+        {
+            getPageTemplate(pageName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#dynamicPageExists(java.lang.String)
+     */
+    public boolean dynamicPageExists(String pageName)
+    {
+        try
+        {
+            getDynamicPage(pageName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#fragmentDefinitionExists(java.lang.String)
+     */
+    public boolean fragmentDefinitionExists(String name)
+    {
+        try
+        {
+            getFragmentDefinition(name);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#linkExists(java.lang.String)
+     */
     public boolean linkExists(String linkName)
     {
         try
@@ -1389,6 +1738,9 @@ public abstract class AbstractPageManager
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#userFolderExists(java.lang.String)
+     */
     public boolean userFolderExists(String userName)
     {
         try
@@ -1402,6 +1754,9 @@ public abstract class AbstractPageManager
         return true;
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#userPageExists(java.lang.String, java.lang.String)
+     */
     public boolean userPageExists(String userName, String pageName)
     {
         try

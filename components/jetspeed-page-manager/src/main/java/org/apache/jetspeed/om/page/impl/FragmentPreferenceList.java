@@ -28,11 +28,11 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
  */
 class FragmentPreferenceList extends AbstractList
 {
-    private FragmentImpl fragment;
+    private BaseFragmentElementImpl fragment;
 
     private List removedPreferences;
 
-    FragmentPreferenceList(FragmentImpl fragment)
+    FragmentPreferenceList(BaseFragmentElementImpl fragment)
     {
         super();
         this.fragment = fragment;

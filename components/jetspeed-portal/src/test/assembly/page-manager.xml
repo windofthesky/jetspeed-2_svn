@@ -20,12 +20,42 @@ limitations under the License.
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
     
   <!-- PageManager -->
-  <bean id="PsmlDocumentHandler"      
+  <bean id="PsmlDocumentHandler"
        class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>.psml</value></constructor-arg>
        <constructor-arg index="3" ><value>org.apache.jetspeed.om.page.psml.PageImpl</value></constructor-arg>       
+       <constructor-arg index="4" ><value>${applicationRoot}/src/test/testdata/pages/pages</value></constructor-arg>
+       <constructor-arg index="5" ><ref bean="PageFileCache"/></constructor-arg>
+  </bean>
+  
+  <bean id="TpsmlDocumentHandler"
+       class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
+       <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
+       <constructor-arg index="2"><value>.tpsml</value></constructor-arg>
+       <constructor-arg index="3" ><value>org.apache.jetspeed.om.page.psml.PageTemplateImpl</value></constructor-arg>       
+       <constructor-arg index="4" ><value>${applicationRoot}/src/test/testdata/pages/pages</value></constructor-arg>
+       <constructor-arg index="5" ><ref bean="PageFileCache"/></constructor-arg>
+  </bean>
+  
+  <bean id="DpsmlDocumentHandler"
+       class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
+       <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
+       <constructor-arg index="2"><value>.dpsml</value></constructor-arg>
+       <constructor-arg index="3" ><value>org.apache.jetspeed.om.page.psml.DynamicPageImpl</value></constructor-arg>       
+       <constructor-arg index="4" ><value>${applicationRoot}/src/test/testdata/pages/pages</value></constructor-arg>
+       <constructor-arg index="5" ><ref bean="PageFileCache"/></constructor-arg>
+  </bean>
+  
+  <bean id="FpsmlDocumentHandler"
+       class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
+       <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
+       <constructor-arg index="2"><value>.fpsml</value></constructor-arg>
+       <constructor-arg index="3" ><value>org.apache.jetspeed.om.page.psml.FragmentDefinitionImpl</value></constructor-arg>       
        <constructor-arg index="4" ><value>${applicationRoot}/src/test/testdata/pages/pages</value></constructor-arg>
        <constructor-arg index="5" ><ref bean="PageFileCache"/></constructor-arg>
   </bean>
@@ -66,6 +96,15 @@ limitations under the License.
         <map>
           <entry key=".psml">
             <ref bean="PsmlDocumentHandler" />
+          </entry>
+          <entry key=".tpsml">
+            <ref bean="TpsmlDocumentHandler" />
+          </entry>
+          <entry key=".dpsml">
+            <ref bean="DpsmlDocumentHandler" />
+          </entry>
+          <entry key=".fpsml">
+            <ref bean="FpsmlDocumentHandler" />
           </entry>
           <entry key=".link">
             <ref bean="LinkDocumentHandler" />

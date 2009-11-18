@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.impl.CoordinateImpl;
 import org.apache.jetspeed.layout.impl.PortletPlacementContextImpl;
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -56,7 +56,7 @@ public class TestPortletPlacement extends TestCase
             assertEquals(a_iNumRows, 3);
 
             // Check the fragments
-            Fragment a_oFrag = ppc
+            ContentFragment a_oFrag = ppc
                     .getFragmentAtNewCoordinate(new CoordinateImpl(0, 0, 0, 0));
             assertNotNull("null fragment found at 0,0", a_oFrag);
             assertEquals(a_oFrag.getId(), "1");
@@ -102,7 +102,7 @@ public class TestPortletPlacement extends TestCase
             PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext.getPage(),portletRegistry);
 
             // Check the fragments
-            Fragment a_oFrag = ppc.getFragmentById("1");
+            ContentFragment a_oFrag = ppc.getFragmentById("1");
             assertNotNull("null fragment with id 1", a_oFrag);
             assertEquals(a_oFrag.getId(), "1");
             assertEquals(a_oFrag.getName(), "frag1");
@@ -141,7 +141,7 @@ public class TestPortletPlacement extends TestCase
         {
             PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext.getPage(),portletRegistry);
 
-            Fragment a_oFrag = ppc
+            ContentFragment a_oFrag = ppc
                     .getFragmentAtNewCoordinate(new CoordinateImpl(0, 0, 0, 0));
 
             Coordinate a_oCoordinate = ppc.remove(a_oFrag);
@@ -168,7 +168,7 @@ public class TestPortletPlacement extends TestCase
         {
             PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext.getPage(),portletRegistry);
 
-            Fragment a_oFrag = ppc
+            ContentFragment a_oFrag = ppc
                     .getFragmentAtNewCoordinate(new CoordinateImpl(0, 0, 0, 0));
 
             Coordinate a_oCoordinate = ppc.moveAbsolute(a_oFrag, new CoordinateImpl(
@@ -203,7 +203,7 @@ public class TestPortletPlacement extends TestCase
         {
             PortletPlacementContext ppc = new PortletPlacementContextImpl(requestContext.getPage(),portletRegistry);
 
-            Fragment a_oFrag = ppc
+            ContentFragment a_oFrag = ppc
                     .getFragmentAtNewCoordinate(new CoordinateImpl(0, 0, 0, 1));
 
             Coordinate a_oCoordinate = ppc.moveUp(a_oFrag);

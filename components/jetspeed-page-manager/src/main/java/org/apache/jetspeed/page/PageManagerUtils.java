@@ -21,18 +21,21 @@ import java.util.Iterator;
 
 import javax.security.auth.Subject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.page.DynamicPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * PageManagerUtils
@@ -128,17 +131,41 @@ public class PageManagerUtils
                 Page dstPage = pageManager.copyPage(srcPage, path);
                 pageManager.updatePage(dstPage);
             }
-            //Commented, as these were creating the duplicate objects 
-            /*            
-            else
+        }     
+        Iterator pageTemplates = srcFolder.getPageTemplates().iterator();
+        while (pageTemplates.hasNext())
+        {
+            PageTemplate srcPageTemplate = (PageTemplate)pageTemplates.next();
+            String path = concatenatePaths(destinationPath, srcPageTemplate.getName());
+            if (!pageManager.pageTemplateExists(path))
             {
-                path = concatenatePaths(destinationPath, uniqueName + "-" +srcPage.getName());               
-                Page dstPage = pageManager.copyPage(srcPage, path);                
-                pageManager.updatePage(dstPage);                
+                PageTemplate dstPageTemplate = pageManager.copyPageTemplate(srcPageTemplate, path);
+                pageManager.updatePageTemplate(dstPageTemplate);
             }
-            */
+        }     
+        Iterator dynamicPages = srcFolder.getDynamicPages().iterator();
+        while (dynamicPages.hasNext())
+        {
+            DynamicPage srcDynamicPage = (DynamicPage)dynamicPages.next();
+            String path = concatenatePaths(destinationPath, srcDynamicPage.getName());
+            if (!pageManager.dynamicPageExists(path))
+            {
+                DynamicPage dstDynamicPage = pageManager.copyDynamicPage(srcDynamicPage, path);
+                pageManager.updateDynamicPage(dstDynamicPage);
+            }
+        }     
+        Iterator fragmentDefinitions = srcFolder.getFragmentDefinitions().iterator();
+        while (fragmentDefinitions.hasNext())
+        {
+            FragmentDefinition srcFragmentDefinition = (FragmentDefinition)fragmentDefinitions.next();
+            String path = concatenatePaths(destinationPath, srcFragmentDefinition.getName());
+            if (!pageManager.fragmentDefinitionExists(path))
+            {
+                FragmentDefinition dstFragmentDefinition = pageManager.copyFragmentDefinition(srcFragmentDefinition, path);
+                pageManager.updateFragmentDefinition(dstFragmentDefinition);
+            }
         }
-     
+        
         Iterator links = srcFolder.getLinks().iterator();
         while (links.hasNext())
         {
@@ -149,16 +176,8 @@ public class PageManagerUtils
                 Link dstLink = pageManager.copyLink(srcLink, path);
                 pageManager.updateLink(dstLink);
             }
-            //Commented, as these were creating the duplicate objects            
-            /*
-            else
-            {
-                path = concatenatePaths(destinationPath, uniqueName + "-" +srcLink.getName());               
-                Link dstLink = pageManager.copyLink(srcLink, path);                
-                pageManager.updateLink(dstLink);                                
-            }
-            */
-        }     
+        }
+        
         Iterator folders = srcFolder.getFolders().iterator();
         while (folders.hasNext())
         {
@@ -257,6 +276,30 @@ public class PageManagerUtils
             Page dstPage = pageManager.copyPage(srcPage, path, copyIds);
             pageManager.updatePage(dstPage);
         }
+        Iterator pageTemplates = srcFolder.getPageTemplates().iterator();
+        while (pageTemplates.hasNext())
+        {
+            PageTemplate srcPageTemplate = (PageTemplate)pageTemplates.next();
+            String path = PageManagerUtils.concatenatePaths(destinationPath, srcPageTemplate.getName());
+            PageTemplate dstPageTemplate = pageManager.copyPageTemplate(srcPageTemplate, path, copyIds);
+            pageManager.updatePageTemplate(dstPageTemplate);
+        }     
+        Iterator dynamicPages = srcFolder.getDynamicPages().iterator();
+        while (dynamicPages.hasNext())
+        {
+            DynamicPage srcDynamicPage = (DynamicPage)dynamicPages.next();
+            String path = PageManagerUtils.concatenatePaths(destinationPath, srcDynamicPage.getName());
+            DynamicPage dstDynamicPage = pageManager.copyDynamicPage(srcDynamicPage, path, copyIds);
+            pageManager.updateDynamicPage(dstDynamicPage);
+        }     
+        Iterator fragmentDefinitions = srcFolder.getFragmentDefinitions().iterator();
+        while (fragmentDefinitions.hasNext())
+        {
+            FragmentDefinition srcFragmentDefinition = (FragmentDefinition)fragmentDefinitions.next();
+            String path = PageManagerUtils.concatenatePaths(destinationPath, srcFragmentDefinition.getName());
+            FragmentDefinition dstFragmentDefinition = pageManager.copyFragmentDefinition(srcFragmentDefinition, path, copyIds);
+            pageManager.updateFragmentDefinition(dstFragmentDefinition);
+        }     
      
         Iterator links = srcFolder.getLinks().iterator();
         while (links.hasNext())
@@ -322,6 +365,39 @@ public class PageManagerUtils
             {
                 Page dstPage = pageManager.copyPage(srcPage, path, copyIds);
                 pageManager.updatePage(dstPage);
+            }
+        }
+        Iterator pageTemplates = srcFolder.getPageTemplates().iterator();
+        while (pageTemplates.hasNext())
+        {
+            PageTemplate srcPageTemplate = (PageTemplate)pageTemplates.next();
+            String path = PageManagerUtils.concatenatePaths(destinationPath, srcPageTemplate.getName());
+            if (!pageManager.pageTemplateExists(path))
+            {
+                PageTemplate dstPageTemplate = pageManager.copyPageTemplate(srcPageTemplate, path, copyIds);
+                pageManager.updatePageTemplate(dstPageTemplate);
+            }
+        }     
+        Iterator dynamicPages = srcFolder.getDynamicPages().iterator();
+        while (dynamicPages.hasNext())
+        {
+            DynamicPage srcDynamicPage = (DynamicPage)dynamicPages.next();
+            String path = PageManagerUtils.concatenatePaths(destinationPath, srcDynamicPage.getName());
+            if (!pageManager.dynamicPageExists(path))
+            {
+                DynamicPage dstDynamicPage = pageManager.copyDynamicPage(srcDynamicPage, path, copyIds);
+                pageManager.updateDynamicPage(dstDynamicPage);
+            }
+        }     
+        Iterator fragmentDefinitions = srcFolder.getFragmentDefinitions().iterator();
+        while (fragmentDefinitions.hasNext())
+        {
+            FragmentDefinition srcFragmentDefinition = (FragmentDefinition)fragmentDefinitions.next();
+            String path = PageManagerUtils.concatenatePaths(destinationPath, srcFragmentDefinition.getName());
+            if (!pageManager.fragmentDefinitionExists(path))
+            {
+                FragmentDefinition dstFragmentDefinition = pageManager.copyFragmentDefinition(srcFragmentDefinition, path, copyIds);
+                pageManager.updateFragmentDefinition(dstFragmentDefinition);
             }
         }
      

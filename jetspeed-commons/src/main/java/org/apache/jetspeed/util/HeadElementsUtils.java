@@ -38,7 +38,7 @@ public class HeadElementsUtils
     @SuppressWarnings("unchecked")
     public static void aggregateHeadElements(List<KeyValue<String, HeadElement>> aggregatedHeadElements, ContentFragment contentFragment)
     {
-        List<ContentFragment> childContentFragments = (List<ContentFragment>) contentFragment.getContentFragments();
+        List<ContentFragment> childContentFragments = (List<ContentFragment>) contentFragment.getFragments();
         
         if (childContentFragments != null && !childContentFragments.isEmpty())
         {

@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.Path;
 import org.jmock.Mock;
@@ -45,15 +45,15 @@ public class TestDecorations extends MockObjectTestCase
     private PathResolverCache prc;
     private ResourceValidator rv;
     private Properties config;
-    private Page page;
+    private ContentPage page;
     private RequestContext requestContext;
     private Mock pageMock;
     private Mock factoryMock;
     private Mock fragmentMock;
     private Mock requestContextMock;
-    private Fragment fragment;
+    private ContentFragment fragment;
     private Mock childFragmentMock;
-    private Fragment childFragment;
+    private ContentFragment childFragment;
     private Mock layoutMock;
     private LayoutDecoration layout;
     private Mock portletDecorMock;
@@ -62,16 +62,16 @@ public class TestDecorations extends MockObjectTestCase
 
     protected void themeInitExpectations()
     {
-        pageMock = new Mock(Page.class);
-        page = (Page) pageMock.proxy();
+        pageMock = new Mock(ContentPage.class);
+        page = (ContentPage) pageMock.proxy();
         factoryMock = new Mock(DecorationFactory.class);
         factory = (DecorationFactory) factoryMock.proxy();
         requestContextMock = new Mock(RequestContext.class);
         requestContext = (RequestContext) requestContextMock.proxy();
-        fragmentMock = new Mock(Fragment.class);
-        fragment = (Fragment) fragmentMock.proxy();
-        childFragmentMock = new Mock(Fragment.class);
-        childFragment = (Fragment) childFragmentMock.proxy();
+        fragmentMock = new Mock(ContentFragment.class);
+        fragment = (ContentFragment) fragmentMock.proxy();
+        childFragmentMock = new Mock(ContentFragment.class);
+        childFragment = (ContentFragment) childFragmentMock.proxy();
         layoutMock = new Mock(LayoutDecoration.class);
         layout = (LayoutDecoration) layoutMock.proxy();
         portletDecorMock = new Mock(PortletDecoration.class);
@@ -232,9 +232,9 @@ public class TestDecorations extends MockObjectTestCase
 
         expectAndReturn(fragmentMock, "getDecorator", "myLayoutDecorator");
          
-        expectAndReturn(fragmentMock, "getType", Fragment.LAYOUT);
+        expectAndReturn(fragmentMock, "getType", ContentFragment.LAYOUT);
 
-        expectAndReturn(childFragmentMock, "getType", Fragment.PORTLET);
+        expectAndReturn(childFragmentMock, "getType", ContentFragment.PORTLET);
         
 //        expectAndReturn(pageMock, "getRootFragment", fragment);
         
@@ -249,7 +249,7 @@ public class TestDecorations extends MockObjectTestCase
         expectAndReturn(atLeastOnce(), servletContextMock, "getResourceAsStream",new Constraint[] {eq("/decorations/portlet/myPortletDecoration/decorator.properties")}, is2);
         expectAndReturn(atLeastOnce(), servletContextMock, "getResourceAsStream",new Constraint[] {eq("/decorations/layout/myLayoutDecorator/decoratordesktop.properties")}, is1);
         expectAndReturn(atLeastOnce(), servletContextMock, "getResourceAsStream",new Constraint[] {eq("/decorations/portlet/myPortletDecoration/decoratordesktop.properties")}, is2);
-                
+        
         Mock servletRequestMock = new Mock(HttpServletRequest.class);
         Mock sessionMock = new Mock(HttpSession.class);
         

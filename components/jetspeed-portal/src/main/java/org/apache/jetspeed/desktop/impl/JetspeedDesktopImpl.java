@@ -40,7 +40,7 @@ import org.apache.jetspeed.desktop.JetspeedDesktopContext;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.headerresource.HeaderResourceLib;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.springframework.web.context.ServletContextAware;
 
@@ -242,7 +242,7 @@ public class JetspeedDesktopImpl implements JetspeedDesktop, ServletContextAware
         boolean layoutDecorationTemplatePathWasAssigned = false;
         try
         {
-            Page page = request.getPage();
+            ContentPage page = request.getPage();
             
             // enable desktop
             request.setAttribute( JetspeedDesktop.DESKTOP_ENABLED_REQUEST_ATTRIBUTE, Boolean.TRUE );

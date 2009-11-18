@@ -123,6 +123,9 @@
         <entry key="SecurityAttributesProvider">
         	<ref bean="org.apache.jetspeed.security.attributes.SecurityAttributesProvider" />
         </entry>        
+        <entry key="PageLayoutComponent">
+        	<ref bean="org.apache.jetspeed.layout.PageLayoutComponent" />
+        </entry> 
         <!-- first uncomment the below service bean in security-spi-atn.xml
           <entry key="PasswordEncodingService">
           <ref bean="org.apache.jetspeed.security.PasswordEncodingService" />

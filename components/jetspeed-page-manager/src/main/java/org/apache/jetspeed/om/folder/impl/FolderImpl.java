@@ -32,14 +32,20 @@ import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
+import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.PageTemplate;
+import org.apache.jetspeed.om.page.impl.DynamicPageImpl;
+import org.apache.jetspeed.om.page.impl.FragmentDefinitionImpl;
 import org.apache.jetspeed.om.page.impl.LinkImpl;
 import org.apache.jetspeed.om.page.impl.PageImpl;
 import org.apache.jetspeed.om.page.impl.PageSecurityImpl;
+import org.apache.jetspeed.om.page.impl.PageTemplateImpl;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
@@ -74,6 +80,12 @@ public class FolderImpl extends NodeImpl implements Folder
     private boolean foldersCached;
     private List pages;
     private boolean pagesCached;
+    private List pageTemplates;
+    private boolean pageTemplatesCached;
+    private List dynamicPages;
+    private boolean dynamicPagesCached;
+    private List fragmentDefinitions;
+    private boolean fragmentDefinitionsCached;
     private List links;
     private boolean linksCached;
     private PageSecurityImpl pageSecurity;
@@ -85,11 +97,14 @@ public class FolderImpl extends NodeImpl implements Folder
     private Comparator documentOrderComparator;
     private NodeSet foldersNodeSet;
     private NodeSet pagesNodeSet;
+    private NodeSet pageTemplatesNodeSet;
+    private NodeSet dynamicPagesNodeSet;
+    private NodeSet fragmentDefinitionsNodeSet;
     private NodeSet linksNodeSet;
     private NodeSet allNodeSet;
     private FolderMenuDefinitionList menuDefinitions;
 
-    private static PermissionFactory pf;
+    protected static PermissionFactory pf;
     
     public static void setPermissionsFactory(PermissionFactory pf)
     {
@@ -232,6 +247,132 @@ public class FolderImpl extends NodeImpl implements Folder
     }
 
     /**
+     * accessPageTemplates
+     *
+     * Access page templates transient cache collection for use by PageManager.
+     *
+     * @return page templates collection
+     */
+    public List accessPageTemplates()
+    {
+        // create initial collection if necessary
+        if (pageTemplates == null)
+        {
+            pageTemplates = DatabasePageManagerUtils.createList();
+        }
+        return pageTemplates;
+    }
+
+    /**
+     * resetPageTemplates
+     *
+     * Reset page templates transient caches for use by PageManager.
+     *
+     * @param cached set cached state for page templates
+     */
+    public void resetPageTemplates(boolean cached)
+    {
+        // save cached state
+        pageTemplatesCached = cached;
+        allCached = false;
+
+        // update node caches
+        if (!cached)
+        {
+            accessPageTemplates().clear();
+        }
+        accessAll().clear();
+
+        // reset cached node sets
+        pageTemplatesNodeSet = null;
+        allNodeSet = null;
+    }
+
+    /**
+     * accessDynamicPages
+     *
+     * Access dynamic pages transient cache collection for use by PageManager.
+     *
+     * @return dynamic pages collection
+     */
+    public List accessDynamicPages()
+    {
+        // create initial collection if necessary
+        if (dynamicPages == null)
+        {
+            dynamicPages = DatabasePageManagerUtils.createList();
+        }
+        return dynamicPages;
+    }
+
+    /**
+     * resetDynamicPages
+     *
+     * Reset dynamic pages transient caches for use by PageManager.
+     *
+     * @param cached set cached state for dynamic pages
+     */
+    public void resetDynamicPages(boolean cached)
+    {
+        // save cached state
+        dynamicPagesCached = cached;
+        allCached = false;
+
+        // update node caches
+        if (!cached)
+        {
+            accessDynamicPages().clear();
+        }
+        accessAll().clear();
+
+        // reset cached node sets
+        dynamicPagesNodeSet = null;
+        allNodeSet = null;
+    }
+
+    /**
+     * accessFragmentDefinitions
+     *
+     * Access fragment definitions transient cache collection for use by PageManager.
+     *
+     * @return fragment definitions collection
+     */
+    public List accessFragmentDefinitions()
+    {
+        // create initial collection if necessary
+        if (fragmentDefinitions == null)
+        {
+            fragmentDefinitions = DatabasePageManagerUtils.createList();
+        }
+        return fragmentDefinitions;
+    }
+
+    /**
+     * resetFragmentDefinitions
+     *
+     * Reset fragment definitions transient caches for use by PageManager.
+     *
+     * @param cached set cached state for fragment definitions
+     */
+    public void resetFragmentDefinitions(boolean cached)
+    {
+        // save cached state
+        fragmentDefinitionsCached = cached;
+        allCached = false;
+
+        // update node caches
+        if (!cached)
+        {
+            accessFragmentDefinitions().clear();
+        }
+        accessAll().clear();
+
+        // reset cached node sets
+        fragmentDefinitionsNodeSet = null;
+        allNodeSet = null;
+    }
+
+    /**
      * accessLinks
      *
      * Access links transient cache collection for use by PageManager.
@@ -337,12 +478,18 @@ public class FolderImpl extends NodeImpl implements Folder
         allCached = cached;
         foldersCached = cached;
         pagesCached = cached;
+        pageTemplatesCached = cached;
+        dynamicPagesCached = cached;
+        fragmentDefinitionsCached = cached;
         linksCached = cached;
         pageSecurityCached = cached;
 
         // update node caches
         accessFolders().clear();
         accessPages().clear();
+        accessPageTemplates().clear();
+        accessDynamicPages().clear();
+        accessFragmentDefinitions().clear();
         accessLinks().clear();
         pageSecurity = null;
         if (cached)
@@ -357,6 +504,18 @@ public class FolderImpl extends NodeImpl implements Folder
                     if (node instanceof PageImpl)
                     {
                         pages.add(node);
+                    }
+                    else if (node instanceof PageTemplateImpl)
+                    {
+                        pageTemplates.add(node);
+                    }
+                    else if (node instanceof DynamicPageImpl)
+                    {
+                        dynamicPages.add(node);
+                    }
+                    else if (node instanceof FragmentDefinitionImpl)
+                    {
+                        fragmentDefinitions.add(node);
                     }
                     else if (node instanceof FolderImpl)
                     {
@@ -382,6 +541,9 @@ public class FolderImpl extends NodeImpl implements Folder
         allNodeSet = null;
         foldersNodeSet = null;
         pagesNodeSet = null;
+        pageTemplatesNodeSet = null;
+        dynamicPagesNodeSet = null;
+        fragmentDefinitionsNodeSet = null;
         linksNodeSet = null;
     }
 
@@ -411,7 +573,7 @@ public class FolderImpl extends NodeImpl implements Folder
                     public int compare(Object o1, Object o2)
                     {
                         // Compare node names using document order;
-                        // use indicies as names if found in document
+                        // use indices as names if found in document
                         // order to force explicitly ordered items
                         // ahead of unordered items
                         String name1 = (String)o1;
@@ -429,7 +591,7 @@ public class FolderImpl extends NodeImpl implements Folder
                             name2 = String.valueOf(index2);
                             if (index1 >= 0)
                             {
-                                // pad order indicies for numeric string compare
+                                // pad order indices for numeric string compare
                                 while (name1.length() != name2.length())
                                 {
                                     if (name1.length() < name2.length())
@@ -443,7 +605,7 @@ public class FolderImpl extends NodeImpl implements Folder
                                 }
                             }
                         }
-                        // compare names and/or indicies
+                        // compare names and/or indices
                         return name1.compareTo(name2);                        
                     }
                 };
@@ -463,6 +625,9 @@ public class FolderImpl extends NodeImpl implements Folder
         allNodeSet = null;
         foldersNodeSet = null;
         pagesNodeSet = null;
+        pageTemplatesNodeSet = null;
+        dynamicPagesNodeSet = null;
+        fragmentDefinitionsNodeSet = null;
     }
 
     /* (non-Javadoc)
@@ -516,7 +681,7 @@ public class FolderImpl extends NodeImpl implements Folder
     public void checkPermissions(String path, int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check granted folder permissions unless the check is
-        // to be skipped due to explicity granted access
+        // to be skipped due to explicitly granted access
         if (!checkParentsOnly)
         {
             AccessController.checkPermission((Permission)pf.newPermission(pf.FOLDER_PERMISSION, path, mask));
@@ -759,7 +924,136 @@ public class FolderImpl extends NodeImpl implements Folder
 
         return page;
     }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getPageTemplates()
+     */
+    public NodeSet getPageTemplates() throws NodeException
+    {
+        // get page templates collection
+        if (!pageTemplatesCached)
+        {
+            // use PageManager to get and cache page templates
+            // collection for this folder
+            return getPageManager().getPageTemplates(this);
+        }
+
+        // return nodes with view access
+        return filterNodeSetByAccess(getPageTemplatesNodeSet());
+    }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getPageTemplate(java.lang.String)
+     */
+    public PageTemplate getPageTemplate(String name) throws PageNotFoundException, NodeException
+    {
+        // get page template instance if page templates collection not available
+        if (!pageTemplatesCached)
+        {
+            // use PageManager to get page template instance without
+            // caching the page templates collection for this folder
+            return getPageManager().getPageTemplate(this, name);
+        }
+
+        // select page template by name from cached page templates collection
+        PageTemplate pageTemplate = (PageTemplate)getPageTemplatesNodeSet().get(name);
+        if (pageTemplate == null)
+        {
+            throw new PageNotFoundException("PageTemplate not found: " + name);
+        }
+
+        // check for view access on page template
+        pageTemplate.checkAccess(JetspeedActions.VIEW);
+
+        return pageTemplate;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getDynamicPages()
+     */
+    public NodeSet getDynamicPages() throws NodeException
+    {
+        // get dynamic pages collection
+        if (!dynamicPagesCached)
+        {
+            // use PageManager to get and cache dynamic pages
+            // collection for this folder
+            return getPageManager().getDynamicPages(this);
+        }
+
+        // return nodes with view access
+        return filterNodeSetByAccess(getDynamicPagesNodeSet());
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getDynamicPage(java.lang.String)
+     */
+    public DynamicPage getDynamicPage(String name) throws PageNotFoundException, NodeException
+    {
+        // get dynamic page instance if dynamic pages collection not available
+        if (!dynamicPagesCached)
+        {
+            // use PageManager to get dynamic page instance without
+            // caching the dynamic pages collection for this folder
+            return getPageManager().getDynamicPage(this, name);
+        }
+
+        // select dynamic page by name from cached dynamic pages collection
+        DynamicPage dynamicPage = (DynamicPage)getDynamicPagesNodeSet().get(name);
+        if (dynamicPage == null)
+        {
+            throw new PageNotFoundException("DynamicPage not found: " + name);
+        }
+
+        // check for view access on page
+        dynamicPage.checkAccess(JetspeedActions.VIEW);
+
+        return dynamicPage;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getFragmentDefinitions()
+     */
+    public NodeSet getFragmentDefinitions() throws NodeException
+    {
+        // get fragment definitions collection
+        if (!fragmentDefinitionsCached)
+        {
+            // use PageManager to get and cache fragment definitions
+            // collection for this folder
+            return getPageManager().getFragmentDefinitions(this);
+        }
+
+        // return nodes with view access
+        return filterNodeSetByAccess(getFragmentDefinitionsNodeSet());
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.folder.Folder#getFragmentDefinition(java.lang.String)
+     */
+    public FragmentDefinition getFragmentDefinition(String name) throws PageNotFoundException, NodeException
+    {
+        // get fragment definitions instance if fragment definitions collection not available
+        if (!fragmentDefinitionsCached)
+        {
+            // use PageManager to get fragment definition instance without
+            // caching the fragment definitions collection for this folder
+            return getPageManager().getFragmentDefinition(this, name);
+        }
+
+        // select fragment definition by name from cached fragment definitions collection
+        FragmentDefinition fragmentDefinition = (FragmentDefinition)getFragmentDefinitionsNodeSet().get(name);
+        if (fragmentDefinition == null)
+        {
+            throw new PageNotFoundException("FragmentDefinition not found: " + name);
+        }
+
+        // check for view access on page
+        fragmentDefinition.checkAccess(JetspeedActions.VIEW);
+
+        return fragmentDefinition;
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getLinks()
      */
@@ -988,6 +1282,75 @@ public class FolderImpl extends NodeImpl implements Folder
             }
         }
         return pagesNodeSet;
+    }
+    
+    /**
+     * getPageTemplatesNodeSet
+     *
+     * Latently create and access page templates node set.
+     *
+     * @return folders node set
+     */
+    private NodeSet getPageTemplatesNodeSet() throws NodeException
+    {
+        if (pageTemplatesNodeSet == null)
+        {
+            if ((pageTemplates != null) && !pageTemplates.isEmpty())
+            {
+                pageTemplatesNodeSet = new NodeSetImpl(pageTemplates, createDocumentOrderComparator());
+            }
+            else
+            {
+                pageTemplatesNodeSet = NodeSetImpl.EMPTY_NODE_SET;
+            }
+        }
+        return pageTemplatesNodeSet;
+    }
+    
+    /**
+     * getDynamicPagesNodeSet
+     *
+     * Latently create and access dynamic pages node set.
+     *
+     * @return folders node set
+     */
+    private NodeSet getDynamicPagesNodeSet() throws NodeException
+    {
+        if (dynamicPagesNodeSet == null)
+        {
+            if ((dynamicPages != null) && !dynamicPages.isEmpty())
+            {
+                dynamicPagesNodeSet = new NodeSetImpl(dynamicPages, createDocumentOrderComparator());
+            }
+            else
+            {
+                dynamicPagesNodeSet = NodeSetImpl.EMPTY_NODE_SET;
+            }
+        }
+        return dynamicPagesNodeSet;
+    }
+    
+    /**
+     * getFragmentDefinitionsNodeSet
+     *
+     * Latently create and access fragment definitions node set.
+     *
+     * @return folders node set
+     */
+    private NodeSet getFragmentDefinitionsNodeSet() throws NodeException
+    {
+        if (fragmentDefinitionsNodeSet == null)
+        {
+            if ((fragmentDefinitions != null) && !fragmentDefinitions.isEmpty())
+            {
+                fragmentDefinitionsNodeSet = new NodeSetImpl(fragmentDefinitions, createDocumentOrderComparator());
+            }
+            else
+            {
+                fragmentDefinitionsNodeSet = NodeSetImpl.EMPTY_NODE_SET;
+            }
+        }
+        return fragmentDefinitionsNodeSet;
     }
     
     /**

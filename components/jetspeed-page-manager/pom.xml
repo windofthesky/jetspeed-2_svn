@@ -62,10 +62,6 @@
     </dependency>
     <dependency>
       <groupId>${pom.groupId}</groupId>
-      <artifactId>jetspeed-registry</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${pom.groupId}</groupId>
       <artifactId>jetspeed-security</artifactId>
     </dependency>
     <dependency>

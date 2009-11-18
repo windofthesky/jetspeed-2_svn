@@ -22,17 +22,15 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.Coordinate;
 import org.apache.jetspeed.layout.PortletPlacementException;
 import org.apache.jetspeed.layout.PortletPlacementContext;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.portlet.InitParam;
-import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Portal Placement Context
@@ -80,12 +78,12 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 	//
 	protected ArrayList[] columnsList = null;
 	
-	// Used as a convience when looking up a particular fragment
+	// Used as a convenience when looking up a particular fragment
 	//
 	// key is Fragment id (String), value is a Coordinate object
 	protected Map fragmentCoordinateMap = new HashMap();
 	
-	// Used as a convience when looking up a particular fragment by id
+	// Used as a convenience when looking up a particular fragment by id
 	//
 	// key is the Fragment id (String), value is the Fragment
 	protected Map fragmentMap = new HashMap();
@@ -93,31 +91,37 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 	// Number of columns
 	protected int numberOfColumns = -1;
 	
-    protected Page page;
+    protected ContentPage page;
     private PortletRegistry registry;
-    protected Fragment layoutContainerFragment;
+    protected ContentFragment layoutContainerFragment;
         
-	public PortletPlacementContextImpl( Page page, PortletRegistry registry ) 
+	public PortletPlacementContextImpl( ContentPage page, PortletRegistry registry ) 
         throws PortletPlacementException 
     {
-		this( page, registry, null );
+		this( page, registry, null, null );
 	}
         
-    public PortletPlacementContextImpl( Page page, PortletRegistry registry, Fragment container ) 
+    public PortletPlacementContextImpl( ContentPage page, PortletRegistry registry, ContentFragment container ) 
         throws PortletPlacementException 
     {
-    	if ( page == null )
-    		throw new NullPointerException( "PortletPlacementContext cannot be instantiated with a null Page argument" );
-    	if ( registry == null )
-    		throw new NullPointerException( "PortletPlacementContext cannot be instantiated with a null PortletRegistry argument" );
-    	
-    	this.page = page;
-    	this.registry = registry;
-    	
-    	init( container );
+        this( page, registry, container, null );
     }
 	
-    protected void init( Fragment container )
+    public PortletPlacementContextImpl( ContentPage page, PortletRegistry registry, ContentFragment container, ContentFragment excludeFragment ) 
+        throws PortletPlacementException 
+    {
+        if ( page == null )
+            throw new NullPointerException( "PortletPlacementContext cannot be instantiated with a null ContentPage argument" );
+        if ( registry == null )
+            throw new NullPointerException( "PortletPlacementContext cannot be instantiated with a null PortletRegistry argument" );
+    
+        this.page = page;
+        this.registry = registry;
+    
+        init( container, excludeFragment );
+    }
+
+    protected void init( ContentFragment container, ContentFragment excludeFragment )
         throws PortletPlacementException 
     {
         if ( container == null )
@@ -132,19 +136,19 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
         }
         this.layoutContainerFragment = container;
         
-        int columnCount = PortletPlacementContextImpl.getColumnCountAndSizes( container, registry, null );
+        int columnCount = PortletPlacementMetadataAccess.getColumnCountAndSizes( container, registry, null );
         if ( columnCount <= 0 )
         {
         	throw new PortletPlacementException( "PortletPlacementContext cannot detemine number of columns in layout fragment (" + container.getId() + ")" );
         }
         this.numberOfColumns = columnCount;
         
-        initProcessLayoutContainerFragment();
+        initProcessLayoutContainerFragment( excludeFragment );
         
         //debugFragments( "init" );
 	}
 	
-	private void initProcessLayoutContainerFragment() 
+	private void initProcessLayoutContainerFragment( ContentFragment excludeFragment ) 
         throws PortletPlacementException 
     {
         List fragChildren = this.layoutContainerFragment.getFragments();
@@ -161,8 +165,8 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
         }
         for( int fragChildIndex = 0; fragChildIndex < fragChildCount; fragChildIndex++ ) 
         {
-            Fragment fragment = (Fragment)fragChildren.get( fragChildIndex );		
-            if ( fragment != null )
+            ContentFragment fragment = (ContentFragment)fragChildren.get( fragChildIndex );		
+            if ( ( fragment != null ) && ( fragment != excludeFragment ) )
             {
             	int col = getColumnFromFragment( fragment );            	
             	
@@ -237,7 +241,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
             while ( nextEntryIndex != -1 )
             {
                 FragmentLinkedListEntry fragLLentry = ll[nextEntryIndex];
-                Fragment fragment = (Fragment)fragChildren.get( fragLLentry.getFragmentIndex() );
+                ContentFragment fragment = (ContentFragment)fragChildren.get( fragLLentry.getFragmentIndex() );
                 
                 fragmentsInColumn.add( fragment );
                 CoordinateImpl coordinate = new CoordinateImpl( colIndex, rowIndex );
@@ -251,7 +255,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
         this.columnsList = columnFragments;
 	}
 	
-	private int getColumnFromFragment( Fragment fragment )
+	private int getColumnFromFragment( ContentFragment fragment )
 	{
 		// get column value in the same manner as /portal and /desktop rendering
 		
@@ -276,7 +280,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		}
 		return col;
 	}
-	private Integer getRowFromFragment( Fragment fragment )
+	private Integer getRowFromFragment( ContentFragment fragment )
 	{
 		// get row value in the same manner as /portal and /desktop rendering
 		
@@ -399,13 +403,13 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
             Iterator frags = column.iterator();
             while ( frags.hasNext() )
             {
-                Fragment f = (Fragment)frags.next();
+                ContentFragment f = (ContentFragment)frags.next();
                 out.append( "      frag " ).append( f == null ? "<null>" : ( f.getId() + " / " + f.getType() ) ).append( eol );
             }
         }
         return out.toString();
     }
-    public Fragment debugFragments( String debug )
+    public ContentFragment debugFragments( String debug )
     {
         log.info( dumpFragments( debug ) );
         return layoutContainerFragment;
@@ -417,7 +421,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
      * 
      * @return the managed page layout with updated fragment state. 
      */
-    public Page syncPageFragments()
+    public ContentPage syncPageFragments()
     {
     	syncFragments( true, -1 );
     	//debugFragments( "syncPage" );
@@ -457,7 +461,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 	            int colRowCount = column.size();
 	        	for ( int rowIndex= 0; rowIndex < colRowCount; rowIndex++ )
 	        	{
-	        		Fragment fragment = (Fragment)column.get( rowIndex );
+	        		ContentFragment fragment = (ContentFragment)column.get( rowIndex );
 	                Coordinate coordinate = (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
 	                boolean needsReplacementCoordinate = false;
 	                
@@ -471,15 +475,14 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 	        		}
 	        		if ( updateFragmentObjects )
 	                {
-	                	fragment.setLayoutColumn( colIndex );
-	                	fragment.setLayoutRow( rowIndex );
+	        		    fragment.updateRowColumn(rowIndex, colIndex);
 	                }
 	            }
         	}
         }
     }
     
-    public int getFragmentRow( Fragment fragment )
+    public int getFragmentRow( ContentFragment fragment )
     {
     	if ( fragment == null ) return -1;
 		Coordinate coordinate = (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
@@ -491,7 +494,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		return coordinate.getOldRow();
     }
     
-    public int getFragmentCol( Fragment fragment )
+    public int getFragmentCol( ContentFragment fragment )
     {
     	if ( fragment == null ) return -1;
 		Coordinate coordinate = (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
@@ -503,22 +506,22 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		return coordinate.getOldCol();
     }
 			
-	public Fragment getFragment( String fragmentId ) throws PortletPlacementException 
+	public ContentFragment getFragment( String fragmentId ) throws PortletPlacementException 
     {
-		return (Fragment)this.fragmentMap.get( fragmentId );
+		return (ContentFragment)this.fragmentMap.get( fragmentId );
 	}
 	
-	public Fragment getFragmentAtOldCoordinate( Coordinate coordinate ) throws PortletPlacementException 
+	public ContentFragment getFragmentAtOldCoordinate( Coordinate coordinate ) throws PortletPlacementException 
     {
 		return getFragmentAtCoordinate( coordinate, true, false );
 	}
 
-	public Fragment getFragmentAtNewCoordinate( Coordinate coordinate ) throws PortletPlacementException 
+	public ContentFragment getFragmentAtNewCoordinate( Coordinate coordinate ) throws PortletPlacementException 
     {
 		return getFragmentAtCoordinate( coordinate, false, false );
 	}
 
-	protected Fragment getFragmentAtCoordinate( Coordinate coordinate, boolean useOldCoordinateValues, boolean suppressExceptions ) throws PortletPlacementException 
+	protected ContentFragment getFragmentAtCoordinate( Coordinate coordinate, boolean useOldCoordinateValues, boolean suppressExceptions ) throws PortletPlacementException 
     {
 		int col = -1;
 		int row = -1;
@@ -550,12 +553,12 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 			throw new PortletPlacementException( "Requested row (" + row + ") is out of bounds (col[" + col + "].row-count=" + columnArray.size() + ")" );
 		}
 		
-		return (Fragment)columnArray.get( row );
+		return (ContentFragment)columnArray.get( row );
 	}
 	
-	public Fragment getFragmentById( String fragmentId ) throws PortletPlacementException 
+	public ContentFragment getFragmentById( String fragmentId ) throws PortletPlacementException 
     {
-		return (Fragment)this.fragmentMap.get( fragmentId );
+		return (ContentFragment)this.fragmentMap.get( fragmentId );
 	}
 
 	public int getNumberColumns() throws PortletPlacementException 
@@ -573,17 +576,17 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		return this.columnsList[col].size();
 	}
 	
-	public Coordinate add( Fragment fragment, Coordinate coordinate ) throws PortletPlacementException 
+	public Coordinate add( ContentFragment fragment, Coordinate coordinate ) throws PortletPlacementException 
     {
 		return moveAbsolute( fragment, coordinate, true );
 	}
 
-	public Coordinate moveAbsolute( Fragment fragment, Coordinate newCoordinate )
+	public Coordinate moveAbsolute( ContentFragment fragment, Coordinate newCoordinate )
         throws PortletPlacementException 
     {
 		return moveAbsolute( fragment, newCoordinate, false );
     }
-	public Coordinate moveAbsolute( Fragment fragment, Coordinate newCoordinate, boolean okToAddFragment )
+	public Coordinate moveAbsolute( ContentFragment fragment, Coordinate newCoordinate, boolean okToAddFragment )
         throws PortletPlacementException 
     {
 		if ( fragment == null )
@@ -643,7 +646,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		return (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
 	}
 
-	protected Coordinate moveDirection( Fragment fragment, int deltaCol, int deltaRow ) 
+	protected Coordinate moveDirection( ContentFragment fragment, int deltaCol, int deltaRow ) 
         throws PortletPlacementException 
     {
 		if ( fragment == null )
@@ -686,27 +689,27 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		return (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
 	}
 	
-	public Coordinate moveDown( Fragment fragment ) throws PortletPlacementException 
+	public Coordinate moveDown( ContentFragment fragment ) throws PortletPlacementException 
     {
 		return moveDirection( fragment, 0, 1 );
 	}
 
-	public Coordinate moveUp( Fragment fragment ) throws PortletPlacementException 
+	public Coordinate moveUp( ContentFragment fragment ) throws PortletPlacementException 
     {
 		return moveDirection( fragment, 0, -1 );
 	}
 
-	public Coordinate moveLeft( Fragment fragment ) throws PortletPlacementException 
+	public Coordinate moveLeft( ContentFragment fragment ) throws PortletPlacementException 
     {
 		return moveDirection( fragment, -1, 0 );
 	}
 
-	public Coordinate moveRight( Fragment fragment ) throws PortletPlacementException 
+	public Coordinate moveRight( ContentFragment fragment ) throws PortletPlacementException 
     {
 		return moveDirection( fragment, 1, 0 );
 	}
 
-	public Coordinate remove( Fragment fragment ) throws PortletPlacementException 
+	public Coordinate remove( ContentFragment fragment ) throws PortletPlacementException 
     {
 		if ( fragment == null )
     		throw new NullPointerException( "PortletPlacementContext remove() cannot accept a null Fragment argument" );
@@ -732,13 +735,13 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		return currentCoordinate;
 	}
 	
-	protected Fragment verifyFragmentAtExpectedCoordinate( int colIndex, int rowIndex, Fragment fragment, String sourceDesc )
+	protected ContentFragment verifyFragmentAtExpectedCoordinate( int colIndex, int rowIndex, ContentFragment fragment, String sourceDesc )
 		throws PortletPlacementException
 	{
 		CoordinateImpl coordinate = new CoordinateImpl( colIndex, rowIndex );
 		
 		boolean suppressExceptions = ( fragment != null );
-		Fragment foundFragment = getFragmentAtCoordinate( coordinate, true, suppressExceptions );
+		ContentFragment foundFragment = getFragmentAtCoordinate( coordinate, true, suppressExceptions );
 		
 		if ( fragment != null )
 		{
@@ -782,120 +785,4 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		}
 		return fragment;
 	}
-
-	static public int getColumnCountAndSizes( Fragment layoutFragment, PortletRegistry registry, Map fragSizes )
-	{
-		return PortletPlacementContextImpl.getColumnCountAndSizes( layoutFragment, registry, fragSizes, false );
-	}
-    static public int getColumnCountAndSizes( Fragment layoutFragment, PortletRegistry registry, Map fragSizes, boolean suppressErrorLogging )
-	{
-    	if ( layoutFragment == null )
-    		throw new NullPointerException( "getColumnCountAndSizes cannot accept a null Fragment argument" );
-    	if ( registry == null )
-    		throw new NullPointerException( "getColumnCountAndSizes cannot accept a null PortletRegistry argument" );
-    	
-		int columnCount = -1;
-		if ( ! "layout".equals( layoutFragment.getType() ) )
-		{
-			if ( ! suppressErrorLogging )
-				log.error( "getColumnCountAndSizes not a layout fragment - " + layoutFragment.getId() + " type=" + layoutFragment.getType() );
-		}
-		else
-    	{   // get layout fragment sizes
-    		String sizesVal = layoutFragment.getProperty( "sizes" );
-    		String layoutName = layoutFragment.getName();
-    		layoutName = ( (layoutName != null && layoutName.length() > 0) ? layoutName : (String)null );
-    		PortletDefinition portletDef = null;
-    		if ( sizesVal == null || sizesVal.length() == 0 )
-    		{
-    			if ( layoutName != null )
-    			{
-    				// logic below is copied from org.apache.jetspeed.portlets.MultiColumnPortlet
-    				portletDef = registry.getPortletDefinitionByUniqueName( layoutName, true );
-                    if ( portletDef != null )
-                    {
-                        InitParam sizesParam = portletDef.getInitParam( "sizes" );
-                        sizesVal = ( sizesParam == null ) ? null : sizesParam.getParamValue();
-                    }
-    			}
-    		}
-    		if ( sizesVal != null && sizesVal.length() > 0 )
-    		{
-    			if ( fragSizes != null )
-    				fragSizes.put( layoutFragment.getId(), sizesVal );
-					
-				int sepPos = -1, startPos = 0, sizesLen = sizesVal.length();
-				columnCount = 0;
-				do
-				{
-					sepPos = sizesVal.indexOf( ',', startPos );
-					if ( sepPos != -1 )
-					{
-						if ( sepPos > startPos )
-							columnCount++;
-						startPos = sepPos +1;
-					}
-					else if ( startPos < sizesLen )
-					{
-						columnCount++;
-					}
-				} while ( startPos < sizesLen && sepPos != -1 );
-				if ( ! suppressErrorLogging && columnCount <= 0 )
-					log.error( "getColumnCountAndSizes invalid columnCount - " + layoutFragment.getId() + " / " + layoutName + " count=" + columnCount + " sizes=" + sizesVal );
-			}
-			else if ( portletDef == null || portletDef.getInitParams().isEmpty() )
-			{
-				if ( ! suppressErrorLogging )
-				{
-					if ( layoutName == null )
-						log.error( "getColumnCountAndSizes null sizes, null layoutName - " + layoutFragment.getId() );
-					else if ( portletDef == null )
-						log.error( "getColumnCountAndSizes null sizes, null PortletDefinition - " + layoutFragment.getId() + " / " + layoutName );
-					else
-						log.error( "getColumnCountAndSizes null sizes, null ParameterSet - " + layoutFragment.getId() + " / " + layoutName );
-				}
-			}
-			else
-			{
-				InitParam colsParam = portletDef.getInitParam( "columns" );
-				String colsParamVal = ( colsParam == null ) ? null : colsParam.getParamValue();
-				if ( colsParamVal != null && colsParamVal.length() > 0 )
-				{
-					try
-					{
-						columnCount = Integer.parseInt( colsParamVal );
-					}
-					catch ( NumberFormatException ex )
-					{
-					}
-					if ( columnCount < 1 )
-					{
-						columnCount = 2;
-					}
-					switch ( columnCount )
-					{
-	            		case 1: sizesVal = "100%"; break;
-	            		case 2: sizesVal = "50%,50%"; break;
-	            		case 3: sizesVal = "34%,33%,33%"; break;
-	            		case 4: sizesVal = "25%,25%,25%,25%"; break;
-	            		default: 
-	            		{
-	            			sizesVal = "50%,50%";
-	            			columnCount = 2;
-	            			break;
-	            		}
-					}
-					if ( fragSizes != null )
-						fragSizes.put( layoutFragment.getId(), sizesVal );
-					//log.info( "getColumnCountAndSizes " + layoutFragment.getId() + " count=" + columnCount + " defaulted-sizes=" + sizesParamVal );
-				}
-				else
-				{
-					if ( ! suppressErrorLogging )
-						log.error( "getColumnCountAndSizes null sizes, columns not defined in ParameterSet - " + layoutFragment.getId() + " / " + layoutName );
-				}
-			}
-    	}
-		return columnCount;
-	}	
 }

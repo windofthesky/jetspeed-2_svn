@@ -22,10 +22,12 @@ import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
-import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToDeleteDocumentException;
@@ -63,10 +65,27 @@ public class DelegatingPageManager extends AbstractPageManager
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#getContentPage(java.lang.String)
+     * @see org.apache.jetspeed.page.PageManager#getPageTemplate(java.lang.String)
      */
-    public ContentPage getContentPage(String path)
-            throws PageNotFoundException, NodeException
+    public PageTemplate getPageTemplate(String id) throws PageNotFoundException, NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getDynamicPage(java.lang.String)
+     */
+    public DynamicPage getDynamicPage(String id) throws PageNotFoundException, NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getFragmentDefinition(java.lang.String)
+     */
+    public FragmentDefinition getFragmentDefinition(String id) throws PageNotFoundException, NodeException
     {
         // TODO Auto-generated method stub
         return null;
@@ -144,6 +163,60 @@ public class DelegatingPageManager extends AbstractPageManager
     }
     
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPageTemplates(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getPageTemplates(Folder folder) throws NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPageTemplate(org.apache.jetspeed.om.folder.Folder, java.lang.String)
+     */
+    public PageTemplate getPageTemplate(Folder folder, String name) throws PageNotFoundException, NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getDynamicPages(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getDynamicPages(Folder folder) throws NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getDynamicPage(org.apache.jetspeed.om.folder.Folder, java.lang.String)
+     */
+    public DynamicPage getDynamicPage(Folder folder, String name) throws PageNotFoundException, NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getFragmentDefinitions(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getFragmentDefinitions(Folder folder) throws NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getFragmentDefinition(org.apache.jetspeed.om.folder.Folder, java.lang.String)
+     */
+    public FragmentDefinition getFragmentDefinition(Folder folder, String name) throws PageNotFoundException, NodeException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getLinks(org.apache.jetspeed.om.folder.Folder)
      */    
     public NodeSet getLinks(Folder folder) throws NodeException
@@ -186,7 +259,6 @@ public class DelegatingPageManager extends AbstractPageManager
             PageNotUpdatedException
     {
         // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)
@@ -196,7 +268,60 @@ public class DelegatingPageManager extends AbstractPageManager
             PageNotRemovedException
     {
         // TODO Auto-generated method stub
+    }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#updatePageTemplate(org.apache.jetspeed.om.page.PageTemplate)
+     */
+    public void updatePageTemplate(PageTemplate pageTemplate) throws NodeException,
+            PageNotUpdatedException
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#removePageTemplate(org.apache.jetspeed.om.page.PageTemplate)
+     */
+    public void removePageTemplate(PageTemplate pageTemplate) throws NodeException,
+            PageNotRemovedException
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#updateDynamicPage(org.apache.jetspeed.om.page.DynamicPage)
+     */
+    public void updateDynamicPage(DynamicPage dynamicPage) throws NodeException,
+            PageNotUpdatedException
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#removeDynamicPage(org.apache.jetspeed.om.page.DynamicPage)
+     */
+    public void removeDynamicPage(DynamicPage dynamicPage) throws NodeException,
+            PageNotRemovedException
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#updateFragmentDefinition(org.apache.jetspeed.om.page.FragmentDefinition)
+     */
+    public void updateFragmentDefinition(FragmentDefinition fragmentDefinition) throws NodeException,
+            PageNotUpdatedException
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#removeFragmentDefinition(org.apache.jetspeed.om.page.FragmentDefinition)
+     */
+    public void removeFragmentDefinition(FragmentDefinition fragmentDefinition) throws NodeException,
+            PageNotRemovedException
+    {
+        // TODO Auto-generated method stub
     }
 
     /* (non-Javadoc)
@@ -206,7 +331,6 @@ public class DelegatingPageManager extends AbstractPageManager
             FolderNotUpdatedException
     {
         // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)
@@ -216,7 +340,6 @@ public class DelegatingPageManager extends AbstractPageManager
             FolderNotUpdatedException
     {
         // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)
@@ -226,7 +349,6 @@ public class DelegatingPageManager extends AbstractPageManager
             FolderNotRemovedException
     {
         // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)
@@ -236,7 +358,6 @@ public class DelegatingPageManager extends AbstractPageManager
             LinkNotUpdatedException
     {
         // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)
@@ -246,7 +367,6 @@ public class DelegatingPageManager extends AbstractPageManager
             LinkNotRemovedException
     {
         // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)
@@ -256,7 +376,6 @@ public class DelegatingPageManager extends AbstractPageManager
             NodeException, FailedToUpdateDocumentException
     {
         // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)
@@ -266,7 +385,6 @@ public class DelegatingPageManager extends AbstractPageManager
             NodeException, FailedToDeleteDocumentException
     {
         // TODO Auto-generated method stub
-
     }
     
     public int addPages(Page[] pages)

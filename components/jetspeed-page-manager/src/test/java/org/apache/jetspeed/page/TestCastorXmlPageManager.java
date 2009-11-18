@@ -38,10 +38,16 @@ import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.Document;
+import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageFragment;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -57,14 +63,6 @@ import org.apache.jetspeed.test.JetspeedTestCase;
  */
 public class TestCastorXmlPageManager extends JetspeedTestCase implements PageManagerTestShared 
 {
-    private String testPage002 = "/test002.psml";
-    private String testPage003 = "/test003.psml";
-    private String testPage004 = "/folder2/test004.psml";
-    private String testFolder2 = "/folder2";
-    private String testFolder3 = "/folder3";
-    private String testLink002 = "/test002.link";
-    private String testLink003 = "/test003.link";
-
     protected CastorXmlPageManager pageManager;
 
     /*
@@ -125,13 +123,45 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
     public void testNewPage()
     {
-        Page testpage = pageManager.newPage(this.testPage003);
+        Page testpage = pageManager.newPage("/test003.psml");
         assertNotNull(testpage);
         assertNotNull(testpage.getId());
         assertNotNull(testpage.getPath());
         assertEquals(testpage.getId(), testpage.getPath());
         assertNotNull(testpage.getRootFragment());
         assertNotNull(testpage.getRootFragment().getId());
+        assertTrue(testpage.getRootFragment() instanceof Fragment);
+        assertEquals(((Fragment)testpage.getRootFragment()).getType(), Fragment.LAYOUT);
+
+        PageTemplate testpagetemplate = pageManager.newPageTemplate("/test003.tpsml");
+        assertNotNull(testpagetemplate);
+        assertNotNull(testpagetemplate.getId());
+        assertNotNull(testpagetemplate.getPath());
+        assertEquals(testpagetemplate.getId(), testpagetemplate.getPath());
+        assertNotNull(testpagetemplate.getRootFragment());
+        assertNotNull(testpagetemplate.getRootFragment().getId());
+        assertTrue(testpagetemplate.getRootFragment() instanceof Fragment);
+        assertEquals(((Fragment)testpagetemplate.getRootFragment()).getType(), Fragment.LAYOUT);
+
+        DynamicPage testdynamicpage = pageManager.newDynamicPage("/test003.dpsml");
+        assertNotNull(testdynamicpage);
+        assertNotNull(testdynamicpage.getId());
+        assertNotNull(testdynamicpage.getPath());
+        assertEquals(testdynamicpage.getId(), testdynamicpage.getPath());
+        assertNotNull(testdynamicpage.getRootFragment());
+        assertNotNull(testdynamicpage.getRootFragment().getId());
+        assertTrue(testdynamicpage.getRootFragment() instanceof Fragment);
+        assertEquals(((Fragment)testdynamicpage.getRootFragment()).getType(), Fragment.LAYOUT);
+
+        FragmentDefinition testfragmentdefinition = pageManager.newFragmentDefinition("/test003.fpsml");
+        assertNotNull(testfragmentdefinition);
+        assertNotNull(testfragmentdefinition.getId());
+        assertNotNull(testfragmentdefinition.getPath());
+        assertEquals(testfragmentdefinition.getId(), testfragmentdefinition.getPath());
+        assertNotNull(testfragmentdefinition.getRootFragment());
+        assertNotNull(testfragmentdefinition.getRootFragment().getId());
+        assertTrue(testfragmentdefinition.getRootFragment() instanceof Fragment);
+        assertEquals(((Fragment)testfragmentdefinition.getRootFragment()).getType(), Fragment.PORTLET);
     }
 
     public void testNewFragment()
@@ -144,7 +174,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
     public void testNewFolder()
     {
-        Folder testfolder = pageManager.newFolder(this.testFolder3);
+        Folder testfolder = pageManager.newFolder("/folder3");
         assertNotNull(testfolder);
         assertNotNull(testfolder.getId());
         assertNotNull(testfolder.getPath());
@@ -153,7 +183,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
     public void testNewLink()
     {
-        Link testlink = pageManager.newLink(this.testLink003);
+        Link testlink = pageManager.newLink("/test003.link");
         assertNotNull(testlink);
         assertNotNull(testlink.getId());
         assertNotNull(testlink.getPath());
@@ -178,7 +208,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals(2, descriptions.size());
         assertEquals(1, subjects.size());
 
-        Fragment root = testpage.getRootFragment();
+        BaseFragmentElement rootFragmentElement = testpage.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        Fragment root = (Fragment)rootFragmentElement;
         assertNotNull(root);
         assertTrue(root.getId().equals("f001"));
         assertTrue(root.getName().equals("TwoColumns"));
@@ -187,7 +219,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
         List children = root.getFragments();
         assertNotNull(children);
-        assertTrue(children.size() == 3);
+        assertTrue(children.size() == 4);
 
         Fragment f = (Fragment) children.get(0);
         assertTrue(f.getId().equals("pe001"));
@@ -237,7 +269,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals("0", f.getProperty(Fragment.ROW_PROPERTY_NAME));
         assertEquals(1, f.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
 
-        f = testpage.getFragmentById("f002");
+        BaseFragmentElement bf = testpage.getFragmentById("f002");
+        assertTrue(bf instanceof Fragment);
+        f = (Fragment)bf;
         assertNotNull(f);
         assertTrue(f.getId().equals("f002"));
         assertTrue(f.getName().equals("Card"));
@@ -246,25 +280,105 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertNotNull(f.getFragments());
         assertTrue(f.getFragments().size() == 2);
 
+        bf = testpage.getFragmentById("f003");
+        assertTrue(bf instanceof FragmentReference);
+        FragmentReference fr = (FragmentReference)bf;
+        assertTrue(fr.getId().equals("f003"));
+        assertTrue(fr.getRefId().equals("test001"));
+
         List fragments = testpage.getFragmentsByName("JMXPortlet");
         assertNotNull(fragments);
         assertEquals(1, fragments.size());
         assertTrue(((Fragment)fragments.get(0)).getId().equals("pe002"));
         assertTrue(((Fragment)fragments.get(0)).getName().equals("JMXPortlet"));
         assertTrue(((Fragment)fragments.get(0)).getType().equals(Fragment.PORTLET));
+
+        PageTemplate testpagetemplate = pageManager.getPageTemplate("/test001.tpsml");
+        assertNotNull(testpagetemplate);
+        assertTrue(testpagetemplate.getId().equals("/test001.tpsml"));
+        assertTrue(testpagetemplate.getTitle().equals("Test Page Template"));
+        assertTrue(testpagetemplate.getSkin().equals("test-template-skin"));
+        assertTrue(testpagetemplate.getDefaultDecorator(Fragment.LAYOUT).equals("test-template-layout"));
+        assertTrue(testpagetemplate.getDefaultDecorator(Fragment.PORTLET).equals("test-template-portlet"));
+        assertTrue(testpagetemplate.getVersion().equals("2.77"));    
+        md = testpagetemplate.getMetadata();
+        descriptions = md.getFields("description");
+        assertNotNull(descriptions);
+        assertEquals(1, descriptions.size());
+        rootFragmentElement = testpagetemplate.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        assertNotNull(root);
+        assertTrue(root.getId().equals("pt-f001"));
+        assertTrue(root.getName().equals("TwoColumns"));
+        assertTrue(root.getType().equals(Fragment.LAYOUT));
+        assertNotNull(root.getFragments());
+        assertTrue(root.getFragments().size() == 3);
+        f = (Fragment)root.getFragments().get(0);
+        assertTrue(f.getId().equals("pt-f002"));
+        assertTrue(f.getName().equals("TemplatePortlet"));
+        assertTrue(f.getType().equals(Fragment.PORTLET));
+        bf = testpagetemplate.getFragmentById("pt-f003");
+        assertTrue(bf instanceof PageFragment);
+        PageFragment pf = (PageFragment)bf;
+        assertTrue(pf.getId().equals("pt-f003"));
+        bf = testpagetemplate.getFragmentById("pt-f004");
+        assertTrue(bf instanceof FragmentReference);
+        fr = (FragmentReference)bf;
+        assertTrue(fr.getId().equals("pt-f004"));
+        assertTrue(fr.getRefId().equals("test001"));
+
+        DynamicPage testdynamicpage = pageManager.getDynamicPage("/test001.dpsml");
+        assertTrue(testdynamicpage.getId().equals("/test001.dpsml"));
+        assertTrue(testdynamicpage.getPageType().equals("default"));        
+        assertTrue(testdynamicpage.getTitle().equals("Test Dynamic Page"));
+        assertTrue(testdynamicpage.getVersion().equals("2.77"));
+        rootFragmentElement = testdynamicpage.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        assertNotNull(root);
+        assertTrue(root.getId().equals("dp-f001"));
+        assertTrue(root.getName().equals("TwoColumns"));
+        assertTrue(root.getType().equals(Fragment.LAYOUT));
+        assertNotNull(root.getFragments());
+        assertTrue(root.getFragments().size() == 2);
+        f = (Fragment)root.getFragments().get(0);
+        assertTrue(f.getId().equals("dp-f002"));
+        assertTrue(f.getName().equals("HelloPortlet"));
+        assertTrue(f.getType().equals(Fragment.PORTLET));
+        bf = testdynamicpage.getFragmentById("dp-f003");
+        assertTrue(bf instanceof FragmentReference);
+        fr = (FragmentReference)bf;
+        assertTrue(fr.getId().equals("dp-f003"));
+        assertTrue(fr.getRefId().equals("test001"));
+    
+        FragmentDefinition testfragmentdefinition = pageManager.getFragmentDefinition("/test001.fpsml");
+        assertTrue(testfragmentdefinition.getId().equals("/test001.fpsml"));
+        assertTrue(testfragmentdefinition.getTitle().equals("Test Fragment Definition"));
+        assertTrue(testfragmentdefinition.getVersion().equals("2.77"));
+        rootFragmentElement = testfragmentdefinition.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        assertNotNull(root);
+        assertTrue(root.getId().equals("test001"));
+        assertTrue(root.getName().equals("HelloPortlet"));
+        assertTrue(root.getType().equals(Fragment.PORTLET));
+        assertTrue(root.getFragments().isEmpty());
     }
 
     public void testCreatePage() throws Exception
     {
-        Page page = pageManager.newPage(this.testPage002);
-        System.out.println("Retrieved test_id in create " + this.testPage002);
+        Page page = pageManager.newPage("/test002.psml");
+        System.out.println("Retrieved test_id in create " + "/test002.psml");
         page.setSkin("myskin");
         page.setTitle("Created Page");
         GenericMetadata metadata = page.getMetadata();
         metadata.addField(Locale.FRENCH, "title", "Created Page de PSML");
         metadata.addField(Locale.JAPANESE, "title", "Created \u3078\u3088\u3046\u3053\u305d");
 
-        Fragment root = page.getRootFragment();
+        BaseFragmentElement rootFragmentElement = page.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        Fragment root = (Fragment)rootFragmentElement;
         root.setName("TestLayout");
         Fragment f = pageManager.newFragment();
         f.setType(Fragment.PORTLET);
@@ -273,6 +387,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         properties.put(Fragment.ROW_PROPERTY_NAME, "0");
         properties.put(Fragment.COLUMN_PROPERTY_NAME, "0");
         root.getFragments().add(f);
+        FragmentReference fr = pageManager.newFragmentReference();
+        fr.setRefId("test002");
+        root.getFragments().add(fr);
 
         SecurityConstraints constraints = page.newSecurityConstraints();
         constraints.setOwner("new-user");
@@ -300,25 +417,166 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
             assertNotNull(errmsg, null);
         }
 
-        page = pageManager.getPage(this.testPage002);
+        page = pageManager.getPage("/test002.psml");
         assertNotNull(page);
-        assertTrue(page.getId().equals(this.testPage002));
+        assertTrue(page.getId().equals("/test002.psml"));
         assertEquals("Created Page", page.getTitle());
         assertEquals("Created Page de PSML", page.getTitle(Locale.FRENCH));
         assertEquals("Created \u3078\u3088\u3046\u3053\u305d", page.getTitle(Locale.JAPANESE));
         assertNotNull(page.getRootFragment());
-        assertTrue(page.getRootFragment().getName().equals("TestLayout"));
-        assertTrue(page.getRootFragment().getFragments().size() == 1);
-
-        f = (Fragment) page.getRootFragment().getFragments().get(0);
+        rootFragmentElement = page.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        assertTrue(root.getName().equals("TestLayout"));
+        assertTrue(root.getFragments().size() == 2);
+        BaseFragmentElement bf = (BaseFragmentElement)root.getFragments().get(0);
+        assertTrue(bf instanceof Fragment);
+        f = (Fragment)bf;
         assertNotNull(f.getProperties());
         assertEquals(0, f.getIntProperty(Fragment.ROW_PROPERTY_NAME));
+
+        PageTemplate pagetemplate = pageManager.newPageTemplate("/test002.tpsml");
+        pagetemplate.setTitle("Created Page Template");
+        metadata = pagetemplate.getMetadata();
+        metadata.addField(null, "description", "Page Template Description");
+        rootFragmentElement = pagetemplate.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        root.setName("TestLayout");
+        f = pageManager.newFragment();
+        f.setType(Fragment.PORTLET);
+        f.setName("TestPortlet");
+        properties = f.getProperties();
+        properties.put(Fragment.ROW_PROPERTY_NAME, "1");
+        properties.put(Fragment.COLUMN_PROPERTY_NAME, "1");
+        root.getFragments().add(f);
+        fr = pageManager.newFragmentReference();
+        fr.setRefId("test002");
+        root.getFragments().add(fr);
+        PageFragment pf = pageManager.newPageFragment();
+        root.getFragments().add(pf);        
+        constraints = pagetemplate.newSecurityConstraints();
+        constraints.setOwner("new-user");
+        pagetemplate.setSecurityConstraints(constraints);
+        try
+        {
+            pageManager.updatePageTemplate(pagetemplate);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in page template update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+        pagetemplate = pageManager.getPageTemplate("/test002.tpsml");
+        assertNotNull(pagetemplate);
+        assertTrue(pagetemplate.getId().equals("/test002.tpsml"));
+        assertEquals("Created Page Template", pagetemplate.getTitle());
+        assertNotNull(pagetemplate.getRootFragment());
+        rootFragmentElement = pagetemplate.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        assertTrue(root.getName().equals("TestLayout"));
+        assertTrue(root.getType().equals(Fragment.LAYOUT));
+        assertTrue(root.getFragments().size() == 3);
+        bf = (BaseFragmentElement)root.getFragments().get(0);
+        assertTrue(bf instanceof Fragment);
+        f = (Fragment)bf;
+        assertTrue(f.getName().equals("TestPortlet"));
+        assertTrue(f.getType().equals(Fragment.PORTLET));
+        assertNotNull(f.getProperties());
+        assertEquals(1, f.getIntProperty(Fragment.ROW_PROPERTY_NAME));
+        bf = (BaseFragmentElement)root.getFragments().get(1);
+        assertTrue(bf instanceof FragmentReference);
+        fr = (FragmentReference)bf;
+        assertTrue(fr.getRefId().equals("test002"));
+        bf = (BaseFragmentElement)root.getFragments().get(2);
+        assertTrue(bf instanceof PageFragment);
+
+        DynamicPage dynamicpage = pageManager.newDynamicPage("/test002.dpsml");
+        dynamicpage.setPageType("default");        
+        dynamicpage.setTitle("Created Dynamic Page");
+        rootFragmentElement = dynamicpage.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        root.setName("TestLayout");
+        f = pageManager.newFragment();
+        f.setType(Fragment.PORTLET);
+        f.setName("TestPortlet");
+        root.getFragments().add(f);        
+        fr = pageManager.newFragmentReference();
+        fr.setRefId("test002");
+        root.getFragments().add(fr);        
+        try
+        {
+            pageManager.updateDynamicPage(dynamicpage);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in dynamic page update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+        dynamicpage = pageManager.getDynamicPage("/test002.dpsml");
+        assertNotNull(dynamicpage);
+        assertTrue(dynamicpage.getId().equals("/test002.dpsml"));
+        assertEquals("default", dynamicpage.getPageType());
+        assertEquals("Created Dynamic Page", dynamicpage.getTitle());
+        assertNotNull(dynamicpage.getRootFragment());
+        rootFragmentElement = dynamicpage.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        assertTrue(root.getName().equals("TestLayout"));
+        assertTrue(root.getType().equals(Fragment.LAYOUT));
+        assertTrue(root.getFragments().size() == 2);
+        bf = (BaseFragmentElement)root.getFragments().get(0);
+        assertTrue(bf instanceof Fragment);
+        f = (Fragment)bf;
+        assertTrue(f.getName().equals("TestPortlet"));
+        assertTrue(f.getType().equals(Fragment.PORTLET));
+        bf = (BaseFragmentElement)root.getFragments().get(1);
+        assertTrue(bf instanceof FragmentReference);
+        fr = (FragmentReference)bf;
+        assertTrue(fr.getRefId().equals("test002"));
+
+        FragmentDefinition fragmentdefinition = pageManager.newFragmentDefinition("/test002.fpsml");
+        fragmentdefinition.setTitle("Created Fragment Definition");
+        rootFragmentElement = fragmentdefinition.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        root.setName("TestPortlet");
+        root.setId("test002");
+        try
+        {
+            pageManager.updateFragmentDefinition(fragmentdefinition);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in fragment definition update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+        fragmentdefinition = pageManager.getFragmentDefinition("/test002.fpsml");
+        assertNotNull(fragmentdefinition);
+        assertTrue(fragmentdefinition.getId().equals("/test002.fpsml"));
+        assertEquals("Created Fragment Definition", fragmentdefinition.getTitle());
+        assertNotNull(fragmentdefinition.getRootFragment());
+        rootFragmentElement = fragmentdefinition.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        assertTrue(root.getId().equals("test002"));
+        assertTrue(root.getName().equals("TestPortlet"));
+        assertTrue(root.getType().equals(Fragment.PORTLET));
+        assertTrue(root.getFragments().isEmpty());
     }
 
     public void testCreateFolder() throws Exception
     {
-        Folder folder = pageManager.newFolder(this.testFolder2);
-        System.out.println("Retrieved test_id in create " + this.testFolder2);
+        Folder folder = pageManager.newFolder("/folder2");
+        System.out.println("Retrieved test_id in create " + "/folder2");
         folder.setTitle("Created Folder");
         folder.setSkin("test-skin");
         folder.setDefaultDecorator("test-layout", Fragment.LAYOUT);
@@ -336,9 +594,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
             assertNotNull(errmsg, null);
         }
 
-        folder = pageManager.getFolder(this.testFolder2);
+        folder = pageManager.getFolder("/folder2");
         assertNotNull(folder);
-        assertTrue(folder.getId().equals(this.testFolder2));
+        assertTrue(folder.getId().equals("/folder2"));
         assertTrue(folder.getTitle().equals("Created Folder"));
         assertTrue(folder.getSkin().equals("test-skin"));
         assertTrue(folder.getEffectiveDefaultDecorator(Fragment.LAYOUT).equals("test-layout"));
@@ -348,8 +606,8 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
     public void testCreateLink() throws Exception
     {
-        Link link = pageManager.newLink(this.testLink002);
-        System.out.println("Retrieved test_id in create " + this.testLink002);
+        Link link = pageManager.newLink("/test002.link");
+        System.out.println("Retrieved test_id in create " + "/test002.link");
         link.setTitle("Created Link");
         link.setSkin("test-skin");
         link.setUrl("http://www.created.link.com/");
@@ -366,21 +624,23 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
             assertNotNull(errmsg, null);
         }
 
-        link = pageManager.getLink(this.testLink002);
+        link = pageManager.getLink("/test002.link");
         assertNotNull(link);
-        assertTrue(link.getId().equals(this.testLink002));
+        assertTrue(link.getId().equals("/test002.link"));
         assertTrue(link.getTitle().equals("Created Link"));
         assertTrue(link.getSkin().equals("test-skin"));
     }
 
     public void testUpdatePage() throws Exception
     {
-        Page page = pageManager.getPage(this.testPage002);
+        Page page = pageManager.getPage("/test002.psml");
         page.setTitle("Updated Title");
-        Fragment root = page.getRootFragment();
+        BaseFragmentElement rootFragmentElement = page.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        Fragment root = (Fragment)rootFragmentElement;
         assertNotNull(root);
         assertNotNull(root.getFragments());
-        assertEquals(1, root.getFragments().size());
+        assertEquals(2, root.getFragments().size());
         String testId = ((Fragment)root.getFragments().get(0)).getId();
         assertNotNull(page.removeFragmentById(testId));
 
@@ -396,17 +656,70 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
             assertNotNull(errmsg, null);
         }
 
-        page = pageManager.getPage(this.testPage002);
+        page = pageManager.getPage("/test002.psml");
         assertTrue(page.getTitle().equals("Updated Title"));
-        root = page.getRootFragment();
+        rootFragmentElement = page.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
         assertNotNull(root);
         assertNotNull(root.getFragments());
-        assertTrue(root.getFragments().isEmpty());
+        assertEquals(1, root.getFragments().size());
+
+        PageTemplate pagetemplate = pageManager.getPageTemplate("/test002.tpsml");
+        pagetemplate.setTitle("Updated Title");
+        try
+        {
+            pageManager.updatePageTemplate(pagetemplate);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in page template update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+        pagetemplate = pageManager.getPageTemplate("/test002.tpsml");
+        assertNotNull(pagetemplate);
+        assertEquals("Updated Title", pagetemplate.getTitle());
+
+        DynamicPage dynamicpage = pageManager.getDynamicPage("/test002.dpsml");
+        dynamicpage.setTitle("Updated Title");
+        try
+        {
+            pageManager.updateDynamicPage(dynamicpage);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in dynamic page update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+        dynamicpage = pageManager.getDynamicPage("/test002.dpsml");
+        assertNotNull(dynamicpage);
+        assertEquals("Updated Title", dynamicpage.getTitle());
+
+        FragmentDefinition fragmentdefinition = pageManager.getFragmentDefinition("/test002.fpsml");
+        fragmentdefinition.setTitle("Updated Title");
+        try
+        {
+            pageManager.updateFragmentDefinition(fragmentdefinition);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in fragment definition update: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+        fragmentdefinition = pageManager.getFragmentDefinition("/test002.fpsml");
+        assertNotNull(fragmentdefinition);
+        assertEquals("Updated Title", fragmentdefinition.getTitle());
     }
 
     public void testUpdateFolder() throws Exception
     {
-        Folder folder = pageManager.getFolder(this.testFolder2);
+        Folder folder = pageManager.getFolder("/folder2");
         folder.setTitle("Updated Title");
 
         try
@@ -421,10 +734,10 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
             assertNotNull(errmsg, null);
         }
 
-        folder = pageManager.getFolder(this.testFolder2);
+        folder = pageManager.getFolder("/folder2");
         assertTrue(folder.getTitle().equals("Updated Title"));
 
-        Page page = pageManager.newPage(this.testPage004);
+        Page page = pageManager.newPage("/folder2/test004.psml");
         page.setTitle("Folder Page");
 
         try
@@ -441,7 +754,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
         assertEquals(1, folder.getPages().size());
         assertEquals(1, pageManager.getPages(folder).size());
-        assertNotNull(folder.getPages().get(this.testPage004));
+        assertNotNull(folder.getPages().get("/folder2/test004.psml"));
 
         folder.setTitle("Updated Deep Title");
         page.setTitle("Updated Deep Title");
@@ -458,15 +771,15 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
             assertNotNull(errmsg, null);
         }
 
-        folder = pageManager.getFolder(this.testFolder2);
+        folder = pageManager.getFolder("/folder2");
         assertTrue(folder.getTitle().equals("Updated Deep Title"));
-        page = pageManager.getPage(this.testPage004);
+        page = pageManager.getPage("/folder2/test004.psml");
         assertTrue(page.getTitle().equals("Updated Deep Title"));
     }
 
     public void testUpdateLink() throws Exception
     {
-        Link link = pageManager.getLink(this.testLink002);
+        Link link = pageManager.getLink("/test002.link");
         link.setTitle("Updated Title");
 
         try
@@ -481,7 +794,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
             assertNotNull(errmsg, null);
         }
 
-        link = pageManager.getLink(this.testLink002);
+        link = pageManager.getLink("/test002.link");
         assertTrue(link.getTitle().equals("Updated Title"));
     }
 
@@ -721,7 +1034,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals(2, simpleMenu.getMenuElements().size());
 
         // test writing page menu definitions
-        page = pageManager.getPage(this.testPage002);
+        page = pageManager.getPage("/test002.psml");
         page.setMenuDefinitions(new ArrayList());
         MenuDefinition newMenu = page.newMenuDefinition();
         newMenu.setName("updated-menu");
@@ -760,7 +1073,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
             System.err.println(errmsg);
             assertNotNull(errmsg, null);
         }
-        page = pageManager.getPage(this.testPage002);
+        page = pageManager.getPage("/test002.psml");
         assertNotNull(page.getMenuDefinitions());
         assertEquals(1, page.getMenuDefinitions().size());
         assertNotNull(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements());
@@ -773,7 +1086,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(5) instanceof MenuIncludeDefinition);
 
         // test writing folder menu definitions
-        folder = pageManager.getFolder(this.testFolder2);
+        folder = pageManager.getFolder("/folder2");
         folder.setMenuDefinitions(new ArrayList());
         newMenu = folder.newMenuDefinition();
         newMenu.setName("updated-menu");
@@ -792,7 +1105,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
             System.err.println(errmsg);
             assertNotNull(errmsg, null);
         }
-        folder = pageManager.getFolder(this.testFolder2);
+        folder = pageManager.getFolder("/folder2");
         assertNotNull(folder.getMenuDefinitions());
         assertEquals(1, folder.getMenuDefinitions().size());
         assertEquals("updated-menu", ((MenuDefinition)folder.getMenuDefinitions().get(0)).getName());
@@ -802,8 +1115,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
     public void testRemovePage() throws Exception
     {
-        Page page = pageManager.getPage(this.testPage002);
-
+        Page page = pageManager.getPage("/test002.psml");
         try
         {
             pageManager.removePage(page);
@@ -819,7 +1131,79 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         boolean exceptionFound = false;
         try
         {
-            page = pageManager.getPage(this.testPage002);
+            page = pageManager.getPage("/test002.psml");
+        }
+        catch (DocumentNotFoundException dnfe)
+        {
+            exceptionFound = true;
+        }
+        assertTrue(exceptionFound);
+
+        PageTemplate pagetemplate = pageManager.getPageTemplate("/test002.tpsml");
+        try
+        {
+            pageManager.removePageTemplate(pagetemplate);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in page template remove: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        exceptionFound = false;
+        try
+        {
+            pagetemplate = pageManager.getPageTemplate("/test002.tpsml");
+        }
+        catch (DocumentNotFoundException dnfe)
+        {
+            exceptionFound = true;
+        }
+        assertTrue(exceptionFound);
+
+        DynamicPage dynamicpage = pageManager.getDynamicPage("/test002.dpsml");
+        try
+        {
+            pageManager.removeDynamicPage(dynamicpage);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in dynamic page remove: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        exceptionFound = false;
+        try
+        {
+            dynamicpage = pageManager.getDynamicPage("/test002.dpsml");
+        }
+        catch (DocumentNotFoundException dnfe)
+        {
+            exceptionFound = true;
+        }
+        assertTrue(exceptionFound);
+        
+        FragmentDefinition fragmentdefinition = pageManager.getFragmentDefinition("/test002.fpsml");
+        try
+        {
+            pageManager.removeFragmentDefinition(fragmentdefinition);
+        }
+        catch (Exception e)
+        {
+            String errmsg = "Exception in fragment definition remove: " + e.toString();
+            e.printStackTrace();
+            System.err.println(errmsg);
+            assertNotNull(errmsg, null);
+        }
+
+        exceptionFound = false;
+        try
+        {
+            fragmentdefinition = pageManager.getFragmentDefinition("/test002.fpsml");
         }
         catch (DocumentNotFoundException dnfe)
         {
@@ -830,7 +1214,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
     public void testRemoveFolder() throws Exception
     {
-        Folder folder = pageManager.getFolder(this.testFolder2);
+        Folder folder = pageManager.getFolder("/folder2");
 
         try
         {
@@ -847,7 +1231,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         boolean exceptionFound = false;
         try
         {
-            folder = pageManager.getFolder(this.testFolder2);
+            folder = pageManager.getFolder("/folder2");
         }
         catch (FolderNotFoundException fnfe)
         {
@@ -858,7 +1242,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
     public void testRemoveLink() throws Exception
     {
-        Link link = pageManager.getLink(this.testLink002);
+        Link link = pageManager.getLink("/test002.link");
 
         try
         {
@@ -875,7 +1259,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         boolean exceptionFound = false;
         try
         {
-            link = pageManager.getLink(this.testLink002);
+            link = pageManager.getLink("/test002.link");
         }
         catch (DocumentNotFoundException dnfe)
         {
@@ -900,8 +1284,12 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(clone.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
 
         // TODO: Test Meta data
-        Fragment root = testpage.getRootFragment();
-        Fragment cloneRoot = clone.getRootFragment();
+        BaseFragmentElement rootFragmentElement = testpage.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        Fragment root = (Fragment)rootFragmentElement;
+        BaseFragmentElement cloneRootFragmentElement = clone.getRootFragment();
+        assertTrue(cloneRootFragmentElement instanceof Fragment);
+        Fragment cloneRoot = (Fragment)cloneRootFragmentElement;
         
         assertNotNull(cloneRoot);
         assertNotNull(cloneRoot.getId());        
@@ -943,10 +1331,13 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals("0", cf.getProperty(Fragment.ROW_PROPERTY_NAME));
         assertEquals(1, cf.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
 
-        f = testpage.getFragmentById("f002");
-        cf = (Fragment) cloneChildren.get(2);
+        BaseFragmentElement bf = (BaseFragmentElement)cloneChildren.get(2);
+        assertTrue(bf instanceof Fragment);
+        cf = (Fragment)bf;
         String id = cf.getId();
-        cf = clone.getFragmentById(id);
+        bf = clone.getFragmentById(id);
+        assertTrue(bf instanceof Fragment);
+        cf = (Fragment)bf;
         
         assertNotNull(cf);        
         assertNotNull(cf.getId());        
@@ -983,6 +1374,83 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(ref.equals("public-view"));
         
         // TODO: menu testing
+
+        PageTemplate testpagetemplate = pageManager.getPageTemplate("/clonetest.tpsml");
+        assertNotNull(testpagetemplate);
+        PageTemplate clonepagetemplate = pageManager.copyPageTemplate(testpagetemplate, "/cloned.tpsml");
+        assertNotNull(clonepagetemplate);
+        assertTrue(clonepagetemplate.getId().equals("/cloned.tpsml"));
+        assertTrue(clonepagetemplate.getTitle().equals("Clone Test Page Template"));
+        assertTrue(clonepagetemplate.getSkin().equals("test-template-skin"));
+        assertTrue(clonepagetemplate.getDefaultDecorator(Fragment.LAYOUT).equals("test-template-layout"));
+        assertTrue(clonepagetemplate.getDefaultDecorator(Fragment.PORTLET).equals("test-template-portlet"));
+        GenericMetadata md = clonepagetemplate.getMetadata();
+        Collection descriptions = md.getFields("description");
+        assertNotNull(descriptions);
+        assertEquals(1, descriptions.size());
+        rootFragmentElement = clonepagetemplate.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        assertNotNull(root);
+        assertFalse(root.getId().equals("cpt-f001"));
+        assertTrue(root.getName().equals("TwoColumns"));
+        assertTrue(root.getType().equals(Fragment.LAYOUT));
+        assertNotNull(root.getFragments());
+        assertTrue(root.getFragments().size() == 3);
+        f = (Fragment)root.getFragments().get(0);
+        assertFalse(f.getId().equals("cpt-f002"));
+        assertTrue(f.getName().equals("TemplatePortlet"));
+        assertTrue(f.getType().equals(Fragment.PORTLET));
+        bf = (BaseFragmentElement)root.getFragments().get(1);
+        assertTrue(bf instanceof PageFragment);
+        PageFragment pf = (PageFragment)bf;
+        assertFalse(pf.getId().equals("cpt-f003"));
+        bf = (BaseFragmentElement)root.getFragments().get(2);
+        assertTrue(bf instanceof FragmentReference);
+        FragmentReference fr = (FragmentReference)bf;
+        assertFalse(fr.getId().equals("cpt-f004"));
+        assertTrue(fr.getRefId().equals("ctest001"));
+
+        DynamicPage testdynamicpage = pageManager.getDynamicPage("/clonetest.dpsml");
+        assertNotNull(testdynamicpage);
+        DynamicPage clonedynamicpage = pageManager.copyDynamicPage(testdynamicpage, "/cloned.dpsml");
+        assertNotNull(clonedynamicpage);
+        assertTrue(clonedynamicpage.getId().equals("/cloned.dpsml"));
+        assertTrue(clonedynamicpage.getPageType().equals("default"));        
+        assertTrue(clonedynamicpage.getTitle().equals("Clone Test Dynamic Page"));
+        rootFragmentElement = clonedynamicpage.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        assertNotNull(root);
+        assertFalse(root.getId().equals("cdp-f001"));
+        assertTrue(root.getName().equals("TwoColumns"));
+        assertTrue(root.getType().equals(Fragment.LAYOUT));
+        assertNotNull(root.getFragments());
+        assertTrue(root.getFragments().size() == 2);
+        f = (Fragment)root.getFragments().get(0);
+        assertFalse(f.getId().equals("cdp-f002"));
+        assertTrue(f.getName().equals("HelloPortlet"));
+        assertTrue(f.getType().equals(Fragment.PORTLET));
+        bf = (BaseFragmentElement)root.getFragments().get(1);
+        assertTrue(bf instanceof FragmentReference);
+        fr = (FragmentReference)bf;
+        assertFalse(fr.getId().equals("cdp-f003"));
+        assertTrue(fr.getRefId().equals("ctest001"));    
+
+        FragmentDefinition testfragmentdefinition = pageManager.getFragmentDefinition("/clonetest.fpsml");
+        assertNotNull(testfragmentdefinition);
+        FragmentDefinition clonefragmentdefinition = pageManager.copyFragmentDefinition(testfragmentdefinition, "/cloned.fpsml");
+        assertNotNull(clonefragmentdefinition);
+        assertTrue(clonefragmentdefinition.getId().equals("/cloned.fpsml"));
+        assertTrue(clonefragmentdefinition.getTitle().equals("Clone Test Fragment Definition"));
+        rootFragmentElement = clonefragmentdefinition.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        assertNotNull(root);
+        assertFalse(root.getId().equals("ctest001"));
+        assertTrue(root.getName().equals("HelloPortlet"));
+        assertTrue(root.getType().equals(Fragment.PORTLET));
+        assertTrue(root.getFragments().isEmpty());
     }
     
     public Collection collectIds(Folder f) throws Exception {
@@ -1007,25 +1475,30 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         return result;
     }
     
-    public Collection collectIds(Fragment f){
+    public Collection collectIds(BaseFragmentElement bf){
     	Collection result = new ArrayList();
-    	
         
-    	result.add(f.getId());
-    	if (f.getFragments().size() > 0){
-    		for (Iterator iter = f.getFragments().iterator(); iter.hasNext();) {
-				Fragment child = (Fragment) iter.next();
-				result.addAll(collectIds(child));
-			}
+    	result.add(bf.getId());
+    	if (bf instanceof Fragment) {
+    	    Fragment f = (Fragment)bf;
+    	    if (f.getFragments().size() > 0){
+    	        for (Iterator iter = f.getFragments().iterator(); iter.hasNext();) {
+    	            BaseFragmentElement child = (BaseFragmentElement) iter.next();
+    	            result.addAll(collectIds(child));
+    	        }
+    	    }
     	}
     	return result;
     }
     
-    private int countFragments(Fragment f){
+    private int countFragments(BaseFragmentElement bf){
         int result = 1;
-        for (Iterator iter = f.getFragments().iterator(); iter.hasNext();)
-        {
-            result+=countFragments((Fragment)iter.next());
+        if (bf instanceof Fragment) {
+            Fragment f = (Fragment)bf;
+            for (Iterator iter = f.getFragments().iterator(); iter.hasNext();)
+            {
+                result+=countFragments((BaseFragmentElement)iter.next());
+            }
         }
         
         return result;
@@ -1041,9 +1514,12 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
                Page otherPage = folder2.getPage(thisPage.getName());
                assertEquals(thisPage.getRootFragment()!=null,otherPage.getRootFragment() != null);
                if (thisPage.getRootFragment() != null){
-                   Fragment thisRootFragment = thisPage.getRootFragment();
-                   Fragment otherRootFragment = otherPage.getRootFragment();
-                   assertEquals(thisRootFragment.getFragments().size(),otherRootFragment.getFragments().size());
+                   BaseFragmentElement thisRootFragment = thisPage.getRootFragment();
+                   BaseFragmentElement otherRootFragment = otherPage.getRootFragment();
+                   assertEquals(thisRootFragment.getClass(), otherRootFragment.getClass());
+                   if (thisRootFragment instanceof Fragment) {
+                       assertEquals(((Fragment)thisRootFragment).getFragments().size(),((Fragment)otherRootFragment).getFragments().size());
+                   }
                    assertEquals(countFragments(thisRootFragment),countFragments(otherRootFragment));
                }               
            } else

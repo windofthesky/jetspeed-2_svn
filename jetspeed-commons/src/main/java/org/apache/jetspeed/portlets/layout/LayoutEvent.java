@@ -16,7 +16,8 @@
  */
 package org.apache.jetspeed.portlets.layout;
 
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 
 /**
  * A LayoutEvent is used by ColumnLayout to notify its LayoutAeventListeners
@@ -51,9 +52,32 @@ public class LayoutEvent
     public static final int MOVED_RIGHT = 4;
     
     private final int eventType;
-    private final Fragment fragment;
+    private final ContentPage page;
+    private final String portletType;
+    private final String portletName;
+    private final ContentFragment fragment;
     private final LayoutCoordinate originalCoordinate;
     private final LayoutCoordinate newCoordinate;    
+   
+    /**
+     * 
+     * @param eventType The type of event (see the event constants)
+     * @param page Page that is the target of this event.
+     * @param portletType The new portlet type.
+     * @param portletName The new portlet name.
+     * @see org.apache.jetspeed.om.page.ContentFragment
+     */
+    public LayoutEvent(int eventType, ContentPage page, String portletType, String portletName)
+    {
+        super();       
+        this.eventType = eventType;
+        this.page = page;
+        this.portletType = portletType;
+        this.portletName = portletName;
+        this.fragment = null;
+        this.originalCoordinate = null;
+        this.newCoordinate = null;
+    }
    
     /**
      * 
@@ -61,12 +85,15 @@ public class LayoutEvent
      * @param fragment Fragment that is the target of this event.
      * @param originalCoordinate the previous LayoutCoordinate of this Fragment
      * @param newCoordinate the new and current coordinates of this fragment.
-     * @see org.apache.jetspeed.om.page.Fragment
+     * @see org.apache.jetspeed.om.page.ContentFragment
      */
-    public LayoutEvent(int eventType, Fragment fragment, LayoutCoordinate originalCoordinate, LayoutCoordinate newCoordinate)
+    public LayoutEvent(int eventType, ContentFragment fragment, LayoutCoordinate originalCoordinate, LayoutCoordinate newCoordinate)
     {
         super();       
         this.eventType = eventType;
+        this.page = null;
+        this.portletType = null;
+        this.portletName = null;
         this.fragment = fragment;
         this.originalCoordinate = originalCoordinate;
         this.newCoordinate = newCoordinate;
@@ -84,11 +111,39 @@ public class LayoutEvent
     }
     
     /**
+     * Returns the page that is the target of this event.
+     * @return Page the fragment that is the target of this event.
+     * @see org.apache.jetspeed.om.page.ContentPage
+     */
+    public ContentPage getPage()
+    {
+        return page;
+    }
+    
+    /** 
+     * Returns the portlet type.
+     * @return the portlet type.
+     */    
+    public String getPortletType()
+    {
+        return portletType;
+    }
+    
+    /** 
+     * Returns the portlet name.
+     * @return the portlet name.
+     */    
+    public String getPortletName()
+    {
+        return portletName;
+    }
+    
+    /**
      * Returns the fragment that is the target of this event.
      * @return Fragment the fragment that is the target of this event.
-     * @see org.apache.jetspeed.om.page.Fragment
+     * @see org.apache.jetspeed.om.page.ContentFragment
      */
-    public Fragment getFragment()
+    public ContentFragment getFragment()
     {
         return fragment;
     }
@@ -113,17 +168,34 @@ public class LayoutEvent
         return originalCoordinate;
     }
 
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     public boolean equals(Object obj)
     {
-        if(obj instanceof LayoutEvent)
+        if (obj instanceof LayoutEvent)
         {
             LayoutEvent event = (LayoutEvent) obj;
-            return event.fragment.equals(fragment) 
-              && event.eventType == eventType
-              && event.originalCoordinate.equals(originalCoordinate)
-              && event.newCoordinate.equals(newCoordinate);
-            
+            if (fragment != null)
+            {
+                return (event.fragment.equals(fragment) && 
+                        event.eventType == eventType &&
+                        event.originalCoordinate.equals(originalCoordinate) &&
+                        event.newCoordinate.equals(newCoordinate));
+            }
+            else if (page != null)
+            {
+                return (event.page.equals(page) &&
+                        event.eventType == eventType &&
+                        ((event.portletName == null && portletName == null) ||
+                         (event.portletName != null && event.portletName.equals(portletName))) &&
+                        ((event.portletType == null && portletType == null) ||
+                         (event.portletType != null && event.portletType.equals(portletType))));
+            }
+            else
+            {
+                return (event.eventType == eventType);
+            }
         }
         else
         {
@@ -131,12 +203,22 @@ public class LayoutEvent
         }
     }
 
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     public String toString()
-    {        
-        return "event_target="+fragment.getId()+",event_type_code="+ eventType + ",orginial_coordinate="+ originalCoordinate+
-               ",new_coordinate="+newCoordinate;
+    {
+        if (fragment != null)
+        {
+            return "event_target="+fragment.getId()+",event_type_code="+ eventType + ",orginial_coordinate="+ originalCoordinate+",new_coordinate="+ newCoordinate;
+        }
+        else if (page != null)
+        {
+            return "event_target="+page.getId()+",event_type_code="+ eventType + ",portlet_type="+ portletType+",portlet_name="+ portletName;            
+        }
+        else
+        {
+            return "event_type_code="+ eventType;
+        }
     }
-    
-
 }

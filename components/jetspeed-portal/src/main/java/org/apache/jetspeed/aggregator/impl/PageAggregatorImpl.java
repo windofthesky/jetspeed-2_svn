@@ -57,7 +57,7 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
             throw new JetspeedException("Failed to find PSML Pin ContentPageAggregator.build");
         }
         
-        ContentFragment root = page.getRootContentFragment();
+        ContentFragment root = page.getRootFragment();
         
         if (root == null)
         {
@@ -92,7 +92,7 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
     @SuppressWarnings("unchecked")
     protected void aggregateAndRender( ContentFragment f, RequestContext context, ContentPage page )
     {
-        List<ContentFragment> contentFragments = f.getContentFragments();
+        List<ContentFragment> contentFragments = f.getFragments();
         
         if (contentFragments != null && !contentFragments.isEmpty())
         {

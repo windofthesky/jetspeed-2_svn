@@ -93,22 +93,18 @@
     </property>
   </bean>
 
-    <bean id="org.apache.pluto.services.PreferencesService" name="PortletPreferencesProviderImpl"
-          class="org.apache.jetspeed.components.portletpreferences.PortletPreferencesServiceImpl"
-	    init-method="init" destroy-method="destroy">
-          
-      <meta key="j2:cat" value="default or registry" />          
+  <bean id="org.apache.pluto.services.PreferencesService" name="PortletPreferencesProviderImpl"
+        class="org.apache.jetspeed.components.portletpreferences.PortletPreferencesServiceImpl"
+        init-method="init" destroy-method="destroy">
+    <meta key="j2:cat" value="default or registry" />          
     <constructor-arg index="0">
       <ref bean="portletFactory" />
     </constructor-arg>
     <constructor-arg index="1">
       <ref bean="preferencesCache" />
     </constructor-arg>    
-    <constructor-arg index='2'>
-    	<ref bean='org.apache.jetspeed.page.PageManager'/>
-    </constructor-arg>
     <property name="useEntityPreferences" ><value>true</value></property>
-    </bean>
+  </bean>
 
   <bean id="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" parent="baseTransactionProxy"
     name="portletPreferencesProvider" destroy-method="destroy">

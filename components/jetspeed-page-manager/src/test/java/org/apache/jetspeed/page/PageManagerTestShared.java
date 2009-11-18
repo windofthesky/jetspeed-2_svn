@@ -51,14 +51,21 @@ import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
+import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.om.page.psml.DynamicPageImpl;
+import org.apache.jetspeed.om.page.psml.FragmentDefinitionImpl;
 import org.apache.jetspeed.om.page.psml.LinkImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PageSecurityImpl;
+import org.apache.jetspeed.om.page.psml.PageTemplateImpl;
 import org.apache.jetspeed.page.document.DocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.FolderHandler;
@@ -138,12 +145,18 @@ interface PageManagerTestShared
             FileCache cache = new FileCache(new EhCacheImpl( CacheManager.getInstance().getEhcache("pageFileCache")), 10);
             
             DocumentHandler psmlHandler = new CastorFileSystemDocumentHandler(idGen, "/JETSPEED-INF/castor/page-mapping.xml", Page.DOCUMENT_TYPE, PageImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
+            DocumentHandler tpsmlHandler = new CastorFileSystemDocumentHandler(idGen, "/JETSPEED-INF/castor/page-mapping.xml", PageTemplate.DOCUMENT_TYPE, PageTemplateImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
+            DocumentHandler dpsmlHandler = new CastorFileSystemDocumentHandler(idGen, "/JETSPEED-INF/castor/page-mapping.xml", DynamicPage.DOCUMENT_TYPE, DynamicPageImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
+            DocumentHandler fpsmlHandler = new CastorFileSystemDocumentHandler(idGen, "/JETSPEED-INF/castor/page-mapping.xml", FragmentDefinition.DOCUMENT_TYPE, FragmentDefinitionImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
             DocumentHandler linkHandler = new CastorFileSystemDocumentHandler(idGen, "/JETSPEED-INF/castor/page-mapping.xml", Link.DOCUMENT_TYPE, LinkImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
             DocumentHandler folderMetaDataHandler = new CastorFileSystemDocumentHandler(idGen, "/JETSPEED-INF/castor/page-mapping.xml", FolderMetaDataImpl.DOCUMENT_TYPE, FolderMetaDataImpl.class, baseDir + "target/testdata/" + pagesDirName, cache);
             DocumentHandler pageSecurityHandler = new CastorFileSystemDocumentHandler(idGen, "/JETSPEED-INF/castor/page-mapping.xml", PageSecurityImpl.DOCUMENT_TYPE, PageSecurity.class, baseDir + "target/testdata/" + pagesDirName, cache);
             
             DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl();
             handlerFactory.registerDocumentHandler(psmlHandler);
+            handlerFactory.registerDocumentHandler(tpsmlHandler);
+            handlerFactory.registerDocumentHandler(dpsmlHandler);
+            handlerFactory.registerDocumentHandler(fpsmlHandler);
             handlerFactory.registerDocumentHandler(linkHandler);
             handlerFactory.registerDocumentHandler(folderMetaDataHandler);
             handlerFactory.registerDocumentHandler(pageSecurityHandler);
@@ -321,8 +334,10 @@ interface PageManagerTestShared
                             constraintsRefs = new ArrayList(1);
                             constraintsRefs.add("public-view");
                             constraints.setSecurityConstraintsRefs(constraintsRefs);
-                            page.setSecurityConstraints(constraints);                        
-                            Fragment root = page.getRootFragment();
+                            page.setSecurityConstraints(constraints);
+                            BaseFragmentElement rootFragmentElement = page.getRootFragment();
+                            TestCase.assertTrue(rootFragmentElement instanceof Fragment);
+                            Fragment root = (Fragment)rootFragmentElement;
                             root.setName("jetspeed-layouts::VelocityTwoColumns");
                             Fragment portlet = pageManager.newPortletFragment();
                             portlet.setName("security::LoginPortlet");
@@ -334,12 +349,17 @@ interface PageManagerTestShared
                             portlet.setSecurityConstraints(fragmentConstraints);
                             root.getFragments().add(portlet);
                             pageManager.updatePage(page);
-                            TestCase.assertNotNull(page.getRootFragment());
-                            TestCase.assertNotNull(page.getRootFragment().getFragments());
-                            TestCase.assertEquals(2, page.getRootFragment().getFragments().size());
-                            TestCase.assertEquals("some-app::SomePortlet", ((Fragment)page.getRootFragment().getFragments().get(1)).getName());
-                            TestCase.assertFalse("0".equals(((Fragment)page.getRootFragment().getFragments().get(1)).getId()));
-                            somePortletId[0] = ((Fragment)page.getRootFragment().getFragments().get(1)).getId();
+                            BaseFragmentElement validateRootFragmentElement = page.getRootFragment();
+                            TestCase.assertTrue(validateRootFragmentElement instanceof Fragment);
+                            Fragment validateRoot = (Fragment)validateRootFragmentElement;                            
+                            TestCase.assertNotNull(validateRoot.getFragments());
+                            TestCase.assertEquals(2, validateRoot.getFragments().size());
+                            BaseFragmentElement validateFragmentElement = (BaseFragmentElement)validateRoot.getFragments().get(1);
+                            TestCase.assertTrue(validateFragmentElement instanceof Fragment);
+                            Fragment validateFragment = (Fragment)validateFragmentElement;
+                            TestCase.assertEquals("some-app::SomePortlet", validateFragment.getName());
+                            TestCase.assertFalse("0".equals(validateFragment.getId()));
+                            somePortletId[0] = validateFragment.getId();
                         
                             page = pageManager.newPage("/user-page.psml");
                             constraints = pageManager.newSecurityConstraints();
@@ -397,9 +417,11 @@ interface PageManagerTestShared
                             TestCase.assertEquals(2, pageManager.getPages(folder).size());
                             PageSecurity pageSecurity = pageManager.getPageSecurity();
                             Page page0 = pageManager.getPage("/default-page.psml");
-                            TestCase.assertNotNull(page0.getRootFragment());
-                            TestCase.assertNotNull(page0.getRootFragment().getFragments());
-                            TestCase.assertEquals(2, page0.getRootFragment().getFragments().size());
+                            BaseFragmentElement validateRootFragmentElement = page0.getRootFragment();
+                            TestCase.assertTrue(validateRootFragmentElement instanceof Fragment);
+                            Fragment validateRoot = (Fragment)validateRootFragmentElement;                            
+                            TestCase.assertNotNull(validateRoot.getFragments());
+                            TestCase.assertEquals(2, validateRoot.getFragments().size());
                             TestCase.assertNotNull(page0.getFragmentById(somePortletId[0]));
                             TestCase.assertNotNull(page0.getFragmentsByName("some-app::SomePortlet"));
                             TestCase.assertEquals(1, page0.getFragmentsByName("some-app::SomePortlet").size());
@@ -437,10 +459,12 @@ interface PageManagerTestShared
                             TestCase.assertNotNull(folder.getPages());
                             TestCase.assertEquals(2, folder.getPages().size());
                             PageSecurity pageSecurity = pageManager.getPageSecurity();
-                            Page page0 = pageManager.getPage("/default-page.psml");
-                            TestCase.assertNotNull(page0.getRootFragment());
-                            TestCase.assertNotNull(page0.getRootFragment().getFragments());
-                            TestCase.assertEquals(2, page0.getRootFragment().getFragments().size());
+                            Page page0 = pageManager.getPage("/default-page.psml");                            
+                            BaseFragmentElement validateRootFragmentElement = page0.getRootFragment();
+                            TestCase.assertTrue(validateRootFragmentElement instanceof Fragment);
+                            Fragment validateRoot = (Fragment)validateRootFragmentElement;                            
+                            TestCase.assertNotNull(validateRoot.getFragments());
+                            TestCase.assertEquals(2, validateRoot.getFragments().size());
                             TestCase.assertNotNull(page0.getFragmentById(somePortletId[0]));
                             TestCase.assertNotNull(page0.getFragmentsByName("some-app::SomePortlet"));
                             TestCase.assertEquals(1, page0.getFragmentsByName("some-app::SomePortlet").size());
@@ -507,9 +531,11 @@ interface PageManagerTestShared
                             TestCase.assertEquals(1, folder.getPages().size());
                             PageSecurity pageSecurity = pageManager.getPageSecurity();
                             Page page0 = pageManager.getPage("/default-page.psml");
-                            TestCase.assertNotNull(page0.getRootFragment());
-                            TestCase.assertNotNull(page0.getRootFragment().getFragments());
-                            TestCase.assertEquals(1, page0.getRootFragment().getFragments().size());
+                            BaseFragmentElement validateRootFragmentElement = page0.getRootFragment();
+                            TestCase.assertTrue(validateRootFragmentElement instanceof Fragment);
+                            Fragment validateRoot = (Fragment)validateRootFragmentElement;
+                            TestCase.assertNotNull(validateRoot.getFragments());
+                            TestCase.assertEquals(1, validateRoot.getFragments().size());
                             TestCase.assertNull(page0.getFragmentById(somePortletId[0]));
                             TestCase.assertTrue(page0.getFragmentsByName("some-app::SomePortlet").isEmpty());
                             Link link = pageManager.getLink("/default.link");
@@ -567,9 +593,11 @@ interface PageManagerTestShared
                             TestCase.assertEquals(1, folder.getPages().size());
                             PageSecurity pageSecurity = pageManager.getPageSecurity();
                             Page page0 = pageManager.getPage("/default-page.psml");
-                            TestCase.assertNotNull(page0.getRootFragment());
-                            TestCase.assertNotNull(page0.getRootFragment().getFragments());
-                            TestCase.assertEquals(1, page0.getRootFragment().getFragments().size());
+                            BaseFragmentElement validateRootFragmentElement = page0.getRootFragment();
+                            TestCase.assertTrue(validateRootFragmentElement instanceof Fragment);
+                            Fragment validateRoot = (Fragment)validateRootFragmentElement;                            
+                            TestCase.assertNotNull(validateRoot.getFragments());
+                            TestCase.assertEquals(1, validateRoot.getFragments().size());
                             TestCase.assertNull(page0.getFragmentById(somePortletId[0]));
                             TestCase.assertTrue(page0.getFragmentsByName("some-app::SomePortlet").isEmpty());
                             Link link = pageManager.getLink("/default.link");
@@ -680,8 +708,6 @@ interface PageManagerTestShared
             org.apache.jetspeed.om.page.impl.BaseElementImpl.setPermissionsFactory(pf);
             org.apache.jetspeed.om.folder.impl.FolderImpl.setPermissionsFactory(pf);
             org.apache.jetspeed.om.folder.psml.FolderImpl.setPermissionsFactory(pf);
-            org.apache.jetspeed.om.page.impl.FragmentImpl.setPermissionsFactory(pf);
-            org.apache.jetspeed.om.page.psml.FragmentImpl.setPermissionsFactory(pf);
         }
 
         public PageManagerPermissionsPolicy(Policy defaultPolicy)

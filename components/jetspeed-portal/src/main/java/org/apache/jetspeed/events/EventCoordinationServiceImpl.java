@@ -41,7 +41,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.providers.EventProviderImpl;
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
@@ -206,17 +206,17 @@ public class EventCoordinationServiceImpl implements JetspeedEventCoordinationSe
 
     private List<PortletWindow> getAllPortletsRegisteredForEvent(RequestContext rc, Event event)
     {
-        Fragment root = rc.getPage().getRootFragment();
+        ContentFragment root = rc.getPage().getRootFragment();
         List<PortletWindow> eventTargets = new LinkedList<PortletWindow>();
         return getPortletsRegisteredOnPage(rc, root, event, eventTargets);
     }
 
-    private List<PortletWindow> getPortletsRegisteredOnPage(RequestContext rc, Fragment fragment, Event event, List<PortletWindow> eventTargets)
+    private List<PortletWindow> getPortletsRegisteredOnPage(RequestContext rc, ContentFragment fragment, Event event, List<PortletWindow> eventTargets)
     {
-        List<Fragment> fragments = fragment.getFragments();
+        List<ContentFragment> fragments = fragment.getFragments();
         if (fragments != null && fragments.size() > 0)
         {
-            for (Fragment child : fragments)
+            for (ContentFragment child : fragments)
             {
                 getPortletsRegisteredOnPage(rc, child, event, eventTargets);
             }
@@ -244,9 +244,9 @@ public class EventCoordinationServiceImpl implements JetspeedEventCoordinationSe
         return eventTargets;
     }
 
-    protected boolean checkSecurityConstraint(PortletDefinition portlet, Fragment fragment)
+    protected boolean checkSecurityConstraint(PortletDefinition portlet, ContentFragment fragment)
     {
-        if (fragment.getType().equals(Fragment.PORTLET))
+        if (fragment.getType().equals(ContentFragment.PORTLET))
         {
             
             if (accessController != null) // TODO: MASK_EVENT 

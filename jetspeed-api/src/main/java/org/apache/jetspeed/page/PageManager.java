@@ -29,11 +29,16 @@ import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
-import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
+import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageFragment;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.DocumentException;
@@ -90,6 +95,27 @@ public interface PageManager
     public Page newPage(String path);
 
     /**
+     * Creates a new empty PageTemplate instance
+     *
+     * @return a newly created PageTemplate object
+     */
+    public PageTemplate newPageTemplate(String path);
+
+    /**
+     * Creates a new empty DynamicPage instance
+     *
+     * @return a newly created DynamicPage object
+     */
+    public DynamicPage newDynamicPage(String path);
+
+    /**
+     * Creates a new empty FragmentDefinition instance
+     *
+     * @return a newly created FragmentDefinition object
+     */
+    public FragmentDefinition newFragmentDefinition(String path);
+
+    /**
      * Create a new empty Folder instance
      *
      * @return a newly created Folder object
@@ -123,6 +149,20 @@ public interface PageManager
      * @return a newly created Fragment object
      */    
     public Fragment newPortletFragment();
+    
+    /**
+     * Creates a new FragmentReference instance
+     *
+     * @return a newly created Fragment object
+     */    
+    public FragmentReference newFragmentReference();
+    
+    /**
+     * Creates a new PageFragment instance
+     *
+     * @return a newly created Fragment object
+     */    
+    public PageFragment newPageFragment();
     
     /**
      * newFolderMenuDefinition - creates a new empty menu definition
@@ -265,20 +305,43 @@ public interface PageManager
     
     /**
      * <p>
-     * ContentPage
+     * getPageTemplate
      * </p>
      *
-     * Returns a PSML document suitable for use in content
-     * rendering, for the given key
+     * Returns a PageTemplate based on its path
      *
-     * @see ContentPage
-     * @see Fragment
-     * @param locator The locator descriptor of the document to be retrieved.
+     * @param path
      * @throws PageNotFoundException if the page cannot be found
      * @throws NodeException
      */
-    public ContentPage getContentPage(String path) throws PageNotFoundException, NodeException;
-    
+    public PageTemplate getPageTemplate(String path) throws PageNotFoundException, NodeException;
+
+    /**
+     * <p>
+     * getDynamicPage
+     * </p>
+     *
+     * Returns a DynamicPage based on its path
+     *
+     * @param path
+     * @throws PageNotFoundException if the page cannot be found
+     * @throws NodeException
+     */
+    public DynamicPage getDynamicPage(String path) throws PageNotFoundException, NodeException;
+
+    /**
+     * <p>
+     * getFragmentDefinition
+     * </p>
+     *
+     * Returns a FragmentDefinition based on its path
+     *
+     * @param path
+     * @throws PageNotFoundException if the page cannot be found
+     * @throws NodeException
+     */
+    public FragmentDefinition getFragmentDefinition(String path) throws PageNotFoundException, NodeException;
+
     /**
      * <p>
      * getLink
@@ -377,6 +440,60 @@ public interface PageManager
     
     /**
      * <p>
+     * getPageTemplates
+     * </p>
+     *
+     * Locates documents within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getPageTemplates(org.apache.jetspeed.om.folder.Folder)
+     *
+     * @param folder The parent folder.
+     * @return A <code>NodeSet</code> of all the PageTemplates referenced
+     *         by this Folder.
+     * @throws NodeException
+     */
+    public NodeSet getPageTemplates(Folder folder) throws NodeException;
+    
+    /**
+     * <p>
+     * getDynamicPages
+     * </p>
+     *
+     * Locates documents within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getDynamicPages(org.apache.jetspeed.om.folder.Folder)
+     *
+     * @param folder The parent folder.
+     * @return A <code>NodeSet</code> of all the DynamicPages referenced
+     *         by this Folder.
+     * @throws NodeException
+     */
+    public NodeSet getDynamicPages(Folder folder) throws NodeException;
+    
+    /**
+     * <p>
+     * getFragmentDefinition
+     * </p>
+     *
+     * Locates documents within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getFragmentDefinition(org.apache.jetspeed.om.folder.Folder)
+     *
+     * @param folder The parent folder.
+     * @return A <code>NodeSet</code> of all the FragmentDefinitions referenced
+     *         by this Folder.
+     * @throws NodeException
+     */
+    public NodeSet getFragmentDefinitions(Folder folder) throws NodeException;
+    
+    /**
+     * <p>
      * getPage
      * </p>
      *
@@ -393,6 +510,63 @@ public interface PageManager
      * @throws NodeException
      */
     public Page getPage(Folder folder, String name) throws PageNotFoundException, NodeException;
+    
+    /**
+     * <p>
+     * getPageTemplate
+     * </p>
+     *
+     * Locates documents within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getPageTemplate(org.apache.jetspeed.om.folder.Folder,java.lang.String)
+     *
+     * @param folder The parent folder.
+     * @param name The name of page template to retrieve.
+     * @return A PageTemplate referenced by this folder.
+     * @throws PageNotFoundException if the PageTemplate requested could not be found.
+     * @throws NodeException
+     */
+    public PageTemplate getPageTemplate(Folder folder, String name) throws PageNotFoundException, NodeException;
+    
+    /**
+     * <p>
+     * getDynamicPage
+     * </p>
+     *
+     * Locates documents within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getDynamicPage(org.apache.jetspeed.om.folder.Folder,java.lang.String)
+     *
+     * @param folder The parent folder.
+     * @param name The name of dynamic page to retrieve.
+     * @return A DynamicPage referenced by this folder.
+     * @throws PageNotFoundException if the DynamicPage requested could not be found.
+     * @throws NodeException
+     */
+    public DynamicPage getDynamicPage(Folder folder, String name) throws PageNotFoundException, NodeException;
+    
+    /**
+     * <p>
+     * getFragmentDefinition
+     * </p>
+     *
+     * Locates documents within a specified parent folder.
+     * Returned documents are filtered according to security
+     * constraints and/or permissions.
+     *
+     * @see org.apache.jetspeed.om.folder.Folder#getFragmentDefinition(org.apache.jetspeed.om.folder.Folder,java.lang.String)
+     *
+     * @param folder The parent folder.
+     * @param name The name of fragment definition to retrieve.
+     * @return A DynamicPage referenced by this folder.
+     * @throws PageNotFoundException if the FragmentDefinition requested could not be found.
+     * @throws NodeException
+     */
+    public FragmentDefinition getFragmentDefinition(Folder folder, String name) throws PageNotFoundException, NodeException;
     
     /**
      * <p>
@@ -466,57 +640,108 @@ public interface PageManager
      */
     public NodeSet getAll(Folder folder) throws DocumentException;
 
-    /** Update a page in persistent storage
+    /**
+     * Update a page in persistent storage
      *
      * @param page The page to be updated.
      */
     public void updatePage(Page page) throws NodeException, PageNotUpdatedException;
 
-    /** Remove a document.
+    /**
+     * Remove a page.
      *
      * @param page The page to be removed.
      */
     public void removePage(Page page) throws NodeException, PageNotRemovedException;
 
-    /** Update a folder and all child folders
-     *  and documents in persistent storage
+    /**
+     * Update a page template in persistent storage
+     *
+     * @param pageTemplate The page template to be updated.
+     */
+    public void updatePageTemplate(PageTemplate pageTemplate) throws NodeException, PageNotUpdatedException;
+
+    /**
+     * Remove a page template.
+     *
+     * @param pageTemplate The page template to be removed.
+     */
+    public void removePageTemplate(PageTemplate pageTemplate) throws NodeException, PageNotRemovedException;
+
+    /**
+     * Update a dynamic page in persistent storage
+     *
+     * @param dynamicPage The dynamic page to be updated.
+     */
+    public void updateDynamicPage(DynamicPage dynamicPage) throws NodeException, PageNotUpdatedException;
+
+    /**
+     * Remove a dynamic page.
+     *
+     * @param dynamicPage The dynamic page to be removed.
+     */
+    public void removeDynamicPage(DynamicPage dynamicPage) throws NodeException, PageNotRemovedException;
+
+    /**
+     * Update a fragment definition in persistent storage
+     *
+     * @param dynamicPage The fragment definition to be updated.
+     */
+    public void updateFragmentDefinition(FragmentDefinition fragmentDefinition) throws NodeException, PageNotUpdatedException;
+
+    /**
+     * Remove a fragment definition.
+     *
+     * @param dynamicPage The fragment definition to be removed.
+     */
+    public void removeFragmentDefinition(FragmentDefinition fragmentDefinition) throws NodeException, PageNotRemovedException;
+    
+    /**
+     * Update a folder and all child folders
+     * and documents in persistent storage
      *
      * @param folder The folder to be updated.
      */
     public void updateFolder(Folder folder) throws NodeException, FolderNotUpdatedException;
 
-    /** Update a folder in persistent storage
+    /**
+     * Update a folder in persistent storage
      *
      * @param folder The folder to be updated.
      * @param deep Flag to control recursive deep updates.
      */
     public void updateFolder(Folder folder, boolean deep) throws NodeException, FolderNotUpdatedException;
 
-    /** Remove a folder.
+    /**
+     * Remove a folder.
      *
      * @param page The folder to be removed.
      */
     public void removeFolder(Folder folder) throws NodeException, FolderNotRemovedException;
 
-    /** Update a link in persistent storage
+    /**
+     * Update a link in persistent storage
      *
      * @param link The link to be updated.
      */
     public void updateLink(Link link) throws NodeException, LinkNotUpdatedException;
 
-    /** Remove a link.
+    /**
+     * Remove a link.
      *
      * @param link The link to be removed.
      */
     public void removeLink(Link link) throws NodeException, LinkNotRemovedException;
 
-    /** Update a page security document in persistent storage
+    /**
+     * Update a page security document in persistent storage
      *
      * @param pageSecurity The document to be updated.
      */
     public void updatePageSecurity(PageSecurity pageSecurity) throws NodeException, FailedToUpdateDocumentException;
 
-    /** Remove a page security document.
+    /**
+     * Remove a page security document.
      *
      * @param pageSecurity The document to be removed.
      */
@@ -549,8 +774,8 @@ public interface PageManager
 
     /** 
      * Copy the source page creating and returning a new copy of the page  
-     * with the same portlet and fragment collection as the source
-     * All fragments are created with new fragment ids
+     * with the same portlet and fragment collection as the source.
+     * All fragments are created with new fragment ids.
      * 
      * @param source The source Page object to be copied 
      * @param path a PSML normalized path to the new page to be created
@@ -569,6 +794,78 @@ public interface PageManager
      * @return a new Page object copied from the source
      */
     public Page copyPage(Page source, String path, boolean copyIds)
+        throws NodeException;
+
+    /** 
+     * Copy the source page template creating and returning a new copy of the page  
+     * template with the same portlet and fragment collection as the source.
+     * All fragments are created with new fragment ids.
+     * 
+     * @param source The source PageTemplate object to be copied 
+     * @param path a PSML normalized path to the new page template to be created
+     * @return a new PageTemplate object copied from the source, with new fragment ids
+     */
+    public PageTemplate copyPageTemplate(PageTemplate source, String path) 
+        throws NodeException;
+
+    /** 
+     * Copy the source page template creating and returning a new copy of the page  
+     * template with the same portlet and fragment collection as the source.
+     * 
+     * @param source The source PageTemplate object to be copied 
+     * @param path a PSML normalized path to the new page template to be created
+     * @param copyIds flag indicating whether to use new or copied ids
+     * @return a new PageTemplate object copied from the source
+     */
+    public PageTemplate copyPageTemplate(PageTemplate source, String path, boolean copyIds)
+        throws NodeException;
+
+    /** 
+     * Copy the source dynamic page creating and returning a new copy of the dynamic  
+     * page with the same portlet and fragment collection as the source.
+     * All fragments are created with new fragment ids.
+     * 
+     * @param source The source DynamicPage object to be copied 
+     * @param path a PSML normalized path to the new dynamic page to be created
+     * @return a new DynamicPage object copied from the source, with new fragment ids
+     */
+    public DynamicPage copyDynamicPage(DynamicPage source, String path) 
+        throws NodeException;
+
+    /** 
+     * Copy the source dynamic page creating and returning a new copy of the dynamic  
+     * page with the same portlet and fragment collection as the source.
+     * 
+     * @param source The source DynamicPage object to be copied 
+     * @param path a PSML normalized path to the new dynamic page to be created
+     * @param copyIds flag indicating whether to use new or copied ids
+     * @return a new DynamicPage object copied from the source
+     */
+    public DynamicPage copyDynamicPage(DynamicPage source, String path, boolean copyIds)
+        throws NodeException;
+
+    /** 
+     * Copy the source fragment definition creating and returning a new copy of  
+     * the fragment definition with the same portlet and fragment collection as the
+     * source. All fragments are created with new fragment ids.
+     * 
+     * @param source The source FragmentDefinition object to be copied 
+     * @param path a PSML normalized path to the new fragment definition to be created
+     * @return a new FragmentDefinition object copied from the source, with new fragment ids
+     */
+    public FragmentDefinition copyFragmentDefinition(FragmentDefinition source, String path) 
+        throws NodeException;
+
+    /** 
+     * Copy the source fragment definition creating and returning a new copy of
+     * the fragment definition with the same portlet and fragment collection as the source.
+     * 
+     * @param source The source FragmentDefinition object to be copied 
+     * @param path a PSML normalized path to the new fragment definition to be created
+     * @param copyIds flag indicating whether to use new or copied ids
+     * @return a new FragmentDefinition object copied from the source
+     */
+    public FragmentDefinition copyFragmentDefinition(FragmentDefinition source, String path, boolean copyIds)
         throws NodeException;
 
     /** 
@@ -598,10 +895,11 @@ public interface PageManager
      * The fragment is created with a new fragment id
      * 
      * @param source The source Fragment object to be copied 
-     * @param the new fragment name, can be the same as source fragment name
+     * @param name the new fragment name, can be the same as source fragment name
+     *             or null to copy existing name
      * @return a new Fragment object copied from the source
      */
-    public Fragment copyFragment(Fragment source, String name) 
+    public BaseFragmentElement copyFragment(BaseFragmentElement source, String name) 
         throws NodeException;
 
     /** 
@@ -609,11 +907,12 @@ public interface PageManager
      * with the parameter collection as the source
      * 
      * @param source The source Fragment object to be copied 
-     * @param the new fragment name, can be the same as source fragment name
+     * @param name the new fragment name, can be the same as source fragment name
+     *             or null to copy existing name
      * @param copyIds flag indicating whether to use new or copied ids
      * @return a new Fragment object copied from the source
      */
-    public Fragment copyFragment(Fragment source, String name, boolean copyIds) 
+    public BaseFragmentElement copyFragment(BaseFragmentElement source, String name, boolean copyIds) 
         throws NodeException;
 
     /**
@@ -716,6 +1015,30 @@ public interface PageManager
      * @return
      */
     public boolean pageExists(String pageName);
+    
+    /**
+     * Check if a page template exists for the given page name
+     * 
+     * @param pageName
+     * @return
+     */
+    public boolean pageTemplateExists(String pageName);
+    
+    /**
+     * Check if a dynamic page exists for the given page name
+     * 
+     * @param pageName
+     * @return
+     */
+    public boolean dynamicPageExists(String pageName);
+    
+    /**
+     * Check if a fragment definition exists for the given name
+     * 
+     * @param name
+     * @return
+     */
+    public boolean fragmentDefinitionExists(String name);
     
     /**
      * Check if a link exists for the given link name

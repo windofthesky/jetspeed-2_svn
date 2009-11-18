@@ -19,6 +19,7 @@ package org.apache.jetspeed.profiler.impl;
 import java.security.Principal;
 
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.login.LoginConstants;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
@@ -61,13 +62,16 @@ public class RefreshUserHomepageValveImpl extends ProfilerValveImpl
      *
      * @param profiler profiler component reference
      * @param portalSite portal site component reference
+     * @param pageLayoutComponent page layout component reference
      * @param requestFallback flag to enable root folder fallback
      * @param useHistory flag to enable selection of last visited folder page
      * @param pageManager pageManagerComponent reference
      */
-    public RefreshUserHomepageValveImpl(Profiler profiler, PortalSite portalSite, boolean requestFallback, boolean useHistoryPageManager, PageManager pageManager, UserManager userManager)
+    public RefreshUserHomepageValveImpl(Profiler profiler, PortalSite portalSite, PageLayoutComponent pageLayoutComponent,
+                                        boolean requestFallback, boolean useHistoryPageManager, PageManager pageManager,
+                                        UserManager userManager)
     {
-        super(profiler, portalSite, requestFallback, useHistoryPageManager);
+        super(profiler, portalSite, pageLayoutComponent, requestFallback, useHistoryPageManager);
         this.pageManager = pageManager;
         this.userManager = userManager;
     }

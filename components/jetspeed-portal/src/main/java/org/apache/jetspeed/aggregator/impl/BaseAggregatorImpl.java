@@ -51,9 +51,9 @@ public abstract class BaseAggregatorImpl
     protected void releaseBuffers(ContentFragment f, RequestContext context)
     {
         
-        if (f.getContentFragments() != null)
+        if (f.getFragments() != null)
         {
-            for (ContentFragment child : (List<ContentFragment>)f.getContentFragments())
+            for (ContentFragment child : (List<ContentFragment>)f.getFragments())
             {
                 if (!"hidden".equals(child.getState()))
                 {
@@ -96,7 +96,7 @@ public abstract class BaseAggregatorImpl
         }
         
         layoutWindow.setAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE, window.getFragment());
-        layoutWindow.setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootContentFragment());
+        layoutWindow.setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootFragment());
 
         try
         {

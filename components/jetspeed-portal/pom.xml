@@ -71,6 +71,10 @@
       <artifactId>jetspeed-security</artifactId>
     </dependency>
     <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-page-layout</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.portals.pluto</groupId>
       <artifactId>pluto-container-api</artifactId>
       <scope>provided</scope>

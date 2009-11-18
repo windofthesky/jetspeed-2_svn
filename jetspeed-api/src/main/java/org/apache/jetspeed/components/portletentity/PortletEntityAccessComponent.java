@@ -19,7 +19,6 @@ package org.apache.jetspeed.components.portletentity;
 import java.util.Collection;
 
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 
@@ -66,7 +65,7 @@ public interface PortletEntityAccessComponent
 	 * @param fragment
 	 * @return
 	 */
-	String generateEntityKey(Fragment fragment);
+	String generateEntityKey(ContentFragment fragment);
 
 	/**
 	 * 

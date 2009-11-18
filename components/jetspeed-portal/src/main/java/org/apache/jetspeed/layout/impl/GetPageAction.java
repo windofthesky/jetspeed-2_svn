@@ -21,19 +21,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.DecorationValve;
 import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
@@ -44,6 +42,9 @@ import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Get Page retrieves a page from the Page Manager store and PSML format
@@ -92,11 +93,15 @@ public class GetPageAction
             // Run the Decoration valve to get actions
             decorationValve.invoke( requestContext, null );
             
-            Page page = requestContext.getPage();                        
+            Page page = requestContext.getPage().getPage();                        
             String pageName = getActionParameter( requestContext, PAGE );
             if ( pageName != null )
             {
                 page = retrievePage( requestContext, pageName );
+            }
+            if (page == null)
+            {
+                throw new AJAXException("Missing current page or '" + PAGE + "' parameter");
             }
             
             // ** DST: DEMO: Hack
@@ -165,11 +170,12 @@ public class GetPageAction
             String singleLayoutId = getActionParameter( requestContext, LAYOUTID );
             if ( singleLayoutId != null )
             {   // build page representation with single layout
-                Fragment currentLayoutFragment = page.getFragmentById( singleLayoutId );
-                if ( currentLayoutFragment == null )
+                BaseFragmentElement singleLayoutFragment = page.getFragmentById( singleLayoutId );
+                if ( ! ( singleLayoutFragment instanceof Fragment) )
                 {
                     throw new Exception( "layout id not found: " + singleLayoutId );
                 }
+                Fragment currentLayoutFragment = (Fragment) singleLayoutFragment;
                 Fragment currentPortletFragment = null;
                 
                 String singlePortletId = getActionParameter( requestContext, PORTLETENTITY );
@@ -198,9 +204,13 @@ public class GetPageAction
                 retrieveFragmentSpecialProperties( requestContext, currentLayoutFragment, fragSizes, portletIcons );
                 resultMap.put( "layoutsingle", currentLayoutFragment );
             }
+            else if (page.getRootFragment() instanceof Fragment)
+            {
+                retrieveFragmentSpecialProperties( requestContext, (Fragment)page.getRootFragment(), fragSizes, portletIcons );
+            }
             else
             {
-                retrieveFragmentSpecialProperties( requestContext, page.getRootFragment(), fragSizes, portletIcons );
+                throw new Exception( "root layout not found for page: " + page.getId() );                
             }
             resultMap.put( SIZES, fragSizes );
             resultMap.put( "portletIcons", portletIcons );
@@ -239,7 +249,9 @@ public class GetPageAction
     	if ( "layout".equals( frag.getType() ) )
     	{   // get layout fragment sizes
     		if ( fragSizes != null )
-    			PortletPlacementContextImpl.getColumnCountAndSizes( frag, registry, fragSizes );
+    		{
+    			PortletPlacementMetadataAccess.getColumnCountAndSizes( frag, registry, fragSizes );
+    		}
     		
     		List childFragments = frag.getFragments();
     		if ( childFragments != null )
@@ -281,17 +293,23 @@ public class GetPageAction
         Page nav;
         try
         {
-            Fragment root = page.getRootFragment();
-            boolean found = findFragment(root);
-            if (!found)
+            if (page.getRootFragment() instanceof Fragment)
             {
-                nav = this.pageManager.getPage("/_user/template/navigator.psml");
-                List<Fragment> navFragments = nav.getRootFragment().getFragments();
-                Fragment source1 = navFragments.get(0);
-                root.getFragments().add(0, source1);
-                Fragment source2 = navFragments.get(1);
-                root.getFragments().add(1, source2);
-                // save?
+                Fragment root = (Fragment)page.getRootFragment();
+                boolean found = findFragment(root);
+                if (!found)
+                {
+                    nav = this.pageManager.getPage("/_user/template/navigator.psml");
+                    if (nav.getRootFragment() instanceof Fragment)
+                    {
+                        List<Fragment> navFragments = ((Fragment)nav.getRootFragment()).getFragments();
+                        Fragment source1 = navFragments.get(0);
+                        root.getFragments().add(0, source1);
+                        Fragment source2 = navFragments.get(1);
+                        root.getFragments().add(1, source2);
+                        // save?
+                    }
+                }
             }
         }
         catch (PageNotFoundException e)

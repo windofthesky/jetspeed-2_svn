@@ -16,16 +16,8 @@
  */
 package org.apache.jetspeed.om.page;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Collections;
-
 import org.apache.jetspeed.om.portlet.LocalizedField;
-import org.apache.jetspeed.om.portlet.impl.GenericMetadataImpl;
-import org.apache.jetspeed.util.ArgUtil;
+import org.apache.jetspeed.om.portlet.GenericMetadataImpl;
 
 /**
  * @author <a href="mailto:jford@apache.org">Jeremy Ford</a>
@@ -45,11 +37,6 @@ public class PageMetadataImpl extends GenericMetadataImpl
         this.fieldImplClass = fieldImplClass;
     }
 
-    /**
-     * localizedText - cached text metadata
-     */
-    private Map localizedText;
-
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.GenericMetadata#createLocalizedField()
      */
@@ -63,58 +50,5 @@ public class PageMetadataImpl extends GenericMetadataImpl
         {
             throw new RuntimeException("Failed to create LocalizedField object: " + fieldImplClass.getName(), e);
         }
-    }
-
-    /**
-     * getText - get localized text from metadata
-     * 
-     * @param name text name
-     * @param locale preferred locale
-     * @return localized text or null if not available
-     */
-    public String getText(String name, Locale locale)
-    {
-        // validate parameters
-        ArgUtil.assertNotNull(String.class, name, this, "getText(String, Locale)");
-        ArgUtil.assertNotNull(Locale.class, locale, this, "getText(String, Locale)");
-
-        // populate cache for named text by locale
-        Map namedLocalizedText = (Map)((localizedText != null) ? localizedText.get(name) : null);
-        if ((namedLocalizedText == null) && (getFields() != null))
-        {
-            Collection fields = getFields(name);
-            if (fields != null)
-            {
-                if (localizedText == null)
-                {
-                    localizedText = Collections.synchronizedMap(new HashMap(getFields().size()));
-                }
-                namedLocalizedText = new HashMap(getFields().size());
-                localizedText.put(name, namedLocalizedText);
-                Iterator fieldsItr = fields.iterator();
-                while (fieldsItr.hasNext())
-                {
-                    LocalizedField field = (LocalizedField)fieldsItr.next();
-                    namedLocalizedText.put(field.getLocale(), field);
-                }
-            }
-        }
-
-        // retrieve cached named text by locale if found
-        if (namedLocalizedText != null)
-        {
-            // test locale
-            if (namedLocalizedText.containsKey(locale) )
-            {
-                return ((LocalizedField)namedLocalizedText.get(locale)).getValue().trim();
-            }
-            // test language only locale
-            Locale languageOnly = new Locale(locale.getLanguage());
-            if (namedLocalizedText.containsKey(languageOnly))
-            {
-                return ((LocalizedField)namedLocalizedText.get(languageOnly)).getValue().trim();
-            }
-        }
-        return null;
     }
 }

@@ -21,9 +21,12 @@ import java.util.Iterator;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.page.DynamicPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.tools.ToolsLogger;
 
@@ -270,7 +273,90 @@ public class PageSerializerImpl implements PageSerializer
                 context.pageCount++;
             }
         }
-
+        Iterator pageTemplates = srcFolder.getPageTemplates().iterator();
+        while (pageTemplates.hasNext())
+        {
+            PageTemplate srcPageTemplate = (PageTemplate) pageTemplates.next();
+            PageTemplate dstPageTemplate = lookupPageTemplate(dest, srcPageTemplate.getPath());
+            if (null != dstPageTemplate)
+            {
+                if (context.overwritePages)
+                {
+                    context.logger.info("overwriting page template " + srcPageTemplate.getPath());
+                    dest.removePageTemplate(dstPageTemplate);
+                    dstPageTemplate = dest.copyPageTemplate(srcPageTemplate, srcPageTemplate.getPath(), true);
+                    dest.updatePageTemplate(dstPageTemplate);
+                    context.pageCount++;
+                }
+                else
+                {
+                    context.logger.info("skipping page template " + srcPageTemplate.getPath());
+                }
+            }
+            else
+            {
+                context.logger.info("processing new page template " + srcPageTemplate.getPath());
+                dstPageTemplate = dest.copyPageTemplate(srcPageTemplate, srcPageTemplate.getPath(), true);
+                dest.updatePageTemplate(dstPageTemplate);
+                context.pageCount++;
+            }
+        }
+        Iterator dynamicPages = srcFolder.getDynamicPages().iterator();
+        while (dynamicPages.hasNext())
+        {
+            DynamicPage srcDynamicPage = (DynamicPage) dynamicPages.next();
+            DynamicPage dstDynamicPage = lookupDynamicPage(dest, srcDynamicPage.getPath());
+            if (null != dstDynamicPage)
+            {
+                if (context.overwritePages)
+                {
+                    context.logger.info("overwriting dynamic page " + srcDynamicPage.getPath());
+                    dest.removeDynamicPage(dstDynamicPage);
+                    dstDynamicPage = dest.copyDynamicPage(srcDynamicPage, srcDynamicPage.getPath(), true);
+                    dest.updateDynamicPage(dstDynamicPage);
+                    context.pageCount++;
+                }
+                else
+                {
+                    context.logger.info("skipping dynamic page " + srcDynamicPage.getPath());
+                }
+            }
+            else
+            {
+                context.logger.info("processing new dynamic page " + srcDynamicPage.getPath());
+                dstDynamicPage = dest.copyDynamicPage(srcDynamicPage, srcDynamicPage.getPath(), true);
+                dest.updateDynamicPage(dstDynamicPage);
+                context.pageCount++;
+            }
+        }
+        Iterator fragmentDefinitions = srcFolder.getFragmentDefinitions().iterator();
+        while (fragmentDefinitions.hasNext())
+        {
+            FragmentDefinition srcFragmentDefinition = (FragmentDefinition) fragmentDefinitions.next();
+            FragmentDefinition dstFragmentDefinition = lookupFragmentDefinition(dest, srcFragmentDefinition.getPath());
+            if (null != dstFragmentDefinition)
+            {
+                if (context.overwritePages)
+                {
+                    context.logger.info("overwriting fragment definition " + srcFragmentDefinition.getPath());
+                    dest.removeFragmentDefinition(dstFragmentDefinition);
+                    dstFragmentDefinition = dest.copyFragmentDefinition(srcFragmentDefinition, srcFragmentDefinition.getPath(), true);
+                    dest.updateFragmentDefinition(dstFragmentDefinition);
+                    context.pageCount++;
+                }
+                else
+                {
+                    context.logger.info("skipping fragment definition " + srcFragmentDefinition.getPath());
+                }
+            }
+            else
+            {
+                context.logger.info("processing fragment definition " + srcFragmentDefinition.getPath());
+                dstFragmentDefinition = dest.copyFragmentDefinition(srcFragmentDefinition, srcFragmentDefinition.getPath(), true);
+                dest.updateFragmentDefinition(dstFragmentDefinition);
+                context.pageCount++;
+            }
+        }
         Iterator links = srcFolder.getLinks().iterator();
         while (links.hasNext())
         {
@@ -315,6 +401,42 @@ public class PageSerializerImpl implements PageSerializer
         try
         {
             return mgr.getPage(path);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    private static PageTemplate lookupPageTemplate(PageManager mgr, String path)
+    {
+        try
+        {
+            return mgr.getPageTemplate(path);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    private static DynamicPage lookupDynamicPage(PageManager mgr, String path)
+    {
+        try
+        {
+            return mgr.getDynamicPage(path);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    private static FragmentDefinition lookupFragmentDefinition(PageManager mgr, String path)
+    {
+        try
+        {
+            return mgr.getFragmentDefinition(path);
         }
         catch (Exception e)
         {

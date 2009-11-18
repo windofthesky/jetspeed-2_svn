@@ -24,11 +24,10 @@ import java.util.Map;
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.decoration.PageActionAccess;
-import org.apache.jetspeed.om.page.ContentPageImpl;
+import org.apache.jetspeed.layout.PageLayoutComponent;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -44,6 +43,9 @@ import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ProfilerValveImpl
@@ -99,20 +101,28 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
      *              history to select default page per site folder
      */
     private boolean useHistory;
+    
+    /**
+     * pageLayoutComponent - component used to construct and maintain ContentPage from
+     *                       profiled PSML Pages and Fragments.
+     */
+    private PageLayoutComponent pageLayoutComponent;
 
     /**
      * ProfilerValveImpl - constructor
      *
      * @param profiler profiler component reference
      * @param portalSite portal site component reference
+     * @param pageLayoutComponent page layout component reference
      * @param requestFallback flag to enable root folder fallback
      * @param useHistory flag to enable selection of last visited folder page
      */
-    public ProfilerValveImpl( Profiler profiler, PortalSite portalSite, 
+    public ProfilerValveImpl( Profiler profiler, PortalSite portalSite, PageLayoutComponent pageLayoutComponent,
                               boolean requestFallback, boolean useHistory)
     {
         this.profiler = profiler;
         this.portalSite = portalSite;
+        this.pageLayoutComponent = pageLayoutComponent;
         this.requestFallback = requestFallback;
         this.useHistory = useHistory;
     }
@@ -122,12 +132,13 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
      *
      * @param profiler profiler component reference
      * @param portalSite portal site component reference
+     * @param pageLayoutComponent page layout component reference
      * @param requestFallback flag to enable root folder fallback
      */
-    public ProfilerValveImpl(Profiler profiler, PortalSite portalSite, 
+    public ProfilerValveImpl(Profiler profiler, PortalSite portalSite, PageLayoutComponent pageLayoutComponent,
                              boolean requestFallback)
     {
-        this(profiler, portalSite, requestFallback, true);
+        this(profiler, portalSite, pageLayoutComponent, requestFallback, true);
     }
 
     /**
@@ -135,10 +146,11 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
      *
      * @param profiler profiler component reference
      * @param portalSite portal site component reference
+     * @param pageLayoutComponent page layout component reference
      */
-    public ProfilerValveImpl(Profiler profiler, PortalSite portalSite)
+    public ProfilerValveImpl(Profiler profiler, PortalSite portalSite, PageLayoutComponent pageLayoutComponent)
     {
-        this(profiler, portalSite, true, true);
+        this(profiler, portalSite, pageLayoutComponent, true, true);
     }
     
     /*
@@ -177,7 +189,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             }
 
             // get specified or default locators for the current user,
-            // falling back to global defaults and, if necessary, explicity
+            // falling back to global defaults and, if necessary, explicitly
             // fallback to 'page' profile locators
             if ( locators == null )
             {
@@ -237,11 +249,13 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 // context here and in subsequent valves/decorators
                 // latently selects the page and builds menus from the
                 // user site view using the request context locators;
-                // the managed page accesed here is the raw selected page
+                // the managed page accessed here is the raw selected page
                 // as returned by the PageManager component; accessing
                 // the managed page here selects the current page for the
                 // request
-                request.setPage(new ContentPageImpl(requestContext.getManagedPage()));
+                Page managedPage = requestContext.getManagedPage();
+                ContentPage contentPage = pageLayoutComponent.newContentPage(managedPage);
+                request.setPage(contentPage);
                 request.setProfileLocators(requestContext.getLocators());
                 
                 request.setAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE,getPageActionAccess(request));                
@@ -313,7 +327,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
      */
     protected PageActionAccess getPageActionAccess(RequestContext requestContext)
     { 
-        Page page = requestContext.getPage();
+        ContentPage page = requestContext.getPage();
         String key = page.getId();
         boolean loggedOn = requestContext.getRequest().getUserPrincipal() != null;
         boolean anonymous = !loggedOn;

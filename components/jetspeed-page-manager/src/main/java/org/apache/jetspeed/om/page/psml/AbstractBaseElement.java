@@ -70,7 +70,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
     
     private DocumentHandlerFactory handlerFactory = null;
 
-    private static PermissionFactory pf;
+    protected static PermissionFactory pf;
     
     public static void setPermissionsFactory(PermissionFactory pf)
     {

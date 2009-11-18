@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.ContentFragment;
 
 /**
  * <h2>Basics</h2>
@@ -52,7 +52,7 @@ import org.apache.jetspeed.om.page.Fragment;
  * 
  * <h2>Layout Events</h2>
  * <p>
- * When any move*() method is invoked and a portlet is actually moved (see indvidual
+ * When any move*() method is invoked and a portlet is actually moved (see individual
  * methods for what causes these circumstances), an initial LayoutEvent is dispatched.  
  * This may cause a cascade of LayoutEvents to be fired in turn if the movement of the
  * target fragment cause other fragments to be repositioned.  In this case a LayoutEvent
@@ -82,16 +82,16 @@ public class ColumnLayout implements Serializable
     private final int numberOfColumns;
     
     /** SortedMap of Columns (which are also sorted maps */
-    private final SortedMap<Integer, SortedMap<Integer, Fragment>> columns;
+    private final SortedMap<Integer, SortedMap<Integer, ContentFragment>> columns;
     
-    /** Width settings for eacah column */
+    /** Width settings for each column */
     private final String[] columnWidths;
     
-    /** Efficent way to always be aware of the next available row in a column */
+    /** Efficient way to always be aware of the next available row in a column */
     private final int[] nextRowNumber;
     
     /** maps Fragments (key) to it's current LayoutCoordinate (value) in this layout */
-    private final Map<Fragment, LayoutCoordinate> coordinates;
+    private final Map<ContentFragment, LayoutCoordinate> coordinates;
     
     /** All of the LayoutEventListeners registered to this layout */
     private final List<LayoutEventListener> eventListeners;
@@ -102,7 +102,7 @@ public class ColumnLayout implements Serializable
      *            the maximum number of columns this layout will have.
      * @param layoutType
      *            this value corresponds to the property settings of the
-     *            fragments within your psml. Layout type allows segration of
+     *            fragments within your psml. Layout type allows segregation of
      *            property settings based on the type of layout in use. This
      *            effectively allows for the interchange of multiple layout
      *            formats without one format effecting the settings of another.
@@ -117,12 +117,12 @@ public class ColumnLayout implements Serializable
         this.columnWidths = columnWidths;
         eventListeners = new ArrayList<LayoutEventListener>();
 
-        columns = new TreeMap<Integer, SortedMap<Integer, Fragment>>();
-        coordinates = new HashMap<Fragment, LayoutCoordinate>();
+        columns = new TreeMap<Integer, SortedMap<Integer, ContentFragment>>();
+        coordinates = new HashMap<ContentFragment, LayoutCoordinate>();
 
         for (int i = 0; i < numberOfColumns; i++)
         {
-            columns.put(new Integer(i), new TreeMap<Integer, Fragment>());
+            columns.put(new Integer(i), new TreeMap<Integer, ContentFragment>());
         }
 
         nextRowNumber = new int[numberOfColumns];
@@ -135,7 +135,7 @@ public class ColumnLayout implements Serializable
     
     /**
      * Same as ColumnLayout(int numberOfColumns, String layoutType) but also
-     * supplies a Collection of fragmetns to initially populate the layout
+     * supplies a Collection of fragments to initially populate the layout
      * with.  Adding these fragments <strong>WILL NOT</strong> cause
      * a LayoutEvent to be dispatched.
      * 
@@ -144,7 +144,7 @@ public class ColumnLayout implements Serializable
      *            the maximum number of columns this layout will have.
      * @param layoutType
      *            this value corresponds to the property settings of the
-     *            fragments within your psml. Layout type allows segration of
+     *            fragments within your psml. Layout type allows segregation of
      *            property settings based on the type of layout in use. This
      *            effectively allows for the interchange of multiple layout
      *            formats without one format effecting the settings of another.
@@ -154,15 +154,15 @@ public class ColumnLayout implements Serializable
      *            are used.
      * @throws LayoutEventException
      */
-    public ColumnLayout(int numberOfColumns, String layoutType, Collection<Fragment> fragments, String[] columnWidths) throws LayoutEventException
+    public ColumnLayout(int numberOfColumns, String layoutType, Collection<ContentFragment> fragments, String[] columnWidths) throws LayoutEventException
     {
         this(numberOfColumns, layoutType, columnWidths);
-        Iterator<Fragment> fragmentsItr = fragments.iterator();
+        Iterator<ContentFragment> fragmentsItr = fragments.iterator();
         try
         {
             while (fragmentsItr.hasNext())
             {
-                Fragment fragment = (Fragment) fragmentsItr.next();
+                ContentFragment fragment = (ContentFragment) fragmentsItr.next();
                 doAdd(getColumn(fragment), getRow(getColumn(fragment), fragment), fragment);
             }
         }
@@ -197,7 +197,7 @@ public class ColumnLayout implements Serializable
      * @see org.apache.jetspeed.om.page.Fragment
      * 
      */
-    public void addFragment(Fragment fragment) throws LayoutEventException
+    public void addFragment(ContentFragment fragment) throws LayoutEventException
     {
         try
         {
@@ -220,7 +220,7 @@ public class ColumnLayout implements Serializable
     
     /**
      * Adds a LayoutEventListener to this layout that will be fired any time
-     * a LayoutEvent is disaptched.
+     * a LayoutEvent is dispatched.
      * 
      * @param eventListener
      * @see LayoutEventListener
@@ -240,7 +240,7 @@ public class ColumnLayout implements Serializable
      * @throws InvalidLayoutLocationException
      *             if the column is outisde of the constraints of this layout
      */
-    public Collection<Fragment> getColumn(int columnNumber) throws InvalidLayoutLocationException
+    public Collection<ContentFragment> getColumn(int columnNumber) throws InvalidLayoutLocationException
     {
         return Collections.unmodifiableCollection(getColumnMap(columnNumber).values());
     }
@@ -314,10 +314,10 @@ public class ColumnLayout implements Serializable
      *         Collection objects) in order within this layout. All Collections
      *         are immutable.
      */
-    public Collection<Collection<Fragment>> getColumns()
+    public Collection<Collection<ContentFragment>> getColumns()
     {
-        ArrayList<Collection<Fragment>> columnList = new ArrayList<Collection<Fragment>>(getNumberOfColumns());
-        for (SortedMap<Integer, Fragment> map : columns.values())
+        ArrayList<Collection<ContentFragment>> columnList = new ArrayList<Collection<ContentFragment>>(getNumberOfColumns());
+        for (SortedMap<Integer, ContentFragment> map : columns.values())
         {
             columnList.add(Collections.unmodifiableCollection(map.values()));
         }
@@ -342,7 +342,7 @@ public class ColumnLayout implements Serializable
      * this ColumnLayout in no sepcific order.
      * @return Immutable Collection of Fragments.
      */
-    public Collection<Fragment> getFragments()
+    public Collection<ContentFragment> getFragments()
     {
         return Collections.unmodifiableCollection(coordinates.keySet());
     }
@@ -357,14 +357,14 @@ public class ColumnLayout implements Serializable
      * @throws InvalidLayoutLocationException if the coordinate lies outside the confines of this layout, i.e., the
      * <code>columnNumber</code> exceeds the max columns setting for this layout.
      */
-    public Fragment getFragmentAt(int columnNumber, int rowNumber) throws EmptyLayoutLocationException,
+    public ContentFragment getFragmentAt(int columnNumber, int rowNumber) throws EmptyLayoutLocationException,
             InvalidLayoutLocationException
     {
-        SortedMap<Integer, Fragment> column = getColumnMap(columnNumber);
+        SortedMap<Integer, ContentFragment> column = getColumnMap(columnNumber);
         Integer rowInteger = new Integer(rowNumber);
         if (column.containsKey(rowInteger))
         {
-            return (Fragment) column.get(rowInteger);
+            return (ContentFragment) column.get(rowInteger);
         }
         else
         {
@@ -385,7 +385,7 @@ public class ColumnLayout implements Serializable
      * <code>columnNumber</code> exceeds the max columns setting for this layout.
      * @see LayoutCoordinate
      */
-    public Fragment getFragmentAt(LayoutCoordinate coodinate) throws EmptyLayoutLocationException,
+    public ContentFragment getFragmentAt(LayoutCoordinate coodinate) throws EmptyLayoutLocationException,
             InvalidLayoutLocationException
     {
         return getFragmentAt(coodinate.getX(), coodinate.getY());
@@ -404,7 +404,7 @@ public class ColumnLayout implements Serializable
      * 
      * @return The last column in this layout.  The Collection is immutable.
      */
-    public Collection<Fragment> getLastColumn() 
+    public Collection<ContentFragment> getLastColumn() 
     {
         try
         {
@@ -422,7 +422,7 @@ public class ColumnLayout implements Serializable
      * 
      * @return The last column in this layout.  The Collection is immutable.
      */
-    public Collection<Fragment> getFirstColumn()
+    public Collection<ContentFragment> getFirstColumn()
     {
         try
         {
@@ -451,7 +451,7 @@ public class ColumnLayout implements Serializable
      * @throws FragmentNotInLayoutException if the specified fragment is not currently in the layout.
      * @throws LayoutEventException If a triggered LayoutEvent fails.
      */
-    public void moveRight(Fragment fragment) throws FragmentNotInLayoutException, LayoutEventException
+    public void moveRight(ContentFragment fragment) throws FragmentNotInLayoutException, LayoutEventException
     {
         LayoutCoordinate coordinate = getCoordinate(fragment);
         LayoutCoordinate newCoordinate = new LayoutCoordinate(coordinate.getX() + 1, coordinate.getY());
@@ -466,7 +466,7 @@ public class ColumnLayout implements Serializable
                 // now move the fragment below up one level.
                 try
                 {
-                    Fragment fragmentBelow = getFragmentAt(new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1));
+                    ContentFragment fragmentBelow = getFragmentAt(new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1));
                     moveUp(fragmentBelow);
                 }
                 catch (EmptyLayoutLocationException e)
@@ -476,7 +476,7 @@ public class ColumnLayout implements Serializable
             }
             catch (InvalidLayoutLocationException e)
             {
-                // This should NEVER happen as the location has already been verfied to be valid
+                // This should NEVER happen as the location has already been verified to be valid
                 throw new LayoutError("It appears this layout is corrupt and cannot correctly identify valid column locations.", e);
             }      
         }
@@ -496,7 +496,7 @@ public class ColumnLayout implements Serializable
      * @throws FragmentNotInLayoutException if the specified fragment is not currently in the layout.
      * @throws LayoutEventException If a triggered LayoutEvent fails.
      */
-    public void moveLeft(Fragment fragment) throws FragmentNotInLayoutException, LayoutEventException
+    public void moveLeft(ContentFragment fragment) throws FragmentNotInLayoutException, LayoutEventException
     {
         LayoutCoordinate coordinate = getCoordinate(fragment);
         LayoutCoordinate newCoordinate = new LayoutCoordinate(coordinate.getX() - 1, coordinate.getY());
@@ -510,7 +510,7 @@ public class ColumnLayout implements Serializable
                 // now move the fragment below up one level.
                 try
                 {
-                    Fragment fragmentBelow = getFragmentAt(new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1));
+                    ContentFragment fragmentBelow = getFragmentAt(new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1));
                     moveUp(fragmentBelow);
                 }
                 catch (EmptyLayoutLocationException e)
@@ -520,7 +520,7 @@ public class ColumnLayout implements Serializable
             }
             catch (InvalidLayoutLocationException e)
             {
-                // This should NEVER happen as the location has already been verfied to be valid
+                // This should NEVER happen as the location has already been verified to be valid
                 throw new LayoutError("It appears this layout is corrupt and cannot correctly identify valid column locations.", e);
             }
          
@@ -541,7 +541,7 @@ public class ColumnLayout implements Serializable
      * @throws FragmentNotInLayoutException if the specified fragment is not currently in the layout.
      * @throws LayoutEventException If a triggered LayoutEvent fails.
      */
-    public void moveUp(Fragment fragment) throws FragmentNotInLayoutException, LayoutEventException
+    public void moveUp(ContentFragment fragment) throws FragmentNotInLayoutException, LayoutEventException
     {
         LayoutCoordinate coordinate = getCoordinate(fragment);
         LayoutCoordinate aboveLayoutCoordinate = new LayoutCoordinate(coordinate.getX(), coordinate.getY() - 1);
@@ -573,7 +573,7 @@ public class ColumnLayout implements Serializable
                     
                     try
                     {
-                        Fragment fragmentBelow = getFragmentAt(new LayoutCoordinate(coordinate.getX(),
+                        ContentFragment fragmentBelow = getFragmentAt(new LayoutCoordinate(coordinate.getX(),
                                 coordinate.getY() + 1));
                         moveUp(fragmentBelow);
                     }
@@ -597,7 +597,7 @@ public class ColumnLayout implements Serializable
      * @throws FragmentNotInLayoutException if the specified fragment is not currently in the layout.
      * @throws LayoutEventException If a triggered LayoutEvent fails.
      */
-    public void moveDown(Fragment fragment) throws FragmentNotInLayoutException, LayoutEventException
+    public void moveDown(ContentFragment fragment) throws FragmentNotInLayoutException, LayoutEventException
     {
         LayoutCoordinate coordinate = getCoordinate(fragment);
         LayoutCoordinate newCoordinate = new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1);
@@ -612,7 +612,7 @@ public class ColumnLayout implements Serializable
                     // the best approach to move a fragment down is to actually move
                     // its neighbor underneath up
                     LayoutCoordinate aboveCoord = new LayoutCoordinate(coordinate.getX(), coordinate.getY() + 1);
-                    Fragment fragmentBelow = getFragmentAt(aboveCoord);
+                    ContentFragment fragmentBelow = getFragmentAt(aboveCoord);
                     doMove(fragmentBelow, aboveCoord, coordinate);
                     processEvent(new LayoutEvent(LayoutEvent.MOVED_UP, fragmentBelow, aboveCoord, coordinate));
                     // Since this logic path is a somewhat special case, the processing of the  MOVED_DOWN
@@ -643,10 +643,10 @@ public class ColumnLayout implements Serializable
      * @throws InvalidLayoutLocationException
      * @throws LayoutEventException 
      */
-    protected void doMove(Fragment fragment, LayoutCoordinate oldCoordinate, LayoutCoordinate newCoordinate)
+    protected void doMove(ContentFragment fragment, LayoutCoordinate oldCoordinate, LayoutCoordinate newCoordinate)
             throws InvalidLayoutLocationException, LayoutEventException
     {
-        SortedMap<Integer, Fragment> oldColumn = getColumnMap(oldCoordinate.getX());
+        SortedMap<Integer, ContentFragment> oldColumn = getColumnMap(oldCoordinate.getX());
         oldColumn.remove(new Integer(oldCoordinate.getY()));
         coordinates.remove(fragment);
 
@@ -662,7 +662,7 @@ public class ColumnLayout implements Serializable
      * @throws FragmentNotInLayoutException if the Fragment is not present in this layout.
      * @see LayoutCoordinate
      */
-    public LayoutCoordinate getCoordinate(Fragment fragment) throws FragmentNotInLayoutException
+    public LayoutCoordinate getCoordinate(ContentFragment fragment) throws FragmentNotInLayoutException
     {
         if (coordinates.containsKey(fragment))
         {
@@ -684,16 +684,16 @@ public class ColumnLayout implements Serializable
      * @throws InvalidLayoutLocationException if the coordinates are outside the bounds of this layout.
      * @throws LayoutEventException id a LayoutEvent fails
      */
-    protected void doAdd(int columnNumber, int rowNumber, Fragment fragment) throws InvalidLayoutLocationException, LayoutEventException
+    protected void doAdd(int columnNumber, int rowNumber, ContentFragment fragment) throws InvalidLayoutLocationException, LayoutEventException
     {
-        SortedMap<Integer, Fragment> column = getColumnMap(columnNumber);
+        SortedMap<Integer, ContentFragment> column = getColumnMap(columnNumber);
     
         Integer rowInteger = new Integer(rowNumber);
         LayoutCoordinate targetCoordinate = new LayoutCoordinate(columnNumber, rowNumber);
         if (column.containsKey(rowInteger))
         {
-            // If the row has something in it, push everythin down 1
-            Fragment existingFragment = (Fragment) column.get(rowInteger);
+            // If the row has something in it, push everything down 1
+            ContentFragment existingFragment = (ContentFragment) column.get(rowInteger);
             column.put(rowInteger, fragment);
             coordinates.put(fragment, targetCoordinate);
             doAdd(columnNumber, ++rowNumber, existingFragment);
@@ -723,7 +723,7 @@ public class ColumnLayout implements Serializable
      * @throws InvalidLayoutLocationException if the <code>columnNumber</code> resides
      * outside the bounds of this layout.
      */
-    protected final SortedMap<Integer, Fragment> getColumnMap(int columnNumber) throws InvalidLayoutLocationException
+    protected final SortedMap<Integer, ContentFragment> getColumnMap(int columnNumber) throws InvalidLayoutLocationException
     {
         Integer columnNumberInteger = new Integer(columnNumber);
 
@@ -747,9 +747,9 @@ public class ColumnLayout implements Serializable
      * @param fragment
      * @return valid row for this fragment within this layout.
      */
-    protected final int getRow(int currentColumn, Fragment fragment)
+    protected final int getRow(int currentColumn, ContentFragment fragment)
     {
-        String propertyValue = fragment.getProperty(Fragment.ROW_PROPERTY_NAME);
+        String propertyValue = fragment.getProperty(ContentFragment.ROW_PROPERTY_NAME);
         if (propertyValue != null)
         {
             return Integer.parseInt(propertyValue);
@@ -773,9 +773,9 @@ public class ColumnLayout implements Serializable
      * @param fragment
      * @return
      */
-    protected final int getColumn(Fragment fragment)
+    protected final int getColumn(ContentFragment fragment)
     {
-        String propertyValue = fragment.getProperty(Fragment.COLUMN_PROPERTY_NAME);
+        String propertyValue = fragment.getProperty(ContentFragment.COLUMN_PROPERTY_NAME);
         if (propertyValue != null)
         {
             int columnNumber = Integer.parseInt(propertyValue);

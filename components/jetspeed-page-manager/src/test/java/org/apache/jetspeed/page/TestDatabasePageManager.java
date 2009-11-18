@@ -30,10 +30,16 @@ import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
+import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageFragment;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.preference.FragmentPreference;
@@ -270,7 +276,9 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         pageMenus.add(newMenu);
         page.setMenuDefinitions(pageMenus);
 
-        Fragment root = page.getRootFragment();
+        BaseFragmentElement rootFragmentElement = page.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        Fragment root = (Fragment)rootFragmentElement;
         root.setDecorator("blue-gradient");
         root.setName("jetspeed-layouts::VelocityTwoColumns");
         root.setShortTitle("Root");
@@ -325,6 +333,9 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         fragmentConstraints.setOwner("user");
         portlet.setSecurityConstraints(fragmentConstraints);
         root.getFragments().add(portlet);
+        FragmentReference fragmentReference = pageManager.newFragmentReference();
+        fragmentReference.setRefId("fragment-definition");
+        root.getFragments().add(fragmentReference);
 
         pageManager.updatePage(page);
 
@@ -417,6 +428,58 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(pageSecurity.getParent().getId(), folder.getId());
         assertNotNull(folder.getPageSecurity());
 
+        PageTemplate pageTemplate = pageManager.newPageTemplate("/page-template.tpsml");
+        pageTemplate.setTitle("Created Page Template");
+        metadata = pageTemplate.getMetadata();
+        metadata.addField(null, "description", "Page Template Description");
+        rootFragmentElement = pageTemplate.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        root.setName("jetspeed-layouts::VelocityTwoColumns");
+        portlet = pageManager.newFragment();
+        portlet.setType(Fragment.PORTLET);
+        portlet.setName("templates::MenusTemplatePortlet");
+        portlet.setLayoutRow(1);
+        portlet.setLayoutColumn(1);
+        root.getFragments().add(portlet);
+        fragmentReference = pageManager.newFragmentReference();
+        fragmentReference.setRefId("fragment-definition");
+        root.getFragments().add(fragmentReference);
+        PageFragment pageFragment = pageManager.newPageFragment();
+        root.getFragments().add(pageFragment);        
+        SecurityConstraints constraints = pageTemplate.newSecurityConstraints();
+        constraints.setOwner("admin");
+        pageTemplate.setSecurityConstraints(constraints);
+
+        pageManager.updatePageTemplate(pageTemplate);
+
+        DynamicPage dynamicPage = pageManager.newDynamicPage("/dynamic-page.dpsml");
+        dynamicPage.setPageType("default");        
+        dynamicPage.setTitle("Created Dynamic Page");
+        rootFragmentElement = dynamicPage.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        root.setName("jetspeed-layouts::VelocityTwoColumns");
+        portlet = pageManager.newFragment();
+        portlet.setType(Fragment.PORTLET);
+        portlet.setName("content-app::ContentPortlet");
+        root.getFragments().add(portlet);        
+        fragmentReference = pageManager.newFragmentReference();
+        fragmentReference.setRefId("fragment-definition");
+        root.getFragments().add(fragmentReference);        
+
+        pageManager.updateDynamicPage(dynamicPage);
+
+        FragmentDefinition fragmentDefinition = pageManager.newFragmentDefinition("/fragment-definition.fpsml");
+        fragmentDefinition.setTitle("Created Fragment Definition");
+        rootFragmentElement = fragmentDefinition.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        root.setName("security::LoginPortlet");
+        root.setId("fragment-definition");
+
+        pageManager.updateFragmentDefinition(fragmentDefinition);
+
         // test duplicate creates
         try
         {
@@ -432,6 +495,33 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             Page dupPage = pageManager.newPage("/default-page.psml");
             pageManager.updatePage(dupPage);
             assertTrue("Duplicate Page / CREATED", false);
+        }
+        catch (PageNotUpdatedException e)
+        {
+        }
+        try
+        {
+            PageTemplate dupPageTemplate = pageManager.newPageTemplate("/page-template.tpsml");
+            pageManager.updatePageTemplate(dupPageTemplate);
+            assertTrue("Duplicate PageTemplate / CREATED", false);
+        }
+        catch (PageNotUpdatedException e)
+        {
+        }
+        try
+        {
+            DynamicPage dupDynamicPage = pageManager.newDynamicPage("/dynamic-page.dpsml");
+            pageManager.updateDynamicPage(dupDynamicPage);
+            assertTrue("Duplicate DynamicPage / CREATED", false);
+        }
+        catch (PageNotUpdatedException e)
+        {
+        }
+        try
+        {
+            FragmentDefinition dupFragmentDefinition = pageManager.newFragmentDefinition("/fragment-definition.fpsml");
+            pageManager.updateFragmentDefinition(dupFragmentDefinition);
+            assertTrue("Duplicate FragmentDefinition / CREATED", false);
         }
         catch (PageNotUpdatedException e)
         {
@@ -491,27 +581,32 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertNotNull(pageManager.getFolders(folder));
         assertEquals(1, pageManager.getFolders(folder).size());
         assertNotNull(folder.getAll());
-        assertEquals(6, folder.getAll().size());
+        assertEquals(9, folder.getAll().size());
         assertNotNull(pageManager.getAll(folder));
-        assertEquals(6, pageManager.getAll(folder).size());
+        assertEquals(9, pageManager.getAll(folder).size());
         Iterator all = folder.getAll().iterator();
         assertEquals("some-other-page.psml", ((Node)all.next()).getName());
         assertEquals("default-page.psml", ((Node)all.next()).getName());
         assertEquals("__subsite-rootx", ((Node)all.next()).getName());
         assertEquals("another-page.psml", ((Node)all.next()).getName());
         assertEquals("default.link", ((Node)all.next()).getName());
+        assertEquals("dynamic-page.dpsml", ((Node)all.next()).getName());
+        assertEquals("fragment-definition.fpsml", ((Node)all.next()).getName());
+        assertEquals("page-template.tpsml", ((Node)all.next()).getName());
         assertEquals("page.security", ((Node)all.next()).getName());
         assertNotNull(folder.getAll().subset(Page.DOCUMENT_TYPE));
         assertEquals(3, folder.getAll().subset(Page.DOCUMENT_TYPE).size());
+        assertNotNull(folder.getAll().subset(PageTemplate.DOCUMENT_TYPE));
+        assertEquals(1, folder.getAll().subset(PageTemplate.DOCUMENT_TYPE).size());
         assertNotNull(folder.getAll().inclusiveSubset(".*other.*"));
         assertEquals(2, folder.getAll().inclusiveSubset(".*other.*").size());
         assertNotNull(folder.getAll().inclusiveSubset("nomatch"));
         assertEquals(0, folder.getAll().inclusiveSubset("nomatch").size());
         assertNotNull(folder.getAll().exclusiveSubset(".*-page.psml"));
-        assertEquals(3, folder.getAll().exclusiveSubset(".*-page.psml").size());
+        assertEquals(6, folder.getAll().exclusiveSubset(".*-page.psml").size());
         
         // verify listener functionality and operation counts
-        assertEquals(22, pmel.newNodeCount);
+        assertEquals(25, pmel.newNodeCount);
         assertEquals(0, pmel.updatedNodeCount);
         assertEquals(0, pmel.removedNodeCount);
     }
@@ -579,6 +674,80 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
+            FragmentDefinition fragmentDefinition = pageManager.getFragmentDefinition("/fragment-definition.fpsml");
+            assertNotNull(fragmentDefinition);
+            assertEquals("Created Fragment Definition", fragmentDefinition.getTitle());
+            assertNotNull(fragmentDefinition.getRootFragment());
+            BaseFragmentElement rootFragmentElement = fragmentDefinition.getRootFragment();
+            assertTrue(rootFragmentElement instanceof Fragment);
+            Fragment root = (Fragment)rootFragmentElement;
+            assertEquals("fragment-definition", root.getId());
+            assertEquals("security::LoginPortlet", root.getName());
+            assertEquals(Fragment.PORTLET, root.getType());
+            assertTrue(root.getFragments().isEmpty());
+        }
+        catch (PageNotFoundException e)
+        {
+            assertTrue("FragmentDefinition /fragment-definition NOT FOUND", false);
+        }
+        try
+        {
+            DynamicPage dynamicPage = pageManager.getDynamicPage("/dynamic-page.dpsml");
+            assertNotNull(dynamicPage);
+            assertEquals("default", dynamicPage.getPageType());
+            assertEquals("Created Dynamic Page", dynamicPage.getTitle());
+            assertNotNull(dynamicPage.getRootFragment());
+            BaseFragmentElement rootFragmentElement = dynamicPage.getRootFragment();
+            assertTrue(rootFragmentElement instanceof Fragment);
+            Fragment root = (Fragment)rootFragmentElement;
+            assertEquals("jetspeed-layouts::VelocityTwoColumns", root.getName());
+            assertEquals(Fragment.LAYOUT, root.getType());
+            assertEquals(2, root.getFragments().size());
+            BaseFragmentElement checkElement0 = (BaseFragmentElement)root.getFragments().get(0);
+            assertTrue(checkElement0 instanceof Fragment);
+            Fragment check0 = (Fragment)checkElement0;
+            assertEquals("content-app::ContentPortlet", check0.getName());
+            assertEquals(Fragment.PORTLET, check0.getType());
+            BaseFragmentElement checkElement1 = (BaseFragmentElement)root.getFragments().get(1);
+            assertTrue(checkElement1 instanceof FragmentReference);
+            FragmentReference check1 = (FragmentReference)checkElement1;
+            assertEquals("fragment-definition", check1.getRefId());
+        }
+        catch (PageNotFoundException e)
+        {
+            assertTrue("DynamicPage /dynamic-page.dpsml NOT FOUND", false);
+        }
+        try
+        {
+            PageTemplate pageTemplate = pageManager.getPageTemplate("/page-template.tpsml");
+            assertNotNull(pageTemplate);
+            assertEquals("Created Page Template", pageTemplate.getTitle());
+            assertNotNull(pageTemplate.getRootFragment());
+            BaseFragmentElement rootFragmentElement = pageTemplate.getRootFragment();
+            assertTrue(rootFragmentElement instanceof Fragment);
+            Fragment root = (Fragment)rootFragmentElement;
+            assertEquals("jetspeed-layouts::VelocityTwoColumns", root.getName());
+            assertEquals(Fragment.LAYOUT, root.getType());
+            assertEquals(3, root.getFragments().size());
+            BaseFragmentElement checkElement0 = (BaseFragmentElement)root.getFragments().get(0);
+            assertTrue(checkElement0 instanceof Fragment);
+            Fragment check0 = (Fragment)checkElement0;
+            assertEquals("templates::MenusTemplatePortlet", check0.getName());
+            assertEquals(Fragment.PORTLET, check0.getType());
+            assertEquals(1, check0.getLayoutRow());
+            BaseFragmentElement checkElement1 = (BaseFragmentElement)root.getFragments().get(1);
+            assertTrue(checkElement1 instanceof FragmentReference);
+            FragmentReference check1 = (FragmentReference)checkElement1;
+            assertEquals("fragment-definition", check1.getRefId());
+            BaseFragmentElement checkElement2 = (BaseFragmentElement)root.getFragments().get(2);
+            assertTrue(checkElement2 instanceof PageFragment);
+        }
+        catch (PageNotFoundException e)
+        {
+            assertTrue("PageTemplate /page-template.tpsml NOT FOUND", false);
+        }
+        try
+        {
             Page check = pageManager.getPage("/default-page.psml");
             assertEquals("/default-page.psml", check.getPath());
             assertEquals("default-page.psml", check.getName());
@@ -627,16 +796,21 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertTrue(checkMenu.getMenuElements().isEmpty());
             assertNotNull(check.getRootFragment());
             assertEquals("blue-gradient", check.getRootFragment().getDecorator());
-            assertEquals("jetspeed-layouts::VelocityTwoColumns", check.getRootFragment().getName());
+            BaseFragmentElement checkRootFragmentElement = check.getRootFragment();
+            assertTrue(checkRootFragmentElement instanceof Fragment);
+            Fragment checkRootFragment = (Fragment)checkRootFragmentElement;
+            assertEquals("jetspeed-layouts::VelocityTwoColumns", checkRootFragment.getName());
             assertEquals("Root", check.getRootFragment().getShortTitle());
             assertEquals("Root Fragment", check.getRootFragment().getTitle());
             assertEquals("Normal", check.getRootFragment().getState());
             assertEquals("50%,50%", check.getRootFragment().getLayoutSizes());
             assertNotNull(check.getRootFragment().getProperties());
             assertEquals("custom-prop-value1", check.getRootFragment().getProperty("custom-prop1"));
-            assertNotNull(check.getRootFragment().getFragments());
-            assertEquals(2, check.getRootFragment().getFragments().size());
-            Fragment check0 = (Fragment)check.getRootFragment().getFragments().get(0);
+            assertNotNull(checkRootFragment.getFragments());
+            assertEquals(3, checkRootFragment.getFragments().size());
+            BaseFragmentElement checkElement0 = (BaseFragmentElement)checkRootFragment.getFragments().get(0);
+            assertTrue(checkElement0 instanceof Fragment);
+            Fragment check0 = (Fragment)checkElement0;
             assertEquals("security::LoginPortlet", check0.getName());
             assertEquals("Portlet", check0.getShortTitle());
             assertEquals("Portlet Fragment", check0.getTitle());
@@ -666,7 +840,9 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertNotNull(((FragmentPreference)check0.getPreferences().get(1)).getValueList());
             assertEquals(1, ((FragmentPreference)check0.getPreferences().get(1)).getValueList().size());
             assertEquals("pref1-value", (String)((FragmentPreference)check0.getPreferences().get(1)).getValueList().get(0));
-            Fragment check1 = (Fragment)check.getRootFragment().getFragments().get(1);
+            BaseFragmentElement checkElement1 = (BaseFragmentElement)checkRootFragment.getFragments().get(1);
+            assertTrue(checkElement1 instanceof Fragment);
+            Fragment check1 = (Fragment)checkElement1;
             assertEquals("some-app::SomePortlet", check1.getName());
             assertEquals("Some Portlet", check1.getShortTitle());
             assertEquals("Some Portlet Fragment", check1.getTitle());
@@ -684,6 +860,10 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertNotNull(check.getFragmentsByName("some-app::SomePortlet"));
             assertEquals(1, check.getFragmentsByName("some-app::SomePortlet").size());
             assertNotNull(check.getParent());
+            BaseFragmentElement checkElement2 = (BaseFragmentElement)checkRootFragment.getFragments().get(2);
+            assertTrue(checkElement2 instanceof FragmentReference);
+            FragmentReference checkFragmentReference = (FragmentReference)checkElement2;
+            assertTrue(checkFragmentReference.getRefId().equals("fragment-definition"));
         }
         catch (PageNotFoundException e)
         {
@@ -728,13 +908,16 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertNotNull(check.getFolders());
             assertEquals(1, check.getFolders().size());
             assertNotNull(check.getAll());
-            assertEquals(6, check.getAll().size());
+            assertEquals(9, check.getAll().size());
             Iterator all = check.getAll().iterator();
             assertEquals("some-other-page.psml", ((Node)all.next()).getName());
             assertEquals("default-page.psml", ((Node)all.next()).getName());
             assertEquals("__subsite-rootx", ((Node)all.next()).getName());
             assertEquals("another-page.psml", ((Node)all.next()).getName());
             assertEquals("default.link", ((Node)all.next()).getName());
+            assertEquals("dynamic-page.dpsml", ((Node)all.next()).getName());
+            assertEquals("fragment-definition.fpsml", ((Node)all.next()).getName());
+            assertEquals("page-template.tpsml", ((Node)all.next()).getName());
             assertEquals("page.security", ((Node)all.next()).getName());
             assertNotNull(check.getMenuDefinitions());
             assertEquals(2, check.getMenuDefinitions().size());
@@ -848,14 +1031,40 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         page.setTitle("UPDATED");
         page.getRootFragment().getProperties().remove("custom-prop1");
         page.getRootFragment().getProperties().put("UPDATED", "UPDATED");
-        assertNotNull(page.getRootFragment().getFragments());
-        assertEquals(2, page.getRootFragment().getFragments().size());
-        String removeId = ((Fragment)page.getRootFragment().getFragments().get(1)).getId();
+        BaseFragmentElement rootFragmentElement = page.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        Fragment root = (Fragment)rootFragmentElement;
+        assertNotNull(root.getFragments());
+        assertEquals(3, root.getFragments().size());
+        String removeId = ((BaseFragmentElement)root.getFragments().get(1)).getId();
         assertNotNull(page.removeFragmentById(removeId));
         SecurityConstraint pageConstraint = page.newSecurityConstraint();
         pageConstraint.setUsers(Shared.makeListFromCSV("UPDATED"));
         page.getSecurityConstraints().getSecurityConstraints().add(0, pageConstraint);
         pageManager.updatePage(page);
+
+        PageTemplate pageTemplate = pageManager.getPageTemplate("/page-template.tpsml");
+        assertEquals("/page-template.tpsml", pageTemplate.getPath());
+        pageTemplate.setTitle("UPDATED");
+        rootFragmentElement = pageTemplate.getRootFragment();
+        assertTrue(rootFragmentElement instanceof Fragment);
+        root = (Fragment)rootFragmentElement;
+        assertTrue(root.getFragments().size() == 3);
+        BaseFragmentElement removeElement0 = (BaseFragmentElement)root.getFragments().get(0);
+        assertTrue(removeElement0 instanceof Fragment);
+        pageTemplate.removeFragmentById(removeElement0.getId());
+        pageManager.updatePageTemplate(pageTemplate);
+
+        DynamicPage dynamicPage = pageManager.getDynamicPage("/dynamic-page.dpsml");
+        assertEquals("/dynamic-page.dpsml", dynamicPage.getPath());
+        dynamicPage.setTitle("UPDATED");
+        dynamicPage.setPageType("UPDATED");
+        pageManager.updateDynamicPage(dynamicPage);
+
+        FragmentDefinition fragmentDefinition = pageManager.getFragmentDefinition("/fragment-definition.fpsml");
+        assertEquals("/fragment-definition.fpsml", fragmentDefinition.getPath());
+        fragmentDefinition.setTitle("UPDATED");
+        pageManager.updateFragmentDefinition(fragmentDefinition);
 
         Link link = pageManager.getLink("/default.link");
         assertEquals("/default.link", link.getPath());
@@ -876,7 +1085,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         ((MenuOptionsDefinition)updateMenu.getMenuElements().get(2)).setProfile("UPDATED");
         pageManager.updateFolder(folder);
         assertNotNull(folder.getAll());
-        assertEquals(6, folder.getAll().size());
+        assertEquals(9, folder.getAll().size());
         Iterator all = folder.getAll().iterator();
         assertEquals("default-page.psml", ((Node)all.next()).getName());
         assertEquals("some-other-page.psml", ((Node)all.next()).getName());
@@ -892,7 +1101,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
 
         // verify listener functionality and operation counts
         assertEquals(0, pmel.newNodeCount);
-        assertEquals(26, pmel.updatedNodeCount);
+        assertEquals(32, pmel.updatedNodeCount);
         assertEquals(0, pmel.removedNodeCount);
     }
 
@@ -952,6 +1161,30 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
+            pageManager.getPageTemplate("/page-template.tpsml");
+            assertTrue("Page /page-template.tpsml FOUND", false);
+        }
+        catch (PageNotFoundException e)
+        {
+        }
+        try
+        {
+            pageManager.getDynamicPage("/dynamic-page.dpsml");
+            assertTrue("Page /dynamic-page.dpsml FOUND", false);
+        }
+        catch (PageNotFoundException e)
+        {
+        }
+        try
+        {
+            pageManager.getFragmentDefinition("/fragment-definition.fpsml");
+            assertTrue("Page /fragment-definition.fpsml FOUND", false);
+        }
+        catch (PageNotFoundException e)
+        {
+        }
+        try
+        {
             pageManager.getFolder("/");
             assertTrue("Folder / FOUND", false);
         }
@@ -977,6 +1210,6 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         // verify listener functionality and operation counts
         assertEquals(0, pmel.newNodeCount);
         assertEquals(0, pmel.updatedNodeCount);
-        assertEquals(22, pmel.removedNodeCount);
+        assertEquals(25, pmel.removedNodeCount);
     }
 }

@@ -19,7 +19,7 @@ package org.apache.jetspeed.components.portletentity;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.container.PortletWindow;
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
@@ -41,9 +41,9 @@ public class PortletEntityImpl implements PortletEntity
     private PortletDefinition portletDefinition = null;  
     protected String portletName;
     protected String appName;
-    private Fragment fragment;
+    private ContentFragment fragment;
     
-    public PortletEntityImpl(Fragment fragment)
+    public PortletEntityImpl(ContentFragment fragment)
     {
         setFragment(fragment);
     }
@@ -141,12 +141,12 @@ public class PortletEntityImpl implements PortletEntity
         }
     }
 
-    public Fragment getFragment()
+    public ContentFragment getFragment()
     {
         return this.fragment;
     }
     
-    public void setFragment(Fragment fragment)
+    public void setFragment(ContentFragment fragment)
     {
         this.fragment = fragment;
     }

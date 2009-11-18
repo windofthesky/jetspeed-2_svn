@@ -235,7 +235,8 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             // marshal: use SAX II handler to filter document XML for
             // page and folder menu definition menu elements ordered
             // polymorphic collection to strip artifical <menu-element>
-            // tags enabling Castor XML binding; see JETSPEED-INF/castor/page-mapping.xml
+            // and <fragment-element> tags enabling Castor XML binding;
+            // see JETSPEED-INF/castor/page-mapping.xml
             writer = new OutputStreamWriter(new FileOutputStream(f), PSML_DOCUMENT_ENCODING);
             XMLWriter xmlWriter = new XMLWriter(writer, this.format);
             final ContentHandler handler = xmlWriter;
@@ -281,8 +282,8 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
                             menuDepth--;
                         }
 
-                        // filter menu-element noded within menu definition
-                        if ((menuDepth == 0) || !qName.equals("menu-element"))
+                        // filter menu-element nodes within menu definition and fragment-element nodes
+                        if (((menuDepth == 0) || !qName.equals("menu-element")) && !qName.equals("fragment-element"))
                         {
                             handler.endElement(uri, localName, qName);
                         }
@@ -296,8 +297,8 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
 					}
 
 					public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
-                        // filter menu-element noded within menu definition
-                        if ((menuDepth == 0) || !qName.equals("menu-element"))
+                        // filter menu-element nodes within menu definition and fragment-element nodes
+                        if (((menuDepth == 0) || !qName.equals("menu-element")) && !qName.equals("fragment-element"))
                         {
                             handler.startElement(uri,localName, qName, atts);
                         }
@@ -410,7 +411,8 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
             // unmarshal: use SAX II parser to read document XML, filtering
             // for page and folder menu definition menu elements ordered
             // polymorphic collection to insert artifical <menu-element>
-            // tags enabling Castor XML binding; see JETSPEED-INF/castor/page-mapping.xml
+            // and <fragment-element> tags enabling Castor XML binding;
+            // see JETSPEED-INF/castor/page-mapping.xml
             
             final InputSource readerInput = new InputSource(new InputStreamReader(new FileInputStream(f), PSML_DOCUMENT_ENCODING));
             Unmarshaller unmarshaller = new Unmarshaller();
@@ -457,9 +459,11 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
                                         handler.startDocument();
                                     }
 
-    								public void endElement(String uri, String localName, String qName) throws SAXException {
+    								public void endElement(String uri, String localName, String qName) throws SAXException
+                                    {
                                         // always include all elements
                                         handler.endElement(uri,localName,qName);
+
                                         // track menu depth and insert menu-element nodes
                                         // to encapsulate menu elements to support collection
                                         // polymorphism in Castor
@@ -473,24 +477,33 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
                                         }
                                         else if ((menuDepth > 0) &&
                                                  (qName.equals("options") || qName.equals("separator") ||
-                                                		 qName.equals("include") || qName.equals("exclude")))
+                                                  qName.equals("include") || qName.equals("exclude")))
                                         {
                                             handler.endElement(null,null,"menu-element");
                                         }
+                                        // insert fragment-element nodes to encapsulate
+                                        // fragment elements to support collection
+                                        // polymorphism in Castor
+                                        if (qName.equals("fragment") || qName.equals("fragment-reference") || qName.equals("page-fragment"))
+                                        {
+                                            handler.endElement(null,null,"fragment-element");
+                                        }
+                                    }
+
+    								public void endPrefixMapping(String prefix) throws SAXException
+                                    {
     								}
 
-    								public void endPrefixMapping(String prefix) throws SAXException {
-    								}
-
-    								public void skippedEntity(String name) throws SAXException {
+    								public void skippedEntity(String name) throws SAXException
+                                    {
     									handler.skippedEntity(name);
     								}
 
-    								public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+    								public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException
+                                    {
                                         // track menu depth and insert menu-element nodes
                                         // to encapsulate menu elements to support collection
-                                        // polymorphism in Castor
-    									
+                                        // polymorphism in Castor    									
     									if (qName.equals("menu"))
                                         {
                                             if (menuDepth > 0)
@@ -505,12 +518,20 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
                                         {
                                             handler.startElement(null,null,"menu-element", null);
                                         }
+                                        // insert fragment-element nodes to encapsulate
+                                        // fragment elements to support collection
+                                        // polymorphism in Castor
+                                        if (qName.equals("fragment") || qName.equals("fragment-reference") || qName.equals("page-fragment"))
+                                        {
+                                            handler.startElement(null,null,"fragment-element",null);
+                                        }
 
                                         // always include all elements
                                         handler.startElement(null,null, qName, atts);
     								}
 
-    								public void startPrefixMapping(String prefix, String uri) throws SAXException {
+    								public void startPrefixMapping(String prefix, String uri) throws SAXException
+                                    {
     								}
                                 });
                         }

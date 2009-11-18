@@ -126,15 +126,16 @@ public interface PortletPreferencesProvider extends PortletPreferencesService
     throws PreferencesException;
 
     /**
-     * Store entity preferences contained in the map parameter for a given page and window
+     * Store entity preferences contained in the map parameter for a given window
      * 
      * @param map
      * @param page
      * @param window
      * @throws PreferencesException
      */
-    public void storeEntityPreferences(Map<String, PortletPreference> map, ContentPage page, PortletWindow window)
+    public void storeEntityPreferences(Map<String, PortletPreference> map, PortletWindow window)
         throws PreferencesException;
+    
     /**
      * Retrieve entity ids (window) given portlet definitaion
      * 

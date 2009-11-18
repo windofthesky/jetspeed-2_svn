@@ -47,10 +47,10 @@ class FilteredFragmentList extends AbstractList
         filteredList.add(index, element);
         // add object to persistent list
         fragment.accessFragments().add(element);
-        // maintain page implementation reference
-        if ((fragment.getPage() != null) && (element instanceof FragmentImpl))
+        // maintain base fragments implementation reference
+        if ((fragment.getBaseFragmentsElement() != null) && (element instanceof FragmentImpl))
         {
-            ((FragmentImpl)element).setPage(fragment.getPage());
+            ((FragmentImpl)element).setBaseFragmentsElement(fragment.getBaseFragmentsElement());
         }
     }
 
@@ -106,10 +106,10 @@ class FilteredFragmentList extends AbstractList
                 }
             }
         }
-        // maintain page implementation reference
-        if ((fragment.getPage() != null) && (element instanceof FragmentImpl))
+        // maintain base fragments implementation reference
+        if ((fragment.getBaseFragmentsElement() != null) && (element instanceof FragmentImpl))
         {
-            ((FragmentImpl)element).setPage(fragment.getPage());
+            ((FragmentImpl)element).setBaseFragmentsElement(fragment.getBaseFragmentsElement());
         }
         return o;
     }

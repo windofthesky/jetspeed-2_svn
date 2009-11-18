@@ -45,18 +45,28 @@ import org.apache.jetspeed.om.folder.impl.FolderMenuIncludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.FolderMenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.FolderMenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.FolderSecurityConstraintImpl;
-import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.ContentPageImpl;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
+import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageFragment;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.om.page.impl.BaseFragmentsElementImpl;
+import org.apache.jetspeed.om.page.impl.DynamicPageImpl;
+import org.apache.jetspeed.om.page.impl.FragmentDefinitionImpl;
 import org.apache.jetspeed.om.page.impl.FragmentImpl;
 import org.apache.jetspeed.om.page.impl.FragmentPreferenceImpl;
+import org.apache.jetspeed.om.page.impl.FragmentReferenceImpl;
 import org.apache.jetspeed.om.page.impl.FragmentSecurityConstraintImpl;
 import org.apache.jetspeed.om.page.impl.LinkImpl;
 import org.apache.jetspeed.om.page.impl.LinkSecurityConstraintImpl;
+import org.apache.jetspeed.om.page.impl.PageFragmentImpl;
 import org.apache.jetspeed.om.page.impl.PageImpl;
 import org.apache.jetspeed.om.page.impl.PageMenuDefinitionImpl;
 import org.apache.jetspeed.om.page.impl.PageMenuExcludeDefinitionImpl;
@@ -66,6 +76,7 @@ import org.apache.jetspeed.om.page.impl.PageMenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.impl.PageSecurityConstraintImpl;
 import org.apache.jetspeed.om.page.impl.PageSecurityImpl;
 import org.apache.jetspeed.om.page.impl.PageSecuritySecurityConstraintImpl;
+import org.apache.jetspeed.om.page.impl.PageTemplateImpl;
 import org.apache.jetspeed.om.page.impl.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl;
 import org.apache.jetspeed.om.preference.FragmentPreference;
@@ -129,6 +140,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         modelClasses.put("PageSecuritySecurityConstraintImpl", PageSecuritySecurityConstraintImpl.class);
         modelClasses.put("SecurityConstraintsDefImpl", SecurityConstraintsDefImpl.class);
         modelClasses.put("FragmentPreferenceImpl", FragmentPreferenceImpl.class);
+        modelClasses.put("FragmentReferenceImpl", FragmentReferenceImpl.class);
+        modelClasses.put("PageFragmentImpl", PageFragmentImpl.class);
+        modelClasses.put("PageTemplateImpl", PageTemplateImpl.class);
+        modelClasses.put("DynamicPageImpl", DynamicPageImpl.class);
+        modelClasses.put("FragmentDefinitionImpl", FragmentDefinitionImpl.class);
     }
 
     private DelegatingPageManager delegator;
@@ -204,6 +220,30 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageTemplate(java.lang.String)
+     */
+    public PageTemplate newPageTemplate(String path)
+    {
+        return delegator.newPageTemplate(path);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newDynamicPage(java.lang.String)
+     */
+    public DynamicPage newDynamicPage(String path)
+    {
+        return delegator.newDynamicPage(path);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newFragmentDefinition(java.lang.String)
+     */
+    public FragmentDefinition newFragmentDefinition(String path)
+    {
+        return delegator.newFragmentDefinition(path);
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#newFolder(java.lang.String)
      */
     public Folder newFolder(String path)
@@ -241,6 +281,22 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     public Fragment newPortletFragment()
     {
         return delegator.newPortletFragment();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newFragmentReference()
+     */
+    public FragmentReference newFragmentReference()
+    {
+        return delegator.newFragmentReference();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newPageFragment()
+     */
+    public PageFragment newPageFragment()
+    {
+        return delegator.newPageFragment();
     }
 
     /* (non-Javadoc)
@@ -429,37 +485,76 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      */
     public Page getPage(String path) throws PageNotFoundException, NodeException
     {
-        // construct page attributes from path
+        return (Page)getFragmentsElement(Page.class, PageImpl.class, path);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPageTemplate(java.lang.String)
+     */
+    public PageTemplate getPageTemplate(String path) throws PageNotFoundException, NodeException
+    {
+        return (PageTemplate)getFragmentsElement(PageTemplate.class, PageTemplateImpl.class, path);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getDynamicPage(java.lang.String)
+     */
+    public DynamicPage getDynamicPage(String path) throws PageNotFoundException, NodeException
+    {
+        return (DynamicPage)getFragmentsElement(DynamicPage.class, DynamicPageImpl.class, path);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getFragmentDefinition(java.lang.String)
+     */
+    public FragmentDefinition getFragmentDefinition(String path) throws PageNotFoundException, NodeException
+    {
+        return (FragmentDefinition)getFragmentsElement(FragmentDefinition.class, FragmentDefinitionImpl.class, path);
+    }
+
+    /**
+     * Get generic fragments/page element from cache or query from database by class.
+     * 
+     * @param fragmentsElementType fragments/page type
+     * @param fragmentsElementImplType fragments/page implementation type
+     * @param path page path
+     * @return page element
+     * @throws PageNotFoundException
+     * @throws NodeException
+     */
+    protected BaseFragmentsElement getFragmentsElement(Class fragmentsElementType, Class fragmentsElementImplType, String path) throws PageNotFoundException, NodeException
+    {
+        // construct page element attributes from path
         path = NodeImpl.getCanonicalNodePath(path);
 
         // optimized retrieval from cache by path if available
         NodeImpl cachedNode = DatabasePageManagerCache.cacheLookup(path);
-        if (cachedNode instanceof Page)
+        if (fragmentsElementType.isInstance(cachedNode))
         {
-            // check for view access on page
+            // check for view access on page element
             cachedNode.checkAccess(JetspeedActions.VIEW);
 
-            return (Page)cachedNode;
+            return (BaseFragmentsElement)cachedNode;
         }
 
-        // retrieve page from database
+        // retrieve page element from database
         try
         {
             Criteria filter = new Criteria();
             filter.addEqualTo("path", path);
-            QueryByCriteria query = QueryFactory.newQuery(PageImpl.class, filter);
-            Page page = (Page)getPersistenceBrokerTemplate().getObjectByQuery(query);
+            QueryByCriteria query = QueryFactory.newQuery(fragmentsElementImplType, filter);
+            BaseFragmentsElement fragmentsElement = (BaseFragmentsElement)getPersistenceBrokerTemplate().getObjectByQuery(query);
             
-            // return page or throw exception
-            if (page == null)
+            // return page element or throw exception
+            if (fragmentsElement == null)
             {
-                throw new PageNotFoundException("Page " + path + " not found.");
+                throw new PageNotFoundException("Fragments/page element " + path + " not found.");
             }
 
-            // check for view access on page
-            page.checkAccess(JetspeedActions.VIEW);
+            // check for view access on page element
+            fragmentsElement.checkAccess(JetspeedActions.VIEW);
 
-            return page;
+            return fragmentsElement;
         }
         catch (PageNotFoundException pnfe)
         {
@@ -471,17 +566,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         }
         catch (Exception e)
         {
-            throw new PageNotFoundException("Page " + path + " not found.", e);
+            throw new PageNotFoundException("Fragments/page element " + path + " not found.", e);
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#getContentPage(java.lang.String)
-     */
-    public ContentPage getContentPage(String path) throws PageNotFoundException, NodeException
-    {
-        // return proxied page
-        return new ContentPageImpl(getPage(path));
     }
 
     /* (non-Javadoc)
@@ -774,6 +860,177 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
     
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPageTemplates(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getPageTemplates(Folder folder) throws NodeException
+    {
+        FolderImpl folderImpl = (FolderImpl)folder;
+
+        // perform lookup of folder page templates collection and cache in folder
+        try
+        {
+            // query for page templates
+            Criteria filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            QueryByCriteria query = QueryFactory.newQuery(PageTemplateImpl.class, filter);
+            Collection pageTemplates = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+
+            // cache page templates in folder
+            folderImpl.accessPageTemplates().clear();
+            if (pageTemplates != null)
+            {
+                folderImpl.accessPageTemplates().addAll(pageTemplates);
+            }
+            folderImpl.resetPageTemplates(true);
+        }
+        catch (Exception e)
+        {
+            // reset cache in folder
+            folderImpl.resetPageTemplates(false);
+            throw new NodeException("Unable to access page templates for folder " + folder.getPath() + ".");
+        }
+
+        // folder page templates cache populated, get page templates
+        // from folder to provide packaging as filtered node set
+        return folder.getPageTemplates();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getPageTemplate(org.apache.jetspeed.om.folder.Folder, java.lang.String)
+     */
+    public PageTemplate getPageTemplate(Folder folder, String name) throws PageNotFoundException, NodeException
+    {
+        // perform lookup by path so that cache can be used
+        String pageTemplatePath = folder.getPath() + Folder.PATH_SEPARATOR + name;
+        try
+        {
+            return getPageTemplate(pageTemplatePath);
+        }
+        catch (PageNotFoundException pnfe)
+        {
+            throw pnfe;
+        }
+        catch (Exception e)
+        {
+            throw new PageNotFoundException("Page template " + pageTemplatePath + " not found.", e);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getDynamicPages(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getDynamicPages(Folder folder) throws NodeException
+    {
+        FolderImpl folderImpl = (FolderImpl)folder;
+
+        // perform lookup of folder dynamic pages collection and cache in folder
+        try
+        {
+            // query for dynamic pages
+            Criteria filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            QueryByCriteria query = QueryFactory.newQuery(DynamicPageImpl.class, filter);
+            Collection dynamicPages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+
+            // cache dynamic pages in folder
+            folderImpl.accessDynamicPages().clear();
+            if (dynamicPages != null)
+            {
+                folderImpl.accessDynamicPages().addAll(dynamicPages);
+            }
+            folderImpl.resetDynamicPages(true);
+        }
+        catch (Exception e)
+        {
+            // reset cache in folder
+            folderImpl.resetDynamicPages(false);
+            throw new NodeException("Unable to access dynamic pages for folder " + folder.getPath() + ".");
+        }
+
+        // folder dynamic pages cache populated, get dynamic pages
+        // from folder to provide packaging as filtered node set
+        return folder.getDynamicPages();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getDynamicPage(org.apache.jetspeed.om.folder.Folder, java.lang.String)
+     */
+    public DynamicPage getDynamicPage(Folder folder, String name) throws PageNotFoundException, NodeException
+    {
+        // perform lookup by path so that cache can be used
+        String dynamicPagePath = folder.getPath() + Folder.PATH_SEPARATOR + name;
+        try
+        {
+            return getDynamicPage(dynamicPagePath);
+        }
+        catch (PageNotFoundException pnfe)
+        {
+            throw pnfe;
+        }
+        catch (Exception e)
+        {
+            throw new PageNotFoundException("Dynamic page " + dynamicPagePath + " not found.", e);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getFragmentDefinitions(org.apache.jetspeed.om.folder.Folder)
+     */
+    public NodeSet getFragmentDefinitions(Folder folder) throws NodeException
+    {
+        FolderImpl folderImpl = (FolderImpl)folder;
+
+        // perform lookup of folder fragment definition collection and cache in folder
+        try
+        {
+            // query for fragment definition
+            Criteria filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            QueryByCriteria query = QueryFactory.newQuery(FragmentDefinitionImpl.class, filter);
+            Collection fragmentDefinitions = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+
+            // cache fragment definition in folder
+            folderImpl.accessFragmentDefinitions().clear();
+            if (fragmentDefinitions != null)
+            {
+                folderImpl.accessFragmentDefinitions().addAll(fragmentDefinitions);
+            }
+            folderImpl.resetFragmentDefinitions(true);
+        }
+        catch (Exception e)
+        {
+            // reset cache in folder
+            folderImpl.resetFragmentDefinitions(false);
+            throw new NodeException("Unable to access fragment definition for folder " + folder.getPath() + ".");
+        }
+
+        // folder fragment definition cache populated, get fragment definition
+        // from folder to provide packaging as filtered node set
+        return folder.getFragmentDefinitions();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#getFragmentDefinition(org.apache.jetspeed.om.folder.Folder, java.lang.String)
+     */
+    public FragmentDefinition getFragmentDefinition(Folder folder, String name) throws PageNotFoundException, NodeException
+    {
+        // perform lookup by path so that cache can be used
+        String fragmentDefinitionPath = folder.getPath() + Folder.PATH_SEPARATOR + name;
+        try
+        {
+            return getFragmentDefinition(fragmentDefinitionPath);
+        }
+        catch (PageNotFoundException pnfe)
+        {
+            throw pnfe;
+        }
+        catch (Exception e)
+        {
+            throw new PageNotFoundException("Fragment definition " + fragmentDefinitionPath + " not found.", e);
+        }
+    }
+    
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#getLinks(org.apache.jetspeed.om.folder.Folder)
      */    
     public NodeSet getLinks(Folder folder) throws NodeException
@@ -884,6 +1141,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for all nodes
             List all = DatabasePageManagerUtils.createList();
+            
+            // query for subfolders
             Criteria filter = new Criteria();
             filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
@@ -892,18 +1151,31 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             {
                 all.addAll(folders);
             }
-            query = QueryFactory.newQuery(PageImpl.class, filter);
-            Collection pages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
-            if (pages != null)
+
+            // polymorphic query for pages, page templates, dynamic pages,
+            // and fragment definitions
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            query = QueryFactory.newQuery(BaseFragmentsElementImpl.class, filter);
+            Collection baseFragments = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            if (baseFragments != null)
             {
-                all.addAll(pages);
+                all.addAll(baseFragments);
             }
+
+            // query for links
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             query = QueryFactory.newQuery(LinkImpl.class, filter);
             Collection links = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (links != null)
             {
                 all.addAll(links);
             }
+
+            // query for page security
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             query = QueryFactory.newQuery(PageSecurityImpl.class, filter);
             PageSecurity document = (PageSecurity)getPersistenceBrokerTemplate().getObjectByQuery(query);
             if (document != null)
@@ -933,22 +1205,156 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      */
     public void updatePage(Page page) throws NodeException, PageNotUpdatedException
     {
+        // dereference page in case proxy is supplied
+        page = (Page)ProxyHelper.getRealObject(page);
+
+        // update page
+        boolean newPage[] = new boolean[]{false};
+        FolderImpl parentFolder = updateFragmentsElement(page, newPage);
+
+        // reset parent folder in case page is new or
+        // parent is holding an out of date copy of
+        // this page that was removed from the cache
+        // before this one was accessed
+        if (parentFolder != null)
+        {
+            parentFolder.resetPages(false);            
+        }
+
+        // notify page manager listeners
+        if (newPage[0])
+        {
+            delegator.notifyNewNode(page);
+        }
+        else
+        {
+            delegator.notifyUpdatedNode(page);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#updatePageTemplate(org.apache.jetspeed.om.page.PageTemplate)
+     */
+    public void updatePageTemplate(PageTemplate pageTemplate) throws NodeException, PageNotUpdatedException
+    {
+        // dereference page template in case proxy is supplied
+        pageTemplate = (PageTemplate)ProxyHelper.getRealObject(pageTemplate);
+
+        // update page template
+        boolean newPageTemplate[] = new boolean[]{false};
+        FolderImpl parentFolder = updateFragmentsElement(pageTemplate, newPageTemplate);
+
+        // reset parent folder in case page is new or
+        // parent is holding an out of date copy of
+        // this page that was removed from the cache
+        // before this one was accessed
+        if (parentFolder != null)
+        {
+            parentFolder.resetPageTemplates(false);
+        }
+
+        // notify page manager listeners
+        if (newPageTemplate[0])
+        {
+            delegator.notifyNewNode(pageTemplate);
+        }
+        else
+        {
+            delegator.notifyUpdatedNode(pageTemplate);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#updateDynamicPage(org.apache.jetspeed.om.page.DynamicPage)
+     */
+    public void updateDynamicPage(DynamicPage dynamicPage) throws NodeException, PageNotUpdatedException
+    {
+        // dereference dynamic page in case proxy is supplied
+        dynamicPage = (DynamicPage)ProxyHelper.getRealObject(dynamicPage);
+
+        // update dynamic page
+        boolean newDynamicPage[] = new boolean[]{false};
+        FolderImpl parentFolder = updateFragmentsElement(dynamicPage, newDynamicPage);
+
+        // reset parent folder in case page is new or
+        // parent is holding an out of date copy of
+        // this page that was removed from the cache
+        // before this one was accessed
+        if (parentFolder != null)
+        {
+            parentFolder.resetDynamicPages(false);
+        }
+
+        // notify page manager listeners
+        if (newDynamicPage[0])
+        {
+            delegator.notifyNewNode(dynamicPage);            
+        }
+        else
+        {
+            delegator.notifyUpdatedNode(dynamicPage);            
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#updateFragmentDefinition(org.apache.jetspeed.om.page.FragmentDefinition)
+     */
+    public void updateFragmentDefinition(FragmentDefinition fragmentsDefinition) throws NodeException, PageNotUpdatedException
+    {
+        // dereference fragment definition in case proxy is supplied
+        fragmentsDefinition = (FragmentDefinition)ProxyHelper.getRealObject(fragmentsDefinition);
+
+        // update fragment definition
+        boolean newFragmentDefinition[] = new boolean[]{false};
+        FolderImpl parentFolder = updateFragmentsElement(fragmentsDefinition, newFragmentDefinition);
+
+        // reset parent folder in case page is new or
+        // parent is holding an out of date copy of
+        // this page that was removed from the cache
+        // before this one was accessed
+        if (parentFolder != null)
+        {
+            parentFolder.resetFragmentDefinitions(false);
+        }
+
+        // notify page manager listeners
+        if (newFragmentDefinition[0])
+        {
+            delegator.notifyNewNode(fragmentsDefinition);            
+        }
+        else
+        {
+            delegator.notifyUpdatedNode(fragmentsDefinition);            
+        }
+    }
+    
+    /**
+     * Update fragments/page element.
+     * 
+     * @param fragmentsElement fragments/page element to update
+     * @param newFragmentsElement new fragments/page element flag
+     * @return parent folder
+     * @throws NodeException
+     * @throws PageNotUpdatedException
+     */
+    protected FolderImpl updateFragmentsElement(BaseFragmentsElement fragmentsElement, boolean [] newFragmentsElement) throws NodeException, PageNotUpdatedException
+    {
         try
         {
-            // dereference page in case proxy is supplied
-            if (page instanceof ContentPageImpl)
+            // validate fragments element
+            BaseFragmentsElementImpl fragmentsElementImpl = (BaseFragmentsElementImpl)fragmentsElement;
+            if (!fragmentsElementImpl.validateFragments())
             {
-                page = ((ContentPageImpl)page).getPage();
+                throw new PageNotUpdatedException("Fragments hierarchy invalid for fragments/page: " + fragmentsElement.getPath() + ", not updated.");
             }
-            page = (Page)ProxyHelper.getRealObject(page);
-
+            
             // look up and set parent folder if necessary
-            FolderImpl parent = (FolderImpl)page.getParent();
+            FolderImpl parent = (FolderImpl)fragmentsElement.getParent();
             if (parent == null)
             {
                 // access folder by path
-                String pagePath = page.getPath();
-                String parentPath = pagePath.substring(0, pagePath.lastIndexOf(Folder.PATH_SEPARATOR));
+                String pageElementPath = fragmentsElement.getPath();
+                String parentPath = pageElementPath.substring(0, pageElementPath.lastIndexOf(Folder.PATH_SEPARATOR));
                 if (parentPath.length() == 0)
                 {
                     parentPath = Folder.PATH_SEPARATOR;
@@ -962,43 +1368,31 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     throw new PageNotUpdatedException("Missing parent folder: " + parentPath);
                 }
                 
-                // check for edit access on parent folder; page
+                // check for edit access on parent folder; fragments/page
                 // access not checked on create
                 parent.checkAccess(JetspeedActions.EDIT);
 
-                // update page and mark cache transaction
-                page.setParent(parent);
-                storeEntity( page, pagePath, true);
-
-                // reset parent folder pages cache
-                if (parent != null)
-                {
-                    parent.resetPages(false);
-                }
-
-                // notify page manager listeners
-                delegator.notifyNewNode(page);
+                // update fragments/page and mark cache transaction
+                fragmentsElement.setParent(parent);
+                storeEntity( fragmentsElement, pageElementPath, true);
+                
+                // new fragments/page
+                newFragmentsElement[0] = true;
             }
             else
             {
-                // check for edit access on page and parent folder
-                page.checkAccess(JetspeedActions.EDIT);
+                // check for edit access on fragments/page and parent folder
+                fragmentsElement.checkAccess(JetspeedActions.EDIT);
 
-                // update page and mark cache transaction
-                storeEntity( page, page.getPath(), false);
-                
-                // reset parent folder pages cache in case
-                // parent is holding an out of date copy of
-                // this page that was removed from the cache
-                // before this one was accessed
-                if (parent != null)
-                {
-                    parent.resetPages(false);
-                }
+                // update fragments/page and mark cache transaction
+                storeEntity( fragmentsElement, fragmentsElement.getPath(), false);
 
-                // notify page manager listeners
-                delegator.notifyUpdatedNode(page);
+                // updated fragments/page
+                newFragmentsElement[0] = false;
             }
+            
+            // return parent folder to update is caches after update
+            return parent;
         }
         catch (PageNotUpdatedException pnue)
         {
@@ -1010,7 +1404,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         }
         catch (Exception e)
         {
-            throw new PageNotUpdatedException("Page " + page.getPath() + " not updated.", e);
+            throw new PageNotUpdatedException("Fragments/page element " + fragmentsElement.getPath() + " not updated.", e);
         }        
     }
     
@@ -1019,40 +1413,96 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      */
     public void removePage(Page page) throws NodeException, PageNotRemovedException
     {
+        // dereference page in case proxy is supplied
+        page = (Page)ProxyHelper.getRealObject(page);
+
+        // remove page
+        FolderImpl parentFolder = removeFragmentsElement(page);
+
+        // reset parent folder holding removed page
+        parentFolder.resetPages(false);            
+
+        // notify page manager listeners
+        delegator.notifyRemovedNode(page);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#removePageTemplate(org.apache.jetspeed.om.page.PageTemplate)
+     */
+    public void removePageTemplate(PageTemplate pageTemplate) throws NodeException, PageNotRemovedException
+    {
+        // dereference page template in case proxy is supplied
+        pageTemplate = (PageTemplate)ProxyHelper.getRealObject(pageTemplate);
+
+        // remove page template
+        FolderImpl parentFolder = removeFragmentsElement(pageTemplate);
+
+        // reset parent folder holding removed page
+        parentFolder.resetPages(false);            
+
+        // notify page manager listeners
+        delegator.notifyRemovedNode(pageTemplate);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#removeDynamicPage(org.apache.jetspeed.om.page.DynamicPage)
+     */
+    public void removeDynamicPage(DynamicPage dynamicPage) throws NodeException, PageNotRemovedException
+    {
+        // dereference dynamic page in case proxy is supplied
+        dynamicPage = (DynamicPage)ProxyHelper.getRealObject(dynamicPage);
+
+        // remove dynamic page
+        FolderImpl parentFolder = removeFragmentsElement(dynamicPage);
+
+        // reset parent folder holding removed page
+        parentFolder.resetPages(false);            
+
+        // notify page manager listeners
+        delegator.notifyRemovedNode(dynamicPage);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#removeFragmentDefinition(org.apache.jetspeed.om.page.FragmentDefinition)
+     */
+    public void removeFragmentDefinition(FragmentDefinition fragmentDefinition) throws NodeException, PageNotRemovedException
+    {
+        // dereference fragment definition in case proxy is supplied
+        fragmentDefinition = (FragmentDefinition)ProxyHelper.getRealObject(fragmentDefinition);
+
+        // remove fragment definition
+        FolderImpl parentFolder = removeFragmentsElement(fragmentDefinition);
+
+        // reset parent folder holding removed page
+        parentFolder.resetPages(false);            
+
+        // notify page manager listeners
+        delegator.notifyRemovedNode(fragmentDefinition);
+    }
+
+    /**
+     * Remove fragments/page element.
+     * 
+     * @param fragmentsElement fragments/page element to remove
+     * @return parent folder
+     * @throws NodeException
+     * @throws PageNotUpdatedException
+     */
+    protected FolderImpl removeFragmentsElement(BaseFragmentsElement fragmentsElement) throws NodeException, PageNotRemovedException
+    {
         try
         {
-            // dereference page in case proxy is supplied
-            if (page instanceof ContentPageImpl)
-            {
-                page = ((ContentPageImpl)page).getPage();
-            }
-            page = (Page)ProxyHelper.getRealObject(page);
-
-            // check for edit access on page and parent folder
-            page.checkAccess(JetspeedActions.EDIT);
+            // check for edit access on fragments/page and parent folder
+            fragmentsElement.checkAccess(JetspeedActions.EDIT);
 
             // look up and update parent folder if necessary
-            if (page.getParent() != null)
-            {
-                FolderImpl parent = (FolderImpl)ProxyHelper.getRealObject(page.getParent());
+            FolderImpl parent = (FolderImpl)ProxyHelper.getRealObject(fragmentsElement.getParent());
                 
-                // delete page
-                getPersistenceBrokerTemplate().delete(page);
-                
-                // reset parent folder pages cache
-                if (parent != null)
-                {
-                    parent.resetPages(false);
-                }
-            }
-            else
-            {
-                // delete page
-                getPersistenceBrokerTemplate().delete(page);
-            }
+            // delete fragments/page
+            getPersistenceBrokerTemplate().delete(fragmentsElement);
 
-            // notify page manager listeners
-            delegator.notifyRemovedNode(page);
+            // return parent folder to update is caches after remove
+            return parent;
         }
         catch (SecurityException se)
         {
@@ -1060,7 +1510,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         }
         catch (Exception e)
         {
-            throw new PageNotRemovedException("Page " + page.getPath() + " not removed.", e);
+            throw new PageNotRemovedException("Fragments/page element " + fragmentsElement.getPath() + " not removed.", e);
         }
     }
 
@@ -1113,10 +1563,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 storeEntity(folder, folderPath, true);
 
                 // reset parent folder folders cache
-                if (parent != null)
-                {
-                    parent.resetFolders(false);
-                }
+                parent.resetFolders(false);
 
                 // notify page manager listeners
                 delegator.notifyNewNode(folder);
@@ -1188,7 +1635,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /**
-     * updateFolderNodes - recusively update all folder nodes
+     * updateFolderNodes - recursively update all folder nodes
      *
      * @param folderImpl folder whose nodes are to be updated
      * @param throws FolderNotUpdatedException
@@ -1197,11 +1644,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         try
         {
-            // construct general node query criteria
+            // update pages
             Criteria filter = new Criteria();
             filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
-
-            // update pages
             QueryByCriteria query = QueryFactory.newQuery(PageImpl.class, filter);
             Collection pages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (pages != null)
@@ -1213,7 +1658,51 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 }
             }
 
+            // update page templates
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            query = QueryFactory.newQuery(PageTemplateImpl.class, filter);
+            Collection pageTemplates = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            if (pageTemplates != null)
+            {
+                Iterator pageTemplatesIter = pageTemplates.iterator();
+                while (pageTemplatesIter.hasNext())
+                {
+                    updatePageTemplate((PageTemplate)pageTemplatesIter.next());
+                }
+            }
+
+            // update dynamic pages
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            query = QueryFactory.newQuery(DynamicPageImpl.class, filter);
+            Collection dynamicPages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            if (dynamicPages != null)
+            {
+                Iterator dynamicPagesIter = dynamicPages.iterator();
+                while (dynamicPagesIter.hasNext())
+                {
+                    updateDynamicPage((DynamicPage)dynamicPagesIter.next());
+                }
+            }
+
+            // update fragment definitions
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            query = QueryFactory.newQuery(FragmentDefinitionImpl.class, filter);
+            Collection fragmentDefinitions = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            if (fragmentDefinitions != null)
+            {
+                Iterator fragmentDefinitionsIter = fragmentDefinitions.iterator();
+                while (fragmentDefinitionsIter.hasNext())
+                {
+                    updateFragmentDefinition((FragmentDefinition)fragmentDefinitionsIter.next());
+                }
+            }
+
             // update links
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             query = QueryFactory.newQuery(LinkImpl.class, filter);
             Collection links = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (links != null)
@@ -1226,6 +1715,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             }
 
             // update page security
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             query = QueryFactory.newQuery(PageSecurityImpl.class, filter);
             PageSecurity document = (PageSecurity)getPersistenceBrokerTemplate().getObjectByQuery(query);
             if (document != null)
@@ -1234,6 +1725,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             }
 
             // update folders last: breadth first recursion
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             query = QueryFactory.newQuery(FolderImpl.class, filter);
             Collection folders = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (folders != null)
@@ -1287,10 +1780,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 getPersistenceBrokerTemplate().delete(folder);
 
                 // reset parent folder folders cache
-                if (parent != null)
-                {
-                    parent.resetFolders(false);
-                }
+                parent.resetFolders(false);
             }
             else
             {
@@ -1321,11 +1811,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         try
         {
-            // construct general node query criteria
+            // remove folders first: depth first recursion
             Criteria filter = new Criteria();
             filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
-
-            // remove folders first: depth first recursion
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
             Collection folders = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (folders != null)
@@ -1338,6 +1826,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             }
 
             // remove pages
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             query = QueryFactory.newQuery(PageImpl.class, filter);
             Collection pages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (pages != null)
@@ -1349,7 +1839,51 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 }
             }
 
+            // remove page templates
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            query = QueryFactory.newQuery(PageTemplateImpl.class, filter);
+            Collection pageTemplates = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            if (pageTemplates != null)
+            {
+                Iterator pageTemplatesIter = pageTemplates.iterator();
+                while (pageTemplatesIter.hasNext())
+                {
+                    removePageTemplate((PageTemplate)pageTemplatesIter.next());
+                }
+            }
+
+            // remove dynamic pages
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            query = QueryFactory.newQuery(DynamicPageImpl.class, filter);
+            Collection dynamicPages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            if (dynamicPages != null)
+            {
+                Iterator dynamicPagesIter = dynamicPages.iterator();
+                while (dynamicPagesIter.hasNext())
+                {
+                    removeDynamicPage((DynamicPage)dynamicPagesIter.next());
+                }
+            }
+
+            // remove fragment definitions
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            query = QueryFactory.newQuery(FragmentDefinitionImpl.class, filter);
+            Collection fragmentDefinitions = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            if (fragmentDefinitions != null)
+            {
+                Iterator fragmentDefinitionsIter = fragmentDefinitions.iterator();
+                while (fragmentDefinitionsIter.hasNext())
+                {
+                    removeFragmentDefinition((FragmentDefinition)fragmentDefinitionsIter.next());
+                }
+            }
+
             // remove links
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             query = QueryFactory.newQuery(LinkImpl.class, filter);
             Collection links = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (links != null)
@@ -1362,6 +1896,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             }
 
             // remove page security
+            filter = new Criteria();
+            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
             query = QueryFactory.newQuery(PageSecurityImpl.class, filter);
             PageSecurity document = (PageSecurity)getPersistenceBrokerTemplate().getObjectByQuery(query);
             if (document != null)
@@ -1394,6 +1930,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             link = (Link)ProxyHelper.getRealObject(link);
 
             // look up and set parent folder if necessary
+            boolean newLink = false;
             FolderImpl parent = (FolderImpl)link.getParent();
             if (parent == null)
             {
@@ -1421,14 +1958,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 link.setParent(parent);
                 storeEntity(link, linkPath, true);
 
-                // reset parent folder links cache
-                if (parent != null)
-                {
-                    parent.resetLinks(false);
-                }
-
-                // notify page manager listeners
-                delegator.notifyNewNode(link);
+                // new link
+                newLink = true;
             }
             else
             {
@@ -1437,18 +1968,25 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
                 // update link and mark cache transaction
                 storeEntity(link, link.getPath(), false);
+                
+                // update link
+                newLink = false;
+            }
 
-                // reset parent folder links cache in case
-                // parent is holding an out of date copy of
-                // this link that was removed from the cache
-                // before this one was accessed
-                if (parent != null)
-                {
-                    parent.resetLinks(false);
-                }
+            // reset parent folder links cache in case
+            // new or parent is holding an out of date copy
+            // of this link that was removed from the cache
+            // before this one was accessed
+            parent.resetLinks(false);
 
-                // notify page manager listeners
-                delegator.notifyUpdatedNode(link);
+            // notify page manager listeners
+            if (newLink)
+            {
+                delegator.notifyNewNode(link);
+            }
+            else
+            {
+                delegator.notifyUpdatedNode(link);                
             }
         }
         catch (FailedToUpdateDocumentException fude)
@@ -1487,10 +2025,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 getPersistenceBrokerTemplate().delete(link);
 
                 // reset parent folder links cache
-                if (parent != null)
-                {                
-                    parent.resetLinks(false);
-                }
+                parent.resetLinks(false);
             }
             else
             {
@@ -1522,6 +2057,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             pageSecurity = (PageSecurity)ProxyHelper.getRealObject(pageSecurity);
 
             // look up and set parent folder if necessary
+            boolean newPageSecurity = false;
             FolderImpl parent = (FolderImpl)pageSecurity.getParent();
             if (parent == null)
             {
@@ -1557,19 +2093,13 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     pageSecurity.setParent(parent);
                     storeEntity(pageSecurity, pageSecurityPath, true);
 
-                    // reset parent folder page security cache
-                    if (parent != null)
-                    {                    
-                        parent.resetPageSecurity((PageSecurityImpl)pageSecurity, true);
-                    }
+                    // new page security
+                    newPageSecurity = true;
                 }
                 catch (Exception e)
                 {
                     throw new FailedToUpdateDocumentException("Parent folder page security exists: " + parentPath);
                 }
-
-                // notify page manager listeners
-                delegator.notifyNewNode(pageSecurity);
             }
             else
             {
@@ -1579,21 +2109,28 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // update document and mark cache transaction
                 storeEntity(pageSecurity, pageSecurity.getPath(), false);
 
-                // reset parent folder page security cache in case
-                // parent is holding an out of date copy of this
-                // page security that was removed from the cache
-                // before this one was accessed
-                if (parent != null)
-                {                
-                    parent.resetPageSecurity((PageSecurityImpl)pageSecurity, true);
-                }
-
-                // notify page manager listeners
-                delegator.notifyUpdatedNode(pageSecurity);
+                // update page security
+                newPageSecurity = false;
             }
+
+            // reset parent folder page security cache if new or
+            // in case parent is holding an out of date copy of
+            // this page security that was removed from the cache
+            // before this one was accessed
+            parent.resetPageSecurity((PageSecurityImpl)pageSecurity, true);
 
             // reset all cached security constraints
             DatabasePageManagerCache.resetCachedSecurityConstraints();
+
+            // notify page manager listeners
+            if (newPageSecurity)
+            {
+                delegator.notifyNewNode(pageSecurity);                
+            }
+            else
+            {
+                delegator.notifyUpdatedNode(pageSecurity);
+            }
         }
         catch (FailedToUpdateDocumentException fude)
         {
@@ -1631,10 +2168,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 getPersistenceBrokerTemplate().delete(pageSecurity);
 
                 // reset parent folder page security cache
-                if (parent != null)
-                {                
-                    parent.resetPageSecurity(null, true);
-                }
+                parent.resetPageSecurity(null, true);
             }
             else
             {
@@ -1714,6 +2248,60 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyPageTemplate(org.apache.jetspeed.om.page.PageTemplate, java.lang.String)
+     */
+    public PageTemplate copyPageTemplate(PageTemplate source, String path)
+    throws NodeException, PageNotUpdatedException
+    {
+        return this.delegator.copyPageTemplate(source, path);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyPageTemplate(org.apache.jetspeed.om.page.PageTemplate, java.lang.String, boolean)
+     */
+    public PageTemplate copyPageTemplate(PageTemplate source, String path, boolean copyIds)
+    throws NodeException, PageNotUpdatedException
+    {
+        return this.delegator.copyPageTemplate(source, path, copyIds);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyDynamicPage(org.apache.jetspeed.om.page.DynamicPage, java.lang.String)
+     */
+    public DynamicPage copyDynamicPage(DynamicPage source, String path)
+    throws NodeException, PageNotUpdatedException
+    {
+        return this.delegator.copyDynamicPage(source, path);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyDynamicPage(org.apache.jetspeed.om.page.DynamicPage, java.lang.String, boolean)
+     */
+    public DynamicPage copyDynamicPage(DynamicPage source, String path, boolean copyIds)
+    throws NodeException, PageNotUpdatedException
+    {
+        return this.delegator.copyDynamicPage(source, path, copyIds);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyFragmentDefinition(org.apache.jetspeed.om.page.FragmentDefinition, java.lang.String)
+     */
+    public FragmentDefinition copyFragmentDefinition(FragmentDefinition source, String path)
+    throws NodeException, PageNotUpdatedException
+    {
+        return this.delegator.copyFragmentDefinition(source, path);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#copyFragmentDefinition(org.apache.jetspeed.om.page.FragmentDefinition, java.lang.String, boolean)
+     */
+    public FragmentDefinition copyFragmentDefinition(FragmentDefinition source, String path, boolean copyIds)
+    throws NodeException, PageNotUpdatedException
+    {
+        return this.delegator.copyFragmentDefinition(source, path, copyIds);
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#copyLink(org.apache.jetspeed.om.page.Link,java.lang.String)
      */
     public Link copyLink(Link source, String path)
@@ -1732,18 +2320,18 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#copyFragment(org.apache.jetspeed.om.page.Fragment,java.lang.String)
+     * @see org.apache.jetspeed.page.PageManager#copyFragment(org.apache.jetspeed.om.page.BaseFragmentElement,java.lang.String)
      */
-    public Fragment copyFragment(Fragment source, String name)
+    public BaseFragmentElement copyFragment(BaseFragmentElement source, String name)
     throws NodeException, PageNotUpdatedException
     {
         return this.delegator.copyFragment(source, name);
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.PageManager#copyFragment(org.apache.jetspeed.om.page.Fragment, java.lang.String, boolean)
+     * @see org.apache.jetspeed.page.PageManager#copyFragment(org.apache.jetspeed.om.page.BaseFragmentElement, java.lang.String, boolean)
      */
-    public Fragment copyFragment(Fragment source, String name, boolean copyIds)
+    public BaseFragmentElement copyFragment(BaseFragmentElement source, String name, boolean copyIds)
     throws NodeException, PageNotUpdatedException
     {
         return this.delegator.copyFragment(source, name, copyIds);
@@ -1808,6 +2396,54 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         return true;
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#pageTemplateExists(java.lang.String)
+     */
+    public boolean pageTemplateExists(String pageName)
+    {
+        try
+        {
+            getPageTemplate(pageName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#dynamicPageExists(java.lang.String)
+     */
+    public boolean dynamicPageExists(String pageName)
+    {
+        try
+        {
+            getDynamicPage(pageName);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#fragmentDefinitionExists(java.lang.String)
+     */
+    public boolean fragmentDefinitionExists(String name)
+    {
+        try
+        {
+            getFragmentDefinition(name);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManager#linkExists(java.lang.String)
      */

@@ -16,24 +16,23 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.ContentFragmentImpl;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.request.RequestContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Update Page action -- updates various parts of the PSML page
@@ -97,7 +96,7 @@ public class UpdatePageAction
             String path = getActionParameter(requestContext, "path");
             if (path == null)
             {
-                page = requestContext.getPage();
+                page = requestContext.getPage().getPage();
             }
             else
             {
@@ -115,6 +114,11 @@ public class UpdatePageAction
                     }
                 }
             }
+            if (page == null)
+            {
+                throw new AJAXException("Missing current page or 'path' parameter");
+            }
+            
             if (method.equals("info"))
             {
                 count = updateInformation(requestContext, resultMap, page, path);
@@ -153,8 +157,13 @@ public class UpdatePageAction
                 page.setTitle(getActionParameter(requestContext, TITLE));
                 String s = getActionParameter(requestContext, SHORT_TITLE );
                 if (!isBlank(s))
-                    page.setShortTitle(s);                
-                page.getRootFragment().setName(getActionParameter(requestContext, DEFAULT_LAYOUT));
+                    page.setShortTitle(s);
+                String l = getActionParameter(requestContext, DEFAULT_LAYOUT);
+                if (!isBlank(l) && (page.getRootFragment() instanceof Fragment))
+                {
+                    Fragment rootFragment = (Fragment)page.getRootFragment();
+                    rootFragment.setName(getActionParameter(requestContext, DEFAULT_LAYOUT));
+                }
                 count++;                
             }
             else if (method.equals("copy"))
@@ -246,7 +255,7 @@ public class UpdatePageAction
     protected int updatePortletDecorator(RequestContext requestContext, Map resultMap, Page page, String fragmentId, String portletDecorator)
     {
     	int count = 0;
-    	Fragment fragment = page.getFragmentById(fragmentId);
+    	BaseFragmentElement fragment = page.getFragmentById(fragmentId);
         if (fragment != null)
         {                
         	fragment.setDecorator( portletDecorator );
@@ -259,13 +268,13 @@ public class UpdatePageAction
     {
         int count = 0;
         String sizes = getActionParameter(requestContext, SIZES);
-        Fragment fragment = page.getFragmentById(fragmentId);
-        if (fragment != null)
-        {                
+        BaseFragmentElement updateFragment = page.getFragmentById(fragmentId);
+        if (updateFragment instanceof Fragment)
+        {
+            Fragment fragment = (Fragment)updateFragment;
             if (!layout.equals(fragment.getName()))
             {
                 fragment.setName(layout);
-                ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap());
                 count++;
                 if ( isBlank(sizes) )
                 {
@@ -293,9 +302,10 @@ public class UpdatePageAction
     {
         int count = 0;
         String sizes = getActionParameter(requestContext, SIZES);
-        Fragment fragment = page.getFragmentById(parentFragmentId);
-        if (fragment != null)
+        BaseFragmentElement parentFragment = page.getFragmentById(parentFragmentId);
+        if (parentFragment instanceof Fragment)
         {
+            Fragment fragment = (Fragment)parentFragment;
             Fragment newFragment = pageManager.newFragment();
             newFragment.setType(Fragment.LAYOUT);            
             newFragment.setName(layout);
@@ -314,7 +324,7 @@ public class UpdatePageAction
     protected int removeFragment(RequestContext requestContext, Map resultMap, Page page, String fragmentId)
     {
         int count = 0;
-        Fragment fragment = page.getFragmentById(fragmentId);
+        BaseFragmentElement fragment = page.getFragmentById(fragmentId);
         if (fragment != null)
         {
             page.removeFragmentById(fragment.getId());

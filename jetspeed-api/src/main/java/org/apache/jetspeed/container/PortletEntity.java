@@ -17,7 +17,7 @@
 
 package org.apache.jetspeed.container;
 
-import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
@@ -37,6 +37,6 @@ public interface PortletEntity // extends org.apache.pluto.container.PortletEnti
 
     String getPortletUniqueName();
 
-    void setFragment(Fragment fragment);
-    Fragment getFragment();    
+    void setFragment(ContentFragment fragment);
+    ContentFragment getFragment();    
 }

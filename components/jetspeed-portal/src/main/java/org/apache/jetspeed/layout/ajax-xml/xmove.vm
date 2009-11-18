@@ -52,4 +52,7 @@
         <height>$height</height>
 #end            
     </new_position>
+#if ($entity)
+    <entity>$entity</entity>
+#end
 </js>

@@ -42,9 +42,9 @@ class FragmentList extends AbstractList
         // implement for modifiable AbstractList:
         // add and maintain page implementation reference
         fragment.accessFragments().add(index, element);
-        if ((fragment.getPage() != null) && (element instanceof FragmentImpl))
+        if ((fragment.getBaseFragmentsElement() != null) && (element instanceof FragmentImpl))
         {
-            ((FragmentImpl)element).setPage(fragment.getPage());
+            ((FragmentImpl)element).setBaseFragmentsElement(fragment.getBaseFragmentsElement());
         }
     }
 
@@ -74,9 +74,9 @@ class FragmentList extends AbstractList
         // implement for modifiable AbstractList:
         // set and maintain page implementation reference
         Object o = fragment.accessFragments().set(index, element);
-        if ((fragment.getPage() != null) && (element instanceof FragmentImpl))
+        if ((fragment.getBaseFragmentsElement() != null) && (element instanceof FragmentImpl))
         {
-            ((FragmentImpl)element).setPage(fragment.getPage());
+            ((FragmentImpl)element).setBaseFragmentsElement(fragment.getBaseFragmentsElement());
         }
         return o;
     }

@@ -106,12 +106,15 @@
     <constructor-arg index="1">
       <ref bean="org.apache.jetspeed.portalsite.PortalSite" />
     </constructor-arg>
+    <constructor-arg index="2">
+      <ref bean="org.apache.jetspeed.layout.PageLayoutComponent" />
+    </constructor-arg>
     <!--
       request fallback to root folder/page enabled by default;
       if set to false, requests generate HTTP 403/404 errors
       for access errors or missing pages
     -->
-    <constructor-arg index="2">
+    <constructor-arg index="3">
       <value>true</value>
     </constructor-arg>
     <!--
@@ -120,7 +123,7 @@
       default page specified in PSML, (or the first page in
       the folder), is always selected
     -->
-    <constructor-arg index="3">
+    <constructor-arg index="4">
       <value>true</value>
     </constructor-arg>
   </bean>
@@ -151,12 +154,15 @@
     <constructor-arg index="1">
       <ref bean="org.apache.jetspeed.portalsite.PortalSite" />
     </constructor-arg>
+    <constructor-arg index="2">
+      <ref bean="org.apache.jetspeed.layout.PageLayoutComponent" />
+    </constructor-arg>
     <!--
       request fallback to root folder/page enabled by default;
       if set to false, requests generate HTTP 403/404 errors
       for access errors or missing pages
     -->
-    <constructor-arg index="2">
+    <constructor-arg index="3">
       <value>true</value>
     </constructor-arg>
     <!--
@@ -165,13 +171,13 @@
       default page specified in PSML, (or the first page in
       the folder), is always selected
     -->
-    <constructor-arg index="3">
+    <constructor-arg index="4">
       <value>true</value>
     </constructor-arg>
-    <constructor-arg index="4">
+    <constructor-arg index="5">
       <ref bean="org.apache.jetspeed.page.PageManager" />
     </constructor-arg>
-    <constructor-arg index="5">
+    <constructor-arg index="6">
       <ref bean="org.apache.jetspeed.security.UserManager" />
     </constructor-arg>
   </bean>
@@ -190,12 +196,15 @@
     <constructor-arg index="1">
       <ref bean="org.apache.jetspeed.portalsite.PortalSite" />
     </constructor-arg>
+    <constructor-arg index="2">
+      <ref bean="org.apache.jetspeed.layout.PageLayoutComponent" />
+    </constructor-arg>
     <!--
       request fallback to root folder/page enabled by default;
       if set to false, requests generate HTTP 403/404 errors
       for access errors or missing pages
     -->
-    <constructor-arg index="2">
+    <constructor-arg index="3">
       <value>true</value>
     </constructor-arg>
     <!--
@@ -204,10 +213,10 @@
       default page specified in PSML, (or the first page in
       the folder), is always selected
     -->
-    <constructor-arg index="3">
+    <constructor-arg index="4">
       <value>true</value>
     </constructor-arg>
-    <constructor-arg index="4">
+    <constructor-arg index="5">
       <ref bean="org.apache.jetspeed.page.PageManager" />
     </constructor-arg>
   </bean>

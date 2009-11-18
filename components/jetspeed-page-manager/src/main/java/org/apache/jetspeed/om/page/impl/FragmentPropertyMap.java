@@ -32,10 +32,10 @@ import java.util.Set;
  */
 class FragmentPropertyMap extends AbstractMap
 {
-    private FragmentImpl fragment;
+    private BaseFragmentElementImpl fragment;
     private FragmentPropertiesEntrySet entrySet;
 
-    FragmentPropertyMap(FragmentImpl fragment)
+    FragmentPropertyMap(BaseFragmentElementImpl fragment)
     {
         super();
         this.fragment = fragment;

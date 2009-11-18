@@ -30,6 +30,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.portlet.Language;
@@ -394,9 +395,10 @@ public interface RequestContext
      * from a generalized non-profiled path to the first page matching the path
      * 
      *  @param profiler The profiler component to use in the search
+     *  @param pageLayoutComponent The page layout component used to assemble the returned page
      *  @return A Content Page located by the profiler, or null if not found
      */
-    ContentPage locatePage(Profiler profiler, String nonProfiledPath);
+    ContentPage locatePage(Profiler profiler, PageLayoutComponent pageLayoutComponent, String nonProfiledPath);
     
     /**
      * Return a map of Jetspeed Request Context objects configured via Spring Map

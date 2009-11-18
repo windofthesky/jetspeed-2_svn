@@ -16,18 +16,15 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.security.AccessController;
-import java.security.Permission;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
+import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
-import org.apache.jetspeed.security.PermissionFactory;
 
 /**
  * FragmentImpl
@@ -35,45 +32,12 @@ import org.apache.jetspeed.security.PermissionFactory;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class FragmentImpl extends BaseElementImpl implements Fragment
+public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
 {
     private List fragments;
-    private String fragmentId;
     private String type;
-    private String skin;
-    private String decorator;
-    private String state;
-    private String mode;
-    private int layoutRowProperty = -1;
-    private int layoutColumnProperty = -1;
-    private String layoutSizesProperty;
-    private float layoutXProperty = -1.0F;
-    private float layoutYProperty = -1.0F;
-    private float layoutZProperty = -1.0F;
-    private float layoutWidthProperty = -1.0F;
-    private float layoutHeightProperty = -1.0F;
-    private String extendedPropertyName1;
-    private String extendedPropertyValue1;
-    private String extendedPropertyName2;
-    private String extendedPropertyValue2;
-    private List preferences;
 
     private FragmentList fragmentsList;
-    private FragmentPropertyMap propertiesMap;
-    private FragmentPreferenceList fragmentPreferences;
-    private PageImpl page;
-
-    private static PermissionFactory pf;
-    
-    public static void setPermissionsFactory(PermissionFactory pf)
-    {
-        FragmentImpl.pf = pf;
-    }
-    
-    public FragmentImpl()
-    {
-        super(new FragmentSecurityConstraintsImpl());
-    }
 
     /**
      * accessFragments
@@ -92,68 +56,29 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         return fragments;
     }
 
-    /**
-     * accessPreferences
-     *
-     * Access mutable persistent collection member for List wrappers.
-     *
-     * @return persistent collection
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl#setBaseFragmentsElement(org.apache.jetspeed.om.page.impl.BaseFragmentsElementImpl)
      */
-    List accessPreferences()
-    {
-        // create initial collection if necessary
-        if (preferences == null)
-        {
-            preferences = DatabasePageManagerUtils.createList();
-        }
-        return preferences;
-    }
-
-    /**
-     * getPage
-     *
-     * Get page implementation that owns fragment.
-     *
-     * @return owning page implementation
-     */
-    PageImpl getPage()
-    {
-        return page;
-    }
-
-    /**
-     * setPage
-     *
-     * Set page implementation that owns fragment and
-     * propagate to all child fragments.
-     *
-     * @param page owning page implementation
-     */
-    void setPage(PageImpl page)
+    void setBaseFragmentsElement(BaseFragmentsElementImpl baseFragmentsElement)
     {
         // set page implementation
-        this.page = page;
+        super.setBaseFragmentsElement(baseFragmentsElement);
         // propagate to children
         if (fragments != null)
         {
             Iterator fragmentsIter = fragments.iterator();
             while (fragmentsIter.hasNext())
             {
-                ((FragmentImpl)fragmentsIter.next()).setPage(page);
+                ((BaseFragmentElementImpl)fragmentsIter.next()).setBaseFragmentsElement(baseFragmentsElement);
             }
         }
     }
 
-    /**
-     * getFragmentById
-     *
-     * Retrieve fragment with matching id from
-     * this or child fragments.
-     *
-     * @param id fragment id to retrieve.
-     * @return matched fragment
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#getFragmentById(java.lang.String)
+     * @see org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl#getFragmentById(java.lang.String)
      */
-    Fragment getFragmentById(String id)
+    public BaseFragmentElement getFragmentById(String id)
     {
         // check for match
         if (getId().equals(id))
@@ -166,7 +91,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
             Iterator fragmentsIter = fragments.iterator();
             while (fragmentsIter.hasNext())
             {
-                Fragment matchedFragment = ((FragmentImpl)fragmentsIter.next()).getFragmentById(id);
+                BaseFragmentElement matchedFragment = ((BaseFragmentElementImpl)fragmentsIter.next()).getFragmentById(id);
                 if (matchedFragment != null)
                 {
                     return matchedFragment;
@@ -176,16 +101,10 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         return null;
     }
 
-    /**
-     * removeFragmentById
-     *
-     * Remove fragment with matching id from
-     * child fragments.
-     *
-     * @param id fragment id to remove.
-     * @return removed fragment
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.Fragment#removeFragmentById(java.lang.String)
      */
-    Fragment removeFragmentById(String id)
+    public BaseFragmentElement removeFragmentById(String id)
     {
         // remove from deep children
         if (fragments != null)
@@ -193,13 +112,16 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
             Iterator fragmentsIter = fragments.iterator();
             while (fragmentsIter.hasNext())
             {
-                FragmentImpl fragment = (FragmentImpl)fragmentsIter.next();
+                BaseFragmentElementImpl fragment = (BaseFragmentElementImpl)fragmentsIter.next();
                 if (!fragment.getId().equals(id))
                 {
-                    Fragment removed = fragment.removeFragmentById(id);
-                    if (removed != null)
+                    if (fragment instanceof FragmentImpl)
                     {
-                        return removed;
+                        BaseFragmentElement removed = ((FragmentImpl)fragment).removeFragmentById(id);
+                        if (removed != null)
+                        {
+                            return removed;
+                        }
                     }
                 }
                 else
@@ -212,34 +134,20 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         return null;
     }
 
-    /**
-     * getFragmentsByName
-     *
-     * Retrieve fragments with matching name including
-     * this and child fragments.
-     *
-     * @param name fragment name to retrieve.
-     * @return list of matched fragments
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl#getFragmentsByName(java.lang.String)
      */
     List getFragmentsByName(String name)
     {
-        List matchedFragments = null;
         // check for match
-        if ((getName() != null) && getName().equals(name))
-        {
-            if (matchedFragments == null)
-            {
-                matchedFragments = DatabasePageManagerUtils.createList();
-            }
-            matchedFragments.add(this);
-        }
-        // match children
+        List matchedFragments = super.getFragmentsByName(name);
+        // match named children
         if (fragments != null)
         {
             Iterator fragmentsIter = fragments.iterator();
             while (fragmentsIter.hasNext())
             {
-                List matchedChildFragments = ((FragmentImpl)fragmentsIter.next()).getFragmentsByName(name);
+                List matchedChildFragments = ((BaseFragmentElementImpl)fragmentsIter.next()).getFragmentsByName(name);
                 if (matchedChildFragments != null)
                 {
                     if (matchedFragments == null)
@@ -256,293 +164,6 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         return matchedFragments;
     }
 
-    /**
-     * getPropertyMemberKeys
-     *
-     * Get valid explicit property member keys.
-     *
-     * @return list of property member keys with values
-     */
-    List getPropertyMemberKeys()
-    {
-        List keys = DatabasePageManagerUtils.createList();
-        if (layoutRowProperty >= 0)
-        {
-            keys.add(ROW_PROPERTY_NAME);
-        }
-        if (layoutColumnProperty >= 0)
-        {
-            keys.add(COLUMN_PROPERTY_NAME);
-        }
-        if (layoutSizesProperty != null)
-        {
-            keys.add(SIZES_PROPERTY_NAME);
-        }
-        if (layoutXProperty >= 0.0F)
-        {
-            keys.add(X_PROPERTY_NAME);
-        }
-        if (layoutYProperty >= 0.0F)
-        {
-            keys.add(Y_PROPERTY_NAME);
-        }
-        if (layoutZProperty >= 0.0F)
-        {
-            keys.add(Z_PROPERTY_NAME);
-        }
-        if (layoutWidthProperty >= 0.0F)
-        {
-            keys.add(WIDTH_PROPERTY_NAME);
-        }
-        if (layoutHeightProperty >= 0.0F)
-        {
-            keys.add(HEIGHT_PROPERTY_NAME);
-        }
-        if ((extendedPropertyName1 != null) && (extendedPropertyValue1 != null))
-        {
-            keys.add(extendedPropertyName1);
-        }
-        if ((extendedPropertyName2 != null) && (extendedPropertyValue2 != null))
-        {
-            keys.add(extendedPropertyName2);
-        }
-        return keys;
-    }
-
-    /**
-     * getPropertyMember
-     *
-     * Get explicit property member.
-     *
-     * @param key property name
-     * @return property setting
-     */
-    String getPropertyMember(String key)
-    {
-        // set fragment explicit property member
-        if (key.equals(ROW_PROPERTY_NAME))
-        {
-            if (layoutRowProperty >= 0)
-            {
-                return String.valueOf(layoutRowProperty);
-            }
-        }
-        else if (key.equals(COLUMN_PROPERTY_NAME))
-        {
-            if (layoutColumnProperty >= 0)
-            {
-                return String.valueOf(layoutColumnProperty);
-            }
-        }
-        else if (key.equals(SIZES_PROPERTY_NAME))
-        {
-            return layoutSizesProperty;
-        }
-        else if (key.equals(X_PROPERTY_NAME))
-        {
-            if (layoutXProperty >= 0.0F)
-            {
-                return String.valueOf(layoutXProperty);
-            }
-        }
-        else if (key.equals(Y_PROPERTY_NAME))
-        {
-            if (layoutYProperty >= 0.0F)
-            {
-                return String.valueOf(layoutYProperty);
-            }
-        }
-        else if (key.equals(Z_PROPERTY_NAME))
-        {
-            if (layoutZProperty >= 0.0F)
-            {
-                return String.valueOf(layoutZProperty);
-            }
-        }
-        else if (key.equals(WIDTH_PROPERTY_NAME))
-        {
-            if (layoutWidthProperty >= 0.0F)
-            {
-                return String.valueOf(layoutWidthProperty);
-            }
-        }
-        else if (key.equals(HEIGHT_PROPERTY_NAME))
-        {
-            if (layoutHeightProperty >= 0.0F)
-            {
-                return String.valueOf(layoutHeightProperty);
-            }
-        }
-        else if (key.equals(extendedPropertyName1))
-        {
-            return extendedPropertyValue1;
-        }
-        else if (key.equals(extendedPropertyName2))
-        {
-            return extendedPropertyValue2;
-        }
-        return null;
-    }
-
-    /**
-     * setPropertyMember
-     *
-     * Set explicit property member.
-     *
-     * @param key property name
-     * @param value property setting
-     */
-    void setPropertyMember(String key, String value)
-    {
-        // set fragment explicit property member
-        if (key.equals(ROW_PROPERTY_NAME))
-        {
-            layoutRowProperty = Integer.parseInt(value);
-        }
-        else if (key.equals(COLUMN_PROPERTY_NAME))
-        {
-            layoutColumnProperty = Integer.parseInt(value);
-        }
-        else if (key.equals(SIZES_PROPERTY_NAME))
-        {
-            layoutSizesProperty = value;
-        }
-        else if (key.equals(X_PROPERTY_NAME))
-        {
-            layoutXProperty = Float.parseFloat(value);
-        }
-        else if (key.equals(Y_PROPERTY_NAME))
-        {
-            layoutYProperty = Float.parseFloat(value);
-        }
-        else if (key.equals(Z_PROPERTY_NAME))
-        {
-            layoutZProperty = Float.parseFloat(value);
-        }
-        else if (key.equals(WIDTH_PROPERTY_NAME))
-        {
-            layoutWidthProperty = Float.parseFloat(value);
-        }
-        else if (key.equals(HEIGHT_PROPERTY_NAME))
-        {
-            layoutHeightProperty = Float.parseFloat(value);
-        }
-        else if (key.equals(extendedPropertyName1))
-        {
-            extendedPropertyValue1 = value;
-        }
-        else if (key.equals(extendedPropertyName2))
-        {
-            extendedPropertyValue2 = value;
-        }
-        else if (extendedPropertyName1 == null)
-        {
-            extendedPropertyName1 = key;
-            extendedPropertyValue1 = value;
-        }
-        else if (extendedPropertyName2 == null)
-        {
-            extendedPropertyName2 = key;
-            extendedPropertyValue2 = value;
-        }
-        else
-        {
-            throw new RuntimeException("Unable to set fragment property " + key + ", extended properties already used.");
-        }
-    }
-
-    /**
-     * clearPropertyMember
-     *
-     * Clear explicit property member.
-     *
-     * @param key property name
-     */
-    void clearPropertyMember(String key)
-    {
-        if (key.equals(ROW_PROPERTY_NAME))
-        {
-            layoutRowProperty = -1;
-        }
-        else if (key.equals(COLUMN_PROPERTY_NAME))
-        {
-            layoutColumnProperty = -1;
-        }
-        else if (key.equals(SIZES_PROPERTY_NAME))
-        {
-            layoutSizesProperty = null;
-        }
-        else if (key.equals(X_PROPERTY_NAME))
-        {
-            layoutXProperty = -1.0F;
-        }
-        else if (key.equals(Y_PROPERTY_NAME))
-        {
-            layoutYProperty = -1.0F;
-        }
-        else if (key.equals(Z_PROPERTY_NAME))
-        {
-            layoutZProperty = -1.0F;
-        }
-        else if (key.equals(WIDTH_PROPERTY_NAME))
-        {
-            layoutWidthProperty = -1.0F;
-        }
-        else if (key.equals(HEIGHT_PROPERTY_NAME))
-        {
-            layoutHeightProperty = -1.0F;
-        }
-        else if (key.equals(extendedPropertyName1))
-        {
-            extendedPropertyName1 = null;
-            extendedPropertyValue1 = null;
-        }
-        else if (key.equals(extendedPropertyName2))
-        {
-            extendedPropertyName2 = null;
-            extendedPropertyValue2 = null;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getEffectivePageSecurity()
-     */
-    public PageSecurity getEffectivePageSecurity()
-    {
-        // delegate to page implementation
-        if (page != null)
-        {
-            return page.getEffectivePageSecurity();
-        }
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getLogicalPermissionPath()
-     */
-    public String getLogicalPermissionPath()
-    {
-        // use page implementation path as base and append name
-        if ((page != null) && (getName() != null))
-        {
-            return page.getLogicalPermissionPath() + Folder.PATH_SEPARATOR + getName();
-        }
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getPhysicalPermissionPath()
-     */
-    public String getPhysicalPermissionPath()
-    {
-        // use page implementation path as base and append name
-        if ((page != null) && (getName() != null))
-        {
-            return page.getPhysicalPermissionPath() + Folder.PATH_SEPARATOR + getName();
-        }
-        return null;
-    }
-
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#resetCachedSecurityConstraints()
      */
@@ -555,62 +176,35 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
             Iterator fragmentsIter = fragments.iterator();
             while (fragmentsIter.hasNext())
             {
-                ((FragmentImpl)fragmentsIter.next()).resetCachedSecurityConstraints();
+                ((BaseFragmentElementImpl)fragmentsIter.next()).resetCachedSecurityConstraints();
             }
         }
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#checkPermissions(java.lang.String, int, boolean, boolean)
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getLogicalPermissionPath()
      */
-    public void checkPermissions(String path, int mask, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    public String getLogicalPermissionPath()
     {
-        // always check for granted fragment permissions
-        AccessController.checkPermission((Permission)pf.newPermission(pf.FRAGMENT_PERMISSION,path, mask));
+        // use base fragments implementation path as base and append name
+        if ((getBaseFragmentsElement() != null) && (getName() != null))
+        {
+            return getBaseFragmentsElement().getLogicalPermissionPath() + Folder.PATH_SEPARATOR + getName();
+        }
+        return null;
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.SecuredResource#getConstraintsEnabled()
+     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getPhysicalPermissionPath()
      */
-    public boolean getConstraintsEnabled()
+    public String getPhysicalPermissionPath()
     {
-        if (page != null)
+        // use base fragments implementation path as base and append name
+        if ((getBaseFragmentsElement() != null) && (getName() != null))
         {
-            return page.getConstraintsEnabled();
+            return getBaseFragmentsElement().getPhysicalPermissionPath() + Folder.PATH_SEPARATOR + getName();
         }
-        return false;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.common.SecuredResource#getPermissionsEnabled()
-     */
-    public boolean getPermissionsEnabled()
-    {
-        if (page != null)
-        {
-            return page.getPermissionsEnabled();
-        }
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getId()
-     */
-    public String getId()
-    {
-        if (fragmentId != null)
-        {
-            return fragmentId;
-        }
-        return super.getId();
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setId(java.lang.String)
-     */
-    public void setId(String fragmentId)
-    {
-        this.fragmentId = fragmentId;
+        return null;
     }
 
     /* (non-Javadoc)
@@ -630,70 +224,6 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getSkin()
-     */
-    public String getSkin()
-    {
-        return skin;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setSkin(java.lang.String)
-     */
-    public void setSkin(String skinName)
-    {
-        this.skin = skinName;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getDecorator()
-     */
-    public String getDecorator()
-    {
-        return decorator;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setDecorator(java.lang.String)
-     */
-    public void setDecorator(String decoratorName)
-    {
-        this.decorator = decoratorName;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getState()
-     */
-    public String getState()
-    {
-        return state;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setState(java.lang.String)
-     */
-    public void setState(String state)
-    {
-        this.state = state;
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getMode()
-     */
-    public String getMode()
-    {
-        return mode;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setMode(java.lang.String)
-     */
-    public void setMode(String mode)
-    {
-        this.mode = mode;
-    }
-
-    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getFragments()
      */
     public List getFragments()
@@ -706,295 +236,30 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
         }
         return filterFragmentsByAccess(fragmentsList, true);
     }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getProperty(java.lang.String)
-     */
-    public String getProperty(String propName)
-    {
-        return (String)getProperties().get(propName);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getIntProperty(java.lang.String)
-     */
-    public int getIntProperty(String propName)
-    {
-        String propValue = (String)getProperties().get(propName);
-        if (propValue != null)
-        {
-            return Integer.parseInt(propValue);
-        }
-        return -1;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getFloatProperty(java.lang.String)
-     */
-    public float getFloatProperty(String propName)
-    {
-        String propValue = (String)getProperties().get(propName);
-        if (propValue != null)
-        {
-            return Float.parseFloat(propValue);
-        }
-        return -1.0F;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getProperties()
-     */
-    public Map getProperties()
-    {
-        // initialize and return writable properties map
-        if (propertiesMap == null)
-        {
-            propertiesMap = new FragmentPropertyMap(this);
-        }
-        return propertiesMap;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutRow()
-     */
-    public int getLayoutRow()
-    {
-        // get standard int property
-        return getIntProperty(ROW_PROPERTY_NAME);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setLayoutRow(int)
-     */
-    public void setLayoutRow(int row)
-    {
-        // set standard int property
-        if (row >= 0)
-        {
-            getProperties().put(ROW_PROPERTY_NAME, String.valueOf(row));
-        }
-        else
-        {
-            getProperties().remove(ROW_PROPERTY_NAME);
-        }
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutColumn()
-     */
-    public int getLayoutColumn()
-    {
-        // get standard int property
-        return getIntProperty(COLUMN_PROPERTY_NAME);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setLayoutColumn(int)
-     */
-    public void setLayoutColumn(int column)
-    {
-        // set standard int property
-        if (column >= 0)
-        {
-            getProperties().put(COLUMN_PROPERTY_NAME, String.valueOf(column));
-        }
-        else
-        {
-            getProperties().remove(COLUMN_PROPERTY_NAME);
-        }
-    }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutSizes()
+     * @see org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl#validateFragments(org.apache.jetspeed.om.page.BaseFragmentValidationListener)
      */
-    public String getLayoutSizes()
+    protected boolean validateFragments(BaseFragmentValidationListener validationListener)
     {
-        // get standard string property
-        return getProperty(SIZES_PROPERTY_NAME);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setLayoutSizes(java.lang.String)
-     */
-    public void setLayoutSizes(String sizes)
-    {
-        // set standard string property
-        if (sizes != null)
+        // validate fragment using validation listener
+        if (!validationListener.validate(this))
         {
-            getProperties().put(SIZES_PROPERTY_NAME, sizes);
+            return false;
         }
-        else
+        // validate fragments using validation listener
+        if (fragments != null)
         {
-            getProperties().remove(SIZES_PROPERTY_NAME);
-        }
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutX()
-     */
-    public float getLayoutX()
-    {
-        // get standard float property
-        return getFloatProperty(X_PROPERTY_NAME);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setLayoutX(float)
-     */
-    public void setLayoutX(float x)
-    {
-        // set standard float property
-        if (x >= 0.0F)
-        {
-            getProperties().put(X_PROPERTY_NAME, String.valueOf(x));
-        }
-        else
-        {
-            getProperties().remove(X_PROPERTY_NAME);
-        }
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutY()
-     */
-    public float getLayoutY()
-    {
-        // get standard float property
-        return getFloatProperty(Y_PROPERTY_NAME);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setLayoutY(float)
-     */
-    public void setLayoutY(float y)
-    {
-        // set standard float property
-        if (y >= 0.0F)
-        {
-            getProperties().put(Y_PROPERTY_NAME, String.valueOf(y));
-        }
-        else
-        {
-            getProperties().remove(Y_PROPERTY_NAME);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutZ()
-     */
-    public float getLayoutZ()
-    {
-        // get standard float property
-        return getFloatProperty(Z_PROPERTY_NAME);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setLayoutZ(float)
-     */
-    public void setLayoutZ(float z)
-    {
-        // set standard float property
-        if (z >= 0.0F)
-        {
-            getProperties().put(Z_PROPERTY_NAME, String.valueOf(z));
-        }
-        else
-        {
-            getProperties().remove(Z_PROPERTY_NAME);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutWidth()
-     */
-    public float getLayoutWidth()
-    {
-        // get standard float property
-        return getFloatProperty(WIDTH_PROPERTY_NAME);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setLayoutWidth(float)
-     */
-    public void setLayoutWidth(float width)
-    {
-        // set standard float property
-        if (width >= 0.0F)
-        {
-            getProperties().put(WIDTH_PROPERTY_NAME, String.valueOf(width));
-        }
-        else
-        {
-            getProperties().remove(WIDTH_PROPERTY_NAME);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getLayoutHeight()
-     */
-    public float getLayoutHeight()
-    {
-        // get standard float property
-        return getFloatProperty(HEIGHT_PROPERTY_NAME);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setLayoutHeight(float)
-     */
-    public void setLayoutHeight(float height)
-    {
-        // set standard float property
-        if (height >= 0.0F)
-        {
-            getProperties().put(HEIGHT_PROPERTY_NAME, String.valueOf(height));
-        }
-        else
-        {
-            getProperties().remove(HEIGHT_PROPERTY_NAME);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#isReference()
-     */
-    public boolean isReference()
-    {
-        return false; // NYI
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#getPreferences()
-     */
-    public List getPreferences()
-    {
-        // return mutable preferences list
-        // by using list wrapper to manage
-        // element uniqueness
-        if (fragmentPreferences == null)
-        {
-            fragmentPreferences = new FragmentPreferenceList(this);
-        }
-        return fragmentPreferences;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.Fragment#setPreferences(java.util.List)
-     */
-    public void setPreferences(List preferences)
-    {
-        // set preferences by replacing existing
-        // entries with new elements if new collection
-        // is specified
-        List fragmentPreferences = getPreferences();
-        if (preferences != fragmentPreferences)
-        {
-            // replace all preferences
-            fragmentPreferences.clear();
-            if (preferences != null)
+            Iterator fragmentsIter = fragments.iterator();
+            while (fragmentsIter.hasNext())
             {
-                fragmentPreferences.addAll(preferences);
+                if (!((BaseFragmentElementImpl)fragmentsIter.next()).validateFragments(validationListener))
+                {
+                    return false;
+                }
             }
         }
+        return true;
     }
     
     /**
@@ -1016,7 +281,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
             Iterator checkAccessIter = fragments.iterator();
             while (checkAccessIter.hasNext())
             {
-                Fragment fragment = (Fragment)checkAccessIter.next();
+                BaseFragmentElement fragment = (BaseFragmentElement)checkAccessIter.next();
                 try
                 {
                     // check access
@@ -1040,7 +305,7 @@ public class FragmentImpl extends BaseElementImpl implements Fragment
                         Iterator copyIter = fragments.iterator();
                         while (copyIter.hasNext())
                         {
-                            Fragment copyFragment = (Fragment)copyIter.next();
+                            BaseFragmentElement copyFragment = (BaseFragmentElement)copyIter.next();
                             if (copyFragment != fragment)
                             {
                                 filteredFragments.add(copyFragment);

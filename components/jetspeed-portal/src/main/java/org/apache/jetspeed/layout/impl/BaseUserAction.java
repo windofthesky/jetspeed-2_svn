@@ -25,8 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.UserManager;
 
@@ -128,13 +128,13 @@ public abstract class BaseUserAction
     }
         
     // TODO: support nested fragments
-    public Fragment getFragmentIdFromLocation(int row, int column, Page page)
+    public ContentFragment getFragmentIdFromLocation(int row, int column, ContentPage page)
     {
-        Fragment root = page.getRootFragment();
+        ContentFragment root = page.getRootFragment();
         Iterator fragments = root.getFragments().iterator();
         while (fragments.hasNext())
         {
-            Fragment fragment = (Fragment)fragments.next();
+            ContentFragment fragment = (ContentFragment)fragments.next();
             if (fragment.getLayoutColumn() == column &&
                 fragment.getLayoutRow() == row)
             {
@@ -164,7 +164,7 @@ public abstract class BaseUserAction
         return parameter;
     }
     
-    public Fragment getParentFragmentById(String id, Fragment root)
+    public ContentFragment getParentFragmentById(String id, ContentFragment root)
     {
         if ( id == null )
         {
@@ -173,17 +173,17 @@ public abstract class BaseUserAction
         return searchForParentFragmentById( id, root );
     }
     
-    protected Fragment searchForParentFragmentById( String id, Fragment parent )
+    protected ContentFragment searchForParentFragmentById( String id, ContentFragment parent )
     {   
         // find fragment by id, tracking fragment parent
-        Fragment matchedParent = null;
+        ContentFragment matchedParent = null;
         if( parent != null ) 
         {
             // process the children
             List children = parent.getFragments();
             for( int i = 0, cSize = children.size() ; i < cSize ; i++) 
             {
-                Fragment childFrag = (Fragment)children.get( i );
+                ContentFragment childFrag = (ContentFragment)children.get( i );
                 if ( childFrag != null ) 
                 {
                     if ( id.equals( childFrag.getId() ) )

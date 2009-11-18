@@ -27,7 +27,7 @@ import javax.portlet.WindowState;
 
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedContentCache;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.container.PortletWindow;
 
@@ -57,7 +57,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
      *   reset all portlets on page to mode VIEW and window state NORMAL in the case of page navigation.
      * </p>
      */
-    public void changeAllPortletsToViewModeAndNormalWindowState(RequestContext context, Page page, PortletWindowRequestNavigationalStates requestStates, JetspeedContentCache cache, JetspeedContentCache decorationCache)
+    public void changeAllPortletsToViewModeAndNormalWindowState(RequestContext context, ContentPage page, PortletWindowRequestNavigationalStates requestStates, JetspeedContentCache cache, JetspeedContentCache decorationCache)
     {
         final PortletMode viewMode = PortletMode.VIEW;
         final WindowState normalWindowState = WindowState.NORMAL;
@@ -116,7 +116,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         } 
     }
     
-    public void sync(RequestContext context, Page page, 
+    public void sync(RequestContext context, ContentPage page, 
                      PortletWindowRequestNavigationalStates requestStates, 
                      JetspeedContentCache cache, JetspeedContentCache decorationCache)
     {
@@ -496,7 +496,7 @@ public class PortletWindowSessionNavigationalStates implements Serializable
         cache.invalidate(context);
     }
     
-    protected Map<String, PortletWindowBaseNavigationalState> getWindowStates(Page page)
+    protected Map<String, PortletWindowBaseNavigationalState> getWindowStates(ContentPage page)
     {
         PageState pageState = pageStates.get(page.getId());
         return pageState != null ? pageState.windowStates : null;

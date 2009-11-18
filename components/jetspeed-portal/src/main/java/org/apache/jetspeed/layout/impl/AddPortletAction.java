@@ -19,19 +19,19 @@ package org.apache.jetspeed.layout.impl;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Add Portlet portlet placement action
@@ -118,8 +118,8 @@ public class AddPortletAction
             	NestedFragmentContext addToFragmentContext = null;
             	if ( layoutId != null && layoutId.length() > 0 )
             	{
-            		Page page = requestContext.getPage();
-            		Fragment fragment = page.getFragmentById( layoutId );
+            		ContentPage page = requestContext.getPage();
+            		ContentFragment fragment = page.getFragmentById( layoutId );
             		if ( fragment == null )
             		{
             			success = false;
@@ -150,10 +150,10 @@ public class AddPortletAction
 
                 if ( addToFragmentContext != null )
                 {
-                	Page newPage = requestContext.getPage();
+                	ContentPage newPage = requestContext.getPage();
 
                 	// using NestedFragmentContext, find portlet id for copy of target portlet in the new page 
-                	Fragment newFragment = null;
+                	ContentFragment newFragment = null;
                 	try
                 	{
                 		newFragment = addToFragmentContext.getFragmentOnNewPage( newPage, getPortletRegistry() );
@@ -169,13 +169,8 @@ public class AddPortletAction
                 }
             }
             
-            Page page = requestContext.getPage();
-            
-            Fragment fragment = pageManager.newFragment();
-            fragment.setType( Fragment.PORTLET );
-            fragment.setName( portletId );
-            
-            Fragment placeInLayoutFragment = null;
+            ContentPage page = requestContext.getPage();
+            ContentFragment placeInLayoutFragment = null;
             if ( layoutId != null && layoutId.length() > 0 )
             {
                 placeInLayoutFragment = page.getFragmentById( layoutId );
@@ -188,7 +183,8 @@ public class AddPortletAction
             {
                 placeInLayoutFragment = page.getRootFragment();
             }
-
+            
+            ContentFragment fragment = placeInLayoutFragment.addPortlet(ContentFragment.PORTLET, portletId);
             success = placeFragment( requestContext,
                                      batch,
                                      resultMap,
@@ -237,7 +233,7 @@ public class AddPortletAction
     throws AJAXException
     {
     	// Look at each portlet currently on the page
-    	Page page = requestContext.getPage();
+    	ContentPage page = requestContext.getPage();
     	
     	boolean duplicateFound = isDuplicateFragment(page.getRootFragment(), portletId);
     	
@@ -247,7 +243,7 @@ public class AddPortletAction
     	}
     }
 
-    protected boolean isDuplicateFragment(Fragment fragment, String portletId) {
+    protected boolean isDuplicateFragment(ContentFragment fragment, String portletId) {
     	if(fragment != null) {
 	    	// Get the name of this fragment
 	    	String fragmentName = fragment.getName();
@@ -260,7 +256,7 @@ public class AddPortletAction
 	    		if(childFragments != null) {
 	    			for(int i = 0; i < childFragments.size(); i++) {
 	    				// Recursively call this method again to process the child fragments
-	    				if(isDuplicateFragment((Fragment)childFragments.get(i),portletId) == true) {
+	    				if(isDuplicateFragment((ContentFragment)childFragments.get(i),portletId) == true) {
 	    					// No need to continue to loop if a duplicate was found
 	    					return true;
 	    				}

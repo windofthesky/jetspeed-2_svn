@@ -58,11 +58,16 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-        <groupId>commons-configuration</groupId>
-        <artifactId>commons-configuration</artifactId>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
     </dependency>
 
     <!-- Test Dependencies -->
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-page-layout</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>

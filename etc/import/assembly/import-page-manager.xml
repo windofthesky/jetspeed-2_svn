@@ -47,7 +47,11 @@ limitations under the License.
         </property>
         <property name="transactionAttributes">
             <props>
+              <prop key="*">PROPAGATION_REQUIRED</prop>
               <prop key="getPage*">PROPAGATION_SUPPORTS</prop>  
+              <prop key="getPageTemplate*">PROPAGATION_SUPPORTS</prop>
+              <prop key="getDynamicPage*">PROPAGATION_SUPPORTS</prop>
+              <prop key="getFragmentDefinition*">PROPAGATION_SUPPORTS</prop>
               <prop key="getLink*">PROPAGATION_SUPPORTS</prop>  
               <prop key="getFolder*">PROPAGATION_SUPPORTS</prop>  
               <prop key="getContentPage">PROPAGATION_SUPPORTS</prop>  
@@ -55,6 +59,9 @@ limitations under the License.
               <prop key="getUserFolder">PROPAGATION_SUPPORTS</prop>  
               <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
               <prop key="removePage">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+              <prop key="removePageTemplate">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+              <prop key="removeDynamicPage">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+              <prop key="removeFragmentDefinition">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
               <prop key="removeFolder">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
               <prop key="removeLink">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
               <prop key="removePageSecurity">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>                            
@@ -63,6 +70,9 @@ limitations under the License.
               <prop key="addPages">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>              
               <prop key="folderExists">PROPAGATION_SUPPORTS</prop>  
               <prop key="pageExists">PROPAGATION_SUPPORTS</prop>  
+              <prop key="pageTemplateExists">PROPAGATION_SUPPORTS</prop>
+              <prop key="dynamicPageExists">PROPAGATION_SUPPORTS</prop>
+              <prop key="fragmentDefinitionExists">PROPAGATION_SUPPORTS</prop>
               <prop key="linkExists">PROPAGATION_SUPPORTS</prop>  
               <prop key="userFolderExists">PROPAGATION_SUPPORTS</prop>  
               <prop key="userPageExists">PROPAGATION_SUPPORTS</prop>  
@@ -91,6 +101,33 @@ limitations under the License.
        <constructor-arg index="4" ><ref bean="PageFileCache"/></constructor-arg>
   </bean>
   
+  <bean id="TpsmlDocumentHandler"
+       class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <constructor-arg index="0"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
+       <constructor-arg index="1"><value>.tpsml</value></constructor-arg>
+       <constructor-arg index="2" ><value>org.apache.jetspeed.om.page.psml.PageTemplateImpl</value></constructor-arg>       
+       <constructor-arg index="3" ><value>${org.apache.jetspeed.page.import.pages}</value></constructor-arg>
+       <constructor-arg index="4" ><ref bean="PageFileCache"/></constructor-arg>
+  </bean>
+
+  <bean id="DpsmlDocumentHandler"
+       class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <constructor-arg index="0"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
+       <constructor-arg index="1"><value>.dpsml</value></constructor-arg>
+       <constructor-arg index="2" ><value>org.apache.jetspeed.om.page.psml.DynamicPageImpl</value></constructor-arg>       
+       <constructor-arg index="3" ><value>${org.apache.jetspeed.page.import.pages}</value></constructor-arg>
+       <constructor-arg index="4" ><ref bean="PageFileCache"/></constructor-arg>
+  </bean>
+
+  <bean id="FpsmlDocumentHandler"
+       class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <constructor-arg index="0"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
+       <constructor-arg index="1"><value>.fpsml</value></constructor-arg>
+       <constructor-arg index="2" ><value>org.apache.jetspeed.om.page.psml.FragmentDefinitionImpl</value></constructor-arg>       
+       <constructor-arg index="3" ><value>${org.apache.jetspeed.page.import.pages}</value></constructor-arg>
+       <constructor-arg index="4" ><ref bean="PageFileCache"/></constructor-arg>
+  </bean>
+
   <bean id="LinkDocumentHandler"       
        class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
        <constructor-arg index="0"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
@@ -124,6 +161,15 @@ limitations under the License.
         <map>
           <entry key=".psml">
             <ref bean="PsmlDocumentHandler" />
+          </entry>
+          <entry key=".tpsml">
+            <ref bean="TpsmlDocumentHandler" />
+          </entry>
+          <entry key=".dpsml">
+            <ref bean="DpsmlDocumentHandler" />
+          </entry>
+          <entry key=".fpsml">
+            <ref bean="FpsmlDocumentHandler" />
           </entry>
           <entry key=".link">
             <ref bean="LinkDocumentHandler" />

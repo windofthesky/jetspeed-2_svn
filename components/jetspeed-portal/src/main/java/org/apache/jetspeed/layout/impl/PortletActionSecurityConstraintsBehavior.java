@@ -22,8 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.administration.PortalConfiguration;
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
 
@@ -40,13 +41,13 @@ public class PortletActionSecurityConstraintsBehavior
     protected Logger log = LoggerFactory.getLogger(PortletActionSecurityConstraintsBehavior.class);    
     protected String guest = "guest";
     
-    public PortletActionSecurityConstraintsBehavior(PageManager pageManager)
+    public PortletActionSecurityConstraintsBehavior(PageManager pageManager, PageLayoutComponent pageLayoutComponent)
     {
-    	this( pageManager, Boolean.FALSE );
+    	this( pageManager, pageLayoutComponent, Boolean.FALSE );
     }
-    public PortletActionSecurityConstraintsBehavior(PageManager pageManager, Boolean enableCreateUserPagesFromRolesOnEdit )
+    public PortletActionSecurityConstraintsBehavior(PageManager pageManager, PageLayoutComponent pageLayoutComponent, Boolean enableCreateUserPagesFromRolesOnEdit )
     {
-        super( pageManager, enableCreateUserPagesFromRolesOnEdit );
+        super( pageManager, pageLayoutComponent, enableCreateUserPagesFromRolesOnEdit );
         PortalConfiguration config = Jetspeed.getConfiguration();
         if (config != null)
         {
@@ -56,7 +57,7 @@ public class PortletActionSecurityConstraintsBehavior
 
     public boolean checkAccess(RequestContext context, String action)
     {
-        Page page = context.getPage();
+        ContentPage page = context.getPage();
         try
         {
             page.checkAccess(action);            

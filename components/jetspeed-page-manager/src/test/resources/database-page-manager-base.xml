@@ -83,7 +83,11 @@ limitations under the License.
                   for methods that directly or indirectly add cache transactions so that
                   they can properly rollback and cleanup thread local storage
               -->
+              <prop key="*">PROPAGATION_REQUIRED</prop>
               <prop key="getPage*">PROPAGATION_SUPPORTS</prop>  
+              <prop key="getPageTemplate*">PROPAGATION_SUPPORTS</prop>
+              <prop key="getDynamicPage*">PROPAGATION_SUPPORTS</prop>
+              <prop key="getFragmentDefinition*">PROPAGATION_SUPPORTS</prop>
               <prop key="getLink*">PROPAGATION_SUPPORTS</prop>  
               <prop key="getFolder*">PROPAGATION_SUPPORTS</prop>  
               <prop key="getContentPage">PROPAGATION_SUPPORTS</prop>  
@@ -91,6 +95,9 @@ limitations under the License.
               <prop key="getUserFolder">PROPAGATION_SUPPORTS</prop>  
               <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
               <prop key="removePage">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+              <prop key="removePageTemplate">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+              <prop key="removeDynamicPage">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
+              <prop key="removeFragmentDefinition">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
               <prop key="removeFolder">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
               <prop key="removeLink">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>
               <prop key="removePageSecurity">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>                            
@@ -99,6 +106,9 @@ limitations under the License.
               <prop key="addPages">PROPAGATION_REQUIRED,-org.apache.jetspeed.page.document.NodeException</prop>              
               <prop key="folderExists">PROPAGATION_SUPPORTS</prop>  
               <prop key="pageExists">PROPAGATION_SUPPORTS</prop>  
+              <prop key="pageTemplateExists">PROPAGATION_SUPPORTS</prop>
+              <prop key="dynamicPageExists">PROPAGATION_SUPPORTS</prop>
+              <prop key="fragmentDefinitionExists">PROPAGATION_SUPPORTS</prop>
               <prop key="linkExists">PROPAGATION_SUPPORTS</prop>  
               <prop key="userFolderExists">PROPAGATION_SUPPORTS</prop>  
               <prop key="userPageExists">PROPAGATION_SUPPORTS</prop>  

@@ -19,8 +19,8 @@ package org.apache.jetspeed.decoration;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 
 /**
@@ -51,7 +51,7 @@ public interface DecorationFactory
      * @see Theme
      * @see RequestContext
      */
-    Theme getTheme(Page page, RequestContext requestContext);
+    Theme getTheme(ContentPage page, RequestContext requestContext);
     
     /**
      * Returns a names portlet Decoration appropriate to the 
@@ -101,7 +101,7 @@ public interface DecorationFactory
      * @see Fragment
      * @see RequestContext
      */
-    Decoration getDecoration(Page page, Fragment fragment, RequestContext requestContext);
+    Decoration getDecoration(ContentPage page, ContentFragment fragment, RequestContext requestContext);
     
     /**
      * Indicates whether /desktop is enabled for the current portal request.

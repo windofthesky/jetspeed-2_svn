@@ -22,7 +22,6 @@ import java.util.Iterator;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
@@ -124,7 +123,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      * @param principal
      * @return
      */
-    public String generateEntityKey( Fragment fragment)
+    public String generateEntityKey( ContentFragment fragment)
     {
         return fragment.getId();
     }

@@ -140,6 +140,9 @@
         <entry key="SpacesService">
         	<ref bean="org.apache.jetspeed.services.Spaces" />
         </entry> 
+        <entry key="PageLayoutComponent">
+        	<ref bean="org.apache.jetspeed.layout.PageLayoutComponent" />
+        </entry> 
         <entry key="PreferencesService">
             <ref bean="org.apache.pluto.services.PreferencesService" />
         </entry> 

@@ -110,4 +110,13 @@ public interface GenericMetadata
      * @param fields
      */
     public void copyFields( Collection<LocalizedField> fields );
+
+    /**
+     * Get localized text from metadata
+     * 
+     * @param name text name
+     * @param locale preferred locale
+     * @return localized text or null if not available
+     */
+    public String getText(String name, Locale locale);
 }

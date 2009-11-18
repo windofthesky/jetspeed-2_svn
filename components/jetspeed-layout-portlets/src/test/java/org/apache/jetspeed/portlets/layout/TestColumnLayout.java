@@ -18,8 +18,8 @@ package org.apache.jetspeed.portlets.layout;
 
 import java.util.Iterator;
 
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.psml.FragmentImpl;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.impl.ContentFragmentImpl;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 
@@ -29,19 +29,19 @@ public class TestColumnLayout extends MockObjectTestCase
     
     private ColumnLayout layout;
 
-    private FragmentImpl f1;
+    private ContentFragmentImpl f1;
 
-    private FragmentImpl f2;
+    private ContentFragmentImpl f2;
 
-    private FragmentImpl f3;
+    private ContentFragmentImpl f3;
 
-    private FragmentImpl f4;
+    private ContentFragmentImpl f4;
 
-    private FragmentImpl f5;
+    private ContentFragmentImpl f5;
 
-    private FragmentImpl f6;
+    private ContentFragmentImpl f6;
     
-    private FragmentImpl f8;
+    private ContentFragmentImpl f8;
 
     public void testBasics() throws Exception
     {
@@ -61,7 +61,7 @@ public class TestColumnLayout extends MockObjectTestCase
         while (column0.hasNext())
         {
             idx++;
-            Fragment fragment = (Fragment) column0.next();
+            ContentFragment fragment = (ContentFragment) column0.next();
             assertEquals("f" + idx, fragment.getId());
         }
 
@@ -71,7 +71,7 @@ public class TestColumnLayout extends MockObjectTestCase
         assertEquals(f5, column1.next());
         assertEquals(f6, column1.next());
 
-        Fragment testFragment = layout.getFragmentAt(new LayoutCoordinate(0, 0));
+        ContentFragment testFragment = layout.getFragmentAt(new LayoutCoordinate(0, 0));
         assertNotNull(testFragment);
         assertEquals(f1, testFragment);
 
@@ -102,14 +102,12 @@ public class TestColumnLayout extends MockObjectTestCase
 
     public void testSameRowSameColumn() throws Exception
     {
-        FragmentImpl f1 = new FragmentImpl();
-        f1.setId("f1");
+        ContentFragmentImpl f1 = new ContentFragmentImpl("f1");
         f1.setName("test");
         f1.setLayoutRow(0);
         f1.setLayoutColumn(0);
 
-        FragmentImpl f2 = new FragmentImpl();
-        f2.setId("f2");
+        ContentFragmentImpl f2 = new ContentFragmentImpl("f2");
         f2.setName("test");
         f2.setLayoutRow(0);
         f2.setLayoutColumn(0);
@@ -124,7 +122,7 @@ public class TestColumnLayout extends MockObjectTestCase
         assertEquals(f2, column0.next());
         assertEquals(f1, column0.next());
 
-        Fragment testFragment = layout.getFragmentAt(0, 1);
+        ContentFragment testFragment = layout.getFragmentAt(0, 1);
         assertNotNull(testFragment);
         assertEquals(f1, testFragment);
 
@@ -136,14 +134,12 @@ public class TestColumnLayout extends MockObjectTestCase
 
     public void testColumnNotSet() throws Exception
     {
-        FragmentImpl f1 = new FragmentImpl();
-        f1.setId("f1");
+        ContentFragmentImpl f1 = new ContentFragmentImpl("f1");
         f1.setName("test");
         f1.setLayoutRow(0);
         f1.setLayoutColumn(0);
 
-        FragmentImpl f2 = new FragmentImpl();
-        f2.setId("f2");
+        ContentFragmentImpl f2 = new ContentFragmentImpl("f2");
         f2.setName("test");
         f2.setLayoutRow(0);
 
@@ -151,7 +147,7 @@ public class TestColumnLayout extends MockObjectTestCase
         layout.addFragment(f1);
         layout.addFragment(f2);
 
-        Fragment testFragment = layout.getFragmentAt(0, 0);
+        ContentFragment testFragment = layout.getFragmentAt(0, 0);
         assertNotNull(testFragment);
         assertEquals(f1, testFragment);
 
@@ -165,14 +161,12 @@ public class TestColumnLayout extends MockObjectTestCase
 
     public void testRowNotSet() throws Exception
     {
-        FragmentImpl f1 = new FragmentImpl();
-        f1.setId("f1");
+        ContentFragmentImpl f1 = new ContentFragmentImpl("f1");
         f1.setName("test");
         f1.setLayoutRow(0);
         f1.setLayoutColumn(0);
 
-        FragmentImpl f2 = new FragmentImpl();
-        f2.setId("f2");
+        ContentFragmentImpl f2 = new ContentFragmentImpl("f2");
         f2.setName("test");
         f2.setLayoutColumn(0);
 
@@ -180,7 +174,7 @@ public class TestColumnLayout extends MockObjectTestCase
         layout.addFragment(f1);
         layout.addFragment(f2);
 
-        Fragment testFragment = layout.getFragmentAt(0, 0);
+        ContentFragment testFragment = layout.getFragmentAt(0, 0);
         assertNotNull(testFragment);
         assertEquals(f1, testFragment);
 
@@ -191,8 +185,7 @@ public class TestColumnLayout extends MockObjectTestCase
 
     public void testColumnLimitExceeded() throws Exception
     {
-        FragmentImpl f1 = new FragmentImpl();
-        f1.setId("f1");
+        ContentFragmentImpl f1 = new ContentFragmentImpl("f1");
         f1.setLayoutRow(0);
         f1.setLayoutColumn(5);
 
@@ -200,15 +193,14 @@ public class TestColumnLayout extends MockObjectTestCase
         layout.addFragment(f1);
 
         // Exceeded columns just get dumped into the last column
-        Fragment testFragment = layout.getFragmentAt(2, 0);
+        ContentFragment testFragment = layout.getFragmentAt(2, 0);
         assertNotNull(testFragment);
         assertEquals(f1, testFragment);
     }
 
     public void testMovingRight() throws Exception
     {
-
-        Fragment movingFragment = layout.getFragmentAt(new LayoutCoordinate(0, 0));
+        ContentFragment movingFragment = layout.getFragmentAt(new LayoutCoordinate(0, 0));
         assertEquals(f1, movingFragment);
         assertEquals(f4, layout.getFragmentAt(new LayoutCoordinate(1, 0)));
 
@@ -235,7 +227,7 @@ public class TestColumnLayout extends MockObjectTestCase
 
     public void testMovingLeft() throws Exception
     {
-        Fragment movingFragment = layout.getFragmentAt(new LayoutCoordinate(1, 0));
+        ContentFragment movingFragment = layout.getFragmentAt(new LayoutCoordinate(1, 0));
         assertEquals(f4, movingFragment);
         assertEquals(f1, layout.getFragmentAt(new LayoutCoordinate(0, 0)));
         
@@ -293,8 +285,7 @@ public class TestColumnLayout extends MockObjectTestCase
 
         // This is a test to make sure the next row pointer is being decremented
         // correctly
-        FragmentImpl f7 = new FragmentImpl();
-        f7.setId("f7");
+        ContentFragmentImpl f7 = new ContentFragmentImpl("f7");
         f7.setName("test");
         f7.setLayoutRow(0);
         f7.setLayoutColumn(1);
@@ -314,7 +305,7 @@ public class TestColumnLayout extends MockObjectTestCase
         assertEquals(f6, layout.getFragmentAt(new LayoutCoordinate(0, 2)));
         assertEquals(f7, layout.getFragmentAt(new LayoutCoordinate(1, 0)));
 
-        // test that column consistency is maitained
+        // test that column consistency is maintained
         Iterator itr1 = layout.getColumn(1).iterator();
 
         itr1.next().equals(f7);
@@ -331,7 +322,7 @@ public class TestColumnLayout extends MockObjectTestCase
 
     public void testInvalidOperations() throws Exception
     {
-        // Create a mock that veridies events are NOT being fired on invalid operations
+        // Create a mock that verifies events are NOT being fired on invalid operations
         Mock listenerMock = mock(LayoutEventListener.class);
         layout.addLayoutEventListener((LayoutEventListener) listenerMock.proxy());
         listenerMock.expects(never()).method("handleEvent").withAnyArguments();
@@ -420,44 +411,37 @@ public class TestColumnLayout extends MockObjectTestCase
 
     protected void setUp() throws Exception
     {
-        f1 = new FragmentImpl();
-        f1.setId("f1");
+        f1 = new ContentFragmentImpl("f1");
         f1.setName("test");
         f1.setLayoutRow(0);
         f1.setLayoutColumn(0);
 
-        f2 = new FragmentImpl();
-        f2.setId("f2");
+        f2 = new ContentFragmentImpl("f2");
         f2.setName("test");
         f2.setLayoutRow(1);
         f2.setLayoutColumn(0);
 
-        f3 = new FragmentImpl();
-        f3.setId("f3");
+        f3 = new ContentFragmentImpl("f3");
         f3.setName("test");
         f3.setLayoutRow(2);
         f3.setLayoutColumn(0);
         
-        f4 = new FragmentImpl();
-        f4.setId("f4");
+        f4 = new ContentFragmentImpl("f4");
         f4.setName("test");
         f4.setLayoutRow(0);
         f4.setLayoutColumn(1);
         
-        f5 = new FragmentImpl();
-        f5.setId("f5");
+        f5 = new ContentFragmentImpl("f5");
         f5.setName("test");
         f5.setLayoutRow(1);
         f5.setLayoutColumn(1);
 
-        f6 = new FragmentImpl();
-        f6.setId("f6");
+        f6 = new ContentFragmentImpl("f6");
         f6.setName("test");
         f6.setLayoutRow(2);
         f6.setLayoutColumn(1);
         
-        f8 = new FragmentImpl();
-        f8.setId("f8");
+        f8 = new ContentFragmentImpl("f8");
         f8.setName("test");
         f8.setLayoutRow(1);
         f8.setLayoutColumn(2);
@@ -472,7 +456,7 @@ public class TestColumnLayout extends MockObjectTestCase
         layout.addFragment(f8);
     }
 
-    protected LayoutEvent createEvent(Fragment fragment, ColumnLayout layout, int eventType) throws Exception
+    protected LayoutEvent createEvent(ContentFragment fragment, ColumnLayout layout, int eventType) throws Exception
     {
         LayoutCoordinate fragmentOriginal = layout.getCoordinate(fragment);
         LayoutCoordinate fragmentNew;

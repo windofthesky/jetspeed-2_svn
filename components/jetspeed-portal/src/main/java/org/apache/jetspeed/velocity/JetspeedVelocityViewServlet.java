@@ -48,8 +48,8 @@ import org.apache.jetspeed.locator.LocatorDescriptor;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
-import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.portals.bridges.velocity.BridgesVelocityViewServlet;
 import org.apache.velocity.Template;
@@ -392,7 +392,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         {
             // get layout type and decoration, fallback to
             // page default decorations
-            Fragment layout = (Fragment) renderRequest.getAttribute(JetspeedVelocityPowerTool.LAYOUT_ATTR);
+            ContentFragment layout = (ContentFragment) renderRequest.getAttribute(JetspeedVelocityPowerTool.LAYOUT_ATTR);
             if (layout == null)
             {
                // layout = (Fragment) renderRequest.getAttribute(JetspeedPowerTool.FRAGMENT_ATTR);
@@ -403,7 +403,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             if (layoutDecoration == null)
             {
                 //Page page = (Page) renderRequest.getAttribute(PortalReservedParameters.PAGE_ATTRIBUTE_KEY);
-                Page page = requestContext.getPage();
+                ContentPage page = requestContext.getPage();
                 layoutDecoration = page.getEffectiveDefaultDecorator(layoutType);
             }
             

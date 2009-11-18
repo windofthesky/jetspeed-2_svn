@@ -46,7 +46,7 @@ import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
 import org.apache.jetspeed.request.RequestContext;
@@ -320,7 +320,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
      * 
      * @return
      */
-    public Page getPage()
+    public ContentPage getPage()
     {
         checkState();
         // return (Page)
