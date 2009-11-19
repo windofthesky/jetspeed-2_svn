@@ -231,11 +231,18 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
         }
     });
 
+    var cleanseForSelector = function(s) {
+    	return s.replace(/(\.|\#)/g, "\\$1");
+    }
+
+    Y.log(" *** replacing " + cleanseForSelector("widget.name#address.cool#3"));
+    
     var onRemoveComplete = function(id, o, args) { 
     	var id = id; // Transaction ID. 
     	var data = o.responseText; // Response data. 
     	var widgetId = args[0];
-    	// now remove it from the dom
+    	// widgetId = widgetId.replace("\.", "\\.");
+    	widgetId = cleanseForSelector(widgetId);
     	var widget = Y.one("#" + widgetId);
     	if (widget)
     	{
@@ -243,7 +250,6 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
     		widget.remove();
 	        if (parent.get('children').size() == 0)
 	        {
-	        	//node.plug(Y.Plugin.Drag);
 		    	var drop = new Y.DD.Drop({
 		        node: parent,
 		        groups: ['portlets']            
@@ -547,11 +553,11 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
 		    	var srcRegion = e.drag.get('node').get('region');
 		    	if (y >= srcRegion.top && y <= srcRegion.bottom && x >= srcRegion.left && x <= srcRegion.right)
 		    	{
-	//	    		Y.log("dragging over src");
+		    		//Y.log("dragging over src");
 		    	}	    	
 		    	else if (y >= region.top && y <= region.bottom && x >= region.left && x <= region.right)
 		    	{
-		    		//Y.log("**** HIT");
+		    		// Y.log("**** HIT");
 		    		portal.isMoving = true;
 		    		portal.movePortlet(e); 
 		    		portal.isMoving = false;
