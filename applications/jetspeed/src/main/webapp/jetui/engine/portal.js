@@ -420,15 +420,11 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
         }
         if (drag.get('node').data.get("toolbar"))
         {
-            drag.get('node').setStyle('visibility', '');
+            drag.get('node').setStyle('visibility', '');        	
         }
         else
         {
-            var x = drag.get('node').all('div');
-            if (x != null)
-            {
-            	x.setStyle('visibility', '');
-            }
+        	drag.get('node').get('children').setStyle('visibility', '');
         }        
         //drag.get('node').setStyle('border', '');                
         drag.get('node').removeClass('moving');
@@ -473,16 +469,9 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
     
     Y.DD.DDM.on('drag:start', function(e) {
         var drag = e.target;
-//        if (drag.target) {
-//            drag.target.set('locked', true);
-//        }
         var dragNode = drag.get('dragNode');
-        dragNode.set('innerHTML', drag.get('node').get('innerHTML'));
-        Y.log("class is " + drag.get('node').getAttribute('class'));
-        Y.log("node is " + drag.get('node').getAttribute('id'));
-
-        //        dragNode.setStyle('opacity','.5');
-//        dragNode.setAttribute('class', 'portlet purpleplanet');
+        var srcNode = drag.get('node');
+        dragNode.set('innerHTML', srcNode.get('innerHTML'));
 
         if (drag.get('node').data.get("toolbar"))
         {
@@ -490,15 +479,10 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
         }
         else
         {
-        	var x = drag.get('node').all('div');
-        	if (x != null)
-        	{
-        		x.setStyle('visibility', 'hidden');
-        	}
+        	srcNode.get('children').setStyle('visibility', 'hidden');
+            srcNode.addClass('moving');        	
         }
-        drag.get('node').setStyle('border', '1px dotted #black');        
-        drag.get('node').addClass('moving');
-        
+        //  drag.get('node').setStyle('border', '1px dotted #black');        
         lastX = drag.mouseXY[0];
         lastY = drag.mouseXY[1];
         //Y.log("starting drag " + lastX +  " , " + lastY);
