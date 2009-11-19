@@ -40,7 +40,7 @@ public interface JetspeedEngineConstants
     public static final String LOG4J_CONFIG_FILE = "log4j.file";
 
     /** The default value for the Log4J File */
-    public static final String LOG4J_CONFIG_FILE_DEFAULT = "/WEB-INF/conf/Log4j.properties";
+    public static final String LOG4J_CONFIG_FILE_DEFAULT = "/WEB-INF/classes/log4j.xml";
 
     /** This is the default log file to be used for logging */
     public static final String DEFAULT_LOGGER = "jetspeed";
