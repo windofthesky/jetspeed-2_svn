@@ -13,7 +13,27 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
+
+---------------------------------------------------------------------------------
+
+  Be carefull about white spaces and carriage returns because JSON YUI3 library
+  will complain about json parse error. The library is very picky and don't catch
+  comments at all...
+
+---------------------------------------------------------------------------------
 *#
+#if ($format == "json"){
+	"status": "$status",
+	"action": "$action",
+	"portlets": [#foreach($portlet in $portlets)    
+	#if($velocityCount > 1),#end{
+			"name":	"$!portlet.Name", 
+			"displayName": "$!portlet.DisplayName",
+			"description": "$!portlet.Description",
+			"image": "$portlet.Image"
+		}#end]
+}
+#else   
 <js>
     <status>$status</status>
     <action>$action</action>
@@ -25,3 +45,4 @@
     </portlets>
     
 </js>
+#end

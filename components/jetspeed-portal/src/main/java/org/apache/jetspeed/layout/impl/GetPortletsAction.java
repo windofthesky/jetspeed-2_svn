@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -98,8 +99,14 @@ public class GetPortletsAction
 //                }
 //                status = "refresh";
             }            
+            String type = getActionParameter(requestContext, TYPE );
+            String format = getActionParameter(requestContext, FORMAT );
+            
             String filter = getActionParameter(requestContext, FILTER);                                    
-            List portlets = retrievePortlets(requestContext, filter);            
+            List<PortletInfo> portlets = retrievePortlets(requestContext, filter); 
+            
+            resultMap.put(TYPE, type );
+            resultMap.put(FORMAT, format );
             resultMap.put(STATUS, status);
             resultMap.put(PORTLETS, portlets);
         } 
@@ -158,8 +165,14 @@ public class GetPortletsAction
                 else
                 {                                        
                     image = "images/portlets/applications-internet.png";
-                }                
-                list.add(new PortletInfo(uniqueName, portlet.getDisplayNameText(locale), portlet.getDescriptionText(locale), image));
+                }
+                
+
+                PortletInfo portInfo=new PortletInfo(uniqueName, 
+                		StringEscapeUtils.escapeXml(portlet.getDisplayNameText(locale)), 
+                        StringEscapeUtils.escapeXml(portlet.getDescriptionText(locale)), image);
+                
+                list.add(portInfo);
             }
         }            
         Collections.sort(list, this);

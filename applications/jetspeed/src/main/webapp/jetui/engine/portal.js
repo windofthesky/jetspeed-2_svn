@@ -1,5 +1,5 @@
 //Use loader to grab the modules needed
-YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'node-base', 'node-menunav', function(Y) {
+YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'dataschema-json', 'node-base', 'node-menunav', function(Y) {
 	
 	//	Retrieve the Node instance representing the root menu
 	//	(<div id="environments-menu">) and call the "plug" method
@@ -234,14 +234,11 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
     var cleanseForSelector = function(s) {
     	return s.replace(/(\.|\#)/g, "\\$1");
     }
-
-    Y.log(" *** replacing " + cleanseForSelector("widget.name#address.cool#3"));
     
     var onRemoveComplete = function(id, o, args) { 
     	var id = id; // Transaction ID. 
     	var data = o.responseText; // Response data. 
     	var widgetId = args[0];
-    	// widgetId = widgetId.replace("\.", "\\.");
     	widgetId = cleanseForSelector(widgetId);
     	var widget = Y.one("#" + widgetId);
     	if (widget)
@@ -439,6 +436,9 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
         persistMove(drag.get('node'));
     });
     
+
+	 
+
     var persistMove = function(drag) {
         if (drag.data.get("toolbar") == false) {
         	var uri = document.location.href;
@@ -459,6 +459,77 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
             var request = Y.io(uri);         	    	
         }    	
     };
+
+    var onLoadPortletComplete = function(id, o, args) { 
+    	var id = id; // Transaction ID. 
+    	var data = o.responseText; // Response data.
+		var node = args[0];		
+		var schemaPortletList = {
+			metaFields: {status:"status", action:"action"},
+			resultListLocator: "portlets", 
+			resultFields: [{key:"name"}, {key:"displayName"}, {key:"description"}, {key:"image"}]
+		};		
+		try {
+    		var dataOut = Y.DataSchema.JSON.apply(schemaPortletList, data);
+		} catch (err)
+		{
+    		Y.log("Error: " + err.message);
+			return;
+		}     
+		if(dataOut!=null)
+		{
+			// TODO: error handling
+			if(dataOut.error)
+			{
+				alert("Error: " + dataOut.error);
+			}
+			else
+			{						
+				var templatePanel = Y.Node.one("#portlet-body-html"); 				
+				for(var i=0; i<dataOut.results.length; i++)
+				{
+					var clone = templatePanel.cloneNode(true);
+					clone.setStyle('display', '');
+					var imgNode = clone.one('img');
+					if(imgNode!=null)
+					{
+						var url = imgNode.getAttribute('src');
+						var imgURL = url + "/" + dataOut.results[i].image;
+						imgNode.setAttribute('src', imgURL);
+						var nameNode = clone.one('#name');
+						nameNode.setContent(dataOut.results[i].displayName);
+						// TODO: add handlers for add and preview
+						// TODO: limit # of portlets to n...
+						// TODO: support paging...
+						node.appendChild(clone);
+					}
+				}
+			}
+		}
+
+		
+    };   
+	///////////////////////////////////////////////////
+	//
+    var loadPortlets = function(panel) {
+    	var uri = document.location.href;
+		uri = uri.replace("/ui", "/ajaxapi");
+	
+		var uri = uri + "?action=getportlets&format=json"; //"id=" + windowId + "&col=" + drag.data.get('column') + "&row=" + drag.data.get('row');
+	
+		//var uri = "http://localhost:8080/jetspeed/test.json";
+
+        Y.on('io:complete', onLoadPortletComplete, this, [panel]); 
+        var request = Y.io(uri);         	    	
+       	    	
+    };
+
+    var portletPanel = Y.Node.all('.portlet-panel-portlets');    
+    portletPanel.each(function(v, k) {
+        //v.on('click', loadPortlets(v));
+		loadPortlets(v);
+    });
+
 	var reallocateColumn = function(column) {
 	    var columns = Y.Node.all('.portal-layout-column');
 	    columns.each(function(v, k) {
