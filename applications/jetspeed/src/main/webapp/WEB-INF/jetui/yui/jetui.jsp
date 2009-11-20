@@ -52,6 +52,11 @@ limitations under the License.
 <title><%=jetui.getTitle(rc)%></title>
 <link rel="shortcut icon" href="<%=baseUrl%>images/jetspeed.jpg" type="image/x-icon" />
 <script type="text/javascript" src="<%=request.getContextPath()%>/javascript/yui/build/yui/yui-min.js"></script>
+<script language="javascript">
+var assetsDir = "assets/";
+var buildDir = "<%=request.getContextPath()%>/javascript/yui/build/" ;
+var yuiConfig = {base:"<%=request.getContextPath()%>/javascript/yui/build/", timeout: 10000, debug: true, useBrowserConsole: true}; // ({classNamePrefix: 'jet'})
+</script>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/jetui/css/portal.css"/>
 
 <%=jetui.includeHeaderResources(rc)%>
@@ -186,11 +191,6 @@ for (String style : jetui.getStyleSheets(rc))
 </div> <!-- end layout -->
 </div>
 </body>
-<script language="javascript">
-var assetsDir = "assets/";
-var buildDir = "<%=request.getContextPath()%>/javascript/yui/build/" ;
-var yuiConfig = {base:"<%=request.getContextPath()%>/javascript/yui/build/", timeout: 10000, debug: true, useBrowserConsole: true}; // ({classNamePrefix: 'jet'})
-</script>
 <script src="<%=request.getContextPath()%>/jetui/engine/portal.js"></script>
  
 </html>
