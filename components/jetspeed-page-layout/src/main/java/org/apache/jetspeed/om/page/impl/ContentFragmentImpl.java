@@ -31,6 +31,7 @@ import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.FragmentReference;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.pluto.container.PortletPreference;
 
@@ -49,6 +50,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
 
     private PageLayoutComponent pageLayoutComponent;
     private String id;
+    private Page page;
     private BaseFragmentsElement definition;
     private Fragment fragment;
     private FragmentReference reference;
@@ -108,15 +110,17 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * 
      * @param pageLayoutComponent PageLayoutComponent instance
      * @param id content fragment id
+     * @param page PSML page
      * @param definition PSML page, page template, or fragment definition
      * @param fragment PSML fragment
      * @param reference PSML page fragment reference
      * @param locked locked flag
      */
-    public ContentFragmentImpl(PageLayoutComponent pageLayoutComponent, String id, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
+    public ContentFragmentImpl(PageLayoutComponent pageLayoutComponent, String id, Page page, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
     {
         this.pageLayoutComponent = pageLayoutComponent;
         this.id = id;
+        this.page = page;
         this.definition = definition;
         this.fragment = fragment;
         this.reference = reference;
@@ -805,6 +809,16 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
     
     /**
+     * Get content page PSML page.
+     * 
+     * @return the PSML page
+     */
+    public Page getPage()
+    {
+        return page;
+    }
+
+    /**
      * Get content fragment PSML page, page template, or
      * fragment definition.
      * 
@@ -839,14 +853,16 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * Initialize content fragment.
      * 
      * @param pageLayoutComponent PageLayoutComponent instance
+     * @param page PSML page
      * @param definition PSML page, page template, or fragment definition
      * @param fragment PSML fragment
      * @param reference PSML page fragment reference
      * @param locked locked flag
      */
-    public void initialize(PageLayoutComponent pageLayoutComponent, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
+    public void initialize(PageLayoutComponent pageLayoutComponent, Page page, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
     {
         this.pageLayoutComponent = pageLayoutComponent;
+        this.page = page;
         this.definition = definition;
         this.fragment = fragment;
         this.reference = reference;
