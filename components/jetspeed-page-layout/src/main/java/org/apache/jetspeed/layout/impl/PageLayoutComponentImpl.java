@@ -176,9 +176,10 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
             if (contentFragmentImpl.isLocked())
             {
-                throw new IllegalArgumentException("Locked content fragment is not mutable");                
+                throw new IllegalArgumentException("Locked content fragment is not mutable");
             }
-            if (!(contentFragmentImpl.getDefinition() instanceof Page))
+            boolean contentFragmentDefinitionIsPage = (contentFragmentImpl.getDefinition() instanceof Page);
+            if (!contentFragmentDefinitionIsPage)
             {
                 throw new IllegalArgumentException("Only page fragments can be modified");                
             }
@@ -438,9 +439,10 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 throw new IllegalArgumentException("Cannot use move fragment operation between pages");                
             }
-            if (!contentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()) && (contentFragmentImpl.getReference() == null))
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof Page) && contentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()));
+            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
-                throw new IllegalArgumentException("Fragment reference and page not consistent");
+                throw new IllegalArgumentException("Fragment reference and page not consistent or mutable");
             }
             
             // retrieve current page and fragments from page manager
@@ -451,15 +453,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
                 throw new IllegalArgumentException("Move from fragmentId and page not consistent");
             }
             Fragment fromFragment = (Fragment)fromFragmentElement;
-            String pageFragmentId = null;
-            if (contentFragmentImpl.getDefinition().getPath().equals(page.getPath()))
-            {
-                pageFragmentId = contentFragmentImpl.getFragment().getId();
-            }
-            else
-            {
-                pageFragmentId = contentFragmentImpl.getReference().getId();
-            }
+            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
             BaseFragmentElement fragment = fromFragment.getFragmentById(pageFragmentId);
             if (fragment == null)
             {
@@ -843,22 +837,15 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 throw new IllegalArgumentException("Parent content fragment and page not consistent or locked");                
             }
-            if (!contentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()) && (contentFragmentImpl.getReference() == null))
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof Page) && contentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()));
+            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
-                throw new IllegalArgumentException("Fragment reference and page not consistent");
+                throw new IllegalArgumentException("Fragment reference and page not consistent or mutable");
             }
             
             // retrieve current page and fragment from page manager
             Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
-            String pageFragmentId = null;
-            if (contentFragmentImpl.getDefinition().getPath().equals(page.getPath()))
-            {
-                pageFragmentId = contentFragmentImpl.getFragment().getId();
-            }
-            else
-            {
-                pageFragmentId = contentFragmentImpl.getReference().getId();
-            }
+            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
             BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
             if (fragment == null)
             {
@@ -894,18 +881,16 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            if (contentFragmentImpl.isLocked())
+            boolean contentFragmentDefinitionIsPage = (contentFragmentImpl.getDefinition() instanceof Page);
+            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
-                throw new IllegalArgumentException("Locked content fragment is not mutable");                
-            }
-            if (!(contentFragmentImpl.getDefinition() instanceof Page))
-            {
-                throw new IllegalArgumentException("Only page fragments can be modified");                
+                throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
             }
             
             // retrieve current fragment and page from page manager
             Page page = pageManager.getPage(contentFragmentImpl.getDefinition().getPath());
-            BaseFragmentElement fragment = page.getFragmentById(contentFragmentImpl.getFragment().getId());
+            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
+            BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
             if (fragment == null)
             {
                 throw new IllegalArgumentException("Fragment and page not consistent");                
@@ -1049,7 +1034,8 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 throw new IllegalArgumentException("Locked content fragment is not mutable");                
             }
-            if (!(contentFragmentImpl.getDefinition() instanceof Page))
+            boolean contentFragmentDefinitionIsPage = (contentFragmentImpl.getDefinition() instanceof Page);
+            if (!contentFragmentDefinitionIsPage)
             {
                 throw new IllegalArgumentException("Only page fragments can be modified");                
             }
@@ -1097,18 +1083,16 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            if (contentFragmentImpl.isLocked())
+            boolean contentFragmentDefinitionIsPage = (contentFragmentImpl.getDefinition() instanceof Page);
+            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
-                throw new IllegalArgumentException("Locked content fragment is not mutable");                
-            }
-            if (!(contentFragmentImpl.getDefinition() instanceof Page))
-            {
-                throw new IllegalArgumentException("Only page fragments can be modified");                
+                throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
             }
             
             // retrieve current fragment and page from page manager
             Page page = pageManager.getPage(contentFragmentImpl.getDefinition().getPath());
-            BaseFragmentElement fragment = page.getFragmentById(contentFragmentImpl.getFragment().getId());
+            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
+            BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
             if (fragment == null)
             {
                 throw new IllegalArgumentException("Fragment and page not consistent");                
@@ -1202,18 +1186,16 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            if (contentFragmentImpl.isLocked())
+            boolean contentFragmentDefinitionIsPage = (contentFragmentImpl.getDefinition() instanceof Page);
+            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
-                throw new IllegalArgumentException("Locked content fragment is not mutable");                
-            }
-            if (!(contentFragmentImpl.getDefinition() instanceof Page))
-            {
-                throw new IllegalArgumentException("Only page fragments can be modified");                
+                throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
             }
             
             // retrieve current fragment and page from page manager
             Page page = pageManager.getPage(contentFragmentImpl.getDefinition().getPath());
-            BaseFragmentElement fragment = page.getFragmentById(contentFragmentImpl.getFragment().getId());
+            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
+            BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
             if (fragment == null)
             {
                 throw new IllegalArgumentException("Fragment and page not consistent");                
@@ -1281,18 +1263,16 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            if (contentFragmentImpl.isLocked())
+            boolean contentFragmentDefinitionIsPage = (contentFragmentImpl.getDefinition() instanceof Page);
+            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
-                throw new IllegalArgumentException("Locked content fragment is not mutable");                
-            }
-            if (!(contentFragmentImpl.getDefinition() instanceof Page))
-            {
-                throw new IllegalArgumentException("Only page fragments can be modified");                
+                throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
             }
             
             // retrieve current fragment and page from page manager
             Page page = pageManager.getPage(contentFragmentImpl.getDefinition().getPath());
-            BaseFragmentElement fragment = page.getFragmentById(contentFragmentImpl.getFragment().getId());
+            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
+            BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
             if (fragment == null)
             {
                 throw new IllegalArgumentException("Fragment and page not consistent");                
@@ -1350,18 +1330,16 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            if (contentFragmentImpl.isLocked())
+            boolean contentFragmentDefinitionIsPage = (contentFragmentImpl.getDefinition() instanceof Page);
+            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
-                throw new IllegalArgumentException("Locked content fragment is not mutable");                
-            }
-            if (!(contentFragmentImpl.getDefinition() instanceof Page))
-            {
-                throw new IllegalArgumentException("Only page fragments can be modified");                
+                throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
             }
             
             // retrieve current fragment and page from page manager
             Page page = pageManager.getPage(contentFragmentImpl.getDefinition().getPath());
-            BaseFragmentElement fragment = page.getFragmentById(contentFragmentImpl.getFragment().getId());
+            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
+            BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
             if (fragment == null)
             {
                 throw new IllegalArgumentException("Fragment and page not consistent");                
