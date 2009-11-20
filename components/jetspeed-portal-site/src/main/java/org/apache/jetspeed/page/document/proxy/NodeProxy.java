@@ -270,8 +270,9 @@ public abstract class NodeProxy extends SiteViewProxy
      *
      * @param definitions list of menu definitions to merge
      * @param node page or folder node that defines menu definitions
+     * @param override menu definition flag
      */
-    protected void mergeMenuDefinitionLocators(List definitions, Node node)
+    protected void mergeMenuDefinitionLocators(List definitions, Node node, boolean override)
     {
         // merge definitions into aggregated menu definition
         // locators if defined
@@ -293,7 +294,11 @@ public abstract class NodeProxy extends SiteViewProxy
                         {
                             menuDefinitionLocators = Collections.synchronizedList(new ArrayList(definitions.size() * 2));
                         }
-                        menuDefinitionLocators.add(new SiteViewMenuDefinitionLocator(definition, node));
+                        menuDefinitionLocators.add(new SiteViewMenuDefinitionLocator(definition, node, override));
+                    }
+                    else if (override)
+                    {
+                        throw new RuntimeException("Override menu definitions must be merged/added before others!");
                     }
                 }
             }

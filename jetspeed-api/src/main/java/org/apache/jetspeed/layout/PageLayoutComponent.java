@@ -16,12 +16,12 @@
  */
 package org.apache.jetspeed.layout;
 
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
 
 /**
  * Page layout component interface.
@@ -106,23 +106,37 @@ public interface PageLayoutComponent
     void incrementInDocumentOrder(ContentPage contentPage);
 
     /**
+     * Move fragment in page to another layout fragment in the same page.
+     *
+     * @param contentPage content page context
+     * @param fragmentId fragment id of fragment to move
+     * @param toFragmentId fragment id of new parent layout fragment
+     */
+    void moveFragment(ContentPage contentPage, String fragmentId, String toFragmentId);
+
+    /**
      * Move fragment from current parent layout fragment to another
      * layout fragment in the same page.
      *
      * @param contentPage content page context
      * @param fragmentId fragment id of fragment to move
-     * @param fromFragmentId fragment id of current parent layout fragment
+     * @param fromFragmentId fragment id of current parent layout fragment or
+     *                       or null if fragment to be found anywhere in page
      * @param toFragmentId fragment id of new parent layout fragment
      */
     void moveFragment(ContentPage contentPage, String fragmentId, String fromFragmentId, String toFragmentId);
 
     /**
-     * Construct a new content page hierarchy from PSML page.
+     * Construct a new content page hierarchy from PSML page, page
+     * templates, and fragment definitions.
      * 
      * @param page PSML page to construct content page from
+     * @param pageTemplate PSML page template to merge into content page
+     * @param fragmentDefinitions PSML fragment definitions referenced
+     *                            by page and/or page template
      * @return new content page
      */
-    ContentPage newContentPage(Page page);
+    ContentPage newContentPage(Page page, PageTemplate pageTemplate, Map fragmentDefinitions);
     
     /**
      * Create a new sibling folder with specified configuration and

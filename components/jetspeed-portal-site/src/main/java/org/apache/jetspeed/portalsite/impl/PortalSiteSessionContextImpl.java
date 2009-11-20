@@ -31,10 +31,11 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionEvent;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.DynamicPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerEventListener;
 import org.apache.jetspeed.page.document.Node;
@@ -49,6 +50,9 @@ import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfileLocatorProperty;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.User;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class encapsulates managed session state for and
@@ -90,6 +94,11 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     private transient Map profileLocators;
 
     /**
+     * forceReservedVisible - force reserved/hidden folders visible in site view
+     */
+    private transient boolean forceReservedVisible;
+
+    /**
      * userPrincipal - session user principal
      */
     private transient String userPrincipal;
@@ -123,12 +132,6 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     private transient boolean stale;
 
     /**
-     * store which pipeline we are serving
-     * 
-     */
-    private transient String pipeline = "";
-    
-    /**
      * locatorsLastUpdateCheck - time stamp of last locators update check.
      */
     private transient long locatorsLastUpdateCheck;
@@ -141,7 +144,6 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     public PortalSiteSessionContextImpl(PageManager pageManager)
     {
         this.pageManager = pageManager;
-        this.pipeline = "";
     }
 
     /**
@@ -152,7 +154,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public PortalSiteRequestContext newRequestContext(Map requestProfileLocators)
     {
-        return new PortalSiteRequestContextImpl(this, requestProfileLocators, true, true);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, true, true, false);
     }
 
     /**
@@ -165,7 +167,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback)
     {
-        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestFallback, true);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestFallback, true, false);
     }
 
     /**
@@ -180,7 +182,23 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback, boolean useHistory)
     {
-        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestFallback, useHistory);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestFallback, useHistory, false);
+    }
+
+    /**
+     * newRequestContext - create a new request context instance
+     *
+     * @param requestProfileLocators request profile locators
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     * @param forceReservedVisible force reserved/hidden folders visible in site view
+     * @return new request context instance
+     */
+    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback, boolean useHistory, boolean forceReservedVisible)
+    {
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestFallback, useHistory, forceReservedVisible);
     }
 
     /**
@@ -191,14 +209,15 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *                        if locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
+     * @param forceReservedVisible force reserved/hidden folders visible for request
      * @return selected page proxy for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public Page selectRequestPage(Map requestProfileLocators, boolean requestFallback, boolean useHistory) throws NodeNotFoundException
+    public Page selectRequestPage(Map requestProfileLocators, boolean requestFallback, boolean useHistory, boolean forceReservedVisible) throws NodeNotFoundException
     {
         // validate and update session profile locators if modified
-        if (updateSessionProfileLocators(requestProfileLocators))
+        if (updateSessionProfileLocators(requestProfileLocators, forceReservedVisible))
         {
             // extract page request path from the locators
             String requestPath = Folder.PATH_SEPARATOR;
@@ -664,14 +683,15 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * getRequestRootFolder - select root folder proxy for given profile locators
      *
      * @param requestProfileLocators map of profile locators for request
+     * @param requestForceReservedVisible force reserved/hidden folders visible for request
      * @return root folder proxy for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public Folder getRequestRootFolder(Map requestProfileLocators) throws NodeNotFoundException
+    public Folder getRequestRootFolder(Map requestProfileLocators, boolean requestForceReservedVisible) throws NodeNotFoundException
     {
         // validate and update session profile locators if modified
-        if (updateSessionProfileLocators(requestProfileLocators))
+        if (updateSessionProfileLocators(requestProfileLocators, requestForceReservedVisible))
         {
             // valid site view required from session profile locators
             SiteView view = getSiteView();
@@ -691,9 +711,10 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *                                session profile locators
      *
      * @param requestProfileLocators map of profile locators for request
+     * @param requestForceReservedVisible force reserved/hidden folders visible for request
      * @return profile locators validation flag
      */
-    private boolean updateSessionProfileLocators(Map requestProfileLocators)
+    private boolean updateSessionProfileLocators(Map requestProfileLocators, boolean requestForceReservedVisible)
     {
         // request profile locators are required
         if ((requestProfileLocators != null) && !requestProfileLocators.isEmpty())
@@ -727,6 +748,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             // this session context
             boolean userUpdate = false;
             boolean locatorsUpdate = false;
+            boolean forceReservedVisibleUpdate = false;
             boolean updated = false;
             synchronized (this)
             {
@@ -734,7 +756,8 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                               ((userPrincipal != null) && !userPrincipal.equals(currentUserPrincipal)));
                 locatorsUpdate = ((profileLocators == null) ||
                                   !locatorsEquals(profileLocators, requestProfileLocators));
-                if (stale || userUpdate || locatorsUpdate)
+                forceReservedVisibleUpdate = (forceReservedVisible != requestForceReservedVisible);
+                if (stale || userUpdate || locatorsUpdate || forceReservedVisibleUpdate)
                 {
                     // reset cached session profile locators, view,
                     // folder page history, menu definition locators,
@@ -758,6 +781,10 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     {
                         debug.append("/locators");
                     }
+                    if (forceReservedVisibleUpdate)
+                    {
+                        debug.append("/force reserved visible");
+                    }
                     if (stale)
                     {
                         debug.append("/stale");
@@ -766,6 +793,18 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 else if (locatorsUpdate)
                 {
                     debug.append("Updated locators");
+                    if (forceReservedVisibleUpdate)
+                    {
+                        debug.append("/force reserved visible");
+                    }
+                    if (stale)
+                    {
+                        debug.append("/stale");
+                    }
+                }
+                else if (forceReservedVisibleUpdate)
+                {
+                    debug.append("Updated force reserved visible");
                     if (stale)
                     {
                         debug.append("/stale");
@@ -863,7 +902,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 // may arrive during construction of the site view which
                 // might then result in synchronized deadlock with page
                 // manager or page manager cache internals
-                view = new SiteView(pageManager, profileLocators);
+                view = new SiteView(pageManager, profileLocators, forceReservedVisible);
 
                 // update site view if not already made available by another
                 // request thread
@@ -928,11 +967,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     {
         // return standard menu names defined for site view
         SiteView view = getSiteView();
-        if (view != null)
-        {
-            return view.getStandardMenuNames();
-        }
-        return null;
+        return ((view != null) ? view.getStandardMenuNames() : null);            
     }
 
     /**
@@ -946,11 +981,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     {
         // return menu definition locators for node in site view
         SiteView view = getSiteView();
-        if (view != null)
-        {
-            return view.getMenuDefinitionLocators(node);
-        }
-        return null;
+        return ((view != null) ? view.getMenuDefinitionLocators(node) : null);            
     }
 
     /**
@@ -965,11 +996,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     {
         // return named menu definition locator for node in site view
         SiteView view = getSiteView();
-        if (view != null)
-        {
-            return view.getMenuDefinitionLocator(node, name);
-        }
-        return null;
+        return ((view != null) ? view.getMenuDefinitionLocator(node, name) : null);            
     }
 
     /**
@@ -982,11 +1009,49 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     {
         // return managed page in site view
         SiteView view = getSiteView();
-        if (view != null)
-        {
-            return view.getManagedPage(page);            
-        }
-        return null;
+        return ((view != null) ? view.getManagedPage(page) : null);            
+    }
+
+    /**
+     * getManagedPageTemplate - get concrete page template instance from page
+     *                          template proxy
+     *  
+     * @param pageTemplate page template proxy
+     * @return managed page template
+     */
+    public PageTemplate getManagedPageTemplate(PageTemplate pageTemplate)
+    {
+        // return managed page template in site view
+        SiteView view = getSiteView();
+        return ((view != null) ? view.getManagedPageTemplate(pageTemplate) : null);            
+    }
+
+    /**
+     * getManagedDynamicPage - get concrete dynamic page instance from dynamic
+     *                         page proxy
+     *  
+     * @param dynamicPage dynamic page proxy
+     * @return managed dynamic page
+     */
+    public DynamicPage getManagedDynamicPage(DynamicPage dynamicPage)
+    {
+        // return managed dynamic page in site view
+        SiteView view = getSiteView();
+        return ((view != null) ? view.getManagedDynamicPage(dynamicPage) : null);            
+    }
+
+    /**
+     * getManagedFragmentDefinition - get concrete dynamic page instance from
+     *                                fragment definition proxy
+     *  
+     * @param fragmentDefinition fragment definition proxy
+     * @return managed fragment definition
+     */
+    public FragmentDefinition getManagedFragmentDefinition(FragmentDefinition fragmentDefinition)
+    {
+        // return managed fragment definition in site view
+        SiteView view = getSiteView();
+        return ((view != null) ? view.getManagedFragmentDefinition(fragmentDefinition) : null);            
     }
 
     /**
@@ -1314,14 +1379,4 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
 		}
 		return folderPageHistory;
 	}
-    
-    public void setPipeline(String pipeline)
-    {
-        this.pipeline = pipeline;
-    }
-    
-    public String getPipeline()
-    {
-        return this.pipeline;
-    }
 }

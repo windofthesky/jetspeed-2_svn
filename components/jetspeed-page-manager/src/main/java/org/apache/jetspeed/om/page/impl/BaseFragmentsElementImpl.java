@@ -17,6 +17,7 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jetspeed.JetspeedActions;
@@ -202,14 +203,27 @@ public abstract class BaseFragmentsElementImpl extends DocumentImpl implements B
         BaseFragmentElementImpl rootFragment = (BaseFragmentElementImpl)getRootFragment();
         if (rootFragment != null)
         {
-            if (rootFragment.getId().equals(id))
+            if (!rootFragment.getId().equals(id))
             {
-                setRootFragment(null);
-                return rootFragment;
+                if (rootFragment instanceof FragmentImpl)
+                {
+                    return ((FragmentImpl)rootFragment).removeFragmentById(id);
+                }
             }
-            else if (rootFragment instanceof FragmentImpl)
+            else
             {
-                return ((FragmentImpl)rootFragment).removeFragmentById(id);
+                try
+                {
+                    // check access
+                    rootFragment.checkAccess(JetspeedActions.EDIT);
+                    
+                    // remove fragment
+                    setRootFragment(null);
+                    return rootFragment;
+                }
+                catch (SecurityException se)
+                {
+                }
             }
         }
         return null;
@@ -222,11 +236,48 @@ public abstract class BaseFragmentsElementImpl extends DocumentImpl implements B
     {
         // get fragments by name and filter by access
         BaseFragmentElementImpl rootFragment = (BaseFragmentElementImpl)getRootFragment();
-        if (rootFragment instanceof FragmentImpl)
+        if (rootFragment != null)
         {
-            // return immutable filtered fragment list
-            FragmentImpl rootFragmentImpl = (FragmentImpl)rootFragment;
-            return rootFragmentImpl.filterFragmentsByAccess(rootFragmentImpl.getFragmentsByName(name), false);
+            if (rootFragment instanceof FragmentImpl)
+            {
+                // return immutable filtered fragment list
+                FragmentImpl rootFragmentImpl = (FragmentImpl)rootFragment;
+                return rootFragmentImpl.filterFragmentsByAccess(rootFragmentImpl.getFragmentsByName(name), false);
+            }
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.BaseFragmentsElement#getFragmentsByInterface(java.lang.Class)
+     */
+    public List getFragmentsByInterface(Class interfaceFilter)
+    {
+        // get fragments by interface and filter by access
+        BaseFragmentElementImpl rootFragment = (BaseFragmentElementImpl)getRootFragment();
+        if (rootFragment != null)
+        {
+            if (rootFragment instanceof FragmentImpl)
+            {
+                // return immutable filtered fragment list
+                FragmentImpl rootFragmentImpl = (FragmentImpl)rootFragment;
+                return rootFragmentImpl.filterFragmentsByAccess(rootFragmentImpl.getFragmentsByInterface(interfaceFilter), false);
+            }
+            else if ((interfaceFilter == null) || interfaceFilter.isInstance(rootFragment))
+            {
+                try
+                {
+                    // check access
+                    rootFragment.checkAccess(JetspeedActions.VIEW);
+                    // return immutable filtered fragment list
+                    List fragmentsList = new ArrayList();
+                    fragmentsList.add(rootFragment);
+                    return fragmentsList;
+                }
+                catch (SecurityException se)
+                {
+                }
+            }
         }
         return null;
     }

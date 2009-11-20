@@ -27,14 +27,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.page.DynamicPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
+import org.apache.jetspeed.om.page.proxy.DynamicPageProxy;
+import org.apache.jetspeed.om.page.proxy.FragmentDefinitionProxy;
 import org.apache.jetspeed.om.page.proxy.LinkProxy;
 import org.apache.jetspeed.om.page.proxy.PageProxy;
+import org.apache.jetspeed.om.page.proxy.PageTemplateProxy;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
@@ -47,7 +51,6 @@ import org.apache.jetspeed.page.document.proxy.NodeProxy;
 import org.apache.jetspeed.page.document.proxy.NodeSetImpl;
 import org.apache.jetspeed.portalsite.view.SiteView;
 import org.apache.jetspeed.portalsite.view.SiteViewSearchPath;
-import org.apache.jetspeed.request.RequestContext;
 
 /**
  * This class proxies PSML Folder instances to create a logical view
@@ -63,8 +66,12 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      */
     protected static final Method GET_ALL_METHOD = reflectMethod(Folder.class, "getAll", null);
     protected static final Method GET_DEFAULT_PAGE_METHOD = reflectMethod(Folder.class, "getDefaultPage", null);
+    protected static final Method GET_DYNAMIC_PAGES_METHOD = reflectMethod(Folder.class, "getDynamicPages", null);
+    protected static final Method GET_DYNAMIC_PAGE_METHOD = reflectMethod(Folder.class, "getDynamicPage", new Class[]{String.class});
     protected static final Method GET_FOLDERS_METHOD = reflectMethod(Folder.class, "getFolders", null);
     protected static final Method GET_FOLDER_METHOD = reflectMethod(Folder.class, "getFolder", new Class[]{String.class});
+    protected static final Method GET_FRAGMENT_DEFINITIONS_METHOD = reflectMethod(Folder.class, "getFragmentDefinitions", null);
+    protected static final Method GET_FRAGMENT_DEFINITION_METHOD = reflectMethod(Folder.class, "getFragmentDefinition", new Class[]{String.class});
     protected static final Method GET_LINKS_METHOD = reflectMethod(Folder.class, "getLinks", null);
     protected static final Method GET_LINK_METHOD = reflectMethod(Folder.class, "getLink", new Class[]{String.class});
     protected static final Method GET_MENU_DEFINITIONS_METHOD = reflectMethod(Folder.class, "getMenuDefinitions", null);
@@ -73,6 +80,8 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     protected static final Method GET_PAGES_METHOD = reflectMethod(Folder.class, "getPages", null);
     protected static final Method GET_PAGE_METHOD = reflectMethod(Folder.class, "getPage", new Class[]{String.class});
     protected static final Method GET_PAGE_SECURITY_METHOD = reflectMethod(Folder.class, "getPageSecurity", null);
+    protected static final Method GET_PAGE_TEMPLATES_METHOD = reflectMethod(Folder.class, "getPageTemplates", null);
+    protected static final Method GET_PAGE_TEMPLATE_METHOD = reflectMethod(Folder.class, "getPageTemplate", new Class[]{String.class});
     protected static final Method GET_SHORT_TITLE_LOCALE_METHOD = reflectMethod(Folder.class, "getShortTitle", new Class[]{Locale.class});
     protected static final Method GET_SHORT_TITLE_METHOD = reflectMethod(Folder.class, "getShortTitle", null);
     protected static final Method GET_TITLE_LOCALE_METHOD = reflectMethod(Folder.class, "getTitle", new Class[]{Locale.class});
@@ -87,6 +96,11 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      * titledFolder - titled proxy delegate folder instance
      */
     private Folder titledFolder;
+
+    /**
+     * forceReservedVisible - flag used to suppress child reserved/hidden folder visibility checks
+     */
+    private boolean forceReservedVisible;
 
     /**
      * children - aggregated proxy sub-folder, page, and link nodes
@@ -117,6 +131,36 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      * pagesAggregated - boolean flag to indicate pages aggregated
      */
     private boolean pagesAggregated;
+
+    /**
+     * pageTemplates - aggregated proxy page template nodes
+     */
+    private NodeSet pageTemplates;
+
+    /**
+     * pageTemplatesAggregated - boolean flag to indicate page templates aggregated
+     */
+    private boolean pageTemplatesAggregated;
+
+    /**
+     * dynamicPages - aggregated proxy dynamic page nodes
+     */
+    private NodeSet dynamicPages;
+
+    /**
+     * dynamicPagesAggregated - boolean flag to indicate dynamic pages aggregated
+     */
+    private boolean dynamicPagesAggregated;
+
+    /**
+     * fragmentDefinitions - aggregated proxy fragment definition nodes
+     */
+    private NodeSet fragmentDefinitions;
+
+    /**
+     * fragmentDefinitionsAggregated - boolean flag to indicate fragment definitions aggregated
+     */
+    private boolean fragmentDefinitionsAggregated;
 
     /**
      * links - aggregated proxy link nodes
@@ -164,10 +208,11 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      *                    with the proxy delegate
      * @param parentFolder view parent proxy folder
      * @param folder proxy delegate
+     * @param forceReservedVisible suppress reserved/hidden folder visibility checks
      */
-    public static Folder newInstance(SiteView view, String locatorName, Folder parentFolder, Folder folder)
+    public static Folder newInstance(SiteView view, String locatorName, Folder parentFolder, Folder folder, boolean forceReservedVisible)
     {
-        return (Folder)Proxy.newProxyInstance(folder.getClass().getClassLoader(), new Class[]{Folder.class}, new FolderProxy(view, locatorName, parentFolder, folder));
+        return (Folder)Proxy.newProxyInstance(folder.getClass().getClassLoader(), new Class[]{Folder.class}, new FolderProxy(view, locatorName, parentFolder, folder, forceReservedVisible));
     }
 
     /**
@@ -178,12 +223,14 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      *                    with the proxy delegate
      * @param parentFolder view parent proxy folder
      * @param folder proxy delegate
+     * @param forceReservedVisible suppress reserved/hidden folder visibility checks
      */
-    private FolderProxy(SiteView view, String locatorName, Folder parentFolder, Folder folder)
+    private FolderProxy(SiteView view, String locatorName, Folder parentFolder, Folder folder, boolean forceReservedVisible)
     {
         super(view, locatorName, parentFolder, folder.getName(), folder.isHidden());
         this.defaultFolder = selectDefaultFromAggregateFolders(folder);
         this.titledFolder = selectTitledFromAggregateFolders(this.defaultFolder);
+        this.forceReservedVisible = forceReservedVisible;
     }
     
     /**
@@ -207,6 +254,14 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         {
             return getDefaultPage(proxy);
         }
+        else if (m.equals(GET_DYNAMIC_PAGES_METHOD))
+        {
+            return getDynamicPages(proxy);
+        }
+        else if (m.equals(GET_DYNAMIC_PAGE_METHOD))
+        {
+            return getDynamicPage(proxy, (String)args[0]);
+        }
         else if (m.equals(GET_FOLDERS_METHOD))
         {
             return getFolders(proxy);
@@ -214,6 +269,14 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         else if (m.equals(GET_FOLDER_METHOD))
         {
             return getFolder(proxy, (String)args[0]);
+        }
+        else if (m.equals(GET_FRAGMENT_DEFINITIONS_METHOD))
+        {
+            return getFragmentDefinitions(proxy);
+        }
+        else if (m.equals(GET_FRAGMENT_DEFINITION_METHOD))
+        {
+            return getFragmentDefinition(proxy, (String)args[0]);
         }
         else if (m.equals(GET_LINKS_METHOD))
         {
@@ -242,6 +305,14 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         else if (m.equals(GET_PAGE_METHOD))
         {
             return getPage(proxy, (String)args[0]);
+        }
+        else if (m.equals(GET_PAGE_TEMPLATES_METHOD))
+        {
+            return getPageTemplates(proxy);
+        }
+        else if (m.equals(GET_PAGE_TEMPLATE_METHOD))
+        {
+            return getPageTemplate(proxy, (String)args[0]);
         }
         else if (m.equals(GET_SHORT_TITLE_LOCALE_METHOD))
         {
@@ -495,6 +566,147 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     }
 
     /**
+     * getDynamicPages - proxy implementation of Folder.getDynamicPages()
+     *
+     * @param proxy this folder proxy
+     * @return list containing all dynamic pages in folder
+     * @throws NodeException
+     */
+    public NodeSet getDynamicPages(Object proxy) throws NodeException
+    {
+        // latently subset dynamic pages by type from aggregated children
+        if (!dynamicPagesAggregated)
+        {
+            NodeSet allChildren = getAll(proxy);
+            if (allChildren != null)
+            {
+                dynamicPages = allChildren.subset(DynamicPage.DOCUMENT_TYPE);
+            }
+            dynamicPagesAggregated = true;
+        }
+        return dynamicPages;
+    }
+    
+    /**
+     * getDynamicPage - proxy implementation of Folder.getDynamicPage()
+     *
+     * @param proxy this folder proxy
+     * @param name dynamic page name including extension
+     * @return dynamic page
+     * @throws PageNotFoundException
+     * @throws NodeException
+     */
+    public DynamicPage getDynamicPage(Object proxy, String name) throws PageNotFoundException, NodeException
+    {
+        // search for dynamic page by name or absolute path from
+        // aggregated dynamic pages
+        NodeSet allDynamicPages = getDynamicPages(proxy);
+        if (allDynamicPages != null)
+        {
+            DynamicPage dynamicPage = (DynamicPage)allDynamicPages.get(name);
+            if (dynamicPage != null)
+            {
+                return dynamicPage;
+            }
+        }
+        throw new PageNotFoundException("DynamicPage " + name + " not found at " + getPath());
+    }
+
+    /**
+     * getPageTemplates - proxy implementation of Folder.getPageTemplates()
+     *
+     * @param proxy this folder proxy
+     * @return list containing all page templates in folder
+     * @throws NodeException
+     */
+    public NodeSet getPageTemplates(Object proxy) throws NodeException
+    {
+        // latently subset page templates by type from aggregated children
+        if (!pageTemplatesAggregated)
+        {
+            NodeSet allChildren = getAll(proxy);
+            if (allChildren != null)
+            {
+                pageTemplates = allChildren.subset(PageTemplate.DOCUMENT_TYPE);
+            }
+            pageTemplatesAggregated = true;
+        }
+        return pageTemplates;
+    }
+    
+    /**
+     * getPageTemplate - proxy implementation of Folder.getPageTemplate()
+     *
+     * @param proxy this folder proxy
+     * @param name page template name including extension
+     * @return page template
+     * @throws PageNotFoundException
+     * @throws NodeException
+     */
+    public PageTemplate getPageTemplate(Object proxy, String name) throws PageNotFoundException, NodeException
+    {
+        // search for page template by name or absolute path from
+        // aggregated page templates
+        NodeSet allPageTemplates = getPageTemplates(proxy);
+        if (allPageTemplates != null)
+        {
+            PageTemplate pageTemplate = (PageTemplate)allPageTemplates.get(name);
+            if (pageTemplate != null)
+            {
+                return pageTemplate;
+            }
+        }
+        throw new PageNotFoundException("PageTemplate " + name + " not found at " + getPath());
+    }
+
+    /**
+     * getFragmentDefinitions - proxy implementation of Folder.getFragmentDefinitions()
+     *
+     * @param proxy this folder proxy
+     * @return list containing all fragment definitions in folder
+     * @throws NodeException
+     */
+    public NodeSet getFragmentDefinitions(Object proxy) throws NodeException
+    {
+        // latently subset fragment definition by type from aggregated children
+        if (!fragmentDefinitionsAggregated)
+        {
+            NodeSet allChildren = getAll(proxy);
+            if (allChildren != null)
+            {
+                fragmentDefinitions = allChildren.subset(FragmentDefinition.DOCUMENT_TYPE);
+            }
+            fragmentDefinitionsAggregated = true;
+        }
+        return fragmentDefinitions;
+    }
+    
+    /**
+     * getFragmentDefinition - proxy implementation of Folder.getFragmentDefinition()
+     *
+     * @param proxy this folder proxy
+     * @param name fragment definition name including extension
+     * @return fragment definition
+     * @throws PageNotFoundException
+     * @throws NodeException
+     */
+    public FragmentDefinition getFragmentDefinition(Object proxy, String name) throws PageNotFoundException, NodeException
+    {
+        // search for fragment definition by name or absolute path from
+        // aggregated fragment definitions
+        NodeSet allFragmentDefinitions = getFragmentDefinitions(proxy);
+        if (allFragmentDefinitions != null)
+        {
+            FragmentDefinition fragmentDefinition = (FragmentDefinition)allFragmentDefinitions.get(name);
+            if (fragmentDefinition != null)
+            {
+                return fragmentDefinition;
+            }
+        }
+        throw new PageNotFoundException("FragmentDefinition " + name + " not found at " + getPath());
+    }
+
+    /**
      * getMetadata - proxy implementation of Folder.getMetadata()
      *
      * @return metadata
@@ -675,7 +887,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                 // get menu definitions from inheritance folders and
                 // merge into aggregate menu definition locators
                 Folder folder = (Folder)foldersIter.next();
-                mergeMenuDefinitionLocators(folder.getMenuDefinitions(), folder);
+                mergeMenuDefinitionLocators(folder.getMenuDefinitions(), folder, false);
             }
         }
         catch (FolderNotFoundException fnfe)
@@ -877,24 +1089,13 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                     Node child = (Node)childrenIter.next();
                     String childName = child.getName();
 
-                    // filter profiling property folders; they are
-                    // accessed only via SiteView search path
-                    // aggregation that directly utilizes the
-                    // current view page manager
-                    boolean visible = (!(child instanceof Folder) || (!childName.startsWith(Folder.RESERVED_SUBSITE_FOLDER_PREFIX) &&
-                                                       !childName.startsWith(Folder.RESERVED_FOLDER_PREFIX)));
-                    RequestContext rc = Jetspeed.getCurrentRequestContext();
-                    boolean configureMode = false;
-                    if (rc != null)
-                    {
-                        if (rc.getPipeline().getName().equals(PortalReservedParameters.CONFIG_PIPELINE_NAME) ||
-                            rc.getPipeline().getName().equals(PortalReservedParameters.DESKTOP_CONFIG_PIPELINE_NAME))    
-                        {
-                            configureMode = true;
-                        }
-                    }
-                    
-                    if (visible || configureMode)
+                    // filter profiling property folders unless forced; they are
+                    // normally accessed only via SiteView search path aggregation
+                    // that directly utilizes the current view page manager
+                    boolean visible = (forceReservedVisible || (!(child instanceof Folder) ||
+                                                                (!childName.startsWith(Folder.RESERVED_SUBSITE_FOLDER_PREFIX) &&
+                                                                 !childName.startsWith(Folder.RESERVED_FOLDER_PREFIX))));
+                    if (visible)
                     {
                         // test child name uniqueness
                         boolean childUnique = true ;
@@ -909,11 +1110,23 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                         {
                             if (child instanceof Folder)
                             {
-                                allChildren.add(FolderProxy.newInstance(getView(), locatorName, (Folder)proxy, (Folder)child));
+                                allChildren.add(FolderProxy.newInstance(getView(), locatorName, (Folder)proxy, (Folder)child, forceReservedVisible));
                             }
                             else if (child instanceof Page)
                             {
                                 allChildren.add(PageProxy.newInstance(getView(), locatorName, (Folder)proxy, (Page)child));
+                            }
+                            else if (child instanceof PageTemplate)
+                            {
+                                allChildren.add(PageTemplateProxy.newInstance(getView(), locatorName, (Folder)proxy, (PageTemplate)child));
+                            }
+                            else if (child instanceof DynamicPage)
+                            {
+                                allChildren.add(DynamicPageProxy.newInstance(getView(), locatorName, (Folder)proxy, (DynamicPage)child));
+                            }
+                            else if (child instanceof FragmentDefinition)
+                            {
+                                allChildren.add(FragmentDefinitionProxy.newInstance(getView(), locatorName, (Folder)proxy, (FragmentDefinition)child));
                             }
                             else if (child instanceof Link)
                             {

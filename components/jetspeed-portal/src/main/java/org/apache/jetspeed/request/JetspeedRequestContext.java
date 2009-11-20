@@ -41,10 +41,11 @@ import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.impl.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.impl.ContentPageImpl;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
+import org.apache.jetspeed.om.page.impl.ContentFragmentImpl;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.window.impl.PortletWindowImpl;
@@ -583,7 +584,10 @@ public class JetspeedRequestContext implements RequestContext
             }               
             PortalSiteSessionContext sessionContext = (PortalSiteSessionContext)getSessionAttribute(ProfilerValveImpl.PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);
             PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, true, true);
-            ContentPage cpage = pageLayoutComponent.newContentPage(requestContext.getManagedPage());
+            Page managedPage = requestContext.getManagedPage();
+            PageTemplate managedPageTemplate = requestContext.getManagedPageTemplate();
+            Map managedFragmentDefinitions = requestContext.getManagedFragmentDefinitions();
+            ContentPage cpage = pageLayoutComponent.newContentPage(managedPage, managedPageTemplate, managedFragmentDefinitions);
             //System.out.println("page is " + cpage.getPath());
             this.setPage(realPage);            
             this.setPath(pathSave);

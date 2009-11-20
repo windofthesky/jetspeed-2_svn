@@ -126,8 +126,18 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
                 }
                 else
                 {
-                    fragmentsIter.remove();
-                    return fragment;
+                    try
+                    {
+                        // check access
+                        fragment.checkAccess(JetspeedActions.EDIT);
+                        
+                        // remove fragment
+                        fragmentsIter.remove();
+                        return fragment;
+                    }
+                    catch (SecurityException se)
+                    {
+                    }
                 }
             }
         }
@@ -148,6 +158,36 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
             while (fragmentsIter.hasNext())
             {
                 List matchedChildFragments = ((BaseFragmentElementImpl)fragmentsIter.next()).getFragmentsByName(name);
+                if (matchedChildFragments != null)
+                {
+                    if (matchedFragments == null)
+                    {
+                        matchedFragments = matchedChildFragments;
+                    }
+                    else
+                    {
+                        matchedFragments.addAll(matchedChildFragments);
+                    }
+                }
+            }
+        }
+        return matchedFragments;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl#getFragmentsByInterface(java.lang.Class)
+     */
+    List getFragmentsByInterface(Class interfaceFilter)
+    {
+        // check for match
+        List matchedFragments = super.getFragmentsByInterface(interfaceFilter);
+        // match children
+        if (fragments != null)
+        {
+            Iterator fragmentsIter = fragments.iterator();
+            while (fragmentsIter.hasNext())
+            {
+                List matchedChildFragments = ((BaseFragmentElementImpl)fragmentsIter.next()).getFragmentsByInterface(interfaceFilter);
                 if (matchedChildFragments != null)
                 {
                     if (matchedFragments == null)

@@ -26,7 +26,10 @@ import java.util.Set;
 import java.util.Collections;
 
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
@@ -69,9 +72,34 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     private boolean useHistory;
 
     /**
-     * page - cached request profiled page proxy
+     * forceReservedVisible - force reserved/hidden folders visible in site view
+     */
+    private boolean forceReservedVisible;
+
+    /**
+     * requestPage - cached request profiled page proxy
      */
     private Page requestPage;
+
+    /**
+     * requestPageTemplate - cached request page template proxy
+     */
+    private PageTemplate requestPageTemplate;
+
+    /**
+     * requestPageTemplateCached - cached flag for request page template proxy
+     */
+    private boolean requestPageTemplateCached;
+
+    /**
+     * requestFragmentDefinitions - cached request request fragment definition proxies map
+     */
+    private Map requestFragmentDefinitions;
+
+    /**
+     * requestFragmentDefinitionsCached - cached flag for request fragment definition proxies map
+     */
+    private boolean requestFragmentDefinitionsCached;
 
     /**
      * siblingPages - cached node set of visible sibling page proxies
@@ -128,14 +156,32 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      *                        if locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
+     * @param forceReservedVisible force reserved/hidden folders visible in site view
      */
     public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators,
-                                        boolean requestFallback, boolean useHistory)
+                                        boolean requestFallback, boolean useHistory, boolean forceReservedVisible)
     {
         this.sessionContext = sessionContext;
         this.requestProfileLocators = requestProfileLocators;
         this.requestFallback = requestFallback;
         this.useHistory = useHistory;
+        this.forceReservedVisible = forceReservedVisible;
+    }
+
+    /**
+     * PortalSiteRequestContextImpl - constructor
+     *
+     * @param sessionContext session context
+     * @param requestProfileLocators request profile locators
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     */
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators,
+                                        boolean requestFallback, boolean useHistory)
+    {
+        this(sessionContext, requestProfileLocators, requestFallback, useHistory, false);
     }
 
     /**
@@ -149,7 +195,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators,
                                         boolean requestFallback)
     {
-        this(sessionContext, requestProfileLocators, requestFallback, true);
+        this(sessionContext, requestProfileLocators, requestFallback, true, false);
     }
 
     /**
@@ -160,7 +206,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators)
     {
-        this(sessionContext, requestProfileLocators, true, true);
+        this(sessionContext, requestProfileLocators, true, true, false);
     }
 
     /**
@@ -197,6 +243,53 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     }
 
     /**
+     * getManagedPageTemplate - get request profiled concrete page 
+     *                          template instance as managed by the
+     *                          page manager
+     *  
+     * @return page template
+     * @throws NodeNotFoundException if page not found
+     * @throws SecurityException if page view access not granted
+     */
+    public PageTemplate getManagedPageTemplate() throws NodeNotFoundException
+    {
+        return sessionContext.getManagedPageTemplate(getPageTemplate());            
+    }
+
+    /**
+     * getManagedFragmentDefinitions - get map of request profiled concrete
+     *                                 fragment definition instances as
+     *                                 managed by the page manager
+     *  
+     * @return map of fragment definitions by id
+     * @throws NodeNotFoundException if page not found
+     * @throws SecurityException if page view access not granted
+     */
+    public Map getManagedFragmentDefinitions() throws NodeNotFoundException
+    {
+        // convert map of proxies to map of managed fragment definitions
+        Map fragmentDefinitions = getFragmentDefinitions();
+        if (fragmentDefinitions != null)
+        {
+            Map managedFragmentDefinitions = new HashMap(4);
+            Iterator fragmentDefinitionsIter = fragmentDefinitions.entrySet().iterator();
+            while (fragmentDefinitionsIter.hasNext())
+            {
+                Map.Entry fragmentDefinitionEntry = (Map.Entry)fragmentDefinitionsIter.next();
+                String id = (String)fragmentDefinitionEntry.getKey();
+                FragmentDefinition fragmentDefinition = (FragmentDefinition)fragmentDefinitionEntry.getValue();
+                FragmentDefinition managedFragmentDefinition = sessionContext.getManagedFragmentDefinition(fragmentDefinition);
+                if (managedFragmentDefinition != null)
+                {
+                    managedFragmentDefinitions.put(id, managedFragmentDefinition);
+                }
+            }
+            return managedFragmentDefinitions;
+        }
+        return null;
+    }
+
+    /**
      * getPage - get request profiled page proxy
      *  
      * @return page proxy
@@ -210,9 +303,162 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         // cached in this context
         if (requestPage == null)
         {
-            requestPage = sessionContext.selectRequestPage(requestProfileLocators, requestFallback, useHistory);            
+            requestPage = sessionContext.selectRequestPage(requestProfileLocators, requestFallback, useHistory, forceReservedVisible);            
         }
         return requestPage;
+    }
+
+    /**
+     * getPageTemplate - get page template proxy for request profiled page
+     *  
+     * @return page template proxy if found or null
+     * @throws NodeNotFoundException if page not found
+     * @throws SecurityException if page view access not granted
+     */
+    public PageTemplate getPageTemplate() throws NodeNotFoundException
+    {
+        if (!requestPageTemplateCached)
+        {
+            // get requested page
+            Page page = getPage();
+            if (page != null)
+            {
+                // scan through site looking for first page template
+                // up the folder hierarchy from the requested page
+                try
+                {
+                    Folder folder = (Folder)page.getParent();
+                    while ((folder != null) && (requestPageTemplate == null))
+                    {
+                        NodeSet pageTemplates = folder.getPageTemplates();
+                        if ((pageTemplates != null) && !pageTemplates.isEmpty())
+                        {
+                            // return first page template found
+                            requestPageTemplate = (PageTemplate)pageTemplates.iterator().next();
+                        }
+                        else
+                        {
+                            // continue scan
+                            folder = (Folder)folder.getParent();
+                        }
+                    }
+                }
+                catch (NodeException ne)
+                {
+                }
+            }
+            requestPageTemplateCached = true;
+        }
+        return requestPageTemplate;
+    }
+
+    /**
+     * getFragmentDefinitions - get fragment definition proxy map for request
+     *                          profiled page and page template
+     *  
+     * @return map of fragment definition proxies by fragment id
+     * @throws NodeNotFoundException if page or fragment definition not found
+     * @throws SecurityException if page view access not granted
+     */
+    public Map getFragmentDefinitions() throws NodeNotFoundException
+    {
+        if (!requestFragmentDefinitionsCached)
+        {
+            // get requested page and optional page template
+            Page page = getPage();
+            PageTemplate pageTemplate = getPageTemplate();
+            if (page != null)
+            {
+                // merge fragment reference ids from requested page and page template
+                Set refIds = new HashSet(4);
+                List requestPageFragmentReferences = page.getFragmentsByInterface(FragmentReference.class);
+                mergeFragmentDefinitionRefIds(requestPageFragmentReferences, refIds);
+                List requestPageTemplateFragmentReferences = ((pageTemplate != null) ? pageTemplate.getFragmentsByInterface(FragmentReference.class) : null);
+                mergeFragmentDefinitionRefIds(requestPageTemplateFragmentReferences, refIds);
+                
+                // scan through site looking for each first matching fragment
+                // definition by reference/definition id up the folder hierarchy
+                // from the requested page
+                Iterator refIdsIter = refIds.iterator();
+                while (refIdsIter.hasNext())
+                {
+                    String refId = (String)refIdsIter.next();
+                    FragmentDefinition requestFragmentDefinition = null;
+                    try
+                    {
+                        // scan for fragment definition
+                        Folder folder = (Folder)page.getParent();
+                        while ((folder != null) && (requestFragmentDefinition == null))
+                        {
+                            NodeSet fragmentDefinitions = folder.getFragmentDefinitions();
+                            if ((fragmentDefinitions != null) && !fragmentDefinitions.isEmpty())
+                            {
+                                // find fragment definition by matching reference/definition id
+                                Iterator fragmentDefinitionsIter = fragmentDefinitions.iterator();
+                                while (fragmentDefinitionsIter.hasNext() && (requestFragmentDefinition == null))
+                                {
+                                    FragmentDefinition fragmentDefinition = (FragmentDefinition)fragmentDefinitionsIter.next();
+                                    if (fragmentDefinition.getDefId().equals(refId))
+                                    {
+                                        requestFragmentDefinition = fragmentDefinition;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // continue scan
+                                folder = (Folder)folder.getParent();
+                            }
+                        }
+                        
+                        // match fragment definition
+                        if (requestFragmentDefinition != null)
+                        {
+                            if (requestFragmentDefinitions == null)
+                            {
+                                requestFragmentDefinitions = Collections.synchronizedMap(new HashMap(4));
+                            }
+                            requestFragmentDefinitions.put(refId, requestFragmentDefinition);
+                        }
+                        else
+                        {
+                            throw new NodeNotFoundException("Fragment definition for "+refId+" not found.");                        
+                        }
+                    }
+                    catch (NodeException ne)
+                    {
+                        NodeNotFoundException nnfe = new NodeNotFoundException("Fragment definition for "+refId+" not found.");
+                        nnfe.initCause(ne);
+                        throw nnfe;
+                    }
+                }
+            }
+            requestFragmentDefinitionsCached = true;
+        }
+        return requestFragmentDefinitions;
+    }
+    
+    /**
+     * mergeFragmentDefinitionRefIds - utility method to merge reference ids
+     * 
+     * @param fragmentReferences list of fragment references
+     * @param refIds merged set of unique reference ids
+     */
+    private void mergeFragmentDefinitionRefIds(List fragmentReferences, Set refIds)
+    {
+        // merge list of fragment reference reference ids 
+        if ((fragmentReferences != null) && !fragmentReferences.isEmpty())
+        {
+            Iterator fragmentReferencesIter = fragmentReferences.iterator();
+            while (fragmentReferencesIter.hasNext())
+            {
+                FragmentReference fragmentReference = (FragmentReference)fragmentReferencesIter.next();
+                if (fragmentReference.getRefId() != null)
+                {
+                    refIds.add(fragmentReference.getRefId());
+                }
+            }
+        }        
     }
 
     /**
@@ -341,7 +587,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         // cached in this context
         if (requestRootFolder == null)
         {
-            requestRootFolder = sessionContext.getRequestRootFolder(requestProfileLocators);
+            requestRootFolder = sessionContext.getRequestRootFolder(requestProfileLocators, forceReservedVisible);
         }
         return requestRootFolder;
     }
@@ -393,7 +639,8 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
 
     /**
      * getCustomMenuNames - get set of custom menu names available as
-     *                      defined for the request profiled page and folder
+     *                      defined for the request profiled page, page
+     *                      template, and folders
      *  
      * @return menu names set
      * @throws NodeNotFoundException if page not found
@@ -401,30 +648,25 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public Set getCustomMenuNames() throws NodeNotFoundException
     {
-        // access page to force request page resolution
+        // access page and page templates to force request
+        // page resolution
         Page page = getPage();
+        PageTemplate pageTemplate = getPageTemplate();
 
         // return available menu definition names from
-        // current request page if not previously cached
-        // in this context
+        // current request page and page template if not
+        // previously cached in this context
         Set standardMenuNames = sessionContext.getStandardMenuNames();
         if ((page != null) && (standardMenuNames != null) && (pageMenuDefinitionNames == null))
         {
-            List locators = sessionContext.getMenuDefinitionLocators(page);
-            if (locators != null)
+            List pageLocators = sessionContext.getMenuDefinitionLocators(page);
+            List pageTemplateLocators = ((pageTemplate != null) ? sessionContext.getMenuDefinitionLocators(pageTemplate) : null);
+            if ((pageLocators != null) || (pageTemplateLocators != null))
             {
                 // get custom definition names
-                pageMenuDefinitionNames = Collections.synchronizedSet(new HashSet(locators.size()));
-                Iterator locatorsIter = locators.iterator();
-                while (locatorsIter.hasNext())
-                {
-                    // get definition name; filter standard menu names
-                    String definitionName = ((SiteViewMenuDefinitionLocator)locatorsIter.next()).getName();
-                    if (!standardMenuNames.contains(definitionName))
-                    {
-                        pageMenuDefinitionNames.add(definitionName);
-                    }
-                }
+                pageMenuDefinitionNames = Collections.synchronizedSet(new HashSet(8));
+                mergeMenuDefinitionLocatorNames(pageLocators, standardMenuNames, pageMenuDefinitionNames);
+                mergeMenuDefinitionLocatorNames(pageTemplateLocators, standardMenuNames, pageMenuDefinitionNames);
             }
             else
             {
@@ -432,6 +674,30 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
             }
         }
         return pageMenuDefinitionNames;
+    }
+    
+    /**
+     * mergeMenuDefinitionLocatorNames - merge menu locator names
+     * 
+     * @param locators menu definition locators
+     * @param excludeNames excluded names set
+     * @param names merged names set
+     */
+    private void mergeMenuDefinitionLocatorNames(List locators, Set excludeNames, Set names)
+    {
+        // merge menu definition locator names
+        if (locators != null)
+        {
+            Iterator locatorsIter = locators.iterator();
+            while (locatorsIter.hasNext())
+            {
+                String definitionName = ((SiteViewMenuDefinitionLocator)locatorsIter.next()).getName();
+                if (!excludeNames.contains(definitionName))
+                {
+                    names.add(definitionName);
+                }
+            }
+        }        
     }
 
     /**
@@ -464,12 +730,23 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public Menu getMenu(String name, Set names) throws NodeNotFoundException
     {
-        // access page to force request page resolution
+        // access page and page template to force request
+        // page resolution
         Page page = getPage();
+        PageTemplate pageTemplate = getPageTemplate();
         if ((page != null) && (name != null))
         {
-            // get menu definition locator
+            // get menu definition locator from page or page template
             SiteViewMenuDefinitionLocator locator = sessionContext.getMenuDefinitionLocator(page, name);
+            if ((pageTemplate != null) && ((locator == null) || !locator.isOverride()))
+            {
+                SiteViewMenuDefinitionLocator pageTemplateLocator = sessionContext.getMenuDefinitionLocator(pageTemplate, name);
+                if (pageTemplateLocator != null)
+                {
+                    locator = pageTemplateLocator;
+                }
+            }
+            // get menu implementation for menu definition locator
             if (locator != null)
             {
                 // lookup and return cached relative/request menus

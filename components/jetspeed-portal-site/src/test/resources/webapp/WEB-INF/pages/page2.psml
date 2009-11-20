@@ -22,6 +22,7 @@ limitations under the License.
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
 
   <title>/page2.psml</title>
-  <fragment id="fake" name="fake" type="fake"/>
-
+  <fragment id="fake" name="fake" type="fake">
+    <fragment-reference id="fake-fragment-reference" refid="fake-fragment-definition-1"/>
+  </fragment>
 </page>

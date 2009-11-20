@@ -18,6 +18,7 @@ package org.apache.jetspeed.om.page.impl;
 
 import java.security.AccessController;
 import java.security.Permission;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -141,7 +142,31 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
         {
             if (matchedFragments == null)
             {
-                matchedFragments = DatabasePageManagerUtils.createList();
+                matchedFragments = new ArrayList();
+            }
+            matchedFragments.add(this);
+        }
+        return matchedFragments;
+    }
+
+    /**
+     * getFragmentsByInterface
+     *
+     * Retrieve fragments with matching interface including
+     * this and child fragments.
+     *
+     * @param interfaceFilter fragment interface to retrieve or null for all.
+     * @return list of matched fragments
+     */
+    List getFragmentsByInterface(Class interfaceFilter)
+    {
+        List matchedFragments = null;
+        // check for match
+        if ((interfaceFilter == null) || interfaceFilter.isInstance(this))
+        {
+            if (matchedFragments == null)
+            {
+                matchedFragments = new ArrayList();
             }
             matchedFragments.add(this);
         }

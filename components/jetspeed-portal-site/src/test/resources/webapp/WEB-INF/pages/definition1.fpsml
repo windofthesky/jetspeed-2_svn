@@ -17,13 +17,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<page id="page0"
+<fragment-definition id="definition1"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
 
-  <title>/page0.psml</title>
-  <fragment id="fake" name="fake" type="fake"/>
-
-  <menu name="template-test" options="/page2.psml"/>
-</page>
+  <title>/definition1.fpsml</title>
+  <fragment id="fake-fragment-definition-1" name="fake-fragment-definition-1" type="fake-fragment-definition-1"/>
+</fragment-definition>

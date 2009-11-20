@@ -356,6 +356,15 @@ public interface ContentFragment
      */
     PageLayoutComponent getPageLayoutComponent();
     
+    /**
+     * Return is locked flag indicating whether this fragment
+     * was originally merged from a page template or fragment
+     * definition.
+     * 
+     * @return locked flag
+     */
+    boolean isLocked();
+    
     /************** PageLayoutComponent Operations **************/
 
     /**

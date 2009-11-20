@@ -17,6 +17,7 @@
 
 package org.apache.jetspeed.om.page.psml;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -24,22 +25,10 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.apache.jetspeed.idgenerator.IdGenerator;
-import org.apache.jetspeed.om.folder.MenuDefinition;
-import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
-import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
-import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
-import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
-import org.apache.jetspeed.om.folder.psml.MenuDefinitionImpl;
-import org.apache.jetspeed.om.folder.psml.MenuExcludeDefinitionImpl;
-import org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl;
-import org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl;
-import org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
-import org.apache.jetspeed.om.page.BasePageElement;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * AbstractBaseFragmentsElement
@@ -245,7 +234,7 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
      */
     public List getFragmentsByName( String name )
     {
-        List fragments = DatabasePageManagerUtils.createList();
+        List fragments = new ArrayList();
 
         Stack stack = new Stack();
         if (getRootFragment() != null)
@@ -265,6 +254,52 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
                     fragments.add(fragment);
                 }
 
+                Iterator i = fragment.getFragments().iterator();
+
+                while (i.hasNext())
+                {
+                    stack.push(i.next());
+                }
+            }
+
+            if (stack.size() > 0)
+            {
+                f = (BaseFragmentElement) stack.pop();
+            }
+            else
+            {
+                f = null;
+            }
+        }
+
+        return fragments;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.BaseFragmentsElement#getFragmentsByInterface(java.lang.Class)
+     */
+    public List getFragmentsByInterface( Class interfaceFilter )
+    {
+        List fragments = new ArrayList();
+
+        Stack stack = new Stack();
+        if (getRootFragment() != null)
+        {
+            stack.push(getRootFragment());
+        }
+
+        BaseFragmentElement f = (BaseFragmentElement) stack.pop();
+
+        while (f != null)
+        {
+            if ((interfaceFilter == null) || interfaceFilter.isInstance(f))
+            {
+                fragments.add(f);
+            }
+
+            if (f instanceof Fragment)
+            {
+                Fragment fragment = (Fragment)f;
                 Iterator i = fragment.getFragments().iterator();
 
                 while (i.hasNext())

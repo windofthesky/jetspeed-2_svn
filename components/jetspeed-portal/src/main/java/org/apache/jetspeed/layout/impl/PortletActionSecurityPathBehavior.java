@@ -16,16 +16,12 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.Locale;
-
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
+import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
 import org.apache.jetspeed.request.RequestContext;
 
 import org.slf4j.Logger;
@@ -41,17 +37,17 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
 {
     protected Logger log = LoggerFactory.getLogger(PortletActionSecurityPathBehavior.class);    
     protected PageManager pageManager;
-    protected PageLayoutComponent pageLayoutComponent;
+    protected PageProfilerValve profilerValve;
     private boolean enableCreateUserPagesFromRolesOnEdit;
     
-    public PortletActionSecurityPathBehavior(PageManager pageManager, PageLayoutComponent pageLayoutComponent)
+    public PortletActionSecurityPathBehavior(PageManager pageManager, PageProfilerValve profilerValve)
     {
-    	this( pageManager, pageLayoutComponent, Boolean.FALSE ) ;
+    	this( pageManager, profilerValve, Boolean.FALSE ) ;
     }
-    public PortletActionSecurityPathBehavior(PageManager pageManager, PageLayoutComponent pageLayoutComponent, Boolean enableCreateUserPagesFromRolesOnEdit )
+    public PortletActionSecurityPathBehavior(PageManager pageManager, PageProfilerValve profilerValve, Boolean enableCreateUserPagesFromRolesOnEdit )
     {
         this.pageManager = pageManager;
-        this.pageLayoutComponent = pageLayoutComponent;
+        this.profilerValve = profilerValve;
         this.enableCreateUserPagesFromRolesOnEdit = ( enableCreateUserPagesFromRolesOnEdit == null ? false : enableCreateUserPagesFromRolesOnEdit.booleanValue() );
     }
 
@@ -101,18 +97,10 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
         	if ( isPageQualifiedForCreateNewPageOnEdit( pagePath ) )
             {
         	    // create user home pages
-        		String pageName = contentPage.getName();
+        		String pageName = contentPage.getName();        		
                 pageManager.createUserHomePagesFromRoles(context.getSubject());
-                Page page = pageManager.getPage(Folder.USER_FOLDER 
-                                                + context.getRequest().getUserPrincipal().getName()
-                                                + Folder.PATH_SEPARATOR 
-                                                + pageName);   // was Folder.FALLBACK_DEFAULT_PAGE prior to 2007-11-06
-                
-                // TODO validate effectiveness of request context reset below
-                context.setPage(pageLayoutComponent.newContentPage(page));
-                context.getRequest().removeAttribute(ProfilerValveImpl.PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY);
-                context.getRequest().removeAttribute(ProfilerValveImpl.PROFILED_PAGE_CONTEXT_ATTR_KEY);
-                context.getRequest().getSession().removeAttribute(ProfilerValveImpl.PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);                
+                // update request context with new profiler valve invocation
+                profilerValve.invoke(context, null);
             }
         }
         catch (Exception e)

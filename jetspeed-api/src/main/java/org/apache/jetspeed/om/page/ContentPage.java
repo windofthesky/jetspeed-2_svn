@@ -18,6 +18,7 @@ package org.apache.jetspeed.om.page;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
@@ -185,6 +186,22 @@ public interface ContentPage
      * @return persistent page or null
      */
     Page getPage();
+    
+    /**
+     * Access underlying concrete persistent page template or
+     * null if page is transient or constructed dynamically.
+     * 
+     * @return persistent page template or null
+     */
+    PageTemplate getPageTemplate();
+    
+    /**
+     * Access underlying concrete persistent fragment definitions
+     * map or null if page is transient or constructed dynamically.
+     * 
+     * @return persistent fragment definitions or null
+     */
+    Map getFragmentDefinitions();
     
     /**
      * Returns the PageLayoutComponent that generated this ContentPage

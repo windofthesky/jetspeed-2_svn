@@ -68,4 +68,13 @@ public interface BaseFragmentsElement extends Document
      * @return the list of found Fragment objects or null if not found
      */
     List getFragmentsByName(String name);
+
+    /**
+     * Retrieves the fragments contained within this page, with the
+     * specified interface.
+     *
+     * @param interfaceFilter the fragment interface to match or null for all
+     * @return the list of found Fragment objects or null if not found
+     */
+    List getFragmentsByInterface(Class interfaceFilter);
 }

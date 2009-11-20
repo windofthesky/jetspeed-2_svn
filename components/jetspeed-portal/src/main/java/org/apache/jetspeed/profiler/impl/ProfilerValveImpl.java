@@ -29,6 +29,7 @@ import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
@@ -219,11 +220,9 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 // and is now being reloaded in a new server), it must be
                 // replaced with a newly created session context
                 PortalSiteSessionContext sessionContext = (PortalSiteSessionContext)request.getSessionAttribute(PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);
-                String pipeline = request.getPipeline().getName();
                 if ((sessionContext == null) || !sessionContext.isValid())
                 {
                     sessionContext = portalSite.newSessionContext();
-                    sessionContext.setPipeline(pipeline);
                     request.setSessionAttribute(PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY, sessionContext);
                 }
 
@@ -237,7 +236,10 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 // request context here does not select the page or build
                 // menus: that is done when the request context is
                 // accessed subsequently
-                PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, requestFallback, useHistory);
+                String pipeline = request.getPipeline().getName();
+                boolean forceReservedFoldersVisibleInView = (pipeline.equals(PortalReservedParameters.CONFIG_PIPELINE_NAME) ||
+                                                             pipeline.equals(PortalReservedParameters.DESKTOP_CONFIG_PIPELINE_NAME));        
+                PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, requestFallback, useHistory, forceReservedFoldersVisibleInView);
                 request.setAttribute(PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY, requestContext);
 
                 // additionally save request context under legacy key
@@ -254,7 +256,9 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 // the managed page here selects the current page for the
                 // request
                 Page managedPage = requestContext.getManagedPage();
-                ContentPage contentPage = pageLayoutComponent.newContentPage(managedPage);
+                PageTemplate managedPageTemplate = requestContext.getManagedPageTemplate();
+                Map managedFragmentDefinitions = requestContext.getManagedFragmentDefinitions();
+                ContentPage contentPage = pageLayoutComponent.newContentPage(managedPage, managedPageTemplate, managedFragmentDefinitions);
                 request.setPage(contentPage);
                 request.setProfileLocators(requestContext.getLocators());
                 
@@ -262,7 +266,10 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
             }
 
             // continue
-            context.invokeNext(request);
+            if (context != null)
+            {
+                context.invokeNext(request);
+            }
         }
         catch (SecurityException se)
         {

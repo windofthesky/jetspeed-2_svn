@@ -26,8 +26,15 @@ import java.util.Set;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.proxy.FolderProxy;
+import org.apache.jetspeed.om.page.DynamicPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
+import org.apache.jetspeed.om.page.proxy.DynamicPageProxy;
+import org.apache.jetspeed.om.page.proxy.FragmentDefinitionProxy;
 import org.apache.jetspeed.om.page.proxy.PageProxy;
+import org.apache.jetspeed.om.page.proxy.PageTemplateProxy;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
@@ -111,6 +118,11 @@ public class SiteView
      * searchPathsString - search paths as string
      */
     private String searchPathsString;
+    
+    /**
+     * forceReservedVisible - force visibility of hidden/reserved folders
+     */
+    private boolean forceReservedVisible;
 
     /**
      * rootFolderProxy - root folder proxy instance
@@ -123,8 +135,9 @@ public class SiteView
      * @param pageManager PageManager component instance
      * @param searchPaths list of search paths in string or search path
      *                    object form
+     * @param forceReservedVisible force visibility of hidden/reserved folders
      */
-    public SiteView(PageManager pageManager, List searchPaths)
+    public SiteView(PageManager pageManager, List searchPaths, boolean forceReservedVisible)
     {
         this.pageManager = pageManager;
         if ((searchPaths != null) && !searchPaths.isEmpty())
@@ -197,6 +210,7 @@ public class SiteView
             this.searchPaths.add(new SiteViewSearchPath(ProfileLocator.PAGE_LOCATOR, Folder.PATH_SEPARATOR));
             this.searchPathsString = Folder.PATH_SEPARATOR;
         }
+        this.forceReservedVisible = forceReservedVisible;
     }
 
     /**
@@ -204,10 +218,11 @@ public class SiteView
      *
      * @param pageManager PageManager component instance
      * @param searchPaths array of search paths
+     * @param forceReservedVisible force visibility of hidden/reserved folders
      */
-    public SiteView(PageManager pageManager, String [] searchPaths)
+    public SiteView(PageManager pageManager, String [] searchPaths, boolean forceReservedVisible)
     {
-        this(pageManager, makeSearchPathList(searchPaths));
+        this(pageManager, makeSearchPathList(searchPaths), forceReservedVisible);
     }
 
     /**
@@ -235,10 +250,11 @@ public class SiteView
      *
      * @param pageManager PageManager component instance
      * @param searchPaths string of comma separated search paths
+     * @param forceReservedVisible force visibility of hidden/reserved folders
      */
-    public SiteView(PageManager pageManager, String searchPaths)
+    public SiteView(PageManager pageManager, String searchPaths, boolean forceReservedVisible)
     {
-        this(pageManager, makeSearchPathList(searchPaths));
+        this(pageManager, makeSearchPathList(searchPaths), forceReservedVisible);
     }
 
     /**
@@ -257,10 +273,11 @@ public class SiteView
      *
      * @param pageManager PageManager component instance
      * @param locator profile locator search specification
+     * @param forceReservedVisible force visibility of hidden/reserved folders
      */
-    public SiteView(PageManager pageManager, ProfileLocator locator)
+    public SiteView(PageManager pageManager, ProfileLocator locator, boolean forceReservedVisible)
     {
-        this(pageManager, makeSearchPathList(locator));
+        this(pageManager, makeSearchPathList(locator), forceReservedVisible);
     }
     
     /**
@@ -284,10 +301,11 @@ public class SiteView
      *
      * @param pageManager PageManager component instance
      * @param locators map of named profile locator search specifications
+     * @param forceReservedVisible force visibility of hidden/reserved folders
      */
-    public SiteView(PageManager pageManager, Map locators)
+    public SiteView(PageManager pageManager, Map locators, boolean forceReservedVisible)
     {
-        this(pageManager, makeSearchPathList(locators));
+        this(pageManager, makeSearchPathList(locators), forceReservedVisible);
     }
     
     /**
@@ -576,7 +594,7 @@ public class SiteView
      */
     public SiteView(PageManager pageManager)
     {
-        this(pageManager, (List)null);
+        this(pageManager, (List)null, false);
     }
 
     /**
@@ -634,7 +652,7 @@ public class SiteView
                 // get concrete root folder from page manager
                 // and construct proxy
                 Folder rootFolder = pageManager.getFolder(path);
-                rootFolderProxy = FolderProxy.newInstance(this, locatorName, null, rootFolder);
+                rootFolderProxy = FolderProxy.newInstance(this, locatorName, null, rootFolder, forceReservedVisible);
             }
             catch (NodeException ne)
             {
@@ -758,7 +776,8 @@ public class SiteView
                     if (children != null)
                     {
                         Node node = children.get(currentPath);
-                        if ((node != null) && (!onlyVisible || !node.isHidden() || (node == currentPage)) &&
+                        if (((node instanceof Folder) | (node instanceof Page) | (node instanceof Link)) &&
+                            (!onlyVisible || !node.isHidden() || (node == currentPage)) &&
                             (!onlyViewable || isProxyViewable(node, onlyVisible)))
                         {
                             return node;
@@ -977,7 +996,7 @@ public class SiteView
                         {
                             // copy children matching remaining path pattern as
                             // page, folder, or link proxies if viewable/visible or
-                            // visibilty not required
+                            // visibility not required
                             children = children.inclusiveSubset(pathPattern);
                             if ((children != null) && !children.isEmpty())
                             {
@@ -986,7 +1005,8 @@ public class SiteView
                                 while (childrenIter.hasNext())
                                 {
                                     Node child = (Node)childrenIter.next(); 
-                                    if ((!onlyVisible || !child.isHidden() || (child == currentPage)) &&
+                                    if (((child instanceof Folder) | (child instanceof Page) | (child instanceof Link)) &&
+                                        (!onlyVisible || !child.isHidden() || (child == currentPage)) &&
                                         (!onlyViewable || isProxyViewable(child, onlyVisible)))
                                     {
                                         if (proxies == null)
@@ -1003,9 +1023,10 @@ public class SiteView
                         {
                             // access remaining path as page, folder, or link
                             // node proxy; return null if not found or not
-                            // viewable and visiblity is required
+                            // viewable and visibility is required
                             Node child = children.get(currentRegexpPath);
-                            if ((child != null) && (!onlyVisible || !child.isHidden() || (child == currentPage)) &&
+                            if (((child instanceof Folder) | (child instanceof Page) | (child instanceof Link)) &&
+                                (!onlyVisible || !child.isHidden() || (child == currentPage)) &&
                                 (!onlyViewable || isProxyViewable(child, onlyVisible)))
                             {
                                 List proxies = new ArrayList(1);
@@ -1235,10 +1256,59 @@ public class SiteView
         // access page proxy from specified page and
         // return associated delegate managed page
         PageProxy pageProxy = (PageProxy)NodeProxy.getNodeProxy(page);
-        if (pageProxy != null)
-        {
-            return pageProxy.getPage();
-        }
-        return null;
+        return ((pageProxy != null) ? pageProxy.getPage() : null);
+    }
+
+    /**
+     * getManagedPageTemplate - get concrete page template instance from
+     *                          page template proxy; implemented here to
+     *                          hide view proxy manipulation from more
+     *                          general portal site implementation
+     *  
+     * @param pageTemplate page template proxy
+     * @return managed page template
+     */
+    public PageTemplate getManagedPageTemplate(PageTemplate pageTemplate)
+    {
+        // access page template proxy from specified page template
+        // and return associated delegate managed page template
+        PageTemplateProxy pageTemplateProxy = (PageTemplateProxy)NodeProxy.getNodeProxy(pageTemplate);
+        return ((pageTemplateProxy != null) ? pageTemplateProxy.getPageTemplate() : null);
+    }
+
+    /**
+     * getManagedDynamicPage - get concrete dynamic page instance from
+     *                         dynamic page proxy; implemented here to
+     *                         hide view proxy manipulation from more
+     *                         general portal site implementation
+     *  
+     * @param dynamicPage dynamic page proxy
+     * @return managed dynamic page
+     */
+    public DynamicPage getManagedDynamicPage(DynamicPage dynamicPage)
+    {
+        // access dynamic page proxy from specified dynamic page
+        // and return associated delegate managed dynamic page
+        DynamicPageProxy dynamicPageProxy = (DynamicPageProxy)NodeProxy.getNodeProxy(dynamicPage);
+        return ((dynamicPageProxy != null) ? dynamicPageProxy.getDynamicPage() : null);
+    }
+
+    /**
+     * getManagedFragmentDefinition - get concrete fragment definition
+     *                                instance from fragment definition
+     *                                proxy; implemented here to hide
+     *                                view proxy manipulation from more
+     *                                general portal site implementation
+     *  
+     * @param fragmentDefinition fragment definition proxy
+     * @return managed dynamic page
+     */
+    public FragmentDefinition getManagedFragmentDefinition(FragmentDefinition fragmentDefinition)
+    {
+        // access fragment definition proxy from specified fragment
+        // definition and return associated delegate managed
+        // fragment definition
+        FragmentDefinitionProxy fragmentDefinitionProxy = (FragmentDefinitionProxy)NodeProxy.getNodeProxy(fragmentDefinition);
+        return ((fragmentDefinitionProxy != null) ? fragmentDefinitionProxy.getFragmentDefinition() : null);
     }
 }

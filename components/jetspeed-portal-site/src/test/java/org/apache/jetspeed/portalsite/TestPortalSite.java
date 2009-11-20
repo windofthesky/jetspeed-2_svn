@@ -30,8 +30,10 @@ import junit.framework.TestSuite;
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
@@ -147,7 +149,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("hostname", true, false, "dash");
         locator.add("user", true, false, "joe");
         locator.add("page", false, false, "home");
-        SiteView profileView = new SiteView(pageManager, locator);
+        SiteView profileView = new SiteView(pageManager, locator, false);
         assertEquals("/_hostname/dash/_user/joe,/_hostname/dash,/", profileView.getSearchPathsString());
         
         locator = new JetspeedProfileLocator();
@@ -158,7 +160,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("hostname", true, false, "dash");
         locator.add("role", true, false, "user");
         locator.add("page", false, false, "home");
-        profileView = new SiteView(pageManager, locator);
+        profileView = new SiteView(pageManager, locator, false);
         assertEquals("/_hostname/dash/_user/joe,/_hostname/dash/_role/user,/_hostname/dash,/", profileView.getSearchPathsString());
   
         locator = new JetspeedProfileLocator();
@@ -171,7 +173,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("hostname", true, false, "localhost");
         locator.add("role", true, false, "somerole");
         locator.add("path", false, false, "home");
-        profileView = new SiteView(pageManager, locator);
+        profileView = new SiteView(pageManager, locator, false);
         assertEquals("/__subsite-root/_hostname/localhost/_user/sublocal,/__subsite-root/_hostname/localhost/_role/somerole,/__subsite-root/_hostname/localhost,/__subsite-root", profileView.getSearchPathsString());                       
     }
     
@@ -276,7 +278,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertTrue(folderPageProxiesByPath.contains(folder0Page0Proxy));
 
         // test aggregating SiteView
-        SiteView aggregateView = new SiteView(pageManager, "/_user/user,/_role/role0,/_group/group,/");
+        SiteView aggregateView = new SiteView(pageManager, "/_user/user,/_role/role0,/_group/group,/", false);
         assertEquals("/_user/user,/_role/role0,/_group/group,/", aggregateView.getSearchPathsString());
         rootFolderProxy = aggregateView.getRootFolderProxy();
         assertNotNull(rootFolderProxy);
@@ -293,8 +295,11 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/page0.psml", extractFileSystemPathFromId(rootPage0Proxy.getId()));
         List rootPage0ProxyMenus = rootPage0Proxy.getMenuDefinitions();
         assertNotNull(rootPage0ProxyMenus);
-        assertEquals(2 + aggregateView.getStandardMenuNames().size(), rootPage0ProxyMenus.size());
+        assertEquals(3 + aggregateView.getStandardMenuNames().size(), rootPage0ProxyMenus.size());
         Iterator menusIter = rootPage0ProxyMenus.iterator();
+        MenuDefinition rootPage0ProxyTemplateTestMenu = (MenuDefinition)menusIter.next();
+        assertEquals("template-test", rootPage0ProxyTemplateTestMenu.getName());
+        assertEquals("/page2.psml", rootPage0ProxyTemplateTestMenu.getOptions());
         MenuDefinition rootPage0ProxyTopMenu = (MenuDefinition)menusIter.next();
         assertEquals("top", rootPage0ProxyTopMenu.getName());
         assertEquals("/", rootPage0ProxyTopMenu.getOptions());
@@ -315,7 +320,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/_user/user/page2.psml", extractFileSystemPathFromId(rootPage2Proxy.getId()));
         List rootPage2ProxyMenus = rootPage2Proxy.getMenuDefinitions();
         assertNotNull(rootPage2ProxyMenus);
-        assertEquals(2 + aggregateView.getStandardMenuNames().size(), rootPage2ProxyMenus.size());
+        assertEquals(3 + aggregateView.getStandardMenuNames().size(), rootPage2ProxyMenus.size());
         menusIter = rootPage2ProxyMenus.iterator();
         MenuDefinition rootPage2ProxyTopMenu = (MenuDefinition)menusIter.next();
         assertEquals("top", rootPage2ProxyTopMenu.getName());
@@ -323,6 +328,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals(1, rootPage2ProxyTopMenu.getDepth());
         MenuDefinition rootPage2ProxyBreadCrumbMenu = (MenuDefinition)menusIter.next();
         assertEquals("bread-crumbs", rootPage2ProxyBreadCrumbMenu.getName());
+        MenuDefinition rootPage2ProxyTemplateTestMenu = (MenuDefinition)menusIter.next();
+        assertEquals("template-test", rootPage2ProxyTemplateTestMenu.getName());
+        assertEquals("/page0.psml", rootPage2ProxyTemplateTestMenu.getOptions());
         for (int i = 0; (i < aggregateView.getStandardMenuNames().size()); i++)
         {
             assertTrue(aggregateView.getStandardMenuNames().contains(((MenuDefinition)menusIter.next()).getName()));
@@ -357,7 +365,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/_user/user/folder1", extractFileSystemPathFromId(rootFolder1Proxy.getId()));
 
         // test degenerate aggregating SiteView
-        aggregateView = new SiteView(pageManager, "/__subsite-root");
+        aggregateView = new SiteView(pageManager, "/__subsite-root", false);
         assertEquals("/__subsite-root", aggregateView.getSearchPathsString());
         rootFolderProxy = aggregateView.getRootFolderProxy();
         assertNotNull(rootFolderProxy);
@@ -371,13 +379,13 @@ public class TestPortalSite extends AbstractSpringTestCase
         // test SiteView construction using profile locators
         JetspeedProfileLocator locator = new JetspeedProfileLocator();
         locator.init(null, "/");
-        SiteView profileView = new SiteView(pageManager, locator);
+        SiteView profileView = new SiteView(pageManager, locator, false);
         assertEquals("/", profileView.getSearchPathsString());
         locator = new JetspeedProfileLocator();
         locator.init(null, "/");
         locator.add("user", true, false, "user");
         locator.add("page", false, false, "default-page");
-        profileView = new SiteView(pageManager, locator);
+        profileView = new SiteView(pageManager, locator, false);
         assertEquals("/_user/user,/", profileView.getSearchPathsString());
         locator = new JetspeedProfileLocator();
         locator.init(null, "/");
@@ -386,14 +394,14 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("mediatype", true, false, "html");
         locator.add("language", true, false, "en");
         locator.add("country", true, false, "US");
-        profileView = new SiteView(pageManager, locator);
+        profileView = new SiteView(pageManager, locator, false);
         assertEquals("/_user/user/_mediatype/html,/_user/user,/", profileView.getSearchPathsString());
         locator = new JetspeedProfileLocator();
         locator.init(null, "/");
         locator.add("page", false, false, "default-page");
         locator.add("role", true, false, "role0");
         locator.add("role", true, false, "role1");
-        profileView = new SiteView(pageManager, locator);
+        profileView = new SiteView(pageManager, locator, false);
         assertEquals("/_role/role0,/_role/role1,/", profileView.getSearchPathsString());
         locator = new JetspeedProfileLocator();
         locator.init(null, "/");
@@ -403,7 +411,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("navigation", false, true, "/");
         locator.add("group", true, false, "group");
         locator.add("page", false, false, "default-page");
-        profileView = new SiteView(pageManager, locator);
+        profileView = new SiteView(pageManager, locator, false);
         assertEquals("/_user/user,/_role/role0,/_group/group,/", profileView.getSearchPathsString());
 
         locator = new JetspeedProfileLocator();
@@ -411,13 +419,13 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("hostname", true, false, "dash");
         locator.add("user", true, false, "joe");
         locator.add("page", false, false, "home");
-        profileView = new SiteView(pageManager, locator);
+        profileView = new SiteView(pageManager, locator, false);
         assertEquals("/_hostname/dash/_user/joe,/_hostname/dash,/", profileView.getSearchPathsString());
         
         locator = new JetspeedProfileLocator();
         locator.init(null, "/");
         locator.add("navigation", false, true, "subsite-root");
-        profileView = new SiteView(pageManager, locator);
+        profileView = new SiteView(pageManager, locator, false);
         assertEquals("/__subsite-root", profileView.getSearchPathsString());
         Map locators = new HashMap();
         locator = new JetspeedProfileLocator();
@@ -431,7 +439,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("navigation", false, true, "/");
         locator.add("group", true, false, "group");
         locators.put("alternate-locator-name", locator);
-        profileView = new SiteView(pageManager, locators);
+        profileView = new SiteView(pageManager, locators, false);
         assertEquals("/_role/role0,/_role/role1,/_user/user,/_group/group,/", profileView.getSearchPathsString());
         rootFolderProxy = profileView.getRootFolderProxy();
         assertNotNull(rootFolderProxy);
@@ -483,6 +491,21 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(requestPageProxy);
         assertEquals("page2.psml", requestPageProxy.getName());
         assertEquals("/_user/user/page2.psml", extractFileSystemPathFromId(requestPageProxy.getId()));
+        PageTemplate requestPageTemplateProxy = requestContext.getPageTemplate();
+        assertNotNull(requestPageTemplateProxy);
+        assertEquals("template.tpsml", requestPageTemplateProxy.getName());
+        assertEquals("/template.tpsml", extractFileSystemPathFromId(requestPageTemplateProxy.getId()));
+        Map requestFragmentDefinitionProxies = requestContext.getFragmentDefinitions();
+        assertNotNull(requestFragmentDefinitionProxies);
+        assertEquals(2, requestFragmentDefinitionProxies.size());
+        FragmentDefinition requestFragmentDefinitionProxy0 = (FragmentDefinition)requestFragmentDefinitionProxies.get("fake-fragment-definition-0");
+        assertNotNull(requestFragmentDefinitionProxy0);
+        assertEquals("definition0.fpsml", requestFragmentDefinitionProxy0.getName());
+        assertEquals("/definition0.fpsml", extractFileSystemPathFromId(requestFragmentDefinitionProxy0.getId()));
+        FragmentDefinition requestFragmentDefinitionProxy1 = (FragmentDefinition)requestFragmentDefinitionProxies.get("fake-fragment-definition-1");
+        assertNotNull(requestFragmentDefinitionProxy1);
+        assertEquals("definition1.fpsml", requestFragmentDefinitionProxy1.getName());
+        assertEquals("/_user/user/definition1.fpsml", extractFileSystemPathFromId(requestFragmentDefinitionProxy1.getId()));        
         Folder requestFolderProxy = requestContext.getFolder();
         assertNotNull(requestFolderProxy);
         assertEquals("/", requestFolderProxy.getName());
@@ -637,9 +660,10 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(requestContext);
         Set customMenuNames = requestContext.getCustomMenuNames();
         assertNotNull(customMenuNames);
-        assertEquals(2, customMenuNames.size());
+        assertEquals(3, customMenuNames.size());
         assertTrue(customMenuNames.contains("top"));
         assertTrue(customMenuNames.contains("bread-crumbs"));
+        assertTrue(customMenuNames.contains("template-test"));
         Menu topMenu = requestContext.getMenu("top");
         assertNotNull(topMenu);
         assertEquals(MenuElement.MENU_ELEMENT_TYPE, topMenu.getElementType());
@@ -740,6 +764,15 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/", ((MenuOption)breadCrumbsElements.get(0)).getUrl());
         assertEquals(MenuOption.FOLDER_OPTION_TYPE, ((MenuOption)breadCrumbsElements.get(0)).getType());
         assertTrue(((MenuImpl)breadCrumbsMenu).isElementRelative());
+        Menu templateTestMenu = requestContext.getMenu("template-test");
+        assertNotNull(templateTestMenu);
+        assertEquals("template-test", templateTestMenu.getName());
+        assertFalse(templateTestMenu.isEmpty());
+        List templateTestElements = templateTestMenu.getElements();
+        assertNotNull(templateTestElements);
+        assertEquals(1, templateTestElements.size());
+        assertTrue(templateTestElements.get(0) instanceof MenuOption);
+        assertEquals("/page1.psml", ((MenuOption)templateTestElements.get(0)).getUrl());
 
         // second request at /folder0
         locator = new JetspeedProfileLocator();
@@ -903,6 +936,33 @@ public class TestPortalSite extends AbstractSpringTestCase
         }
         assertEquals("tabs", pagesMenu.getSkin());
         assertTrue(((MenuImpl)pagesMenu).isElementRelative());
+
+        // fourth request at /page0.psml
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/page0.psml");
+        locator.add("user", true, false, "user");
+        locator.add("mediatype", true, false, "html");
+        locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/page0.psml");
+        locator.add("role", true, false, "role0");
+        locators.put("role", locator);
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/page0.psml");
+        locator.add("group", true, false, "group");
+        locators.put("group", locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        Menu templateTestMenu2 = requestContext.getMenu("template-test");
+        assertNotNull(templateTestMenu2);
+        assertEquals("template-test", templateTestMenu2.getName());
+        assertFalse(templateTestMenu2.isEmpty());
+        List templateTestElements2 = templateTestMenu2.getElements();
+        assertNotNull(templateTestElements2);
+        assertEquals(1, templateTestElements2.size());
+        assertTrue(templateTestElements2.get(0) instanceof MenuOption);
+        assertEquals("/page2.psml", ((MenuOption)templateTestElements2.get(0)).getUrl());
 
         // new request at /folder1
         locator = new JetspeedProfileLocator();

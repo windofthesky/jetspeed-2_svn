@@ -42,15 +42,22 @@ public class SiteViewMenuDefinitionLocator
     private MenuDefinition menuDefinition;
 
     /**
+     * override - override menu definition flag
+     */
+    private boolean override;
+
+    /**
      * SiteViewMenuDefinitionLocator - custom menu definition constructor
      *
      * @param menuDefinition custom menu definition
      * @param definingNode defining page or folder
+     * @param 
      */
-    public SiteViewMenuDefinitionLocator(MenuDefinition menuDefinition, Node definingNode)
+    public SiteViewMenuDefinitionLocator(MenuDefinition menuDefinition, Node definingNode, boolean override)
     {
         this.menuDefinition = menuDefinition;
         this.locator = definingNode.getPath() + "|" + menuDefinition.getName();
+        this.override = override;
     }
 
     /**
@@ -116,5 +123,15 @@ public class SiteViewMenuDefinitionLocator
     public String getName()
     {
         return menuDefinition.getName();
+    }
+
+    /**
+     * isOverride - return override menu definition flag
+     *
+     * @return override menu definition flag
+     */
+    public boolean isOverride()
+    {
+        return override;
     }
 }

@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
 
@@ -57,6 +58,28 @@ public interface PortalSiteRequestContext
     Page getManagedPage() throws NodeNotFoundException;
 
     /**
+     * getManagedPageTemplate - get request profiled concrete page 
+     *                          template instance as managed by the
+     *                          page manager
+     *  
+     * @return page template
+     * @throws NodeNotFoundException if page not found
+     * @throws SecurityException if page view access not granted
+     */
+    PageTemplate getManagedPageTemplate() throws NodeNotFoundException;
+
+    /**
+     * getManagedFragmentDefinitions - get map of request profiled concrete
+     *                                 fragment definition instances as
+     *                                 managed by the page manager
+     *  
+     * @return map of fragment definitions by id
+     * @throws NodeNotFoundException if page or fragment definition not found
+     * @throws SecurityException if page view access not granted
+     */
+    Map getManagedFragmentDefinitions() throws NodeNotFoundException;
+
+    /**
      * getPage - get request profiled page proxy
      *  
      * @return page proxy
@@ -64,6 +87,25 @@ public interface PortalSiteRequestContext
      * @throws SecurityException if page view access not granted
      */
     Page getPage() throws NodeNotFoundException;
+
+    /**
+     * getPageTemplate - get page template proxy for request profiled page
+     *  
+     * @return page template proxy if found or null
+     * @throws NodeNotFoundException if page not found
+     * @throws SecurityException if page view access not granted
+     */
+    PageTemplate getPageTemplate() throws NodeNotFoundException;
+
+    /**
+     * getFragmentDefinitions - get fragment definition proxy map for request
+     *                          profiled page and page template
+     *  
+     * @return map of fragment definition proxies by fragment id
+     * @throws NodeNotFoundException if page not found
+     * @throws SecurityException if page view access not granted
+     */
+    Map getFragmentDefinitions() throws NodeNotFoundException;
 
     /**
      * getFolder - get folder proxy relative to request profiled page

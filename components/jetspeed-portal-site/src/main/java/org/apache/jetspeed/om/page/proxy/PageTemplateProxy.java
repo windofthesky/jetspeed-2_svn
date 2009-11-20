@@ -22,29 +22,28 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.proxy.FolderProxy;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
 import org.apache.jetspeed.portalsite.view.SiteView;
 
 /**
- * This class proxies PSML Page instances to create a logical view
- * of site content using the Dynamic Proxy pattern.
+ * This class proxies PSML PageTemplate instances to create a logical
+ * view of site content using the Dynamic Proxy pattern.
  * 
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
- * @version $Id$
+ * @version $Id:$
  */
-public class PageProxy extends NodeProxy implements InvocationHandler
+public class PageTemplateProxy extends NodeProxy implements InvocationHandler
 {
     /**
-     * *_METHOD - Page method constants
+     * *_METHOD - PageTemplate method constants
      */
-    protected static final Method GET_MENU_DEFINITIONS_METHOD = reflectMethod(Page.class, "getMenuDefinitions", null);
+    protected static final Method GET_MENU_DEFINITIONS_METHOD = reflectMethod(PageTemplate.class, "getMenuDefinitions", null);
 
     /**
-     * page - proxy delegate page instance
+     * pageTemplate - proxy delegate page template instance
      */
-    private Page page;
+    private PageTemplate pageTemplate;
 
     /**
      * newInstance - creates a new proxy instance that implements the Page interface
@@ -53,26 +52,26 @@ public class PageProxy extends NodeProxy implements InvocationHandler
      * @param locatorName name of profile locator associated
      *                    with the proxy delegate
      * @param parentFolder view parent proxy folder
-     * @param page proxy delegate
+     * @param pageTemplate proxy delegate
      */
-    public static Page newInstance(SiteView view, String locatorName, Folder parentFolder, Page page)
+    public static PageTemplate newInstance(SiteView view, String locatorName, Folder parentFolder, PageTemplate pageTemplate)
     {
-        return (Page)Proxy.newProxyInstance(page.getClass().getClassLoader(), new Class[]{Page.class}, new PageProxy(view, locatorName, parentFolder, page));
+        return (PageTemplate)Proxy.newProxyInstance(pageTemplate.getClass().getClassLoader(), new Class[]{PageTemplate.class}, new PageTemplateProxy(view, locatorName, parentFolder, pageTemplate));
     }
 
     /**
-     * PageProxy - private constructor used by newInstance()
+     * PageTemplateProxy - private constructor used by newInstance()
      *
      * @param view site view owner of this proxy
      * @param locatorName name of profile locator associated
      *                    with the proxy delegate
      * @param parentFolder view parent proxy folder
-     * @param page proxy delegate
+     * @param pageTemplate proxy delegate
      */
-    private PageProxy(SiteView view, String locatorName, Folder parentFolder, Page page)
+    private PageTemplateProxy(SiteView view, String locatorName, Folder parentFolder, PageTemplate pageTemplate)
     {
-        super(view, locatorName, parentFolder, page.getName(), page.isHidden());
-        this.page = page;
+        super(view, locatorName, parentFolder, pageTemplate.getName(), false);
+        this.pageTemplate = pageTemplate;
     }
     
     /**
@@ -81,7 +80,7 @@ public class PageProxy extends NodeProxy implements InvocationHandler
      *          proxy handler or should be hidden/stubbed)
      *
      * @param proxy instance invoked against
-     * @param method Page interface method invoked
+     * @param method PageTemplate interface method invoked
      * @param args method arguments
      * @throws Throwable
      */
@@ -124,13 +123,13 @@ public class PageProxy extends NodeProxy implements InvocationHandler
         // proxy suppression of not implemented or mutable methods
         if (m.getName().startsWith("set"))
         {
-            throw new RuntimeException("Page instance is immutable from proxy.");
+            throw new RuntimeException("PageTemplate instance is immutable from proxy.");
         }
 
         try
         {
-            // attempt to invoke method on delegate Page instance
-            return m.invoke(page, args);
+            // attempt to invoke method on delegate PageTemplate instance
+            return m.invoke(pageTemplate, args);
         }
         catch (InvocationTargetException ite)
         {
@@ -139,13 +138,13 @@ public class PageProxy extends NodeProxy implements InvocationHandler
     }
 
     /**
-     * getPage - get proxy delegate page instance
+     * getPageTemplate - get proxy delegate page template instance
      *
-     * @return delegate page
+     * @return delegate page template
      */
-    public Page getPage()
+    public PageTemplate getPageTemplate()
     {
-        return page;
+        return pageTemplate;
     }
 
     /**
@@ -154,13 +153,7 @@ public class PageProxy extends NodeProxy implements InvocationHandler
      */
     protected void aggregateMenuDefinitionLocators()
     {
-        // merge page and parent folder menu definition locators
-        // by name, (most specific page definitions are merged first
-        // since they override any folder definitions); note parent
-        // folder menu definitions include standard menu definition
-        // locator defaults
-        mergeMenuDefinitionLocators(page.getMenuDefinitions(), page, true);
-        FolderProxy parentFolderProxy = FolderProxy.getFolderProxy(getParent());
-        mergeMenuDefinitionLocators(parentFolderProxy.getMenuDefinitionLocators());
+        // merge only page template menu definition locators by name
+        mergeMenuDefinitionLocators(pageTemplate.getMenuDefinitions(), pageTemplate, false);
     }
 }

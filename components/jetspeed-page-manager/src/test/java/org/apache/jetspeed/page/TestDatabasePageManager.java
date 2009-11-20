@@ -674,11 +674,11 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
-            FragmentDefinition fragmentDefinition = pageManager.getFragmentDefinition("/fragment-definition.fpsml");
-            assertNotNull(fragmentDefinition);
-            assertEquals("Created Fragment Definition", fragmentDefinition.getTitle());
-            assertNotNull(fragmentDefinition.getRootFragment());
-            BaseFragmentElement rootFragmentElement = fragmentDefinition.getRootFragment();
+            FragmentDefinition check = pageManager.getFragmentDefinition("/fragment-definition.fpsml");
+            assertNotNull(check);
+            assertEquals("Created Fragment Definition", check.getTitle());
+            assertNotNull(check.getRootFragment());
+            BaseFragmentElement rootFragmentElement = check.getRootFragment();
             assertTrue(rootFragmentElement instanceof Fragment);
             Fragment root = (Fragment)rootFragmentElement;
             assertEquals("fragment-definition", root.getId());
@@ -692,12 +692,12 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
-            DynamicPage dynamicPage = pageManager.getDynamicPage("/dynamic-page.dpsml");
-            assertNotNull(dynamicPage);
-            assertEquals("default", dynamicPage.getPageType());
-            assertEquals("Created Dynamic Page", dynamicPage.getTitle());
-            assertNotNull(dynamicPage.getRootFragment());
-            BaseFragmentElement rootFragmentElement = dynamicPage.getRootFragment();
+            DynamicPage check = pageManager.getDynamicPage("/dynamic-page.dpsml");
+            assertNotNull(check);
+            assertEquals("default", check.getPageType());
+            assertEquals("Created Dynamic Page", check.getTitle());
+            assertNotNull(check.getRootFragment());
+            BaseFragmentElement rootFragmentElement = check.getRootFragment();
             assertTrue(rootFragmentElement instanceof Fragment);
             Fragment root = (Fragment)rootFragmentElement;
             assertEquals("jetspeed-layouts::VelocityTwoColumns", root.getName());
@@ -719,11 +719,11 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         }
         try
         {
-            PageTemplate pageTemplate = pageManager.getPageTemplate("/page-template.tpsml");
-            assertNotNull(pageTemplate);
-            assertEquals("Created Page Template", pageTemplate.getTitle());
-            assertNotNull(pageTemplate.getRootFragment());
-            BaseFragmentElement rootFragmentElement = pageTemplate.getRootFragment();
+            PageTemplate check = pageManager.getPageTemplate("/page-template.tpsml");
+            assertNotNull(check);
+            assertEquals("Created Page Template", check.getTitle());
+            assertNotNull(check.getRootFragment());
+            BaseFragmentElement rootFragmentElement = check.getRootFragment();
             assertTrue(rootFragmentElement instanceof Fragment);
             Fragment root = (Fragment)rootFragmentElement;
             assertEquals("jetspeed-layouts::VelocityTwoColumns", root.getName());
@@ -864,6 +864,10 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertTrue(checkElement2 instanceof FragmentReference);
             FragmentReference checkFragmentReference = (FragmentReference)checkElement2;
             assertTrue(checkFragmentReference.getRefId().equals("fragment-definition"));
+            assertNotNull(check.getFragmentsByInterface(null));
+            assertEquals(4, check.getFragmentsByInterface(null).size());
+            assertNotNull(check.getFragmentsByInterface(FragmentReference.class));
+            assertEquals(1, check.getFragmentsByInterface(FragmentReference.class).size());
         }
         catch (PageNotFoundException e)
         {

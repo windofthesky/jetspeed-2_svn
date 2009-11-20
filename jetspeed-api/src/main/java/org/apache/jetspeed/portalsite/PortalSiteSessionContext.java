@@ -60,6 +60,19 @@ public interface PortalSiteSessionContext extends Serializable
     PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback, boolean useHistory);
 
     /**
+     * newRequestContext - create a new request context instance
+     *
+     * @param requestProfileLocators request profile locators
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     * @param forceReservedVisible force reserved/hidden folders visible in site view
+     * @return new request context instance
+     */
+    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback, boolean useHistory, boolean forceReservedVisible);
+
+    /**
      * getPageManager - return PageManager component instance
      *
      * @return PageManager instance
@@ -73,18 +86,6 @@ public interface PortalSiteSessionContext extends Serializable
      *
      * @return valid context status
      */
-    boolean isValid();
-    
-    /**
-     * set which pipeline this context is stored for 
-     * 
-     * @param pipeline
-     */
-    void setPipeline(String pipeline);
-    
-    /**
-     * get which pipeline this context is stored for
-     */
-    String getPipeline();
+    boolean isValid();    
 }
 

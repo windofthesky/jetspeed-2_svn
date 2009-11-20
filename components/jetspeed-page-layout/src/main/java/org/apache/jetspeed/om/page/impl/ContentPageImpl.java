@@ -26,6 +26,7 @@ import org.apache.jetspeed.layout.impl.PageLayoutComponentUtils;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 
 /**
@@ -39,6 +40,8 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     private PageLayoutComponent pageLayoutComponent;
     private String id;
     private Page page;
+    private PageTemplate pageTemplate;
+    private Map fragmentDefinitions;
 
     private ContentFragmentImpl rootContentFragment;
     private GenericMetadata metadata;
@@ -77,12 +80,16 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
      * @param pageLayoutComponent PageLayoutComponent instance
      * @param id content page id
      * @param page PSML page
+     * @param pageTemplate PSML page template
+     * @param fragmentDefinitions PSML fragment definitions
      */
-    public ContentPageImpl(PageLayoutComponent pageLayoutComponent, String id, Page page)
+    public ContentPageImpl(PageLayoutComponent pageLayoutComponent, String id, Page page, PageTemplate pageTemplate, Map fragmentDefinitions)
     {
         this.pageLayoutComponent = pageLayoutComponent;
         this.id = id;
         this.page = page;
+        this.pageTemplate = pageTemplate;
+        this.fragmentDefinitions = fragmentDefinitions;
     }
     
     /* (non-Javadoc)
@@ -127,13 +134,21 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#getFragmentDefinitions()
+     */
+    public Map getFragmentDefinitions()
+    {
+        return fragmentDefinitions;
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#getFragmentById(java.lang.String)
      */
     public ContentFragment getFragmentById(String id)
     {
         if (rootContentFragment != null)
         {
-            return rootContentFragment.getFragmentById(id);
+            return rootContentFragment.getFragmentById(id, null);
         }
         return null;
     }
@@ -192,6 +207,14 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     public PageLayoutComponent getPageLayoutComponent()
     {
         return pageLayoutComponent;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#getPageTemplate()
+     */
+    public PageTemplate getPageTemplate()
+    {
+        return pageTemplate;
     }
     
     /* (non-Javadoc)
@@ -565,14 +588,54 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     }
     
     /**
+     * Get content fragment associated with content page root fragment.
+     * 
+     * @return content fragment
+     */
+    public ContentFragmentImpl getPageRootContentFragment()
+    {
+        if (rootContentFragment != null)
+        {
+            if (page != null)
+            {
+                // find first content fragment with page definition
+                return rootContentFragment.getFragmentByDefinition(page);
+            }
+            else
+            {
+                // transient content page assumes it is constructed
+                // from page; return root content fragment
+                return rootContentFragment;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Get content fragment and parent by id.
+     * 
+     * @param id content fragment id
+     * @param parent returned parent content fragment
+     * @return content fragment
+     */
+    public ContentFragmentImpl getFragmentById(String id, ContentFragmentImpl [] parentFragment)
+    {
+        if (rootContentFragment != null)
+        {
+            return rootContentFragment.getFragmentById(id, parentFragment);
+        }
+        return null;
+    }
+
+    /**
      * Remove content fragment by id.
      * 
      * @param id the id of fragment to remove
      * @return removed content fragment
      */
-    public ContentFragment removeFragmentById(String id)
+    public ContentFragmentImpl removeFragmentById(String id)
     {
-        ContentFragment removed = null;
+        ContentFragmentImpl removed = null;
         if (rootContentFragment != null)
         {
             if (rootContentFragment.getId().equals(id))

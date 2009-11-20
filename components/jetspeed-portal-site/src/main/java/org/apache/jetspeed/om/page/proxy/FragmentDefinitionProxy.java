@@ -22,57 +22,51 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.proxy.FolderProxy;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
 import org.apache.jetspeed.portalsite.view.SiteView;
 
 /**
- * This class proxies PSML Page instances to create a logical view
- * of site content using the Dynamic Proxy pattern.
+ * This class proxies PSML FragmentDefinition instances to create
+ * a logical view of site content using the Dynamic Proxy pattern.
  * 
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
- * @version $Id$
+ * @version $Id:$
  */
-public class PageProxy extends NodeProxy implements InvocationHandler
+public class FragmentDefinitionProxy extends NodeProxy implements InvocationHandler
 {
     /**
-     * *_METHOD - Page method constants
+     * fragmentDefinition - proxy delegate fragment definition instance
      */
-    protected static final Method GET_MENU_DEFINITIONS_METHOD = reflectMethod(Page.class, "getMenuDefinitions", null);
+    private FragmentDefinition fragmentDefinition;
 
     /**
-     * page - proxy delegate page instance
-     */
-    private Page page;
-
-    /**
-     * newInstance - creates a new proxy instance that implements the Page interface
+     * newInstance - creates a new proxy instance that implements the FragmentDefinition interface
      *
      * @param view site view owner of this proxy
      * @param locatorName name of profile locator associated
      *                    with the proxy delegate
      * @param parentFolder view parent proxy folder
-     * @param page proxy delegate
+     * @param fragmentDefinition proxy delegate
      */
-    public static Page newInstance(SiteView view, String locatorName, Folder parentFolder, Page page)
+    public static FragmentDefinition newInstance(SiteView view, String locatorName, Folder parentFolder, FragmentDefinition fragmentDefinition)
     {
-        return (Page)Proxy.newProxyInstance(page.getClass().getClassLoader(), new Class[]{Page.class}, new PageProxy(view, locatorName, parentFolder, page));
+        return (FragmentDefinition)Proxy.newProxyInstance(fragmentDefinition.getClass().getClassLoader(), new Class[]{FragmentDefinition.class}, new FragmentDefinitionProxy(view, locatorName, parentFolder, fragmentDefinition));
     }
 
     /**
-     * PageProxy - private constructor used by newInstance()
+     * FragmentDefinitionProxy - private constructor used by newInstance()
      *
      * @param view site view owner of this proxy
      * @param locatorName name of profile locator associated
      *                    with the proxy delegate
      * @param parentFolder view parent proxy folder
-     * @param page proxy delegate
+     * @param fragmentDefinition proxy delegate
      */
-    private PageProxy(SiteView view, String locatorName, Folder parentFolder, Page page)
+    private FragmentDefinitionProxy(SiteView view, String locatorName, Folder parentFolder, FragmentDefinition fragmentDefinition)
     {
-        super(view, locatorName, parentFolder, page.getName(), page.isHidden());
-        this.page = page;
+        super(view, locatorName, parentFolder, fragmentDefinition.getName(), false);
+        this.fragmentDefinition = fragmentDefinition;
     }
     
     /**
@@ -81,18 +75,13 @@ public class PageProxy extends NodeProxy implements InvocationHandler
      *          proxy handler or should be hidden/stubbed)
      *
      * @param proxy instance invoked against
-     * @param method Page interface method invoked
+     * @param method FragmentDefinition interface method invoked
      * @param args method arguments
      * @throws Throwable
      */
     public Object invoke(Object proxy, Method m, Object [] args) throws Throwable
     {
-        // proxy implementation method dispatch
-        if (m.equals(GET_MENU_DEFINITIONS_METHOD))
-        {
-            return getMenuDefinitions();
-        }
-        else if (m.equals(GET_PARENT_METHOD))
+        if (m.equals(GET_PARENT_METHOD))
         {
             return getParent();
         }
@@ -124,13 +113,13 @@ public class PageProxy extends NodeProxy implements InvocationHandler
         // proxy suppression of not implemented or mutable methods
         if (m.getName().startsWith("set"))
         {
-            throw new RuntimeException("Page instance is immutable from proxy.");
+            throw new RuntimeException("FragmentDefinition instance is immutable from proxy.");
         }
 
         try
         {
-            // attempt to invoke method on delegate Page instance
-            return m.invoke(page, args);
+            // attempt to invoke method on delegate FragmentDefinition instance
+            return m.invoke(fragmentDefinition, args);
         }
         catch (InvocationTargetException ite)
         {
@@ -139,28 +128,12 @@ public class PageProxy extends NodeProxy implements InvocationHandler
     }
 
     /**
-     * getPage - get proxy delegate page instance
+     * getFragmentDefinition - get proxy delegate fragment definition instance
      *
-     * @return delegate page
+     * @return delegate fragment definition
      */
-    public Page getPage()
+    public FragmentDefinition getFragmentDefinition()
     {
-        return page;
-    }
-
-    /**
-     * aggregateMenuDefinitionLocators - aggregate all menu definition locators
-     *                                   in site view for this folder or page
-     */
-    protected void aggregateMenuDefinitionLocators()
-    {
-        // merge page and parent folder menu definition locators
-        // by name, (most specific page definitions are merged first
-        // since they override any folder definitions); note parent
-        // folder menu definitions include standard menu definition
-        // locator defaults
-        mergeMenuDefinitionLocators(page.getMenuDefinitions(), page, true);
-        FolderProxy parentFolderProxy = FolderProxy.getFolderProxy(getParent());
-        mergeMenuDefinitionLocators(parentFolderProxy.getMenuDefinitionLocators());
+        return fragmentDefinition;
     }
 }

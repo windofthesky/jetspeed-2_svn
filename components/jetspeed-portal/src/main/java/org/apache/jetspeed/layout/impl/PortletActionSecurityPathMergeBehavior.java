@@ -22,16 +22,17 @@ import java.util.Set;
 
 import javax.security.auth.Subject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.impl.TransientRole;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstracted behavior of security checks when used with the
@@ -47,13 +48,13 @@ public class PortletActionSecurityPathMergeBehavior
 {
     protected Logger log = LoggerFactory.getLogger(PortletActionSecurityPathMergeBehavior.class);
     
-    public PortletActionSecurityPathMergeBehavior( PageManager pageManager, PageLayoutComponent pageLayoutComponent )
+    public PortletActionSecurityPathMergeBehavior( PageManager pageManager, PageProfilerValve profilerValve )
     {
-    	this( pageManager, pageLayoutComponent, Boolean.FALSE );
+    	this( pageManager, profilerValve, Boolean.FALSE );
     }
-    public PortletActionSecurityPathMergeBehavior( PageManager pageManager, PageLayoutComponent pageLayoutComponent, Boolean enableCreateUserPagesFromRolesOnEdit )
+    public PortletActionSecurityPathMergeBehavior( PageManager pageManager, PageProfilerValve profilerValve, Boolean enableCreateUserPagesFromRolesOnEdit )
     {
-        super( pageManager, pageLayoutComponent, enableCreateUserPagesFromRolesOnEdit );
+        super( pageManager, profilerValve, enableCreateUserPagesFromRolesOnEdit );
     }
 
     public Subject getSubject(RequestContext context)

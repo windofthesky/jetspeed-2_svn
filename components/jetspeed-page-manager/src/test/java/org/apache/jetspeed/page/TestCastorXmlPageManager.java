@@ -292,6 +292,12 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(((Fragment)fragments.get(0)).getId().equals("pe002"));
         assertTrue(((Fragment)fragments.get(0)).getName().equals("JMXPortlet"));
         assertTrue(((Fragment)fragments.get(0)).getType().equals(Fragment.PORTLET));
+        List fragmentsByInterface = testpage.getFragmentsByInterface(null);
+        assertNotNull(fragmentsByInterface);
+        assertEquals(7, fragmentsByInterface.size());
+        fragmentsByInterface = testpage.getFragmentsByInterface(FragmentReference.class);
+        assertNotNull(fragmentsByInterface);
+        assertEquals(1, fragmentsByInterface.size());
 
         PageTemplate testpagetemplate = pageManager.getPageTemplate("/test001.tpsml");
         assertNotNull(testpagetemplate);

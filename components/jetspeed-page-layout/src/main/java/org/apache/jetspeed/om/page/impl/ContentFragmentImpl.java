@@ -27,9 +27,10 @@ import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.impl.PageLayoutComponentUtils;
-import org.apache.jetspeed.om.page.BaseFragmentElement;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.pluto.container.PortletPreference;
 
@@ -48,9 +49,11 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
 
     private PageLayoutComponent pageLayoutComponent;
     private String id;
-    private Page page;
-    private BaseFragmentElement fragment;
+    private BaseFragmentsElement definition;
+    private Fragment fragment;
+    private FragmentReference reference;
     private boolean instantlyRendered;
+    private boolean locked;
     
     private StringBuffer overriddenContent;
     private PortletContent portletContent;
@@ -91,12 +94,13 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * Construct new dynamic content fragment with rendering flag.
      *
      * @param id content fragment id
-     * @param instantlyRendered rendering flag
+     * @param instantlyRendered rendering flag, (rendering implies locked)
      */
     public ContentFragmentImpl(String id, boolean instantlyRendered)
     {
         this.id = id;
         this.instantlyRendered = instantlyRendered;
+        this.locked = instantlyRendered;
     }
     
     /**
@@ -104,15 +108,19 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * 
      * @param pageLayoutComponent PageLayoutComponent instance
      * @param id content fragment id
-     * @param page PSML page
+     * @param definition PSML page, page template, or fragment definition
      * @param fragment PSML fragment
+     * @param reference PSML page fragment reference
+     * @param locked locked flag
      */
-    public ContentFragmentImpl(PageLayoutComponent pageLayoutComponent, String id, Page page, BaseFragmentElement fragment)
+    public ContentFragmentImpl(PageLayoutComponent pageLayoutComponent, String id, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
     {
         this.pageLayoutComponent = pageLayoutComponent;
         this.id = id;
-        this.page = page;
+        this.definition = definition;
         this.fragment = fragment;
+        this.reference = reference;
+        this.locked = locked;
     }
 
     /* (non-Javadoc)
@@ -438,6 +446,14 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
     
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#isLocked()
+     */
+    public boolean isLocked()
+    {
+        return locked;
+    }
+    
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#overrideRenderedContent(java.lang.String)
      */
     public void overrideRenderedContent(String content)
@@ -659,12 +675,49 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
 
     /**
+     * Get content fragment by definition.
+     * 
+     * @param definition content fragment definition
+     * @return content fragment
+     */
+    public ContentFragmentImpl getFragmentByDefinition(BaseFragmentsElement definition)
+    {
+        if (getDefinition() == definition)
+        {
+            return this;
+        }
+        Iterator fragmentIter = getFragments().iterator();
+        while (fragmentIter.hasNext())
+        {
+            ContentFragmentImpl childFragment = (ContentFragmentImpl)fragmentIter.next();
+            ContentFragmentImpl fragment = childFragment.getFragmentByDefinition(definition);
+            if (fragment != null)
+            {
+                return fragment;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get content fragment by id.
      * 
      * @param id content fragment id
      * @return content fragment
      */
-    public ContentFragment getFragmentById(String id)
+    public ContentFragmentImpl getFragmentById(String id)
+    {
+        return getFragmentById(id, null);
+    }
+
+    /**
+     * Get content fragment and parent by id.
+     * 
+     * @param id content fragment id
+     * @param parent returned parent content fragment
+     * @return content fragment
+     */
+    public ContentFragmentImpl getFragmentById(String id, ContentFragmentImpl [] parentFragment)
     {
         if (getId().equals(id))
         {
@@ -674,9 +727,13 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
         while (fragmentIter.hasNext())
         {
             ContentFragmentImpl childFragment = (ContentFragmentImpl)fragmentIter.next();
-            ContentFragment fragment = childFragment.getFragmentById(id);
+            ContentFragmentImpl fragment = childFragment.getFragmentById(id, parentFragment);
             if (fragment != null)
             {
+                if ((parentFragment != null) && (parentFragment[0] == null))
+                {
+                    parentFragment[0] = this;
+                }
                 return fragment;
             }
         }
@@ -748,13 +805,14 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
     
     /**
-     * Get content fragment PSML page.
+     * Get content fragment PSML page, page template, or
+     * fragment definition.
      * 
-     * @return the page
+     * @return the PSML definition
      */
-    public Page getPage()
+    public BaseFragmentsElement getDefinition()
     {
-        return page;
+        return definition;
     }
 
     /**
@@ -762,23 +820,37 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * 
      * @return the fragment
      */
-    public BaseFragmentElement getFragment()
+    public Fragment getFragment()
     {
         return fragment;
+    }
+
+    /**
+     * Get content fragment PSML page reference fragment.
+     * 
+     * @return the reference fragment
+     */
+    public FragmentReference getReference()
+    {
+        return reference;
     }
 
     /**
      * Initialize content fragment.
      * 
      * @param pageLayoutComponent PageLayoutComponent instance
-     * @param page PSML page
+     * @param definition PSML page, page template, or fragment definition
      * @param fragment PSML fragment
+     * @param reference PSML page fragment reference
+     * @param locked locked flag
      */
-    public void initialize(PageLayoutComponent pageLayoutComponent, Page page, BaseFragmentElement fragment)
+    public void initialize(PageLayoutComponent pageLayoutComponent, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
     {
         this.pageLayoutComponent = pageLayoutComponent;
-        this.page = page;
+        this.definition = definition;
         this.fragment = fragment;
+        this.reference = reference;
+        this.locked = locked;
     }
 
     /**
@@ -787,9 +859,9 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * @param id content fragment id
      * @return content fragment
      */
-    public ContentFragment removeFragmentById(String id)
+    public ContentFragmentImpl removeFragmentById(String id)
     {
-        ContentFragment removed = null;
+        ContentFragmentImpl removed = null;
         Iterator fragmentIter = getFragments().iterator();
         while ((removed == null) && fragmentIter.hasNext())
         {

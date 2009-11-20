@@ -18,15 +18,16 @@ package org.apache.jetspeed.layout.impl;
 
 import java.security.Principal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.administration.PortalConfiguration;
-import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
 import org.apache.jetspeed.request.RequestContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstracted behavior of security checks for portlet actions
@@ -41,13 +42,13 @@ public class PortletActionSecurityConstraintsBehavior
     protected Logger log = LoggerFactory.getLogger(PortletActionSecurityConstraintsBehavior.class);    
     protected String guest = "guest";
     
-    public PortletActionSecurityConstraintsBehavior(PageManager pageManager, PageLayoutComponent pageLayoutComponent)
+    public PortletActionSecurityConstraintsBehavior(PageManager pageManager, PageProfilerValve profilerValve)
     {
-    	this( pageManager, pageLayoutComponent, Boolean.FALSE );
+    	this( pageManager, profilerValve, Boolean.FALSE );
     }
-    public PortletActionSecurityConstraintsBehavior(PageManager pageManager, PageLayoutComponent pageLayoutComponent, Boolean enableCreateUserPagesFromRolesOnEdit )
+    public PortletActionSecurityConstraintsBehavior(PageManager pageManager, PageProfilerValve profilerValve, Boolean enableCreateUserPagesFromRolesOnEdit )
     {
-        super( pageManager, pageLayoutComponent, enableCreateUserPagesFromRolesOnEdit );
+        super( pageManager, profilerValve, enableCreateUserPagesFromRolesOnEdit );
         PortalConfiguration config = Jetspeed.getConfiguration();
         if (config != null)
         {

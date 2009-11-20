@@ -200,7 +200,7 @@ public class TestAggregator extends JetspeedTestCase
                         PageLayoutComponent pageLayoutComponent = 
                             (PageLayoutComponent) engine.getComponentManager().getComponent(PageLayoutComponent.class);
                         assertNotNull(page);
-                        requestContext.setPage(pageLayoutComponent.newContentPage(page));
+                        requestContext.setPage(pageLayoutComponent.newContentPage(page, null, null));
 
                         if (!isParallelMode) {
                             pageAggregator.build(requestContext);
