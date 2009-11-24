@@ -27,6 +27,7 @@ public interface PortalReservedParameters
 {
     public final static String PORTLET = "portlet";
     public final static String PORTLET_ENTITY = "entity";        
+    public final static String PORTLET_MODE = "mode";
     public final static String PAGE = "page";
     public final static String PIPELINE = "pipeline";
     public final static String DEFAULT_PIPELINE = "jetspeed-pipeline";

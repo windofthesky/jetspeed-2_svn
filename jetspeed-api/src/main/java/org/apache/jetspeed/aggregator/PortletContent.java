@@ -19,6 +19,8 @@ package org.apache.jetspeed.aggregator;
 import java.io.PrintWriter;
 import java.util.List;
 
+import javax.portlet.PortletMode;
+
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.util.KeyValue;
@@ -106,7 +108,14 @@ public interface PortletContent
      * @param contentType
      */
     void setContentType(String contentType);
-
+    
+    /**
+     * Gets the portlet mode of this portlet content.
+     * 
+     * @return
+     */
+    PortletMode getPortletMode();
+    
     /**
      * Adds an header element to be contributed to the page.
      * If keyHint argument is provided and if a header element 

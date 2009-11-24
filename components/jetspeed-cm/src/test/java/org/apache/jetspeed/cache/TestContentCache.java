@@ -21,6 +21,8 @@ import java.security.Principal;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.portlet.PortletMode;
+
 import junit.framework.TestCase;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -403,6 +405,12 @@ public class TestContentCache extends TestCase
         {
             // TODO Auto-generated method stub
             return null;
+        }
+
+
+        public PortletMode getPortletMode()
+        {
+            return PortletMode.VIEW;
         }
     }
         

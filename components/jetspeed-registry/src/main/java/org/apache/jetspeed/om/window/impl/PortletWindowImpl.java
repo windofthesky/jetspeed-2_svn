@@ -75,6 +75,8 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Render
     private PortletRequestContext portletRequestContext;
     private PortletResponse portletResponse;
     private PortletInstance portletInstance;
+    private PortletMode portletMode;
+    private WindowState windowState;
     private List<KeyValue<String, HeadElement>> headElements;
 
     private boolean valid;
@@ -158,12 +160,22 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Render
 
     public PortletMode getPortletMode()
     {
-        return valid ? requestContext.getPortalURL().getNavigationalState().getMode(this) : PortletMode.VIEW;
+        if (portletMode == null && valid)
+        {
+            portletMode = requestContext.getPortalURL().getNavigationalState().getMode(this);
+        }
+        
+        return (portletMode != null ? portletMode : PortletMode.VIEW);
     }
 
     public WindowState getWindowState()
     {
-        return valid ? requestContext.getPortalURL().getNavigationalState().getState(this) : WindowState.NORMAL;
+        if (windowState == null && valid)
+        {
+            windowState = requestContext.getPortalURL().getNavigationalState().getState(this);
+        }
+        
+        return (windowState != null ? windowState : WindowState.NORMAL);
     }
 
     public Map<String,Object> getAttributes()

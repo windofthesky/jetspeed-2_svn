@@ -18,14 +18,21 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.portlet.PortletMode;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletAggregator;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.state.MutableNavigationalState;
+import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.portlet.HeadElement;
@@ -43,6 +50,7 @@ public class PortletAggregatorImpl implements PortletAggregator
 {
     private PortletRenderer renderer;
     private boolean titleInHeader;
+    private Map<String, PortletMode> availablePortletModesMap;
 
     public PortletAggregatorImpl(PortletRenderer renderer) 
     {
@@ -93,6 +101,18 @@ public class PortletAggregatorImpl implements PortletAggregator
             window = context.getInstantlyCreatedPortletWindow(entity, name);
         }
         
+        PortletMode requetedPortletMode = getRequestedPortletMode(context);
+        NavigationalState navState = context.getPortalURL().getNavigationalState();
+        
+        if (!requetedPortletMode.equals(navState.getMode(window)))
+        {
+            if (navState instanceof MutableNavigationalState)
+            {
+                MutableNavigationalState mutableNavState = (MutableNavigationalState) navState;
+                mutableNavState.setMode(window, requetedPortletMode);
+            }
+        }
+        
         ContentFragment contentFragment = window.getFragment();
         renderer.renderNow(contentFragment, context);
         
@@ -132,4 +152,33 @@ public class PortletAggregatorImpl implements PortletAggregator
         }
     }
     
+    private PortletMode getRequestedPortletMode(final RequestContext context)
+    {
+        String portletModeName = context.getRequestParameter(PortalReservedParameters.PORTLET_MODE);
+        
+        if (portletModeName == null || "".equals(portletModeName))
+        {
+            return PortletMode.VIEW;
+        }
+        
+        if (availablePortletModesMap == null)
+        {
+            Map<String, PortletMode> portletModesMap = new HashMap<String, PortletMode>();
+            
+            for (PortletMode portletMode : JetspeedActions.getStandardPortletModes())
+            {
+                portletModesMap.put(portletMode.toString(), portletMode);
+            }
+            
+            for (PortletMode portletMode : JetspeedActions.getExtendedPortletModes())
+            {
+                portletModesMap.put(portletMode.toString(), portletMode);
+            }
+            
+            availablePortletModesMap = portletModesMap;
+        }
+        
+        PortletMode portletMode = availablePortletModesMap.get(portletModeName);
+        return (portletMode != null ? portletMode : PortletMode.VIEW);
+    }
 }

@@ -34,10 +34,8 @@ import org.apache.jetspeed.container.PortletWindow;
 
 public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFactory
 {
-    private static final DecoratorActionTemplate ABOUT_MODE_TEMPLATE = new DecoratorActionTemplate(JetspeedActions.ABOUT_MODE);
     private static final DecoratorActionTemplate CONFIG_MODE_TEMPLATE = new DecoratorActionTemplate(JetspeedActions.CONFIG_MODE);
     private static final DecoratorActionTemplate EDIT_DEFAULTS_MODE_TEMPLATE = new DecoratorActionTemplate(JetspeedActions.EDIT_DEFAULTS_MODE);
-    //private static final DecoratorActionTemplate PREVIEW_MODE_TEMPLATE = new DecoratorActionTemplate(JetspeedActions.PREVIEW_MODE);
     private static final DecoratorActionTemplate PRINT_MODE_TEMPLATE = new DecoratorActionTemplate(JetspeedActions.PRINT_MODE);
     private static final DecoratorActionTemplate SOLO_ACTION_TEMPLATE = new DecoratorActionTemplate(JetspeedActions.SOLO_STATE);
     
@@ -50,7 +48,7 @@ public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFacto
         list.add(JetspeedActions.ABOUT_MODE);
         list.add(JetspeedActions.CONFIG_MODE);
         list.add(JetspeedActions.EDIT_DEFAULTS_MODE);
-        //list.add(JetspeedActions.PREVIEW_MODE);
+        list.add(JetspeedActions.PREVIEW_MODE);
         list.add(JetspeedActions.PRINT_MODE);
         list.addAll(JetspeedActions.getStandardWindowStates());
         list.add(JetspeedActions.SOLO_STATE);

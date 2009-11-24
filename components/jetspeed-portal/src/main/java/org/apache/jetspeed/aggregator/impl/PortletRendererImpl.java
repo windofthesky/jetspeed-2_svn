@@ -299,12 +299,18 @@ public class PortletRendererImpl implements PortletRenderer
         ContentFragment fragment = portletWindow.getFragment();
         ContentCacheKey cacheKey = portletContentCache.createCacheKey(requestContext, fragment.getId());        
         CacheElement cachedElement = portletContentCache.get(cacheKey);
+        
         if (cachedElement != null)
         {
-            PortletContent portletContent = (PortletContent)cachedElement.getContent();            
-            fragment.setPortletContent(portletContent);
-            return true;
-        }        
+            PortletContent portletContent = (PortletContent) cachedElement.getContent();
+            
+            if (portletWindow.getPortletMode().equals(portletContent.getPortletMode()))
+            {
+                fragment.setPortletContent(portletContent);
+                return true;
+            }
+        }
+        
         return false;
     }
     
@@ -320,7 +326,7 @@ public class PortletRendererImpl implements PortletRenderer
         {
             title = portletWindow.getPortletDefinition().getPortletName();
         }
-        return new PortletContentImpl(cacheKey, expirationCache, title);
+        return new PortletContentImpl(cacheKey, expirationCache, title, portletWindow.getPortletMode());
     }
     
     protected RenderingJob buildRenderingJob( PortletWindow portletWindow, 

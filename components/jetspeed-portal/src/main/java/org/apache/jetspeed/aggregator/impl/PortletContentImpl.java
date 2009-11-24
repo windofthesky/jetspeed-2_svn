@@ -21,6 +21,8 @@ import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
 
+import javax.portlet.PortletMode;
+
 import org.apache.commons.collections.list.TreeList;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.cache.ContentCacheKey;
@@ -30,6 +32,11 @@ import org.apache.jetspeed.util.HeadElementUtils;
 import org.apache.jetspeed.util.KeyValue;
 
 
+/**
+ * PortletContentImpl
+ * 
+ * @version $Id$
+ */
 public class PortletContentImpl implements PortletContent
 {
     private CharArrayWriter cw;
@@ -39,6 +46,7 @@ public class PortletContentImpl implements PortletContent
     private int expiration;
     private String title;
     private String contentType;
+    private PortletMode portletMode;
     
     /**
      * The list container for all contributed head elements from this portlet content.
@@ -52,12 +60,13 @@ public class PortletContentImpl implements PortletContent
         writer = new PrintWriter(cw);
     }
     
-    PortletContentImpl(ContentCacheKey cacheKey, int expiration, String title)
+    PortletContentImpl(ContentCacheKey cacheKey, int expiration, String title, PortletMode portletMode)
     {
         this();
         this.cacheKey = cacheKey;
         this.expiration = expiration;
         this.title = title;
+        this.portletMode = portletMode;
     }
 
     public PrintWriter getWriter()
@@ -151,7 +160,12 @@ public class PortletContentImpl implements PortletContent
     {
         this.contentType = contentType;
     }
-     
+    
+    public PortletMode getPortletMode()
+    {
+        return (portletMode != null ? portletMode : PortletMode.VIEW);
+    }
+    
     public void reset()
     {
         if (!complete)
