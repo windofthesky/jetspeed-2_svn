@@ -16,43 +16,40 @@
  */
 package org.apache.jetspeed.portlet;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.util.HashSet;
 import java.util.List;
 
-import java.io.IOException;
-
-import javax.portlet.EventPortlet;
-import javax.portlet.Portlet;
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-import javax.portlet.PortletMode;
-import javax.portlet.ResourceServingPortlet;
-import javax.portlet.WindowState;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.EventPortlet;
+import javax.portlet.GenericPortlet;
+import javax.portlet.Portlet;
+import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-
-import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.portlet.SupportsHeaderPhase;
-import org.apache.jetspeed.util.BaseObjectProxy;
-
+import javax.portlet.ResourceServingPortlet;
+import javax.portlet.UnavailableException;
+import javax.portlet.WindowState;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-import javax.portlet.UnavailableException;
+
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.container.JetspeedPortletConfig;
+import org.apache.jetspeed.factory.PortletFactory;
+import org.apache.jetspeed.factory.PortletInstance;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Supports;
-import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.factory.PortletInstance;
+import org.apache.jetspeed.util.BaseObjectProxy;
 
 /**
  * PortletObjectProxy
@@ -81,15 +78,28 @@ public class PortletObjectProxy extends BaseObjectProxy
     
     private Object portletObject;
     private PortletInstance customConfigModePortletInstance;
+    private PortletInstance customPreviewModePortletInstance;
     private boolean genericPortletInvocable;
     private Method portletDoEditMethod;
     private boolean autoSwitchEditDefaultsModeToEditMode;
     private boolean autoSwitchConfigMode;
     private String customConfigModePortletUniqueName;
+    private boolean autoSwitchPreviewMode;
+    private String customPreviewModePortletUniqueName;
     private List<Supports> supports;
     
+    public static Object createProxy(Object proxiedObject, 
+                                     boolean autoSwitchEditDefaultsModeToEditMode, 
+                                     boolean autoSwitchConfigMode, String customConfigModePortletUniqueName)
+    {
+        return createProxy(proxiedObject, autoSwitchEditDefaultsModeToEditMode, autoSwitchConfigMode, customConfigModePortletUniqueName, false, null);
+    }
+    
     @SuppressWarnings("unchecked")
-    public static Object createProxy(Object proxiedObject, boolean autoSwitchEditDefaultsModeToEditMode, boolean autoSwitchConfigMode, String customConfigModePortletUniqueName)
+    public static Object createProxy(Object proxiedObject, 
+                                     boolean autoSwitchEditDefaultsModeToEditMode, 
+                                     boolean autoSwitchConfigMode, String customConfigModePortletUniqueName,
+                                     boolean autoSwitchPreviewMode, String customPreviewModePortletUniqueName)
     {
         HashSet<Class> interfaces = new HashSet<Class>();
         interfaces.add(Portlet.class);
@@ -117,16 +127,25 @@ public class PortletObjectProxy extends BaseObjectProxy
         Class proxiedClass = proxiedObject.getClass();
         ClassLoader classLoader = proxiedClass.getClassLoader();
         
-        InvocationHandler handler = new PortletObjectProxy(proxiedObject, autoSwitchEditDefaultsModeToEditMode, autoSwitchConfigMode, customConfigModePortletUniqueName);
+        InvocationHandler handler = 
+            new PortletObjectProxy(proxiedObject, 
+                                   autoSwitchEditDefaultsModeToEditMode, 
+                                   autoSwitchConfigMode, customConfigModePortletUniqueName,
+                                   autoSwitchPreviewMode, customPreviewModePortletUniqueName);
         return Proxy.newProxyInstance(classLoader, interfaces.toArray(new Class[interfaces.size()]), handler);
     }
 
-    private PortletObjectProxy(Object portletObject, boolean autoSwitchEditDefaultsModeToEditMode, boolean autoSwitchConfigMode, String customConfigModePortletUniqueName)
+    private PortletObjectProxy(Object portletObject, 
+                               boolean autoSwitchEditDefaultsModeToEditMode, 
+                               boolean autoSwitchConfigMode, String customConfigModePortletUniqueName,
+                               boolean autoSwitchPreviewMode, String customPreviewModePortletUniqueName)
     {
         this.portletObject = portletObject;
         this.autoSwitchEditDefaultsModeToEditMode = autoSwitchEditDefaultsModeToEditMode;
         this.autoSwitchConfigMode = autoSwitchConfigMode;
         this.customConfigModePortletUniqueName = customConfigModePortletUniqueName;
+        this.autoSwitchPreviewMode = autoSwitchPreviewMode;
+        this.customPreviewModePortletUniqueName = customPreviewModePortletUniqueName;
         
         if (portletObject instanceof GenericPortlet)
         {
@@ -190,20 +209,26 @@ public class PortletObjectProxy extends BaseObjectProxy
         
         boolean autoSwitchConfigMode = false;
         boolean autoSwitchToEditMode = false;
+        boolean autoSwitchPreviewMode = false;
         
         if (this.autoSwitchConfigMode && JetspeedActions.CONFIG_MODE.equals(mode))
         {
             autoSwitchConfigMode = true;
         }
         
-        if (this.autoSwitchEditDefaultsModeToEditMode && this.genericPortletInvocable)
+        if (this.autoSwitchEditDefaultsModeToEditMode && this.genericPortletInvocable && JetspeedActions.EDIT_DEFAULTS_MODE.equals(mode))
         {
-            if (JetspeedActions.EDIT_DEFAULTS_MODE.equals(mode))
+            if (!isSupportingPortletMode((GenericPortlet) this.portletObject, JetspeedActions.EDIT_DEFAULTS_MODE))
             {
-                if (!isSupportingEditDefaultsMode((GenericPortlet) this.portletObject))
-                {
-                    autoSwitchToEditMode = true;
-                }
+                autoSwitchToEditMode = true;
+            }
+        }
+        
+        if (this.autoSwitchPreviewMode && JetspeedActions.PREVIEW_MODE.equals(mode))
+        {
+            if (!isSupportingPortletMode((GenericPortlet) this.portletObject, JetspeedActions.PREVIEW_MODE))
+            {
+                autoSwitchPreviewMode = true;
             }
         }
         
@@ -213,14 +238,14 @@ public class PortletObjectProxy extends BaseObjectProxy
             {
                 if (this.customConfigModePortletInstance == null)
                 {
-                    refreshCustomConfigModePortletInstance();
+                    this.customConfigModePortletInstance = getPortletInstance(this.customConfigModePortletUniqueName);
                 }
                 
                 this.customConfigModePortletInstance.render(request, response);
             }
             catch (UnavailableException e)
             {
-                refreshCustomConfigModePortletInstance();
+                this.customConfigModePortletInstance = getPortletInstance(this.customConfigModePortletUniqueName);
                 this.customConfigModePortletInstance.render(request, response);
             }
         }
@@ -237,6 +262,23 @@ public class PortletObjectProxy extends BaseObjectProxy
                 response.setTitle(title);
                 
                 this.portletDoEditMethod.invoke(genericPortlet, new Object [] { request, response });
+            }
+        }
+        else if (autoSwitchPreviewMode)
+        {
+            try
+            {
+                if (this.customPreviewModePortletInstance == null)
+                {
+                    this.customPreviewModePortletInstance = getPortletInstance(this.customPreviewModePortletUniqueName);
+                }
+                
+                this.customPreviewModePortletInstance.render(request, response);
+            }
+            catch (UnavailableException e)
+            {
+                this.customPreviewModePortletInstance = getPortletInstance(this.customPreviewModePortletUniqueName);
+                this.customPreviewModePortletInstance.render(request, response);
             }
         }
         else
@@ -262,14 +304,14 @@ public class PortletObjectProxy extends BaseObjectProxy
             {
                 if (this.customConfigModePortletInstance == null)
                 {
-                    refreshCustomConfigModePortletInstance();
+                    this.customConfigModePortletInstance = getPortletInstance(this.customConfigModePortletUniqueName);
                 }
                 
                 this.customConfigModePortletInstance.processAction(request, response);
             }
             catch (UnavailableException e)
             {
-                refreshCustomConfigModePortletInstance();
+                this.customConfigModePortletInstance = getPortletInstance(this.customConfigModePortletUniqueName);
                 this.customConfigModePortletInstance.processAction(request, response);
             }
         }
@@ -279,7 +321,7 @@ public class PortletObjectProxy extends BaseObjectProxy
         }
     }
     
-    private boolean isSupportingEditDefaultsMode(GenericPortlet portlet)
+    private boolean isSupportingPortletMode(GenericPortlet portlet, PortletMode portletMode)
     {
         if (supports == null)
         {
@@ -296,31 +338,33 @@ public class PortletObjectProxy extends BaseObjectProxy
         
         if (supports != null)
         {
-            String pm = JetspeedActions.EDIT_DEFAULTS_MODE.toString();
+            String portletModeName = portletMode.toString();
+            
             for (Supports s : supports)
             {
-                if (s.getPortletModes().contains(pm))
+                if (s.getPortletModes().contains(portletModeName))
                 {
                     return true;
                 }
             }
+            
             return false;
         }
         
         return false;
     }
        
-    private void refreshCustomConfigModePortletInstance() throws PortletException
+    private PortletInstance getPortletInstance(String portletUniqueName) throws PortletException
     {
         PortletRegistry registry = (PortletRegistry) Jetspeed.getComponentManager().getComponent("portletRegistry");
         PortletFactory portletFactory = (PortletFactory) Jetspeed.getComponentManager().getComponent("portletFactory");
         ServletContext portalAppContext = ((ServletConfig) Jetspeed.getComponentManager().getComponent("ServletConfig")).getServletContext();
         
-        PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName(this.customConfigModePortletUniqueName, true);
+        PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName(portletUniqueName, true);
         PortletApplication portletApp = portletDef.getApplication();
         ServletContext portletAppContext = portalAppContext.getContext(portletApp.getContextPath());
         
-        this.customConfigModePortletInstance = portletFactory.getPortletInstance(portletAppContext, portletDef, false);
+        return portletFactory.getPortletInstance(portletAppContext, portletDef, false);
     }
     
 }

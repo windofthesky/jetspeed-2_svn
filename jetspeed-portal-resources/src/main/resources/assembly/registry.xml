@@ -34,9 +34,18 @@
     <constructor-arg index="2">
       <value>${supported.portletmode.autoswitch.edit_defaults}</value>
     </constructor-arg>
+    <!-- If the following constructor-arg is set to true, 
+      proxy instances will switch preview mode to built-in custom preview mode portlet unless the portlet implements preview mode. -->
+    <constructor-arg index="3">
+      <value>${supported.portletmode.autoswitch.preview}</value>
+    </constructor-arg>
     <!-- Surrogate portlet for config modes. -->
     <property name="customConfigModePortletUniqueName">
       <value>${supported.portletmode.autoswitch.config.surrogate.portlet}</value>
+    </property>
+    <!-- Surrogate portlet for preview modes. -->
+    <property name="customPreviewModePortletUniqueName">
+      <value>${supported.portletmode.autoswitch.preview.surrogate.portlet}</value>
     </property>
   </bean>
 

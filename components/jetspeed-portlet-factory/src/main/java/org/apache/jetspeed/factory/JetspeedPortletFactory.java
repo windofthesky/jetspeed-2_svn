@@ -95,7 +95,21 @@ public class JetspeedPortletFactory implements PortletFactory
      */
     private boolean autoSwitchConfigMode;
 
+    /**
+     * Delegated portlet unique name for config mode
+     */
     private String customConfigModePortletUniqueName;
+    
+    /**
+     * Flag whether the instantiated proxy will switch preview mode to built-in
+     * preview markup generating portlet or not.
+     */
+    private boolean autoSwitchPreviewMode;
+    
+    /**
+     * Delegated portlet unique name for preview mode
+     */
+    private String customPreviewModePortletUniqueName;
 
     public JetspeedPortletFactory(RequestDispatcherService rdService)
     {
@@ -103,6 +117,11 @@ public class JetspeedPortletFactory implements PortletFactory
     }
     
     public JetspeedPortletFactory(RequestDispatcherService rdService, boolean autoSwitchConfigMode, boolean autoSwitchEditDefaultsModeToEditMode)
+    {
+        this(rdService, autoSwitchConfigMode, autoSwitchEditDefaultsModeToEditMode, false);
+    }
+    
+    public JetspeedPortletFactory(RequestDispatcherService rdService, boolean autoSwitchConfigMode, boolean autoSwitchEditDefaultsModeToEditMode, boolean autoSwitchPreviewMode)
     {
         this.rdService = rdService;
         this.portletCache = Collections.synchronizedMap(new HashMap<String, Map<String, PortletInstance>>());
@@ -114,7 +133,8 @@ public class JetspeedPortletFactory implements PortletFactory
         this.portletsResourceBundleCache = Collections.synchronizedMap(new HashMap<String, Map<String, Map<Locale, ResourceBundle>>>());
         this.autoSwitchConfigMode = autoSwitchConfigMode;
         this.autoSwitchEditDefaultsModeToEditMode = autoSwitchEditDefaultsModeToEditMode;
-        this.portletProxyUsed = (this.autoSwitchConfigMode || this.autoSwitchEditDefaultsModeToEditMode);
+        this.autoSwitchPreviewMode = autoSwitchPreviewMode;
+        this.portletProxyUsed = (this.autoSwitchConfigMode || this.autoSwitchEditDefaultsModeToEditMode || this.autoSwitchPreviewMode);
         this.servletContextProvider = new JetspeedServletContextProviderImpl(rdService);
     }
     
@@ -156,6 +176,16 @@ public class JetspeedPortletFactory implements PortletFactory
     public String getCustomConfigModePortletUniqueName()
     {
         return this.customConfigModePortletUniqueName;
+    }
+    
+    public void setCustomPreviewModePortletUniqueName(String customPreviewModePortletUniqueName)
+    {
+        this.customPreviewModePortletUniqueName = customPreviewModePortletUniqueName;
+    }
+
+    public String getCustomPreviewModePortletUniqueName()
+    {
+        return this.customPreviewModePortletUniqueName;
     }
     
     public void registerPortletApplication(PortletApplication pa, ClassLoader cl)
@@ -454,12 +484,13 @@ public class JetspeedPortletFactory implements PortletFactory
 
                         if (proxyUsed)
                         {
-                            portlet = new JetspeedPortletProxyInstance(pd
-                                    .getPortletName(), (Portlet) clazz
-                                    .newInstance(),
-                                    this.autoSwitchEditDefaultsModeToEditMode,
-                                    this.autoSwitchConfigMode,
-                                    this.customConfigModePortletUniqueName);
+                            portlet = new JetspeedPortletProxyInstance(
+                                                                       pd.getPortletName(),
+                                                                       (Portlet) clazz.newInstance(),
+                                                                       this.autoSwitchEditDefaultsModeToEditMode,
+                                                                       this.autoSwitchConfigMode, this.customConfigModePortletUniqueName,
+                                                                       this.autoSwitchPreviewMode, this.customPreviewModePortletUniqueName
+                                                                       );
                         }
                         else
                         {
