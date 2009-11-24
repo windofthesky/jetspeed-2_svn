@@ -50,6 +50,9 @@ limitations under the License.
 					{
 						for(DecoratorAction action : (List<DecoratorAction>)fragment.getDecoration().getActions())
 					    {			        
+                            if ("preview".equals(action.getActionName()))
+                                continue;
+                            
 					        String target = "target='"+ action.getTarget() + "'";
 					        if (action.getTarget() == null)
 					            target = "";

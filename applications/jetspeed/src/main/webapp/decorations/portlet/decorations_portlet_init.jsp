@@ -54,12 +54,14 @@ limitations under the License.
   
                         <div class="PActionBar"> <!-- B: div portal-page-actions --> 
                           <c:forEach var="_action" items="${actions}">
-                            <a href="<c:out value='${_action.action}'/>" 
-                               title="<c:out value='${_action.name}'/>" 
-                               class="action portlet-action"
-                               <c:if test="${_action.target}"> target="<c:out value='${_action.target}'/>"</c:if>>
-                              <img src="<c:out value='${requestScope.cPath}/${_action.link}'/>" alt="<c:out value='${_action.alt}'/>" border="0" />
-                            </a>
+                            <c:if test="${_action.actionName != 'preview'}">
+                              <a href="<c:out value='${_action.action}'/>" 
+                                title="<c:out value='${_action.name}'/>" 
+                                class="action portlet-action"
+                                <c:if test="${_action.target}"> target="<c:out value='${_action.target}'/>"</c:if>>
+                                <img src="<c:out value='${requestScope.cPath}/${_action.link}'/>" alt="<c:out value='${_action.alt}'/>" border="0" />
+                              </a>
+                            </c:if>
                           </c:forEach>
                         </div> <!-- E: div portal-page-actions --> 
   
