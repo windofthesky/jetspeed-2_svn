@@ -363,18 +363,15 @@ public class PortletRendererImpl implements PortletRenderer
             timeoutFields = portletDefinition.getMetadata().getFields(PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_RENDER_TIMEOUT);
         }
 
-        if (timeoutFields != null) 
+        if (timeoutFields != null && !timeoutFields.isEmpty()) 
         {
-            for (LocalizedField timeoutField : timeoutFields)
+            try 
             {
-                try 
-                {
-                    timeoutMetadata = Long.parseLong(timeoutField.getValue());
-                }
-                catch (NumberFormatException nfe) 
-                {
-                    log.warn("Invalid timeout metadata: " + nfe.getMessage());
-                }
+                timeoutMetadata = Long.parseLong(timeoutFields.iterator().next().getValue());
+            }
+            catch (NumberFormatException nfe) 
+            {
+                log.warn("Invalid timeout metadata: " + nfe.getMessage());
             }
         }       
         return timeoutMetadata;

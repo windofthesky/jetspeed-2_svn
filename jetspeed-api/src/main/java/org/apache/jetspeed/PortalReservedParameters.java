@@ -97,12 +97,19 @@ public interface PortalReservedParameters
      * which never participate with other portlets.
      */
     public static final String PORTLET_EXTENDED_DESCRIPTOR_NON_STANDARD_ACTION = "nonStandardAction";
+    
     /**
      * A portlet can have a specific setting for the timeout duration that the portal will wait
      * before it gives up on rendering the portlet. This value overrides the system setting.
      * The timeout value is in milliseconds 
      */
     public static final String PORTLET_EXTENDED_DESCRIPTOR_RENDER_TIMEOUT = "timeout";
+    
+    /**
+     * A portlet can have a specific setting for the preview image.
+     * The portlet preview image url 
+     */
+    public static final String PORTLET_EXTENDED_DESCRIPTOR_PREVIEW_IMAGE = "portlet.preview.image";
     
     /**
      *  Until version 2.1, Jetspeed merged portal request parameters with portlet specific
