@@ -24,6 +24,7 @@ import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Preference;
+import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.pluto.container.PortletPreference;
 import org.apache.pluto.container.PortletPreferencesService;
 
@@ -58,7 +59,7 @@ public interface PortletPreferencesProvider extends PortletPreferencesService
      * Store the default preferences by descriptor preferences for a given portlet definition
      * @param pd
      */
-    public void storeDefaults(PortletDefinition pd);
+    public void storeDefaults(PortletDefinition pd, Preferences prefs);
     
     /**
      * Store the default preferences by input preference for a given portlet definition

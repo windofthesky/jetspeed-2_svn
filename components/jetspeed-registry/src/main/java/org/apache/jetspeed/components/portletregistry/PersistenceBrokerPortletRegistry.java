@@ -37,6 +37,7 @@ import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Preference;
+import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.jetspeed.om.portlet.SecurityRoleRef;
 import org.apache.jetspeed.om.portlet.Supports;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
@@ -470,7 +471,7 @@ public class PersistenceBrokerPortletRegistry
         }
         try
         {
-            preferenceService.storeDefaults(copy);
+            preferenceService.storeDefaults(copy, (Preferences)null);
         }
         catch (Throwable e)
         {

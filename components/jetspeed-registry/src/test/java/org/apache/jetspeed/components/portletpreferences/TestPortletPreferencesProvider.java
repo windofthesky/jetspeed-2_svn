@@ -17,6 +17,7 @@
 package org.apache.jetspeed.components.portletpreferences;
 
 import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.engine.MockJetspeedEngine;
 
@@ -25,8 +26,8 @@ public class TestPortletPreferencesProvider extends
 {
 
     private static MockJetspeedEngine mockEngine = new MockJetspeedEngine();
-	private PortletPreferencesProvider prefs;
-	
+	private PortletPreferencesProvider prefsProvider;
+	private PortletRegistry registry;
 	
 	@Override
 	protected String[] getConfigurations() {
@@ -39,10 +40,12 @@ public class TestPortletPreferencesProvider extends
         super.setUp();
         mockEngine.setComponentManager(scm);
         Jetspeed.setEngine(mockEngine);
-        this.prefs = (PortletPreferencesProvider) scm.getComponent("org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider");
+        this.prefsProvider = (PortletPreferencesProvider) scm.getComponent("org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider");
         PortletPreferencesProvider temp = (PortletPreferencesProvider) scm.getComponent("portletPreferencesProvider");
         System.out.println("temp = " + temp);
-        System.out.println("prefs = " + prefs);        
+        System.out.println("prefs = " + prefsProvider);
+        this.registry = (PortletRegistry) scm.getComponent("portletRegistry");
+
 //        teardownTestData();
 //        setupTestData();
     }
@@ -53,10 +56,26 @@ public class TestPortletPreferencesProvider extends
         Jetspeed.setEngine(null);
         super.tearDown();
     }
-    
+
     public void testEntities() throws Exception
-    {
-    	System.out.println("Testing baby");    	
-    }
+    {}
+    
+//    public void testPrefs() throws Exception
+//    {
+//        System.out.println("Testing prefs");
+//        PortletDefinition pd = registry.getPortletDefinitionByUniqueName("j2-admin::CategoryPortletSelector");
+//        PortletDefinitionImpl.setPortletPreferencesProvider(prefsProvider);
+//        assertNotNull(pd);
+//        Preferences prefs = pd.getPortletPreferences();
+//        assertNotNull(prefs);
+//        Preference pref = prefs.getPortletPreference("Keywords:Fun");
+//        assertNotNull(pref);
+//        List<String> values = pref.getValues();
+//        assert(values.size() > 0);
+//        String oldValue = values.get(0); 
+//        oldValue += ",UPDATED";
+//        values.set(0, oldValue);
+//        prefsProvider.storeDefaults(pd, prefs);
+//    }
     
 }

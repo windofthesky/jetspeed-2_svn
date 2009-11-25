@@ -959,8 +959,8 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
           name="userName"
           column="USER_NAME"
           jdbc-type="VARCHAR"
-          nullable="false"
-          primarykey="true"
+          nullable="true"
+          primarykey="false"
           length="80"
       >
       </field-descriptor>
@@ -984,6 +984,7 @@ CREATE INDEX IX_PORTLET_PREF_ENTITY ON PORTLET_PREFERENCE (ENTITY_ID, USER_NAME)
       <collection-descriptor
           name="values"
           element-class-ref="org.apache.jetspeed.components.portletpreferences.DatabasePreferenceValue"
+		  collection-class="org.apache.jetspeed.util.ojb.CollectionUtils$SynchronizedRemovalAwareList"          
           auto-retrieve="true"
           auto-update="object"
           auto-delete="object"

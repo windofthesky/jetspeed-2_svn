@@ -142,7 +142,6 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
 
     public Preferences getPortletPreferences()
     {
-        //System.out.println(">>> Getting prefs ");
         if (PortletDefinitionImpl.portletPreferencesProvider == null)
         {
             return new PreferencesImpl();            
