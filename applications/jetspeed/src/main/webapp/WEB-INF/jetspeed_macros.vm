@@ -152,13 +152,11 @@ $resourceHeader.getContent()
 #macro(PortletActionBar $_decoration)
  #set($_actions = $_decoration.actions)
   
-  <div class="PActionBar">
+ <div class="PActionBar">
     #foreach ($_action in $_actions)
-      #if (${_action.ActionName} != "preview")
-        <a href="${_action.Action}" title="${_action.Name}" class="action portlet-action" #if($_action.target)target="$_action.target"#end><img src="$request.contextPath/${_action.link}" alt="${_action.Alt}" border="0" /></a>
-      #end
+     <a href="${_action.Action}" title="${_action.Name}" class="action portlet-action" #if($_action.target)target="$_action.target"#end><img src="$request.contextPath/${_action.link}" alt="${_action.Alt}" border="0" /></a>
     #end    
-  </div>
+ </div>
 #end
 
 

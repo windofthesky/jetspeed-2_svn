@@ -48,7 +48,6 @@ public class CustomDecoratorActionsFactory extends AbstractDecoratorActionsFacto
         list.add(JetspeedActions.ABOUT_MODE);
         list.add(JetspeedActions.CONFIG_MODE);
         list.add(JetspeedActions.EDIT_DEFAULTS_MODE);
-        list.add(JetspeedActions.PREVIEW_MODE);
         list.add(JetspeedActions.PRINT_MODE);
         list.addAll(JetspeedActions.getStandardWindowStates());
         list.add(JetspeedActions.SOLO_STATE);

@@ -30,46 +30,43 @@ limitations under the License.
 <%@ page import="org.apache.jetspeed.decoration.DecoratorAction" %>
 <%@ page import="org.apache.jetspeed.PortalReservedParameters" %>
 <%
-	String content = (String)request.getAttribute("content");
-	String decorator = (String)request.getAttribute("decorator");
-	ContentFragment fragment = (ContentFragment)request.getAttribute("fragment");
-	LayoutCoordinate coordinate = (LayoutCoordinate)request.getAttribute("coordinate");
-	String title = "";
-	boolean showTitle = fragment.getDecoration().getTitleOption() == Decoration.TitleOption.SHOW; 	
-	if (showTitle && fragment.getPortletContent() != null)
-	    title = fragment.getPortletContent().getTitle();
+    String content = (String)request.getAttribute("content");
+    String decorator = (String)request.getAttribute("decorator");
+    ContentFragment fragment = (ContentFragment)request.getAttribute("fragment");
+    LayoutCoordinate coordinate = (LayoutCoordinate)request.getAttribute("coordinate");
+    String title = "";
+    boolean showTitle = fragment.getDecoration().getTitleOption() == Decoration.TitleOption.SHOW;   
+    if (showTitle && fragment.getPortletContent() != null)
+        title = fragment.getPortletContent().getTitle();
 %>
-	<div class="portal-layout-cell" id="<%=fragment.getId()%>" name="<%=fragment.getName()%>" column="<%=coordinate.getX()%>" row="<%=coordinate.getY()%>">
-		<div class="portlet <%=decorator%>">
-		    <div class="PTitle" >
-	          <div class="PTitleContent"><%=title%></div>
-		  	    <div class="PActionBar">
+    <div class="portal-layout-cell" id="<%=fragment.getId()%>" name="<%=fragment.getName()%>" column="<%=coordinate.getX()%>" row="<%=coordinate.getY()%>">
+        <div class="portlet <%=decorator%>">
+            <div class="PTitle" >
+              <div class="PTitleContent"><%=title%></div>
+                <div class="PActionBar">
 <%
-					Decoration.ActionsOption option = fragment.getDecoration().getActionsOption(); 	
-					if (option != Decoration.ActionsOption.HIDE) // TODO: HOVER, DROP DOWN not yet implemented
-					{
-						for(DecoratorAction action : (List<DecoratorAction>)fragment.getDecoration().getActions())
-					    {			        
-                            if ("preview".equals(action.getActionName()))
-                                continue;
-                            
-					        String target = "target='"+ action.getTarget() + "'";
-					        if (action.getTarget() == null)
-					            target = "";
- %>			    
-			     <a href="<%=action.getAction()%>" title="<%=action.getName()%>" class="action portlet-action" <%=target%>><img src="<%=request.getContextPath()%>/<%=action.getLink()%>" alt="<%=action.getAlt()%>" border="0" /></a>
-<%                  } // for loop				
+                    Decoration.ActionsOption option = fragment.getDecoration().getActionsOption();  
+                    if (option != Decoration.ActionsOption.HIDE) // TODO: HOVER, DROP DOWN not yet implemented
+                    {
+                        for(DecoratorAction action : (List<DecoratorAction>)fragment.getDecoration().getActions())
+                        {                   
+                            String target = "target='"+ action.getTarget() + "'";
+                            if (action.getTarget() == null)
+                                target = "";
+ %>             
+                 <a href="<%=action.getAction()%>" title="<%=action.getName()%>" class="action portlet-action" <%=target%>><img src="<%=request.getContextPath()%>/<%=action.getLink()%>" alt="<%=action.getAlt()%>" border="0" /></a>
+<%                  } // for loop               
 // FIXME: integrate close into standard actions, use security constraints on close action
 if (request.getUserPrincipal() != null && fragment.getDecoration().getActions().size() > 0)
 {
 %>
-				 <span style='cursor: pointer; z-index: 1000;' id='jetspeed-close-<%=fragment.getId()%>' title="close" class="portlet-action-close"><img src="<%=request.getContextPath()%>/decorations/portlet/jetspeed/images/close.gif" alt="Close" border="0" /></span>				 
+                 <span style='cursor: pointer; z-index: 1000;' id='jetspeed-close-<%=fragment.getId()%>' title="close" class="portlet-action-close"><img src="<%=request.getContextPath()%>/decorations/portlet/jetspeed/images/close.gif" alt="Close" border="0" /></span>              
 <% }  } %>
-			    </div>
-		      </div>
-		       <div class="PContentBorder">
-		         <div class="PContent"><%=content%></div>
-		       </div>
-		    </div>
+                </div>
+              </div>
+               <div class="PContentBorder">
+                 <div class="PContent"><%=content%></div>
+               </div>
+            </div>
           </div>
      
