@@ -269,6 +269,7 @@
     <javax.servlet.jsp.version>2.0</javax.servlet.jsp.version>
     <javax.sql.version>2.0</javax.sql.version>
     <javax.transaction.version>1.0.1B</javax.transaction.version>
+    <javax.ws.rs.version>1.0</javax.ws.rs.version>
     <jaxen.version>1.0-FCS</jaxen.version>
     <jaxb.version>2.1</jaxb.version>
     <jaxb-impl.version>2.1.9</jaxb-impl.version>
@@ -311,6 +312,7 @@
     <ccpp.version>1.0</ccpp.version>
     <commonj.version>1.1</commonj.version>
     <tyrex.version>1.0.1</tyrex.version>
+    <cxf.version>2.2.5</cxf.version>
   </properties>
 
   <!-- Dependency Configuration -->
@@ -974,7 +976,44 @@
         <artifactId>jaxb-impl</artifactId>
         <version>${jaxb-impl.version}</version>
       </dependency>
-
+      
+      <!-- JAX-RS -->
+      <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>jsr311-api</artifactId>
+        <version>${javax.ws.rs.version}</version>
+      </dependency>
+      
+      <!-- CXF -->
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        <version>${cxf.version}</version>
+        <scope>runtime</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
       <!-- Test -->
       <dependency>
         <groupId>junit</groupId>

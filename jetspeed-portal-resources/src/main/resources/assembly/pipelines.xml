@@ -349,7 +349,14 @@
       <ref bean="RolesSecurityBehavior" />
     </constructor-arg>
   </bean>
-
+  
+  <bean id="RestfulServicesValve" class="org.apache.jetspeed.pipeline.valve.impl.ServletDelegatingValve" 
+        init-method="initialize" destroy-method="destroy">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg ref="cxfServlet" />
+    <constructor-arg ref="cxfServletConfig" />
+  </bean>
+  
   <bean id="DecorationValve" class="org.apache.jetspeed.decoration.DecorationValve" init-method="initialize">
     <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
@@ -714,6 +721,25 @@
     </constructor-arg>
   </bean>
 
+  <bean id="restful-services-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg>
+      <value>RestfulServicesPipeline</value>
+    </constructor-arg>
+    <constructor-arg>
+      <list>
+        <ref bean="capabilityValve" />
+        <ref bean="portalURLValve" />
+        <ref bean="securityValve" />
+        <ref bean="localizationValve" />
+        <ref bean="profilerValve" />
+        <ref bean="refreshUserHomepageValve" />
+        <ref bean="containerValve" />
+        <ref bean="RestfulServicesValve" />
+      </list>
+    </constructor-arg>
+  </bean>
+  
   <bean id="fileserver-pipeline" class="org.apache.jetspeed.pipeline.JetspeedPipeline" init-method="initialize">
     <meta key="j2:cat" value="default" />
     <constructor-arg>
@@ -793,17 +819,20 @@
         <entry key='/portal'>
           <value>jetspeed-pipeline</value>
         </entry>
-        <entry key='/ajaxapi'>
-          <value>ajax-pipeline</value>
-        </entry>
         <entry key='/login'>
           <value>jetspeed-pipeline</value>
         </entry>
         <entry key='/fileserver'>
           <value>fileserver-pipeline</value>
         </entry>
+        <entry key='/ajaxapi'>
+          <value>ajax-pipeline</value>
+        </entry>
         <entry key='/ajax'>
           <value>ajax-direct-pipeline</value>
+        </entry>
+        <entry key='/services'>
+          <value>restful-services-pipeline</value>
         </entry>
         <entry key='/desktop'>
           <value>desktop-pipeline</value>

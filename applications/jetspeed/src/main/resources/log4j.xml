@@ -94,7 +94,15 @@
       <param name="ConversionPattern" value="%d{dd.MM.yyyy HH:mm:ss} %-5p [%C.%M():%L] %m%n"/>
     </layout>
   </appender>
-
+  
+  <!-- cxf appender -->
+  <appender name="cxf" class="org.apache.log4j.FileAppender">
+    <param name="File" value="${org.apache.portals.logdir}/jetspeed-cxf.log"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{dd.MM.yyyy HH:mm:ss} %-5p [%C.%M():%L] %m%n"/>
+    </layout>
+  </appender>
+  
   <!-- ====================================================================== -->
   <!-- L O G G E R S                                                          -->
   <!-- ====================================================================== -->
@@ -132,6 +140,11 @@
   <category additivity="false" name="org.apache.ojb">
     <level value="ERROR"/>
     <appender-ref ref="ojb"/>
+  </category>
+  
+  <category additivity="false" name="org.apache.cxf">
+    <level value="ERROR"/>
+    <appender-ref ref="cxf"/>
   </category>
   
   <category additivity="false" name="scheduler">
