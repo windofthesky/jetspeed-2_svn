@@ -33,7 +33,7 @@ public class DescriptionBean implements Serializable
 {
     private static final long serialVersionUID = 1L;
     
-    private String description;
+    private String value;
     private String lang;
     private String localeString;
 
@@ -44,7 +44,7 @@ public class DescriptionBean implements Serializable
     
     public DescriptionBean(final Description description)
     {
-        this.description = description.getDescription();
+        this.value = description.getDescription();
         lang = description.getLang();
         
         Locale locale = description.getLocale();
@@ -55,14 +55,14 @@ public class DescriptionBean implements Serializable
         }
     }
 
-    public String getDescription()
+    public String getValue()
     {
-        return description;
+        return value;
     }
 
-    public void setDescription(String description)
+    public void setValue(String value)
     {
-        this.description = description;
+        this.value = value;
     }
 
     public String getLang()

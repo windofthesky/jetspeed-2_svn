@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.DisplayName;
 import org.apache.jetspeed.om.portlet.Language;
@@ -43,11 +44,14 @@ public class PortletDefinitionBean implements Serializable
     
     private String applicationName;
     private String portletName;
+    private String uniqueName;
     private PortletInfoBean portletInfoBean;
     private Collection<DisplayNameBean> displayNameBeans;
     private Collection<DescriptionBean> descriptionBeans;
     private Collection<SupportsBean> supportsBeans;
     private Collection<LanguageBean> languageBeans;
+    private GenericMetadataBean metadataBean;
+    private Collection<ContainerRuntimeOptionBean> containerRuntimeOptionBeans;
     
     public PortletDefinitionBean()
     {
@@ -58,6 +62,7 @@ public class PortletDefinitionBean implements Serializable
     {
         applicationName = portletDefinition.getApplication().getName();
         portletName = portletDefinition.getPortletName();
+        uniqueName = portletDefinition.getUniqueName();
         portletInfoBean = new PortletInfoBean(portletDefinition.getPortletInfo());
         
         ArrayList<DisplayNameBean> displayNameBeanList = new ArrayList<DisplayNameBean>();
@@ -87,6 +92,15 @@ public class PortletDefinitionBean implements Serializable
             languageBeanList.add(new LanguageBean(language));
         }
         languageBeans = languageBeanList;
+        
+        metadataBean = new GenericMetadataBean(portletDefinition.getMetadata());
+        
+        ArrayList<ContainerRuntimeOptionBean> containerRuntimeOptionBeanList = new ArrayList<ContainerRuntimeOptionBean>();
+        for (ContainerRuntimeOption containerRuntimeOption : portletDefinition.getContainerRuntimeOptions())
+        {
+            containerRuntimeOptionBeanList.add(new ContainerRuntimeOptionBean(containerRuntimeOption));
+        }
+        containerRuntimeOptionBeans = containerRuntimeOptionBeanList;
     }
 
     public String getApplicationName()
@@ -109,6 +123,16 @@ public class PortletDefinitionBean implements Serializable
         this.portletName = portletName;
     }
 
+    public String getUniqueName()
+    {
+        return uniqueName;
+    }
+
+    public void setUniqueName(String uniqueName)
+    {
+        this.uniqueName = uniqueName;
+    }
+    
     @XmlElement(name="portletInfo")
     public PortletInfoBean getPortletInfoBean()
     {
@@ -166,6 +190,29 @@ public class PortletDefinitionBean implements Serializable
     public void setLanguageBeans(Collection<LanguageBean> languageBeans)
     {
         this.languageBeans = languageBeans;
+    }
+    
+    @XmlElement(name="metadata")
+    public GenericMetadataBean getMetadataBean()
+    {
+        return metadataBean;
+    }
+    
+    public void setMetadataBean(GenericMetadataBean metadataBean)
+    {
+        this.metadataBean = metadataBean;
+    }
+    
+    @XmlElementWrapper(name="containerRuntimeOptions")
+    @XmlElements(@XmlElement(name="containerRuntimeOption"))
+    public Collection<ContainerRuntimeOptionBean> getContainerRuntimeOptionBeans()
+    {
+        return containerRuntimeOptionBeans;
+    }
+
+    public void setContainerRuntimeOptionBeans(Collection<ContainerRuntimeOptionBean> containerRuntimeOptionBeans)
+    {
+        this.containerRuntimeOptionBeans = containerRuntimeOptionBeans;
     }
     
 }

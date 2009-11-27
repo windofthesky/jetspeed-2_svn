@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.DisplayName;
 import org.apache.jetspeed.om.portlet.PortletApplication;
@@ -41,12 +42,15 @@ public class PortletApplicationBean implements Serializable
     
     private String name;
     private String contextPath;
+    private String localContextPath;
     private String defaultNamespace;
     private int applicationType;
     private long checksum;
     private long revision;
     private Collection<DisplayNameBean> displayNameBeans;
     private Collection<DescriptionBean> descriptionBeans;
+    private GenericMetadataBean metadataBean;
+    private Collection<ContainerRuntimeOptionBean> containerRuntimeOptionBeans;
     
     public PortletApplicationBean()
     {
@@ -57,6 +61,7 @@ public class PortletApplicationBean implements Serializable
     {
         name = portletApplication.getName();
         contextPath = portletApplication.getContextPath();
+        localContextPath = portletApplication.getLocalContextPath();
         defaultNamespace = portletApplication.getDefaultNamespace();
         applicationType = portletApplication.getApplicationType();
         checksum = portletApplication.getChecksum();
@@ -75,6 +80,15 @@ public class PortletApplicationBean implements Serializable
             descriptionBeanList.add(new DescriptionBean(description));
         }
         descriptionBeans = descriptionBeanList;
+        
+        metadataBean = new GenericMetadataBean(portletApplication.getMetadata());
+        
+        ArrayList<ContainerRuntimeOptionBean> containerRuntimeOptionBeanList = new ArrayList<ContainerRuntimeOptionBean>();
+        for (ContainerRuntimeOption containerRuntimeOption : portletApplication.getContainerRuntimeOptions())
+        {
+            containerRuntimeOptionBeanList.add(new ContainerRuntimeOptionBean(containerRuntimeOption));
+        }
+        containerRuntimeOptionBeans = containerRuntimeOptionBeanList;
     }
 
     public String getName()
@@ -97,6 +111,16 @@ public class PortletApplicationBean implements Serializable
         this.contextPath = contextPath;
     }
 
+    public String getLocalContextPath()
+    {
+        return localContextPath;
+    }
+
+    public void setLocalContextPath(String localContextPath)
+    {
+        this.localContextPath = localContextPath;
+    }
+    
     public String getDefaultNamespace()
     {
         return defaultNamespace;
@@ -161,4 +185,26 @@ public class PortletApplicationBean implements Serializable
         this.descriptionBeans = descriptionBeans;
     }
     
+    @XmlElement(name="metadata")
+    public GenericMetadataBean getMetadataBean()
+    {
+        return metadataBean;
+    }
+    
+    public void setMetadataBean(GenericMetadataBean metadataBean)
+    {
+        this.metadataBean = metadataBean;
+    }
+    
+    @XmlElementWrapper(name="containerRuntimeOptions")
+    @XmlElements(@XmlElement(name="containerRuntimeOption"))
+    public Collection<ContainerRuntimeOptionBean> getContainerRuntimeOptionBeans()
+    {
+        return containerRuntimeOptionBeans;
+    }
+
+    public void setContainerRuntimeOptionBeans(Collection<ContainerRuntimeOptionBean> containerRuntimeOptionBeans)
+    {
+        this.containerRuntimeOptionBeans = containerRuntimeOptionBeans;
+    }
 }

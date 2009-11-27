@@ -17,72 +17,59 @@
 package org.apache.jetspeed.services.beans;
 
 import java.io.Serializable;
-import java.util.Locale;
+import java.util.Collection;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.jetspeed.om.portlet.DisplayName;
+import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 
 /**
- * DisplayNameBean
+ * ContainerRuntimeOptionBean
  * 
  * @version $Id$
  */
-@XmlRootElement(name="displayName")
-public class DisplayNameBean implements Serializable
+@XmlRootElement(name="containerRuntimeOption")
+public class ContainerRuntimeOptionBean implements Serializable
 {
     private static final long serialVersionUID = 1L;
     
-    private String value;
-    private String lang;
-    private String localeString;
+    private String name;
+    private Collection<String> values;
 
-    public DisplayNameBean()
+    public ContainerRuntimeOptionBean()
     {
         
     }
     
-    public DisplayNameBean(final DisplayName displayName)
+    public ContainerRuntimeOptionBean(final ContainerRuntimeOption containerRuntimeOption)
     {
-        this.value = displayName.getDisplayName();
-        lang = displayName.getLang();
-        
-        Locale locale = displayName.getLocale();
-        
-        if (locale != null)
-        {
-            localeString = locale.toString();
-        }
+        name = containerRuntimeOption.getName();
+        values = containerRuntimeOption.getValues();
     }
 
-    public String getValue()
+    public String getName()
     {
-        return value;
+        return name;
     }
 
-    public void setValue(String value)
+    public void setName(String name)
     {
-        this.value = value;
+        this.name = name;
     }
 
-    public String getLang()
+    @XmlElementWrapper(name="values")
+    @XmlElements(@XmlElement(name="value"))
+    public Collection<String> getValues()
     {
-        return lang;
+        return values;
     }
 
-    public void setLang(String lang)
+    public void setValues(Collection<String> values)
     {
-        this.lang = lang;
+        this.values = values;
     }
 
-    public String getLocaleString()
-    {
-        return localeString;
-    }
-
-    public void setLocaleString(String localeString)
-    {
-        this.localeString = localeString;
-    }
-    
 }

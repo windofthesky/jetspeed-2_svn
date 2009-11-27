@@ -21,38 +21,48 @@ import java.util.Locale;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.jetspeed.om.portlet.DisplayName;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 
 /**
- * DisplayNameBean
+ * LocalizedFieldBean
  * 
  * @version $Id$
  */
-@XmlRootElement(name="displayName")
-public class DisplayNameBean implements Serializable
+@XmlRootElement(name="field")
+public class LocalizedFieldBean implements Serializable
 {
     private static final long serialVersionUID = 1L;
     
+    private String name;
     private String value;
-    private String lang;
     private String localeString;
 
-    public DisplayNameBean()
+    public LocalizedFieldBean()
     {
         
     }
     
-    public DisplayNameBean(final DisplayName displayName)
+    public LocalizedFieldBean(final LocalizedField localizedField)
     {
-        this.value = displayName.getDisplayName();
-        lang = displayName.getLang();
+        name = localizedField.getName();
+        value = localizedField.getValue();
         
-        Locale locale = displayName.getLocale();
+        Locale locale = localizedField.getLocale();
         
         if (locale != null)
         {
             localeString = locale.toString();
         }
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
     }
 
     public String getValue()
@@ -63,16 +73,6 @@ public class DisplayNameBean implements Serializable
     public void setValue(String value)
     {
         this.value = value;
-    }
-
-    public String getLang()
-    {
-        return lang;
-    }
-
-    public void setLang(String lang)
-    {
-        this.lang = lang;
     }
 
     public String getLocaleString()

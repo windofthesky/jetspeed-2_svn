@@ -26,6 +26,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
@@ -72,13 +73,20 @@ public class PortletRegistryService
     }
     
     @GET
-    @Path("/application/{name}")
-    public PortletApplicationBeans getPortletApplication(@PathParam("name") String name)
+    @Path("/application/{path:.*}")
+    public PortletApplicationBeans getPortletApplication(@PathParam("path") List<PathSegment> pathSegments)
     {
+        String applicationName = null;
+        
+        if (pathSegments != null && !pathSegments.isEmpty())
+        {
+            applicationName = pathSegments.get(0).getPath();
+        }
+        
         PortletApplicationBeans paBeans = new PortletApplicationBeans();
         List<PortletApplicationBean> paBeanList = new ArrayList<PortletApplicationBean>();
         
-        if (StringUtils.isBlank(name))
+        if (StringUtils.isBlank(applicationName))
         {
             for (PortletApplication pa : portletRegistry.getPortletApplications())
             {
@@ -87,7 +95,7 @@ public class PortletRegistryService
         }
         else
         {
-            PortletApplication pa = portletRegistry.getPortletApplication(name, true);
+            PortletApplication pa = portletRegistry.getPortletApplication(applicationName, true);
             
             if (pa != null)
             {
@@ -100,13 +108,29 @@ public class PortletRegistryService
     }
     
     @GET
-    @Path("/definition/{uniqueName}")
-    public PortletDefinitionBeans getPortletDefinition(@PathParam("uniqueName") String uniqueName)
+    @Path("/definition/{path:.*}")
+    public PortletDefinitionBeans getPortletDefinition(@PathParam("path") List<PathSegment> pathSegments)
     {
+        String applicationName = null;
+        String definitionName = null;
+        
+        if (pathSegments != null)
+        {
+            if (pathSegments.size() > 0)
+            {
+                applicationName = pathSegments.get(0).getPath();
+            }
+            
+            if (pathSegments.size() > 1)
+            {
+                definitionName = pathSegments.get(1).getPath();
+            }
+        }
+        
         PortletDefinitionBeans pdBeans = new PortletDefinitionBeans();
         List<PortletDefinitionBean> pdBeanList = new ArrayList<PortletDefinitionBean>();
         
-        if (StringUtils.isBlank(uniqueName))
+        if (StringUtils.isBlank(applicationName) && StringUtils.isBlank(definitionName))
         {
             for (PortletDefinition pd : portletRegistry.getAllPortletDefinitions())
             {
@@ -115,24 +139,25 @@ public class PortletRegistryService
         }
         else
         {
-            int offset = uniqueName.indexOf("::");
+            PortletApplication pa = portletRegistry.getPortletApplication(applicationName, true);
             
-            if (offset != -1)
+            if (pa != null)
             {
-                PortletDefinition pd = portletRegistry.getPortletDefinitionByUniqueName(uniqueName, true);
-                
-                if (pd != null)
+                if (StringUtils.isBlank(definitionName))
                 {
-                    pdBeanList.add(new PortletDefinitionBean(pd));
+                    if (pa != null)
+                    {
+                        for (PortletDefinition pd : pa.getPortlets())
+                        {
+                            pdBeanList.add(new PortletDefinitionBean(pd));
+                        }
+                    }
                 }
-            }
-            else
-            {
-                PortletApplication pa = portletRegistry.getPortletApplication(uniqueName, true);
-                
-                if (pa != null)
+                else
                 {
-                    for (PortletDefinition pd : pa.getPortlets())
+                    PortletDefinition pd = pa.getPortlet(definitionName);
+                    
+                    if (pd != null)
                     {
                         pdBeanList.add(new PortletDefinitionBean(pd));
                     }
