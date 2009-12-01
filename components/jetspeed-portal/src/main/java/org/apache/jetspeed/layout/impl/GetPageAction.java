@@ -32,11 +32,11 @@ import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.PageNotFoundException;
-import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
@@ -93,20 +93,16 @@ public class GetPageAction
             // Run the Decoration valve to get actions
             decorationValve.invoke( requestContext, null );
             
-            Page page = requestContext.getPage().getPage();                        
+            ContentPage page = requestContext.getPage();                        
             String pageName = getActionParameter( requestContext, PAGE );
-            if ( pageName != null )
-            {
-                page = retrievePage( requestContext, pageName );
-            }
+//            if ( pageName != null )
+//            {
+//                page = retrievePage( requestContext, pageName );
+//            }
             if (page == null)
             {
                 throw new AJAXException("Missing current page or '" + PAGE + "' parameter");
-            }
-            
-            // ** DST: DEMO: Hack
-            insertNavigator(page);           
-            
+            }            
             resultMap.put( STATUS, status );
             resultMap.put( PAGE, page );
             
@@ -133,7 +129,7 @@ public class GetPageAction
             
             String profiledPath = siteRequestContext.getPage().getPath();
             resultMap.put( PROFILED_PATH, profiledPath );
-            putSecurityInformation( resultMap, page );
+            putSecurityInformation( resultMap, page.getPage() ); //TODO: REVIEW: RANDY 
      
             PageActionAccess pageActionAccess = (PageActionAccess)requestContext.getAttribute( PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE );
             Boolean userIsAnonymous = Boolean.TRUE;
@@ -170,43 +166,43 @@ public class GetPageAction
             String singleLayoutId = getActionParameter( requestContext, LAYOUTID );
             if ( singleLayoutId != null )
             {   // build page representation with single layout
-                BaseFragmentElement singleLayoutFragment = page.getFragmentById( singleLayoutId );
-                if ( ! ( singleLayoutFragment instanceof Fragment) )
-                {
-                    throw new Exception( "layout id not found: " + singleLayoutId );
-                }
-                Fragment currentLayoutFragment = (Fragment) singleLayoutFragment;
-                Fragment currentPortletFragment = null;
-                
-                String singlePortletId = getActionParameter( requestContext, PORTLETENTITY );
-                if ( singlePortletId != null )
-                {
-                    Iterator layoutChildIter = currentLayoutFragment.getFragments().iterator();
-                    while ( layoutChildIter.hasNext() )
-                    {
-                        Fragment childFrag = (Fragment)layoutChildIter.next();
-                        if ( childFrag != null )
-                        {
-                            if ( singlePortletId.equals( childFrag.getId() ) )
-                            {
-                                currentPortletFragment = childFrag;
-                                break;
-                            }
-                        }
-                    }
-                    if ( currentPortletFragment == null )
-                    {
-                        throw new Exception( "portlet id " + singlePortletId + " not found in layout " + singleLayoutId );
-                    }
-                    resultMap.put( "portletsingleId", currentPortletFragment.getId() );
-                }
-                
-                retrieveFragmentSpecialProperties( requestContext, currentLayoutFragment, fragSizes, portletIcons );
-                resultMap.put( "layoutsingle", currentLayoutFragment );
+//                BaseFragmentElement singleLayoutFragment = page.getPage().getFragmentById( singleLayoutId ); //TODO: REVIEW: RANDY
+//                if ( ! ( singleLayoutFragment instanceof ContentFragment) )
+//                {
+//                    throw new Exception( "layout id not found: " + singleLayoutId );
+//                }
+//                ContentFragment currentLayoutFragment =  singleLayoutFragment;
+//                ContentFragment currentPortletFragment = null;
+//                
+//                String singlePortletId = getActionParameter( requestContext, PORTLETENTITY );
+//                if ( singlePortletId != null )
+//                {
+//                    Iterator layoutChildIter = currentLayoutFragment.getFragments().iterator();
+//                    while ( layoutChildIter.hasNext() )
+//                    {
+//                        Fragment childFrag = (Fragment)layoutChildIter.next();
+//                        if ( childFrag != null )
+//                        {
+//                            if ( singlePortletId.equals( childFrag.getId() ) )
+//                            {
+//                                currentPortletFragment = childFrag;
+//                                break;
+//                            }
+//                        }
+//                    }
+//                    if ( currentPortletFragment == null )
+//                    {
+//                        throw new Exception( "portlet id " + singlePortletId + " not found in layout " + singleLayoutId );
+//                    }
+//                    resultMap.put( "portletsingleId", currentPortletFragment.getId() );
+//                }
+//                
+//                retrieveFragmentSpecialProperties( requestContext, currentLayoutFragment, fragSizes, portletIcons );
+//                resultMap.put( "layoutsingle", currentLayoutFragment );
             }
-            else if (page.getRootFragment() instanceof Fragment)
+            else if (page.getRootFragment() instanceof ContentFragment)
             {
-                retrieveFragmentSpecialProperties( requestContext, (Fragment)page.getRootFragment(), fragSizes, portletIcons );
+                retrieveFragmentSpecialProperties( requestContext, page.getRootFragment(), fragSizes, portletIcons );
             }
             else
             {
@@ -239,7 +235,7 @@ public class GetPageAction
     }        
     
     
-    protected void retrieveFragmentSpecialProperties( RequestContext requestContext, Fragment frag, Map fragSizes, Map portletIcons )
+    protected void retrieveFragmentSpecialProperties( RequestContext requestContext, ContentFragment frag, Map fragSizes, Map portletIcons )
     {
         if ( frag == null )
         {
@@ -259,7 +255,7 @@ public class GetPageAction
     			Iterator childFragIter = childFragments.iterator();
     			while ( childFragIter.hasNext() )
     			{
-    				Fragment childFrag = (Fragment)childFragIter.next();
+    				ContentFragment childFrag = (ContentFragment)childFragIter.next();
                     retrieveFragmentSpecialProperties( requestContext, childFrag, fragSizes, portletIcons );
     			}
     		}
@@ -288,62 +284,5 @@ public class GetPageAction
         }
     }
     
-    private void insertNavigator(Page page)
-    {
-        Page nav;
-        try
-        {
-            if (page.getRootFragment() instanceof Fragment)
-            {
-                Fragment root = (Fragment)page.getRootFragment();
-                boolean found = findFragment(root);
-                if (!found)
-                {
-                    nav = this.pageManager.getPage("/_user/template/navigator.psml");
-                    if (nav.getRootFragment() instanceof Fragment)
-                    {
-                        List<Fragment> navFragments = ((Fragment)nav.getRootFragment()).getFragments();
-                        Fragment source1 = navFragments.get(0);
-                        root.getFragments().add(0, source1);
-                        Fragment source2 = navFragments.get(1);
-                        root.getFragments().add(1, source2);
-                        // save?
-                    }
-                }
-            }
-        }
-        catch (PageNotFoundException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (NodeException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }        
-    }
-    
-    private boolean findFragment(Fragment f)
-    {
-        List<Fragment> fragments = f.getFragments();
-        
-        //if ("_jsNavigator-1001".equals(f.getId())) // BUG: won't work on db psml
-        if ("j2-admin::JetspeedNavigator".equals(f.getName()) || "j2-admin::JetspeedToolbox".equals(f.getName()))
-        {
-            return true;
-        }
-        
-        if (fragments != null && !fragments.isEmpty())
-        {
-            for (Fragment child : fragments)
-            {
-                boolean found = findFragment(child);
-                if (found)
-                    return true;
-            }
-        }
-        return false;
-    }
     
 }

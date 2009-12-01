@@ -145,22 +145,19 @@ for (String style : jetui.getStyleSheets(rc))
             int subindex = 0;
             for (ContentFragment fragment : collections)
             {
-                if (!(fragment.getName().equals("j2-admin::JetspeedToolbox") || fragment.getName().equals("j2-admin::JetspeedNavigator")))
-                {
-                    //String content = jetui.renderPortletWindow(fragment.getId(), fragment.getName(), rc);
-                    String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
-                    request.setAttribute("content", content);                    
-                    String decorator = fragment.getDecorator(); 
-            		if (decorator == null)
-            		    decorator = pageDec;
-                    request.setAttribute("decorator", decorator);                    
-                    request.setAttribute("fragment", fragment);      
-                    request.setAttribute("coordinate", columnLayout.getCoordinate(fragment));
+                   //String content = jetui.renderPortletWindow(fragment.getId(), fragment.getName(), rc);
+                   String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
+                   request.setAttribute("content", content);                    
+                   String decorator = fragment.getDecorator(); 
+                   if (decorator == null)
+    	       		    decorator = pageDec;
+                   request.setAttribute("decorator", decorator);                    
+                   request.setAttribute("fragment", fragment);      
+                   request.setAttribute("coordinate", columnLayout.getCoordinate(fragment));
 %>
 <jsp:include page="jetui-portlet.jsp"/>
 <%          
                     subindex++;
-                }
             }
             index++;
 %>

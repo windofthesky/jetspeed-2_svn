@@ -316,11 +316,11 @@
 			<userinfo>
 				<preference>
 					<name value="user.name.given"/>
-					<value value="Test Dude"/>
+					<value value="Portal"/>
 				</preference>
 				<preference>
 					<name value="user.name.family"/>
-					<value value="Dudley"/>
+					<value value="Administrator"/>
 				</preference>
 			</userinfo>
 			<Rules/>
@@ -330,7 +330,16 @@
 			<roles>user,manager</roles>
 			<groups></groups>
 			<preferences/>
-			<userinfo/>
+			<userinfo>
+				<preference>
+					<name value="user.name.given"/>
+					<value value="Site"/>
+				</preference>
+				<preference>
+					<name value="user.name.family"/>
+					<value value="Manager"/>
+				</preference>
+			</userinfo>
 			<Rules/>
 		</User>
 		<User name="user">
@@ -338,7 +347,16 @@
 			<roles>user</roles>
 			<groups>accounting</groups>
 			<preferences/>
-			<userinfo/>
+			<userinfo>
+				<preference>
+					<name value="user.name.given"/>
+					<value value="Portal"/>
+				</preference>
+				<preference>
+					<name value="user.name.family"/>
+					<value value="User"/>
+				</preference>
+			</userinfo>
 			<Rules>
 				<Rule locator="menu" rule="role-group"/>
 				<Rule locator="page" rule="j2"/>
@@ -349,7 +367,16 @@
 			<roles>user</roles>
 			<groups>accounting</groups>
 			<preferences/>
-			<userinfo/>
+			<userinfo>
+				<preference>
+					<name value="user.name.given"/>
+					<value value="Local"/>
+				</preference>
+				<preference>
+					<name value="user.name.family"/>
+					<value value="User"/>
+				</preference>
+			</userinfo>
 			<Rules>
 				<Rule locator="page" rule="localhost-fallback"/>
 			</Rules>
@@ -359,7 +386,16 @@
 			<roles>user</roles>
 			<groups>accounting</groups>
 			<preferences/>
-			<userinfo/>
+			<userinfo>
+				<preference>
+					<name value="user.name.given"/>
+					<value value="Sublocal"/>
+				</preference>
+				<preference>
+					<name value="user.name.family"/>
+					<value value="User"/>
+				</preference>
+			</userinfo>
 			<Rules>
 				<Rule locator="page" rule="subsite-by-hostname"/>
 			</Rules>
@@ -369,7 +405,16 @@
 			<roles></roles>
 			<groups></groups>
 			<preferences/>
-			<userinfo/>
+			<userinfo>
+				<preference>
+					<name value="user.name.given"/>
+					<value value="Tomcat"/>
+				</preference>
+				<preference>
+					<name value="user.name.family"/>
+					<value value="User"/>
+				</preference>
+			</userinfo>
 			<Rules/>
 		</User>
 		<User name="jetspeed">
@@ -377,7 +422,16 @@
 			<roles>manager</roles>
 			<groups>engineering</groups>
 			<preferences/>
-			<userinfo/>
+			<userinfo>
+				<preference>
+					<name value="user.name.given"/>
+					<value value="Jetspeed"/>
+				</preference>
+				<preference>
+					<name value="user.name.family"/>
+					<value value="User"/>
+				</preference>
+			</userinfo>
 			<Rules>
 				<Rule locator="menu" rule="role-group"/>
 				<Rule locator="page" rule="role-fallback"/>
@@ -388,7 +442,16 @@
 			<roles>guest</roles>
 			<groups></groups>
 			<preferences/>
-			<userinfo/>
+			<userinfo>
+				<preference>
+					<name value="user.name.given"/>
+					<value value=""/>
+				</preference>
+				<preference>
+					<name value="user.name.family"/>
+					<value value="Guest"/>
+				</preference>
+			</userinfo>
 			<Rules>
 				<Rule locator="page" rule="j2"/>
 			</Rules>

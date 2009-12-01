@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page-template id="definition"
+    xmlns="http://portals.apache.org/jetspeed"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
+
+  <title>TEMPLATE</title>
+  <fragment id="template-top" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+
+    <fragment id="_jsNavigator-1001" type="portlet" name="j2-admin::JetspeedNavigator">
+  	        <property name="z" value="201.0"></property>
+            <property name="row" value="0"></property>
+            <property name="width" value="267.0"></property>
+            <property name="height" value="388.0"></property>
+            <property name="column" value="0"></property>
+            <property name="y" value="104.0"></property>
+            <property name="x" value="1.0"></property>
+            <property name="jsdesktop" value="staticpos=false;fitheight=false"></property>                        
+    </fragment>
+    <page-fragment id="page-template">
+      <property name="row" value="1"/>
+    </page-fragment>
+    
+    <fragment id="_jsToolbox-1001" type="portlet" name="j2-admin::JetspeedToolbox">
+  	        <property name="z" value="201.0"></property>
+            <property name="row" value="2"></property>
+            <property name="width" value="267.0"></property>
+            <property name="height" value="388.0"></property>
+            <property name="column" value="0"></property>
+            <property name="y" value="500.0"></property>
+            <property name="x" value="1.0"></property>
+            <property name="jsdesktop" value="staticpos=false;fitheight=false"></property>                        
+    </fragment>
+    
+<!--    
+    <fragment-reference id="page-template-wp-reference" refid="wp-definition">
+      <property name="row" value="1"/>
+    </fragment-reference>
+  -->   
+  </fragment>  
+</page-template>

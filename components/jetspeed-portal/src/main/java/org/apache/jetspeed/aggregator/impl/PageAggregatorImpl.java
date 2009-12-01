@@ -103,13 +103,9 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
                     aggregateAndRender(child, context, page);
                 }
             }
-        }
-        
-        // ** DST: DEMO: Hack
-        if (!"j2-admin::JetspeedNavigator".equals(f.getName()) && !"j2-admin::JetspeedToolbox".equals(f.getName()))        
-        {
+        }        
+        if (!f.isLocked()) // FIXME: this is still not the desired behavior, need to check if its docked 
             renderer.renderNow(f, context);
-        }
     }
     
 }

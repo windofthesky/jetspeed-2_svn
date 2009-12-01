@@ -64,9 +64,20 @@ public class Jetui
         {
             RequestDispatcher dispatcher = request.getRequest().getRequestDispatcher(layoutTemplate);
             request.setAttribute("jetui", this);
+            ContentFragment rootFragment = request.getPage().getRootFragment();     
+            if (rootFragment.isLocked())
+            {
+                for (ContentFragment f : (List<ContentFragment>)rootFragment.getFragments())
+                {
+                    if (!f.isLocked() && f.getType().equals(ContentFragment.LAYOUT))
+                    {
+                        rootFragment = f;
+                        break;
+                    }
+                }
+            }            
             if (maximized == null)
             {
-                ContentFragment rootFragment = request.getPage().getRootFragment();
                 String jetspeedLayout = rootFragment.getName();
                 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 // BOGUS: I would prefer to put all layout information directly in PSML, not in portlet.xml, right now its mixed
@@ -93,13 +104,13 @@ public class Jetui
                     fragmentColumnSizes = "25%,25%,25%,25%";                                
                 }                
                 String [] fragmentColumnSizesArray = fragmentColumnSizes.split("\\,");
-                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////            
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 ColumnLayout columnLayout = new ColumnLayout(numberOfColumns, layoutType, rootFragment.getFragments(), fragmentColumnSizesArray);
                 request.setAttribute("columnLayout", columnLayout);
             }
             else
             {
-                ColumnLayout columnLayout = new ColumnLayout(1, "maximized", request.getPage().getRootFragment().getFragments(), new String[] { "100%" });
+                ColumnLayout columnLayout = new ColumnLayout(1, "maximized", rootFragment.getFragments(), new String[] { "100%" });
                 request.setAttribute("columnLayout", columnLayout);                
             }
             dispatcher.include(request.getRequest(), request.getResponse());            

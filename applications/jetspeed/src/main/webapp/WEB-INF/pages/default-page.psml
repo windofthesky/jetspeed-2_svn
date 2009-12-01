@@ -46,10 +46,10 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="3" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>                                
-    <fragment id="dp-24" type="portlet" name="demo::WeatherPortlet">
+    <fragment-reference id="dp-24-wp-reference" refid="wp-definition">
         <property name="row" value="4"/>
         <property name="column" value="1"/>
-    </fragment>
+    </fragment-reference>
     
     <fragment id="dp-7" type="portlet" name="demo::PickANumberPortlet" >
       <property layout="TwoColumns" name="row" value="1" />
