@@ -18,7 +18,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
   
+  <!-- To enable log4j logging instead of the default java logging of cxf. -->
   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <meta key="j2:cat" value="default" />
     <property name="targetClass" value="java.lang.System"/>
     <property name="targetMethod" value="setProperty"/>
     <property name="arguments">
@@ -29,18 +31,32 @@
     </property>
   </bean>
   
+  <!-- To set resource singletons bean id properties -->
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <meta key="j2:cat" value="default" />
+    <property name="targetClass" value="java.lang.System"/>
+    <property name="targetMethod" value="setProperty"/>
+    <property name="arguments">
+      <list>
+        <value>org.apache.jetspeed.services.rest.singletons</value>
+        <value>org.apache.jetspeed.services.rest.singletons</value>
+      </list>
+    </property>
+  </bean>
+  
+  <!-- Delegating CXF Servlet -->
   <bean id="cxfServlet" class="org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet">
     <meta key="j2:cat" value="default" />
   </bean>
   
+  <!-- CXF Servlet Config -->
   <bean id="cxfServletConfig" class="org.apache.jetspeed.pipeline.valve.impl.ServletDelegatingValve$ServletConfigImpl">
     <meta key="j2:cat" value="default" />
     <constructor-arg value="CXFNonSpringJaxrsServlet" />
     <constructor-arg>
       <props>
-        <!-- White space separted resource class names -->
-        <prop key="jaxrs.serviceClasses">
-          org.apache.jetspeed.services.rest.PortletRegistryService
+        <prop key="javax.ws.rs.Application">
+          org.apache.jetspeed.services.rest.JetspeedJaxrsApplication
         </prop>
       </props>
     </constructor-arg>
@@ -50,6 +66,23 @@
         <property name="propertyPath" value="servletContext"/>
       </bean>
     </property>
+  </bean>
+  
+  <!-- JAX-RS Service Singleton Resource Beans  -->
+  <bean id="org.apache.jetspeed.services.rest.singletons" class="org.springframework.beans.factory.config.SetFactoryBean">
+    <meta key="j2:cat" value="default" />
+    <property name="sourceSet">
+      <set>
+        <ref bean="jaxrsPortletRegistryService" />
+      </set>
+    </property>
+  </bean>
+  
+  <!-- Portlet Registry JAX-RS Service -->
+  <bean id="jaxrsPortletRegistryService" class="org.apache.jetspeed.services.rest.PortletRegistryService">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg ref="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
+    <constructor-arg ref="org.apache.jetspeed.search.SearchEngine" />
   </bean>
   
 </beans>

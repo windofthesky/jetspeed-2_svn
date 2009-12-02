@@ -38,6 +38,7 @@ public class ServletDelegatingValve extends AbstractValve
 {
     protected HttpServlet servlet;
     protected ServletConfig config;
+    protected boolean servletInitialized;
 
     public ServletDelegatingValve(HttpServlet servlet, ServletConfig config)
     {
@@ -48,19 +49,21 @@ public class ServletDelegatingValve extends AbstractValve
     @Override
     public void initialize() throws PipelineException
     {
-        try
-        {
-            servlet.init(config);
-        }
-        catch (Exception e)
-        {
-            throw new PipelineException(e);
-        }
     }
-
+    
     public void destroy()
     {
-        servlet.destroy();
+        if (servlet != null && servletInitialized)
+        {
+            try
+            {
+                servlet.destroy();
+            }
+            finally
+            {
+                servletInitialized = false;
+            }
+        }
     }
 
     @Override
@@ -68,6 +71,11 @@ public class ServletDelegatingValve extends AbstractValve
     {
         try
         {
+            if (!servletInitialized)
+            {
+                initServlet();
+            }
+            
             servlet.service(request.getRequest(), request.getResponse());
         }
         catch (Exception e)
@@ -77,6 +85,22 @@ public class ServletDelegatingValve extends AbstractValve
         
         // continue
         context.invokeNext(request);
+    }
+    
+    private synchronized void initServlet() throws PipelineException
+    {
+        if (!servletInitialized)
+        {
+            try
+            {
+                servlet.init(config);
+                servletInitialized = true;
+            }
+            catch (Exception e)
+            {
+                throw new PipelineException(e);
+            }
+        }
     }
 
     public static class ServletConfigImpl implements ServletConfig

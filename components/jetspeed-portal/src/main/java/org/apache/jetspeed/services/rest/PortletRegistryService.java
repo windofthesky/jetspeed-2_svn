@@ -33,7 +33,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
@@ -67,25 +66,21 @@ public class PortletRegistryService
     @Context
     private ServletContext servletContext;
     
-    @Context
-    private HttpServletRequest servletRequest;
-    
-    @Context
-    private UriInfo uriInfo;
-    
     private PortletRegistry portletRegistry;
     
     private SearchEngine searchEngine;
     
-    public PortletRegistryService()
+    public PortletRegistryService(PortletRegistry portletRegistry, SearchEngine searchEngine)
     {
-        portletRegistry = (PortletRegistry) Jetspeed.getComponentManager().getComponent(PortletRegistry.class);
-        searchEngine = (SearchEngine) Jetspeed.getComponentManager().getComponent(SearchEngine.class);
+        this.portletRegistry = portletRegistry;
+        this.searchEngine = searchEngine;
     }
     
     @GET
     @Path("/application/{path:.*}")
-    public PortletApplicationBeans getPortletApplication(@PathParam("path") List<PathSegment> pathSegments,
+    public PortletApplicationBeans getPortletApplication(@Context HttpServletRequest servletRequest,
+                                                         @Context UriInfo uriInfo,
+                                                         @PathParam("path") List<PathSegment> pathSegments,
                                                          @QueryParam("query") String queryParam, 
                                                          @QueryParam("begin") String beginIndexParam,
                                                          @QueryParam("max") String maxResultsParam)
@@ -152,7 +147,9 @@ public class PortletRegistryService
     
     @GET
     @Path("/definition/{path:.*}")
-    public PortletDefinitionBeans getPortletDefinition(@PathParam("path") List<PathSegment> pathSegments, 
+    public PortletDefinitionBeans getPortletDefinition(@Context HttpServletRequest servletRequest,
+                                                       @Context UriInfo uriInfo,
+                                                       @PathParam("path") List<PathSegment> pathSegments, 
                                                        @QueryParam("query") String queryParam, 
                                                        @QueryParam("begin") String beginIndexParam,
                                                        @QueryParam("max") String maxResultsParam)
