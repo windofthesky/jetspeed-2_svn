@@ -310,6 +310,7 @@ limitations under the License.
 	     
 	  #foreach($f in $column)
       ## Set up coordinates for this fragment
+      #if($f.isLocked() == false)
       #set($coords = $columnLayout.getCoordinate($f))	  
       #set($col = $coords.x)
       #set($lastRow = $columnLayout.getLastRowNumber($col))
@@ -381,6 +382,7 @@ limitations under the License.
 			    $f.renderedContent			
 		    #end
 		  </div>
+		  #end
 		#end
 	</div>
 	#set ($columnIndex = $columnIndex + 1)  

@@ -104,8 +104,7 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
                 }
             }
         }        
-        if (!f.isLocked()) // FIXME: this is still not the desired behavior, need to check if its docked 
-            renderer.renderNow(f, context);
+        renderer.renderNow(f, context);
     }
     
 }
