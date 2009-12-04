@@ -59,35 +59,13 @@ public class PaginationUtils
     
     public static Collection<? extends Object> subCollection(final Collection<? extends Object> collection, int beginIndex, int maxResults)
     {
-        if (beginIndex < 0 || (beginIndex == 0 && maxResults < 0))
+        if (collection instanceof List)
         {
-            return collection;
-        }
-        else if (beginIndex >= collection.size())
-        {
-            return Collections.emptyList();
+            return subList((List<? extends Object>) collection, beginIndex, maxResults);
         }
         else
         {
-            List<Object> list = null;
-            
-            if (collection instanceof List)
-            {
-                list = (List<Object>) collection;
-            }
-            else
-            {
-                list = new ArrayList<Object>(collection);
-            }
-            
-            if (maxResults < 0)
-            {
-                return list.subList(beginIndex, list.size());
-            }
-            else
-            {
-                return list.subList(beginIndex, Math.min(list.size(), beginIndex + maxResults));
-            }
+            return subList(new ArrayList<Object>(collection), beginIndex, maxResults);
         }
     }
     

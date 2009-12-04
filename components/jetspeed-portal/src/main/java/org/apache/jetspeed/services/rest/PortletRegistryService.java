@@ -18,6 +18,7 @@ package org.apache.jetspeed.services.rest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletConfig;
@@ -33,12 +34,14 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.search.SearchResults;
+import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.jetspeed.services.beans.PortletApplicationBean;
 import org.apache.jetspeed.services.beans.PortletApplicationBeanCollection;
 import org.apache.jetspeed.services.beans.PortletDefinitionBean;
@@ -66,12 +69,15 @@ public class PortletRegistryService
     @Context
     private ServletContext servletContext;
     
+    private SecurityAccessController securityAccessController;
+    
     private PortletRegistry portletRegistry;
     
     private SearchEngine searchEngine;
     
-    public PortletRegistryService(PortletRegistry portletRegistry, SearchEngine searchEngine)
+    public PortletRegistryService(SecurityAccessController securityAccessController, PortletRegistry portletRegistry, SearchEngine searchEngine)
     {
+        this.securityAccessController = securityAccessController;
         this.portletRegistry = portletRegistry;
         this.searchEngine = searchEngine;
     }
@@ -194,9 +200,9 @@ public class PortletRegistryService
                 "AND " + queryParam;
             SearchResults searchResults = searchEngine.search(queryText);
             List<ParsedObject> searchResultList = searchResults.getResults();
-            pdBeans.setTotalSize(searchResultList.size());
+            ArrayList<PortletDefinition> searchedPortletDefinitions = new ArrayList<PortletDefinition>();
             
-            for (ParsedObject parsedObject : (List<ParsedObject>) PaginationUtils.subList(searchResultList, beginIndex, maxResults))
+            for (ParsedObject parsedObject : searchResultList)
             {
                 String uniqueName = SearchEngineUtils.getPortletUniqueName(parsedObject);
                 
@@ -207,17 +213,25 @@ public class PortletRegistryService
                 
                 PortletDefinition pd = portletRegistry.getPortletDefinitionByUniqueName(uniqueName);
                 
-                if (pd != null)
+                if (pd != null && securityAccessController.checkPortletAccess(pd, JetspeedActions.MASK_VIEW))
                 {
-                    pdBeanList.add(new PortletDefinitionBean(pd));
+                    searchedPortletDefinitions.add(pd);
                 }
+            }
+            
+            Collection<PortletDefinition> filteredPortletDefinitions = filterPortletDefinitionsBySecurityAccess(searchedPortletDefinitions, JetspeedActions.MASK_VIEW);
+            pdBeans.setTotalSize(filteredPortletDefinitions.size());
+            
+            for (PortletDefinition pd : (Collection<PortletDefinition>) PaginationUtils.subCollection(filteredPortletDefinitions, beginIndex, maxResults))
+            {
+                pdBeanList.add(new PortletDefinitionBean(pd));
             }
         }
         else
         {
             if (StringUtils.isBlank(applicationName) && StringUtils.isBlank(definitionName))
             {
-                Collection<PortletDefinition> pds = portletRegistry.getAllPortletDefinitions();
+                Collection<PortletDefinition> pds = filterPortletDefinitionsBySecurityAccess(portletRegistry.getAllPortletDefinitions(), JetspeedActions.MASK_VIEW);
                 pdBeans.setTotalSize(pds.size());
                 
                 for (PortletDefinition pd : (Collection<PortletDefinition>) PaginationUtils.subCollection(pds, beginIndex, maxResults))
@@ -233,22 +247,19 @@ public class PortletRegistryService
                 {
                     if (StringUtils.isBlank(definitionName))
                     {
-                        if (pa != null)
+                        Collection<PortletDefinition> pds = filterPortletDefinitionsBySecurityAccess(pa.getPortlets(), JetspeedActions.MASK_VIEW);
+                        pdBeans.setTotalSize(pds.size());
+                        
+                        for (PortletDefinition pd : (List<PortletDefinition>) PaginationUtils.subCollection(pds, beginIndex, maxResults))
                         {
-                            Collection<PortletDefinition> pds = pa.getPortlets();
-                            pdBeans.setTotalSize(pds.size());
-                            
-                            for (PortletDefinition pd : (List<PortletDefinition>) PaginationUtils.subList(pa.getPortlets(), beginIndex, maxResults))
-                            {
-                                pdBeanList.add(new PortletDefinitionBean(pd));
-                            }
+                            pdBeanList.add(new PortletDefinitionBean(pd));
                         }
                     }
                     else
                     {
                         PortletDefinition pd = pa.getPortlet(definitionName);
                         
-                        if (pd != null)
+                        if (pd != null && securityAccessController.checkPortletAccess(pd, JetspeedActions.MASK_VIEW))
                         {
                             pdBeanList.add(new PortletDefinitionBean(pd));
                             pdBeans.setTotalSize(1);
@@ -261,6 +272,31 @@ public class PortletRegistryService
         pdBeans.setPortletApplicationBeans(pdBeanList);
         
         return pdBeans;
+    }
+    
+    private Collection<PortletDefinition> filterPortletDefinitionsBySecurityAccess(Collection<PortletDefinition> collection, int mask)
+    {
+        if (securityAccessController == null)
+        {
+            return collection;
+        }
+        
+        if (collection == null || collection.isEmpty())
+        {
+            return Collections.emptyList();
+        }
+        
+        ArrayList<PortletDefinition> filteredCollection = new ArrayList<PortletDefinition>();
+        
+        for (PortletDefinition pd : collection)
+        {
+            if (securityAccessController.checkPortletAccess(pd, mask))
+            {
+                filteredCollection.add(pd);
+            }
+        }
+        
+        return filteredCollection;
     }
     
 }

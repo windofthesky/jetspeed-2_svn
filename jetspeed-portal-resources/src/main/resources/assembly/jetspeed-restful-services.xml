@@ -108,6 +108,7 @@
   <!-- Portlet Registry JAX-RS Service -->
   <bean id="jaxrsPortletRegistryService" class="org.apache.jetspeed.services.rest.PortletRegistryService">
     <meta key="j2:cat" value="default" />
+    <constructor-arg ref="org.apache.jetspeed.security.SecurityAccessController" />
     <constructor-arg ref="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
     <constructor-arg ref="org.apache.jetspeed.search.SearchEngine" />
   </bean>
