@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.DisplayName;
+import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Supports;
@@ -52,6 +53,7 @@ public class PortletDefinitionBean implements Serializable
     private Collection<LanguageBean> languageBeans;
     private GenericMetadataBean metadataBean;
     private Collection<ContainerRuntimeOptionBean> containerRuntimeOptionBeans;
+    private Collection<InitParamBean> initParamBeans;
     
     public PortletDefinitionBean()
     {
@@ -101,6 +103,13 @@ public class PortletDefinitionBean implements Serializable
             containerRuntimeOptionBeanList.add(new ContainerRuntimeOptionBean(containerRuntimeOption));
         }
         containerRuntimeOptionBeans = containerRuntimeOptionBeanList;
+        
+        ArrayList<InitParamBean> initParamBeanList = new ArrayList<InitParamBean>();
+        for (InitParam initParam : portletDefinition.getInitParams())
+        {
+            initParamBeanList.add(new InitParamBean(initParam));
+        }
+        initParamBeans = initParamBeanList;
     }
 
     public String getApplicationName()
@@ -213,6 +222,18 @@ public class PortletDefinitionBean implements Serializable
     public void setContainerRuntimeOptionBeans(Collection<ContainerRuntimeOptionBean> containerRuntimeOptionBeans)
     {
         this.containerRuntimeOptionBeans = containerRuntimeOptionBeans;
+    }
+    
+    @XmlElementWrapper(name="initparams")
+    @XmlElements(@XmlElement(name="initparam"))
+    public Collection<InitParamBean> getInitParamBeans()
+    {
+        return initParamBeans;
+    }
+
+    public void setInitParamBeans(Collection<InitParamBean> initParamBeans)
+    {
+        this.initParamBeans = initParamBeans;
     }
     
 }

@@ -40,9 +40,9 @@ import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.search.SearchResults;
 import org.apache.jetspeed.services.beans.PortletApplicationBean;
-import org.apache.jetspeed.services.beans.PortletApplicationBeans;
+import org.apache.jetspeed.services.beans.PortletApplicationBeanCollection;
 import org.apache.jetspeed.services.beans.PortletDefinitionBean;
-import org.apache.jetspeed.services.beans.PortletDefinitionBeans;
+import org.apache.jetspeed.services.beans.PortletDefinitionBeanCollection;
 import org.apache.jetspeed.services.rest.util.PaginationUtils;
 import org.apache.jetspeed.services.rest.util.SearchEngineUtils;
 import org.slf4j.Logger;
@@ -78,7 +78,7 @@ public class PortletRegistryService
     
     @GET
     @Path("/application/{path:.*}")
-    public PortletApplicationBeans getPortletApplication(@Context HttpServletRequest servletRequest,
+    public PortletApplicationBeanCollection getPortletApplication(@Context HttpServletRequest servletRequest,
                                                          @Context UriInfo uriInfo,
                                                          @PathParam("path") List<PathSegment> pathSegments,
                                                          @QueryParam("query") String queryParam, 
@@ -95,7 +95,9 @@ public class PortletRegistryService
         int beginIndex = NumberUtils.toInt(beginIndexParam, -1);
         int maxResults = NumberUtils.toInt(maxResultsParam, -1);
         
-        PortletApplicationBeans paBeans = new PortletApplicationBeans();
+        PortletApplicationBeanCollection paBeans = new PortletApplicationBeanCollection();
+        paBeans.setBeginIndex(beginIndex);
+        paBeans.setTotalSize(0);
         List<PortletApplicationBean> paBeanList = new ArrayList<PortletApplicationBean>();
         
         if (!StringUtils.isBlank(queryParam))
@@ -103,6 +105,7 @@ public class PortletRegistryService
             String queryText = ParsedObject.FIELDNAME_TYPE + ":\"" + ParsedObject.OBJECT_TYPE_PORTLET_APPLICATION + "\" AND " + queryParam;
             SearchResults searchResults = searchEngine.search(queryText);
             List<ParsedObject> searchResultList = searchResults.getResults();
+            paBeans.setTotalSize(searchResultList.size());
             
             for (ParsedObject parsedObject : (List<ParsedObject>) PaginationUtils.subList(searchResultList, beginIndex, maxResults))
             {
@@ -125,7 +128,10 @@ public class PortletRegistryService
         {
             if (StringUtils.isBlank(applicationName))
             {
-                for (PortletApplication pa : (Collection<PortletApplication>) PaginationUtils.subCollection(portletRegistry.getPortletApplications(), beginIndex, maxResults))
+                Collection<PortletApplication> pas = portletRegistry.getPortletApplications();
+                paBeans.setTotalSize(pas.size());
+                
+                for (PortletApplication pa : (Collection<PortletApplication>) PaginationUtils.subCollection(pas, beginIndex, maxResults))
                 {
                     paBeanList.add(new PortletApplicationBean(pa));
                 }
@@ -136,18 +142,20 @@ public class PortletRegistryService
                 
                 if (pa != null)
                 {
+                    paBeans.setTotalSize(1);
                     paBeanList.add(new PortletApplicationBean(pa));
                 }
             }
         }
         
         paBeans.setPortletApplicationBeans(paBeanList);
+        
         return paBeans;
     }
     
     @GET
     @Path("/definition/{path:.*}")
-    public PortletDefinitionBeans getPortletDefinition(@Context HttpServletRequest servletRequest,
+    public PortletDefinitionBeanCollection getPortletDefinition(@Context HttpServletRequest servletRequest,
                                                        @Context UriInfo uriInfo,
                                                        @PathParam("path") List<PathSegment> pathSegments, 
                                                        @QueryParam("query") String queryParam, 
@@ -173,7 +181,9 @@ public class PortletRegistryService
         int beginIndex = NumberUtils.toInt(beginIndexParam, -1);
         int maxResults = NumberUtils.toInt(maxResultsParam, -1);
         
-        PortletDefinitionBeans pdBeans = new PortletDefinitionBeans();
+        PortletDefinitionBeanCollection pdBeans = new PortletDefinitionBeanCollection();
+        pdBeans.setBeginIndex(beginIndex);
+        pdBeans.setTotalSize(0);
         List<PortletDefinitionBean> pdBeanList = new ArrayList<PortletDefinitionBean>();
         
         if (!StringUtils.isBlank(queryParam))
@@ -184,6 +194,7 @@ public class PortletRegistryService
                 "AND " + queryParam;
             SearchResults searchResults = searchEngine.search(queryText);
             List<ParsedObject> searchResultList = searchResults.getResults();
+            pdBeans.setTotalSize(searchResultList.size());
             
             for (ParsedObject parsedObject : (List<ParsedObject>) PaginationUtils.subList(searchResultList, beginIndex, maxResults))
             {
@@ -206,7 +217,10 @@ public class PortletRegistryService
         {
             if (StringUtils.isBlank(applicationName) && StringUtils.isBlank(definitionName))
             {
-                for (PortletDefinition pd : (Collection<PortletDefinition>) PaginationUtils.subCollection(portletRegistry.getAllPortletDefinitions(), beginIndex, maxResults))
+                Collection<PortletDefinition> pds = portletRegistry.getAllPortletDefinitions();
+                pdBeans.setTotalSize(pds.size());
+                
+                for (PortletDefinition pd : (Collection<PortletDefinition>) PaginationUtils.subCollection(pds, beginIndex, maxResults))
                 {
                     pdBeanList.add(new PortletDefinitionBean(pd));
                 }
@@ -221,6 +235,9 @@ public class PortletRegistryService
                     {
                         if (pa != null)
                         {
+                            Collection<PortletDefinition> pds = pa.getPortlets();
+                            pdBeans.setTotalSize(pds.size());
+                            
                             for (PortletDefinition pd : (List<PortletDefinition>) PaginationUtils.subList(pa.getPortlets(), beginIndex, maxResults))
                             {
                                 pdBeanList.add(new PortletDefinitionBean(pd));
@@ -234,6 +251,7 @@ public class PortletRegistryService
                         if (pd != null)
                         {
                             pdBeanList.add(new PortletDefinitionBean(pd));
+                            pdBeans.setTotalSize(1);
                         }
                     }
                 }
@@ -241,6 +259,7 @@ public class PortletRegistryService
         }
         
         pdBeans.setPortletApplicationBeans(pdBeanList);
+        
         return pdBeans;
     }
     

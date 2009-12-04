@@ -19,36 +19,73 @@ package org.apache.jetspeed.services.beans;
 import java.io.Serializable;
 import java.util.Collection;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * PortletDefinitionBeans
+ * BeansCollection
  * 
  * @version $Id$
  */
-@XmlRootElement(name="definitions")
-public class PortletDefinitionBeans implements Serializable
+@XmlRootElement(name="collection")
+public class BeanCollection<T> implements Serializable
 {
     private static final long serialVersionUID = 1L;
     
-    private Collection<PortletDefinitionBean> portletDefinitionBeans;
+    private Collection<T> collection;
     
-    public PortletDefinitionBeans()
+    private int totalSize = -1;
+    
+    private int beginIndex = -1;
+    
+    public BeanCollection()
     {
         
     }
     
-    @XmlElements(@XmlElement(name="definition"))
-    public Collection<PortletDefinitionBean> getPortletDefinitionBean()
+    protected Collection<T> getCollection()
     {
-        return portletDefinitionBeans;
+        return collection;
     }
     
-    public void setPortletApplicationBeans(Collection<PortletDefinitionBean> portletDefinitionBeans)
+    protected void setCollection(Collection<T> collection)
     {
-        this.portletDefinitionBeans = portletDefinitionBeans;
+        this.collection = collection;
+    }
+    
+    @XmlAttribute(name="size")
+    public int getSize()
+    {
+        return (collection != null ? collection.size() : 0);
+    }
+    
+    public void setSize()
+    {
+        
+    }
+    
+    @XmlAttribute(name="totalSize")
+    public int getTotalSize()
+    {
+        return totalSize;
+    }
+    
+    public void setTotalSize(int totalSize)
+    {
+        this.totalSize = totalSize;
+    }
+    
+    @XmlAttribute(name="beginIndex")
+    public int getBeginIndex()
+    {
+        return beginIndex;
+    }
+    
+    public void setBeginIndex(int beginIndex)
+    {
+        this.beginIndex = beginIndex;
     }
     
 }

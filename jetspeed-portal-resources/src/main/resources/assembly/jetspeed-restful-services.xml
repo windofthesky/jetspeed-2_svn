@@ -15,8 +15,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
   
   <!-- To enable log4j logging instead of the default java logging of cxf. -->
   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
@@ -68,12 +69,38 @@
     </property>
   </bean>
   
+  <bean id="jaxrsJsonProvider" class="org.apache.cxf.jaxrs.provider.JSONProvider">
+    <meta key="j2:cat" value="default" />
+    <property name="serializeAsArray" value="true"/>
+    <property name="arrayKeys">
+      <list>
+        <!--
+        <value>displayName</value>
+        <value>description</value>
+        <value>initparam</value>
+        <value>language</value>
+        <value>field</value>
+        <value>portletMode</value>
+        <value>windowState</value>
+        <value>definition</value>
+        <value>application</value>
+        -->
+      </list>
+    </property>
+  </bean>
+  
   <!-- JAX-RS Service Singleton Resource Beans  -->
   <bean id="org.apache.jetspeed.services.rest.singletons" class="org.springframework.beans.factory.config.SetFactoryBean">
     <meta key="j2:cat" value="default" />
     <property name="sourceSet">
       <set>
+        
+        <!-- JAX-RS Providers -->
+        <ref bean="jaxrsJsonProvider" />
+        
+        <!-- Resource providers -->
         <ref bean="jaxrsPortletRegistryService" />
+        
       </set>
     </property>
   </bean>
