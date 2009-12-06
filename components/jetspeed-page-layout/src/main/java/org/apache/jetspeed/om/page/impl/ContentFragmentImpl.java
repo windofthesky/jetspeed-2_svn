@@ -745,6 +745,31 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
 
     /**
+     * Get content fragment by underlying PSML Fragment id.
+     * 
+     * @param id PSML fragment id
+     * @return content fragment
+     */
+    public ContentFragmentImpl getFragmentByFragmentId(String id)
+    {
+        if (fragment != null && fragment.getId().equals(id))
+        {
+            return this;
+        }
+        Iterator fragmentIter = getFragments().iterator();
+        while (fragmentIter.hasNext())
+        {
+            ContentFragmentImpl childFragment = (ContentFragmentImpl)fragmentIter.next();
+            ContentFragmentImpl fragment = childFragment.getFragmentByFragmentId(id);
+            if (fragment != null)
+            {
+                return fragment;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get content fragment nesting level.
      * 
      * @param fragmentId fragment id to find

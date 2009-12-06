@@ -159,6 +159,13 @@ public interface ContentPage
     ContentFragment getFragmentById(String id);
 
     /**
+     * Returns a ContentFragment represented by the underlying PSML Fragment fragment id argument.
+     * @param id unique id of the ContentFragment we want to retrieve.
+     * @return
+     */
+    ContentFragment getFragmentByFragmentId(String id);
+
+    /**
      * Returns a list of ContentFragment fragments represented by the name argument.
      * @param name name of the ContentFragments we want to retrieve.
      * @return list of ContentFragment

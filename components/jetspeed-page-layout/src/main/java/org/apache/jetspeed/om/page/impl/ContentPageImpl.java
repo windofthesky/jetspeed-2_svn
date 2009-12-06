@@ -154,6 +154,18 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#getFragmentByFragmentId(java.lang.String)
+     */
+    public ContentFragment getFragmentByFragmentId(String id)
+    {
+        if (rootContentFragment != null)
+        {
+            return rootContentFragment.getFragmentByFragmentId(id);
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#getFragmentsByName(java.lang.String)
      */
     public List getFragmentsByName(String name)
