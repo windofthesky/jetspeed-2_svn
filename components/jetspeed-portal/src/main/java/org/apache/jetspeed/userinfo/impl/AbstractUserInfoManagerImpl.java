@@ -17,8 +17,7 @@
 package org.apache.jetspeed.userinfo.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
@@ -29,7 +28,6 @@ import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.om.portlet.impl.UserAttributeRefImpl;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.pluto.container.PortletContainerException;
 import org.apache.jetspeed.container.PortletWindow;
 
 /**
@@ -55,50 +53,47 @@ public abstract class AbstractUserInfoManagerImpl
      * @param userAttributeRefs
      *            The declarative jetspeed portlet extension user attributes
      *            reference.
-     * @return The collection of linked attributes.
+     * @return The list of linked attributes.
      */
-    protected Collection mapLinkedUserAttributes(Collection userAttributes, Collection userAttributeRefs)
+    protected List<UserAttributeRef> mapLinkedUserAttributes(List<UserAttribute> userAttributes, List<UserAttributeRef> userAttributeRefs)
     {
-        Collection linkedUserAttributes = new ArrayList();
+        UserAttributeRefImpl impl;
+        List<UserAttributeRef> linkedUserAttributes = new ArrayList<UserAttributeRef>();
         if ((null != userAttributeRefs) && (userAttributeRefs.size() > 0))
         {
-            Iterator attrIter = userAttributes.iterator();
-            while (attrIter.hasNext())
+            for (UserAttribute currentAttribute : userAttributes)
             {
-                UserAttribute currentAttribute = (UserAttribute) attrIter.next();
                 boolean linkedAttribute = false;
-                if (null != currentAttribute)
+                impl = new UserAttributeRefImpl();
+                for (UserAttributeRef currentAttributeRef : userAttributeRefs)
                 {
-                    Iterator attrRefsIter = userAttributeRefs.iterator();
-                    while (attrRefsIter.hasNext())
+                    if ((currentAttribute.getName()).equals(currentAttributeRef.getNameLink()))
                     {
-                        UserAttributeRef currentAttributeRef = (UserAttributeRef) attrRefsIter.next();
-                        if (null != currentAttributeRef)
+                        if (log.isDebugEnabled())
                         {
-                            if ((currentAttribute.getName()).equals(currentAttributeRef.getNameLink()))
-                            {
-                                if (log.isDebugEnabled())
-                                    log.debug("Linking user attribute ref: [[name, " + currentAttribute.getName()
-                                            + "], [linked name, " + currentAttributeRef.getName() + "]]");
-                                linkedUserAttributes.add(currentAttributeRef);
-                                linkedAttribute = true;
-                            }
+                            log.debug("Linking user attribute ref: [[name, " + currentAttribute.getName()
+                                    + "], [linked name, " + currentAttributeRef.getName() + "]]");
                         }
+                        impl.setName(currentAttributeRef.getName());
+                        impl.setNameLink(currentAttributeRef.getNameLink());
+                        linkedAttribute = true;
+                        break;
                     }
                 }
                 if (!linkedAttribute)
                 {
-                    linkedUserAttributes.add(new UserAttributeRefImpl(currentAttribute));
+                    impl.setName(currentAttribute.getName());
                 }
+                linkedUserAttributes.add(impl);
             }
         }
         else
         {
-            Iterator attrIter = userAttributes.iterator();
-            while (attrIter.hasNext())
+            for (UserAttribute currentAttribute : userAttributes)
             {
-                UserAttribute currentAttribute = (UserAttribute) attrIter.next();
-                linkedUserAttributes.add(new UserAttributeRefImpl(currentAttribute));
+                impl = new UserAttributeRefImpl();
+                impl.setName(currentAttribute.getName());
+                linkedUserAttributes.add(impl);
             }
         }
         return linkedUserAttributes;
@@ -107,10 +102,9 @@ public abstract class AbstractUserInfoManagerImpl
     /**
      * For Pluto 2.0
      */
-    public Map<String, String> getUserInfo(PortletRequest request, org.apache.pluto.container.PortletWindow window) throws PortletContainerException
+    public Map<String, String> getUserInfo(PortletRequest request, org.apache.pluto.container.PortletWindow window)
     {
-        String remoteUser = request.getRemoteUser(); 
-        if ( remoteUser == null ) 
+        if ( request.getUserPrincipal() == null ) 
         {
             return null;
         }

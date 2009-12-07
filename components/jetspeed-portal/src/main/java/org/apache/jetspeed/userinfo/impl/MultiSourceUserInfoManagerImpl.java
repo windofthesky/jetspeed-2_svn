@@ -16,23 +16,19 @@
  */
 package org.apache.jetspeed.userinfo.impl;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.portlet.PortletRequest;
 import javax.security.auth.Subject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.userinfo.UserAttributeRetrievalException;
 import org.apache.jetspeed.userinfo.UserAttributeSource;
-import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
  * Multisource User Information manager
@@ -42,57 +38,51 @@ import org.apache.jetspeed.userinfo.UserInfoManager;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id: $
  */
-public class MultiSourceUserInfoManagerImpl extends AbstractUserInfoManagerImpl
-        implements UserInfoManager
+public class MultiSourceUserInfoManagerImpl extends UserInfoManagerImpl
 {
 
     /** Logger */
     private static final Logger log = LoggerFactory.getLogger(MultiSourceUserInfoManagerImpl.class);
 
-    private List sources;
+    private List<UserAttributeSource> sources;
 
-    private PortletRegistry portletRegistry;
-   
-    public Map getUserInfoMap(String appName, RequestContext context)
+    public Map<String,String> getUserInfoMap(String appName, RequestContext context)
     {
-
+        Map<String,String> userInfoMap = null;
         try
         {
-            Map userInfoMap = new HashMap();
             Subject subject = context.getSubject();
-            PortletApplication pa = portletRegistry.getPortletApplication(appName, true);
-            if (null == pa)
+            if (null != subject)
             {
-                log.debug(PortletRequest.USER_INFO + " is set to null");
-                return null;
+                
             }
-            Collection userAttributes = pa.getUserAttributes();
-            Collection userAttributeRefs = pa.getUserAttributeRefs();
-            Collection linkedUserAttributes = mapLinkedUserAttributes(
-                    userAttributes, userAttributeRefs);
-            for (Iterator iter = sources.iterator(); iter.hasNext();)
+            userInfoMap = new HashMap<String,String>();
+            
+            List<UserAttributeRef> linkedUserAttributes = getLinkedUserAttr(appName);
+            
+            for (UserAttributeSource source : sources)
             {
-                UserAttributeSource source = (UserAttributeSource) iter.next();
-                Map sourceMap;
-
-                sourceMap = source.getUserAttributeMap(subject,
-                        linkedUserAttributes, context);
-                userInfoMap.putAll(sourceMap);
+                Map<String, String> sourceMap = source.getUserAttributeMap(subject, linkedUserAttributes, context);
+                if (sourceMap != null)
+                {
+                    userInfoMap.putAll(sourceMap);
+                }
             }
-            return userInfoMap;
-        } catch (UserAttributeRetrievalException e)
+        } 
+        catch (UserAttributeRetrievalException e)
         {
             // Until external api is changed return
-            e.printStackTrace();            
+            log.error(e.getMessage(), e);          
             return null;
         }
+        return userInfoMap;
     }
 
     /**
      * @param sources
      *            The sources to set.
      */
-    public void setSources(List sources)
+    public void setSources(List<UserAttributeSource> sources)
     {
         this.sources = sources;
     }
@@ -103,7 +93,7 @@ public class MultiSourceUserInfoManagerImpl extends AbstractUserInfoManagerImpl
      */
     public void setPortletRegistry(PortletRegistry portletRegistry)
     {
-        this.portletRegistry = portletRegistry;
+        registry = portletRegistry;
     }
 
 }

@@ -17,10 +17,9 @@
 package org.apache.jetspeed.userinfo.impl;
 
 import java.security.Principal;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
@@ -30,9 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
@@ -53,19 +53,19 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
     /** Logger */
     private static final Logger log = LoggerFactory.getLogger(UserInfoManagerImpl.class);
 
-    // TODO Same caching issue as usual. We should look into JCS. That wil do
-    // for now.
-    /** Map used to cache user info maps for each mapped portlet application. */
-    private static Map<String, Map<String, String>> userInfoMapCache;
+    // TODO: needs cache invalidation when portlet application user info configuration changes
+    /** Map to cache user info keys for each mapped portlet application. */
+    private static Map<String, List<UserAttributeRef>> appUserInfoAttrCache = Collections.synchronizedMap(new HashMap<String,List<UserAttributeRef>>());
 
     /** The user manager */
-    UserManager userMgr;
+    protected UserManager userMgr;
 
     /** The portlet registry. */
-    PortletRegistry registry;
-
-    /** The object id of the portlet application being processed. */
-    String oid;
+    protected PortletRegistry registry;
+    
+    protected UserInfoManagerImpl()
+    {
+    }
 
     /**
      * <p>
@@ -79,7 +79,6 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
     {
         this.userMgr = userMgr;
         this.registry = registry;
-        initUserInfoMapCache();
     }
 
     /**
@@ -97,36 +96,42 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
     {
         this.userMgr = userMgr;
         this.registry = registry;
-        initUserInfoMapCache();
     }
 
     public Map<String, String> getUserInfoMap(String appName, RequestContext context)
     {
         if (log.isDebugEnabled())
-            log.debug("Getting user info for portlet application: " + oid.toString());
-
-        // Check if user info map is in cache.
-        if (userInfoMapCache.containsKey(appName))
-        {
-            return userInfoMapCache.get(appName);
-        }
-        // Not in cache, map user info.
+            log.debug("Getting user info for portlet application: " + appName);
+        
         Map<String, String> userInfo = getUserInformation(context);
-        if (null == userInfo)
+        if (null == userInfo || userInfo.isEmpty())
         {
-            log.debug(PortletRequest.USER_INFO + " is set to null");
+            log.debug(PortletRequest.USER_INFO + " is null or empty");
             return null;
         }
-
-        PortletApplication pa = registry.getPortletApplication(appName, true);
-        if (null == pa)
+        
+        return mapUserInfo(userInfo, getLinkedUserAttr(appName));
+    }
+    
+    protected List<UserAttributeRef> getLinkedUserAttr(String appName)
+    {
+        // Check if user info map is in cache.
+        List<UserAttributeRef> linkedUserAttr = appUserInfoAttrCache.get(appName);
+        
+        if (linkedUserAttr == null)
         {
-            log.debug(PortletRequest.USER_INFO + " is set to null");
-            return null;
+            PortletApplication pa = registry.getPortletApplication(appName, true);
+            if (null == pa)
+            {
+                log.debug(PortletRequest.USER_INFO + " is set to null");
+                return null;
+            }
+            List<UserAttribute> userAttributes = pa.getUserAttributes();
+            List<UserAttributeRef> userAttributeRefs = pa.getUserAttributeRefs();
+            linkedUserAttr = mapLinkedUserAttributes(userAttributes, userAttributeRefs);
+            appUserInfoAttrCache.put(appName, linkedUserAttr);
         }
-        Collection userAttributes = pa.getUserAttributes();
-        Collection userAttributeRefs = pa.getUserAttributeRefs();
-        return mapUserInfo(userInfo, userAttributes, userAttributeRefs);
+        return linkedUserAttr;
     }
 
     /**
@@ -141,40 +146,22 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
      *            attributes reference.
      * @return The user info map.
      */
-    private Map<String, String> mapUserInfo(Map<String, String> userInfo, Collection userAttributes, Collection userAttributeRefs)
+    protected Map<String, String> mapUserInfo(Map<String, String> userInfo, List<UserAttributeRef> linkedUserAttributes)
     {
         Map<String, String>userInfoMap = new HashMap<String, String>();
-        if ((null == userAttributes) || (userAttributes.size() == 0))
+        for (UserAttributeRef currentAttributeRef : linkedUserAttributes)
         {
-            return null;
-        }
-        Collection linkedUserAttributes = mapLinkedUserAttributes(userAttributes, userAttributeRefs);
-        Iterator iter = linkedUserAttributes.iterator();
-        while (iter.hasNext())
-        {
-            UserAttributeRef currentAttributeRef = (UserAttributeRef) iter.next();
-            if (null != currentAttributeRef)
+            String key = currentAttributeRef.getNameLink();
+            String name = currentAttributeRef.getName();
+            if (key == null)
+            {                
+                key = name;
+            }
+            if (userInfo.containsKey(key))
             {
-                for (String key : userInfo.keySet())
-                {
-                    if (null != currentAttributeRef.getNameLink())
-                    {
-                        if ((currentAttributeRef.getNameLink()).equals(key))
-                        {
-                            userInfoMap.put(currentAttributeRef.getName(), userInfo.get(key));
-                        }
-                    }
-                    else
-                    {
-                        if ((currentAttributeRef.getName()).equals(key))
-                        {
-                            userInfoMap.put(currentAttributeRef.getName(), userInfo.get(key));
-                        }
-                    }
-                }
+                userInfoMap.put(name, userInfo.get(key));
             }
         }
-        userInfoMapCache.put(oid, userInfoMap);
         return userInfoMap;
     }
 
@@ -191,7 +178,7 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
      */
     private Map<String, String> getUserInformation(RequestContext context)
     {
-        Map<String, String> userInfo = new HashMap<String, String>();
+        Map<String, String> userInfo = null;
         Subject subject = context.getSubject();
         if (null != subject)
         {
@@ -199,29 +186,12 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
             if (null != userPrincipal)
             {
                 log.debug("Got user principal: " + userPrincipal.getName());
-                try
+                if (userPrincipal instanceof JetspeedPrincipal)
                 {
-                    if (userMgr.userExists(userPrincipal.getName()))
-                    {
-                        User user = userMgr.getUser(userPrincipal.getName());
-                        userInfo = user.getInfoMap();
-                    }
-                }
-                catch (SecurityException sex)
-                {
-                    log.warn("Unexpected SecurityException in UserInfoManager", sex);
+                    return ((JetspeedPrincipal)userPrincipal).getInfoMap();
                 }
             }
         }
         return userInfo;
     }
-
-    private void initUserInfoMapCache()
-    {
-        if (null == userInfoMapCache)
-        {
-            userInfoMapCache = Collections.synchronizedMap(new HashMap());
-        }
-    }
-
 }
