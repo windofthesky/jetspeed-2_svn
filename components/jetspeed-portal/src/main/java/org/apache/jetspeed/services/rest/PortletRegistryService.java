@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.search.ParsedObject;
@@ -219,7 +220,7 @@ public class PortletRegistryService
                 }
             }
             
-            Collection<PortletDefinition> filteredPortletDefinitions = filterPortletDefinitionsBySecurityAccess(searchedPortletDefinitions, JetspeedActions.MASK_VIEW);
+            Collection<PortletDefinition> filteredPortletDefinitions = filterPortletDefinitionsBySecurityAccess(searchedPortletDefinitions, JetspeedActions.MASK_VIEW, servletRequest);
             pdBeans.setTotalSize(filteredPortletDefinitions.size());
             
             for (PortletDefinition pd : (Collection<PortletDefinition>) PaginationUtils.subCollection(filteredPortletDefinitions, beginIndex, maxResults))
@@ -231,7 +232,7 @@ public class PortletRegistryService
         {
             if (StringUtils.isBlank(applicationName) && StringUtils.isBlank(definitionName))
             {
-                Collection<PortletDefinition> pds = filterPortletDefinitionsBySecurityAccess(portletRegistry.getAllPortletDefinitions(), JetspeedActions.MASK_VIEW);
+                Collection<PortletDefinition> pds = filterPortletDefinitionsBySecurityAccess(portletRegistry.getAllPortletDefinitions(), JetspeedActions.MASK_VIEW, servletRequest);
                 pdBeans.setTotalSize(pds.size());
                 
                 for (PortletDefinition pd : (Collection<PortletDefinition>) PaginationUtils.subCollection(pds, beginIndex, maxResults))
@@ -247,7 +248,7 @@ public class PortletRegistryService
                 {
                     if (StringUtils.isBlank(definitionName))
                     {
-                        Collection<PortletDefinition> pds = filterPortletDefinitionsBySecurityAccess(pa.getPortlets(), JetspeedActions.MASK_VIEW);
+                        Collection<PortletDefinition> pds = filterPortletDefinitionsBySecurityAccess(pa.getPortlets(), JetspeedActions.MASK_VIEW, servletRequest);
                         pdBeans.setTotalSize(pds.size());
                         
                         for (PortletDefinition pd : (List<PortletDefinition>) PaginationUtils.subCollection(pds, beginIndex, maxResults))
@@ -274,7 +275,7 @@ public class PortletRegistryService
         return pdBeans;
     }
     
-    private Collection<PortletDefinition> filterPortletDefinitionsBySecurityAccess(Collection<PortletDefinition> collection, int mask)
+    private Collection<PortletDefinition> filterPortletDefinitionsBySecurityAccess(Collection<PortletDefinition> collection, int mask, HttpServletRequest servletRequest)
     {
         if (securityAccessController == null)
         {
@@ -290,6 +291,11 @@ public class PortletRegistryService
         
         for (PortletDefinition pd : collection)
         {
+            if (isFilteredOutByRole(pd, servletRequest))
+            {
+                continue;
+            }
+            
             if (securityAccessController.checkPortletAccess(pd, mask))
             {
                 filteredCollection.add(pd);
@@ -297,6 +303,33 @@ public class PortletRegistryService
         }
         
         return filteredCollection;
+    }
+    
+    private boolean isFilteredOutByRole(PortletDefinition pd, HttpServletRequest servletRequest)
+    {
+        boolean filteredOut = false;
+        
+        Collection<LocalizedField> fields = pd.getMetadata().getFields("selector.conditional.role");
+        
+        if (fields != null && !fields.isEmpty()) 
+        {
+            LocalizedField field = fields.iterator().next();
+            String role = field.getValue();
+            
+            if (!StringUtils.isBlank(role))
+            {
+                if (role.equals("*"))
+                {
+                    filteredOut = true;
+                }
+                else
+                {
+                    filteredOut = (!servletRequest.isUserInRole(role));
+                }
+            }
+        }
+        
+        return filteredOut;
     }
     
 }
