@@ -68,25 +68,52 @@
       </bean>
     </property>
   </bean>
-  
-  <bean id="jaxrsJsonProvider" class="org.apache.cxf.jaxrs.provider.JSONProvider">
+
+  <bean id="jacksonObjectMapper" class="org.codehaus.jackson.map.ObjectMapper">
     <meta key="j2:cat" value="default" />
-    <property name="serializeAsArray" value="true"/>
-    <property name="arrayKeys">
+  </bean>
+  
+  <bean id="jacksonJaxbIntrospector" class="org.codehaus.jackson.xc.JaxbAnnotationIntrospector">
+    <meta key="j2:cat" value="default" />
+  </bean>
+  
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <meta key="j2:cat" value="default" />
+    <property name="targetObject">
+      <bean class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+        <meta key="j2:cat" value="default" />
+        <property name="targetObject" ref="jacksonObjectMapper" />
+        <property name="propertyPath" value="serializationConfig"/>
+      </bean>
+    </property>
+    <property name="targetMethod" value="setAnnotationIntrospector"/>
+    <property name="arguments">
       <list>
-        <!--
-        <value>displayName</value>
-        <value>description</value>
-        <value>initparam</value>
-        <value>language</value>
-        <value>field</value>
-        <value>portletMode</value>
-        <value>windowState</value>
-        <value>definition</value>
-        <value>application</value>
-        -->
+        <ref bean="jacksonJaxbIntrospector" />
       </list>
     </property>
+  </bean>
+  
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <meta key="j2:cat" value="default" />
+    <property name="targetObject">
+      <bean class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+        <meta key="j2:cat" value="default" />
+        <property name="targetObject" ref="jacksonObjectMapper" />
+        <property name="propertyPath" value="deserializationConfig"/>
+      </bean>
+    </property>
+    <property name="targetMethod" value="setAnnotationIntrospector"/>
+    <property name="arguments">
+      <list>
+        <ref bean="jacksonJaxbIntrospector" />
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="jaxrsJsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
+    <meta key="j2:cat" value="default" />
+    <property name="mapper" ref="jacksonObjectMapper" />
   </bean>
   
   <!-- JAX-RS Service Singleton Resource Beans  -->
