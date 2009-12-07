@@ -46,6 +46,7 @@ public class PortletDefinitionBean implements Serializable
     private String applicationName;
     private String portletName;
     private String uniqueName;
+    private String portletIcon;
     private PortletInfoBean portletInfoBean;
     private Collection<DisplayNameBean> displayNameBeans;
     private Collection<DescriptionBean> descriptionBeans;
@@ -108,6 +109,11 @@ public class PortletDefinitionBean implements Serializable
         for (InitParam initParam : portletDefinition.getInitParams())
         {
             initParamBeanList.add(new InitParamBean(initParam));
+            
+            if ("portlet-icon".equals(initParam.getParamName()))
+            {
+                portletIcon = initParam.getParamValue();
+            }
         }
         initParamBeans = initParamBeanList;
     }
@@ -130,6 +136,16 @@ public class PortletDefinitionBean implements Serializable
     public void setPortletName(String portletName)
     {
         this.portletName = portletName;
+    }
+
+    public String getPortletIcon()
+    {
+        return portletIcon;
+    }
+
+    public void setPortletIcon(String portletIcon)
+    {
+        this.portletIcon = portletIcon;
     }
 
     public String getUniqueName()
@@ -224,8 +240,8 @@ public class PortletDefinitionBean implements Serializable
         this.containerRuntimeOptionBeans = containerRuntimeOptionBeans;
     }
     
-    @XmlElementWrapper(name="initparams")
-    @XmlElements(@XmlElement(name="initparam"))
+    @XmlElementWrapper(name="initParams")
+    @XmlElements(@XmlElement(name="initParam"))
     public Collection<InitParamBean> getInitParamBeans()
     {
         return initParamBeans;
