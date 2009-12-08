@@ -148,6 +148,7 @@
     <constructor-arg ref="PortletActionSecurityBehavior" />
     <constructor-arg ref="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
     <constructor-arg ref="DecorationValve" />
+    <constructor-arg ref="org.apache.jetspeed.layout.PageLayoutComponent" />
   </bean>
   
 </beans>

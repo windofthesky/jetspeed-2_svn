@@ -21,17 +21,24 @@ import java.util.List;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.decoration.DecorationValve;
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.page.PageManager;
@@ -66,42 +73,81 @@ public class PageManagementService
     
     private DecorationValve decorationValve;
     
+    private PageLayoutComponent pageLayoutComponent;
+    
     public PageManagementService(PageManager pageManager,
                                        PortletActionSecurityBehavior securityBehavior,
                                        PortletRegistry portletRegistry,
-                                       DecorationValve decorationValve)
+                                       DecorationValve decorationValve,
+                                       PageLayoutComponent pageLayoutComponent)
     {
         this.pageManager = pageManager;
         this.securityBehavior = securityBehavior;
         this.portletRegistry = portletRegistry;
         this.decorationValve = decorationValve;
+        this.pageLayoutComponent = pageLayoutComponent;
     }
     
     @GET
     @Path("/{path:.*}")
     public ContentPageBean getContentPage(@Context HttpServletRequest servletRequest,
-                                      @Context UriInfo uriInfo,
-                                      @PathParam("path") List<PathSegment> pathSegments)
+                                          @Context UriInfo uriInfo,
+                                          @PathParam("path") List<PathSegment> pathSegments)
     {
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
+        ContentPage contentPage = getContentPage(requestContext);
+        return new ContentPageBean(contentPage);
+    }
+    
+    @POST
+    @Path("/{path:.*}")
+    public Response addContentFragment(@Context HttpServletRequest servletRequest,
+                                       @Context UriInfo uriInfo,
+                                       @PathParam("path") List<PathSegment> pathSegments,
+                                       @FormParam("type") String fragmentType,
+                                       @FormParam("name") String fragmentName)
+    {
+        if (StringUtils.isBlank(fragmentType) || StringUtils.isBlank(fragmentName))
+        {
+            throw new WebApplicationException(new IllegalArgumentException("Fragment type and name not specified"));
+        }
         
+        RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
+        ContentPage contentPage = getContentPage(requestContext);
+        
+        pageLayoutComponent.addPortlet(contentPage, fragmentType, fragmentName);
+        
+        return Response.ok().build();
+    }
+    
+    @DELETE
+    @Path("/{path:.*}")
+    public Response deleteContentFragment(@Context HttpServletRequest servletRequest,
+                                       @Context UriInfo uriInfo,
+                                       @PathParam("path") List<PathSegment> pathSegments,
+                                       @QueryParam("id") String fragmentId)
+    {
+        if (StringUtils.isBlank(fragmentId))
+        {
+            throw new WebApplicationException(new IllegalArgumentException("Fragment id not specified"));
+        }
+        
+        RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
+        ContentPage contentPage = getContentPage(requestContext);
+        
+        pageLayoutComponent.removeFragment(contentPage, fragmentId);
+        
+        return Response.ok().build();
+    }
+    
+    private ContentPage getContentPage(RequestContext requestContext) throws WebApplicationException
+    {
         try
         {
             checkPageAccess(requestContext, JetspeedActions.VIEW);
-        }
-        catch (SecurityException e)
-        {
-            throw new WebApplicationException(e);
-        }
-        
-        try
-        {
             // Run the Decoration valve to get actions
             decorationValve.invoke(requestContext, null);
-            
-            ContentPage contentPage = requestContext.getPage();
-            
-            return new ContentPageBean(contentPage);
+            return requestContext.getPage();
         }
         catch (Exception e)
         {
