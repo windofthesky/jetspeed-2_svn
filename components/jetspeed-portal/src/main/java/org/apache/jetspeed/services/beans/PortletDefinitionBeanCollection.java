@@ -19,6 +19,7 @@ package org.apache.jetspeed.services.beans;
 import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -27,26 +28,28 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  * @version $Id$
  */
-@XmlRootElement(name="definitions")
-public class PortletDefinitionBeanCollection extends BeanCollection<PortletDefinitionBean>
+@XmlRootElement(name="data")
+public class PortletDefinitionBeanCollection extends BeanCollection
 {
     private static final long serialVersionUID = 1L;
     
+    private Collection<PortletDefinitionBean> definitionBeans;
+
     public PortletDefinitionBeanCollection()
     {
         super();
     }
     
-    @Override
+    @XmlElementWrapper(name="definitions")
     @XmlElements(@XmlElement(name="definition"))
-    public Collection<PortletDefinitionBean> getCollection()
+    public Collection<PortletDefinitionBean> getDefinitions()
     {
-        return super.getCollection();
+        return definitionBeans;
     }
     
-    public void setPortletApplicationBeans(Collection<PortletDefinitionBean> collection)
+    public void setDefinitions(Collection<PortletDefinitionBean> definitionBeans)
     {
-        super.setCollection(collection);
+        this.definitionBeans = definitionBeans;
     }
     
 }

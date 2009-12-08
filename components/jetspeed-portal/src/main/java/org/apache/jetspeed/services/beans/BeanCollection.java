@@ -17,11 +17,7 @@
 package org.apache.jetspeed.services.beans;
 
 import java.io.Serializable;
-import java.util.Collection;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -29,12 +25,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  * @version $Id$
  */
-@XmlRootElement(name="collection")
-public class BeanCollection<T> implements Serializable
+@XmlRootElement(name="data")
+public class BeanCollection implements Serializable
 {
     private static final long serialVersionUID = 1L;
-    
-    private Collection<T> collection;
     
     private int totalSize = -1;
     
@@ -45,28 +39,6 @@ public class BeanCollection<T> implements Serializable
         
     }
     
-    protected Collection<T> getCollection()
-    {
-        return collection;
-    }
-    
-    protected void setCollection(Collection<T> collection)
-    {
-        this.collection = collection;
-    }
-    
-    @XmlAttribute(name="size")
-    public int getSize()
-    {
-        return (collection != null ? collection.size() : 0);
-    }
-    
-    public void setSize()
-    {
-        
-    }
-    
-    @XmlAttribute(name="totalSize")
     public int getTotalSize()
     {
         return totalSize;
@@ -77,7 +49,6 @@ public class BeanCollection<T> implements Serializable
         this.totalSize = totalSize;
     }
     
-    @XmlAttribute(name="beginIndex")
     public int getBeginIndex()
     {
         return beginIndex;

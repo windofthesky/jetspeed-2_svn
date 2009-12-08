@@ -155,7 +155,7 @@ public class PortletRegistryService
             }
         }
         
-        paBeans.setPortletApplicationBeans(paBeanList);
+        paBeans.setApplications(paBeanList);
         
         return paBeans;
     }
@@ -270,7 +270,7 @@ public class PortletRegistryService
             }
         }
         
-        pdBeans.setPortletApplicationBeans(pdBeanList);
+        pdBeans.setDefinitions(pdBeanList);
         
         return pdBeans;
     }
