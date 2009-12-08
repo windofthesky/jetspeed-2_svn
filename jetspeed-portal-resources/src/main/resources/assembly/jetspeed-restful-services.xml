@@ -127,6 +127,7 @@
         
         <!-- Resource providers -->
         <ref bean="jaxrsPortletRegistryService" />
+        <ref bean="jaxrsPageManagementService" />
         
       </set>
     </property>
@@ -138,6 +139,15 @@
     <constructor-arg ref="org.apache.jetspeed.security.SecurityAccessController" />
     <constructor-arg ref="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
     <constructor-arg ref="org.apache.jetspeed.search.SearchEngine" />
+  </bean>
+  
+  <!-- Portal Page Management JAX-RS Service -->
+  <bean id="jaxrsPageManagementService" class="org.apache.jetspeed.services.rest.PageManagementService">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg ref="org.apache.jetspeed.page.PageManager" />
+    <constructor-arg ref="PortletActionSecurityBehavior" />
+    <constructor-arg ref="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
+    <constructor-arg ref="DecorationValve" />
   </bean>
   
 </beans>
