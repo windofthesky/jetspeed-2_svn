@@ -32,43 +32,6 @@
     </property>
   </bean>
   
-  <!-- To set resource singletons bean id properties -->
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <meta key="j2:cat" value="default" />
-    <property name="targetClass" value="java.lang.System"/>
-    <property name="targetMethod" value="setProperty"/>
-    <property name="arguments">
-      <list>
-        <value>org.apache.jetspeed.services.rest.singletons</value>
-        <value>org.apache.jetspeed.services.rest.singletons</value>
-      </list>
-    </property>
-  </bean>
-  
-  <!-- Delegating CXF Servlet -->
-  <bean id="cxfServlet" class="org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet">
-    <meta key="j2:cat" value="default" />
-  </bean>
-  
-  <!-- CXF Servlet Config -->
-  <bean id="cxfServletConfig" class="org.apache.jetspeed.pipeline.valve.impl.ServletDelegatingValve$ServletConfigImpl">
-    <meta key="j2:cat" value="default" />
-    <constructor-arg value="CXFNonSpringJaxrsServlet" />
-    <constructor-arg>
-      <props>
-        <prop key="javax.ws.rs.Application">
-          org.apache.jetspeed.services.rest.JetspeedJaxrsApplication
-        </prop>
-      </props>
-    </constructor-arg>
-    <property name="servletContext">
-      <bean class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
-        <property name="targetObject" ref="javax.servlet.ServletConfig" />
-        <property name="propertyPath" value="servletContext"/>
-      </bean>
-    </property>
-  </bean>
-
   <bean id="jacksonObjectMapper" class="org.codehaus.jackson.map.ObjectMapper">
     <meta key="j2:cat" value="default" />
   </bean>
@@ -116,20 +79,56 @@
     <property name="mapper" ref="jacksonObjectMapper" />
   </bean>
   
-  <!-- JAX-RS Service Singleton Resource Beans  -->
-  <bean id="org.apache.jetspeed.services.rest.singletons" class="org.springframework.beans.factory.config.SetFactoryBean">
+  <bean id="cxfJaxrsBus" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <meta key="j2:cat" value="default" />
-    <property name="sourceSet">
-      <set>
-        
-        <!-- JAX-RS Providers -->
+    <property name="targetClass" value="org.apache.cxf.BusFactory"/>
+    <property name="targetMethod" value="getThreadDefaultBus"/>
+    <property name="arguments">
+      <list>
+        <value>true</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="cxfDestinationFactory" class="org.apache.cxf.transport.servlet.ServletTransportFactory">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg ref="cxfJaxrsBus" />
+  </bean>
+  
+  <bean id="cxfJaxrsServletController" class="org.apache.cxf.transport.servlet.ServletController">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg ref="cxfDestinationFactory" />
+    <constructor-arg ref="javax.servlet.ServletConfig" />
+    <constructor-arg>
+      <bean class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+        <meta key="j2:cat" value="default" />
+        <property name="targetObject" ref="javax.servlet.ServletConfig" />
+        <property name="propertyPath" value="servletContext"/>
+      </bean>
+    </constructor-arg>
+    <constructor-arg ref="cxfJaxrsBus" />
+  </bean>
+  
+  <bean id="cxfJaxrsServerFactoryBean" class="org.apache.cxf.jaxrs.JAXRSServerFactoryBean">
+    <meta key="j2:cat" value="default" />
+    <property name="address" value="/" />
+    <property name="destinationFactory" ref="cxfDestinationFactory" />
+    <property name="providers">
+      <list>
         <ref bean="jaxrsJsonProvider" />
-        
-        <!-- Resource providers -->
-        <ref bean="jaxrsPortletRegistryService" />
-        <ref bean="jaxrsPageManagementService" />
-        
-      </set>
+      </list>
+    </property>
+    <property name="resourceProviders">
+      <list>
+        <bean class="org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider">
+          <meta key="j2:cat" value="default" />
+          <constructor-arg ref="jaxrsPortletRegistryService" />
+        </bean>
+        <bean class="org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider">
+          <meta key="j2:cat" value="default" />
+          <constructor-arg ref="jaxrsPageManagementService" />
+        </bean>
+      </list>
     </property>
   </bean>
   

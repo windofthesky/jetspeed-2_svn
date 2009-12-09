@@ -350,11 +350,13 @@
     </constructor-arg>
   </bean>
   
-  <bean id="RestfulServicesValve" class="org.apache.jetspeed.pipeline.valve.impl.ServletDelegatingValve" 
+  <bean id="RestfulServicesValve" class="org.apache.jetspeed.services.rest.JaxrsServiceValve" 
         init-method="initialize" destroy-method="destroy">
     <meta key="j2:cat" value="default" />
-    <constructor-arg ref="cxfServlet" />
-    <constructor-arg ref="cxfServletConfig" />
+    <constructor-arg value="org.apache.cxf.BusFactory" />
+    <constructor-arg ref="cxfJaxrsBus" />
+    <constructor-arg ref="cxfJaxrsServletController" />
+    <constructor-arg ref="cxfJaxrsServerFactoryBean" />
   </bean>
   
   <bean id="DecorationValve" class="org.apache.jetspeed.decoration.DecorationValve" init-method="initialize">
