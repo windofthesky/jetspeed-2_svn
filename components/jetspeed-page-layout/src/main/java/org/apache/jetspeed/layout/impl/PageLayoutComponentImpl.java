@@ -1440,7 +1440,28 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             throw new PageLayoutComponentException("Unexpected exception: "+e, e);
         }
     }
-
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#getUnlockedRootFragment(org.apache.jetspeed.om.page.ContentPage)
+     */
+    public ContentFragment getUnlockedRootFragment(ContentPage contentPage)
+    {
+        ContentFragment rootFragment = contentPage.getRootFragment();
+        
+        if (rootFragment.isLocked())
+        {
+            for (ContentFragment f : (List<ContentFragment>) rootFragment.getFragments())
+            {
+                if (!f.isLocked() && f.getType().equals(ContentFragment.LAYOUT))
+                {
+                    return f;
+                }
+            }
+        }
+        
+        return rootFragment;
+    }
+    
     /**
      * Merge content page attributes from source PSML page.
      * 

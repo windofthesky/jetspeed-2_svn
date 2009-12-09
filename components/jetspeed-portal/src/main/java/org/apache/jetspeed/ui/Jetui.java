@@ -29,6 +29,7 @@ import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.headerresource.HeaderResourceFactory;
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.portlet.HeadElement;
@@ -48,12 +49,14 @@ public class Jetui
 {
     private PortletRenderer renderer;
     private HeaderResourceFactory headerFactory;
+    private PageLayoutComponent pageLayoutComponent;
     private String layoutTemplate;
     
-    public Jetui(PortletRenderer renderer, HeaderResourceFactory headerFactory, String layoutTemplate)
+    public Jetui(PortletRenderer renderer, HeaderResourceFactory headerFactory, PageLayoutComponent pageLayoutComponent, String layoutTemplate)
     {
         this.renderer = renderer;
         this.headerFactory = headerFactory;
+        this.pageLayoutComponent = pageLayoutComponent;
         this.layoutTemplate = layoutTemplate;
     }
     
@@ -64,18 +67,7 @@ public class Jetui
         {
             RequestDispatcher dispatcher = request.getRequest().getRequestDispatcher(layoutTemplate);
             request.setAttribute("jetui", this);
-            ContentFragment rootFragment = request.getPage().getRootFragment();     
-            if (rootFragment.isLocked())
-            {
-                for (ContentFragment f : (List<ContentFragment>)rootFragment.getFragments())
-                {
-                    if (!f.isLocked() && f.getType().equals(ContentFragment.LAYOUT))
-                    {
-                        rootFragment = f;
-                        break;
-                    }
-                }
-            }            
+            ContentFragment rootFragment = pageLayoutComponent.getUnlockedRootFragment(request.getPage());
             if (maximized == null)
             {
                 String jetspeedLayout = rootFragment.getName();

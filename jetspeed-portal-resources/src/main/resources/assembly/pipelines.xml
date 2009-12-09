@@ -914,10 +914,11 @@
     <meta key="j2:cat" value="default" />
     <constructor-arg><ref bean="org.apache.jetspeed.aggregator.PortletRenderer"/></constructor-arg>
     <constructor-arg><ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory"/></constructor-arg>
+    <constructor-arg><ref bean="org.apache.jetspeed.layout.PageLayoutComponent" /></constructor-arg>
     <constructor-arg><value>/WEB-INF/jetui/yui/jetui.jsp</value></constructor-arg>        
   </bean>
   
-   <bean id="jetuiAggregator" class="org.apache.jetspeed.ui.JetuiAggregatorImpl">
+  <bean id="jetuiAggregator" class="org.apache.jetspeed.ui.JetuiAggregatorImpl">
     <meta key="j2:cat" value="default" />
     <constructor-arg index="0">
       <ref bean="org.apache.jetspeed.aggregator.PortletRenderer" />

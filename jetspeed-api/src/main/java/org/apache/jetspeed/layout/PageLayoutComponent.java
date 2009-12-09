@@ -280,4 +280,13 @@ public interface PageLayoutComponent
      * @param shortTitle page short title
      */
     void updateTitles(ContentPage contentPage, String title, String shortTitle);
+    
+    /**
+     * Returns the root fragment which is not locked and not merged from a page template
+     * 
+     * @param contentPage content page context
+     * @return
+     */
+    ContentFragment getUnlockedRootFragment(ContentPage contentPage);
+    
 }
