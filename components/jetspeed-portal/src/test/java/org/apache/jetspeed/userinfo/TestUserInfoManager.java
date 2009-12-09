@@ -169,9 +169,20 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
      * @return The request context.
      */
     private RequestContext initRequestContext(String username)
-    {
+    {        
         RequestContext request = new MockRequestContext("default-other");
-        request.setSubject(JetspeedSubjectFactory.createSubject(new UserImpl(username), null, null, null));
+        User user = null;
+        // need to retrieve user from usermanager to retrieve previously configured user attributes
+        // if user doesn't exist (e.g. anon user), a transient UserImpl will be used instead
+        try
+        {
+            user = ums.getUser(username);
+        }
+        catch (SecurityException e)
+        {
+            user = new UserImpl(username);
+        }
+        request.setSubject(JetspeedSubjectFactory.createSubject(user, null, null, null));
         return request;
     }
 

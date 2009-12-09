@@ -104,10 +104,15 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
             log.debug("Getting user info for portlet application: " + appName);
         
         Map<String, String> userInfo = getUserInformation(context);
-        if (null == userInfo || userInfo.isEmpty())
+        if (null == userInfo)
         {
-            log.debug(PortletRequest.USER_INFO + " is null or empty");
+            log.debug(PortletRequest.USER_INFO + " is null");
             return null;
+        }
+        else if (userInfo.isEmpty())
+        {
+            log.debug(PortletRequest.USER_INFO + " is empty");
+            return Collections.emptyMap();
         }
         
         return mapUserInfo(userInfo, getLinkedUserAttr(appName));
@@ -149,17 +154,20 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
     protected Map<String, String> mapUserInfo(Map<String, String> userInfo, List<UserAttributeRef> linkedUserAttributes)
     {
         Map<String, String>userInfoMap = new HashMap<String, String>();
-        for (UserAttributeRef currentAttributeRef : linkedUserAttributes)
+        if (linkedUserAttributes != null)
         {
-            String key = currentAttributeRef.getNameLink();
-            String name = currentAttributeRef.getName();
-            if (key == null)
-            {                
-                key = name;
-            }
-            if (userInfo.containsKey(key))
+            for (UserAttributeRef currentAttributeRef : linkedUserAttributes)
             {
-                userInfoMap.put(name, userInfo.get(key));
+                String key = currentAttributeRef.getNameLink();
+                String name = currentAttributeRef.getName();
+                if (key == null)
+                {                
+                    key = name;
+                }
+                if (userInfo.containsKey(key))
+                {
+                    userInfoMap.put(name, userInfo.get(key));
+                }
             }
         }
         return userInfoMap;
