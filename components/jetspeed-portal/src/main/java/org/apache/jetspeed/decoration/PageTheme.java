@@ -76,8 +76,10 @@ public class PageTheme implements Theme, Serializable
         {
             portletDecorationNames.put(this.layoutDecoration.getName(), this.layoutDecoration.getName());
             Decoration decoration = decorationFactory.getPortletDecoration(this.layoutDecoration.getName(), requestContext);
-            this.styleSheets.add(decoration.getStyleSheet());
-            this.styleSheets.add(decoration.getStyleSheetPortal());            
+            if (decoration.getStyleSheet() != null)
+                this.styleSheets.add(decoration.getStyleSheet());
+            if (decoration.getStyleSheetPortal() != null)
+                this.styleSheets.add(decoration.getStyleSheetPortal());            
         }
         this.portletDecorationNames = Collections.unmodifiableCollection( new ArrayList( portletDecorationNames.keySet() ) );
     }

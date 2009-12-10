@@ -41,7 +41,6 @@ Primary cause for setting doctype is to prevent IE (including IE7) from using to
   <h1 class="logo">Jetspeed</h1>
   <div class="menu">
 <ul class="tabs">
-#parse ($layoutDecoration.getResource("../environment.vm"))
 </ul>  
    <div class="tabs" widgetId="jetspeed-menu-pages" dojoType="jetspeed:PortalTabContainer"></div>
   </div>

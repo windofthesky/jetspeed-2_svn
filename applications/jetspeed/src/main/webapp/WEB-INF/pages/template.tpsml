@@ -5,28 +5,37 @@
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
 
   <title>TEMPLATE</title>
-  <fragment id="template-top" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+  <fragment id="template-top2" type="layout" name="jetspeed-layouts::VelocityThreeColumns">
+    <property name="sizes" value="15%,70%,15%"></property>
 
-    <fragment id="_jsNavigator-1001" type="portlet" name="j2-admin::JetspeedNavigator">
+    <fragment id="_jsSpaceNavigator-1001" type="portlet" name="j2-admin::SpaceNavigator" decorator='clear'>
+            <property name="y" value="300"></property>
+            <property name="x" value="20"></property>            
+            <property name="jsdesktop" value="detached=true"></property>                        
+    </fragment>
+
+    <fragment id="_jsNavigator-1001" type="portlet" name="j2-admin::PageNavigator">
   	        <property name="z" value="201.0"></property>
             <property name="row" value="0"></property>
-            <property name="width" value="267.0"></property>
+            <property name="width" value="40"></property>
             <property name="height" value="388.0"></property>
             <property name="column" value="0"></property>
             <property name="y" value="104.0"></property>
-            <property name="x" value="1.0"></property>
+            <property name="x" value="1.0"></property>            
             <property name="jsdesktop" value="staticpos=false;fitheight=false"></property>                        
     </fragment>
     <page-fragment id="page-template">
-      <property name="row" value="1"/>
+      <property name="column" value="1"/>
+      <property name="row" value="0"/>
+      <property name="width" value="60%"></property>      
     </page-fragment>
     
     <fragment id="_jsToolbox-1001" type="portlet" name="j2-admin::JetspeedToolbox">
   	        <property name="z" value="201.0"></property>
-            <property name="row" value="2"></property>
-            <property name="width" value="267.0"></property>
+            <property name="row" value="0"></property>
+            <property name="width" value="40"></property>
             <property name="height" value="388.0"></property>
-            <property name="column" value="0"></property>
+            <property name="column" value="2"></property>
             <property name="y" value="500.0"></property>
             <property name="x" value="1.0"></property>
             <property name="jsdesktop" value="staticpos=false;fitheight=false"></property>                        

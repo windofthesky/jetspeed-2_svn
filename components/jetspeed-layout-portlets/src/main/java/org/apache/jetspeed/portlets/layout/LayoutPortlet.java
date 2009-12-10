@@ -37,6 +37,7 @@ import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalConfiguration;
+import org.apache.jetspeed.administration.PortalConfigurationConstants;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.layout.JetspeedPowerTool;
 import org.apache.jetspeed.locator.LocatorDescriptor;
@@ -80,7 +81,10 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
     protected TemplateLocator templateLocator;
     protected TemplateLocator decorationLocator;
     protected boolean storeViewPageInSession;
-    
+    protected boolean supportsAjax = false;
+    protected String ajaxViewLayout;
+    protected String ajaxMaxLayout;
+    protected String ajaxSoloLayout;
     private Map layoutTemplatesCache = new HashMap();
     public static final String DEFAULT_TEMPLATE_EXT = ".vm";
     public static final String TEMPLATE_EXTENSION_KEY = "template.extension";
@@ -103,6 +107,12 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
             throw new PortletException("Failed to find the Portal Configuration on portlet initialization");
         }        
         storeViewPageInSession = portalConfiguration.getBoolean("layout.page.storeViewPageInSession", true);
+        // jetui configuration        
+        String jetuiMode = portalConfiguration.getString(PortalConfigurationConstants.JETUI_CUSTOMIZATION_METHOD, PortalConfigurationConstants.JETUI_CUSTOMIZATION_SERVER);
+        this.supportsAjax = (jetuiMode.equals(PortalConfigurationConstants.JETUI_CUSTOMIZATION_AJAX));
+        this.ajaxViewLayout = portalConfiguration.getString(PortalConfigurationConstants.JETUI_LAYOUT_VIEW, "jetui");
+        this.ajaxMaxLayout = portalConfiguration.getString(PortalConfigurationConstants.JETUI_LAYOUT_MAX, "maximized");
+        this.ajaxSoloLayout = portalConfiguration.getString(PortalConfigurationConstants.JETUI_LAYOUT_SOLO, "solo");
         
         templateLocator = (TemplateLocator) getPortletContext().getAttribute("TemplateLocator");
         decorationLocator = (TemplateLocator) getPortletContext().getAttribute("DecorationLocator");
@@ -205,14 +215,9 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                 viewPage = getCachedLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_MAX);                       
                 if (viewPage == null)
                 {
-                    PortletPreferences prefs = request.getPreferences();
-                    viewPage = prefs.getValue(PARAM_MAX_PAGE, null);
+                    viewPage = (this.supportsAjax) ? this.ajaxMaxLayout : this.getInitParameter(PARAM_MAX_PAGE);
                     if (viewPage == null)
-                    {
-                        viewPage = this.getInitParameter(PARAM_MAX_PAGE);
-                        if (viewPage == null)
-                            viewPage = "maximized";
-                    }
+                        viewPage = "maximized";
                     cacheLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_MAX, viewPage);
                 }
             }
@@ -221,15 +226,10 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                 viewPage = getCachedLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_SOLO);                       
                 if (viewPage == null)
                 {
-                    PortletPreferences prefs = request.getPreferences();                
-                    viewPage = prefs.getValue(PARAM_SOLO_PAGE, null);
+                    viewPage = (this.supportsAjax) ? this.ajaxSoloLayout : this.getInitParameter(PARAM_SOLO_PAGE);
                     if (viewPage == null)
                     {
-                        viewPage = this.getInitParameter(PARAM_SOLO_PAGE);
-                        if (viewPage == null)
-                        {
-                            viewPage = "solo";
-                        }
+                        viewPage = "solo";
                     }
                     cacheLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_SOLO, viewPage);                    
                 }
@@ -239,14 +239,9 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                 viewPage = getCachedLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_VIEW);                       
                 if (viewPage == null)
                 {
-                    PortletPreferences prefs = request.getPreferences();                                
-                    viewPage = prefs.getValue(PARAM_VIEW_PAGE, null);
+                    viewPage = (this.supportsAjax) ? this.ajaxViewLayout : this.getInitParameter(PARAM_VIEW_PAGE);
                     if (viewPage == null)
-                    {
-                        viewPage = this.getInitParameter(PARAM_VIEW_PAGE);
-                        if (viewPage == null)
-                            viewPage = "columns";
-                    }
+                        viewPage = "columns";
                     cacheLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_VIEW, viewPage);                    
                 }
             }

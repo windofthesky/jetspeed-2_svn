@@ -6,13 +6,10 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
 	//	passing in a reference to the MenuNav Node Plugin.
 
 	var menu = Y.one("#environments-menu");
-
-	menu.plug(Y.Plugin.NodeMenuNav);
-
-	//	Show the menu now that it is ready
-
-	menu.setStyle("display","inline");
-	
+	if (!Y.Lang.isNull(menu)) {
+		menu.plug(Y.Plugin.NodeMenuNav);
+		menu.setStyle("display","inline");
+	}
 	//new Y.Console().render(); 
     //Make this an Event Target so we can bubble to it
     var Portal = function() {
@@ -73,12 +70,14 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
         "id" : { value: "0" },
         "nested" : { value : false },
         "column" : { value : 0 },
+        "locked" : { value : false },
         "row" : { value : 0 }
     };
 	Layout.prototype.info = function() {
 		Y.log("name: " + this.get("name"));
 		Y.log("id  : " + this.get("id"));		
 		Y.log("nested  : " + this.get("nested"));		
+		Y.log("locked  : " + this.get("locked"));		
 		Y.log("col, row  : " + this.get("column") + "," + this.get("row"));		
 		Y.log("---------");
     };
@@ -106,26 +105,32 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
     var lhsToggler = Y.one('#jstbLeftToggle');
     var rhsToggler = Y.one('#jstbRightToggle');    
     // add fx plugin to docking area
-    portal.jstbLeft = Y.one('#jstbLeft').plug(Y.Plugin.NodeFX, {
-        from: { width: 1 },
-        to: {
-            width: function(node) { // dynamic in case of change
-                return 200; //node.get('scrollWidth'); // get expanded height (offsetHeight may be zero)
-            }
-        },
-        easing: Y.Easing.easeOut,
-        duration: 0.3
-    });    
-    portal.jstbRight = Y.one('#jstbRight').plug(Y.Plugin.NodeFX, {
-        from: { width: 1 },
-        to: {
-            width: function(node) { // dynamic in case of change
-                return 200; //node.get('scrollWidth'); // get expanded height (offsetHeight may be zero)
-            }
-        },
-        easing: Y.Easing.easeOut,
-        duration: 0.3
-    });        
+    portal.jstbLeft = Y.one('#jstbLeft');
+	if (!Y.Lang.isNull(portal.jstbLeft)) {
+       portal.jstbLeft.plug(Y.Plugin.NodeFX, {
+	        from: { width: 1 },
+	        to: {
+	            width: function(node) { // dynamic in case of change
+	                return 200; //node.get('scrollWidth'); // get expanded height (offsetHeight may be zero)
+	            }
+	        },
+	        easing: Y.Easing.easeOut,
+	        duration: 0.3
+	       });
+	}
+    portal.jstbRight = Y.one('#jstbRight')
+	if (!Y.Lang.isNull(portal.jstbRight)) {
+	    portal.jstbRight.plug(Y.Plugin.NodeFX, {
+	        from: { width: 1 },
+	        to: {
+	            width: function(node) { // dynamic in case of change
+	                return 200; //node.get('scrollWidth'); // get expanded height (offsetHeight may be zero)
+	            }
+	        },
+	        easing: Y.Easing.easeOut,
+	        duration: 0.3
+	    });        
+	}
     var onClickToolbar = function(e) {
 //    	nav.setStyle('z-index', '500');
     }
@@ -143,53 +148,65 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
     	}
     	portal.toggleToolbar(toolbar, toggler, compareStyle);    	    	
     };
-    lhsToggler.on('click', onClickToggler);
-    rhsToggler.on('click', onClickToggler);
-
+    if (!Y.Lang.isNull(lhsToggler)) {
+    	lhsToggler.on('click', onClickToggler);
+    }
+    if (!Y.Lang.isNull(rhsToggler)) {
+    	rhsToggler.on('click', onClickToggler);
+    }
     ////////////////////////////////////////////////////       
     // drag and drop
     var nav = Y.one('#jsNavigator');
-    nav.data = navigator;
-    var ddNav = new Y.DD.Drag({
-        node: nav,
-        groups: ['toolbars'],
-        dragMode: 'point'                
-    }).plug(Y.Plugin.DDProxy, { 
-      	 moveOnEnd: false         	    	
-    });    
-    ddNav.addHandle('.PTitle');
-    nav.on('click', onClickToolbar);
-
+    if (!Y.Lang.isNull(nav)) {
+	    nav.data = navigator;
+	    var ddNav = new Y.DD.Drag({
+	        node: nav,
+	        groups: ['toolbars'],
+	        dragMode: 'point'                
+	    }).plug(Y.Plugin.DDProxy, { 
+	      	 moveOnEnd: false         	    	
+	    });    
+	    ddNav.addHandle('.PTitle');
+	    nav.on('click', onClickToolbar);
+    }    
     var jetspeedZone = Y.one('#jetspeedZone');
-    var jzDrop = new Y.DD.Drop({
-        node: jetspeedZone,
-        groups: ['toolbars']        
-    });
-    
+    if (!Y.Lang.isNull(jetspeedZone)) {   
+	    var jzDrop = new Y.DD.Drop({
+	        node: jetspeedZone,
+	        groups: ['toolbars']        
+	    });
+    }    
     var tb = Y.one('#jsToolbox');
-    tb.data = toolbox;
-    var ddToolbox = new Y.DD.Drag({
-        node: tb,
-        groups: ['toolbars'],                 
-        dragMode: 'point'        
-    }).plug(Y.Plugin.DDProxy, { 
-      	 moveOnEnd: false         	    	
-    });    
-    ddToolbox.addHandle('.PTitle');
-    tb.on('click', onClickToolbar);
-    
-    var drop = new Y.DD.Drop({
-        node: Y.one('#jstbLeft'),
-        groups: ['toolbars']
-    });
-    var drop = new Y.DD.Drop({
-        node: Y.one('#jstbRight'),
-        groups: ['toolbars']        
-    });
-    
-    var draggablePortlets = Y.Node.all('.portal-layout-cell');    
+    if (!Y.Lang.isNull(tb)) {    
+	    tb.data = toolbox;
+	    var ddToolbox = new Y.DD.Drag({
+	        node: tb,
+	        groups: ['toolbars'],                 
+	        dragMode: 'point'        
+	    }).plug(Y.Plugin.DDProxy, { 
+	      	 moveOnEnd: false         	    	
+	    });    
+	    ddToolbox.addHandle('.PTitle');
+	    tb.on('click', onClickToolbar);
+    }
+    var jstbLeft = Y.one('#jstbLeft');
+    if (!Y.Lang.isNull(jstbLeft)) {    
+	    var drop = new Y.DD.Drop({
+	        node: jstbLeft,
+	        groups: ['toolbars']
+	    });
+    }
+    var jstbRight = Y.one('#jstbRight');
+    if (!Y.Lang.isNull(jstbRight)) {    
+	    var drop = new Y.DD.Drop({
+	        node: jstbRight,
+	        groups: ['toolbars']        
+	    });
+    }
+	var draggablePortlets = Y.Node.all('.portal-layout-cell');    
     draggablePortlets.each(function(v, k) {
         var portlet = new Portlet();
+    	Y.log("portlet = " + v.getAttribute("name") + v.getAttribute("id"));
         portlet.set("name", v.getAttribute("name"));
         portlet.set("id", v.getAttribute("id"));
         portlet.set("toolbar", false);
@@ -214,14 +231,18 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
     
     var dropLayouts = Y.Node.all('.portal-layout-column');
     dropLayouts.each(function(v, k) {
+    	Y.log("layout = " + v.getAttribute("name") + v.getAttribute("id"));
         var layout = new Layout();
         layout.set("name", v.getAttribute("name"));
         layout.set("id", v.getAttribute("id"));
         layout.set("nested", false);
+        var locked = v.getAttribute("locked");
+        locked = (locked == null || locked == "false") ? false : true;        	
+        layout.set("locked", locked);
         layout.set("column", v.getAttribute("column"));        
         layout.set("row", 0);
         v.data = layout;
-        //layout.info();
+        layout.info();
         if (v.get('children').size() == 0)
         {
 	    	var drop = new Y.DD.Drop({
@@ -257,7 +278,7 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
     
     var onClickRemove = function(e) {
     	var uri = document.location.href;
-    	uri = uri.replace("/ui", "/ajaxapi");
+    	uri = uri.replace("/portal", "/ajaxapi");
     	var windowId =  e.currentTarget.getAttribute('id');
     	windowId = windowId.replace("jetspeed-close-", "");
     	var uri = uri + "?action=remove&id=" + windowId;
@@ -442,7 +463,7 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
     var persistMove = function(drag) {
         if (drag.data.get("toolbar") == false) {
         	var uri = document.location.href;
-        	uri = uri.replace("/ui", "/ajaxapi");
+        	uri = uri.replace("/portal", "/ajaxapi");
         	var windowId =  drag.getAttribute('id');
         	var oldColumn = drag.data.get('column');
         	var oldRow = drag.data.get('row');        	
@@ -463,13 +484,16 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
 	var reallocateColumn = function(column) {
 	    var columns = Y.Node.all('.portal-layout-column');
 	    columns.each(function(v, k) {
-	    	if (v.data.get('column') == column)
+	    	if (v.data.get('locked') == false)
 	    	{
-	    		var row = 0;
-    			v.get('children').each(function(v,k) {
-	    			v.data.set('row', row);
-	    			row++;
-	    		}, row);
+		    	if (v.data.get('column') == column)
+		    	{
+		    		var row = 0;
+	    			v.get('children').each(function(v,k) {
+		    			v.data.set('row', row);
+		    			row++;
+		    		}, row);
+		    	}
 	    	}
 	    });
 	};    
@@ -575,42 +599,5 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
 		//Y.log("x,y = " + x + "," + y);
     	
     });
-    
-//    Y.DD.DDM.on('drag:drag', function(e) {
-//        var x = e.target.mouseXY[0];
-//    	var y = e.target.mouseXY[1];
-//        if (y < lastY) {
-//            goingUp = true;
-//        } else {
-//            goingUp = false;
-//        }
-//        if (x < lastX) {
-//            goingRight = false;
-//        } else {
-//            goingRight = true;
-//        }        
-//        lastX = x;
-//        Y.log("DRAG: x = " + x + " y " + y );
-//    });
-    
-//    Y.DD.DDM.on('drop:enter', function(e) {
-//    
-//    	//var region = e.drop.region;
-//    	var region = e.drop.get('node').get('region');     	
-//    	Y.log("region = " + region.top + "," + region.bottom + " : " + region.left + ","  +region.right);
-    
-//        if (!e.drag || !e.drop || (e.drop !== e.target)) {
-//            return false;
-//        }
-        //var id = e.drop.get('node').data.get('id');
-        //Y.log("entering: " + p);
-        
-//        if (e.drop.get('node').get('tagName').toLowerCase() === 'li') {
-//            if (e.drop.get('node').hasClass('item')) {
-//                _moveMod(e.drag, e.drop);
-//            }
-//        }
-//    });    
-    
     
 });

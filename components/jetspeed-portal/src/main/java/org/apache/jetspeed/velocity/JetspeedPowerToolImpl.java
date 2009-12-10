@@ -23,6 +23,7 @@ import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.PortletConfig;
@@ -37,6 +38,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.administration.PortalConfigurationConstants;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.PortletWindow;
@@ -50,6 +52,7 @@ import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.UserSubjectPrincipal;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.HeadElementUtils;
 import org.apache.jetspeed.util.KeyValue;
@@ -102,7 +105,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     protected PortletConfig portletConfig;
 
     protected Writer templateWriter;
-
+    
     protected static final Logger log = LoggerFactory.getLogger(JetspeedPowerToolImpl.class);
 
     protected CapabilityMap capabilityMap;
@@ -124,6 +127,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     private BasePortalURL baseUrlAccess;
     
     private PortletRenderer renderer;
+    protected boolean ajaxCustomization = false;
     
     public JetspeedPowerToolImpl(RequestContext requestContext, PortletConfig portletConfig, RenderRequest renderRequest, RenderResponse renderResponse, PortletRenderer renderer) throws Exception
     {
@@ -144,6 +148,9 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
 
         templateLocator = (TemplateLocator) getComponent("TemplateLocator");
         decorationLocator = (TemplateLocator) getComponent("DecorationLocator");
+        String jetuiMode = Jetspeed.getConfiguration().getString(PortalConfigurationConstants.JETUI_CUSTOMIZATION_METHOD, PortalConfigurationConstants.JETUI_CUSTOMIZATION_SERVER);
+        this.ajaxCustomization = (jetuiMode.equals(PortalConfigurationConstants.JETUI_CUSTOMIZATION_AJAX));
+        
         // By using null, we create a re-useable locator
         capabilityMap = requestContext.getCapabilityMap();
         locale = requestContext.getLocale();
@@ -871,6 +878,28 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         }
         
         return false;
+    }
+    
+    public boolean isAjaxCustomizationEnabled()
+    {
+        return this.ajaxCustomization;
+    }
+
+    public Map getUserAttributes()
+    {
+        RequestContext rc = getRequestContext();
+        Map map = null;
+        Principal principal = rc.getRequest().getUserPrincipal();
+        if (principal instanceof UserSubjectPrincipal)
+        {
+            UserSubjectPrincipal jp = (UserSubjectPrincipal)principal;
+            map = jp.getUser().getInfoMap();
+            if (map.get("user.name.given") == null)
+                map.put("user.name.given", "");
+            if (map.get("user.name.family") == null)
+                map.put("user.name.family", jp.getName());            
+        }
+        return map;
     }
     
 }

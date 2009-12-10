@@ -96,6 +96,8 @@ public class ColumnLayout implements Serializable
     /** All of the LayoutEventListeners registered to this layout */
     private final List<LayoutEventListener> eventListeners;
 
+    private final List<ContentFragment> detachedPortlets;
+    
     /**
      * 
      * @param numberOfColumns
@@ -119,7 +121,8 @@ public class ColumnLayout implements Serializable
 
         columns = new TreeMap<Integer, SortedMap<Integer, ContentFragment>>();
         coordinates = new HashMap<ContentFragment, LayoutCoordinate>();
-
+        detachedPortlets = new ArrayList<ContentFragment>();
+        
         for (int i = 0; i < numberOfColumns; i++)
         {
             columns.put(new Integer(i), new TreeMap<Integer, ContentFragment>());
@@ -163,6 +166,20 @@ public class ColumnLayout implements Serializable
             while (fragmentsItr.hasNext())
             {
                 ContentFragment fragment = (ContentFragment) fragmentsItr.next();
+                String jsdesktop = fragment.getProperty(NameValueProperty.NAME_VALUE_PROPERTY);
+                if (jsdesktop != null)
+                {
+                    NameValueProperty nvp = new NameValueProperty(jsdesktop);
+                    if (nvp.isDetached())
+                    {
+                        detachedPortlets.add(fragment);
+                        continue;
+                    }
+                    else if (nvp.isDecoratorRendered())
+                    {
+                        continue;
+                    }
+                }
                 doAdd(getColumn(fragment), getRow(getColumn(fragment), fragment), fragment);
             }
         }
@@ -812,6 +829,11 @@ public class ColumnLayout implements Serializable
             eventListener.handleEvent(event);
         }
         
+    }
+
+    public List<ContentFragment> getDetachedPortlets()
+    {
+        return this.detachedPortlets;
     }
 
 }

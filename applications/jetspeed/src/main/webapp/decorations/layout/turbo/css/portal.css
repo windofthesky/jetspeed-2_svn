@@ -31,5 +31,19 @@ text-decoration: underline;
 font-size: 7pt;
 }
 
+.active > a { font-weight: bold; }
+#nav-top { z-index: 1000;  }
+#nav-top > li { float: left; margin: 0 7px 0 0; padding-bottom: 5px; list-style-type: none}
+#nav-top a { display: block; color:#107EC0; text-decoration: none; font-size: 12px;}
+#nav-top a:hover { text-decoration: underline; }
+#nav-top > li > a { padding: 0 26px 5px 5px; background: url(../../images/arrow-nav-top.png) no-repeat 100% 2px; color: #FFFFFF; font-weight: bold; }
+#nav-top ul li { padding: 0 10px 8px; list-style-type: none }
+#nav-top li:hover { background: url(../../images/hover-nav-top.png) repeat-x; }
+#nav-top li:hover ul { left: auto; }
+#nav-top ul { position: absolute; left: -999em; background-color: #FFFFFF; border: 1px solid #107EC0; }
+#nav-top #envList { width: 145px; }
+#nav-top #spaceList { width: 250px; }
+#nav-top ul .first, #nav-top ul li:first-child { padding-top: 8px; }
+#nav-top ul .add { background: url(../../images/divider-nav-top.png) repeat-x; padding-top: 7px; }
 
 /*  end layout decorator tigris additions  */

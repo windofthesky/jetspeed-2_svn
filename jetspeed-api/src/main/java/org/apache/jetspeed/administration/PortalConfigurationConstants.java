@@ -73,4 +73,11 @@ public interface PortalConfigurationConstants
     static final String ROLES_DEFAULT_USER = "default.user.role";
     static final String ROLES_DEFAULT_GUEST = "default.guest.role";
     
+    /** Jetui */
+    static final String JETUI_CUSTOMIZATION_METHOD = "jetui.customization.method";
+    static final String JETUI_CUSTOMIZATION_SERVER = "server";
+    static final String JETUI_CUSTOMIZATION_AJAX = "ajax";
+    static final String JETUI_LAYOUT_VIEW = "jetui.layout.view";
+    static final String JETUI_LAYOUT_MAX = "jetui.layout.max";
+    static final String JETUI_LAYOUT_SOLO = "jetui.layout.solo";    
 }

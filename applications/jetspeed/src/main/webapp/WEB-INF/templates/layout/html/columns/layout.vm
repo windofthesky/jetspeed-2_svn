@@ -92,9 +92,9 @@ limitations under the License.
     #else
       #set($allowAddLayout=false)
     #end
-     
     #getBoolProperty($allowChangeLayout $rootDecorator "allow.change.layout" true)
     #getBoolProperty($allowAddPortlet $rootDecorator "allow.add.portlet" true)
+    #if ($myFragment.isLocked() == false)             
     <fieldset>    
     <div class="layout-edit-bar-left">
         <div class="layout-title"><b>$messages.getString("portal.page.customizer.name")</b></div>
@@ -140,7 +140,7 @@ limitations under the License.
       <div class="layout-title"><b>$messages.getString("portal.page.editing.layoutConfiguration")</b></div>
       <div class="layout-content">
         #end
-        #if ($allowChangePageTheme)
+##        #if ($allowChangePageTheme)
         <div>
           <label for="theme">$messages.getString("portal.page.editing.theme")</label>
           <select id='theme' name='theme' onChange="$form$submit">
@@ -149,7 +149,7 @@ limitations under the License.
             #end
           </select>   
         </div>
-        #end
+##        #end
         #if($allowAddLayout||$allowChangeLayout)
         <div>
           <label for="layout">$messages.getString("portal.page.editing.layout")</label>
@@ -193,7 +193,8 @@ limitations under the License.
       </div>
         #end
     </div> 
-    </fieldset>   
+    </fieldset>
+    #end       
     <fieldset style="float:left;width:49%;margin:0px;padding:0px;">
     <div class="layout-edit-bar-left">
         #if($allowAddPage||$allowChangePageName||$allowDeletePage)
@@ -303,7 +304,6 @@ limitations under the License.
 	  
   #set($columnFloat = $columnLayout.getColumnFloat($columnIndex))
 	#set($columnWidth = $columnLayout.getColumnWidth($columnIndex))
-	
 	<div id="column_${myFragment.getId()}_${columnIndex}" 
 	     class="portal-layout-column portal-layout-column-${layoutType}-${columnIndex}" 
 	     style="float:${columnFloat}; width:${columnWidth};">
@@ -317,7 +317,7 @@ limitations under the License.
       #set($row = $coords.y)
 			
       ## get the decorated Portlet content
-		  <div class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}" >
+		  <div id='$f.id' name='$f.name' column='${col}' row='${row}' class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}" >
 		    ## editing block
 		    #if($editing)
 		      <div class="portlet-edit-bar">

@@ -27,15 +27,20 @@ limitations under the License.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head> 
-
-## To include head elements, portlet contents which are instantly added should be rendered before invoking includeHeaderResource.
-#set($navigatorPortletContent = $jetspeed.renderPortletWindow("_JetspeedNavigator", "j2-admin::JetspeedNavigator"))
-#set($toolboxPortletContent = $jetspeed.renderPortletWindow("_JetspeedToolbox", "j2-admin::JetspeedToolbox"))
+#if ($jetspeed.isAjaxCustomizationEnabled())
+<script type="text/javascript" src="#BaseHref()/javascript/yui/build/yui/yui-min.js"></script>
+<script language="javascript">
+var assetsDir = "assets/";
+var buildDir = "#BaseHref()/javascript/yui/build/" ;
+var yuiConfig = {base:"#BaseHref()/javascript/yui/build/", timeout: 10000, debug: true, useBrowserConsole: true}; // ({classNamePrefix: 'jet'})
+</script>
+<link rel="stylesheet" type="text/css" href="#BaseHref()/jetui/css/portal.css"/>
+#end
 
 #includeHeaderResource()
 
-    <meta http-equiv="Content-type" content="#ContentType()" />
-    <title>#PageTitle()</title>
+<meta http-equiv="Content-type" content="#ContentType()" />
+<title>#PageTitle()</title>
 <link rel="shortcut icon" href="#BaseHref()images/jetspeed.jpg" type="image/x-icon" />
 #includeJavaScriptForHead()
 #IncludeStylesheets()
@@ -45,23 +50,25 @@ limitations under the License.
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
 <!-- Page Action Bar -->
 #if ($request.getUserPrincipal())
-<a class="layout-greenearth-logout" href="#BaseHref()login/logout">Logout</a>
+<span class="layout-statusarea"><b>$jetspeed.getUserAttributes().get("user.name.given") $jetspeed.getUserAttributes().get("user.name.family")</b> | Profile | Tasks (5) | Notifications (2) | <a href="#BaseHref()login/logout">Log out</a></span>
 #end
+#if (!$jetspeed.isAjaxCustomizationEnabled())
 #PageActionBar()
+#end
 <!-- end of header -->
-</div>   
 <div id="layout-${layoutFragment.id}" class="#PageBaseCSSClass()" >
 <div class="header">
 <h1 class="logo">Jetspeed 2</h1>
 <div class="menu">
-## #set($pagesStandardMenu = $site.getMenu("pages"))## #if(!$pagesStandardMenu.empty)
-## #includeTabsNavigation($pagesStandardMenu $LEFT_TO_RIGHT)
-## #end
-<ul class="tabs">
-#parse ($layoutDecoration.getResource("../environment.vm"))
-</ul>
+#if (!$jetspeed.isAjaxCustomizationEnabled())
+#set($pagesStandardMenu = $site.getMenu("pages"))
+#if(!$pagesStandardMenu.empty)
+#includeTabsNavigation($pagesStandardMenu $LEFT_TO_RIGHT)
+#end
+#end
 </div>
 </div>
+#if (!$jetspeed.isAjaxCustomizationEnabled())
     <!-- Content Table -->
     <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
         <tr>            
@@ -71,13 +78,7 @@ limitations under the License.
             <td valign="top" id="leftcol" >
                 <div id="navcolumn">
                     <table cellpadding="0" cellspacing="4" border="0" width="100%">
-##                        #includeLinksWithIconNavigation($navigationsStandardMenu $TOP_TO_BOTTOM)
-					<tr><td class="portlet greenearth">
-                        $navigatorPortletContent
-                    </td></tr>
-					<tr><td class="portlet greenearth">
-                        $toolboxPortletContent
-                    </td></tr>
+                        #includeLinksWithIconNavigation($navigationsStandardMenu $TOP_TO_BOTTOM)
                     </table>
                 </div>
             </td>
@@ -86,6 +87,7 @@ limitations under the License.
             <!-- Content Table Data -->
             <td nowrap="nowrap" valign="top">
            <!-- Breadcrumbs Back Navigation -->
+#end          
       <div id="breadcrumbs">
 #set($breadcrumbsStandardMenu = $site.getMenu("breadcrumbs"))
 #if(!$breadcrumbsStandardMenu.empty)

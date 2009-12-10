@@ -18,6 +18,7 @@ package org.apache.jetspeed.layout;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
@@ -29,6 +30,7 @@ import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.portlet.HeadElement;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.KeyValue;
 
 /**
@@ -270,4 +272,11 @@ public interface JetspeedPowerTool
      */
     boolean isDojoEnabled(List<KeyValue<String, HeadElement>> headElements);
     
+    /**
+     * Determine if ajax customization is enabled
+     * @return true when ajax customization enabled
+     */
+    boolean isAjaxCustomizationEnabled();
+    
+    public Map getUserAttributes();    
 }

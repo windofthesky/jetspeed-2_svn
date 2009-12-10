@@ -22,4 +22,7 @@ limitations under the License.
       <img src="#GetPageResource('images/Jetspeed_blue_sm.png')" alt="Jetspeed 2 Powered" border="0" />
     </p>
   </body>
+#if ($jetspeed.isAjaxCustomizationEnabled())
+<script src="#BaseHref()/jetui/engine/portal.js"></script>
+#end    
 </html>
