@@ -51,14 +51,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
-      <artifactId>jetspeed-commons</artifactId>
-      <scope>provided</scope>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
     </dependency>
-      <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-      </dependency>
     <dependency>
       <groupId>${pom.groupId}</groupId>
       <artifactId>jetspeed-rdbms</artifactId>
