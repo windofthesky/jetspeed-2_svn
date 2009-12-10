@@ -747,6 +747,7 @@
         <ref bean="profilerValve" />
         <ref bean="refreshUserHomepageValve" />
         <ref bean="containerValve" />
+        <ref bean="DecorationValve" />
         <ref bean="RestfulServicesValve" />
       </list>
     </constructor-arg>

@@ -126,7 +126,7 @@
         </bean>
         <bean class="org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider">
           <meta key="j2:cat" value="default" />
-          <constructor-arg ref="jaxrsPageManagementService" />
+          <constructor-arg ref="jaxrsPageLayoutService" />
         </bean>
       </list>
     </property>
@@ -141,13 +141,11 @@
   </bean>
   
   <!-- Portal Page Management JAX-RS Service -->
-  <bean id="jaxrsPageManagementService" class="org.apache.jetspeed.services.rest.PageManagementService">
+  <bean id="jaxrsPageLayoutService" class="org.apache.jetspeed.services.rest.PageLayoutService">
     <meta key="j2:cat" value="default" />
-    <constructor-arg ref="org.apache.jetspeed.page.PageManager" />
-    <constructor-arg ref="PortletActionSecurityBehavior" />
-    <constructor-arg ref="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
-    <constructor-arg ref="DecorationValve" />
     <constructor-arg ref="org.apache.jetspeed.layout.PageLayoutComponent" />
+    <constructor-arg ref="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
+    <constructor-arg ref="PortletActionSecurityBehavior" />
   </bean>
   
 </beans>
