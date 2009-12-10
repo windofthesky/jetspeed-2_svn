@@ -212,7 +212,12 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
             JetspeedPowerTool jpt = getJetspeedPowerTool(request, response);
             if (maximized)
             {
-                viewPage = getCachedLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_MAX);                       
+                viewPage = getCachedLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_MAX);
+                if (viewPage == null)
+                {
+                    PortletPreferences prefs = request.getPreferences();
+                    viewPage = prefs.getValue(PARAM_MAX_PAGE, null);
+                }
                 if (viewPage == null)
                 {
                     viewPage = (this.supportsAjax) ? this.ajaxMaxLayout : this.getInitParameter(PARAM_MAX_PAGE);
@@ -226,6 +231,11 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
                 viewPage = getCachedLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_SOLO);                       
                 if (viewPage == null)
                 {
+                    PortletPreferences prefs = request.getPreferences();
+                    viewPage = prefs.getValue(PARAM_SOLO_PAGE, null);
+                }
+                if (viewPage == null)
+                {
                     viewPage = (this.supportsAjax) ? this.ajaxSoloLayout : this.getInitParameter(PARAM_SOLO_PAGE);
                     if (viewPage == null)
                     {
@@ -237,6 +247,11 @@ public class LayoutPortlet extends org.apache.portals.bridges.common.GenericServ
             else
             {
                 viewPage = getCachedLayoutViewPage(request, PortalReservedParameters.PAGE_LAYOUT_VIEW);                       
+                if (viewPage == null)
+                {
+                    PortletPreferences prefs = request.getPreferences();
+                    viewPage = prefs.getValue(PARAM_VIEW_PAGE, null);
+                }
                 if (viewPage == null)
                 {
                     viewPage = (this.supportsAjax) ? this.ajaxViewLayout : this.getInitParameter(PARAM_VIEW_PAGE);
