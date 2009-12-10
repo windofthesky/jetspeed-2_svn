@@ -17,12 +17,16 @@
 
 package org.apache.jetspeed.container.url.impl;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+
 import org.apache.jetspeed.container.state.NavigationalStateComponent;
+import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.desktop.JetspeedDesktop;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.desktop.JetspeedDesktop;
 
 /**
  * Creates the PortalURL for the current Request
@@ -33,38 +37,88 @@ import org.apache.jetspeed.desktop.JetspeedDesktop;
 public class PortalURLValveImpl extends AbstractValve
 {
     private NavigationalStateComponent navComponent;
-
+    private boolean pathInfoParamAllowed;
+    private String defaultPathInfoParam;
+    
     public PortalURLValveImpl(NavigationalStateComponent navComponent)
     {
         this.navComponent = navComponent;
+    }
+    
+    public void setPathInfoParamAllowed(boolean pathInfoParamAllowed)
+    {
+        this.pathInfoParamAllowed = pathInfoParamAllowed;
+    }
+    
+    public void setDefaultPathInfoParam(String defaultPathInfoParam)
+    {
+        this.defaultPathInfoParam = defaultPathInfoParam;
     }
     
     public void invoke(RequestContext request, ValveContext context)
         throws PipelineException
     {
         try
-        {  
-            if ( request.getPortalURL() == null )
+        {
+            if (request.getPortalURL() == null)
             {
+                HttpServletRequest servletRequest = getHttpServletRequest(request);
                 String encoding = request.getRequestParameter(JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER);
-                if (encoding != null && encoding.equals(JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER_VALUE))
+                
+                if (JetspeedDesktop.DESKTOP_ENCODER_REQUEST_PARAMETER_VALUE.equals(encoding))
                 {
-                    request.setPortalURL(navComponent.createDesktopURL(request.getRequest(), request.getCharacterEncoding()));
+                    request.setPortalURL(navComponent.createDesktopURL(servletRequest, request.getCharacterEncoding()));
                     request.setAttribute( JetspeedDesktop.DESKTOP_ENABLED_REQUEST_ATTRIBUTE, Boolean.TRUE );
                 }
                 else
                 {
-                    request.setPortalURL(navComponent.createURL(request.getRequest(), request.getCharacterEncoding()));
+                    request.setPortalURL(navComponent.createURL(servletRequest, request.getCharacterEncoding()));
                 }
-                
             }
         }
         catch (Exception e)
         {
             throw new PipelineException(e);
         }
+        
         // Pass control to the next Valve in the Pipeline
         context.invokeNext( request );
+    }
+    
+    private HttpServletRequest getHttpServletRequest(RequestContext request)
+    {
+        HttpServletRequest servletRequest = request.getRequest();
+        
+        if (pathInfoParamAllowed)
+        {
+            String param = servletRequest.getParameter(PortalURL.PATH_INFO_QUERY);
+            
+            if (param == null)
+            {
+                param = servletRequest.getHeader(PortalURL.PATH_INFO_HEADER);
+                
+                if (param == null)
+                {
+                    param = defaultPathInfoParam;
+                }
+            }
+            
+            if (param != null)
+            {
+                final String pathInfoParam = param;
+                
+                servletRequest = new HttpServletRequestWrapper(servletRequest)
+                {
+                    @Override
+                    public String getPathInfo()
+                    {
+                        return pathInfoParam;
+                    }
+                };
+            }
+        }
+        
+        return servletRequest;
     }
 
     public String toString()

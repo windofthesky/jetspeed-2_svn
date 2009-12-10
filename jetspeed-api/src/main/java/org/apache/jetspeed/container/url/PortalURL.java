@@ -64,6 +64,12 @@ public interface PortalURL
     /** HTTPS protocol. */
     public static final String HTTPS = "https";
     
+    /** Portal Path Info Query parameter. */
+    public static final String PATH_INFO_QUERY = "_portalpath";
+    
+    /** Portal Path Info HTTP Header name. */
+    public static final String PATH_INFO_HEADER = "X-Portal-Path";
+    
     /**
      * @return true if only relative urls should be generated (without scheme, servername, port)
      */

@@ -66,7 +66,17 @@
       <ref bean="NavigationalStateComponent" />
     </constructor-arg>
   </bean>
-
+  
+  <bean id="pathInfoParamEnabledPortalURLValve" class="org.apache.jetspeed.container.url.impl.PortalURLValveImpl"
+    init-method="initialize">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg>
+      <ref bean="NavigationalStateComponent" />
+    </constructor-arg>
+    <property name="pathInfoParamAllowed" value="true" />
+    <property name="defaultPathInfoParam" value="/" />
+  </bean>
+  
   <bean id="securityValve" class="org.apache.jetspeed.security.impl.SecurityValveImpl" init-method="initialize">
     <meta key="j2:cat" value="default" />
     <constructor-arg index='0'>
@@ -731,7 +741,7 @@
     <constructor-arg>
       <list>
         <ref bean="capabilityValve" />
-        <ref bean="portalURLValve" />
+        <ref bean="pathInfoParamEnabledPortalURLValve" />
         <ref bean="securityValve" />
         <ref bean="localizationValve" />
         <ref bean="profilerValve" />
