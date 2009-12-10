@@ -16,7 +16,10 @@
  */
 package org.apache.jetspeed.services.rest;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -30,7 +33,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
@@ -72,6 +74,8 @@ public class PageLayoutService
     
     private PortletActionSecurityBehavior securityBehavior;
     
+    private ContentFragmentRowComparator contentFragmentRowComparator = new ContentFragmentRowComparator();
+    
     public PageLayoutService(PageLayoutComponent pageLayoutComponent,
                              PortletRegistry portletRegistry,
                              PortletActionSecurityBehavior securityBehavior)
@@ -109,6 +113,15 @@ public class PageLayoutService
         try
         {
             ContentFragment contentFragment = pageLayoutComponent.addPortlet(contentPage, fragmentType, fragmentName);
+            
+            if (contentFragment.getLayoutColumn() == -1 || contentFragment.getLayoutRow() == -1)
+            {
+                String addedContentFragmentId = contentFragment.getId();
+                ContentFragment layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), addedContentFragmentId);
+                int columnCount = getColumnCountOfLayoutFragment(layoutFragment);
+                adjustPositionsOfChildFragments(layoutFragment, columnCount);
+            }
+            
             return new ContentFragmentBean(contentFragment);
         }
         catch (Exception e)
@@ -119,7 +132,7 @@ public class PageLayoutService
     
     @DELETE
     @Path("/fragment/{id}/")
-    public Response deleteContentFragment(@Context HttpServletRequest servletRequest,
+    public ContentFragmentBean deleteContentFragment(@Context HttpServletRequest servletRequest,
                                           @Context UriInfo uriInfo,
                                           @PathParam("id") String fragmentId)
     {
@@ -130,17 +143,33 @@ public class PageLayoutService
         
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
         ContentPage contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        ContentFragment contentFragment = contentPage.getFragmentById(fragmentId);
+        
+        if (contentFragment == null)
+        {
+            throw new WebApplicationException(new IllegalArgumentException("Fragment not found with the specified id: " + fragmentId));
+        }
+        
+        ContentFragment layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), fragmentId);
+        
+        if (layoutFragment == null)
+        {
+            throw new WebApplicationException(new IllegalArgumentException("Layout fragment not found for the fragment: " + fragmentId));
+        }
         
         try
         {
             pageLayoutComponent.removeFragment(contentPage, fragmentId);
+            
+            int columnCount = getColumnCountOfLayoutFragment(layoutFragment);
+            adjustPositionsOfChildFragments(layoutFragment, columnCount);
+            
+            return new ContentFragmentBean(contentFragment);
         }
         catch (Exception e)
         {
             throw new WebApplicationException(e);
         }
-        
-        return Response.ok().build();
     }
     
     @PUT
@@ -172,73 +201,123 @@ public class PageLayoutService
             throw new WebApplicationException(new IllegalArgumentException("Fragment not found with the specified id: " + fragmentId));
         }
         
-        ContentFragment layoutFragment = null;
-        
-        if (!StringUtils.isBlank(layoutFragmentId))
-        {
-            layoutFragment = contentPage.getFragmentByFragmentId(layoutFragmentId);
-            
-            if (layoutFragment == null)
-            {
-                throw new WebApplicationException(new IllegalArgumentException("Layout fragment not found with the specified id: " + layoutFragmentId));
-            }
-        }
-        else
-        {
-            layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), fragmentId);
-            
-            if (layoutFragment == null)
-            {
-                throw new WebApplicationException(new IllegalArgumentException("Layout fragment not found for the fragment: " + fragmentId));
-            }
-        }
-        
-        int layoutColumnCount = getColumnCountOfLayoutFragment(layoutFragment);
-        
         if (!StringUtils.isBlank(direction))
         {
-            int row = contentFragment.getLayoutRow();
-            int col = contentFragment.getLayoutColumn();
-            
             direction = direction.trim();
+            
+            ContentFragment layoutFragment = null;
+            
+            if (!StringUtils.isBlank(layoutFragmentId))
+            {
+                layoutFragment = contentPage.getFragmentByFragmentId(layoutFragmentId);
+                
+                if (layoutFragment == null)
+                {
+                    throw new WebApplicationException(new IllegalArgumentException("Layout fragment not found with the specified id: " + layoutFragmentId));
+                }
+            }
+            else
+            {
+                layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), fragmentId);
+                
+                if (layoutFragment == null)
+                {
+                    throw new WebApplicationException(new IllegalArgumentException("Layout fragment not found for the fragment: " + fragmentId));
+                }
+            }
+            
+            int layoutColumnCount = getColumnCountOfLayoutFragment(layoutFragment);
             
             if ("left".equals(direction))
             {
-                if (col > 0)
+                int oldColumn = contentFragment.getLayoutColumn();
+                
+                if (oldColumn < 0 || oldColumn >= layoutColumnCount)
                 {
-                    --col;
+                    oldColumn = layoutColumnCount - 1;
+                }
+                
+                int newColumn = (oldColumn <= 0 ? 0 : oldColumn - 1);
+                
+                if (newColumn != oldColumn)
+                {
+                    pageLayoutComponent.updateRowColumn(contentFragment, contentFragment.getLayoutRow(), newColumn);
+                    adjustPositionsOfChildFragments(layoutFragment, layoutColumnCount);
                 }
             }
             else if ("right".equals(direction))
             {
-                if (col < layoutColumnCount - 1)
+                int oldColumn = contentFragment.getLayoutColumn();
+                
+                if (oldColumn < 0 || oldColumn >= layoutColumnCount)
                 {
-                    ++col;
+                    oldColumn = layoutColumnCount - 1;
+                }
+                
+                int newColumn = (oldColumn < layoutColumnCount - 1 ? oldColumn + 1 : layoutColumnCount - 1);
+                
+                if (newColumn != oldColumn)
+                {
+                    pageLayoutComponent.updateRowColumn(contentFragment, contentFragment.getLayoutRow(), newColumn);
+                    adjustPositionsOfChildFragments(layoutFragment, layoutColumnCount);
                 }
             }
             else if ("up".equals(direction))
             {
-                // TODO: retrieve all portlet fragments to calculate the real row number?
-                if (row > 0)
+                adjustPositionsOfChildFragments(layoutFragment, layoutColumnCount);
+                SortedSet<ContentFragment> [] fragmentSetArray = getSortedChildFragmentSetArray(layoutFragment, layoutColumnCount);
+                for (SortedSet<ContentFragment> set : fragmentSetArray)
                 {
-                    --row;
+                    if (set.contains(contentFragment))
+                    {
+                        SortedSet<ContentFragment> headSet = set.headSet(contentFragment);
+                        
+                        if (!headSet.isEmpty())
+                        {
+                            ContentFragment destFragment = headSet.last();
+                            int row = contentFragment.getLayoutRow();
+                            int column = contentFragment.getLayoutColumn();
+                            int destRow = destFragment.getLayoutRow();
+                            int destColumn = destFragment.getLayoutColumn();
+                            pageLayoutComponent.updateRowColumn(contentFragment, destRow, destColumn);
+                            pageLayoutComponent.updateRowColumn(destFragment, row, column);
+                        }
+                    }
+                    
+                    break;
                 }
             }
             else if ("down".equals(direction))
             {
-                // TODO: retrieve all portlet fragments to calculate the real row number?
-                ++row;
+                adjustPositionsOfChildFragments(layoutFragment, layoutColumnCount);
+                SortedSet<ContentFragment> [] fragmentSetArray = getSortedChildFragmentSetArray(layoutFragment, layoutColumnCount);
+                for (SortedSet<ContentFragment> set : fragmentSetArray)
+                {
+                    if (set.contains(contentFragment))
+                    {
+                        SortedSet<ContentFragment> tailSet = set.tailSet(contentFragment);
+                        
+                        if (!tailSet.isEmpty())
+                        {
+                            ContentFragment destFragment = tailSet.first();
+                            int row = contentFragment.getLayoutRow();
+                            int column = contentFragment.getLayoutColumn();
+                            int destRow = destFragment.getLayoutRow();
+                            int destColumn = destFragment.getLayoutColumn();
+                            pageLayoutComponent.updateRowColumn(contentFragment, destRow, destColumn);
+                            pageLayoutComponent.updateRowColumn(destFragment, row, column);
+                        }
+                    }
+                    
+                    break;
+                }
             }
             else
             {
                 throw new WebApplicationException(new IllegalArgumentException("Invalid direction: " + direction));
             }
-            
-            rowParam = Integer.toString(row);
-            colParam = Integer.toString(col);
         }
-        
-        if (!StringUtils.isBlank(rowParam) && !StringUtils.isBlank(colParam))
+        else if (!StringUtils.isBlank(rowParam) && !StringUtils.isBlank(colParam))
         {
             int row = NumberUtils.toInt(rowParam, -1);
             int col = NumberUtils.toInt(colParam, -1);
@@ -246,7 +325,6 @@ public class PageLayoutService
             try
             {
                 pageLayoutComponent.updateRowColumn(contentFragment, row, col);
-                return new ContentFragmentBean(contentPage.getFragmentById(fragmentId));
             }
             catch (Exception e)
             {
@@ -264,13 +342,14 @@ public class PageLayoutService
             try
             {
                 pageLayoutComponent.updatePosition(contentFragment, posX, posY, posZ, posWidth, posHeight);
-                return new ContentFragmentBean(contentPage.getFragmentById(fragmentId));
             }
             catch (Exception e)
             {
                 throw new WebApplicationException(e);
             }
         }
+        
+        return new ContentFragmentBean(contentFragment);
     }
     
     private ContentPage getContentPage(RequestContext requestContext, String action) throws WebApplicationException
@@ -317,7 +396,7 @@ public class PageLayoutService
     
     private int getColumnCountOfLayoutFragment(ContentFragment layoutFragment)
     {
-        int columnCount = 0;
+        int columnCount = 1;
         
         String sizes = layoutFragment.getLayoutSizes();
         
@@ -348,4 +427,85 @@ public class PageLayoutService
         
         return columnCount;
     }
+    
+    private SortedSet<ContentFragment> [] getSortedChildFragmentSetArray(ContentFragment layoutFragment, int columnCount)
+    {
+        if (columnCount <= 0)
+        {
+            throw new IllegalArgumentException("Invalid columnCount: " + columnCount);
+        }
+        
+        int defaultColumn = columnCount - 1;
+        SortedSet<ContentFragment> [] fragmentSetArray = new TreeSet[columnCount];
+        
+        for (int i = 0; i < columnCount; i++)
+        {
+            fragmentSetArray[i] = new TreeSet<ContentFragment>(contentFragmentRowComparator);
+        }
+        
+        for (ContentFragment child : (List<ContentFragment>) layoutFragment.getFragments())
+        {
+            int column = child.getLayoutColumn();
+            
+            if (column < 0 || column >= columnCount)
+            {
+                column = defaultColumn;
+            }
+            
+            fragmentSetArray[column].add(child);
+        }
+        
+        return fragmentSetArray;
+    }
+    
+    private void adjustPositionsOfChildFragments(ContentFragment layoutFragment, int columnCount)
+    {
+        SortedSet<ContentFragment> [] fragmentSetArray = getSortedChildFragmentSetArray(layoutFragment, columnCount);
+
+        for (int column = 0; column < columnCount; column++)
+        {
+            int row = 0;
+            
+            for (ContentFragment child : fragmentSetArray[column])
+            {
+                if (row != child.getLayoutRow() || -1 == child.getLayoutColumn())
+                {
+                    pageLayoutComponent.updateRowColumn(child, row, column);
+                }
+                
+                ++row;
+            }
+        }
+    }
+    
+    private static class ContentFragmentRowComparator implements Comparator<ContentFragment>
+    {
+        public int compare(ContentFragment f1, ContentFragment f2)
+        {
+            int r1 = f1.getLayoutRow();
+            int r2 = f2.getLayoutRow();
+            
+            if (r1 == r2)
+            {
+                return 0;
+            }
+            else if (r1 != -1 && r2 == -1)
+            {
+                return -1;
+            }
+            else if (r1 == -1 && r2 != -1)
+            {
+                return 1;
+            }
+            else if (r1 > r2)
+            {
+                return 1;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+    }
+    
 }
