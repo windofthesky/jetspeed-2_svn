@@ -17,6 +17,8 @@
 
 package org.apache.jetspeed.container.url.impl;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
@@ -27,6 +29,7 @@ import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.HttpUtils;
 
 /**
  * Creates the PortalURL for the current Request
@@ -91,7 +94,15 @@ public class PortalURLValveImpl extends AbstractValve
         
         if (pathInfoParamAllowed)
         {
-            String param = servletRequest.getParameter(PortalURL.PATH_INFO_QUERY);
+            String param = null;
+            
+            Map<String, String []> queryParamMap = HttpUtils.parseQueryString(servletRequest.getQueryString());
+            String [] pathInfoParams = queryParamMap.get(PortalURL.PATH_INFO_QUERY);
+            
+            if (pathInfoParams != null && pathInfoParams.length != 0)
+            {
+                param = pathInfoParams[0];
+            }
             
             if (param == null)
             {
