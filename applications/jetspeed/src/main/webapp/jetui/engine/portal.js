@@ -1,6 +1,13 @@
 //Use loader to grab the modules needed
-YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'dataschema-json', 'node-base', 'node-menunav', function(Y) {
+YUI(JETUI_YUI_config).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'dataschema-json', 'node-base', 'node-menunav', function(Y) {
 	
+    // initialize singleton portal instance
+    if (!JETUI_YUI_config.portalInstance) {
+        JETUI_YUI_config.portalInstance = new Y.JetUI.Portal();
+    }
+    
+    var portal = JETUI_YUI_config.portalInstance;
+
 	//	Retrieve the Node instance representing the root menu
 	//	(<div id="environments-menu">) and call the "plug" method
 	//	passing in a reference to the MenuNav Node Plugin.
@@ -11,85 +18,15 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
 		menu.setStyle("display","inline");
 	}
 	//new Y.Console().render(); 
-    //Make this an Event Target so we can bubble to it
-    var Portal = function() {
-        Portal.superclass.constructor.apply(this, arguments);
-    };
-    Portal.NAME = 'portal';
-    Portal.prototype.desktopMode = false;
-    Portal.prototype.jstbLeft;
-    Portal.prototype.jstbRight;
-    Portal.prototype.isMoving;
-    Y.extend(Portal, Y.Base);
-    var portal = new Portal();
-    portal.isMoving = false;
-    var goingUp = false, goingRight = false, lastY = 0, lastX = 0;   
-    
-    ////////////////////////////////////////////////////
-    // the Portlet Class
-    function Portlet(config) {
-        Portlet.superclass.constructor.call(this, config);
-    };
-    Y.extend(Portlet, Y.Base, {
-    	initializer : function(cfg) { 
-   	 	},
-        destructor : function(cfg) { 
-   	 	}     	    	
-    });    
-    Portlet.NAME = "portlet";
-    Portlet.ATTRS = {
-    	"name" : { value: "undefined" }, 
-        "id" : { value: "0" },
-        "toolbar" : { value : false },
-        "detached" : { value : false },
-        "column" : { value : 0 },
-        "row" : { value : 0 }
-    };
-	Portlet.prototype.info = function() {
-		Y.log("name: " + this.get("name"));
-		Y.log("id  : " + this.get("id"));		
-		Y.log("toolbar  : " + this.get("toolbar"));		
-		Y.log("col, row  : " + this.get("column") + "," + this.get("row"));		
-		Y.log("---------");
-    };
-
-    ////////////////////////////////////////////////////
-    // the Layout Class
-    function Layout(config) {
-        Layout.superclass.constructor.call(this, config);
-    };
-    Y.extend(Layout, Y.Base, {
-    	initializer : function(cfg) { 
-   	 	},
-        destructor : function(cfg) { 
-   	 	}     	    	
-    });    
-    Layout.NAME = "layout";
-    Layout.ATTRS = {
-    	"name" : { value: "undefined" }, 
-        "id" : { value: "0" },
-        "nested" : { value : false },
-        "column" : { value : 0 },
-        "locked" : { value : false },
-        "row" : { value : 0 }
-    };
-	Layout.prototype.info = function() {
-		Y.log("name: " + this.get("name"));
-		Y.log("id  : " + this.get("id"));		
-		Y.log("nested  : " + this.get("nested"));		
-		Y.log("locked  : " + this.get("locked"));		
-		Y.log("col, row  : " + this.get("column") + "," + this.get("row"));		
-		Y.log("---------");
-    };
     
     ////////////////////////////////////////////////////    
     // Create Navigator Portlet
-    var navigator = new Portlet();
+    var navigator = new Y.JetUI.Portlet();
     navigator.set("name", "j2-admin::PageNavigator");
     navigator.set("id", "_PageNavigator");
     navigator.set("toolbar", true);
     navigator.set("detached", false);
-    var toolbox = new Portlet();
+    var toolbox = new Y.JetUI.Portlet();
     toolbox.set("name", "j2-admin::JetspeedToolbox");
     toolbox.set("id", "_JetspeedToolbox");
     toolbox.set("toolbar", true);
@@ -205,7 +142,7 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
     }
 	var draggablePortlets = Y.Node.all('.portal-layout-cell');    
     draggablePortlets.each(function(v, k) {
-        var portlet = new Portlet();
+        var portlet = new Y.JetUI.Portlet();
     	Y.log("portlet = " + v.getAttribute("name") + v.getAttribute("id"));
         portlet.set("name", v.getAttribute("name"));
         portlet.set("id", v.getAttribute("id"));
@@ -232,7 +169,7 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
     var dropLayouts = Y.Node.all('.portal-layout-column');
     dropLayouts.each(function(v, k) {
     	Y.log("layout = " + v.getAttribute("name") + v.getAttribute("id"));
-        var layout = new Layout();
+        var layout = new Y.JetUI.Layout();
         layout.set("name", v.getAttribute("name"));
         layout.set("id", v.getAttribute("id"));
         layout.set("nested", false);
@@ -291,24 +228,8 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
         v.on('click', onClickRemove);
     });
         
-    Portal.prototype.toggleToolbar = function(toolbar, toggler, compareStyle) {
-        toggler.toggleClass('jstbToggle1');
-        toggler.toggleClass('jstbToggle2');
-        var currentStyle = toggler.getAttribute('class');
-        var nodelist = toolbar.get('children');
-        if (currentStyle == compareStyle)
-        {
-            nodelist.setStyle('display', 'block');        	
-        }
-        else
-        {
-            nodelist.setStyle('display', 'none');        	
-        }	        
-        toolbar.fx.set('reverse', !toolbar.fx.get('reverse')); // toggle reverse 
-        toolbar.fx.run();
-	};	   
-    
 	Y.DD.DDM.on('drag:drophit', function(e) {
+	    var portal = JETUI_YUI_config.portalInstance;
 		var drop = e.drop.get('node'),
             drag = e.drag.get('node');
         if (drag.data.get("toolbar"))
@@ -343,89 +264,6 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
         }
     });
 	
-    Portal.prototype.moveToLayout = function(e)
-    {
-        var drop = e.drop.get('node'),
-        	drag = e.drag.get('node');
-        var dragParent = drag.get('parentNode');       
-    	drop.appendChild(drag);
-        if (dragParent.get('children').size() == 0)
-        {
-        	//node.plug(Y.Plugin.Drag);
-	    	var drop = new Y.DD.Drop({
-	        node: dragParent,
-	        groups: ['portlets']            
-	    	});
-        }
-        // BOZO: im manipulating internal DD structures, should find a way to detach the handler
-        var i = 0;
-        while (i < Y.DD.DDM.targets.length) {
-        	if (Y.DD.DDM.targets[i] == e.drop) {
-        		Y.DD.DDM.targets.splice(i, 1);
-        		break;
-        	}
-        	i++;
-        }
-        // I don't think this is working
-        e.drop.unplug(Y.Plugin.Drop);
-    }
-
-	  Portal.prototype.movePortlet = function(e)
-	  {
-        var drop = e.drop.get('node'),
-            drag = e.drag.get('node');
-        var dragParent = drag.get('parentNode');
-        var dropParent = drop.get('parentNode');
-        if (dropParent == portal.jstbLeft || dropParent == portal.jstbRight)
-        {
-          if (!dropParent.contains(drag)) {
-        	  dropParent.appendChild(drag);
-          }
-        }
-        else
-        {
-        	if (goingUp)
-        	{
-    			//Y.log("going UP");
-        		// var next = drop.get('previousSibling');
-    			var prev = drop.previous();
-                if (prev == null)
-                {
-                	//drag.remove();                	
-                	dropParent.prepend(drag);                	
-                }
-                else
-                {
-        			//drag.remove();
-                	dropParent.insertBefore(drag, drop);
-                }        		
-        	}
-        	else
-        	{
-        		var next = drop.next();
-                if (next == null) 
-                {
-        			//Y.log("going down APPEND");
-        			//drag.remove();
-        			dropParent.appendChild(drag);
-                }
-                else
-                {
-        			//Y.log("going down: " + next); //next.data.get('name'));
-        			//drag.remove();
-        			dropParent.insertBefore(drag, next);
-                }
-        	}
-        }
-        if (dragParent.get('children').size() == 0)
-        {
-	    	var drop = new Y.DD.Drop({
-	        node: dragParent,
-	        groups: ['portlets']            
-	    	});
-        }        
-    };    
-
     var onMoveComplete = function(id, o, args) { 
     	var id = id; // Transaction ID. 
     	var data = o.responseText; // Response data.
@@ -514,34 +352,35 @@ YUI(yuiConfig).use('console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xm
             srcNode.addClass('moving');        	
         }
         //  drag.get('node').setStyle('border', '1px dotted #black');        
-        lastX = drag.mouseXY[0];
-        lastY = drag.mouseXY[1];
-        //Y.log("starting drag " + lastX +  " , " + lastY);
+        portal.lastX = drag.mouseXY[0];
+        portal.lastY = drag.mouseXY[1];
+        //Y.log("starting drag " + portal.lastX +  " , " + portal.lastY);
     });
 
     Y.DD.DDM.on('drag:over', function(e) {
+        var portal = JETUI_YUI_config.portalInstance;
     	if (portal.isMoving)
     		return;
     	
     	var x = e.drag.mouseXY[0],
     		y = e.drag.mouseXY[1];
     	
-    	if (y == lastY)
+    	if (y == portal.lastY)
     	{    		
     	}
-    	else if (y < lastY) {
-            goingUp = true;
+    	else if (y < portal.lastY) {
+            portal.goingUp = true;
             
         } else {
-            goingUp = false;
+            portal.goingUp = false;
         }
-        lastY = y;
-        if (x < lastX) {
-            goingRight = false;
+    	portal.lastY = y;
+        if (x < portal.lastX) {
+            portal.goingRight = false;
         } else {
-            goingRight = true;
+            portal.goingRight = true;
         }        
-        lastX = x;
+        portal.lastX = x;
         
         if (e.drag.get('node').data.get("toolbar"))
         {        
