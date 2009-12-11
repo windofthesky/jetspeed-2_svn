@@ -412,7 +412,7 @@ YUI(JETUI_YUI_config).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'dataty
         else
         {
 	    	var region = e.drop.get('node').get('region');
-	    	if (e.drop.get('node').data.name == "portlet")
+	    	if (e.drop.get('node').data.name == "Portlet")
 	    	{
 		    	var srcRegion = e.drag.get('node').get('region');
 		    	if (y >= srcRegion.top && y <= srcRegion.bottom && x >= srcRegion.left && x <= srcRegion.right)
@@ -427,7 +427,7 @@ YUI(JETUI_YUI_config).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'dataty
 		    		portal.isMoving = false;
 		    	}
 	    	}
-	    	else if (e.drop.get('node').data.name == "layout")
+	    	else if (e.drop.get('node').data.name == "Layout")
 	    	{
 	    		portal.isMoving = true;
 	    		portal.moveToLayout(e);
