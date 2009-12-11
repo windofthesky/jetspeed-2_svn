@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 
 import junit.framework.TestCase;
 import net.sf.ehcache.Cache;
@@ -411,6 +412,11 @@ public class TestContentCache extends TestCase
         public PortletMode getPortletMode()
         {
             return PortletMode.VIEW;
+        }
+        
+        public WindowState getWindowState()
+        {
+            return WindowState.NORMAL;
         }
     }
         
