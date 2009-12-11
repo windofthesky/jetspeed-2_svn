@@ -23,8 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletAggregator;
@@ -51,6 +53,7 @@ public class PortletAggregatorImpl implements PortletAggregator
     private PortletRenderer renderer;
     private boolean titleInHeader;
     private Map<String, PortletMode> availablePortletModesMap;
+    private Map<String, WindowState> availableWindowStatesMap;
 
     public PortletAggregatorImpl(PortletRenderer renderer) 
     {
@@ -102,14 +105,22 @@ public class PortletAggregatorImpl implements PortletAggregator
         }
         
         PortletMode requetedPortletMode = getRequestedPortletMode(context);
+        WindowState requetedWindowState = getRequestedWindowState(context);
+        
         NavigationalState navState = context.getPortalURL().getNavigationalState();
         
-        if (!requetedPortletMode.equals(navState.getMode(window)))
+        if (navState instanceof MutableNavigationalState)
         {
-            if (navState instanceof MutableNavigationalState)
+            MutableNavigationalState mutableNavState = (MutableNavigationalState) navState;
+            
+            if (!requetedPortletMode.equals(navState.getMode(window)))
             {
-                MutableNavigationalState mutableNavState = (MutableNavigationalState) navState;
                 mutableNavState.setMode(window, requetedPortletMode);
+            }
+            
+            if (!requetedWindowState.equals(navState.getState(window)))
+            {
+                mutableNavState.setState(window, requetedWindowState);
             }
         }
         
@@ -156,7 +167,7 @@ public class PortletAggregatorImpl implements PortletAggregator
     {
         String portletModeName = context.getRequestParameter(PortalReservedParameters.PORTLET_MODE);
         
-        if (portletModeName == null || "".equals(portletModeName))
+        if (StringUtils.isBlank(portletModeName))
         {
             return PortletMode.VIEW;
         }
@@ -180,5 +191,35 @@ public class PortletAggregatorImpl implements PortletAggregator
         
         PortletMode portletMode = availablePortletModesMap.get(portletModeName);
         return (portletMode != null ? portletMode : PortletMode.VIEW);
+    }
+    
+    private WindowState getRequestedWindowState(final RequestContext context)
+    {
+        String windowStateName = context.getRequestParameter(PortalReservedParameters.WINDOW_STATE);
+        
+        if (StringUtils.isBlank(windowStateName))
+        {
+            return WindowState.NORMAL;
+        }
+        
+        if (availableWindowStatesMap == null)
+        {
+            Map<String, WindowState> windowStatesMap = new HashMap<String, WindowState>();
+            
+            for (WindowState windowState : JetspeedActions.getStandardWindowStates())
+            {
+                windowStatesMap.put(windowState.toString(), windowState);
+            }
+            
+            for (WindowState windowState : JetspeedActions.getExtendedWindowStates())
+            {
+                windowStatesMap.put(windowState.toString(), windowState);
+            }
+            
+            availableWindowStatesMap = windowStatesMap;
+        }
+        
+        WindowState windowState = availableWindowStatesMap.get(windowStateName);
+        return (windowState != null ? windowState : WindowState.NORMAL);
     }
 }

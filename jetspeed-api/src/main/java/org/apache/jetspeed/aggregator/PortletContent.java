@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.portlet.HeadElement;
@@ -115,6 +116,13 @@ public interface PortletContent
      * @return
      */
     PortletMode getPortletMode();
+    
+    /**
+     * Gets the window state of this portlet content.
+     * 
+     * @return
+     */
+    WindowState getWindowState();
     
     /**
      * Adds an header element to be contributed to the page.

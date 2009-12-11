@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 
 import org.apache.commons.collections.list.TreeList;
 import org.apache.jetspeed.aggregator.PortletContent;
@@ -47,6 +48,7 @@ public class PortletContentImpl implements PortletContent
     private String title;
     private String contentType;
     private PortletMode portletMode;
+    private WindowState windowState;
     
     /**
      * The list container for all contributed head elements from this portlet content.
@@ -60,13 +62,14 @@ public class PortletContentImpl implements PortletContent
         writer = new PrintWriter(cw);
     }
     
-    PortletContentImpl(ContentCacheKey cacheKey, int expiration, String title, PortletMode portletMode)
+    PortletContentImpl(ContentCacheKey cacheKey, int expiration, String title, PortletMode portletMode, WindowState windowState)
     {
         this();
         this.cacheKey = cacheKey;
         this.expiration = expiration;
         this.title = title;
         this.portletMode = portletMode;
+        this.windowState = windowState;
     }
 
     public PrintWriter getWriter()
@@ -164,6 +167,11 @@ public class PortletContentImpl implements PortletContent
     public PortletMode getPortletMode()
     {
         return (portletMode != null ? portletMode : PortletMode.VIEW);
+    }
+    
+    public WindowState getWindowState()
+    {
+        return (windowState != null ? windowState : WindowState.NORMAL);
     }
     
     public void reset()

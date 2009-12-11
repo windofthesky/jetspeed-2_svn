@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletAccessDeniedException;
@@ -36,6 +36,7 @@ import org.apache.jetspeed.aggregator.WorkerMonitor;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.LocalizedField;
@@ -44,7 +45,8 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.pluto.container.PortletContainer;
-import org.apache.jetspeed.container.PortletWindow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <h4>PortletRendererService <br />
@@ -304,7 +306,10 @@ public class PortletRendererImpl implements PortletRenderer
         {
             PortletContent portletContent = (PortletContent) cachedElement.getContent();
             
-            if (portletWindow.getPortletMode().equals(portletContent.getPortletMode()))
+            PortletMode portletMode = portletContent.getPortletMode();
+            WindowState windowState = portletContent.getWindowState();
+            
+            if (portletWindow.getPortletMode().equals(portletMode) && portletWindow.getWindowState().equals(windowState))
             {
                 fragment.setPortletContent(portletContent);
                 return true;
@@ -326,7 +331,7 @@ public class PortletRendererImpl implements PortletRenderer
         {
             title = portletWindow.getPortletDefinition().getPortletName();
         }
-        return new PortletContentImpl(cacheKey, expirationCache, title, portletWindow.getPortletMode());
+        return new PortletContentImpl(cacheKey, expirationCache, title, portletWindow.getPortletMode(), portletWindow.getWindowState());
     }
     
     protected RenderingJob buildRenderingJob( PortletWindow portletWindow, 
