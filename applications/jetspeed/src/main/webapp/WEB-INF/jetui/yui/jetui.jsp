@@ -139,7 +139,8 @@ for (String style : jetui.getStyleSheets(rc))
 		request.setAttribute("coordinate", columnLayout.getCoordinate(maximized));
 %>
 <div id="column_id_0>" 
-     class="portal-layout-column" 
+     class="portal-layout-column"
+	 locked='<%=maximized.isLocked() %>'> 
      style="float:left; width:100%; background-color: #ffffff;">
 <jsp:include page="jetui-portlet.jsp"/>
 </div>  
@@ -156,6 +157,7 @@ for (String style : jetui.getStyleSheets(rc))
 %>
 <div id="column_id_<%=index%>" 
      class="portal-layout-column" column='<%=index%>'
+	 locked='false' 
      style="float:<%=columnFloat%>; min-height: 100px; width:<%=columnWidth%>;">
 
 <%      

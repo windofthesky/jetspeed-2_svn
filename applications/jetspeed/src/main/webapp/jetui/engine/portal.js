@@ -134,7 +134,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
 	var draggablePortlets = Y.Node.all(config.portletStyle);    
     draggablePortlets.each(function(v, k) {
         var portlet = new Y.JetUI.Portlet();
-    	Y.log("portlet = " + v.getAttribute("name") + v.getAttribute("id") + "locked = " + v.getAttribute("locked"));
+    	//Y.log("portlet = " + v.getAttribute("name") + v.getAttribute("id") + "locked = " + v.getAttribute("locked"));
         portlet.set("name", v.getAttribute("name"));
         portlet.set("id", v.getAttribute("id"));
         portlet.set("toolbar", Boolean(v.getAttribute("locked").toLowerCase() === 'true'));
@@ -142,7 +142,6 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
         portlet.set("column", v.getAttribute("column"));
         portlet.set("row", v.getAttribute("row"));
         v.data = portlet;
-        Y.log("toolbar = " + portlet.get("toolbar"));
         var dragGroups = ['portlets'];
         var dragMode = 'intersect';
         var dropGroups  = ['portlets', 'toolbars'];
@@ -169,7 +168,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     
     var dropLayouts = Y.Node.all(config.layoutStyle); 
     dropLayouts.each(function(v, k) {
-    	Y.log("layout = " + v.getAttribute("name") + v.getAttribute("id"));
+    	//Y.log("layout = " + v.getAttribute("name") + v.getAttribute("id"));
         var layout = new Y.JetUI.Layout();
         layout.set("name", v.getAttribute("name"));
         layout.set("id", v.getAttribute("id"));
@@ -180,7 +179,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
         layout.set("column", v.getAttribute("column"));        
         layout.set("row", 0);
         v.data = layout;
-        layout.info();
+        //layout.info();
         if (v.get('children').size() == 0)
         {
 	    	var drop = new Y.DD.Drop({
@@ -216,10 +215,13 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     
     var onClickRemove = function(e) {
     	var uri = document.location.href;
-    	uri = uri.replace("/portal", "/ajaxapi");
+    	if (uri.indexOf("/portal") > -1)    	
+    		uri = uri.replace("/portal", "/ajaxapi");
+    	else
+    		uri = uri.replace("/ui", "/ajaxapi");
     	var windowId =  e.currentTarget.getAttribute('id');
     	windowId = windowId.replace("jetspeed-close-", "");
-    	var uri = uri + "?action=remove&id=" + windowId;
+    	var uri = uri + "?action=remove&id=" + windowId;    	
         Y.on('io:complete', onRemoveComplete, this, [windowId]); 
         var request = Y.io(uri); 
     };
@@ -268,11 +270,10 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     var onMoveComplete = function(id, o, args) { 
     	var id = id; // Transaction ID. 
     	var data = o.responseText; // Response data.
-    	Y.log("move result = " + data);
+    	//Y.log("move result = " + data);
     	var dataIn = Y.DataType.XML.parse(data),
     		schema = {  resultListLocator: "status", resultFields: [{key:"status"}] },
     		dataOut = Y.DataSchema.XML.apply(schema, dataIn);
-		Y.log("data = " + dataOut)                
     	var widgetId = args[0];
     };     
     
@@ -302,7 +303,10 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     var persistMove = function(drag) {
         if (drag.data.get("toolbar") == false) {
         	var uri = document.location.href;
-        	uri = uri.replace("/portal", "/ajaxapi");
+        	if (uri.indexOf("/portal") > -1)
+        		uri = uri.replace("/portal", "/ajaxapi");
+        	else
+        		uri = uri.replace("/ui", "/ajaxapi");
         	var windowId =  drag.getAttribute('id');
         	var oldColumn = drag.data.get('column');
         	var oldRow = drag.data.get('row');        	
@@ -355,7 +359,6 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
         //  drag.get('node').setStyle('border', '1px dotted #black');        
         portal.lastX = drag.mouseXY[0];
         portal.lastY = drag.mouseXY[1];
-        //Y.log("starting drag " + portal.lastX +  " , " + portal.lastY);
     });
 
     Y.DD.DDM.on('drag:over', function(e) {
