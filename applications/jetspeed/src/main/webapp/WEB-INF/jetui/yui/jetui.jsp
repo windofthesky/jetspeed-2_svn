@@ -95,7 +95,6 @@ for (String style : jetui.getStyleSheets(rc))
 <div id="layout-<%=pageDec%>" class="layout-<%=pageDec%>" >
 <div class="header">
 <h1 class="logo">Jetspeed 2</h1>
-<span id="environments-menu" class="layout-horizontal-menu yui-menu yui-menu-horizontal yui-menubuttonnav"><%=spacesNavContent%></span>
 <div class="menu">
 &nbsp;<span style='position: absolute; left: 0px; top: 50px;' id='jstbLeftToggle' class='jstbToggle1'></span><span id='jstbRightToggle' class='jstbToggle2' style='position: absolute; right: 0px; top: 50px;'></span>
 </div>
@@ -206,6 +205,18 @@ for (String style : jetui.getStyleSheets(rc))
 </div> <!-- end layout -->
 </div>
 </body>
+<%
+for (ContentFragment fragment : columnLayout.getDetachedPortlets())
+{
+	String x = fragment.getProperty("x");
+	String y = fragment.getProperty("y");
+    String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
+%>
+   <div id='<%=fragment.getId()%>' detached='true' locked='<%=fragment.isLocked()%>' name='<%=fragment.getName()%>' column='0' row='0' style='position: absolute; top: <%=x%>px; left: <%=y%>px;'>
+<%=content%>
+   </div>			    
+<% } %>
+
 <script src="<%=request.getContextPath()%>/jetui/engine/portal.js"></script>
  
 </html>

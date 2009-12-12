@@ -102,6 +102,7 @@ public class Jetui
                 String [] fragmentColumnSizesArray = fragmentColumnSizes.split("\\,");
                 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 ColumnLayout columnLayout = new ColumnLayout(numberOfColumns, layoutType, rootFragment.getFragments(), fragmentColumnSizesArray);
+                columnLayout.buildDetachedPortletList(request.getPage().getRootFragment().getFragments());
                 request.setAttribute("columnLayout", columnLayout);
             }
             else

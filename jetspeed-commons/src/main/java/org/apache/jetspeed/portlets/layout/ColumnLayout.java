@@ -836,4 +836,27 @@ public class ColumnLayout implements Serializable
         return this.detachedPortlets;
     }
 
+    public void buildDetachedPortletList(Collection<ContentFragment> fragments)
+    {
+        Iterator<ContentFragment> fragmentsItr = fragments.iterator();
+        while (fragmentsItr.hasNext())
+        {
+            ContentFragment fragment = (ContentFragment) fragmentsItr.next();
+            String jsdesktop = fragment.getProperty(NameValueProperty.NAME_VALUE_PROPERTY);
+            if (jsdesktop != null)
+            {
+                NameValueProperty nvp = new NameValueProperty(jsdesktop);
+                if (nvp.isDetached())
+                {
+                    detachedPortlets.add(fragment);
+                    continue;
+                }
+                else if (nvp.isDecoratorRendered())
+                {
+                    continue;
+                }
+            }
+        }
+    }
+    
 }
