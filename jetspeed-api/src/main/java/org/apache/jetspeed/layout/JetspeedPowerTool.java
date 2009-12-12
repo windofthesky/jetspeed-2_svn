@@ -24,6 +24,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.locator.TemplateDescriptor;
 import org.apache.jetspeed.locator.TemplateLocatorException;
@@ -278,5 +279,8 @@ public interface JetspeedPowerTool
      */
     boolean isAjaxCustomizationEnabled();
     
-    public Map getUserAttributes();    
+    Map getUserAttributes();
+    
+    PortalConfiguration getPortalConfiguration();
+    
 }

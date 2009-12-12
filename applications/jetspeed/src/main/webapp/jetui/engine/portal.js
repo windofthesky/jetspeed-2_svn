@@ -1,24 +1,15 @@
 //Use loader to grab the modules needed
-YUI(JETUI_YUI_config).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'dataschema-json', 'node-base', 'node-menunav', function(Y) {
+YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'dataschema-json', 'node-base', 'node-menunav', function(Y) {
+
+	var config = JETUI_YUI.config;
+    Y.log("Starting up JETUI " +  config.engine + " engine...");
 	
     // initialize singleton portal instance
-    if (!JETUI_YUI_config.portalInstance) {
-        JETUI_YUI_config.portalInstance = new Y.JetUI.Portal();
-    }
-    
-    var portal = JETUI_YUI_config.portalInstance;
-
-	//	Retrieve the Node instance representing the root menu
-	//	(<div id="environments-menu">) and call the "plug" method
-	//	passing in a reference to the MenuNav Node Plugin.
-
-	var menu = Y.one("#environments-menu");
-	if (!Y.Lang.isNull(menu)) {
-		menu.plug(Y.Plugin.NodeMenuNav);
-		menu.setStyle("display","inline");
-	}
-	//new Y.Console().render(); 
-    
+    if (!JETUI_YUI.portalInstance) {
+        JETUI_YUI.portalInstance = new Y.JetUI.Portal();
+    }    
+    var portal = JETUI_YUI.portalInstance;
+        
     ////////////////////////////////////////////////////    
     // Create Navigator Portlet
     var navigator = new Y.JetUI.Portlet();
@@ -103,7 +94,7 @@ YUI(JETUI_YUI_config).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'dataty
 	    }).plug(Y.Plugin.DDProxy, { 
 	      	 moveOnEnd: false         	    	
 	    });    
-	    ddNav.addHandle('.PTitle');
+	    ddNav.addHandle(config.dragHandleStyle);
 	    nav.on('click', onClickToolbar);
     }    
     var jetspeedZone = Y.one('#jetspeedZone');
@@ -123,7 +114,7 @@ YUI(JETUI_YUI_config).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'dataty
 	    }).plug(Y.Plugin.DDProxy, { 
 	      	 moveOnEnd: false         	    	
 	    });    
-	    ddToolbox.addHandle('.PTitle');
+	    ddToolbox.addHandle(config.dragHandleStyle); 
 	    tb.on('click', onClickToolbar);
     }
     var jstbLeft = Y.one('#jstbLeft');
@@ -140,7 +131,7 @@ YUI(JETUI_YUI_config).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'dataty
 	        groups: ['toolbars']        
 	    });
     }
-	var draggablePortlets = Y.Node.all('.portal-layout-cell');    
+	var draggablePortlets = Y.Node.all(config.portletStyle);    
     draggablePortlets.each(function(v, k) {
         var portlet = new Y.JetUI.Portlet();
     	Y.log("portlet = " + v.getAttribute("name") + v.getAttribute("id"));
@@ -158,7 +149,7 @@ YUI(JETUI_YUI_config).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'dataty
         }).plug(Y.Plugin.DDProxy, { 
           	 moveOnEnd: false         	    	
         });    
-        ddNav.addHandle('.PTitle');
+        ddNav.addHandle(config.dragHandleStyle);
     	var drop = new Y.DD.Drop({
             node: v,
             groups: ['portlets', 'toolbars']            
@@ -166,7 +157,7 @@ YUI(JETUI_YUI_config).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'dataty
     	//portlet.info();
     });
     
-    var dropLayouts = Y.Node.all('.portal-layout-column');
+    var dropLayouts = Y.Node.all(config.layoutStyle); 
     dropLayouts.each(function(v, k) {
     	Y.log("layout = " + v.getAttribute("name") + v.getAttribute("id"));
         var layout = new Y.JetUI.Layout();
@@ -229,7 +220,7 @@ YUI(JETUI_YUI_config).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'dataty
     });
         
 	Y.DD.DDM.on('drag:drophit', function(e) {
-	    var portal = JETUI_YUI_config.portalInstance;
+	    var portal = JETUI_YUI.portalInstance;
 		var drop = e.drop.get('node'),
             drag = e.drag.get('node');
         if (drag.data.get("toolbar"))
@@ -320,7 +311,7 @@ YUI(JETUI_YUI_config).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'dataty
     };
 
 	var reallocateColumn = function(column) {
-	    var columns = Y.Node.all('.portal-layout-column');
+	    var columns = Y.Node.all(config.layoutStyle); 
 	    columns.each(function(v, k) {
 	    	if (v.data.get('locked') == false)
 	    	{
@@ -358,7 +349,7 @@ YUI(JETUI_YUI_config).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'dataty
     });
 
     Y.DD.DDM.on('drag:over', function(e) {
-        var portal = JETUI_YUI_config.portalInstance;
+        var portal = JETUI_YUI.portalInstance;
     	if (portal.isMoving)
     		return;
     	

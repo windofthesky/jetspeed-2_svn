@@ -172,10 +172,10 @@ YUI.add('jetui-portal', function(Y) {
          * @method movePortlet
          */
         movePortlet : function(e) {
-            if (!JETUI_YUI_config || !JETUI_YUI_config.portalInstance)
+            if (!JETUI_YUI || !JETUI_YUI.portalInstance)
                 return;
             
-            var portal = JETUI_YUI_config.portalInstance;
+            var portal = JETUI_YUI.portalInstance;
             var drop = e.drop.get('node'),
                 drag = e.drag.get('node');
             var dragParent = drag.get('parentNode');

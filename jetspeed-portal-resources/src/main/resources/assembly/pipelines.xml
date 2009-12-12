@@ -926,6 +926,7 @@
     <constructor-arg><ref bean="org.apache.jetspeed.aggregator.PortletRenderer"/></constructor-arg>
     <constructor-arg><ref bean="org.apache.jetspeed.headerresource.HeaderResourceFactory"/></constructor-arg>
     <constructor-arg><ref bean="org.apache.jetspeed.layout.PageLayoutComponent" /></constructor-arg>
+    <constructor-arg><ref bean="PortalConfiguration" /></constructor-arg>
     <constructor-arg><value>${jetui.render.template}</value></constructor-arg>        
   </bean>
   

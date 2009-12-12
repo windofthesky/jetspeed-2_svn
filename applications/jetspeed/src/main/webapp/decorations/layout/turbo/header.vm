@@ -23,6 +23,7 @@ limitations under the License.
 
 #* Add all template constants to the current context *#
 #defineNavigationConstants()
+#set($pc = $jetspeed.getPortalConfiguration())
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -30,11 +31,20 @@ limitations under the License.
 #if ($jetspeed.isAjaxCustomizationEnabled())
 <script type="text/javascript" src="#BaseHref()/javascript/yui/build/yui/yui-min.js"></script>
 <script language="javascript">
-var JETUI_YUI_config = {
+var JetuiConfiguration = {
+	engine: '$pc.getString("jetui.render.engine")',
+	ajaxTransport: '$pc.getString("jetui.ajax.transport")',
+	dragMode: '$pc.getString("jetui.drag.mode")',
+	portletStyle: '$pc.getString("jetui.style.portlet")',
+	layoutStyle: '$pc.getString("jetui.style.layout")',
+	dragHandleStyle: '$pc.getString("jetui.style.drag.handle")'	
+};
+var JETUI_YUI = {
   base: "#BaseHref()/javascript/yui/build/",
   timeout: 10000, 
   debug: true, 
   useBrowserConsole: true,
+  config: JetuiConfiguration,    
   modules: {
     'jetui-portal': { fullpath: "#BaseHref()/javascript/jetspeed/jetui/jetui-portal.js" }
   }

@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 
+import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.decoration.Theme;
@@ -50,13 +51,16 @@ public class Jetui
     private PortletRenderer renderer;
     private HeaderResourceFactory headerFactory;
     private PageLayoutComponent pageLayoutComponent;
+    private PortalConfiguration pc;
     private String layoutTemplate;
     
-    public Jetui(PortletRenderer renderer, HeaderResourceFactory headerFactory, PageLayoutComponent pageLayoutComponent, String layoutTemplate)
+    public Jetui(PortletRenderer renderer, HeaderResourceFactory headerFactory, PageLayoutComponent pageLayoutComponent, 
+            PortalConfiguration pc, String layoutTemplate)
     {
         this.renderer = renderer;
         this.headerFactory = headerFactory;
         this.pageLayoutComponent = pageLayoutComponent;
+        this.pc = pc;
         this.layoutTemplate = layoutTemplate;
     }
     
@@ -221,5 +225,10 @@ public class Jetui
                 map.put("user.name.family", jp.getName());            
         }
         return map;
+    }
+    
+    public PortalConfiguration getPortalConfiguration()
+    {
+        return this.pc;
     }
 }

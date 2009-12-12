@@ -79,5 +79,18 @@ public interface PortalConfigurationConstants
     static final String JETUI_CUSTOMIZATION_AJAX = "ajax";
     static final String JETUI_LAYOUT_VIEW = "jetui.layout.view";
     static final String JETUI_LAYOUT_MAX = "jetui.layout.max";
-    static final String JETUI_LAYOUT_SOLO = "jetui.layout.solo";    
+    static final String JETUI_LAYOUT_SOLO = "jetui.layout.solo";
+    static final String JETUI_RENDER_TEMPLATE = "jetui.render.template";
+    static final String JETUI_RENDER_ENGINE = "jetui.render.engine";
+    static final String JETUI_CSRE = "CSRE";
+    static final String JETUI_SSRE = "SSRE";
+    static final String JETUI_AJAX_TRANSPORT = "jetui.ajax.transport";
+    static final String JETUI_TRANSPORT_JSON = "json";
+    static final String JETUI_TRANSPORT_XML = "xml";
+    static final String JETUI_DRAG_MODE = "jetui.drag.mode";
+    static final String JETUI_DRAG_FULL = "full";
+    static final String JETUI_DRAG_YAHOO = "yahoo";
+    static final String JETUI_STYLE_PORTLET = "jetui.style.portlet";
+    static final String JETUI_STYLE_LAYOUT = "jetui.style.layout";
+    static final String JETUI_STYLE_DRAG_HANDLE = "jetui.style.drag.handle";    
 }

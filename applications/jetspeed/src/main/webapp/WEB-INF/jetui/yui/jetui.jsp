@@ -26,9 +26,12 @@ limitations under the License.
 <%@ page import="org.apache.jetspeed.portlets.layout.ColumnLayout" %>
 <%@ page import="org.apache.jetspeed.decoration.DecoratorAction" %>
 <%@ page import="org.apache.jetspeed.PortalReservedParameters" %>
+<%@ page import="org.apache.jetspeed.administration.PortalConfiguration" %>
+<%@ page import="org.apache.jetspeed.administration.PortalConfigurationConstants" %>
 
 <%
   Jetui jetui = (Jetui)request.getAttribute("jetui");
+  PortalConfiguration pc = jetui.getPortalConfiguration();
   RequestContext rc = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
   Map userInfo = jetui.getUserAttributes(rc);
   ContentPage portalPage = rc.getPage();
@@ -53,11 +56,20 @@ limitations under the License.
 <link rel="shortcut icon" href="<%=baseUrl%>images/jetspeed.jpg" type="image/x-icon" />
 <script type="text/javascript" src="<%=request.getContextPath()%>/javascript/yui/build/yui/yui-min.js"></script>
 <script language="javascript">
-var JETUI_YUI_config = {
+var JetuiConfiguration = {
+	engine: "<%=pc.getString(PortalConfigurationConstants.JETUI_RENDER_ENGINE)%>",
+	ajaxTransport: "<%=pc.getString(PortalConfigurationConstants.JETUI_AJAX_TRANSPORT)%>",
+	dragMode: "<%=pc.getString(PortalConfigurationConstants.JETUI_DRAG_MODE)%>",
+	portletStyle: "<%=pc.getString(PortalConfigurationConstants.JETUI_STYLE_PORTLET)%>",
+	layoutStyle: "<%=pc.getString(PortalConfigurationConstants.JETUI_STYLE_LAYOUT)%>",
+	dragHandleStyle: "<%=pc.getString(PortalConfigurationConstants.JETUI_STYLE_DRAG_HANDLE)%>"	
+};
+var JETUI_YUI = {
   base: "<%=request.getContextPath()%>/javascript/yui/build/",
   timeout: 10000, 
   debug: true, 
   useBrowserConsole: true,
+  config: JetuiConfiguration,
   modules: {
     'jetui-portal': { fullpath: "<%=request.getContextPath()%>/javascript/jetspeed/jetui/jetui-portal.js" }
   }

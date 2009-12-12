@@ -38,6 +38,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.administration.PortalConfigurationConstants;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.capabilities.CapabilityMap;
@@ -901,5 +902,9 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         }
         return map;
     }
-    
+
+    public PortalConfiguration getPortalConfiguration()
+    {
+        return Jetspeed.getConfiguration();
+    }
 }
