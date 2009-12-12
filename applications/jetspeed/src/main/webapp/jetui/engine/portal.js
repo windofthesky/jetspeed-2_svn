@@ -134,26 +134,36 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
 	var draggablePortlets = Y.Node.all(config.portletStyle);    
     draggablePortlets.each(function(v, k) {
         var portlet = new Y.JetUI.Portlet();
-    	Y.log("portlet = " + v.getAttribute("name") + v.getAttribute("id"));
+    	Y.log("portlet = " + v.getAttribute("name") + v.getAttribute("id") + "locked = " + v.getAttribute("locked"));
         portlet.set("name", v.getAttribute("name"));
         portlet.set("id", v.getAttribute("id"));
-        portlet.set("toolbar", false);
+        portlet.set("toolbar", Boolean(v.getAttribute("locked").toLowerCase() === 'true'));
         portlet.set("detached", false);
         portlet.set("column", v.getAttribute("column"));
         portlet.set("row", v.getAttribute("row"));
         v.data = portlet;
-        var ddNav = new Y.DD.Drag({
-            node: v,
-            groups: ['portlets'],
-            dragMode: 'intersect'                    
-        }).plug(Y.Plugin.DDProxy, { 
-          	 moveOnEnd: false         	    	
-        });    
-        ddNav.addHandle(config.dragHandleStyle);
-    	var drop = new Y.DD.Drop({
-            node: v,
-            groups: ['portlets', 'toolbars']            
-        });        
+        Y.log("toolbar = " + portlet.get("toolbar"));
+        var dragGroups = ['portlets'];
+        var dragMode = 'intersect';
+        var dropGroups  = ['portlets', 'toolbars'];
+        if (portlet.get("toolbar") == false) {
+// FIXME: disabling Detachable toolbars until I have time to implement scheduled        	
+//	        groups = ['toolbars'],	        dragMode = 'point';
+//	        dropGroups = [];
+//        }
+	        var ddNav = new Y.DD.Drag({
+	            node: v,
+	            groups: dragGroups,
+	            dragMode: dragMode                    
+	        }).plug(Y.Plugin.DDProxy, { 
+	          	 moveOnEnd: false         	    	
+	        });    
+	        ddNav.addHandle(config.dragHandleStyle);
+	    	var drop = new Y.DD.Drop({
+	            node: v,
+	            groups: dropGroups            
+	        });
+        }
     	//portlet.info();
     });
     

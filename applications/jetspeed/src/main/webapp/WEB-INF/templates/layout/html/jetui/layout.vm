@@ -72,7 +72,7 @@ limitations under the License.
 	 	  $jetspeed.setCurrentFragment($f)	   
   	      #if($f.type == "portlet")
 	         ## get the decorated Portlet content
-		     <div id='$f.id' name='$f.name' column='${col}' row='${row}' class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}" >
+		     <div id='$f.id' locked='$f.isLocked()' name='$f.name' column='${col}' row='${row}' class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}" >
 			    #parse($f.decoration.template)
 		     </div>			    
 		   #else		
