@@ -37,9 +37,13 @@ the root of your decortaion.  This will be used instead of the default.
         
         $!jetspeed.getTitle($f)
       </div>
-    
-      #PortletActionBar($decoration)
-	
+     #set($_actions = $decoration.actions)  
+	 <div class="PActionBar">
+	    #foreach ($_action in $_actions)
+	     <a href="${_action.Action}" title="${_action.Name}" class="action portlet-action" #if($_action.target)target="$_action.target"#end><img src="$request.contextPath/${_action.link}" alt="${_action.Alt}" border="0" /></a>
+	    #end
+	    <span style='cursor: pointer; z-index: 1000;' id='jetspeed-close-${f.id}' title="close" class="portlet-action-close"><img src="${request.contextPath}/decorations/portlet/jetspeed/images/close.gif" alt="Close" border="0" /></span>    
+	 </div>
     </div>
  #end    
  #if (!$jetspeed.isHidden($f) && !$hidePortlet && $jetspeed.WindowState.toString() != "minimized")
