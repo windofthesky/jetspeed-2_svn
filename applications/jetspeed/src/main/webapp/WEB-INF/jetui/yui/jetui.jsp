@@ -46,7 +46,14 @@ limitations under the License.
       encoding += "; charset=" + response.getCharacterEncoding();
   }
   String baseUrl = jetui.getBaseURL(rc);
-  String pageDec = jetui.getTheme(rc).getPageLayoutDecoration().getName();  
+  String pageDec = jetui.getTheme(rc).getPageLayoutDecoration().getName();
+  
+  String portalContextPath = request.getContextPath();
+  String portalServletPath = request.getServletPath();
+  String portalPagePath = rc.getPortalURL().getPath();
+  if (portalPagePath == null || "".equals(portalPagePath)) {
+      portalPagePath = "/";
+  }
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -62,7 +69,10 @@ var JetuiConfiguration = {
 	dragMode: "<%=pc.getString(PortalConfigurationConstants.JETUI_DRAG_MODE)%>",
 	portletStyle: "<%=pc.getString(PortalConfigurationConstants.JETUI_STYLE_PORTLET)%>",
 	layoutStyle: "<%=pc.getString(PortalConfigurationConstants.JETUI_STYLE_LAYOUT)%>",
-	dragHandleStyle: "<%=pc.getString(PortalConfigurationConstants.JETUI_STYLE_DRAG_HANDLE)%>"	
+	dragHandleStyle: "<%=pc.getString(PortalConfigurationConstants.JETUI_STYLE_DRAG_HANDLE)%>",
+	portalContextPath: "<%=portalContextPath%>",
+	portalServletPath: "<%=portalServletPath%>",
+	portalPagePath: "<%=portalPagePath%>"
 };
 var JETUI_YUI = {
   base: "<%=request.getContextPath()%>/javascript/yui/build/",
@@ -206,7 +216,7 @@ for (String style : jetui.getStyleSheets(rc))
 
 </div> <!-- end layout -->
 </div>
-</body>
+
 <%
 for (ContentFragment fragment : columnLayout.getDetachedPortlets())
 {
@@ -220,5 +230,18 @@ for (ContentFragment fragment : columnLayout.getDetachedPortlets())
 <% } %>
 
 <script src="<%=request.getContextPath()%>/jetui/engine/portal.js"></script>
- 
+
+<div id="jsPortletTemplate" class="portal-layout-cell yui-dd-draggable yui-dd-drop" style="display: none">
+  <div class="portlet <%=pageDec%>">
+    <div class="PTitle">
+      <div class="PTitleContent">Loading..L</div>
+      <div class="PActionBar"></div>
+    </div>
+    <div class="PContentBorder">
+      <div class="PContent"></div>
+    </div>
+  </div>
+</div>
+
+</body>
 </html>

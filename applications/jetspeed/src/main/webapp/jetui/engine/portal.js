@@ -9,6 +9,9 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
         JETUI_YUI.portalInstance = new Y.JetUI.Portal();
     }    
     var portal = JETUI_YUI.portalInstance;
+    portal.portalContextPath = config.portalContextPath;
+    portal.portalServletPath = config.portalServletPath;
+    portal.portalPagePath = config.portalPagePath;
         
     ////////////////////////////////////////////////////    
     // Create Navigator Portlet
@@ -133,15 +136,8 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     }
 	var draggablePortlets = Y.Node.all(config.portletStyle);    
     draggablePortlets.each(function(v, k) {
-        var portlet = new Y.JetUI.Portlet();
+        var portlet = Y.JetUI.Portlet.attach(v);
     	//Y.log("portlet = " + v.getAttribute("name") + v.getAttribute("id") + "locked = " + v.getAttribute("locked"));
-        portlet.set("name", v.getAttribute("name"));
-        portlet.set("id", v.getAttribute("id"));
-        portlet.set("toolbar", Boolean(v.getAttribute("locked").toLowerCase() === 'true'));
-        portlet.set("detached", false);
-        portlet.set("column", v.getAttribute("column"));
-        portlet.set("row", v.getAttribute("row"));
-        v.data = portlet;
         var dragGroups = ['portlets'];
         var dragMode = 'intersect';
         var dropGroups  = ['portlets', 'toolbars'];
@@ -169,16 +165,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     var dropLayouts = Y.Node.all(config.layoutStyle); 
     dropLayouts.each(function(v, k) {
     	//Y.log("layout = " + v.getAttribute("name") + v.getAttribute("id"));
-        var layout = new Y.JetUI.Layout();
-        layout.set("name", v.getAttribute("name"));
-        layout.set("id", v.getAttribute("id"));
-        layout.set("nested", false);
-        var locked = v.getAttribute("locked");
-        locked = (locked == null || locked == "false") ? false : true;        	
-        layout.set("locked", locked);
-        layout.set("column", v.getAttribute("column"));        
-        layout.set("row", 0);
-        v.data = layout;
+        var layout = Y.JetUI.Layout.attach(v);
         //layout.info();
         if (v.get('children').size() == 0)
         {

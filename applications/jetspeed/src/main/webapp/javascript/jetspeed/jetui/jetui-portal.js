@@ -55,6 +55,24 @@ YUI.add('jetui-portal', function(Y) {
     Y.extend(Y.JetUI.Portal, Y.Base, {
         
         /**
+         * @property portal context path
+         * @type String
+         */
+        portalContextPath : "",
+        
+        /**
+         * @property portal base path
+         * @type String
+         */
+        portalServletPath : "",
+        
+        /**
+         * @property portal page path
+         * @type String
+         */
+        portalPagePath : "/",
+        
+        /**
          * @property desktopMode
          * @type Boolean
          */
@@ -215,6 +233,64 @@ YUI.add('jetui-portal', function(Y) {
                     groups: ['portlets']            
                 });
             }        
+        },
+        
+        /**
+         * @method onPortletRenderComplete
+         */
+        onPortletRenderComplete : function(id, o, args) {
+            var id = id;
+            var v = args.complete;
+            var data = o.responseText;
+            var title = o.getResponseHeader("JS_PORTLET_TITLE");
+            var children = v.getElementsByTagName("DIV");
+            children.each(function(v, k) {
+                if (v.hasClass("PTitleContent")) {
+                    v.setContent(title);
+                } else if (v.hasClass("PContent")) {
+                    v.setContent(data);
+                }
+            });
+        },
+        
+        /**
+         * @method addPortlet
+         */
+        addPortlet : function(fragment) {
+            if (!JETUI_YUI || !JETUI_YUI.portalInstance)
+                return;
+            
+            var portal = JETUI_YUI.portalInstance;
+            var templatePanel = Y.Node.one("#jsPortletTemplate");
+            var v = templatePanel.cloneNode(true);
+            v.setStyle('display', '');
+            v.set("id", fragment.id);
+            v.setAttribute("name", fragment.name);
+            v.setAttribute("row", fragment.properties.row);
+            v.setAttribute("column", fragment.properties.column);
+            var portlet = Y.JetUI.Portlet.attach(v);
+            var dragGroups = ['portlets'];
+            var dragMode = 'intersect';
+            var dropGroups  = ['portlets', 'toolbars'];
+            if (portlet.get("toolbar") == false) {
+                var ddNav = new Y.DD.Drag({
+                    node: v,
+                    groups: dragGroups,
+                    dragMode: dragMode
+                }).plug(Y.Plugin.DDProxy, {
+                     moveOnEnd: false
+                });
+                ddNav.addHandle(JetuiConfiguration.dragHandleStyle);
+                var drop = new Y.DD.Drop({
+                    node: v,
+                    groups: dropGroups            
+                });
+            }
+            var columns = Y.Node.all('.portal-layout-column');
+            columns.item(parseInt(fragment.properties.column)).appendChild(v);
+            
+            var uri = portal.portalContextPath + "/portlet" + portal.portalPagePath + "?entity=" + fragment.id;
+            var request = Y.io(uri, { on: { complete: this.onPortletRenderComplete }, arguments: { complete: v } } );
         }
         
     });
@@ -292,7 +368,23 @@ YUI.add('jetui-portal', function(Y) {
             Y.log("---------");
         }
     });
-
+    
+    /**
+     * Create a portlet window and attach the portlet window to the sepcified node.
+     * @method attach
+     */
+    Y.JetUI.Portlet.attach = function(node) {
+        var portlet = new Y.JetUI.Portlet();
+        portlet.set("name", node.getAttribute("name"));
+        portlet.set("id", node.getAttribute("id"));
+        portlet.set("toolbar", Boolean(node.getAttribute("locked").toLowerCase() === 'true'));
+        portlet.set("detached", false);
+        portlet.set("column", node.getAttribute("column"));
+        portlet.set("row", node.getAttribute("row"));
+        node.data = portlet;
+        return portlet;
+    };
+    
     /**
      * Create a layout window to represent a layout window.
      *
@@ -367,5 +459,23 @@ YUI.add('jetui-portal', function(Y) {
             Y.log("---------");
         }
     });
+    
+    /**
+     * Create a layout and attach the layout to the sepcified node.
+     * @method attach
+     */
+    Y.JetUI.Layout.attach = function(node) {
+        var layout = new Y.JetUI.Layout();
+        layout.set("name", node.getAttribute("name"));
+        layout.set("id", node.getAttribute("id"));
+        layout.set("nested", false);
+        var locked = node.getAttribute("locked");
+        locked = (locked == null || locked == "false") ? false : true;          
+        layout.set("locked", locked);
+        layout.set("column", node.getAttribute("column"));        
+        layout.set("row", 0);
+        node.data = layout;
+        return layout;
+    };
     
 }, '3.0.0', {requires:['dd', 'io', 'dataschema-json', 'node-base', 'node-menunav']});
