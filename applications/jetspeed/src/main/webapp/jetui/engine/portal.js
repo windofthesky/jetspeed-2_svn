@@ -176,16 +176,11 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
         }
     });
 
-    var cleanseForSelector = function(s) {
-    	return s.replace(/(\.|\#)/g, "\\$1");
-    }
-    
     var onRemoveComplete = function(id, o, args) { 
     	var id = id; // Transaction ID. 
     	var data = o.responseText; // Response data. 
     	var widgetId = args[0];
-    	widgetId = cleanseForSelector(widgetId);
-    	var widget = Y.one("#" + widgetId);
+    	var widget = Y.one("[id='" + widgetId + "']");
     	if (widget)
     	{
     		var parent = widget.get('parentNode');
@@ -198,7 +193,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
 		    	});
 	        }
     	}
-    };     
+    };
     
     var onClickRemove = function(e) {
     	var uri = document.location.href;
@@ -210,10 +205,10 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     	windowId = windowId.replace("jetspeed-close-", "");
     	var uri = uri + "?action=remove&id=" + windowId;    	
         Y.on('io:complete', onRemoveComplete, this, [windowId]); 
-        var request = Y.io(uri); 
+        var request = Y.io(uri);
     };
 
-    var closeWindows = Y.Node.all('.portlet-action-close');    
+    var closeWindows = Y.Node.all('.portlet-action-close');
     closeWindows.each(function(v, k) {
         v.on('click', onClickRemove);
     });
