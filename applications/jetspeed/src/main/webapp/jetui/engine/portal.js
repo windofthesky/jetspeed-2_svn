@@ -179,33 +179,33 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     var onRemoveComplete = function(id, o, args) { 
     	var id = id; // Transaction ID. 
     	var data = o.responseText; // Response data. 
-    	var widgetId = args[0];
-    	var widget = Y.one("[id='" + widgetId + "']");
-    	if (widget)
-    	{
-    		var parent = widget.get('parentNode');
-    		widget.remove();
+    	var windowId = args.complete[0];
+    	var window = Y.one("[id='" + windowId + "']");
+    	if (window) {
+    		var parent = window.get('parentNode');
+    		window.remove();
 	        if (parent.get('children').size() == 0)
 	        {
 		    	var drop = new Y.DD.Drop({
-		        node: parent,
-		        groups: ['portlets']            
+    		        node: parent,
+    		        groups: ['portlets']            
 		    	});
 	        }
     	}
     };
     
     var onClickRemove = function(e) {
-    	var uri = document.location.href;
-    	if (uri.indexOf("/portal") > -1)    	
-    		uri = uri.replace("/portal", "/ajaxapi");
-    	else
-    		uri = uri.replace("/ui", "/ajaxapi");
-    	var windowId =  e.currentTarget.getAttribute('id');
-    	windowId = windowId.replace("jetspeed-close-", "");
-    	var uri = uri + "?action=remove&id=" + windowId;    	
-        Y.on('io:complete', onRemoveComplete, this, [windowId]); 
-        var request = Y.io(uri);
+        var portal = JETUI_YUI.portalInstance;
+        var windowId =  e.currentTarget.getAttribute('id');
+        windowId = windowId.replace("jetspeed-close-", "");
+        var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/?_type=json";
+        var config = {
+                on: { complete: onRemoveComplete },
+                method: "DELETE",
+                headers: { "X-Portal-Path" : portal.portalPagePath },
+                arguments: { complete: [ windowId ] }
+            };
+        var request = Y.io(uri, config);
     };
 
     var closeWindows = Y.Node.all('.portlet-action-close');

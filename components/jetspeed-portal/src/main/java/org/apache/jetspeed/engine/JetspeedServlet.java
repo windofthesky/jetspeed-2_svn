@@ -36,8 +36,6 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.UserContentCacheManager;
@@ -59,6 +57,8 @@ import org.apache.jetspeed.security.UserSubjectPrincipal;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.statistics.PortalStatistics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Jetspeed Servlet entry point.
@@ -260,7 +260,7 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
      * @exception ServletException
      *                a servlet exception.
      */
-    public final void doGet( HttpServletRequest req, HttpServletResponse res ) throws IOException, ServletException
+    private void invoke( HttpServletRequest req, HttpServletResponse res ) throws IOException, ServletException
     {
         // define RequestContext here to allow protential usage and state processing in case of an exception
         // in outer catch errorHandler method call
@@ -311,24 +311,13 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
             handleError(req, res, context, e);
         }
     }
-
-    /**
-     * In this application doGet and doPost are the same thing.
-     * 
-     * @param req
-     *            Servlet request.
-     * @param res
-     *            Servlet response.
-     * @exception IOException
-     *                a servlet exception.
-     * @exception ServletException
-     *                a servlet exception.
-     */
-    public final void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException, ServletException
+    
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        doGet(req, res);
+        invoke(request, response);
     }
-
+    
     // -------------------------------------------------------------------
     // S E R V L E T S H U T D O W N
     // -------------------------------------------------------------------
