@@ -286,7 +286,7 @@ YUI.add('jetui-portal', function(Y) {
                     groups: dropGroups            
                 });
             }
-            var columns = Y.Node.all('.portal-layout-column');
+            var columns = Y.Node.all(JetuiConfiguration.layoutStyle); 
             columns.item(parseInt(fragment.properties.column)).appendChild(v);
             
             var uri = portal.portalContextPath + "/portlet" + portal.portalPagePath + "?entity=" + fragment.id;
