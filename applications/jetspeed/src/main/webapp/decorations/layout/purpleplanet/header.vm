@@ -28,7 +28,7 @@ limitations under the License.
 #set($portalContextPath = $rc.request.getContextPath())
 #set($portalServletPath = $rc.request.getServletPath())
 #set($portalPagePath = $rc.getPortalURL().getPath())
-#if ($portalPagePath == "") 
+#if ("$!portalPagePath" == "")
   #set($portalPagePath = "/")
 #end
 
