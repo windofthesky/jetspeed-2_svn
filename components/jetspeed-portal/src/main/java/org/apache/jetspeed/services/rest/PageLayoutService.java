@@ -39,6 +39,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -48,6 +49,7 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.beans.ContentFragmentBean;
 import org.apache.jetspeed.services.beans.ContentPageBean;
+import org.apache.jetspeed.services.beans.DecorationBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +97,29 @@ public class PageLayoutService
         return new ContentPageBean(contentPage);
     }
     
+    @GET
+    @Path("/fragment/{id}/")
+    public ContentFragmentBean getContentFragment(@Context HttpServletRequest servletRequest,
+                                                  @Context UriInfo uriInfo,
+                                                  @PathParam("id") String fragmentId)
+    {
+        if (StringUtils.isBlank(fragmentId))
+        {
+            throw new WebApplicationException(new IllegalArgumentException("Fragment id not specified"));
+        }
+        
+        RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
+        ContentPage contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        ContentFragment contentFragment = contentPage.getFragmentById(fragmentId);
+        
+        if (contentFragment == null)
+        {
+            throw new WebApplicationException(new IllegalArgumentException("Fragment not found with the specified id: " + fragmentId));
+        }
+        
+        return new ContentFragmentBean(contentFragment);
+    }
+    
     @POST
     @Path("/fragment/{type}/{name}/")
     public ContentFragmentBean addContentFragment(@Context HttpServletRequest servletRequest,
@@ -133,8 +158,8 @@ public class PageLayoutService
     @DELETE
     @Path("/fragment/{id}/")
     public ContentFragmentBean deleteContentFragment(@Context HttpServletRequest servletRequest,
-                                          @Context UriInfo uriInfo,
-                                          @PathParam("id") String fragmentId)
+                                                     @Context UriInfo uriInfo,
+                                                     @PathParam("id") String fragmentId)
     {
         if (StringUtils.isBlank(fragmentId))
         {
@@ -350,6 +375,36 @@ public class PageLayoutService
         }
         
         return new ContentFragmentBean(contentFragment);
+    }
+
+    @GET
+    @Path("/decoration/fragment/{id}/")
+    public DecorationBean getDecorationOfContentFragment(@Context HttpServletRequest servletRequest,
+                                                         @Context UriInfo uriInfo,
+                                                         @PathParam("id") String fragmentId)
+    {
+        if (StringUtils.isBlank(fragmentId))
+        {
+            throw new WebApplicationException(new IllegalArgumentException("Fragment id not specified"));
+        }
+        
+        RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
+        ContentPage contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        ContentFragment contentFragment = contentPage.getFragmentById(fragmentId);
+        
+        if (contentFragment == null)
+        {
+            throw new WebApplicationException(new IllegalArgumentException("Fragment not found with the specified id: " + fragmentId));
+        }
+        
+        Decoration decoration = contentFragment.getDecoration();
+        
+        if (decoration == null)
+        {
+            throw new WebApplicationException(new IllegalArgumentException("Decoration not found with the specified id: " + fragmentId));
+        }
+        
+        return new DecorationBean(decoration);
     }
     
     private ContentPage getContentPage(RequestContext requestContext, String action) throws WebApplicationException

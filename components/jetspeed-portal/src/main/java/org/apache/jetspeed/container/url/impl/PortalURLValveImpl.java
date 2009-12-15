@@ -116,16 +116,16 @@ public class PortalURLValveImpl extends AbstractValve
             
             if (param != null)
             {
-                final String pathInfoParam = param;
+                int offset = param.indexOf(':');
                 
-                servletRequest = new HttpServletRequestWrapper(servletRequest)
+                if (offset == -1)
                 {
-                    @Override
-                    public String getPathInfo()
-                    {
-                        return pathInfoParam;
-                    }
-                };
+                    servletRequest = new PortalPathAdjustedHttpServletRequestWrapper(servletRequest, null, param);
+                }
+                else
+                {
+                    servletRequest = new PortalPathAdjustedHttpServletRequestWrapper(servletRequest, param.substring(0, offset), param.substring(offset + 1));
+                }
             }
         }
         
@@ -135,5 +135,31 @@ public class PortalURLValveImpl extends AbstractValve
     public String toString()
     {
         return "PortalURLValveImpl";
+    }
+    
+    private static class PortalPathAdjustedHttpServletRequestWrapper extends HttpServletRequestWrapper
+    {
+        private String servletPath;
+        private String pathInfo;
+        
+        private PortalPathAdjustedHttpServletRequestWrapper(HttpServletRequest request, String servletPath, String pathInfo)
+        {
+            super(request);
+            
+            this.servletPath = servletPath;
+            this.pathInfo = pathInfo;
+        }
+        
+        @Override
+        public String getServletPath()
+        {
+            return (servletPath != null ? servletPath : super.getServletPath());
+        }
+        
+        @Override
+        public String getPathInfo()
+        {
+            return (pathInfo != null ? pathInfo : super.getPathInfo());
+        }
     }
 }

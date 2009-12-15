@@ -42,6 +42,7 @@ public class ContentFragmentBean implements Serializable
     private String id;
     private String type;
     private String name;
+    private boolean locked;
     private String decorator;
     private String mode;
     private String state;
@@ -59,6 +60,7 @@ public class ContentFragmentBean implements Serializable
         id = contentFragment.getId();
         type = contentFragment.getType();
         name = contentFragment.getName();
+        locked = contentFragment.isLocked();
         decorator = contentFragment.getDecorator();
         
         mode = contentFragment.getMode();
@@ -109,7 +111,17 @@ public class ContentFragmentBean implements Serializable
     {
         this.name = name;
     }
-
+    
+    public boolean isLocked()
+    {
+        return locked;
+    }
+    
+    public void setLocked(boolean locked)
+    {
+        this.locked = locked;
+    }
+    
     public String getDecorator()
     {
         return decorator;

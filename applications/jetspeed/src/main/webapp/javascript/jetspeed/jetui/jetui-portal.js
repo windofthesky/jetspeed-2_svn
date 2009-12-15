@@ -274,10 +274,57 @@ YUI.add('jetui-portal', function(Y) {
             var config = {
                     on: { complete: portal.onPortletRemoveComplete },
                     method: "DELETE",
-                    headers: { "X-Portal-Path" : portal.portalPagePath },
+                    headers: { "X-Portal-Path" : portal.portalServletPath + ":" + portal.portalPagePath },
                     arguments: { complete: [ windowId ] }
                 };
             var request = Y.io(uri, config);
+        },
+        
+        /**
+         * @method onPortletDecorationReadComplete
+         */
+        onPortletDecorationReadComplete : function(id, o, args) {
+            if (!JETUI_YUI || !JETUI_YUI.portalInstance)
+                return;
+            var portal = JETUI_YUI.portalInstance;
+            var windowId = args.complete[0];
+            var actionBarElem = args.complete[1];
+            var existingActionElem = null;
+            var childElems = actionBarElem.getElementsByTagName("*");
+            if (childElems.size() > 0) {
+                existingActionElem = childElems.item(0);
+            }
+            var result = null;
+
+            try {
+                result = Y.JSON.parse(o.responseText);
+                if (!result) {
+                    Y.log("Error: no data found.");
+                    return;
+                }
+            } catch (e) {
+                Y.log("Error: " + e.message);
+                return;
+            }
+            
+            var decoActions = result.decoratorActions;
+            for (var i = 0; i < decoActions.length; i++) {
+                var link = Y.Node.create("<a class='action portlet-action'/>");
+                var icon = Y.Node.create("<img border='0'/>");
+                link.setAttribute("href", decoActions[i].action);
+                if (link.target) {
+                    link.setAttribute("target", decoActions[i].target);
+                }
+                link.setAttribute("title", decoActions[i].name);
+                icon.setAttribute("src", portal.portalContextPath + "/" + decoActions[i].link);
+                icon.setAttribute("alt", decoActions[i].alt);
+                link.appendChild(icon);
+                if (existingActionElem) {
+                    actionBarElem.insertBefore(link, existingActionElem);
+                } else {
+                    actionBarElem.appendChild(link);
+                }
+            }
         },
         
         /**
@@ -291,12 +338,15 @@ YUI.add('jetui-portal', function(Y) {
             var v = args.complete;
             var windowId = v.get("id");
             var titleElem = null;
+            var actionBarElem = null;
             var closeElem = null;
             var contentElem = null;
             var children = v.getElementsByTagName("*");
             children.each(function(v, k) {
                 if (v.hasClass("PTitleContent")) {
                     titleElem = v;
+                } else if (v.hasClass("PActionBar")) {
+                    actionBarElem = v;
                 } else if (v.hasClass("PContent")) {
                     contentElem = v;
                 } else if (/^jetspeed-close/.test("" + v.get("id"))) {
@@ -314,6 +364,16 @@ YUI.add('jetui-portal', function(Y) {
             var portletContent = o.responseText;
             if (contentElem) {
                 contentElem.setContent(portletContent);
+            }
+            
+            if (actionBarElem) {
+                var uri = portal.portalContextPath + "/services/pagelayout/decoration/fragment/" + windowId + "/?_type=json";
+                var config = {
+                        on: { complete: portal.onPortletDecorationReadComplete },
+                        headers: { "X-Portal-Path" : portal.portalServletPath + ":" + portal.portalPagePath },
+                        arguments: { complete: [ windowId, actionBarElem ] }
+                    };
+                var request = Y.io(uri, config);
             }
         },
         
