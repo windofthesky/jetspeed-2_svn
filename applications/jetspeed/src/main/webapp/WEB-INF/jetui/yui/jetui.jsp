@@ -35,12 +35,28 @@ limitations under the License.
   RequestContext rc = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
   Map userInfo = jetui.getUserAttributes(rc);
   ContentPage portalPage = rc.getPage();
+  ContentFragment maximized = (ContentFragment)request.getAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
   ColumnLayout columnLayout = (ColumnLayout)request.getAttribute("columnLayout");
+  
+  String navContent = null;
+  String tbContent = null;
+  
   ContentFragment pageNav = jetui.getContentFragment("jsPageNavigator",  rc);
-  String navContent = jetui.getRenderedContent(pageNav, rc);
   ContentFragment toolbox = jetui.getContentFragment("jsToolbox",  rc);
-  String tbContent = jetui.getRenderedContent(toolbox, rc);
+  
+  if (maximized != null)
+  {
+      navContent = jetui.renderPortletWindow(pageNav.getId(), pageNav.getName(), rc);
+      tbContent = jetui.renderPortletWindow(toolbox.getId(), pageNav.getName(), rc);
+  }
+  else
+  {
+      navContent = jetui.getRenderedContent(pageNav, rc);
+      tbContent = jetui.getRenderedContent(toolbox, rc);
+  }
+  
   String breadcrumbs = jetui.renderPortletWindow("jsBreadcrumbMenu", "j2-admin::BreadcrumbMenu", rc);
+  
   String encoding = "text/html"; 
   if (response.getCharacterEncoding() != null)
   {
@@ -137,7 +153,6 @@ for (String style : jetui.getStyleSheets(rc))
 <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span><%=breadcrumbs%></div>
 <div id="jsFragments" class="portal-nested-layout portal-nested-layout-TwoColumns">
 <%
-    ContentFragment maximized = (ContentFragment)request.getAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
     if (maximized != null)
     {
         String content = jetui.getRenderedContent(maximized, rc);
@@ -149,9 +164,9 @@ for (String style : jetui.getStyleSheets(rc))
         request.setAttribute("fragment", maximized);
 		request.setAttribute("coordinate", columnLayout.getCoordinate(maximized));
 %>
-<div id="column_id_0>" 
+<div id="column_id_0"
      class="portal-layout-column"
-	 locked='<%=maximized.isLocked() %>'> 
+	 locked="<%=maximized.isLocked()%>" 
      style="float:left; width:100%; background-color: #ffffff;">
 <jsp:include page="jetui-portlet.jsp"/>
 </div>  
