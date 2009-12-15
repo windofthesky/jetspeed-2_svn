@@ -235,7 +235,7 @@ for (ContentFragment fragment : columnLayout.getDetachedPortlets())
 <div id="jsPortletTemplate" class="portal-layout-cell yui-dd-draggable yui-dd-drop" style="display: none">
   <div class="portlet <%=pageDec%>">
     <div class="PTitle">
-      <div class="PTitleContent">Loading..L</div>
+      <div class="PTitleContent">Loading...</div>
       <div class="PActionBar"></div>
     </div>
     <div class="PContentBorder">
