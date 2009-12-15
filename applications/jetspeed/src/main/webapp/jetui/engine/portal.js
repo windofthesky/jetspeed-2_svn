@@ -141,11 +141,13 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
         var dragGroups = ['portlets'];
         var dragMode = 'intersect';
         var dropGroups  = ['portlets', 'toolbars'];
-        if (portlet.get("toolbar") == false) {
+        if (portlet.get("toolbar") == true) {
 // FIXME: disabling Detachable toolbars until I have time to implement scheduled        	
-//	        groups = ['toolbars'],	        dragMode = 'point';
-//	        dropGroups = [];
-//        }
+	        groups = ['toolbars'],	        
+	        dragMode = 'point';
+	        dropGroups = [];
+        }
+        
 	        var ddNav = new Y.DD.Drag({
 	            node: v,
 	            groups: dragGroups,
@@ -158,7 +160,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
 	            node: v,
 	            groups: dropGroups            
 	        });
-        }
+        
     	//portlet.info();
     });
     
