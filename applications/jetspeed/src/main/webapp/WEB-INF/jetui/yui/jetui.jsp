@@ -38,7 +38,7 @@ limitations under the License.
   ColumnLayout columnLayout = (ColumnLayout)request.getAttribute("columnLayout");
   ContentFragment pageNav = jetui.getContentFragment("jsPageNavigator",  rc);
   String navContent = jetui.getRenderedContent(pageNav, rc);
-  ContentFragment toolbox = jetui.getContentFragment("jsJetspeedToolbox",  rc);
+  ContentFragment toolbox = jetui.getContentFragment("jsToolbox",  rc);
   String tbContent = jetui.getRenderedContent(toolbox, rc);
   String breadcrumbs = jetui.renderPortletWindow("jsBreadcrumbMenu", "j2-admin::BreadcrumbMenu", rc);
   String encoding = "text/html"; 
