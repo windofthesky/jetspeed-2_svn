@@ -36,10 +36,11 @@ limitations under the License.
   Map userInfo = jetui.getUserAttributes(rc);
   ContentPage portalPage = rc.getPage();
   ColumnLayout columnLayout = (ColumnLayout)request.getAttribute("columnLayout");
-  String navContent = jetui.renderPortletWindow("_PageNavigator", "j2-admin::PageNavigator", rc);
-  String spacesNavContent = jetui.renderPortletWindow("_SpaceNavigator", "j2-admin::SpaceNavigator", rc);
-  String tbContent = jetui.renderPortletWindow("_JetspeedToolbox", "j2-admin::JetspeedToolbox", rc);
-  String breadcrumbs = jetui.renderPortletWindow("_BreadcrumbMenu", "j2-admin::BreadcrumbMenu", rc);
+  ContentFragment pageNav = jetui.getContentFragment("jsPageNavigator",  rc);
+  String navContent = jetui.getRenderedContent(pageNav, rc);
+  ContentFragment toolbox = jetui.getContentFragment("jsJetspeedToolbox",  rc);
+  String tbContent = jetui.getRenderedContent(toolbox, rc);
+  String breadcrumbs = jetui.renderPortletWindow("jsBreadcrumbMenu", "j2-admin::BreadcrumbMenu", rc);
   String encoding = "text/html"; 
   if (response.getCharacterEncoding() != null)
   {

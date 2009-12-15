@@ -32,6 +32,7 @@ import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
@@ -172,6 +173,26 @@ public class Jetui
         return fragment.getRenderedContent();
     }
     
+    public ContentFragment getContentFragment(String windowId, RequestContext context)
+    {
+        ContentPage page = context.getPage();
+        return page.getFragmentByFragmentId(windowId);
+//        if (windowId == null || portletUniqueName == null)
+//        {
+//            throw new IllegalArgumentException("Parameter windowId and portletUniqueName are both required");
+//        }
+//        PortletWindow window = context.getPortletWindow(windowId);
+//        if (window == null)
+//        {
+//            window = context.getInstantlyCreatedPortletWindow(windowId, portletUniqueName);
+//        }
+//        if (window.isValid())
+//        {
+//            return window.getFragment();
+//        }
+//        return null;
+    }            
+        
     public String renderPortletWindow(String windowId, String portletUniqueName, RequestContext context)
     {
         try
