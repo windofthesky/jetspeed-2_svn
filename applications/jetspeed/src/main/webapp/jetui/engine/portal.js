@@ -142,8 +142,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
         var dragMode = 'intersect';
         var dropGroups  = ['portlets', 'toolbars'];
         if (portlet.get("toolbar") == true) {
-// FIXME: disabling Detachable toolbars until I have time to implement scheduled        	
-	        groups = ['toolbars'],	        
+	        dragGroups = ['toolbars'],	        
 	        dragMode = 'point';
 	        dropGroups = [];
         }
