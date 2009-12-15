@@ -14,6 +14,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 *#
+#set($rc = $request.getAttribute("org.apache.jetspeed.request.RequestContext"))
+#set($portalContextPath = $rc.request.getContextPath())
+
 #if (!$jetspeed.isAjaxCustomizationEnabled())
           </td>
         </tr>
@@ -28,7 +31,9 @@ limitations under the License.
   <div class="portlet ${layoutDecoration.name}">
     <div class="PTitle">
       <div class="PTitleContent">Loading...</div>
-      <div class="PActionBar"></div>
+      <div class="PActionBar">
+        <span style='cursor: pointer; z-index: 1000;' id='jetspeed-close-XXX' title="close" class="portlet-action-close"><img src="$portalContextPath/decorations/portlet/jetspeed/images/close.gif" alt="Close" border="0" /></span>
+      </div>
     </div>
     <div class="PContentBorder">
       <div class="PContent"></div>
