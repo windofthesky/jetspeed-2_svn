@@ -21,8 +21,19 @@ limitations under the License.
     <p>
       <img src="#GetPageResource('images/Jetspeed_blue_sm.png')" alt="Jetspeed 2 Powered" border="0" />
     </p>
-  </body>
 #if ($jetspeed.isAjaxCustomizationEnabled())
 <script src="#BaseHref()/jetui/engine/portal.js"></script>
+<div id="jsPortletTemplate" class="portal-layout-cell yui-dd-draggable yui-dd-drop" style="display: none">
+  <div class="portlet ${layoutDecoration.name}">
+    <div class="PTitle">
+      <div class="PTitleContent">Loading..L</div>
+      <div class="PActionBar"></div>
+    </div>
+    <div class="PContentBorder">
+      <div class="PContent"></div>
+    </div>
+  </div>
+</div>
 #end  
+</body>
 </html>

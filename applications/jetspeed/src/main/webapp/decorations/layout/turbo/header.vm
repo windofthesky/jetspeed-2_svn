@@ -24,6 +24,13 @@ limitations under the License.
 #* Add all template constants to the current context *#
 #defineNavigationConstants()
 #set($pc = $jetspeed.getPortalConfiguration())
+#set($rc = $request.getAttribute("org.apache.jetspeed.request.RequestContext"))
+#set($portalContextPath = $rc.request.getContextPath())
+#set($portalServletPath = $rc.request.getServletPath())
+#set($portalPagePath = $rc.getPortalURL().getPath())
+#if ($portalPagePath == "") 
+  #set($portalPagePath = "/")
+#end
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -37,7 +44,10 @@ var JetuiConfiguration = {
 	dragMode: '$pc.getString("jetui.drag.mode")',
 	portletStyle: '$pc.getString("jetui.style.portlet")',
 	layoutStyle: '$pc.getString("jetui.style.layout")',
-	dragHandleStyle: '$pc.getString("jetui.style.drag.handle")'	
+	dragHandleStyle: '$pc.getString("jetui.style.drag.handle")',
+	portalContextPath: "${portalContextPath}",
+	portalServletPath: "${portalServletPath}",
+	portalPagePath: "${portalPagePath}"			
 };
 var JETUI_YUI = {
   base: "#BaseHref()/javascript/yui/build/",
