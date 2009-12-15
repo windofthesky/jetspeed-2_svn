@@ -236,27 +236,85 @@ YUI.add('jetui-portal', function(Y) {
         },
         
         /**
+         * @method onPortletRemoveComplete
+         */
+        onPortletRemoveComplete : function(id, o, args) {
+            var id = id; // Transaction ID.
+            var data = o.responseText; // Response data. 
+            var windowId = args.complete[0];
+            var window = Y.one("[id='" + windowId + "']");
+            if (window) {
+                var parent = window.get('parentNode');
+                window.remove();
+                if (parent.get('children').size() == 0)
+                {
+                    var drop = new Y.DD.Drop({
+                        node: parent,
+                        groups: ['portlets']            
+                    });
+                }
+            }
+        },
+        
+        /**
+         * @method removePortlet
+         */
+        removePortlet : function(e) {
+            if (!JETUI_YUI || !JETUI_YUI.portalInstance)
+                return;
+            var portal = JETUI_YUI.portalInstance;
+            var windowId = null;
+            if (e instanceof String) {
+                windowId = e;
+            } else {
+                var windowId = e.currentTarget.getAttribute("id");
+                windowId = windowId.replace(/^jetspeed-close-/, "");
+            }
+            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/?_type=json";
+            var config = {
+                    on: { complete: portal.onPortletRemoveComplete },
+                    method: "DELETE",
+                    headers: { "X-Portal-Path" : portal.portalPagePath },
+                    arguments: { complete: [ windowId ] }
+                };
+            var request = Y.io(uri, config);
+        },
+        
+        /**
          * @method onPortletRenderComplete
          */
         onPortletRenderComplete : function(id, o, args) {
+            if (!JETUI_YUI || !JETUI_YUI.portalInstance)
+                return;
+            var portal = JETUI_YUI.portalInstance;
             var id = id;
             var v = args.complete;
-            var data = o.responseText;
-            var title = o.getResponseHeader("JS_PORTLET_TITLE");
-            var children = v.getElementsByTagName("DIV");
+            var windowId = v.get("id");
+            var titleElem = null;
+            var closeElem = null;
+            var contentElem = null;
+            var children = v.getElementsByTagName("*");
             children.each(function(v, k) {
                 if (v.hasClass("PTitleContent")) {
-                    v.setContent(title);
+                    titleElem = v;
                 } else if (v.hasClass("PContent")) {
-                    v.setContent(data);
+                    contentElem = v;
+                } else if (/^jetspeed-close/.test("" + v.get("id"))) {
+                    closeElem = v;
                 }
             });
-            children = v.getElementsByTagName("H2");
-            children.each(function(v, k) {
-                if (v.hasClass("PTitleContent")) {
-                    v.setContent(title);
-                }
-            });            
+            var title = o.getResponseHeader("JS_PORTLET_TITLE");
+            if (titleElem) {
+                titleElem.setContent(title);
+            }
+            if (closeElem) {
+                closeElem.setAttribute("id", "jetspeed-close-" + windowId);
+                closeElem.on('click', portal.removePortlet);
+            }
+            var portletContent = o.responseText;
+            if (contentElem) {
+                contentElem.setContent(portletContent);
+            }
         },
         
         /**
@@ -274,6 +332,7 @@ YUI.add('jetui-portal', function(Y) {
             v.setAttribute("name", fragment.name);
             v.setAttribute("row", fragment.properties.row);
             v.setAttribute("column", fragment.properties.column);
+            
             var portlet = Y.JetUI.Portlet.attach(v);
             var dragGroups = ['portlets'];
             var dragMode = 'intersect';
@@ -298,7 +357,6 @@ YUI.add('jetui-portal', function(Y) {
             var uri = portal.portalContextPath + "/portlet" + portal.portalPagePath + "?entity=" + fragment.id;
             var request = Y.io(uri, { on: { complete: this.onPortletRenderComplete }, arguments: { complete: v } } );
         }
-        
     });
     
     /**

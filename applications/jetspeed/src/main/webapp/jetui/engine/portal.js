@@ -176,42 +176,10 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
 	    	});
         }
     });
-
-    var onRemoveComplete = function(id, o, args) { 
-    	var id = id; // Transaction ID. 
-    	var data = o.responseText; // Response data. 
-    	var windowId = args.complete[0];
-    	var window = Y.one("[id='" + windowId + "']");
-    	if (window) {
-    		var parent = window.get('parentNode');
-    		window.remove();
-	        if (parent.get('children').size() == 0)
-	        {
-		    	var drop = new Y.DD.Drop({
-    		        node: parent,
-    		        groups: ['portlets']            
-		    	});
-	        }
-    	}
-    };
     
-    var onClickRemove = function(e) {
-        var portal = JETUI_YUI.portalInstance;
-        var windowId =  e.currentTarget.getAttribute('id');
-        windowId = windowId.replace("jetspeed-close-", "");
-        var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/?_type=json";
-        var config = {
-                on: { complete: onRemoveComplete },
-                method: "DELETE",
-                headers: { "X-Portal-Path" : portal.portalPagePath },
-                arguments: { complete: [ windowId ] }
-            };
-        var request = Y.io(uri, config);
-    };
-
     var closeWindows = Y.Node.all('.portlet-action-close');
     closeWindows.each(function(v, k) {
-        v.on('click', onClickRemove);
+        v.on('click', portal.removePortlet);
     });
         
 	Y.DD.DDM.on('drag:drophit', function(e) {
