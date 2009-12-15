@@ -281,6 +281,26 @@ YUI.add('jetui-portal', function(Y) {
         },
         
         /**
+         * @method createDecoratorActionNode
+         */
+        createDecoratorActionNode : function(decoAction) {
+            if (!JETUI_YUI || !JETUI_YUI.portalInstance)
+                return;
+            var portal = JETUI_YUI.portalInstance;
+            var node = Y.Node.create("<a class='action portlet-action'/>");
+            var icon = Y.Node.create("<img border='0'/>");
+            node.setAttribute("href", decoAction.action);
+            if (decoAction.target) {
+                node.setAttribute("target", decoAction.target);
+            }
+            node.setAttribute("title", decoAction.name);
+            icon.setAttribute("src", portal.portalContextPath + "/" + decoAction.link);
+            icon.setAttribute("alt", decoAction.alt);
+            node.appendChild(icon);
+            return node;
+        },
+        
+        /**
          * @method onPortletDecorationReadComplete
          */
         onPortletDecorationReadComplete : function(id, o, args) {
@@ -309,20 +329,11 @@ YUI.add('jetui-portal', function(Y) {
             
             var decoActions = result.decoratorActions;
             for (var i = 0; i < decoActions.length; i++) {
-                var link = Y.Node.create("<a class='action portlet-action'/>");
-                var icon = Y.Node.create("<img border='0'/>");
-                link.setAttribute("href", decoActions[i].action);
-                if (link.target) {
-                    link.setAttribute("target", decoActions[i].target);
-                }
-                link.setAttribute("title", decoActions[i].name);
-                icon.setAttribute("src", portal.portalContextPath + "/" + decoActions[i].link);
-                icon.setAttribute("alt", decoActions[i].alt);
-                link.appendChild(icon);
+                var decoActionNode = portal.createDecoratorActionNode(decoActions[i]);
                 if (existingActionElem) {
-                    actionBarElem.insertBefore(link, existingActionElem);
+                    actionBarElem.insertBefore(decoActionNode, existingActionElem);
                 } else {
-                    actionBarElem.appendChild(link);
+                    actionBarElem.appendChild(decoActionNode);
                 }
             }
         },
