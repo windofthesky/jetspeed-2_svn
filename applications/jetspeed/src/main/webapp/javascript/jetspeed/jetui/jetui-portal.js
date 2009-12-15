@@ -251,6 +251,12 @@ YUI.add('jetui-portal', function(Y) {
                     v.setContent(data);
                 }
             });
+            children = v.getElementsByTagName("H2");
+            children.each(function(v, k) {
+                if (v.hasClass("PTitleContent")) {
+                    v.setContent(title);
+                }
+            });            
         },
         
         /**
