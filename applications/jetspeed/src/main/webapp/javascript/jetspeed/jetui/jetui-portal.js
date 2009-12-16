@@ -126,7 +126,10 @@ YUI.add('jetui-portal', function(Y) {
          * @method initializer
          * @protected
          */
-        initializer : function(cfg) { 
+        initializer : function(cfg) {
+            this.portalContextPath = cfg.portalContextPath;
+            this.portalServletPath = cfg.portalServletPath;
+            this.portalPagePath = cfg.portalPagePath;
         },
         
         /**
@@ -435,6 +438,13 @@ YUI.add('jetui-portal', function(Y) {
             var request = Y.io(uri, { on: { complete: this.onPortletRenderComplete }, arguments: { complete: v } } );
         }
     });
+    
+    /**
+     * The portal singleton instance
+     */
+    if (JETUI_YUI && !JETUI_YUI.portalInstance) {
+        JETUI_YUI.portalInstance = new Y.JetUI.Portal(JETUI_YUI.config);
+    }
     
     /**
      * Create a portlet window to represent a portal window.

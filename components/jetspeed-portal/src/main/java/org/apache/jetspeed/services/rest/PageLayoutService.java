@@ -25,6 +25,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -35,6 +36,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.jetspeed.JetspeedActions;
@@ -125,7 +127,10 @@ public class PageLayoutService
     public ContentFragmentBean addContentFragment(@Context HttpServletRequest servletRequest,
                                                   @Context UriInfo uriInfo,
                                                   @PathParam("type") String fragmentType,
-                                                  @PathParam("name") String fragmentName)
+                                                  @PathParam("name") String fragmentName,
+                                                  @FormParam("row") String rowParam,
+                                                  @FormParam("col") String colParam,
+                                                  @FormParam("minrowscol") String minRowsColumnParam)
     {
         if (StringUtils.isBlank(fragmentType) || StringUtils.isBlank(fragmentName))
         {
@@ -135,15 +140,49 @@ public class PageLayoutService
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
         ContentPage contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
         
+        int row = NumberUtils.toInt(rowParam, -1);
+        int col = NumberUtils.toInt(colParam, -1);
+        boolean minRowsColumn = BooleanUtils.toBoolean(minRowsColumnParam);
+        
         try
         {
             ContentFragment contentFragment = pageLayoutComponent.addPortlet(contentPage, fragmentType, fragmentName);
+            String addedContentFragmentId = contentFragment.getId();
             
-            if (contentFragment.getLayoutColumn() == -1 || contentFragment.getLayoutRow() == -1)
+            boolean needToAdjustPositions = false;
+            
+            ContentFragment layoutFragment = null;
+            int columnCount = -1;
+            
+            if (col == -1 && minRowsColumn)
             {
-                String addedContentFragmentId = contentFragment.getId();
-                ContentFragment layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), addedContentFragmentId);
-                int columnCount = getColumnCountOfLayoutFragment(layoutFragment);
+                layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), addedContentFragmentId);
+                columnCount = getColumnCountOfLayoutFragment(layoutFragment);
+                col = getMinRowsColumnIndex(layoutFragment, columnCount);
+            }
+            
+            if (row != -1 || col != -1) 
+            {
+                pageLayoutComponent.updateRowColumn(contentFragment, row, col);
+                needToAdjustPositions = true;
+            } 
+            else 
+            {
+                needToAdjustPositions = (contentFragment.getLayoutColumn() == -1 || contentFragment.getLayoutRow() == -1);
+            }
+            
+            if (needToAdjustPositions)
+            {
+                if (layoutFragment == null)
+                {
+                    layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), addedContentFragmentId);
+                }
+                
+                if (columnCount == -1)
+                {
+                    columnCount = getColumnCountOfLayoutFragment(layoutFragment);
+                }
+                
                 adjustPositionsOfChildFragments(layoutFragment, columnCount);
             }
             
@@ -407,6 +446,14 @@ public class PageLayoutService
         return new DecorationBean(decoration);
     }
     
+    /**
+     * Returns the content page of the current portal request context with security check.
+     * 
+     * @param requestContext the portal request context
+     * @param action the action to check the security against.
+     * @return
+     * @throws WebApplicationException
+     */
     private ContentPage getContentPage(RequestContext requestContext, String action) throws WebApplicationException
     {
         try
@@ -427,6 +474,12 @@ public class PageLayoutService
         }
     }
     
+    /**
+     * Returns the parent layout content fragment of the content fragment specified by the fragmentId.
+     * @param contentFragment the seed content fragment where searching starts from.
+     * @param fragmentId the fragment id of the content fragment, of which the parent fragment is looked for.
+     * @return
+     */
     private ContentFragment getParentFragment(ContentFragment contentFragment, String fragmentId)
     {
         for (ContentFragment child : (List<ContentFragment>) contentFragment.getFragments())
@@ -449,6 +502,11 @@ public class PageLayoutService
         return null;
     }
     
+    /**
+     * Returns the column count of the layout content fragment based on the init parameters of the layout portlet.
+     * @param layoutFragment
+     * @return
+     */
     private int getColumnCountOfLayoutFragment(ContentFragment layoutFragment)
     {
         int columnCount = 1;
@@ -483,6 +541,12 @@ public class PageLayoutService
         return columnCount;
     }
     
+    /**
+     * Returns child content fragment set array ordered by the column index from the layout content fragment.
+     * @param layoutFragment
+     * @param columnCount
+     * @return
+     */
     private SortedSet<ContentFragment> [] getSortedChildFragmentSetArray(ContentFragment layoutFragment, int columnCount)
     {
         if (columnCount <= 0)
@@ -513,6 +577,12 @@ public class PageLayoutService
         return fragmentSetArray;
     }
     
+    /**
+     * Adjusts the rows and cols of each content fragment contained in the layout fragment.
+     * @param layoutFragment
+     * @param columnCount the column count of the layout fragment.
+     * @see #getColumnCountOfLayoutFragment(ContentFragment)
+     */
     private void adjustPositionsOfChildFragments(ContentFragment layoutFragment, int columnCount)
     {
         SortedSet<ContentFragment> [] fragmentSetArray = getSortedChildFragmentSetArray(layoutFragment, columnCount);
@@ -533,6 +603,31 @@ public class PageLayoutService
         }
     }
     
+    private int getMinRowsColumnIndex(ContentFragment layoutFragment, int columnCount)
+    {
+        SortedSet<ContentFragment> [] fragmentSetArray = getSortedChildFragmentSetArray(layoutFragment, columnCount);
+        int col = fragmentSetArray.length - 1;
+        
+        int rowCount = fragmentSetArray[col].size();
+        
+        for (int i = fragmentSetArray.length - 2; i >= 0; i--)
+        {
+            if (fragmentSetArray[i].size() < rowCount)
+            {
+                col = i;
+                rowCount = fragmentSetArray[i].size();
+            }
+        }
+        
+        return col;
+    }
+    
+    /**
+     * ContentFragmentRowComparator
+     * <P>
+     * Comparator to compare content fragments by the row index in a column.
+     * </P>
+     */
     private static class ContentFragmentRowComparator implements Comparator<ContentFragment>
     {
         public int compare(ContentFragment f1, ContentFragment f2)

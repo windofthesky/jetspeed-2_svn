@@ -4,14 +4,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
 	var config = JETUI_YUI.config;
     Y.log("Starting up JETUI " +  config.engine + " engine...");
 	
-    // initialize singleton portal instance
-    if (!JETUI_YUI.portalInstance) {
-        JETUI_YUI.portalInstance = new Y.JetUI.Portal();
-    }    
     var portal = JETUI_YUI.portalInstance;
-    portal.portalContextPath = config.portalContextPath;
-    portal.portalServletPath = config.portalServletPath;
-    portal.portalPagePath = config.portalPagePath;
         
     ////////////////////////////////////////////////////    
     // Create Navigator Portlet
