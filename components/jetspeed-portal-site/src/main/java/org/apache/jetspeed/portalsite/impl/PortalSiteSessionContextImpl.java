@@ -32,8 +32,10 @@ import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionEvent;
 
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.PageManager;
@@ -42,6 +44,7 @@ import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
+import org.apache.jetspeed.portalsite.PortalSiteContentTypeMapper;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.portalsite.PortalSiteSessionContext;
 import org.apache.jetspeed.portalsite.view.SiteView;
@@ -87,6 +90,11 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * pageManager - PageManager component
      */
     private transient PageManager pageManager;
+
+    /**
+     * contentTypeMapper - PortalSiteContentTypeMapper component
+     */
+    private transient PortalSiteContentTypeMapper contentTypeMapper;
 
     /**
      * profileLocators - map of session profile locators by locator names
@@ -140,10 +148,12 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * PortalSiteSessionContextImpl - constructor
      *
      * @param pageManager PageManager component instance
+     * @param contentTypeMapper PortalSiteContentTypeMapper component instance
      */
-    public PortalSiteSessionContextImpl(PageManager pageManager)
+    public PortalSiteSessionContextImpl(PageManager pageManager, PortalSiteContentTypeMapper contentTypeMapper)
     {
         this.pageManager = pageManager;
+        this.contentTypeMapper = contentTypeMapper;
     }
 
     /**
@@ -214,13 +224,14 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public Page selectRequestPage(Map requestProfileLocators, boolean requestFallback, boolean useHistory, boolean forceReservedVisible) throws NodeNotFoundException
+    public BaseConcretePageElement selectRequestPage(Map requestProfileLocators, boolean requestFallback, boolean useHistory, boolean forceReservedVisible) throws NodeNotFoundException
     {
         // validate and update session profile locators if modified
         if (updateSessionProfileLocators(requestProfileLocators, forceReservedVisible))
         {
-            // extract page request path from the locators
+            // extract page request path and server from the locators
             String requestPath = Folder.PATH_SEPARATOR;
+            String requestServerName = null;
             ProfileLocator locator = (ProfileLocator)requestProfileLocators.get(ProfileLocator.PAGE_LOCATOR);
             if (locator != null)
             {
@@ -236,6 +247,62 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 // simply use the request path)
                 locator = (ProfileLocator)requestProfileLocators.values().iterator().next();
                 requestPath = locator.getRequestPath();
+            }
+            requestServerName = locator.getRequestServerName();
+            if (log.isDebugEnabled())
+            {
+                log.debug("Select request page: requestPath="+requestPath+", requestServerName: "+requestServerName);
+            }
+
+            // determine content mapping for request path if content type
+            // mapper configured for context
+            if (contentTypeMapper != null)
+            {
+                // test for system page or folder request mappings; if system
+                // types matched, continue below with native portal resolution
+                // of request
+                String systemType = contentTypeMapper.mapSystemType(requestPath);
+                if (systemType == null)
+                {
+                    // test for content type mappings; if no content type matched
+                    // request, continue with native portal resolution of request
+                    String contentType = contentTypeMapper.mapContentType(requestPath);
+                    if (contentType != null)
+                    {
+                        // log mapping
+                        if (log.isDebugEnabled())
+                        {
+                            log.debug("Content request: requestPath="+requestPath+", mapped to content type: "+contentType);
+                        }
+
+                        // support request path mapping of content requests
+                        String mappedRequestPath = contentTypeMapper.mapRequestPath(requestServerName, contentType, requestPath);
+                        if (mappedRequestPath != null)
+                        {
+                            // log mapping
+                            if (log.isDebugEnabled())
+                            {
+                                log.debug("Mapped content request: serverName="+requestServerName+", contentType="+contentType+", requestPath="+requestPath+", mapped to: "+mappedRequestPath);
+                            }
+                            requestPath = mappedRequestPath;
+                        }
+
+                        // attempt to match content request against dynamic pages
+                        // using profile locators and site view; start at root
+                        // folder until path no longer matches and search from
+                        // there back up toward the root for dynamic pages by
+                        // content type; fallback to wildcard content type
+                        return selectContentRequestPage(requestPath, contentType);
+                    }
+                }
+                else
+                {
+                    // log mapping
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug("System request: requestPath="+requestPath+", mapped to system type: "+systemType);
+                    }                    
+                }
             }
             
             // attempt to select request page or folder using
@@ -405,10 +472,10 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                             // log modified page request
                             if (log.isDebugEnabled() && !path.equals(requestPath))
                             {
-                                log.debug("Request page modified by profile locator: request path=" + path);
+                                log.debug("Request path modified by profile locator: request path=" + path + ", original request path=" + requestPath);
                             }
+                            return path;
                         }
-                        return path;
                     }
                 }
             }
@@ -680,6 +747,130 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     }
     
     /**
+     * selectContentRequestPage - select dynamic page proxy for request for
+     *                            specified content request path and content
+     *                            type given profile locators and site view
+     *                            associated with this context
+     *
+     * @param requestPath request path
+     * @param contentType content type
+     * @return selected dynamic page proxy for request
+     * @throws NodeNotFoundException if not found
+     * @throws SecurityException if view access not granted
+     */
+    private DynamicPage selectContentRequestPage(String requestPath, String contentType) throws NodeNotFoundException
+    {
+        // save access exceptions
+        SecurityException accessException = null;
+
+        // valid SiteView required from session profile locators
+        SiteView view = getSiteView();
+        if (view != null)
+        {
+            // default request to root folder if not specified
+            if (requestPath == null)
+            {
+                requestPath = Folder.PATH_SEPARATOR;
+            }
+            
+            // log content page request
+            if (log.isDebugEnabled())
+            {
+                log.debug("Request content page: request path=" + requestPath);
+            }
+            
+            // search for deepest matching content request path
+            // that matches request path; start with root folder in view
+            Folder contentRequestFolder = (Folder)view.getNodeProxy(Folder.PATH_SEPARATOR, null, false, false);
+            String contentRequestPath = contentRequestFolder.getPath();
+            String contentRequestFile = null;
+            for (;;)
+            {
+                // find next path name
+                int startOfPathNameIndex = (contentRequestPath.equals(Folder.PATH_SEPARATOR) ? 1 : contentRequestPath.length()+1);
+                int endOfPathNameIndex = requestPath.indexOf(Folder.PATH_SEPARATOR, startOfPathNameIndex);
+                if ((endOfPathNameIndex == -1) || (endOfPathNameIndex == startOfPathNameIndex))
+                {
+                    break;
+                }
+                // find folder in view
+                try
+                {
+                    String pathFolderName = requestPath.substring(startOfPathNameIndex, endOfPathNameIndex);
+                    contentRequestFolder = contentRequestFolder.getFolder(pathFolderName);
+                    contentRequestPath = contentRequestFolder.getPath();
+                }
+                catch (Exception e)
+                {
+                    break;
+                }
+            }
+            
+            // select matching dynamic pages in folders from deepest
+            // to root folders in content request path
+            while (contentRequestFolder != null)
+            {
+                // select dynamic page by content type or wildcard match
+                try
+                {
+                    NodeSet dynamicPages = contentRequestFolder.getDynamicPages();
+                    if ((dynamicPages != null) && !dynamicPages.isEmpty())
+                    {
+                        // select matching page
+                        DynamicPage wildcardMatchingPage = null;
+                        Iterator dynamicPagesIter = dynamicPages.iterator();
+                        while (dynamicPagesIter.hasNext())
+                        {
+                            DynamicPage dynamicPage = (DynamicPage)dynamicPagesIter.next();
+                            if ((dynamicPage.getContentType() == null) || dynamicPage.getContentType().equals(DynamicPage.WILDCARD_CONTENT_TYPE))
+                            {
+                                wildcardMatchingPage = dynamicPage;
+                            }
+                            else if (dynamicPage.getContentType().equals(contentType))
+                            {
+                                // log selected dynamic page
+                                if (log.isDebugEnabled())
+                                {
+                                    log.debug("Selected "+contentType+" content dynamic page, path=" + view.getManagedDynamicPage(dynamicPage).getPath());
+                                }
+                                return dynamicPage;
+                            }
+                        }
+                        // select wildcard matching page
+                        if (wildcardMatchingPage != null)
+                        {
+                            // log selected dynamic page
+                            if (log.isDebugEnabled())
+                            {
+                                log.debug("Selected "+contentType+" content dynamic page with wildcard, path=" + view.getManagedDynamicPage(wildcardMatchingPage).getPath());
+                            }
+                            return wildcardMatchingPage;
+                        }
+                    }
+                }
+                catch (NodeException ne)
+                {
+                    break;
+                }
+                catch (SecurityException se)
+                {
+                    accessException = se;
+                }
+
+                // continue search with parent folder
+                contentRequestFolder = (Folder)contentRequestFolder.getParent();
+            }
+        }
+            
+        // no dynamic page matched or accessible
+        if (accessException != null)
+        {
+            throw accessException;
+        }
+        throw new NodeNotFoundException("No dynamic page matched " + requestPath + " request in site view.");
+    }
+
+    /**
      * getRequestRootFolder - select root folder proxy for given profile locators
      *
      * @param requestProfileLocators map of profile locators for request
@@ -938,6 +1129,16 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     }
 
     /**
+     * getContentTypeMapper - return PortalSiteContentTypeMapper component instance
+     *
+     * @return PortalSiteContentTypeMapper instance
+     */
+    public PortalSiteContentTypeMapper getContentTypeMapper()
+    {
+        return contentTypeMapper;
+    }
+    
+    /**
      * isValid - return flag indicating whether this context instance
      *           is valid or if it is stale after being persisted and
      *           reloaded as session state
@@ -1000,16 +1201,25 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     }
 
     /**
-     * getManagedPage - get concrete page instance from page proxy
+     * getManagedConcretePage - get concrete page or dynamic page instance
+     *                          from page proxy
      *  
      * @param page page proxy
      * @return managed page
      */
-    public Page getManagedPage(Page page)
+    public BaseConcretePageElement getManagedPage(BaseConcretePageElement page)
     {
-        // return managed page in site view
+        // return managed page or dynamic page in site view
         SiteView view = getSiteView();
-        return ((view != null) ? view.getManagedPage(page) : null);            
+        if (page instanceof Page)
+        {
+            return ((view != null) ? view.getManagedPage((Page)page) : null);
+        }
+        else if (page instanceof DynamicPage)
+        {
+            return ((view != null) ? view.getManagedDynamicPage((DynamicPage)page) : null);
+        }
+        return null;
     }
 
     /**

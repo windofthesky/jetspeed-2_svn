@@ -28,7 +28,7 @@ import java.util.Collections;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.FragmentReference;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
@@ -79,7 +79,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     /**
      * requestPage - cached request profiled page proxy
      */
-    private Page requestPage;
+    private BaseConcretePageElement requestPage;
 
     /**
      * requestPageTemplate - cached request page template proxy
@@ -230,14 +230,14 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     }
 
     /**
-     * getManagedPage - get request profiled concrete page instance
-     *                  as managed by the page manager
+     * getManagedPage - get request profiled concrete page or dynamic page
+     *                  instance as managed by the page manager
      *  
      * @return managed page
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    public Page getManagedPage() throws NodeNotFoundException
+    public BaseConcretePageElement getManagedPage() throws NodeNotFoundException
     {
         return sessionContext.getManagedPage(getPage());            
     }
@@ -296,7 +296,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    public Page getPage() throws NodeNotFoundException
+    public BaseConcretePageElement getPage() throws NodeNotFoundException
     {
         // select request page from session context using
         // request profile locators if not previously
@@ -320,7 +320,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         if (!requestPageTemplateCached)
         {
             // get requested page
-            Page page = getPage();
+            BaseConcretePageElement page = getPage();
             if (page != null)
             {
                 // scan through site looking for first page template
@@ -365,7 +365,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         if (!requestFragmentDefinitionsCached)
         {
             // get requested page and optional page template
-            Page page = getPage();
+            BaseConcretePageElement page = getPage();
             PageTemplate pageTemplate = getPageTemplate();
             if (page != null)
             {
@@ -471,7 +471,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     public Folder getFolder() throws NodeNotFoundException
     {
         // return parent folder of request page
-        Page page = getPage();
+        BaseConcretePageElement page = getPage();
         if (page != null)
         {
             return (Folder)page.getParent();
@@ -650,7 +650,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     {
         // access page and page templates to force request
         // page resolution
-        Page page = getPage();
+        BaseConcretePageElement page = getPage();
         PageTemplate pageTemplate = getPageTemplate();
 
         // return available menu definition names from
@@ -732,7 +732,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     {
         // access page and page template to force request
         // page resolution
-        Page page = getPage();
+        BaseConcretePageElement page = getPage();
         PageTemplate pageTemplate = getPageTemplate();
         if ((page != null) && (name != null))
         {

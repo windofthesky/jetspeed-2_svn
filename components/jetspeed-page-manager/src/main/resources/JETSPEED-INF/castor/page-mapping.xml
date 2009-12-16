@@ -95,8 +95,8 @@
          extends="org.apache.jetspeed.om.page.psml.AbstractBaseConcretePageElement">
     <map-to xml="dynamic-page"/>
 
-    <field name="pageType" type="string">
-      <bind-xml name="type" node="attribute"/>
+    <field name="contentType" type="string">
+      <bind-xml name="content-type" node="attribute"/>
     </field>
   </class>
 

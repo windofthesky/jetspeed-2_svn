@@ -1127,8 +1127,12 @@ public class SiteView
      */
     private static boolean isProxyViewable(Node nodeProxy, boolean onlyVisible)
     {
-        // pages and links are always considered viewable;
-        // folders must be tested for viewable and visibile
+        // pages and links are always considered viewable
+        if ((nodeProxy instanceof Page) || (nodeProxy instanceof Link))
+        {
+            return true;
+        }
+        // folders must be tested for viewable and visible
         // child nodes
         if (nodeProxy instanceof Folder)
         {
@@ -1156,7 +1160,8 @@ public class SiteView
             }
             return false;
         }
-        return true;
+        // templates, fragments, and dynamic page are not visible
+        return false;
     }
 
     /**

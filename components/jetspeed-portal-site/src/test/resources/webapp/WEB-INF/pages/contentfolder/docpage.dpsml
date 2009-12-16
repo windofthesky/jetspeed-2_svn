@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 Licensed to the Apache Software Foundation (ASF) under one or more
 contributor license agreements.  See the NOTICE file distributed with
@@ -15,16 +16,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<dynamic-page id="clonetest" content-type="default"
+
+<dynamic-page id="docpage" content-type="doc-type"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
 
-  <title>Clone Test Dynamic Page</title>
-
-  <fragment id="cdp-f001" type="layout" name="TwoColumns">
-    <fragment id="cdp-f002" type="portlet" name="HelloPortlet"/>
-    <fragment-reference id="cdp-f003" refid="ctest001"/>
-  </fragment>
-
+  <title>/contentfolder/docpage.dpsml</title>
+  <fragment id="fake" name="fake" type="fake"/>
 </dynamic-page>

@@ -167,10 +167,37 @@ limitations under the License.
   </bean>
     
   <!-- PortalSite -->
+  <bean id="org.apache.jetspeed.portalsite.PortalSiteContentTypeMapper" 
+       name="portalSiteContentTypeMapper"
+       class="org.apache.jetspeed.portalsite.impl.PortalSiteContentTypeMapperImpl">         
+       <constructor-arg index="0">
+           <list>
+               <bean class="org.apache.jetspeed.portalsite.impl.ContentTypeMapping">
+                   <constructor-arg index="0"><value>\w[.](\w+)&#36;</value></constructor-arg> <!-- use &#36; for '$' -->
+                   <constructor-arg index="1"><value>&#36;1-type</value></constructor-arg> <!-- use &#36; for '$' -->
+               </bean>
+           </list>
+       </constructor-arg>
+       <constructor-arg index="1">
+           <list>
+               <bean class="org.apache.jetspeed.portalsite.impl.RequestPathMapping">
+                   <constructor-arg index="0"><value>/preview/</value></constructor-arg>
+                   <constructor-arg index="1"><value>/</value></constructor-arg>
+               </bean>
+               <bean class="org.apache.jetspeed.portalsite.impl.RequestPathMapping">
+                   <constructor-arg index="0"><value>.domain.com</value></constructor-arg>
+                   <constructor-arg index="1"><value>doc-type</value></constructor-arg>
+                   <constructor-arg index="2"><value>/(?:draft|scratch)/</value></constructor-arg>
+                   <constructor-arg index="3"><value>/pub/</value></constructor-arg>
+               </bean>
+           </list>
+       </constructor-arg>
+  </bean>
   <bean id="org.apache.jetspeed.portalsite.PortalSite" 
        name="portalSite"
        class="org.apache.jetspeed.portalsite.impl.PortalSiteImpl">         
        <constructor-arg index="0"><ref bean="pageManager"/></constructor-arg>
+       <constructor-arg index="1"><ref bean="portalSiteContentTypeMapper"/></constructor-arg>
   </bean>
     
 </beans>

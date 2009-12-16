@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
-import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
@@ -45,8 +44,6 @@ public class PathSessionResolver implements RuleCriterionResolver
         else
         {
             path = context.getPath();
-            if (path != null)
-                path = mapPath(context, path);            
         }
         
         if ((path == null) || path.equals("/"))
@@ -61,37 +58,6 @@ public class PathSessionResolver implements RuleCriterionResolver
         return path;            
     }
     
-    private String mapPath(RequestContext context, String originalPath)
-    {
-        String path = originalPath;
-        if (path.endsWith(".psml"))
-        {
-            return originalPath;
-        }
-        for (int ix=0; ix < REGEX_MAP.length; ix++)
-        {
-            if (path.matches(REGEX_MAP[ix][0]))
-            {
-                path = REGEX_MAP[ix][1];
-                context.setPath(path);
-                context.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, originalPath);                
-                break;
-            }            
-        }
-        return path;
-    }
-    
-    // TODO: configure this information externally and live
-    static String[][] REGEX_MAP =
-    {     
-        {".*\\.(...|....)", "/Public/content.psml"}
-//        {".*\\.html", "/Public/content.psml"},       
-//        {".*\\.pdf", "/Public/content.psml"},        
-//        {"/_content.*", "/Public/content.psml"}
-//        {"/data/*", "/Public/content2.psml"},
-    };
-     
-
     /* (non-Javadoc)
      * @see org.apache.jetspeed.profiler.rules.RuleCriterionResolver#isControl()
      */

@@ -28,22 +28,22 @@ public class DynamicPageImpl extends AbstractBaseConcretePageElement implements 
 {
     private static final long serialVersionUID = 1L;
 
-    private String pageType;
+    private String contentType;
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.DynamicPage#getPageType()
+     * @see org.apache.jetspeed.om.page.DynamicPage#getContentType()
      */
-    public String getPageType()
+    public String getContentType()
     {
-        return pageType;
+        return contentType;
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.DynamicPage#setPageType(java.lang.String)
+     * @see org.apache.jetspeed.om.page.DynamicPage#setContentType(java.lang.String)
      */
-    public void setPageType(String pageType)
+    public void setContentType(String contentType)
     {
-        this.pageType = pageType;
+        this.contentType = contentType;
     }
 
     /* (non-Javadoc)

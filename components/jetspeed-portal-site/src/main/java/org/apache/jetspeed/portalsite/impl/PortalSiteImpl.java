@@ -18,6 +18,7 @@ package org.apache.jetspeed.portalsite.impl;
 
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.portalsite.PortalSite;
+import org.apache.jetspeed.portalsite.PortalSiteContentTypeMapper;
 import org.apache.jetspeed.portalsite.PortalSiteSessionContext;
 
 /**
@@ -32,15 +33,22 @@ public class PortalSiteImpl implements PortalSite
      * pageManager - PageManager component
      */
     private PageManager pageManager;
+    
+    /**
+     * contentTypeMapper - PortalSiteContentTypeMapper component
+     */
+    private PortalSiteContentTypeMapper contentTypeMapper;
 
     /**
      * PortalSiteImpl - component constructor
      *
      * @param pageManager PageManager component instance
+     * @param contentTypeMapper PortalSiteContentTypeMapper component instance
      */
-    public PortalSiteImpl(PageManager pageManager)
+    public PortalSiteImpl(PageManager pageManager, PortalSiteContentTypeMapper contentTypeMapper)
     {
         this.pageManager = pageManager;
+        this.contentTypeMapper = contentTypeMapper;
     }
 
     /**
@@ -50,7 +58,7 @@ public class PortalSiteImpl implements PortalSite
      */
     public PortalSiteSessionContext newSessionContext()
     {
-        return new PortalSiteSessionContextImpl(pageManager);
+        return new PortalSiteSessionContextImpl(pageManager, contentTypeMapper);
     }
 
     /**
@@ -61,5 +69,15 @@ public class PortalSiteImpl implements PortalSite
     public PageManager getPageManager()
     {
         return pageManager;
+    }
+
+    /**
+     * getContentTypeMapper - return PortalSiteContentTypeMapper component instance
+     *
+     * @return PortalSiteContentTypeMapper instance
+     */
+    public PortalSiteContentTypeMapper getContentTypeMapper()
+    {
+        return contentTypeMapper;
     }
 }

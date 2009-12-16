@@ -336,7 +336,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
         DynamicPage testdynamicpage = pageManager.getDynamicPage("/test001.dpsml");
         assertTrue(testdynamicpage.getId().equals("/test001.dpsml"));
-        assertTrue(testdynamicpage.getPageType().equals("default"));        
+        assertTrue(testdynamicpage.getContentType().equals("default"));        
         assertTrue(testdynamicpage.getTitle().equals("Test Dynamic Page"));
         assertTrue(testdynamicpage.getVersion().equals("2.77"));
         rootFragmentElement = testdynamicpage.getRootFragment();
@@ -501,7 +501,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(bf instanceof PageFragment);
 
         DynamicPage dynamicpage = pageManager.newDynamicPage("/test002.dpsml");
-        dynamicpage.setPageType("default");        
+        dynamicpage.setContentType("default");        
         dynamicpage.setTitle("Created Dynamic Page");
         rootFragmentElement = dynamicpage.getRootFragment();
         assertTrue(rootFragmentElement instanceof Fragment);
@@ -528,7 +528,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         dynamicpage = pageManager.getDynamicPage("/test002.dpsml");
         assertNotNull(dynamicpage);
         assertTrue(dynamicpage.getId().equals("/test002.dpsml"));
-        assertEquals("default", dynamicpage.getPageType());
+        assertEquals("default", dynamicpage.getContentType());
         assertEquals("Created Dynamic Page", dynamicpage.getTitle());
         assertNotNull(dynamicpage.getRootFragment());
         rootFragmentElement = dynamicpage.getRootFragment();
@@ -1422,7 +1422,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         DynamicPage clonedynamicpage = pageManager.copyDynamicPage(testdynamicpage, "/cloned.dpsml");
         assertNotNull(clonedynamicpage);
         assertTrue(clonedynamicpage.getId().equals("/cloned.dpsml"));
-        assertTrue(clonedynamicpage.getPageType().equals("default"));        
+        assertTrue(clonedynamicpage.getContentType().equals("default"));        
         assertTrue(clonedynamicpage.getTitle().equals("Clone Test Dynamic Page"));
         rootFragmentElement = clonedynamicpage.getRootFragment();
         assertTrue(rootFragmentElement instanceof Fragment);

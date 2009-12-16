@@ -186,7 +186,7 @@ limitations under the License.
         <column name="CLASS_NAME" required="true" size="100" type="VARCHAR"/>
         <column name="PARENT_ID" type="INTEGER" required="true"/>
         <column name="PATH" required="true" size="240" type="VARCHAR"/>
-        <column name="PAGE_TYPE" size="40" type="VARCHAR"/>
+        <column name="CONTENT_TYPE" size="40" type="VARCHAR"/>
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
         <column name="VERSION" size="40" type="VARCHAR"/>
         <column name="TITLE" size="100" type="VARCHAR"/>

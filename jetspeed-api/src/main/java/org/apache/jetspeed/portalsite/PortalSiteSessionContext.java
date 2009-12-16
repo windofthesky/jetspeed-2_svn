@@ -80,6 +80,13 @@ public interface PortalSiteSessionContext extends Serializable
     PageManager getPageManager();
 
     /**
+     * getContentTypeMapper - return PortalSiteContentTypeMapper component instance
+     *
+     * @return PortalSiteContentTypeMapper instance
+     */
+    PortalSiteContentTypeMapper getContentTypeMapper();
+
+    /**
      * isValid - return flag indicating whether this context instance
      *           is valid or if it is stale after being persisted and
      *           reloaded as session state

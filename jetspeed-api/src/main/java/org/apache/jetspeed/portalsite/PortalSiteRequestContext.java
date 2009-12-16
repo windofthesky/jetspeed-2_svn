@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
@@ -55,7 +55,7 @@ public interface PortalSiteRequestContext
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    Page getManagedPage() throws NodeNotFoundException;
+    BaseConcretePageElement getManagedPage() throws NodeNotFoundException;
 
     /**
      * getManagedPageTemplate - get request profiled concrete page 
@@ -86,7 +86,7 @@ public interface PortalSiteRequestContext
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    Page getPage() throws NodeNotFoundException;
+    BaseConcretePageElement getPage() throws NodeNotFoundException;
 
     /**
      * getPageTemplate - get page template proxy for request profiled page

@@ -28,6 +28,7 @@ import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
@@ -164,6 +165,14 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
     {
         try
         {
+            // save original request in the event it is modified below
+            // and some down stream content portlet needs it set
+            request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, request.getPath());
+            if (log.isDebugEnabled())
+            {
+                log.debug("Request path: "+request.getPath());
+            }
+            
             // get profiler locators for request subject/principal using the profiler
             Subject subject = request.getSubject();
             if (subject == null)
@@ -255,14 +264,19 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 // as returned by the PageManager component; accessing
                 // the managed page here selects the current page for the
                 // request
-                Page managedPage = requestContext.getManagedPage();
+                BaseConcretePageElement managedPage = requestContext.getManagedPage();
                 PageTemplate managedPageTemplate = requestContext.getManagedPageTemplate();
                 Map managedFragmentDefinitions = requestContext.getManagedFragmentDefinitions();
                 ContentPage contentPage = pageLayoutComponent.newContentPage(managedPage, managedPageTemplate, managedFragmentDefinitions);
                 request.setPage(contentPage);
                 request.setProfileLocators(requestContext.getLocators());
                 
-                request.setAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE,getPageActionAccess(request));                
+                request.setAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE,getPageActionAccess(request));
+
+                if (log.isDebugEnabled())
+                {
+                    log.debug("Page path: "+contentPage.getPath());
+                }
             }
 
             // continue

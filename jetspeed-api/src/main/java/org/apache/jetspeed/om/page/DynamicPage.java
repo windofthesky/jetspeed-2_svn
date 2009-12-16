@@ -28,18 +28,20 @@ import java.io.Serializable;
 public interface DynamicPage extends BaseConcretePageElement, Serializable
 {
     String DOCUMENT_TYPE = ".dpsml";
+    
+    String WILDCARD_CONTENT_TYPE = "*";
 
     /**
-     * Get the page type name that applies to this page.
+     * Get the content type name that applies to this page.
      *
      * @return the page type name name
      */
-    String getPageType();
+    String getContentType();
 
     /**
-     * Set the page type name for this page.
+     * Set the content type name for this page.
      *
-     * @param pageType the name of the page type for the page
+     * @param contentType the name of the content type for the page
      */
-    void setPageType(String pageType);
+    void setContentType(String contentType);
 }

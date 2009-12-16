@@ -28,15 +28,20 @@ import java.util.Map;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.PageNotRemovedException;
+import org.apache.jetspeed.page.PageNotUpdatedException;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.BasePageElement;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.FragmentReference;
+import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageFragment;
 import org.apache.jetspeed.om.page.PageTemplate;
@@ -46,6 +51,7 @@ import org.apache.jetspeed.om.page.impl.ContentLocalizedFieldImpl;
 import org.apache.jetspeed.om.page.impl.ContentPageImpl;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.preference.FragmentPreference;
+import org.apache.jetspeed.page.document.NodeException;
 import org.apache.pluto.container.PortletPreference;
 
 import org.slf4j.Logger;
@@ -96,7 +102,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
 
             // retrieve current page and root fragment from page manager
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
             BaseFragmentElement rootFragment = page.getRootFragment();
             if (!(rootFragment instanceof Fragment))
             {
@@ -126,7 +132,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             fragment.getFragments().add(newFragment);
 
             // update page in page manager
-            pageManager.updatePage(page);
+            updatePage(page);
             
             // update content page context
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
@@ -178,14 +184,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 throw new IllegalArgumentException("Locked content fragment is not mutable");
             }
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof Page) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
             if (!contentFragmentDefinitionIsPage)
             {
                 throw new IllegalArgumentException("Only page fragments can be modified");                
             }
 
             // retrieve current page and fragment from page manager
-            Page page = pageManager.getPage(contentFragmentImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
             BaseFragmentElement parentFragment = page.getFragmentById(contentFragmentImpl.getFragment().getId());
             if (!(parentFragment instanceof Fragment))
             {
@@ -215,7 +221,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             fragment.getFragments().add(newFragment);
 
             // update page in page manager
-            pageManager.updatePage(page);
+            updatePage(page);
 
             // update content context
             ContentFragmentImpl newContentFragmentImpl = newContentFragment(contentFragmentImpl.getId(), page, null, page, newFragment, false);
@@ -251,7 +257,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
 
             // retrieve current page and root fragment from page manager
-            Page page = pageManager.getPage(contentPage.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPage.getPage().getPath());
             BaseFragmentElement rootFragment = page.getRootFragment();
             if (!(rootFragment instanceof Fragment))
             {
@@ -273,7 +279,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             fragment.getFragments().add(newFragment);
 
             // update page in page manager
-            pageManager.updatePage(page);
+            updatePage(page);
 
             // update content page context
             ContentFragmentImpl newContentFragmentImpl = newContentFragment(pageRootContentFragmentImpl.getId(), page, null, page, newFragment, false);
@@ -296,7 +302,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // retrieve current page and parent folders from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
             Folder pageFolder = (Folder)page.getParent();
             Folder documentOrderingFolder = (Folder)pageFolder.getParent();
             if (documentOrderingFolder != null)
@@ -328,7 +334,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // retrieve current page and parent folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
             Folder documentOrderingFolder = (Folder)page.getParent();
 
             // check for edit permission
@@ -357,7 +363,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // retrieve current page and parent folders from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
             Folder pageFolder = (Folder)page.getParent();
             Folder documentOrderingFolder = (Folder)pageFolder.getParent();
             if (documentOrderingFolder != null)
@@ -389,7 +395,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // retrieve current page and parent folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
             Folder documentOrderingFolder = (Folder)page.getParent();
 
             // check for edit permission
@@ -439,14 +445,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 throw new IllegalArgumentException("Cannot use move fragment operation between pages");                
             }
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof Page) && contentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()));
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()));
             if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
                 throw new IllegalArgumentException("Fragment reference and page not consistent or mutable");
             }
             
             // retrieve current page and fragments from page manager
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
             BaseFragmentElement fromFragmentElement = page.getFragmentById(fromContentFragmentImpl.getFragment().getId());
             if (!(fromFragmentElement instanceof Fragment))
             {
@@ -472,7 +478,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // move page fragment and update page in page manager
             fragment = fromFragment.removeFragmentById(fragment.getId());
             toFragment.getFragments().add(fragment);
-            pageManager.updatePage(page);
+            updatePage(page);
 
             // update content context
             fromContentFragmentImpl.removeFragmentById(fragmentId);
@@ -489,7 +495,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
     /* (non-Javadoc)
      * @see org.apache.jetspeed.layout.PageLayoutComponent#newContentPage(org.apache.jetspeed.om.page.Page, org.apache.jetspeed.om.page.PageTemplate, java.util.Map)
      */
-    public ContentPage newContentPage(Page page, PageTemplate pageTemplate, Map fragmentDefinitions)
+    public ContentPage newContentPage(BaseConcretePageElement page, PageTemplate pageTemplate, Map fragmentDefinitions)
     {
         // generate content page
         String contentPageId = page.getId();
@@ -573,7 +579,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // retrieve current page and parent folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
             Folder folder = (Folder)page.getParent();
             
             // check for edit permission
@@ -681,7 +687,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // retrieve current page and parent folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
             Folder folder = (Folder)page.getParent();
 
             // check for edit permission
@@ -751,7 +757,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // retrieve current page and document ordering folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
             String documentName = page.getName();
             Folder documentOrderingFolder = (Folder)page.getParent();
 
@@ -759,7 +765,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             page.checkAccess(JetspeedActions.EDIT);
 
             // remove in page manager
-            pageManager.removePage(page);
+            removePage(page);
 
             // check for ordering folder edit permission
             documentOrderingFolder.checkAccess(JetspeedActions.EDIT);
@@ -788,7 +794,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // retrieve current page and parent folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
             Folder folder = (Folder)page.getParent();
             String documentName = folder.getName();
             Folder documentOrderingFolder = (Folder)folder.getParent();
@@ -837,14 +843,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 throw new IllegalArgumentException("Parent content fragment and page not consistent or locked");                
             }
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof Page) && contentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()));
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()));
             if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
                 throw new IllegalArgumentException("Fragment reference and page not consistent or mutable");
             }
             
             // retrieve current page and fragment from page manager
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
             String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
             BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
             if (fragment == null)
@@ -859,7 +865,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             boolean update = (page.removeFragmentById(pageFragmentId) != null);
             if (update)
             {
-                pageManager.updatePage(page);
+                updatePage(page);
             }
             
             // update content context
@@ -881,14 +887,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof Page) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
             if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
                 throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
             }
             
             // retrieve current fragment and page from page manager
-            Page page = pageManager.getPage(contentFragmentImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
             String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
             BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
             if (fragment == null)
@@ -910,7 +916,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             if (update)
             {
-                pageManager.updatePage(page);
+                updatePage(page);
             }
             
             // update content context
@@ -938,7 +944,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             
             // retrieve current page from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
 
             // check for edit permission
             page.checkAccess(JetspeedActions.EDIT);            
@@ -954,7 +960,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             if (update)
             {
-                pageManager.updatePage(page);
+                updatePage(page);
             }
 
             // update content context
@@ -979,7 +985,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // retrieve current page and parent folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
             Folder folder = (Folder)page.getParent();
 
             // check for edit permission
@@ -1034,14 +1040,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 throw new IllegalArgumentException("Locked content fragment is not mutable");                
             }
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof Page) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
             if (!contentFragmentDefinitionIsPage)
             {
                 throw new IllegalArgumentException("Only page fragments can be modified");                
             }
             
             // retrieve current fragment and page from page manager
-            Page page = pageManager.getPage(contentFragmentImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
             BaseFragmentElement foundFragment = page.getFragmentById(contentFragmentImpl.getFragment().getId());
             if (!(foundFragment instanceof Fragment))
             {
@@ -1061,7 +1067,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             if (update)
             {
-                pageManager.updatePage(page);
+                updatePage(page);
             }
 
             // update content context
@@ -1083,14 +1089,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof Page) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
             if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
                 throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
             }
             
             // retrieve current fragment and page from page manager
-            Page page = pageManager.getPage(contentFragmentImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
             String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
             BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
             if (fragment == null)
@@ -1145,7 +1151,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             if (update)
             {
-                pageManager.updatePage(page);
+                updatePage(page);
             }
 
             // update content context
@@ -1186,14 +1192,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof Page) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
             if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
                 throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
             }
             
             // retrieve current fragment and page from page manager
-            Page page = pageManager.getPage(contentFragmentImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
             String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
             BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
             if (fragment == null)
@@ -1242,7 +1248,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
                     fragment.getPreferences().add(preference);
                 }
             }
-            pageManager.updatePage(page);
+            updatePage(page);
 
             // update content context
             contentFragmentImpl.setPreferences(preferences);
@@ -1263,14 +1269,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof Page) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
             if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
                 throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
             }
             
             // retrieve current fragment and page from page manager
-            Page page = pageManager.getPage(contentFragmentImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
             String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
             BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
             if (fragment == null)
@@ -1301,7 +1307,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             if (update)
             {
-                pageManager.updatePage(page);
+                updatePage(page);
             }
 
             // update content context
@@ -1330,14 +1336,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof Page) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
             if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
             {
                 throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
             }
             
             // retrieve current fragment and page from page manager
-            Page page = pageManager.getPage(contentFragmentImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
             String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
             BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
             if (fragment == null)
@@ -1368,7 +1374,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             if (update)
             {
-                pageManager.updatePage(page);
+                updatePage(page);
             }
 
             // update content context
@@ -1397,7 +1403,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // retrieve current page from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            Page page = pageManager.getPage(contentPageImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
 
             // check for edit permission
             page.checkAccess(JetspeedActions.EDIT);            
@@ -1422,7 +1428,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             if (update)
             {
-                pageManager.updatePage(page);
+                updatePage(page);
             }
             
             // update content context
@@ -1568,7 +1574,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
      * @param locked locked fragment flag
      * @return content fragment hierarchy or null if undefined
      */
-    private ContentFragmentImpl newContentFragment(String parentId, Page page, Map fragmentDefinitions, BaseFragmentsElement definition, BaseFragmentElement fragment, boolean locked)
+    private ContentFragmentImpl newContentFragment(String parentId, BaseConcretePageElement page, Map fragmentDefinitions, BaseFragmentsElement definition, BaseFragmentElement fragment, boolean locked)
     {
         // generate content fragment hierarchy for specific fragment;
         // merges fragment hierarchy and attributes from fragments,
@@ -1645,7 +1651,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
      * @param fragmentFragment referenced root PSML fragment from fragment definition
      * @return content fragment hierarchy or null if undefined
      */
-    private ContentFragmentImpl newContentFragment(String parentId, Page page, Map fragmentDefinitions, BaseFragmentsElement definition, FragmentReference fragmentReference, Fragment [] fragmentFragment)
+    private ContentFragmentImpl newContentFragment(String parentId, BaseConcretePageElement page, Map fragmentDefinitions, BaseFragmentsElement definition, FragmentReference fragmentReference, Fragment [] fragmentFragment)
     {
         // generate content fragment hierarchy for reference fragment from
         // fragment definition root fragment if located
@@ -1672,7 +1678,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
      * @param locked locked fragment flag
      * @return content fragment hierarchy or null if undefined
      */
-    private ContentFragmentImpl newContentFragment(String id, Page page, Map fragmentDefinitions, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
+    private ContentFragmentImpl newContentFragment(String id, BaseConcretePageElement page, Map fragmentDefinitions, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
     {
         // generate content fragment hierarchy for fragment
         ContentFragmentImpl contentFragmentImpl = new ContentFragmentImpl(this, id, page, definition, fragment, reference, locked);
@@ -1845,5 +1851,70 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
         }
         return false;
+    }
+    
+    /**
+     * Get page or dynamic page from page manager.
+     * 
+     * @param pagePath path to page
+     * @return page or dynamic page
+     * @throws PageNotFoundException
+     * @throws NodeException
+     */
+    private BaseConcretePageElement getPage(String pagePath) throws PageNotFoundException, NodeException
+    {
+        if (pagePath.endsWith(Page.DOCUMENT_TYPE))
+        {
+            return pageManager.getPage(pagePath);
+        }
+        if (pagePath.endsWith(DynamicPage.DOCUMENT_TYPE))
+        {
+            return pageManager.getDynamicPage(pagePath);            
+        }
+        throw new PageNotFoundException("Unable to classify page path by type: "+pagePath);
+    }
+    
+    /**
+     * Update page or dynamic page using page manager.
+     * 
+     * @param page page or dynamic page to update
+     * @throws NodeException
+     * @throws PageNotUpdatedException
+     */
+    private void updatePage(BaseConcretePageElement page) throws NodeException, PageNotUpdatedException
+    {
+        if (page instanceof Page)
+        {
+            pageManager.updatePage((Page)page);
+            return;
+        }
+        if (page instanceof DynamicPage)
+        {
+            pageManager.updateDynamicPage((DynamicPage)page);
+            return;
+        }
+        throw new PageNotUpdatedException("Unable to classify page by type: "+((page != null) ? page.getClass().getName() : "null"));
+    }
+
+    /**
+     * Remove page or dynamic page using page manager.
+     * 
+     * @param page page or dynamic page to update
+     * @throws NodeException
+     * @throws PageNotRemovedException
+     */
+    private void removePage(BaseConcretePageElement page) throws NodeException, PageNotRemovedException
+    {
+        if (page instanceof Page)
+        {
+            pageManager.removePage((Page)page);
+            return;
+        }
+        if (page instanceof DynamicPage)
+        {
+            pageManager.removeDynamicPage((DynamicPage)page);
+            return;
+        }
+        throw new PageNotRemovedException("Unable to classify page by type: "+((page != null) ? page.getClass().getName() : "null"));
     }
 }

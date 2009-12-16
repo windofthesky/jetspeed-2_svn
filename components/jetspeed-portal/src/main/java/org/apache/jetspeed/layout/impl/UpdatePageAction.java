@@ -24,7 +24,9 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
+import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
@@ -92,7 +94,7 @@ public class UpdatePageAction
                 return success;
             }           
             int count = 0;
-            Page page = null;            
+            BaseConcretePageElement page = null;            
             String path = getActionParameter(requestContext, "path");
             if (path == null)
             {
@@ -102,11 +104,24 @@ public class UpdatePageAction
             {
                 if (!method.equals("add"))
                 {
-                    page = pageManager.getPage(path);
+                    if (path.endsWith(Page.DOCUMENT_TYPE))
+                    {
+                        page = pageManager.getPage(path);
+                    }
+                    else if (path.endsWith(DynamicPage.DOCUMENT_TYPE))
+                    {
+                        page = pageManager.getDynamicPage(path);
+                    }
+                    else
+                    {
+                        success = false;
+                        resultMap.put(REASON, "Can't lookup page by document type: " + path);                
+                        return success;                        
+                    }
                 }
                 else
                 {
-                    if (pageManager.pageExists(path))
+                    if (pageManager.pageExists(path) || pageManager.dynamicPageExists(path))
                     {
                         success = false;
                         resultMap.put(REASON, "Can't create: Page already exists: " + path);                
@@ -170,22 +185,46 @@ public class UpdatePageAction
             {            	
             	String destination = getActionParameter(requestContext, "destination");
             	String name = getActionParameter(requestContext, RESOURCE_NAME);
-            	destination = destination + Folder.PATH_SEPARATOR + name;           	
-            	Page newPage = pageManager.copyPage(page,destination);
-            	pageManager.updatePage(newPage);
+            	destination = destination + Folder.PATH_SEPARATOR + name;
+            	if (page instanceof Page)
+            	{
+            	    Page newPage = pageManager.copyPage((Page)page,destination);
+            	    pageManager.updatePage(newPage);
+            	}
+            	else if (page instanceof DynamicPage)
+            	{
+                    DynamicPage newPage = pageManager.copyDynamicPage((DynamicPage)page,destination);
+                    pageManager.updateDynamicPage(newPage);            	    
+            	}
             }
             else if (method.equals("move"))
             {            	
             	String destination = getActionParameter(requestContext, "destination");
             	String name = getActionParameter(requestContext, RESOURCE_NAME);            	
             	destination = destination + Folder.PATH_SEPARATOR + name;
-            	Page newPage = pageManager.copyPage(page, destination, true);
-            	pageManager.updatePage(newPage);
-            	pageManager.removePage(page);
+                if (page instanceof Page)
+                {
+                    Page newPage = pageManager.copyPage((Page)page, destination, true);
+                    pageManager.updatePage(newPage);
+                    pageManager.removePage((Page)page);
+                }
+                else if (page instanceof DynamicPage)
+                {
+                    DynamicPage newPage = pageManager.copyDynamicPage((DynamicPage)page, destination, true);
+                    pageManager.updateDynamicPage(newPage);
+                    pageManager.removeDynamicPage((DynamicPage)page);
+                }
             } 
             else if (method.equals("remove"))
             {
-                pageManager.removePage(page);
+                if (page instanceof Page)
+                {
+                    pageManager.removePage((Page)page);
+                }
+                else if (page instanceof DynamicPage)
+                {
+                    pageManager.removeDynamicPage((DynamicPage)page);
+                }
             }
             else if (method.equals("update-fragment"))
             {
@@ -238,7 +277,14 @@ public class UpdatePageAction
             }
             if (count > 0)
             {
-                pageManager.updatePage(page);                
+                if (page instanceof Page)
+                {
+                    pageManager.updatePage((Page)page);
+                }
+                else
+                {
+                    pageManager.updateDynamicPage((DynamicPage)page);                    
+                }
             }                        
             resultMap.put("count", Integer.toString(count));
             resultMap.put(STATUS, status);
@@ -252,7 +298,7 @@ public class UpdatePageAction
         return success;
     }
     
-    protected int updatePortletDecorator(RequestContext requestContext, Map resultMap, Page page, String fragmentId, String portletDecorator)
+    protected int updatePortletDecorator(RequestContext requestContext, Map resultMap, BaseConcretePageElement page, String fragmentId, String portletDecorator)
     {
     	int count = 0;
     	BaseFragmentElement fragment = page.getFragmentById(fragmentId);
@@ -264,7 +310,7 @@ public class UpdatePageAction
     	return count;
     }
     
-    protected int updateFragment(RequestContext requestContext, Map resultMap, Page page, String fragmentId, String layout)
+    protected int updateFragment(RequestContext requestContext, Map resultMap, BaseConcretePageElement page, String fragmentId, String layout)
     {
         int count = 0;
         String sizes = getActionParameter(requestContext, SIZES);
@@ -298,7 +344,7 @@ public class UpdatePageAction
         return count;
     }
 
-    protected int addFragment(RequestContext requestContext, Map resultMap, Page page, String parentFragmentId, String layout)
+    protected int addFragment(RequestContext requestContext, Map resultMap, BaseConcretePageElement page, String parentFragmentId, String layout)
     {
         int count = 0;
         String sizes = getActionParameter(requestContext, SIZES);
@@ -321,7 +367,7 @@ public class UpdatePageAction
         return count;
     }
 
-    protected int removeFragment(RequestContext requestContext, Map resultMap, Page page, String fragmentId)
+    protected int removeFragment(RequestContext requestContext, Map resultMap, BaseConcretePageElement page, String fragmentId)
     {
         int count = 0;
         BaseFragmentElement fragment = page.getFragmentById(fragmentId);

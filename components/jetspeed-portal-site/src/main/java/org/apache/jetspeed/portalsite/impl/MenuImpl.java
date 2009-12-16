@@ -175,7 +175,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
             else
             {
                 // limit cyclic references to this menu if named and
-                // referencable as root menu instance
+                // referenced as root menu instance
                 boolean menuNameReferenced = false;
                 if ((definition.getName() != null) && (parent == null))
                 {

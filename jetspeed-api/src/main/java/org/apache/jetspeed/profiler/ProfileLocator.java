@@ -55,6 +55,15 @@ public interface ProfileLocator
     void init(Profiler profiler, String requestPath);
 
     /**
+     * Initialize this page context.
+     *
+     * @param profiler The profiler initializing this locator.
+     * @param requestPath The request path used to create this locator.
+     * @param requestServerName The request server name used to create this locator.
+     */
+    void init(Profiler profiler, String requestPath, String requestServerName);
+
+    /**
      * Get an iterator over the locator's properties.
      * Elements are returned as @link ProfileLocatorProperty array. 
      *  
@@ -164,4 +173,12 @@ public interface ProfileLocator
      * @return The request path.
      */
     String getRequestPath();
+    
+    /**
+     * <p>Retain the request server name to support additional page location mapping
+     * not part of the profiler rule criterion.</p>
+     * 
+     * @return The request server name.
+     */
+    String getRequestServerName();
 }

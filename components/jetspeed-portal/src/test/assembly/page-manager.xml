@@ -141,10 +141,23 @@ limitations under the License.
   </bean>
 
   <!-- PortalSite -->
+  <bean id="org.apache.jetspeed.portalsite.PortalSiteContentTypeMapper" 
+       name="portalSiteContentTypeMapper"
+       class="org.apache.jetspeed.portalsite.impl.PortalSiteContentTypeMapperImpl">         
+       <constructor-arg index="0">
+           <list>
+               <bean class="org.apache.jetspeed.portalsite.impl.ContentTypeMapping">
+                   <constructor-arg index="0"><value>\w[.](\w+)&#36;</value></constructor-arg> <!-- use &#36; for '$' -->
+                   <constructor-arg index="1"><value>&#36;1</value></constructor-arg> <!-- use &#36; for '$' -->
+               </bean>
+           </list>
+       </constructor-arg>
+  </bean>
   <bean id="org.apache.jetspeed.portalsite.PortalSite" 
        name="portalSite"
        class="org.apache.jetspeed.portalsite.impl.PortalSiteImpl">         
        <constructor-arg index="0"><ref bean="pageManager"/></constructor-arg>
+       <constructor-arg index="1"><ref bean="portalSiteContentTypeMapper"/></constructor-arg>
   </bean>
 
     <bean id="IdGenerator" class="org.apache.jetspeed.idgenerator.JetspeedIdGenerator" init-method="start" destroy-method="stop">

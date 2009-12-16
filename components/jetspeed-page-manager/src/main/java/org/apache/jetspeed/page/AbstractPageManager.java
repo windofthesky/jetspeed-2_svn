@@ -1122,7 +1122,7 @@ public abstract class AbstractPageManager
         DynamicPage dynamicPage = newDynamicPage(path);
         copyPageAttributes(source, copyIds, dynamicPage);
         dynamicPage.setHidden(source.isHidden());
-        dynamicPage.setPageType(source.getPageType());
+        dynamicPage.setContentType(source.getContentType());
         return dynamicPage;
     }
 

@@ -27,11 +27,11 @@ import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.impl.PageLayoutComponentUtils;
+import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.FragmentReference;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.pluto.container.PortletPreference;
 
@@ -50,7 +50,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
 
     private PageLayoutComponent pageLayoutComponent;
     private String id;
-    private Page page;
+    private BaseConcretePageElement page;
     private BaseFragmentsElement definition;
     private Fragment fragment;
     private FragmentReference reference;
@@ -116,7 +116,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * @param reference PSML page fragment reference
      * @param locked locked flag
      */
-    public ContentFragmentImpl(PageLayoutComponent pageLayoutComponent, String id, Page page, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
+    public ContentFragmentImpl(PageLayoutComponent pageLayoutComponent, String id, BaseConcretePageElement page, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
     {
         this.pageLayoutComponent = pageLayoutComponent;
         this.id = id;
@@ -838,7 +838,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * 
      * @return the PSML page
      */
-    public Page getPage()
+    public BaseConcretePageElement getPage()
     {
         return page;
     }
@@ -884,7 +884,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * @param reference PSML page fragment reference
      * @param locked locked flag
      */
-    public void initialize(PageLayoutComponent pageLayoutComponent, Page page, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
+    public void initialize(PageLayoutComponent pageLayoutComponent, BaseConcretePageElement page, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
     {
         this.pageLayoutComponent = pageLayoutComponent;
         this.page = page;

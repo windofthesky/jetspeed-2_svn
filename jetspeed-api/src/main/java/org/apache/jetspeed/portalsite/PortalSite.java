@@ -39,4 +39,11 @@ public interface PortalSite
      * @return PageManager instance
      */
     PageManager getPageManager();
+
+    /**
+     * getContentTypeMapper - return PortalSiteContentTypeMapper component instance
+     *
+     * @return PortalSiteContentTypeMapper instance
+     */
+    PortalSiteContentTypeMapper getContentTypeMapper();
 }

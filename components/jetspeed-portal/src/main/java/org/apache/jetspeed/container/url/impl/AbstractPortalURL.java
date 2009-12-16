@@ -245,13 +245,13 @@ public abstract class AbstractPortalURL implements PortalURL
 
     public String getPageBasePath()
     {
-        if ( null == path || (1 == path.length() && '/' == path.charAt(0)) )
+        if (null == path || (1 == path.length() && '/' == path.charAt(0)))
         {
             return basePath;
         }
-        else if ( -1 != path.indexOf('/') && !path.endsWith("/") )
+        else if (-1 != path.indexOf('/'))
         {
-            return basePath + path.substring(0, path.lastIndexOf('/') );
+            return basePath + path.substring(0, path.lastIndexOf('/'));
         }
         else
         {

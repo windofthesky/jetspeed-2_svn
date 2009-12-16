@@ -23,9 +23,9 @@ import java.util.Map;
 
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.impl.PageLayoutComponentUtils;
+import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 
@@ -39,7 +39,7 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
 {
     private PageLayoutComponent pageLayoutComponent;
     private String id;
-    private Page page;
+    private BaseConcretePageElement page;
     private PageTemplate pageTemplate;
     private Map fragmentDefinitions;
 
@@ -83,7 +83,7 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
      * @param pageTemplate PSML page template
      * @param fragmentDefinitions PSML fragment definitions
      */
-    public ContentPageImpl(PageLayoutComponent pageLayoutComponent, String id, Page page, PageTemplate pageTemplate, Map fragmentDefinitions)
+    public ContentPageImpl(PageLayoutComponent pageLayoutComponent, String id, BaseConcretePageElement page, PageTemplate pageTemplate, Map fragmentDefinitions)
     {
         this.pageLayoutComponent = pageLayoutComponent;
         this.id = id;
@@ -208,7 +208,7 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#getPage()
      */
-    public Page getPage()
+    public BaseConcretePageElement getPage()
     {
         return page;
     }

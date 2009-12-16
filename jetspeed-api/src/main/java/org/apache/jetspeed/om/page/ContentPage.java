@@ -192,7 +192,7 @@ public interface ContentPage
      * 
      * @return persistent page or null
      */
-    Page getPage();
+    BaseConcretePageElement getPage();
     
     /**
      * Access underlying concrete persistent page template or

@@ -82,6 +82,10 @@ public class PathInfoEncodingPortalURL extends AbstractPortalURL
                     buffer.append(token);
                 }
             }
+            if (pathInfo.endsWith("/"))
+            {
+                buffer.append("/");                
+            }
             if ( buffer.length() > 0 )
             {
                 path = buffer.toString();

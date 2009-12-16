@@ -733,7 +733,7 @@ public class JetspeedProfilerImpl extends InitablePersistenceBrokerDaoSupport
         {
             ProfileLocator locator = (ProfileLocator) beanFactory.getBean(
                     this.locatorBean, ProfileLocator.class);
-            locator.init(this, context.getPath());
+            locator.init(this, context.getPath(), ((context.getRequest() != null) ? context.getRequest().getServerName() : null));
             return locator;
         } catch (Exception e)
         {

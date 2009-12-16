@@ -1578,8 +1578,8 @@
       <!-- org.apache.jetspeed.om.page.impl.DynamicPageImpl mapping -->
 
       <field-descriptor
-         name="pageType"
-         column="PAGE_TYPE"
+         name="contentType"
+         column="CONTENT_TYPE"
          jdbc-type="VARCHAR"
       />
 

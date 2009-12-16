@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.PageTemplate;
 
 /**
@@ -136,7 +136,7 @@ public interface PageLayoutComponent
      *                            by page and/or page template
      * @return new content page
      */
-    ContentPage newContentPage(Page page, PageTemplate pageTemplate, Map fragmentDefinitions);
+    ContentPage newContentPage(BaseConcretePageElement page, PageTemplate pageTemplate, Map fragmentDefinitions);
     
     /**
      * Create a new sibling folder with specified configuration and
