@@ -422,8 +422,14 @@ YUI.add('jetui-portal', function(Y) {
                     groups: dropGroups            
                 });
             }
-            var columns = Y.Node.all(JetuiConfiguration.layoutStyle); 
-            columns.item(parseInt(fragment.properties.column)).appendChild(v);
+            var columns = [];
+            Y.Node.all(JetuiConfiguration.layoutStyle).each(function(v, k) {
+                var locked = v.getAttribute("locked");
+                if (!locked || "false" == locked) {
+                    columns.push(v);
+                }
+            });
+            columns[parseInt(fragment.properties.column)].appendChild(v);
             
             var uri = portal.portalContextPath + "/portlet" + portal.portalPagePath + "?entity=" + fragment.id;
             var request = Y.io(uri, { on: { complete: this.onPortletRenderComplete }, arguments: { complete: v } } );
