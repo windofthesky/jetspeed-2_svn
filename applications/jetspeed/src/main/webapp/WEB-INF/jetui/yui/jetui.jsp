@@ -126,7 +126,7 @@ for (String style : jetui.getStyleSheets(rc))
 &nbsp;<span style='position: absolute; left: 0px; top: 50px;' id='jstbLeftToggle' class='jstbToggle1'></span><span id='jstbRightToggle' class='jstbToggle2' style='position: absolute; right: 0px; top: 50px;'></span>
 </div>
 <%if (request.getUserPrincipal() != null) {%>
-<span class="layout-statusarea"><b><%=userInfo.get("user.name.given")%> <%=userInfo.get("user.name.family")%></b> | Profile | Tasks (5) | Notifications (2) | <a href="<%=request.getContextPath()%>/login/logout">Log out</a></span>
+<span class="layout-statusarea"><b><%=userInfo.get("user.name.given")%> <%=userInfo.get("user.name.family")%></b> | Profile | Tasks (5) | Notifications (2) | <a href="<%=request.getContextPath()%>/login/logout?org.apache.jetspeed.login.destination=<%=request.getContextPath()%>/ui">Log out</a></span>
 <% } %>
 <!-- <span class="layout-search"><input type='text' size='14'/></span><span class="layout-search2"><img height='18' src="<%=request.getContextPath()%>/images/search.png"/></span>  -->
 </div> <!-- end header -->
