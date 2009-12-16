@@ -4,7 +4,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
 	var config = JETUI_YUI.config;
     Y.log("Starting up JETUI " +  config.engine + " engine...");
 	
-    var portal = JETUI_YUI.portalInstance;
+    var portal = JETUI_YUI.getPortalInstance();
         
     ////////////////////////////////////////////////////    
     // Create Navigator Portlet
@@ -176,7 +176,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     });
         
 	Y.DD.DDM.on('drag:drophit', function(e) {
-	    var portal = JETUI_YUI.portalInstance;
+	    var portal = JETUI_YUI.getPortalInstance();
 		var drop = e.drop.get('node'),
             drag = e.drag.get('node');
         if (drag.data.get("toolbar"))
@@ -312,7 +312,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     });
 
     Y.DD.DDM.on('drag:over', function(e) {
-        var portal = JETUI_YUI.portalInstance;
+        var portal = JETUI_YUI.getPortalInstance();
     	if (portal.isMoving)
     		return;
     	

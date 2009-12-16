@@ -27,6 +27,22 @@ YUI.add('jetui-portal', function(Y) {
     
     Y.namespace("JetUI");
     
+    // JETUI_YUI must be defined outside. However, just check again not to throw exceptions.
+    if (!JETUI_YUI) {
+        JETUI_YUI = {};
+    }
+    
+    /**
+     * Global method definition to returns the portal singleton instance
+     * @method
+     */
+    JETUI_YUI.getPortalInstance = function() {
+        if (!JETUI_YUI._portalInstance) {
+            JETUI_YUI._portalInstance = new Y.JetUI.Portal(JETUI_YUI.config);
+        }
+        return JETUI_YUI._portalInstance;
+    };
+    
     /**
      * Create a portal to represent a portal screen.
      *
@@ -127,9 +143,11 @@ YUI.add('jetui-portal', function(Y) {
          * @protected
          */
         initializer : function(cfg) {
-            this.portalContextPath = cfg.portalContextPath;
-            this.portalServletPath = cfg.portalServletPath;
-            this.portalPagePath = cfg.portalPagePath;
+            if (cfg) {
+                this.portalContextPath = cfg.portalContextPath;
+                this.portalServletPath = cfg.portalServletPath;
+                this.portalPagePath = cfg.portalPagePath;
+            }
         },
         
         /**
@@ -193,10 +211,7 @@ YUI.add('jetui-portal', function(Y) {
          * @method movePortlet
          */
         movePortlet : function(e) {
-            if (!JETUI_YUI || !JETUI_YUI.portalInstance)
-                return;
-            
-            var portal = JETUI_YUI.portalInstance;
+            var portal = JETUI_YUI.getPortalInstance();
             var drop = e.drop.get('node'),
                 drag = e.drag.get('node');
             var dragParent = drag.get('parentNode');
@@ -263,9 +278,7 @@ YUI.add('jetui-portal', function(Y) {
          * @method removePortlet
          */
         removePortlet : function(e) {
-            if (!JETUI_YUI || !JETUI_YUI.portalInstance)
-                return;
-            var portal = JETUI_YUI.portalInstance;
+            var portal = JETUI_YUI.getPortalInstance();
             var windowId = null;
             if (e instanceof String) {
                 windowId = e;
@@ -287,9 +300,7 @@ YUI.add('jetui-portal', function(Y) {
          * @method createDecoratorActionNode
          */
         createDecoratorActionNode : function(decoAction) {
-            if (!JETUI_YUI || !JETUI_YUI.portalInstance)
-                return;
-            var portal = JETUI_YUI.portalInstance;
+            var portal = JETUI_YUI.getPortalInstance();
             var node = Y.Node.create("<a class='action portlet-action'/>");
             var icon = Y.Node.create("<img border='0'/>");
             node.setAttribute("href", decoAction.action);
@@ -307,9 +318,7 @@ YUI.add('jetui-portal', function(Y) {
          * @method onPortletDecorationReadComplete
          */
         onPortletDecorationReadComplete : function(id, o, args) {
-            if (!JETUI_YUI || !JETUI_YUI.portalInstance)
-                return;
-            var portal = JETUI_YUI.portalInstance;
+            var portal = JETUI_YUI.getPortalInstance();
             var windowId = args.complete[0];
             var actionBarElem = args.complete[1];
             var existingActionElem = null;
@@ -345,9 +354,7 @@ YUI.add('jetui-portal', function(Y) {
          * @method onPortletRenderComplete
          */
         onPortletRenderComplete : function(id, o, args) {
-            if (!JETUI_YUI || !JETUI_YUI.portalInstance)
-                return;
-            var portal = JETUI_YUI.portalInstance;
+            var portal = JETUI_YUI.getPortalInstance();
             var id = id;
             var v = args.complete;
             var windowId = v.get("id");
@@ -395,10 +402,7 @@ YUI.add('jetui-portal', function(Y) {
          * @method addPortlet
          */
         addPortlet : function(fragment) {
-            if (!JETUI_YUI || !JETUI_YUI.portalInstance)
-                return;
-            
-            var portal = JETUI_YUI.portalInstance;
+            var portal = JETUI_YUI.getPortalInstance();
             var templatePanel = Y.Node.one("#jsPortletTemplate");
             var v = templatePanel.cloneNode(true);
             v.setStyle('display', '');
@@ -438,13 +442,6 @@ YUI.add('jetui-portal', function(Y) {
             var request = Y.io(uri, { on: { complete: this.onPortletRenderComplete }, arguments: { complete: v } } );
         }
     });
-    
-    /**
-     * The portal singleton instance
-     */
-    if (JETUI_YUI && !JETUI_YUI.portalInstance) {
-        JETUI_YUI.portalInstance = new Y.JetUI.Portal(JETUI_YUI.config);
-    }
     
     /**
      * Create a portlet window to represent a portal window.
