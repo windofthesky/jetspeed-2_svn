@@ -85,12 +85,12 @@ public class PortletRegistryService
     
     @GET
     @Path("/application/{path:.*}")
-    public PortletApplicationBeanCollection getPortletApplication(@Context HttpServletRequest servletRequest,
-                                                         @Context UriInfo uriInfo,
-                                                         @PathParam("path") List<PathSegment> pathSegments,
-                                                         @QueryParam("query") String queryParam, 
-                                                         @QueryParam("begin") String beginIndexParam,
-                                                         @QueryParam("max") String maxResultsParam)
+    public PortletApplicationBeanCollection getPortletApplications(@Context HttpServletRequest servletRequest,
+                                                                   @Context UriInfo uriInfo,
+                                                                   @PathParam("path") List<PathSegment> pathSegments,
+                                                                   @QueryParam("query") String queryParam, 
+                                                                   @QueryParam("begin") String beginIndexParam,
+                                                                   @QueryParam("max") String maxResultsParam)
     {
         String applicationName = null;
         
@@ -109,7 +109,8 @@ public class PortletRegistryService
         
         if (!StringUtils.isBlank(queryParam))
         {
-            String queryText = ParsedObject.FIELDNAME_TYPE + ":\"" + ParsedObject.OBJECT_TYPE_PORTLET_APPLICATION + "\" AND " + queryParam;
+            String queryText = 
+                ParsedObject.FIELDNAME_TYPE + ":\"" + ParsedObject.OBJECT_TYPE_PORTLET_APPLICATION + "\" AND ( " + queryParam + " )";
             SearchResults searchResults = searchEngine.search(queryText);
             List<ParsedObject> searchResultList = searchResults.getResults();
             paBeans.setTotalSize(searchResultList.size());
@@ -162,12 +163,12 @@ public class PortletRegistryService
     
     @GET
     @Path("/definition/{path:.*}")
-    public PortletDefinitionBeanCollection getPortletDefinition(@Context HttpServletRequest servletRequest,
-                                                       @Context UriInfo uriInfo,
-                                                       @PathParam("path") List<PathSegment> pathSegments, 
-                                                       @QueryParam("query") String queryParam, 
-                                                       @QueryParam("begin") String beginIndexParam,
-                                                       @QueryParam("max") String maxResultsParam)
+    public PortletDefinitionBeanCollection getPortletDefinitions(@Context HttpServletRequest servletRequest,
+                                                                 @Context UriInfo uriInfo,
+                                                                 @PathParam("path") List<PathSegment> pathSegments, 
+                                                                 @QueryParam("query") String queryParam, 
+                                                                 @QueryParam("begin") String beginIndexParam,
+                                                                 @QueryParam("max") String maxResultsParam)
     {
         String applicationName = null;
         String definitionName = null;
@@ -198,7 +199,7 @@ public class PortletRegistryService
             String queryText = 
                 ParsedObject.FIELDNAME_TYPE + ":\"" + ParsedObject.OBJECT_TYPE_PORTLET + "\" " +
                 "AND NOT " + ParsedObject.FIELDNAME_TYPE + ":\"" + ParsedObject.OBJECT_TYPE_PORTLET_APPLICATION + "\" " + 
-                "AND " + queryParam;
+                "AND ( " + queryParam + " )";
             SearchResults searchResults = searchEngine.search(queryText);
             List<ParsedObject> searchResultList = searchResults.getResults();
             ArrayList<PortletDefinition> searchedPortletDefinitions = new ArrayList<PortletDefinition>();
