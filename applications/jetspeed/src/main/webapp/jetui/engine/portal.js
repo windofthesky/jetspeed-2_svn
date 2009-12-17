@@ -1,5 +1,5 @@
 //Use loader to grab the modules needed
-YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'dataschema-json', 'node-base', 'node-menunav', function(Y) {
+YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'dataschema-json', 'node', 'node-menunav', function(Y) {
 
 	var config = JETUI_YUI.config;
     Y.log("Starting up JETUI " +  config.engine + " engine...");

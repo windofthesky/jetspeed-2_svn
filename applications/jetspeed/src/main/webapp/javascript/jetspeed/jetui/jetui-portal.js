@@ -626,4 +626,4 @@ YUI.add('jetui-portal', function(Y) {
         return layout;
     };
     
-}, '3.0.0', {requires:['dd', 'io', 'dataschema-json', 'node-base', 'node-menunav']});
+}, '3.0.0', {requires:['dd', 'io', 'dataschema-json', 'node', 'node-menunav']});
