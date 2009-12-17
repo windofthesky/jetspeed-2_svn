@@ -81,25 +81,32 @@ public class Jetui
                 // need to have a better algorithm to determine number of columns and fragment column sizes
                 int numberOfColumns = 1;
                 String layoutType = "OneColumn";
-                String fragmentColumnSizes = "100%";
+                String fragmentColumnSizes = rootFragment.getProperty("sizes");
                 if (jetspeedLayout.indexOf("Two") > -1)
                 {
                     numberOfColumns = 2;
                     layoutType = "TwoColumn";
-                    fragmentColumnSizes = "50%,50%";
+                    if (fragmentColumnSizes == null)
+                    	fragmentColumnSizes = "50%,50%";
                 }
                 else if (jetspeedLayout.indexOf("Three") > -1)
                 {
                     numberOfColumns = 3;
                     layoutType = "ThreeColumn";
-                    fragmentColumnSizes = "33%,34%,33%";                
+                    if (fragmentColumnSizes == null)                    
+                    	fragmentColumnSizes = "33%,34%,33%";                
                 }                
                 else if (jetspeedLayout.indexOf("Four") > -1)
                 {
                     numberOfColumns = 4;
                     layoutType = "FourColumn";
-                    fragmentColumnSizes = "25%,25%,25%,25%";                                
-                }                
+                    if (fragmentColumnSizes == null)                    
+                    	fragmentColumnSizes = "25%,25%,25%,25%";                                
+                }      
+                else
+                {
+                    fragmentColumnSizes = "100%";
+                }
                 String [] fragmentColumnSizesArray = fragmentColumnSizes.split("\\,");
                 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 ColumnLayout columnLayout = new ColumnLayout(numberOfColumns, layoutType, rootFragment.getFragments(), fragmentColumnSizesArray);
