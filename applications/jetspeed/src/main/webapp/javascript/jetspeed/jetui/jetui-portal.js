@@ -179,7 +179,8 @@ YUI.add('jetui-portal', function(Y) {
         },
         
         /**
-         * @method moveToLayout
+         * @method moveToLayout moves a portlet window to layout column grid position in the browser
+         * this is a client side only operation. Operates in grid (non-detached) mode.
          */
         moveToLayout : function(e) {
             var drop = e.drop.get('node'),
@@ -206,11 +207,12 @@ YUI.add('jetui-portal', function(Y) {
             // I don't think this is working
             e.drop.unplug(Y.Plugin.Drop);
         },
-        
+ 
         /**
-         * @method movePortlet
+         * @method moveToGrid moves a portlet window to another grid position in the browser
+         * this is a client side only operation. Operates in grid (non-detached) mode.
          */
-        movePortlet : function(e) {
+        moveToGrid : function(e) {
             var portal = JETUI_YUI.getPortalInstance();
             var drop = e.drop.get('node'),
                 drag = e.drag.get('node');
@@ -250,9 +252,92 @@ YUI.add('jetui-portal', function(Y) {
                     node: dragParent,
                     groups: ['portlets']            
                 });
-            }        
+            }                           
+        },
+
+        /**
+         * @method detachPortlet detaches a portlet from a grid position and moves it to a z-order top detached window
+         */
+        detachPortlet : function(e) {
+            var portal = JETUI_YUI.getPortalInstance();
+            var windowId = null;
+            if (e instanceof String) {
+                windowId = e;
+            } else {
+                var windowId = e.currentTarget.getAttribute("id");
+                windowId = windowId.replace(/^jetspeed-detach-/, "");
+            }
+            var window = Y.one("[id='" + windowId + "']");
+            if (window) {
+                Y.log("data = " + window.data.get("name"));            	
+            }
+            // TODO: left off here
         },
         
+        onMoveComplete : function(id, o, args) { 
+            var id = id; // Transaction ID. 
+            var data = o.responseText; // Response data.
+            Y.log("move result = " + data);
+            var windowId = args.complete[0];
+        },             
+        
+        /**
+         * @method movePortlet persist the move operation to the persistent store over restful put request
+         */
+        movePortlet : function(drag, e) {
+            var windowId =  drag.getAttribute('id');
+            if (drag.data.get("toolbar") == false) {
+            	var oldColumn = drag.data.get('column');
+            	var oldRow = drag.data.get('row');        	
+        		var dragParent = drag.get('parentNode');
+            	var parentColumn = dragParent.data.get('column');
+            	if (parentColumn != oldColumn)
+            	{
+            		this.reallocateColumn(oldColumn); // moved from different column
+            		drag.data.set('column', parentColumn);
+            	}
+            	this.reallocateColumn(parentColumn);
+                var uri = this.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
+                uri += "&col=" + drag.data.get('column') + "&row=" + drag.data.get('row');
+                var config = {
+                        on: { complete: this.onMoveComplete },
+                        method: "PUT",
+                        headers: { "X-Portal-Path" : this.portalPagePath },
+                        arguments: { complete: [ windowId ] }
+                    };
+                var request = Y.io(uri, config);
+            }    	
+            else
+            {
+                var uri = this.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
+                uri += "&x=" + e.target.region.top + "&y=" + e.target.region.left;
+                var config = {
+                        on: { complete: this.onMoveComplete },
+                        method: "PUT",
+                        headers: { "X-Portal-Path" : this.portalPagePath },
+                        arguments: { complete: [ windowId ] }
+                    };
+                var request = Y.io(uri, config);
+            }        	
+        },
+                
+        reallocateColumn : function(column) {
+    	    var columns = Y.Node.all(JetuiConfiguration.layoutStyle); 
+    	    columns.each(function(v, k) {
+    	    	if (v.data.get('locked') == false)
+    	    	{
+    		    	if (v.data.get('column') == column)
+    		    	{
+    		    		var row = 0;
+    	    			v.get('children').each(function(v,k) {
+    		    			v.data.set('row', row);
+    		    			row++;
+    		    		}, row);
+    		    	}
+    	    	}
+    	    });
+    	},
+    	
         /**
          * @method onPortletRemoveComplete
          */
@@ -275,7 +360,7 @@ YUI.add('jetui-portal', function(Y) {
         },
         
         /**
-         * @method removePortlet
+         * @method removePortlet removes a portlet from the persistent store over restful delete request
          */
         removePortlet : function(e) {
             var portal = JETUI_YUI.getPortalInstance();

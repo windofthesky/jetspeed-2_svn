@@ -138,21 +138,19 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
 	        dragGroups = ['toolbars'],	        
 	        dragMode = 'point';
 	        dropGroups = [];
-        }
-        
-	        var ddNav = new Y.DD.Drag({
-	            node: v,
-	            groups: dragGroups,
-	            dragMode: dragMode                    
-	        }).plug(Y.Plugin.DDProxy, { 
-	          	 moveOnEnd: false         	    	
-	        });    
-	        ddNav.addHandle(config.dragHandleStyle);
-	    	var drop = new Y.DD.Drop({
-	            node: v,
-	            groups: dropGroups            
-	        });
-        
+        }        
+        var ddNav = new Y.DD.Drag({
+            node: v,
+            groups: dragGroups,
+            dragMode: dragMode                    
+        }).plug(Y.Plugin.DDProxy, { 
+          	 moveOnEnd: false         	    	
+        });    
+        ddNav.addHandle(config.dragHandleStyle);
+    	var drop = new Y.DD.Drop({
+            node: v,
+            groups: dropGroups            
+        });
     	//portlet.info();
     });
     
@@ -174,7 +172,12 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     closeWindows.each(function(v, k) {
         v.on('click', portal.removePortlet);
     });
-        
+
+    var detachWindows = Y.Node.all('.portlet-action-detach');
+    detachWindows.each(function(v, k) {
+        v.on('click', portal.detachPortlet);
+    });
+    
 	Y.DD.DDM.on('drag:drophit', function(e) {
 	    var portal = JETUI_YUI.getPortalInstance();
 		var drop = e.drop.get('node'),
@@ -228,70 +231,8 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
         drag.get('node').removeClass('moving');
         drag.get('dragNode').set('innerHTML', '');
 
-        persistMove(drag.get('node'), e);
-    });
-    
-    var onMoveComplete = function(id, o, args) { 
-        var id = id; // Transaction ID. 
-        var data = o.responseText; // Response data.
-        Y.log("move result = " + data);
-        var windowId = args.complete[0];
-    };     
-    
-    var persistMove = function(drag, e) {
-        var portal = JETUI_YUI.getPortalInstance();
-        var windowId =  drag.getAttribute('id');
-        if (drag.data.get("toolbar") == false) {
-        	var oldColumn = drag.data.get('column');
-        	var oldRow = drag.data.get('row');        	
-    		var dragParent = drag.get('parentNode');
-        	var parentColumn = dragParent.data.get('column');
-        	if (parentColumn != oldColumn)
-        	{
-        		reallocateColumn(oldColumn); // moved from different column
-        		drag.data.set('column', parentColumn);
-        	}
-        	reallocateColumn(parentColumn);
-            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
-            uri += "&col=" + drag.data.get('column') + "&row=" + drag.data.get('row');
-            var config = {
-                    on: { complete: onMoveComplete },
-                    method: "PUT",
-                    headers: { "X-Portal-Path" : portal.portalPagePath },
-                    arguments: { complete: [ windowId ] }
-                };
-            var request = Y.io(uri, config);
-        }    	
-        else
-        {
-            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
-            uri += "&x=" + e.target.region.top + "&y=" + e.target.region.left;
-            var config = {
-                    on: { complete: onMoveComplete },
-                    method: "PUT",
-                    headers: { "X-Portal-Path" : portal.portalPagePath },
-                    arguments: { complete: [ windowId ] }
-                };
-            var request = Y.io(uri, config);
-        }
-    };
-
-	var reallocateColumn = function(column) {
-	    var columns = Y.Node.all(config.layoutStyle); 
-	    columns.each(function(v, k) {
-	    	if (v.data.get('locked') == false)
-	    	{
-		    	if (v.data.get('column') == column)
-		    	{
-		    		var row = 0;
-	    			v.get('children').each(function(v,k) {
-		    			v.data.set('row', row);
-		    			row++;
-		    		}, row);
-		    	}
-	    	}
-	    });
-	};    
+        portal.movePortlet(drag.get('node'), e);
+    });        	
     
     Y.DD.DDM.on('drag:start', function(e) {
         var drag = e.target;
@@ -379,7 +320,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
 		    	{
 		    		// Y.log("**** HIT");
 		    		portal.isMoving = true;
-		    		portal.movePortlet(e); 
+		    		portal.moveToGrid(e); 
 		    		portal.isMoving = false;
 		    	}
 	    	}

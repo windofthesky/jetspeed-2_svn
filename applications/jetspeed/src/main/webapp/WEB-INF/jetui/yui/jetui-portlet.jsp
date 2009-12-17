@@ -60,7 +60,9 @@ limitations under the License.
 if (request.getUserPrincipal() != null && fragment.getDecoration().getActions().size() > 0)
 {
 %>
-                 <span style='cursor: pointer; z-index: 1000;' id='jetspeed-close-<%=fragment.getId()%>' title="close" class="portlet-action-close"><img src="<%=request.getContextPath()%>/decorations/portlet/jetspeed/images/close.gif" alt="Close" border="0" /></span>              
+                 <span style='cursor: pointer; z-index: 1000;' id='jetspeed-close-<%=fragment.getId()%>' title="close" class="portlet-action-close"><img src="<%=request.getContextPath()%>/decorations/images/close.gif" alt="Close" border="0" /></span>              
+                 <span style='cursor: pointer; z-index: 1000;' id='jetspeed-detach-<%=fragment.getId()%>' title="detach" class="portlet-action-detach"><img src="<%=request.getContextPath()%>/decorations/images/detach.gif" alt="Detach" border="0" /></span>              
+
 <% }  } %>
                 </div>
               </div>
