@@ -17,6 +17,7 @@
 package org.apache.jetspeed.services.rest;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -346,9 +347,9 @@ public class PageLayoutService
                             pageLayoutComponent.updateRowColumn(contentFragment, destRow, destColumn);
                             pageLayoutComponent.updateRowColumn(destFragment, row, column);
                         }
+                        
+                        break;
                     }
-                    
-                    break;
                 }
             }
             else if ("down".equals(direction))
@@ -361,9 +362,17 @@ public class PageLayoutService
                     {
                         SortedSet<ContentFragment> tailSet = set.tailSet(contentFragment);
                         
-                        if (!tailSet.isEmpty())
+                        if (tailSet.size() > 1)
                         {
-                            ContentFragment destFragment = tailSet.first();
+                            Iterator<ContentFragment> it = tailSet.iterator();
+                            ContentFragment tempFragment = it.next();
+                            
+                            if (!tempFragment.getId().equals(contentFragment.getId()))
+                            {
+                                throw new IllegalStateException("Tail set of the column fragment set must start with the content fragment itself.");
+                            }
+                            
+                            ContentFragment destFragment = it.next();
                             int row = contentFragment.getLayoutRow();
                             int column = contentFragment.getLayoutColumn();
                             int destRow = destFragment.getLayoutRow();
@@ -371,9 +380,9 @@ public class PageLayoutService
                             pageLayoutComponent.updateRowColumn(contentFragment, destRow, destColumn);
                             pageLayoutComponent.updateRowColumn(destFragment, row, column);
                         }
+                        
+                        break;
                     }
-                    
-                    break;
                 }
             }
             else
@@ -385,14 +394,67 @@ public class PageLayoutService
         {
             int row = NumberUtils.toInt(rowParam, -1);
             int col = NumberUtils.toInt(colParam, -1);
-
-            try
+            
+            if (row != -1 && col != -1 && (contentFragment.getLayoutRow() != row || contentFragment.getLayoutColumn() != col))
             {
-                pageLayoutComponent.updateRowColumn(contentFragment, row, col);
-            }
-            catch (Exception e)
-            {
-                throw new WebApplicationException(e);
+                try
+                {
+                    ContentFragment layoutFragment = null;
+                    
+                    if (!StringUtils.isBlank(layoutFragmentId))
+                    {
+                        layoutFragment = contentPage.getFragmentByFragmentId(layoutFragmentId);
+                        
+                        if (layoutFragment == null)
+                        {
+                            throw new WebApplicationException(new IllegalArgumentException("Layout fragment not found with the specified id: " + layoutFragmentId));
+                        }
+                    }
+                    else
+                    {
+                        layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), fragmentId);
+                        
+                        if (layoutFragment == null)
+                        {
+                            throw new WebApplicationException(new IllegalArgumentException("Layout fragment not found for the fragment: " + fragmentId));
+                        }
+                    }
+                    
+                    int layoutColumnCount = getColumnCountOfLayoutFragment(layoutFragment);
+                    
+                    SortedSet<ContentFragment> [] fragmentSetArray = getSortedChildFragmentSetArray(layoutFragment, layoutColumnCount);
+                    
+                    if (fragmentSetArray.length > col)
+                    {
+                        SortedSet<ContentFragment> set = fragmentSetArray[col];
+                        
+                        if (row >= set.size())
+                        {
+                            row = set.size();
+                        }
+                        
+                        pageLayoutComponent.updateRowColumn(contentFragment, row, col);
+                        
+                        SortedSet<ContentFragment> tailSet = set.tailSet(contentFragment);
+                        
+                        for (ContentFragment f : tailSet)
+                        {
+                            if (!f.getId().equals(contentFragment.getId()))
+                            {
+                                ++row;
+                                
+                                if (row != f.getLayoutRow())
+                                {
+                                    pageLayoutComponent.updateRowColumn(f, row, col);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new WebApplicationException(e);
+                }
             }
         }
         else

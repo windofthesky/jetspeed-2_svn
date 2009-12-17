@@ -211,16 +211,6 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
         }
     });
 	
-    var onMoveComplete = function(id, o, args) { 
-    	var id = id; // Transaction ID. 
-    	var data = o.responseText; // Response data.
-    	//Y.log("move result = " + data);
-    	var dataIn = Y.DataType.XML.parse(data),
-    		schema = {  resultListLocator: "status", resultFields: [{key:"status"}] },
-    		dataOut = Y.DataSchema.XML.apply(schema, dataIn);
-    	var widgetId = args[0];
-    };     
-    
     Y.DD.DDM.on('drag:end', function(e) {
         var drag = e.target;
         if (drag.target) {
@@ -241,16 +231,16 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
         persistMove(drag.get('node'), e);
     });
     
-
-	 
-
+    var onMoveComplete = function(id, o, args) { 
+        var id = id; // Transaction ID. 
+        var data = o.responseText; // Response data.
+        Y.log("move result = " + data);
+        var windowId = args.complete[0];
+    };     
+    
     var persistMove = function(drag, e) {
-    	var uri = document.location.href;
-    	if (uri.indexOf("/portal") > -1)
-    		uri = uri.replace("/portal", "/ajaxapi");
-    	else
-    		uri = uri.replace("/ui", "/ajaxapi");
-    	var windowId =  drag.getAttribute('id');
+        var portal = JETUI_YUI.getPortalInstance();
+        var windowId =  drag.getAttribute('id');
         if (drag.data.get("toolbar") == false) {
         	var oldColumn = drag.data.get('column');
         	var oldRow = drag.data.get('row');        	
@@ -262,15 +252,27 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
         		drag.data.set('column', parentColumn);
         	}
         	reallocateColumn(parentColumn);
-        	var uri = uri + "?action=moveabs&id=" + windowId + "&col=" + drag.data.get('column') + "&row=" + drag.data.get('row');
-            Y.on('io:complete', onMoveComplete, this, [windowId]); 
-            var request = Y.io(uri);         	            
+            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
+            uri += "&col=" + drag.data.get('column') + "&row=" + drag.data.get('row');
+            var config = {
+                    on: { complete: onMoveComplete },
+                    method: "PUT",
+                    headers: { "X-Portal-Path" : portal.portalPagePath },
+                    arguments: { complete: [ windowId ] }
+                };
+            var request = Y.io(uri, config);
         }    	
         else
         {
-        	var uri = uri + "?action=move&id=" + windowId + "&x=" + e.target.region.top + "&y=" + e.target.region.left;
-            Y.on('io:complete', onMoveComplete, this, [windowId]); 
-            var request = Y.io(uri);         	            
+            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
+            uri += "&x=" + e.target.region.top + "&y=" + e.target.region.left;
+            var config = {
+                    on: { complete: onMoveComplete },
+                    method: "PUT",
+                    headers: { "X-Portal-Path" : portal.portalPagePath },
+                    arguments: { complete: [ windowId ] }
+                };
+            var request = Y.io(uri, config);
         }
     };
 
