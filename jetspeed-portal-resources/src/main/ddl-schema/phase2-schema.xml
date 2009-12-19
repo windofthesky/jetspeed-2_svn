@@ -348,10 +348,6 @@ limitations under the License.
         <column name="LAYOUT_Z" type="REAL"/>
         <column name="LAYOUT_WIDTH" type="REAL"/>
         <column name="LAYOUT_HEIGHT" type="REAL"/>
-        <column name="EXT_PROP_NAME_1" size="40" type="VARCHAR"/>
-        <column name="EXT_PROP_VALUE_1" size="80" type="VARCHAR"/>
-        <column name="EXT_PROP_NAME_2" size="40" type="VARCHAR"/>
-        <column name="EXT_PROP_VALUE_2" size="80" type="VARCHAR"/>
         <column name="OWNER_PRINCIPAL" size="40" type="VARCHAR"/>
         <foreign-key foreignTable="FRAGMENT" name="FK_FRAGMENT_1" onDelete="cascade">
             <reference foreign="FRAGMENT_ID" local="PARENT_ID"/>
@@ -434,6 +430,27 @@ limitations under the License.
         <index name="IX_FRAGMENT_PREF_VALUE_1">
             <index-column name="PREF_ID"/>
         </index>
+    </table>
+
+    <table name="FRAGMENT_PROP">
+        <column name="PROP_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="FRAGMENT_ID" required="true" type="INTEGER"/>
+        <column name="NAME" required="true" size="40" type="VARCHAR"/>
+        <column name="SCOPE" required="false" size="10" type="VARCHAR"/>
+        <column name="SCOPE_VALUE" required="false" size="40" type="VARCHAR"/>
+        <column name="VALUE" required="true" size="100" type="VARCHAR"/>
+        <foreign-key foreignTable="FRAGMENT" name="FK_FRAGMENT_PROP_1" onDelete="cascade">
+            <reference foreign="FRAGMENT_ID" local="FRAGMENT_ID"/>
+        </foreign-key>
+        <index name="IX_FRAGMENT_PROP_1">
+            <index-column name="FRAGMENT_ID"/>
+        </index>
+        <unique name="UN_FRAGMENT_PROP_1">
+            <unique-column name="FRAGMENT_ID"/>
+            <unique-column name="NAME"/>
+            <unique-column name="SCOPE"/>
+            <unique-column name="SCOPE_VALUE"/>
+        </unique>
     </table>
 
     <!--

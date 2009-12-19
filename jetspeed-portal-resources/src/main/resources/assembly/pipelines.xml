@@ -348,6 +348,9 @@
 
   <bean id="cleanUpValve" class="org.apache.jetspeed.pipeline.valve.impl.CleanupValveImpl" init-method="initialize">
     <meta key="j2:cat" value="default" />
+    <constructor-arg>
+      <ref bean="org.apache.jetspeed.page.PageManager" />
+    </constructor-arg>
   </bean>
 
   <bean id="AJAXValve" class="org.apache.jetspeed.ajax.AJAXValve" init-method="initialize">
@@ -629,6 +632,7 @@
         <ref bean="refreshUserHomepageValve" />
         <ref bean="containerValve" />
         <ref bean="actionValve" />
+        <ref bean="cleanUpValve" />
       </list>
     </constructor-arg>
   </bean>
@@ -648,6 +652,7 @@
         <ref bean="refreshUserHomepageValve" />
         <ref bean="containerValve" />
         <ref bean="desktopActionValve" />
+        <ref bean="cleanUpValve" />
       </list>
     </constructor-arg>
   </bean>
@@ -670,6 +675,7 @@
         <ref bean="containerValve" />
         <ref bean="resourceValve" />
         <ref bean="portletValveTitleInHeader" />
+        <ref bean="cleanUpValve" />
       </list>
     </constructor-arg>
   </bean>
@@ -689,6 +695,7 @@
         <ref bean="refreshUserHomepageValve" />
         <ref bean="containerValve" />
         <ref bean="portletValveTitleInHeader" />
+        <ref bean="cleanUpValve" />
       </list>
     </constructor-arg>
   </bean>
@@ -710,6 +717,7 @@
         <ref bean="containerValve" />
         <!--  this is the standard Jetspeed API entry point -->
         <ref bean="layoutValve" />
+        <ref bean="cleanUpValve" />
       </list>
     </constructor-arg>
   </bean>
@@ -729,6 +737,7 @@
         <ref bean="refreshUserHomepageValve" />
         <ref bean="containerValve" />
         <ref bean="AJAXValve" />
+        <ref bean="cleanUpValve" />
       </list>
     </constructor-arg>
   </bean>
@@ -768,6 +777,7 @@
         <ref bean="containerValve" />
         <ref bean="fileServerValve" />
         <ref bean="portletValve" />
+        <ref bean="cleanUpValve" />
       </list>
     </constructor-arg>
   </bean>
@@ -787,6 +797,7 @@
         <ref bean="refreshUserHomepageValve" />
         <ref bean="headerAggregatorValveDesktop" />
         <ref bean="desktopValve" />
+        <ref bean="cleanUpValve" />
       </list>
     </constructor-arg>
   </bean>
@@ -806,6 +817,7 @@
         <ref bean="refreshUserHomepageValve" />
         <ref bean="headerAggregatorValveDesktop" />
         <ref bean="desktopValve" />
+        <ref bean="cleanUpValve" />
       </list>
     </constructor-arg>
   </bean>

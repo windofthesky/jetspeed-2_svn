@@ -25,12 +25,14 @@ import java.util.List;
 
 import javax.security.auth.Subject;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.BaseElement;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
+import org.apache.jetspeed.page.impl.DatabasePageManager;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.JSSubject;
@@ -54,6 +56,7 @@ public abstract class BaseElementImpl implements BaseElement
 
     private boolean constraintsEnabled;
     private boolean permissionsEnabled;
+    private DatabasePageManager pageManager;
     protected static PermissionFactory pf;
     
     public static void setPermissionsFactory(PermissionFactory pf)
@@ -105,6 +108,30 @@ public abstract class BaseElementImpl implements BaseElement
     {
         permissionsEnabled = enabled;
     }
+    
+    /**
+     * Infuses PageManager for use by this folder instance.
+     *
+     * @param pageManager page manager that manages this folder instance
+     */
+    public void setPageManager(DatabasePageManager pageManager)
+    {
+        this.pageManager = pageManager;
+    }
+
+    /**
+     * Get infused or registered page manager instance managing this base element.
+     * 
+     * @return page manager instance
+     */
+    public DatabasePageManager getPageManager()
+    {
+        if (pageManager == null)
+        {
+            pageManager = (DatabasePageManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.page.PageManager");
+        }        
+        return pageManager;
+    }     
 
     /**
      * grantViewActionAccess

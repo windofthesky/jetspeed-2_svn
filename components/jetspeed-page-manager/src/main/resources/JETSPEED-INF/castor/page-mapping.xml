@@ -170,7 +170,7 @@
       <bind-xml name="short-title"/>
     </field>
 
-    <field name="propertiesList"
+    <field name="properties"
            type="org.apache.jetspeed.om.page.psml.PropertyImpl" collection="arraylist">
       <bind-xml name="property"/>
     </field>
@@ -493,6 +493,14 @@
 
     <field name="name" type="string">
       <bind-xml name="name" node="attribute"/>
+    </field>
+
+    <field name="uncheckedScope" type="string">
+      <bind-xml name="scope" node="attribute"/>
+    </field>
+
+    <field name="scopeValue" type="string">
+      <bind-xml name="scopeValue" node="attribute"/>
     </field>
 
     <field name="value" type="string">

@@ -33,6 +33,8 @@ limitations under the License.
     <fragment id="pe001" type="portlet" name="HelloPortlet">
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />      
+      <property name="custom" value="custom-value" />
+      <property name="custom" scope="user" scopeValue="user" value="custom-value-user" />
     </fragment>
     <fragment id="pe002" type="portlet" name="JMXPortlet">
       <property layout="TwoColumns" name="row" value="0" />

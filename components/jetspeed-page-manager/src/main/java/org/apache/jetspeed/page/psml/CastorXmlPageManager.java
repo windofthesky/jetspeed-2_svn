@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
@@ -57,6 +55,7 @@ import org.apache.jetspeed.om.page.psml.PageFragmentImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
 import org.apache.jetspeed.om.page.psml.PageSecurityImpl;
 import org.apache.jetspeed.om.page.psml.PageTemplateImpl;
+import org.apache.jetspeed.om.page.psml.PropertyImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.AbstractPageManager;
@@ -75,6 +74,9 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This service is responsible for loading and saving PSML pages serialized to
@@ -119,6 +121,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         modelClasses.put("PageTemplateImpl", PageTemplateImpl.class);
         modelClasses.put("DynamicPageImpl", DynamicPageImpl.class);
         modelClasses.put("FragmentDefinitionImpl", FragmentDefinitionImpl.class);
+        modelClasses.put("FragmentPropertyImpl", PropertyImpl.class);
     }
 
     private DocumentHandlerFactory handlerFactory;

@@ -65,7 +65,7 @@ public class ContentFragmentBean implements Serializable
         
         mode = contentFragment.getMode();
         state = contentFragment.getState();
-        properties = contentFragment.getProperties();
+        properties = contentFragment.getPropertiesMap();
         
         Collection<ContentFragment> childContentFragments = contentFragment.getFragments();
         

@@ -17,17 +17,22 @@
 
 package org.apache.jetspeed.om.page.psml;
 
+import org.apache.jetspeed.om.page.BaseFragmentPropertyImpl;
+import org.apache.jetspeed.om.page.FragmentProperty;
+
 /**
- * Bean like implementation of the Parameter interface suitable for
+ * Bean like implementation of the FragmentProperty interface suitable for
  * Castor serialization.
  *
  * @see org.apache.jetspeed.om.registry.PsmlParameter
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class PropertyImpl implements java.io.Serializable
+public class PropertyImpl extends BaseFragmentPropertyImpl implements FragmentProperty, java.io.Serializable
 {
     private String name;
+    private String scope;
+    private String scopeValue;
     private String value;
 
     public PropertyImpl()
@@ -55,6 +60,31 @@ public class PropertyImpl implements java.io.Serializable
         this.name = name;
     }
 
+    public String getScope()
+    {
+        return this.scope;
+    }
+
+    public void setScope(String scope)
+    {
+        if ((scope != null) && !scope.equals(USER_PROPERTY_SCOPE) && 
+            (!GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED || (!scope.equals(GROUP_PROPERTY_SCOPE) && !scope.equals(ROLE_PROPERTY_SCOPE))))
+            {
+                throw new IllegalArgumentException("Fragment property scope "+scope+" invalid or not enabled");
+            }
+        this.scope = scope;
+    }
+
+    public String getScopeValue()
+    {
+        return this.scopeValue;
+    }
+
+    public void setScopeValue(String scopeValue)
+    {
+        this.scopeValue = scopeValue;
+    }
+
     public String getValue()
     {
         return this.value;
@@ -76,5 +106,25 @@ public class PropertyImpl implements java.io.Serializable
     public int getIntValue()
     {        
         return Integer.parseInt(value);
+    }
+
+    /**
+     * Unchecked read access to scope value.
+     * 
+     * @return scope
+     */
+    public String getUncheckedScope()
+    {
+        return this.scope;
+    }
+
+    /**
+     * Unchecked write access to scope value.
+     * 
+     * @param scope
+     */
+    public void setUncheckedScope(String scope)
+    {
+        this.scope = scope;
     }
 }

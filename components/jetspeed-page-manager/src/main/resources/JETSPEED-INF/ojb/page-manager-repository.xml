@@ -2164,25 +2164,25 @@
       />
 
       <field-descriptor
-         name="skin"
+         name="skinProperty"
          column="SKIN"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="decorator"
+         name="decoratorProperty"
          column="DECORATOR"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="state"
+         name="stateProperty"
          column="STATE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="mode"
+         name="modeProperty"
          column="PMODE"
          jdbc-type="VARCHAR"
       />
@@ -2233,30 +2233,6 @@
          name="layoutHeightProperty"
          column="LAYOUT_HEIGHT"
          jdbc-type="REAL"
-      />
-
-      <field-descriptor
-         name="extendedPropertyName1"
-         column="EXT_PROP_NAME_1"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="extendedPropertyValue1"
-         column="EXT_PROP_VALUE_1"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="extendedPropertyName2"
-         column="EXT_PROP_NAME_2"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="extendedPropertyValue2"
-         column="EXT_PROP_VALUE_2"
-         jdbc-type="VARCHAR"
       />
 
       <field-descriptor
@@ -2381,25 +2357,25 @@
       />
 
       <field-descriptor
-         name="skin"
+         name="skinProperty"
          column="SKIN"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="decorator"
+         name="decoratorProperty"
          column="DECORATOR"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="state"
+         name="stateProperty"
          column="STATE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="mode"
+         name="modeProperty"
          column="PMODE"
          jdbc-type="VARCHAR"
       />
@@ -2450,30 +2426,6 @@
          name="layoutHeightProperty"
          column="LAYOUT_HEIGHT"
          jdbc-type="REAL"
-      />
-
-      <field-descriptor
-         name="extendedPropertyName1"
-         column="EXT_PROP_NAME_1"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="extendedPropertyValue1"
-         column="EXT_PROP_VALUE_1"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="extendedPropertyName2"
-         column="EXT_PROP_NAME_2"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="extendedPropertyValue2"
-         column="EXT_PROP_VALUE_2"
-         jdbc-type="VARCHAR"
       />
 
       <field-descriptor
@@ -2581,25 +2533,25 @@
       />
 
       <field-descriptor
-         name="skin"
+         name="skinProperty"
          column="SKIN"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="decorator"
+         name="decoratorProperty"
          column="DECORATOR"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="state"
+         name="stateProperty"
          column="STATE"
          jdbc-type="VARCHAR"
       />
 
       <field-descriptor
-         name="mode"
+         name="modeProperty"
          column="PMODE"
          jdbc-type="VARCHAR"
       />
@@ -2650,30 +2602,6 @@
          name="layoutHeightProperty"
          column="LAYOUT_HEIGHT"
          jdbc-type="REAL"
-      />
-
-      <field-descriptor
-         name="extendedPropertyName1"
-         column="EXT_PROP_NAME_1"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="extendedPropertyValue1"
-         column="EXT_PROP_VALUE_1"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="extendedPropertyName2"
-         column="EXT_PROP_NAME_2"
-         jdbc-type="VARCHAR"
-      />
-
-      <field-descriptor
-         name="extendedPropertyValue2"
-         column="EXT_PROP_VALUE_2"
-         jdbc-type="VARCHAR"
       />
 
       <field-descriptor
@@ -2875,6 +2803,44 @@
          name="valueOrder"
          column="VALUE_ORDER"
          jdbc-type="INTEGER"
+      />
+
+      <field-descriptor
+         name="value"
+         column="VALUE"
+         jdbc-type="VARCHAR"
+      />
+   </class-descriptor>
+
+   <class-descriptor
+      class="org.apache.jetspeed.om.page.impl.FragmentPropertyImpl"
+      table="FRAGMENT_PROP"
+   >
+      <field-descriptor
+         name="id"
+         column="PROP_ID"
+         jdbc-type="INTEGER"
+         primarykey="true"
+         autoincrement="true"
+      />
+
+      <field-descriptor
+        name="fragmentId"
+        column="FRAGMENT_ID"
+        jdbc-type="INTEGER"
+        access="anonymous"
+      />
+
+      <field-descriptor
+         name="scope"
+         column="SCOPE"
+         jdbc-type="VARCHAR"
+      />
+
+      <field-descriptor
+         name="scopeValue"
+         column="SCOPE_VALUE"
+         jdbc-type="VARCHAR"
       />
 
       <field-descriptor

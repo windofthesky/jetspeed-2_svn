@@ -24,8 +24,6 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -43,6 +41,7 @@ import org.apache.jetspeed.om.page.BasePageElement;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
@@ -54,6 +53,9 @@ import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * AbstractPageManagerService
@@ -102,6 +104,7 @@ public abstract class AbstractPageManager
     protected Class pageTemplateClass;
     protected Class dynamicPageClass;
     protected Class fragmentDefinitionClass;
+    protected Class fragmentPropertyClass;
 
     private IdGenerator generator;
 
@@ -177,6 +180,7 @@ public abstract class AbstractPageManager
         this.pageTemplateClass = (Class)modelClasses.get("PageTemplateImpl");
         this.dynamicPageClass = (Class)modelClasses.get("DynamicPageImpl");
         this.fragmentDefinitionClass = (Class)modelClasses.get("FragmentDefinitionImpl");
+        this.fragmentPropertyClass = (Class)modelClasses.get("FragmentPropertyImpl");
     }
     
     /* (non-Javadoc)
@@ -805,7 +809,7 @@ public abstract class AbstractPageManager
     }
 
     /**
-     * newFragmentPreference - creates a new security constraints definition
+     * newFragmentPreference - creates a new fragment preference
      *
      * @return a newly created FragmentPreference object
      */
@@ -817,7 +821,26 @@ public abstract class AbstractPageManager
         }
         catch (ClassCastException e)
         {
-            String message = "Failed to create security constraints definition object for " + this.fragmentPreferenceClass;
+            String message = "Failed to create fragment preference object for " + this.fragmentPropertyClass;
+            log.error(message, e);
+        }
+        return null;
+    }
+
+    /**
+     * newFragmentProperty - creates a new fragment property
+     *
+     * @return a newly created FragmentProperty object
+     */
+    public FragmentProperty newFragmentProperty()
+    {
+        try
+        {
+            return (FragmentProperty)createObject(this.fragmentPropertyClass);
+        }
+        catch (ClassCastException e)
+        {
+            String message = "Failed to create fragment property object for " + this.fragmentPropertyClass;
             log.error(message, e);
         }
         return null;
@@ -1241,11 +1264,20 @@ public abstract class AbstractPageManager
             copy.setId(source.getId());
         }
         copy.setDecorator(source.getDecorator());
+        copy.setLayoutColumn(source.getLayoutColumn());
+        copy.setLayoutHeight(source.getLayoutHeight());
+        copy.setLayoutRow(source.getLayoutRow());
+        copy.setLayoutSizes(source.getLayoutSizes());
+        copy.setLayoutX(source.getLayoutX());
+        copy.setLayoutY(source.getLayoutY());
+        copy.setLayoutZ(source.getLayoutZ());
+        copy.setLayoutWidth(source.getLayoutWidth());
+        copy.setMode(source.getMode());
         copy.setShortTitle(source.getShortTitle());
         copy.setSkin(source.getSkin());
-        copy.setTitle(source.getTitle());
         copy.setState(source.getState());
-
+        copy.setTitle(source.getTitle());
+        
         // copy security constraints
         SecurityConstraints srcSecurity = source.getSecurityConstraints();        
         if ((srcSecurity != null) && !srcSecurity.isEmpty())
@@ -1255,15 +1287,22 @@ public abstract class AbstractPageManager
         }
         
         // copy properties
-        Iterator props = source.getProperties().entrySet().iterator();
+        Iterator props = source.getProperties().iterator();
         while (props.hasNext())
         {
-            Map.Entry prop = (Map.Entry)props.next();
-            copy.getProperties().put(prop.getKey(), prop.getValue());
+            FragmentProperty prop = (FragmentProperty)props.next();
+            if (copy.getProperty(prop.getName(), prop.getScope(), prop.getScopeValue()) == null)
+            {
+                FragmentProperty newProp = newFragmentProperty();
+                newProp.setName(prop.getName());
+                newProp.setScope(prop.getScope());
+                newProp.setScopeValue(prop.getScopeValue());
+                newProp.setValue(prop.getValue());
+                copy.getProperties().add(newProp);
+            }
         }
                   
         // copy preferences
-        copy.setPreferences(DatabasePageManagerUtils.createList());
         Iterator prefs = source.getPreferences().iterator();
         while (prefs.hasNext())
         {
@@ -1768,6 +1807,14 @@ public abstract class AbstractPageManager
             return false;
         }
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#cleanupRequestCache()
+     */
+    public void cleanupRequestCache()
+    {
+        // nothing to cleanup by default
     }
     
     /**

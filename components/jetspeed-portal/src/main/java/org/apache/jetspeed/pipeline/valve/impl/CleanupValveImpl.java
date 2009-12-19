@@ -24,13 +24,15 @@ import java.util.Stack;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.CleanupValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -52,9 +54,16 @@ public class CleanupValveImpl extends AbstractValve implements CleanupValve
 
     private static final Logger log = LoggerFactory.getLogger(CleanupValveImpl.class);
 
+    private PageManager pageManager;
     
-    public CleanupValveImpl()
+    /**
+     * Create cleanup valve with specified page manager component.
+     * 
+     * @param pageManager active page manager component
+     */
+    public CleanupValveImpl(PageManager pageManager)
     {
+        this.pageManager = pageManager;
     }
 
     /**
@@ -88,7 +97,17 @@ public class CleanupValveImpl extends AbstractValve implements CleanupValve
         {
             log.error("CleanupValveImpl: failed while trying to render fragment " + fragment);
             log.error("CleanupValveImpl: Unable to complete all renderings", e);
-        }        
+        }
+        
+        // Cleanup PageManager caches per request
+        try
+        {
+            pageManager.cleanupRequestCache();
+        }
+        catch (Exception e)
+        {
+            log.error("CleanupValveImpl: Unexpected exception caught", e);
+        }
     }
     
     /**

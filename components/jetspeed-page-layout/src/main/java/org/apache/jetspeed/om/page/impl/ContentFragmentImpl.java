@@ -19,9 +19,11 @@ package org.apache.jetspeed.om.page.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.decoration.Decoration;
@@ -31,6 +33,7 @@ import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.Fragment;
+import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.pluto.container.PortletPreference;
@@ -61,15 +64,11 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     private PortletContent portletContent;
     private Decoration decoration;
 
-    private String decorator;
-    private Map properties;
+    private List properties;
     private List fragments;
-    private String mode;
     private String name;
     private List preferences;
     private String shortTitle;
-    private String skin;
-    private String state;
     private String title;
     private String type;
 
@@ -173,7 +172,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      */
     public String getDecorator()
     {
-        return decorator;
+        return getProperty(DECORATOR_PROPERTY_NAME);
     }
 
     /* (non-Javadoc)
@@ -181,12 +180,25 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      */
     public float getFloatProperty(String propName)
     {
-        String propValue = (String)getProperties().get(propName);
+        String propValue = getProperty(propName);
         if (propValue != null)
         {
             return Float.parseFloat(propValue);
         }
         return -1.0F;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#getFloatProperty(java.lang.String, java.lang.String)
+     */
+    public float getFloatProperty(String propName, String scope)
+    {
+        String propValue = getProperty(propName, scope);
+        if (propValue != null)
+        {
+            return Float.parseFloat(propValue);
+        }
+        return -1.0F;        
     }
 
     /* (non-Javadoc)
@@ -214,7 +226,20 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      */
     public int getIntProperty(String propName)
     {
-        String propValue = (String)getProperties().get(propName);
+        String propValue = getProperty(propName);
+        if (propValue != null)
+        {
+            return Integer.parseInt(propValue);
+        }
+        return -1;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#getIntProperty(java.lang.String, java.lang.String)
+     */
+    public int getIntProperty(String propName, String scope)
+    {
+        String propValue = getProperty(propName, scope);
         if (propValue != null)
         {
             return Integer.parseInt(propValue);
@@ -291,7 +316,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      */
     public String getMode()
     {
-        return mode;
+        return getProperty(MODE_PROPERTY_NAME);
     }
 
     /* (non-Javadoc)
@@ -341,13 +366,42 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#getProperties()
      */
-    public Map getProperties()
+    public List getProperties()
     {
         if (properties == null)
         {
-            properties = new HashMap();
+            properties = new ArrayList();
         }
         return properties;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#getPropertiesMap()
+     */
+    public Map getPropertiesMap()
+    {
+        // get property names
+        Set propertyNames = new HashSet();
+        Iterator propertiesIter = getProperties().iterator();
+        while (propertiesIter.hasNext())
+        {
+            FragmentProperty fragmentProperty = (FragmentProperty)propertiesIter.next();
+            propertyNames.add(fragmentProperty.getName());
+        }
+        
+        // construct and return properties map 
+        Map propertiesMap = new HashMap();
+        Iterator propertyNamesIter = propertyNames.iterator();
+        while (propertyNamesIter.hasNext())
+        {
+            String propertyName = (String)propertyNamesIter.next();
+            String propertyValue = getProperty(propertyName);
+            if (propertyValue != null)
+            {
+                propertiesMap.put(propertyName, propertyValue);
+            }
+        }
+        return propertiesMap;
     }
 
     /* (non-Javadoc)
@@ -355,7 +409,75 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      */
     public String getProperty(String propName)
     {
-        return (String)getProperties().get(propName);
+        // scoped property values
+        String userValue = null;
+        String groupValue = null;
+        String roleValue = null;
+        String globalValue = null;
+
+        // iterate through properties list to determine most specific
+        // property value; assumes properties are already filtered
+        // for current user user, group, and role scopes
+        Iterator propertiesIter = getProperties().iterator();
+        while ((userValue == null) && propertiesIter.hasNext())
+        {
+            FragmentProperty fragmentProperty = (FragmentProperty)propertiesIter.next();
+            if (fragmentProperty.getName().equals(propName))
+            {
+                String fragmentPropertyScope = fragmentProperty.getScope();
+                if (fragmentPropertyScope != null)
+                {
+                    if (fragmentPropertyScope.equals(FragmentProperty.USER_PROPERTY_SCOPE))
+                    {
+                        userValue = fragmentProperty.getValue();
+                    }
+                    else if (groupValue == null)
+                    {
+                        if (fragmentPropertyScope.equals(FragmentProperty.GROUP_PROPERTY_SCOPE))
+                        {
+                            groupValue = fragmentProperty.getValue();
+                        }
+                        else if (roleValue == null)
+                        {
+                            if (fragmentPropertyScope.equals(FragmentProperty.ROLE_PROPERTY_SCOPE))
+                            {
+                                roleValue = fragmentProperty.getValue();
+                            }
+                        }
+                    }
+                }
+                else if ((groupValue == null) && (roleValue == null) && (globalValue == null))
+                {
+                    globalValue = fragmentProperty.getValue();
+                }
+            }
+        }
+
+        // return most specifically scoped property value
+        return ((userValue != null) ? userValue : ((groupValue != null) ? groupValue : ((roleValue != null) ? roleValue : globalValue)));
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#getProperty(java.lang.String, java.lang.String)
+     */
+    public String getProperty(String propName, String scope)
+    {
+        // iterate through properties list to get property value
+        Iterator propertiesIter = getProperties().iterator();
+        while (propertiesIter.hasNext())
+        {
+            FragmentProperty fragmentProperty = (FragmentProperty)propertiesIter.next();
+            if (fragmentProperty.getName().equals(propName))
+            {
+                String fragmentPropertyScope = fragmentProperty.getScope();
+                if (((fragmentPropertyScope == null) && (scope == null)) ||
+                    ((fragmentPropertyScope != null) && fragmentPropertyScope.equals(scope)))
+                {
+                    return fragmentProperty.getValue();
+                }
+            }
+        }
+        return null;
     }
 
     /* (non-Javadoc)
@@ -414,7 +536,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      */
     public String getSkin()
     {
-        return skin;
+        return getProperty(SKIN_PROPERTY_NAME);
     }
 
     /* (non-Javadoc)
@@ -422,7 +544,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      */
     public String getState()
     {
-        return state;
+        return getProperty(STATE_PROPERTY_NAME);
     }
 
     /* (non-Javadoc)
@@ -547,16 +669,24 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      */
     public void updateDecorator(String decoratorName)
     {
+        updateDecorator(decoratorName, null, null);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#updateDecorator(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void updateDecorator(String decoratorName, String scope, String scopeValue)
+    {
         if (pageLayoutComponent != null)
         {
             // delegate to page layout component
-            pageLayoutComponent.updateDecorator(this, decoratorName);
+            pageLayoutComponent.updateDecorator(this, decoratorName, scope, scopeValue);
         }
         else
         {
             // perform locally only
             decoratorName = (!Utils.isNull(decoratorName) ? decoratorName : null);
-            setDecorator(decoratorName);
+            setDecorator(scope, scopeValue, decoratorName);
         }
     }
 
@@ -582,33 +712,41 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      */
     public void updatePosition(float x, float y, float z, float width, float height)
     {
+        updatePosition(x, y, z, width, height, null, null);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#updatePosition(float, float, float, float, float, java.lang.String, java.lang.String)
+     */
+    public void updatePosition(float x, float y, float z, float width, float height, String scope, String scopeValue)
+    {
         if (pageLayoutComponent != null)
         {
             // delegate to page layout component
-            pageLayoutComponent.updatePosition(this, x, y, z, width, height);
+            pageLayoutComponent.updatePosition(this, x, y, z, width, height, scope, scopeValue);
         }
         else
         {
             // perform locally only
             if (!Utils.isNull(x))
             {
-                setLayoutX(x);
+                setLayoutX(scope, scopeValue, x);
             }
             if (!Utils.isNull(y))
             {
-                setLayoutY(y);
+                setLayoutY(scope, scopeValue, y);
             }
             if (!Utils.isNull(z))
             {
-                setLayoutZ(z);
+                setLayoutZ(scope, scopeValue, z);
             }
             if (!Utils.isNull(width))
             {
-                setLayoutWidth(width);
+                setLayoutWidth(scope, scopeValue, width);
             }
             if (!Utils.isNull(height))
             {
-                setLayoutWidth(height);
+                setLayoutWidth(scope, scopeValue, height);
             }
         }
     }
@@ -631,49 +769,90 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.ContentFragment#updateRowColumn(int, int)
+     * @see org.apache.jetspeed.om.page.ContentFragment#updateProperty(java.lang.String, java.lang.String)
      */
-    public void updateRowColumn(int row, int column)
+    public void updateProperty(String propName, String propValue)
+    {
+        updateProperty(propName, propValue, null, null);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#updateProperty(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void updateProperty(String propName, String propValue, String scope, String scopeValue)
     {
         if (pageLayoutComponent != null)
         {
             // delegate to page layout component
-            pageLayoutComponent.updateRowColumn(this, row, column);
+            pageLayoutComponent.updateProperty(this, propName, propValue, scope, scopeValue);
+        }
+        else
+        {
+            // perform locally only            
+            setProperty(propName, scope, scopeValue, propValue);
+        }        
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#updateRowColumn(int, int)
+     */
+    public void updateRowColumn(int row, int column)
+    {
+        updateRowColumn(row, column, null, null);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#updateRowColumn(int, int, java.lang.String, java.lang.String)
+     */
+    public void updateRowColumn(int row, int column, String scope, String scopeValue)
+    {
+        if (pageLayoutComponent != null)
+        {
+            // delegate to page layout component
+            pageLayoutComponent.updateRowColumn(this, row, column, scope, scopeValue);
         }
         else
         {
             // perform locally only            
             if (!Utils.isNull(row))
             {
-                setLayoutRow(row);
+                setLayoutRow(scope, scopeValue, row);
             }
             if (!Utils.isNull(column))
             {
-                setLayoutColumn(column);
+                setLayoutColumn(scope, scopeValue, column);
             }
         }
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#updateStateMode(java.lang.String, java.lang.String)
      */
     public void updateStateMode(String portletState, String portletMode)
     {
+        updateStateMode(portletState, portletMode, null, null);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#updateStateMode(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void updateStateMode(String portletState, String portletMode, String scope, String scopeValue)
+    {
         if (pageLayoutComponent != null)
         {
             // delegate to page layout component
-            pageLayoutComponent.updateStateMode(this, portletState, portletMode);
+            pageLayoutComponent.updateStateMode(this, portletState, portletMode, scope, scopeValue);
         }
         else
         {
             // perform locally only            
             if (!Utils.isNull(portletState))
             {
-                setState(portletState);
+                setState(scope, scopeValue, portletState);
             }
             if (!Utils.isNull(portletMode))
             {
-                setMode(portletMode);
+                setMode(scope, scopeValue, portletMode);
             }            
         }
     }
@@ -921,129 +1100,296 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
 
     /**
-     * Set content fragment decorator.
+     * Set global content fragment decorator.
      * 
      * @param decorator the decorator to set
      */
     public void setDecorator(String decorator)
     {
-        this.decorator = decorator;
+        setProperty(DECORATOR_PROPERTY_NAME, null, null, decorator);
+    }
+
+    /**
+     * Set content fragment decorator.
+     * 
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param decorator the decorator to set
+     */
+    public void setDecorator(String scope, String scopeValue, String decorator)
+    {
+        setProperty(DECORATOR_PROPERTY_NAME, scope, scopeValue, decorator);
     }
 
     /**
      * Set int property.
      * 
      * @param name property name
+     * @param scope property scope
+     * @param scopeValue property scope value
      * @param value int property value
      */
-    public void setIntProperty(String name, int value)
+    public void setIntProperty(String name, String scope, String scopeValue, int value)
     {
-        if (value >= 0)
-        {
-            getProperties().put(name, String.valueOf(value));
-        }
-        else
-        {
-            getProperties().remove(name);            
-        }
+        setProperty(name, scope, scopeValue, ((value >= 0) ? String.valueOf(value) : null));
     }
 
     /**
      * Set float property.
      * 
      * @param name property name
+     * @param scope property scope
+     * @param scopeValue property scope value
      * @param value float property value
      */
-    public void setFloatProperty(String name, float value)
+    public void setFloatProperty(String name, String scope, String scopeValue, float value)
     {
-        if (value >= 0)
-        {
-            getProperties().put(name, String.valueOf(value));
-        }
-        else
-        {
-            getProperties().remove(name);            
-        }
+        setProperty(name, scope, scopeValue, ((value >= 0.0F) ? String.valueOf(value) : null));
     }
 
     /**
-     * Set layout column property.
+     * Set global layout column property.
      * 
      * @param column column property value
      */
     public void setLayoutColumn(int column)
     {
-        setIntProperty(COLUMN_PROPERTY_NAME, column);
+        setIntProperty(COLUMN_PROPERTY_NAME, null, null, column);
     }
 
     /**
-     * Set layout height property.
+     * Set layout column property.
+     * 
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param column column property value
+     */
+    public void setLayoutColumn(String scope, String scopeValue, int column)
+    {
+        setIntProperty(COLUMN_PROPERTY_NAME, scope, scopeValue, column);
+    }
+
+    /**
+     * Set global layout height property.
      * 
      * @param height height property value
      */
     public void setLayoutHeight(float height)
     {
-        setFloatProperty(HEIGHT_PROPERTY_NAME, height);
+        setFloatProperty(HEIGHT_PROPERTY_NAME, null, null, height);
     }
 
     /**
-     * Set layout row property.
+     * Set layout height property.
+     * 
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param height height property value
+     */
+    public void setLayoutHeight(String scope, String scopeValue, float height)
+    {
+        setFloatProperty(HEIGHT_PROPERTY_NAME, scope, scopeValue, height);
+    }
+
+    /**
+     * Set global layout sizes property.
+     * 
+     * @param sizes sizes property value
+     */
+    public void setLayoutSizes(String sizes)
+    {
+        setProperty(SIZES_PROPERTY_NAME, null, null, sizes);
+    }
+
+    /**
+     * Set layout sizes property.
+     * 
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param sizes sizes property value
+     */
+    public void setLayoutSizes(String scope, String scopeValue, String sizes)
+    {
+        setProperty(SIZES_PROPERTY_NAME, scope, scopeValue, sizes);
+    }
+
+    /**
+     * Set global layout row property.
      * 
      * @param row row property value
      */
     public void setLayoutRow(int row)
     {
-        setIntProperty(ROW_PROPERTY_NAME, row);
+        setIntProperty(ROW_PROPERTY_NAME, null, null, row);
     }
 
     /**
-     * Set layout width property.
+     * Set layout row property.
+     * 
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param row row property value
+     */
+    public void setLayoutRow(String scope, String scopeValue, int row)
+    {
+        setIntProperty(ROW_PROPERTY_NAME, scope, scopeValue, row);
+    }
+
+    /**
+     * Set global layout width property.
      * 
      * @param width width property value
      */
     public void setLayoutWidth(float width)
     {
-        setFloatProperty(WIDTH_PROPERTY_NAME, width);
+        setFloatProperty(WIDTH_PROPERTY_NAME, null, null, width);
     }
 
     /**
-     * Set layout x property.
+     * Set layout width property.
+     * 
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param width width property value
+     */
+    public void setLayoutWidth(String scope, String scopeValue, float width)
+    {
+        setFloatProperty(WIDTH_PROPERTY_NAME, scope, scopeValue, width);
+    }
+
+    /**
+     * Set global layout x property.
      * 
      * @param x x property value
      */
     public void setLayoutX(float x)
     {
-        setFloatProperty(X_PROPERTY_NAME, x);
+        setFloatProperty(X_PROPERTY_NAME, null, null, x);
     }
 
     /**
-     * Set layout y property.
+     * Set layout x property.
+     * 
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param x x property value
+     */
+    public void setLayoutX(String scope, String scopeValue, float x)
+    {
+        setFloatProperty(X_PROPERTY_NAME, scope, scopeValue, x);
+    }
+
+    /**
+     * Set global layout y property.
      * 
      * @param y y property value
      */
     public void setLayoutY(float y)
     {
-        setFloatProperty(Y_PROPERTY_NAME, y);
+        setFloatProperty(Y_PROPERTY_NAME, null, null, y);
     }
 
     /**
-     * Set layout z property.
+     * Set layout y property.
+     * 
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param y y property value
+     */
+    public void setLayoutY(String scope, String scopeValue, float y)
+    {
+        setFloatProperty(Y_PROPERTY_NAME, scope, scopeValue, y);
+    }
+
+    /**
+     * Set global layout z property.
      * 
      * @param z z property value
      */
     public void setLayoutZ(float z)
     {
-        setFloatProperty(Z_PROPERTY_NAME, z);
+        setFloatProperty(Z_PROPERTY_NAME, null, null, z);
     }
 
     /**
-     * Set content fragment mode.
+     * Set layout z property.
+     * 
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param z z property value
+     */
+    public void setLayoutZ(String scope, String scopeValue, float z)
+    {
+        setFloatProperty(Z_PROPERTY_NAME, scope, scopeValue, z);
+    }
+
+    /**
+     * Set property.
+     * 
+     * @param name property name
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param value property value
+     */
+    public void setProperty(String propName, String scope, String scopeValue, String value)
+    {
+        // iterate through properties list to find property
+        FragmentProperty fragmentProperty = null;
+        Iterator propertiesIter = getProperties().iterator();
+        while (propertiesIter.hasNext())
+        {
+            FragmentProperty findFragmentProperty = (FragmentProperty)propertiesIter.next();
+            if (findFragmentProperty.getName().equals(propName))
+            {
+                String findFragmentPropertyScope = findFragmentProperty.getScope();
+                if ((scope == null) && (findFragmentPropertyScope == null))
+                {
+                    fragmentProperty = findFragmentProperty;
+                    break;
+                }
+                else if ((findFragmentPropertyScope != null) && findFragmentPropertyScope.equals(scope))
+                {
+                    String findFragmentPropertyScopeValue = findFragmentProperty.getScopeValue();
+                    if ((findFragmentPropertyScopeValue != null) && findFragmentPropertyScopeValue.equals(scopeValue))
+                    {
+                        fragmentProperty = findFragmentProperty;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // add, set, or remove property
+        if (fragmentProperty != null)
+        {
+            getProperties().remove(fragmentProperty);                
+        }
+        if (value != null)
+        {
+            getProperties().add(new ContentFragmentPropertyImpl(propName, scope, scopeValue, value));
+        }
+    }
+
+    /**
+     * Set global content fragment mode.
      * 
      * @param mode the mode to set
      */
     public void setMode(String mode)
     {
-        this.mode = mode;
+        setProperty(MODE_PROPERTY_NAME, null, null, mode);
+    }
+
+    /**
+     * Set content fragment mode.
+     * 
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param mode the mode to set
+     */
+    public void setMode(String scope, String scopeValue, String mode)
+    {
+        setProperty(MODE_PROPERTY_NAME, scope, scopeValue, mode);
     }
 
     /**
@@ -1065,7 +1411,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      */
     public void setPreferences(Map preferences)
     {
-        this.preferences.clear();
+        getPreferences().clear();
         if (preferences != null)
         {
             Iterator preferencesIter = preferences.entrySet().iterator();
@@ -1097,7 +1443,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
                 {
                     throw new IllegalArgumentException("Unexpected preference value type");
                 }
-                this.preferences.add(preference);
+                getPreferences().add(preference);
             }
         }        
     }
@@ -1113,23 +1459,47 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
 
     /**
-     * Set content fragment skin.
+     * Set global content fragment skin.
      * 
      * @param skin the skin to set
      */
     public void setSkin(String skin)
     {
-        this.skin = skin;
+        setProperty(SKIN_PROPERTY_NAME, null, null, skin);
     }
 
     /**
-     * Set content fragment state.
+     * Set content fragment skin.
+     * 
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param skin the skin to set
+     */
+    public void setSkin(String scope, String scopeValue, String skin)
+    {
+        setProperty(SKIN_PROPERTY_NAME, scope, scopeValue, skin);
+    }
+
+    /**
+     * Set global content fragment state.
      * 
      * @param state the state to set
      */
     public void setState(String state)
     {
-        this.state = state;
+        setProperty(STATE_PROPERTY_NAME, null, null, state);
+    }
+
+    /**
+     * Set content fragment state.
+     * 
+     * @param scope property scope
+     * @param scopeValue property scope value
+     * @param state the state to set
+     */
+    public void setState(String scope, String scopeValue, String state)
+    {
+        setProperty(STATE_PROPERTY_NAME, scope, scopeValue, state);
     }
 
     /**

@@ -260,7 +260,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		// get column value in the same manner as /portal and /desktop rendering
 		
 		// get column from properties to distinguish between null and -1 (fragment.getLayoutColumn() is -1 when column is not specified)
-		String colStr = (String)fragment.getProperties().get( "column" );
+		String colStr = fragment.getProperty( "column" );
         int columnCount = this.numberOfColumns;
 		int col = columnCount - 1;
 		if ( colStr != null )
@@ -285,7 +285,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		// get row value in the same manner as /portal and /desktop rendering
 		
 		// get row from properties to distinguish between null and -1 (fragment.getLayoutRow() is -1 when row is not specified)
-		String rowStr = (String)fragment.getProperties().get( "row" );
+		String rowStr = fragment.getProperty( "row" );
 		if ( rowStr != null )
 		{
 			try

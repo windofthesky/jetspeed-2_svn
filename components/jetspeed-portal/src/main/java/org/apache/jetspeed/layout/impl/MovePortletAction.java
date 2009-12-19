@@ -358,16 +358,9 @@ public class MovePortletAction
         String posExtended = getActionParameter( requestContext, DESKTOP_EXTENDED );
         if ( posExtended != null )
         {
-            Map fragmentProperties = fragment.getProperties();
-            if ( fragmentProperties == null )
-            {
-                success = false;
-                resultMap.put(REASON, "Failed to acquire fragment properties map for portlet id: " + moveFragmentId );
-                return success;
-            }
-            String oldDeskExt = (String)fragmentProperties.get( DESKTOP_EXTENDED );
+            String oldDeskExt = fragment.getProperty( DESKTOP_EXTENDED );
             resultMap.put( OLD_DESKTOP_EXTENDED, ( (oldDeskExt != null) ? oldDeskExt : "" ) );
-            fragmentProperties.put( DESKTOP_EXTENDED, posExtended );
+            fragment.updateProperty( DESKTOP_EXTENDED, posExtended );
         }
                 
         // only required for moveabs

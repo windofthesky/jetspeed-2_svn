@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.jetspeed.page.impl.DatabasePageManager;
 import org.apache.jetspeed.page.impl.DatabasePageManagerCache;
 
 /**
@@ -94,6 +95,7 @@ public class PageManagerInterceptor implements MethodInterceptor
             if (performCacheTransactionProcessing)
             {
                 DatabasePageManagerCache.rollbackTransactions();
+                DatabasePageManager.rollbackTransactions();
             }
             throw exp;
         }
@@ -103,6 +105,7 @@ public class PageManagerInterceptor implements MethodInterceptor
             if (performCacheTransactionProcessing)
             {
                 DatabasePageManagerCache.clearTransactions();
+                DatabasePageManager.clearTransactions();
             }
         }
     }

@@ -40,6 +40,7 @@ import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.Page;
@@ -47,6 +48,7 @@ import org.apache.jetspeed.om.page.PageFragment;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.page.impl.ContentFragmentImpl;
 import org.apache.jetspeed.om.page.impl.ContentFragmentPreferenceImpl;
+import org.apache.jetspeed.om.page.impl.ContentFragmentPropertyImpl;
 import org.apache.jetspeed.om.page.impl.ContentLocalizedFieldImpl;
 import org.apache.jetspeed.om.page.impl.ContentPageImpl;
 import org.apache.jetspeed.om.portlet.LocalizedField;
@@ -139,11 +141,11 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             contentFragmentImpl.initialize(this, page, page, newFragment, null, false);
             if (!Utils.isNull(row))
             {
-                contentFragmentImpl.setLayoutRow(row);
+                contentFragmentImpl.setLayoutRow(null, null, row);
             }
             if (!Utils.isNull(column))
             {
-                contentFragmentImpl.setLayoutColumn(column);
+                contentFragmentImpl.setLayoutColumn(null, null, column);
             }
             pageRootContentFragmentImpl.getFragments().add(contentFragmentImpl);
             String newContentFragmentId = pageRootContentFragmentImpl.getId()+"."+contentFragmentImpl.getFragment().getId();
@@ -882,6 +884,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
      */
     public void updateDecorator(ContentFragment contentFragment, String decoratorName)
     {
+        updateDecorator(contentFragment, decoratorName, null, null);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#updateDecorator(org.apache.jetspeed.om.page.ContentFragment, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void updateDecorator(ContentFragment contentFragment, String decoratorName, String scope, String scopeValue)
+    {
         log.debug("PageLayoutComponentImpl.updateDecorator() invoked");
         try
         {
@@ -911,7 +921,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             if (((decoratorName != null) && !decoratorName.equals(fragment.getDecorator()) ||
                 ((decoratorName == null) && (fragment.getDecorator() != null))))
             {
-                fragment.setDecorator(decoratorName);
+                fragment.setDecorator(scope, scopeValue, decoratorName);
                 update = true;
             }
             if (update)
@@ -920,7 +930,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             
             // update content context
-            contentFragmentImpl.setDecorator(decoratorName);
+            contentFragmentImpl.setDecorator(scope, scopeValue, decoratorName);
         }
         catch (Exception e)
         {
@@ -1084,6 +1094,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
      */
     public void updatePosition(ContentFragment contentFragment, float x, float y, float z, float width, float height)
     {
+        updatePosition(contentFragment, x, y, z, width, height, null, null);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#updatePosition(org.apache.jetspeed.om.page.ContentFragment, float, float, float, float, float, java.lang.String, java.lang.String)
+     */
+    public void updatePosition(ContentFragment contentFragment, float x, float y, float z, float width, float height, String scope, String scopeValue)
+    {
         log.debug("PageLayoutComponentImpl.updatePosition() invoked");
         try
         {
@@ -1113,7 +1131,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 if (x != fragment.getLayoutX())
                 {
-                    fragment.setLayoutX(x);
+                    fragment.setLayoutX(scope, scopeValue, x);
                     update = true;
                 }
             }
@@ -1121,7 +1139,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 if (y != fragment.getLayoutY())
                 {
-                    fragment.setLayoutY(y);
+                    fragment.setLayoutY(scope, scopeValue, y);
                     update = true;
                 }
             }
@@ -1129,7 +1147,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 if (z != fragment.getLayoutZ())
                 {
-                    fragment.setLayoutZ(z);
+                    fragment.setLayoutZ(scope, scopeValue, z);
                     update = true;
                 }
             }
@@ -1137,7 +1155,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 if (width != fragment.getLayoutWidth())
                 {
-                    fragment.setLayoutWidth(width);
+                    fragment.setLayoutWidth(scope, scopeValue, width);
                     update = true;
                 }
             }
@@ -1145,7 +1163,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 if (height != fragment.getLayoutHeight())
                 {
-                    fragment.setLayoutWidth(height);
+                    fragment.setLayoutWidth(scope, scopeValue, height);
                     update = true;
                 }
             }
@@ -1157,23 +1175,23 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // update content context
             if (!Utils.isNull(x))
             {
-                contentFragmentImpl.setLayoutX(x);
+                contentFragmentImpl.setLayoutX(scope, scopeValue, x);
             }
             if (!Utils.isNull(y))
             {
-                contentFragmentImpl.setLayoutY(y);
+                contentFragmentImpl.setLayoutY(scope, scopeValue, y);
             }
             if (!Utils.isNull(z))
             {
-                contentFragmentImpl.setLayoutZ(z);
+                contentFragmentImpl.setLayoutZ(scope, scopeValue, z);
             }
             if (!Utils.isNull(width))
             {
-                contentFragmentImpl.setLayoutWidth(width);
+                contentFragmentImpl.setLayoutWidth(scope, scopeValue, width);
             }
             if (!Utils.isNull(height))
             {
-                contentFragmentImpl.setLayoutWidth(height);
+                contentFragmentImpl.setLayoutWidth(scope, scopeValue, height);
             }
         }
         catch (Exception e)
@@ -1260,9 +1278,71 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#updateProperty(org.apache.jetspeed.om.page.ContentFragment, java.lang.String, java.lang.String)
+     */
+    public void updateProperty(ContentFragment contentFragment, String propName, String propValue)
+    {
+        updateProperty(contentFragment, propName, propValue, null, null);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#updateProperty(org.apache.jetspeed.om.page.ContentFragment, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void updateProperty(ContentFragment contentFragment, String propName, String propValue, String scope, String scopeValue)
+    {
+        log.debug("PageLayoutComponentImpl.updateProperty() invoked");
+        try
+        {
+            // validate content fragment
+            ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
+            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
+            {
+                throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
+            }
+            
+            // retrieve current fragment and page from page manager
+            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
+            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
+            BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
+            if (fragment == null)
+            {
+                throw new IllegalArgumentException("Fragment and page not consistent");                
+            }
+
+            // check for edit permission
+            fragment.checkAccess(JetspeedActions.EDIT);            
+
+            // update fragment property and page in page manager
+            propValue = (!Utils.isNull(propValue) ? propValue : null);
+            String currentPropValue = fragment.getProperty(propName, scope, scopeValue);
+            if (((propValue == null) && (currentPropValue != null)) || ((propValue != null) && !propValue.equals(currentPropValue)))
+            {
+                fragment.setProperty(propName, scope, scopeValue, propValue);
+                updatePage(page);
+            }
+
+            // update content context
+            contentFragmentImpl.setProperty(propName, scope, scopeValue, propValue);
+        }
+        catch (Exception e)
+        {
+            throw new PageLayoutComponentException("Unexpected exception: "+e, e);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.layout.PageLayoutComponent#updateRowColumn(org.apache.jetspeed.om.page.ContentFragment, int, int)
      */
     public void updateRowColumn(ContentFragment contentFragment, int row, int column)
+    {
+        updateRowColumn(contentFragment, row, column, null, null);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#updateRowColumn(org.apache.jetspeed.om.page.ContentFragment, int, int, java.lang.String, java.lang.String)
+     */
+    public void updateRowColumn(ContentFragment contentFragment, int row, int column, String scope, String scopeValue)
     {
         log.debug("PageLayoutComponentImpl.updateRowColumn() invoked");
         try
@@ -1293,7 +1373,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 if (row != fragment.getLayoutRow())
                 {
-                    fragment.setLayoutRow(row);
+                    fragment.setLayoutRow(scope, scopeValue, row);
                     update = true;
                 }
             }
@@ -1301,7 +1381,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 if (column != fragment.getLayoutColumn())
                 {
-                    fragment.setLayoutColumn(column);
+                    fragment.setLayoutColumn(scope, scopeValue, column);
                     update = true;
                 }
             }
@@ -1313,11 +1393,11 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // update content context
             if (!Utils.isNull(row))
             {
-                contentFragmentImpl.setLayoutRow(row);
+                contentFragmentImpl.setLayoutRow(scope, scopeValue, row);
             }
             if (!Utils.isNull(column))
             {
-                contentFragmentImpl.setLayoutColumn(column);
+                contentFragmentImpl.setLayoutColumn(scope, scopeValue, column);
             }
         }
         catch (Exception e)
@@ -1330,6 +1410,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
      * @see org.apache.jetspeed.layout.PageLayoutComponent#updateStateMode(org.apache.jetspeed.om.page.ContentFragment, java.lang.String, java.lang.String)
      */
     public void updateStateMode(ContentFragment contentFragment, String portletState, String portletMode)
+    {
+        updateStateMode(contentFragment, portletState, portletMode, null, null);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#updateStateMode(org.apache.jetspeed.om.page.ContentFragment, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void updateStateMode(ContentFragment contentFragment, String portletState, String portletMode, String scope, String scopeValue)
     {
         log.debug("PageLayoutComponentImpl.updateStateMode() invoked");
         try
@@ -1360,7 +1448,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 if (!portletState.equals(fragment.getState()))
                 {
-                    fragment.setState(portletState);
+                    fragment.setState(scope, scopeValue, portletState);
                     update = true;
                 }
             }
@@ -1368,7 +1456,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 if (!portletMode.equals(fragment.getMode()))
                 {
-                    fragment.setMode(portletMode);
+                    fragment.setMode(scope, scopeValue, portletMode);
                     update = true;
                 }
             }
@@ -1380,11 +1468,11 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // update content context
             if (!Utils.isNull(portletState))
             {
-                contentFragmentImpl.setState(portletState);
+                contentFragmentImpl.setState(scope, scopeValue, portletState);
             }
             if (!Utils.isNull(portletMode))
             {
-                contentFragmentImpl.setMode(portletMode);
+                contentFragmentImpl.setMode(scope, scopeValue, portletMode);
             }
         }
         catch (Exception e)
@@ -1720,16 +1808,70 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 contentFragmentImpl.setDecorator(fragment.getDecorator());
             }
+            if (contentFragmentImpl.getLayoutColumn() <  0)
+            {
+                contentFragmentImpl.setLayoutColumn(fragment.getLayoutColumn());
+            }
+            if (contentFragmentImpl.getLayoutHeight() < 0.0F)
+            {
+                contentFragmentImpl.setLayoutHeight(fragment.getLayoutHeight());
+            }
+            if (contentFragmentImpl.getLayoutRow() < 0)
+            {
+                contentFragmentImpl.setLayoutRow(fragment.getLayoutRow());
+            }
+            if (contentFragmentImpl.getLayoutSizes() == null)
+            {
+                contentFragmentImpl.setLayoutSizes(fragment.getLayoutSizes());
+            }
+            if (contentFragmentImpl.getLayoutX() < 0.0F)
+            {
+                contentFragmentImpl.setLayoutX(fragment.getLayoutX());
+            }
+            if (contentFragmentImpl.getLayoutY() < 0.0F)
+            {
+                contentFragmentImpl.setLayoutY(fragment.getLayoutY());
+            }
+            if (contentFragmentImpl.getLayoutZ() < 0.0F)
+            {
+                contentFragmentImpl.setLayoutZ(fragment.getLayoutZ());
+            }
+            if (contentFragmentImpl.getLayoutWidth() < 0.0F)
+            {
+                contentFragmentImpl.setLayoutWidth(fragment.getLayoutWidth());
+            }
             if (fragment.getProperties() != null)
             {
-                Iterator propertiesIter = fragment.getProperties().entrySet().iterator();
+                Iterator propertiesIter = fragment.getProperties().iterator();
                 while (propertiesIter.hasNext())
                 {
-                    Map.Entry property = (Map.Entry)propertiesIter.next();
-                    String propertyKey = (String)property.getKey();
-                    if (!contentFragmentImpl.getProperties().containsKey(propertyKey))
+                    boolean foundProperty = false;
+                    FragmentProperty fragmentProperty = (FragmentProperty)propertiesIter.next();
+                    String name = fragmentProperty.getName();
+                    String scope = fragmentProperty.getScope();
+                    String scopeValue = fragmentProperty.getScopeValue();
+                    Iterator scanPropertiesIter = contentFragmentImpl.getProperties().iterator();
+                    while (!foundProperty && scanPropertiesIter.hasNext())
                     {
-                        contentFragmentImpl.getProperties().put(propertyKey, property.getValue());                    
+                        FragmentProperty scanFragmentProperty = (FragmentProperty)scanPropertiesIter.next();
+                        String scanName = scanFragmentProperty.getName();
+                        if (name.equals(scanName))
+                        {
+                            String scanScope = scanFragmentProperty.getScope();
+                            if ((scope == null) && (scanScope == null))
+                            {
+                                foundProperty = true;
+                            }
+                            else if ((scope != null) && scope.equals(scanScope))
+                            {
+                                String scanScopeValue = scanFragmentProperty.getScopeValue();
+                                foundProperty = ((scopeValue != null) && scopeValue.equals(scanScopeValue));
+                            }
+                        }
+                    }
+                    if (!foundProperty)
+                    {
+                        contentFragmentImpl.getProperties().add(new ContentFragmentPropertyImpl(name, scope, scopeValue, fragmentProperty.getValue()));
                     }
                 }
             }

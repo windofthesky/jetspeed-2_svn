@@ -20,14 +20,13 @@ package org.apache.jetspeed.om.page.psml;
 import java.security.AccessController;
 import java.security.Permission;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
+import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.PageSecurity;
 
 /**
@@ -47,12 +46,10 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
 
     private String skin = null;
 
-    private List propertiesList = new ArrayList();
+    private List properties = new ArrayList();
     
     private List preferences = new ArrayList();
     
-    private Map propertiesMap = new HashMap();
-
     private String name;
 
     private AbstractBaseFragmentsElement baseFragmentsElement;
@@ -68,57 +65,180 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
     {
     }
 
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#getState()
+     */
     public String getState()
     {
-        return this.state;
+        return getProperty(STATE_PROPERTY_NAME);
     }
 
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setState(java.lang.String)
+     */
     public void setState( String state )
     {
         this.state = state;
     }
 
-    public String getMode()
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setState(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void setState(String scope, String scopeValue, String state)
     {
-        return this.mode;
+        setProperty(STATE_PROPERTY_NAME, scope, scopeValue, state);
     }
 
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#getMode()
+     */
+    public String getMode()
+    {
+        return getProperty(MODE_PROPERTY_NAME);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setMode(java.lang.String)
+     */
     public void setMode( String mode )
     {
         this.mode = mode;
     }
 
-    public String getDecorator()
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setMode(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void setMode(String scope, String scopeValue, String mode)
     {
-        return this.decorator;
+        setProperty(MODE_PROPERTY_NAME, scope, scopeValue, mode);
     }
 
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#getDecorator()
+     */
+    public String getDecorator()
+    {
+        return getProperty(DECORATOR_PROPERTY_NAME);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setDecorator(java.lang.String)
+     */
     public void setDecorator( String decoratorName )
     {
         this.decorator = decoratorName;
     }
 
-    public String getSkin()
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setDecorator(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void setDecorator(String scope, String scopeValue, String decorator)
     {
-        return this.skin;
+        setProperty(DECORATOR_PROPERTY_NAME, scope, scopeValue, decorator);
     }
 
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#getSkin()
+     */
+    public String getSkin()
+    {
+        return getProperty(SKIN_PROPERTY_NAME);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setSkin(java.lang.String)
+     */
     public void setSkin( String skin )
     {
         this.skin = skin;
     }
 
-    public List getPropertiesList()
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setSkin(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void setSkin(String scope, String scopeValue, String skin)
     {
-        return (List) this.propertiesList;
+        setProperty(SKIN_PROPERTY_NAME, scope, scopeValue, skin);
     }
-    
+
     /**
      * @see org.apache.jetspeed.om.page.BaseFragmentElement#getProperty(java.lang.String)
      */
     public String getProperty(String propName)
     {
-        return (String)propertiesMap.get(propName);
+        // scoped property values
+        String [] userValue = new String[1];
+        String [] groupValue = new String[1];
+        String [] roleValue = new String[1];
+        String [] globalValue = new String[1];
+
+        // get property values from properties list
+        PropertyImpl.getFragmentProperty(propName, getProperties(), userValue, groupValue, roleValue, globalValue);
+
+        // override global property value members if not found in scoped properties
+        if ((userValue[0] == null) && (groupValue[0] == null) && (roleValue[0] == null))
+        {
+            if (propName.equals(STATE_PROPERTY_NAME))
+            {
+                globalValue[0] = state;
+            }
+            else if (propName.equals(MODE_PROPERTY_NAME))
+            {
+                globalValue[0] = mode;                    
+            }
+            else if (propName.equals(DECORATOR_PROPERTY_NAME))
+            {
+                globalValue[0] = decorator;                    
+            }
+            else if (propName.equals(SKIN_PROPERTY_NAME))
+            {
+                globalValue[0] = skin;                                        
+            }
+        }
+
+        // return most specifically scoped property value
+        return ((userValue[0] != null) ? userValue[0] : ((groupValue[0] != null) ? groupValue[0] : ((roleValue[0] != null) ? roleValue[0] : globalValue[0])));
+    }
+    
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#getProperty(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public String getProperty(String propName, String propScope, String propScopeValue)
+    {
+        // lookup global property value members
+        if (propScope == null)
+        {
+            if (propName.equals(STATE_PROPERTY_NAME))
+            {
+                return state;
+            }
+            else if (propName.equals(MODE_PROPERTY_NAME))
+            {
+                return mode;                    
+            }
+            else if (propName.equals(DECORATOR_PROPERTY_NAME))
+            {
+                return decorator;                    
+            }
+            else if (propName.equals(SKIN_PROPERTY_NAME))
+            {
+                return skin;                                        
+            }
+        }
+        
+        // default user scope value
+        if ((propScope != null) && propScope.equals(USER_PROPERTY_SCOPE) && (propScopeValue == null))
+        {
+            propScopeValue = PropertyImpl.getCurrentUserScopeValue();
+        }
+
+        // find specified scoped property value
+        FragmentProperty fragmentProperty = PropertyImpl.findFragmentProperty(propName, propScope, propScopeValue, properties);
+        if (fragmentProperty != null)
+        {
+            return fragmentProperty.getValue();
+        }
+        return null;
     }
     
     /**
@@ -126,7 +246,20 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public int getIntProperty(String propName)
     {
-        String prop = (String)propertiesMap.get(propName);
+        String prop = getProperty(propName);
+        if (prop != null)
+        {
+            return Integer.parseInt(prop);
+        }
+        return -1;
+    }
+    
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#getIntProperty(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public int getIntProperty(String propName, String propScope, String propScopeValue)
+    {
+        String prop = getProperty(propName, propScope, propScopeValue);
         if (prop != null)
         {
             return Integer.parseInt(prop);
@@ -139,7 +272,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public float getFloatProperty(String propName)
     {
-        String prop = (String)propertiesMap.get(propName);
+        String prop = getProperty(propName);
         if (prop != null)
         {
             return Float.parseFloat(prop);
@@ -148,13 +281,116 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
     }
     
     /**
-     * @see org.apache.jetspeed.om.page.BaseFragmentElement#getProperties()
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#getFloatProperty(java.lang.String, java.lang.String, java.lang.String)
      */
-    public Map getProperties()
+    public float getFloatProperty(String propName, String propScope, String propScopeValue)
     {
-        return propertiesMap;
+        String prop = getProperty(propName, propScope, propScopeValue);
+        if (prop != null)
+        {
+            return Float.parseFloat(prop);
+        }
+        return -1.0F;
     }
 
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setProperty(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void setProperty(String propName, String propScope, String propScopeValue, String propValue)
+    {
+        // set global property value members
+        if (propScope == null)
+        {
+            if (propName.equals(STATE_PROPERTY_NAME))
+            {
+                state = propValue;
+                return;
+            }
+            else if (propName.equals(MODE_PROPERTY_NAME))
+            {
+                mode = propValue;
+                return;                    
+            }
+            else if (propName.equals(DECORATOR_PROPERTY_NAME))
+            {
+                decorator = propValue;
+                return;                    
+            }
+            else if (propName.equals(SKIN_PROPERTY_NAME))
+            {
+                skin = propValue;
+                return;                                        
+            }
+        }
+        
+        // default user scope value
+        if ((propScope != null) && propScope.equals(USER_PROPERTY_SCOPE) && (propScopeValue == null))
+        {
+            propScopeValue = PropertyImpl.getCurrentUserScopeValue();
+        }
+
+        // find specified scoped property value
+        FragmentProperty fragmentProperty = PropertyImpl.findFragmentProperty(propName, propScope, propScopeValue, properties);
+
+        // add, set, or remove property
+        if (propValue != null)
+        {
+            if (fragmentProperty == null)
+            {
+                fragmentProperty = new PropertyImpl();
+                fragmentProperty.setName(propName);
+                fragmentProperty.setScope(propScope);
+                fragmentProperty.setScopeValue(propScopeValue);
+                fragmentProperty.setValue(propValue);
+                properties.add(fragmentProperty);
+            }
+            else
+            {
+                fragmentProperty.setValue(propValue);
+            }
+        }
+        else if (fragmentProperty != null)
+        {
+            properties.remove(fragmentProperty);
+        }
+    }
+    
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setProperty(java.lang.String, java.lang.String, java.lang.String, int)
+     */
+    public void setProperty(String propName, String propScope, String propScopeValue, int propValue)
+    {
+        setProperty(propName, propScope, propScopeValue, ((propValue >= 0) ? String.valueOf(propValue) : null));
+    }
+    
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setProperty(java.lang.String, java.lang.String, java.lang.String, float)
+     */
+    public void setProperty(String propName, String propScope, String propScopeValue, float propValue)
+    {
+        setProperty(propName, propScope, propScopeValue, ((propValue >= 0.0F) ? String.valueOf(propValue) : null));
+    }
+    
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#getProperties()
+     */
+    public List getProperties()
+    {
+        return properties;
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setProperties(java.util.List)
+     */
+    public void setProperties(List properties)
+    {
+        if (properties == null)
+        {
+            properties = new ArrayList();
+        }
+        this.properties = properties;  
+    } 
+    
     /**
      * @see org.apache.jetspeed.om.page.BaseFragmentElement#getLayoutRow()
      */
@@ -168,14 +404,15 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public void setLayoutRow(int row)
     {
-        if (row >= 0)
-        {
-            propertiesMap.put(ROW_PROPERTY_NAME, String.valueOf(row));
-        }
-        else
-        {
-            propertiesMap.remove(ROW_PROPERTY_NAME);
-        }
+        setProperty(ROW_PROPERTY_NAME, null, null, row);
+    }
+    
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setLayoutRow(java.lang.String, java.lang.String, int)
+     */
+    public void setLayoutRow(String scope, String scopeValue, int row)
+    {
+        setProperty(ROW_PROPERTY_NAME, scope, scopeValue, row);
     }
     
     /**
@@ -191,14 +428,15 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public void setLayoutColumn(int column)
     {
-        if (column >= 0)
-        {
-            propertiesMap.put(COLUMN_PROPERTY_NAME, String.valueOf(column));
-        }
-        else
-        {
-            propertiesMap.remove(COLUMN_PROPERTY_NAME);
-        }
+        setProperty(COLUMN_PROPERTY_NAME, null, null, column);
+    }
+    
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setLayoutColumn(java.lang.String, java.lang.String, int)
+     */
+    public void setLayoutColumn(String scope, String scopeValue, int column)
+    {
+        setProperty(COLUMN_PROPERTY_NAME, scope, scopeValue, column);
     }
     
     /**
@@ -206,7 +444,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public String getLayoutSizes()
     {
-        return (String)propertiesMap.get(SIZES_PROPERTY_NAME);
+        return getProperty(SIZES_PROPERTY_NAME);
     }
     
     /**
@@ -214,14 +452,15 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public void setLayoutSizes(String sizes)
     {
-        if (sizes != null)
-        {
-            propertiesMap.put(SIZES_PROPERTY_NAME, sizes);
-        }
-        else
-        {
-            propertiesMap.remove(SIZES_PROPERTY_NAME);
-        }
+        setProperty(SIZES_PROPERTY_NAME, null, null, sizes);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setLayoutSizes(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void setLayoutSizes(String scope, String scopeValue, String sizes)
+    {
+        setProperty(SIZES_PROPERTY_NAME, scope, scopeValue, sizes);
     }
 
     /**
@@ -237,14 +476,15 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public void setLayoutX(float x)
     {
-        if (x >= 0.0F)
-        {
-            propertiesMap.put(X_PROPERTY_NAME, String.valueOf(x));
-        }
-        else
-        {
-            propertiesMap.remove(X_PROPERTY_NAME);
-        }
+        setProperty(X_PROPERTY_NAME, null, null, x);
+    }
+    
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setLayoutX(java.lang.String, java.lang.String, float)
+     */
+    public void setLayoutX(String scope, String scopeValue, float x)
+    {
+        setProperty(X_PROPERTY_NAME, scope, scopeValue, x);
     }
     
     /**
@@ -260,14 +500,15 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public void setLayoutY(float y)
     {
-        if (y >= 0.0F)
-        {
-            propertiesMap.put(Y_PROPERTY_NAME, String.valueOf(y));
-        }
-        else
-        {
-            propertiesMap.remove(Y_PROPERTY_NAME);
-        }
+        setProperty(Y_PROPERTY_NAME, null, null, y);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setLayoutY(java.lang.String, java.lang.String, float)
+     */
+    public void setLayoutY(String scope, String scopeValue, float y)
+    {
+        setProperty(Y_PROPERTY_NAME, scope, scopeValue, y);
     }
 
     /**
@@ -283,14 +524,15 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public void setLayoutZ(float z)
     {
-        if (z >= 0.0F)
-        {
-            propertiesMap.put(Z_PROPERTY_NAME, String.valueOf(z));
-        }
-        else
-        {
-            propertiesMap.remove(Z_PROPERTY_NAME);
-        }
+        setProperty(Z_PROPERTY_NAME, null, null, z);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setLayoutZ(java.lang.String, java.lang.String, float)
+     */
+    public void setLayoutZ(String scope, String scopeValue, float z)
+    {
+        setProperty(Z_PROPERTY_NAME, scope, scopeValue, z);
     }
 
     /**
@@ -306,14 +548,15 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public void setLayoutWidth(float width)
     {
-        if (width >= 0.0F)
-        {
-            propertiesMap.put(WIDTH_PROPERTY_NAME, String.valueOf(width));
-        }
-        else
-        {
-            propertiesMap.remove(WIDTH_PROPERTY_NAME);
-        }
+        setProperty(WIDTH_PROPERTY_NAME, null, null, width);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setLayoutWidth(java.lang.String, java.lang.String, float)
+     */
+    public void setLayoutWidth(String scope, String scopeValue, float width)
+    {
+        setProperty(WIDTH_PROPERTY_NAME, scope, scopeValue, width);
     }
 
     /**
@@ -329,14 +572,15 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public void setLayoutHeight(float height)
     {
-        if (height >= 0.0F)
-        {
-            propertiesMap.put(HEIGHT_PROPERTY_NAME, String.valueOf(height));
-        }
-        else
-        {
-            propertiesMap.remove(HEIGHT_PROPERTY_NAME);
-        }
+        setProperty(HEIGHT_PROPERTY_NAME, null, null, height);
+    }
+
+    /**
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setLayoutHeight(java.lang.String, java.lang.String, float)
+     */
+    public void setLayoutHeight(String scope, String scopeValue, float height)
+    {
+        setProperty(HEIGHT_PROPERTY_NAME, scope, scopeValue, height);
     }
 
     /**
@@ -388,15 +632,26 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      * </p>
      * 
      * @see org.apache.jetspeed.om.page.BaseFragmentElement#getPreferences()
-     * @param name
      */
     public List getPreferences()
     {
         return preferences;
     }
 
+    /**
+     * <p>
+     * setPreferences
+     * </p>
+     * 
+     * @see org.apache.jetspeed.om.page.BaseFragmentElement#setPreferences(java.util.List)
+     * @param preferences
+     */
     public void setPreferences(List preferences)
     {
+        if (preferences == null)
+        {
+            preferences = new ArrayList();
+        }
         this.preferences = preferences;  
     } 
     
@@ -480,54 +735,9 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
             dirty = true;
         }
 
-        // load the properties map from list
-        propertiesMap.clear();
-        Iterator propsIter = propertiesList.iterator();
-        while (propsIter.hasNext())
-        {
-            PropertyImpl prop = (PropertyImpl) propsIter.next();
-            propertiesMap.put(prop.getName(), prop.getValue());
-        }
-        
         return dirty;
     }
 
-    /**
-     * marshalling - notification that this instance is to
-     *               be saved to the persistent store
-     */
-    public void marshalling()
-    {
-        // update the properties list from the map
-        // if change/edit detected
-        boolean changed = (propertiesMap.size() != propertiesList.size());
-        if (!changed)
-        {
-            Iterator propsIter = propertiesList.iterator();
-            while (!changed && propsIter.hasNext())
-            {
-                PropertyImpl prop = (PropertyImpl) propsIter.next();
-                changed = (prop.getValue() != propertiesMap.get(prop.getName()));
-            }
-        }
-        if (changed)
-        {
-            propertiesList.clear();
-            Iterator propsIter = propertiesMap.entrySet().iterator();
-            while (propsIter.hasNext())
-            {
-                Map.Entry prop = (Map.Entry) propsIter.next();
-                PropertyImpl listProp = new PropertyImpl();
-                listProp.setName((String)prop.getKey());
-                listProp.setValue((String)prop.getValue());
-                propertiesList.add(listProp);
-            }
-        }
-
-        // notify super class implementation
-        super.marshalling();
-    }
-    
     /**
      * Validate fragment using specified validation listener.
      * 

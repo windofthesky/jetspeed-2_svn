@@ -33,6 +33,7 @@ import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
@@ -289,6 +290,13 @@ public interface PageManager
      * @return a newly created FragmentPreference
      */
     public FragmentPreference newFragmentPreference();
+
+    /**
+     * newFragmentProperty - creates a new fragment property
+     *
+     * @return a newly created FragmentProperty
+     */
+    public FragmentProperty newFragmentProperty();
 
     /**
      * <p>
@@ -1108,4 +1116,9 @@ public interface PageManager
      * @param node updated managed node if known
      */
     public void notifyUpdatedNode(Node node);
+    
+    /**
+     * Cleanup request level cache for current thread.
+     */
+    public void cleanupRequestCache();
 }

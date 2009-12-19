@@ -23,7 +23,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
@@ -46,7 +45,6 @@ import org.apache.jetspeed.om.page.impl.LinkImpl;
 import org.apache.jetspeed.om.page.impl.PageImpl;
 import org.apache.jetspeed.om.page.impl.PageSecurityImpl;
 import org.apache.jetspeed.om.page.impl.PageTemplateImpl;
-import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -75,7 +73,6 @@ public class FolderImpl extends NodeImpl implements Folder
     private List orders;
     private List menus;
 
-    private PageManager pageManager;
     private List folders;
     private boolean foldersCached;
     private List pages;
@@ -148,18 +145,6 @@ public class FolderImpl extends NodeImpl implements Folder
             menus = DatabasePageManagerUtils.createList();
         }
         return menus;
-    }
-
-    /**
-     * setPageManager
-     *
-     * Infuses PageManager for use by this folder instance.
-     *
-     * @param pageManager page manager that manages this folder instance
-     */
-    public void setPageManager(PageManager pageManager)
-    {
-        this.pageManager = pageManager;
     }
 
     /**
@@ -1467,13 +1452,4 @@ public class FolderImpl extends NodeImpl implements Folder
         }
         return nodes;
     }
-    
-    public PageManager getPageManager()
-    {
-        if(pageManager == null)
-        {
-            pageManager = (PageManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.page.PageManager");
-        }        
-        return pageManager;
-    }     
 }

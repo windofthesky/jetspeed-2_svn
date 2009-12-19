@@ -34,6 +34,7 @@ import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
@@ -285,8 +286,17 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         root.setTitle("Root Fragment");
         root.setState("Normal");
         root.setLayoutSizes("50%,50%");
-        root.getProperties().put("custom-prop1", "custom-prop-value1");
-        root.getProperties().put("custom-prop2", "custom-prop-value2");
+        /*
+        TODO: reenable once extended properties supported
+        FragmentProperty property1 = pageManager.newFragmentProperty();
+        property1.setName("custom-prop1");
+        property1.setValue("custom-prop-value1");
+        root.getProperties().add(property1);
+        FragmentProperty property2 = pageManager.newFragmentProperty();
+        property2.setName("custom-prop1");
+        property2.setValue("custom-prop-value1");
+        root.getProperties().add(property2);
+        */
         
         Fragment portlet = pageManager.newPortletFragment();
         portlet.setName("security::LoginPortlet");
@@ -805,7 +815,10 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals("Normal", check.getRootFragment().getState());
             assertEquals("50%,50%", check.getRootFragment().getLayoutSizes());
             assertNotNull(check.getRootFragment().getProperties());
+            /*
+            TODO: reenable once extended properties supported
             assertEquals("custom-prop-value1", check.getRootFragment().getProperty("custom-prop1"));
+            */
             assertNotNull(checkRootFragment.getFragments());
             assertEquals(3, checkRootFragment.getFragments().size());
             BaseFragmentElement checkElement0 = (BaseFragmentElement)checkRootFragment.getFragments().get(0);
@@ -1029,12 +1042,27 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals("/page.security", pageSecurity.getPath());
         pageSecurity.getGlobalSecurityConstraintsRefs().add("UPDATED");
         pageManager.updatePageSecurity(pageSecurity);
-
         Page page = pageManager.getPage("/default-page.psml");
         assertEquals("/default-page.psml", page.getPath());
         page.setTitle("UPDATED");
-        page.getRootFragment().getProperties().remove("custom-prop1");
-        page.getRootFragment().getProperties().put("UPDATED", "UPDATED");
+        /*
+        TODO: reenable once extended properties supported
+        FragmentProperty removeProperty = null;
+        Iterator propertyIter = page.getRootFragment().getProperties().iterator();
+        while (propertyIter.hasNext())
+        {
+            FragmentProperty property = (FragmentProperty)propertyIter.next();
+            if (property.getName().equals("custom-prop1"))
+            {
+                removeProperty = property;
+            }
+        }
+        page.getRootFragment().getProperties().remove(removeProperty);
+        */
+        FragmentProperty property = pageManager.newFragmentProperty();
+        property.setName("UPDATED");
+        property.setValue("UPDATED");
+        page.getRootFragment().getProperties().add(property);
         BaseFragmentElement rootFragmentElement = page.getRootFragment();
         assertTrue(rootFragmentElement instanceof Fragment);
         Fragment root = (Fragment)rootFragmentElement;

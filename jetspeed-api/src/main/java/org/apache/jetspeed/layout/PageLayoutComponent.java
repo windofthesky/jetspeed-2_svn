@@ -32,6 +32,31 @@ import org.apache.jetspeed.om.page.PageTemplate;
 public interface PageLayoutComponent
 {
     /**
+     * global standard property scope
+     */
+    String GLOBAL_PROPERTY_SCOPE = ContentFragment.GLOBAL_PROPERTY_SCOPE;
+
+    /**
+     * user standard property scope
+     */
+    String USER_PROPERTY_SCOPE = ContentFragment.USER_PROPERTY_SCOPE;
+
+    /**
+     * role standard property scope
+     */
+    String ROLE_PROPERTY_SCOPE = ContentFragment.ROLE_PROPERTY_SCOPE;
+
+    /**
+     * group standard property scope
+     */
+    String GROUP_PROPERTY_SCOPE = ContentFragment.GROUP_PROPERTY_SCOPE;
+
+    /**
+     * group and role standard property scopes enabled flag
+     */
+    boolean GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED = ContentFragment.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED;
+
+    /**
      * Add fragment to page at specified row column layout position
      * returning associated content fragment. Fragment is always added to
      * the page root layout fragment.
@@ -198,12 +223,22 @@ public interface PageLayoutComponent
     void removeFolder(ContentPage contentPage);
     
     /**
-     * Update fragment portlet decorator.
+     * Update global fragment portlet decorator.
      *  
      * @param contentFragment content fragment context
      * @param decoratorName portlet decorator name
      */
     void updateDecorator(ContentFragment contentFragment, String decoratorName);
+
+    /**
+     * Update fragment portlet decorator.
+     *  
+     * @param contentFragment content fragment context
+     * @param decoratorName portlet decorator name
+     * @param scope property scope
+     * @param scopeValue property scope value
+     */
+    void updateDecorator(ContentFragment contentFragment, String decoratorName, String scope, String scopeValue);
 
     /**
      * Update page default decorator.
@@ -232,7 +267,7 @@ public interface PageLayoutComponent
     void updateName(ContentFragment contentFragment, String name);
 
     /**
-     * Update fragment layout position.
+     * Update global fragment layout position.
      * 
      * @param contentFragment content fragment context
      * @param x fragment X coordinate or -1
@@ -242,6 +277,20 @@ public interface PageLayoutComponent
      * @param height fragment portlet height or -1
      */
     void updatePosition(ContentFragment contentFragment, float x, float y, float z, float width, float height);
+    
+    /**
+     * Update fragment layout position.
+     * 
+     * @param contentFragment content fragment context
+     * @param x fragment X coordinate or -1
+     * @param y fragment Y coordinate or -1
+     * @param z fragment Z level or -1
+     * @param width fragment portlet width or -1
+     * @param height fragment portlet height or -1
+     * @param scope properties scope
+     * @param scopeValue properties scope value
+     */
+    void updatePosition(ContentFragment contentFragment, float x, float y, float z, float width, float height, String scope, String scopeValue);
     
     /**
      * Update preferences with new preferences set, accepting
@@ -255,7 +304,27 @@ public interface PageLayoutComponent
     void updatePreferences(ContentFragment contentFragment, Map preferences);
 
     /**
-     * Update fragment row and column layout position.
+     * Update global fragment property.
+     * 
+     * @param contentFragment content fragment context
+     * @param propName fragment property name
+     * @param propValue fragment property value
+     */
+    void updateProperty(ContentFragment contentFragment, String propName, String propValue);
+    
+    /**
+     * Update fragment property.
+     * 
+     * @param contentFragment content fragment context
+     * @param propName fragment property name
+     * @param propValue fragment property value
+     * @param scope property scope 
+     * @param scopeValue property scope value
+     */
+    void updateProperty(ContentFragment contentFragment, String propName, String propValue, String scope, String scopeValue);
+    
+    /**
+     * Update global fragment row and column layout position.
      * 
      * @param contentFragment content fragment context
      * @param row fragment row position
@@ -264,13 +333,35 @@ public interface PageLayoutComponent
     void updateRowColumn(ContentFragment contentFragment, int row, int column);
     
     /**
-     * Update fragment portlet state and/or mode.
+     * Update fragment row and column layout position.
+     * 
+     * @param contentFragment content fragment context
+     * @param row fragment row position
+     * @param column fragment column position
+     * @param scope properties scope
+     * @param scopeValue properties scope value
+     */
+    void updateRowColumn(ContentFragment contentFragment, int row, int column, String scope, String scopeValue);
+    
+    /**
+     * Update global fragment portlet state and/or mode.
      * 
      * @param contentFragment content fragment context
      * @param portletState fragment portlet state or null
      * @param portletMode fragment portlet mode or null
      */
     void updateStateMode(ContentFragment contentFragment, String portletState, String portletMode);
+
+    /**
+     * Update fragment portlet state and/or mode.
+     * 
+     * @param contentFragment content fragment context
+     * @param portletState fragment portlet state or null
+     * @param portletMode fragment portlet mode or null
+     * @param scope properties scope
+     * @param scopeValue properties scope value
+     */
+    void updateStateMode(ContentFragment contentFragment, String portletState, String portletMode, String scope, String scopeValue);
 
     /**
      * Update page titles.
@@ -285,8 +376,7 @@ public interface PageLayoutComponent
      * Returns the root fragment which is not locked and not merged from a page template
      * 
      * @param contentPage content page context
-     * @return
+     * @return content fragment context
      */
-    ContentFragment getUnlockedRootFragment(ContentPage contentPage);
-    
+    ContentFragment getUnlockedRootFragment(ContentPage contentPage);    
 }

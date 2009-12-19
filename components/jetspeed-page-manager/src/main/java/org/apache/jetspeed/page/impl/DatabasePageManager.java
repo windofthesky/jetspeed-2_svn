@@ -50,6 +50,7 @@ import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
@@ -57,11 +58,14 @@ import org.apache.jetspeed.om.page.PageFragment;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl;
 import org.apache.jetspeed.om.page.impl.BaseFragmentsElementImpl;
 import org.apache.jetspeed.om.page.impl.DynamicPageImpl;
 import org.apache.jetspeed.om.page.impl.FragmentDefinitionImpl;
 import org.apache.jetspeed.om.page.impl.FragmentImpl;
 import org.apache.jetspeed.om.page.impl.FragmentPreferenceImpl;
+import org.apache.jetspeed.om.page.impl.FragmentPropertyImpl;
+import org.apache.jetspeed.om.page.impl.FragmentPropertyList;
 import org.apache.jetspeed.om.page.impl.FragmentReferenceImpl;
 import org.apache.jetspeed.om.page.impl.FragmentSecurityConstraintImpl;
 import org.apache.jetspeed.om.page.impl.LinkImpl;
@@ -114,6 +118,8 @@ import org.apache.ojb.broker.query.QueryFactory;
  */
 public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport implements PageManager
 {
+    private static ThreadLocal fragmentPropertyListsCache = new ThreadLocal();
+    
     private static Map modelClasses = new HashMap();
     static
     {
@@ -145,6 +151,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         modelClasses.put("PageTemplateImpl", PageTemplateImpl.class);
         modelClasses.put("DynamicPageImpl", DynamicPageImpl.class);
         modelClasses.put("FragmentDefinitionImpl", FragmentDefinitionImpl.class);
+        modelClasses.put("FragmentPropertyImpl", FragmentPropertyImpl.class);
     }
 
     private DelegatingPageManager delegator;
@@ -441,6 +448,14 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     public FragmentPreference newFragmentPreference()
     {
         return delegator.newFragmentPreference();
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#newFragmentPreference()
+     */
+    public FragmentProperty newFragmentProperty()
+    {
+        return delegator.newFragmentProperty();
     }
 
     /* (non-Javadoc)
@@ -2575,5 +2590,81 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         // notify page manager listeners
         delegator.notifyUpdatedNode(node);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#cleanupRequestCache()
+     */
+    public void cleanupRequestCache()
+    {
+        // clear thread local cache on request completion
+        rollbackTransactions();
+    }
+    
+    /**
+     * Get and cache fragment property list for specified fragment.
+     * 
+     * @param baseFragmentElement owning fragment of fragment property list
+     * @return new or cached fragment property list
+     */
+    public FragmentPropertyList getFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElement)
+    {
+        // check thread local fragment property lists cache
+        String cacheKey = baseFragmentElement.getBaseFragmentsElement().getPath()+"/"+baseFragmentElement.getId();
+        Map cache = (Map)fragmentPropertyListsCache.get();
+        FragmentPropertyList list = ((cache != null) ? (FragmentPropertyList)cache.get(cacheKey) : null);
+        if (list == null)
+        {
+            // create new fragment property list
+            list = new FragmentPropertyList(baseFragmentElement);
+            
+            // TODO: query for fragment property list using database query
+        
+            // save fragment property list in thread local cache
+            if (cache == null)
+            {
+                cache = new HashMap();
+                fragmentPropertyListsCache.set(cache);
+            }
+            cache.put(cacheKey, list);
+        }
+        return list;
+    }
+
+    /**
+     * Update fragment property list.
+     * 
+     * @param list fragment property list
+     */
+    public void updateFragmentPropertiesList(FragmentPropertyList list)
+    {
+        // TODO: NYI
+    }
+
+    /**
+     * Remove fragment property list.
+     * 
+     * @param list fragment property list
+     */
+    public void removeFragmentPropertiesList(FragmentPropertyList list)
+    {
+        // TODO: NYI
+    }
+
+    /**
+     * Rollback transactions registered with current thread.
+     */
+    public static void rollbackTransactions()
+    {
+        // clear thread local cache on rollback to ensure clean reset
+        fragmentPropertyListsCache.remove();
+    }
+
+    /**
+     * Clear transactions registered with current thread.
+     */
+    public static void clearTransactions()
+    {
+        // do not clear thread local cache: cache across transactions
     }
 }

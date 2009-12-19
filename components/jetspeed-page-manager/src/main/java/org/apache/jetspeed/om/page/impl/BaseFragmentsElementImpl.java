@@ -147,8 +147,7 @@ public abstract class BaseFragmentsElementImpl extends DocumentImpl implements B
                 reuseFragment.setDecorator(baseFragmentImpl.getDecorator());
                 reuseFragment.setState(baseFragmentImpl.getState());
                 reuseFragment.setSecurityConstraints(baseFragmentImpl.getSecurityConstraints());
-                reuseFragment.getProperties().clear();
-                reuseFragment.getProperties().putAll(baseFragmentImpl.getProperties());
+                reuseFragment.setProperties(baseFragmentImpl.getProperties());
                 reuseFragment.setPreferences(baseFragmentImpl.getPreferences());
             }
             this.fragment.add(addFragment);

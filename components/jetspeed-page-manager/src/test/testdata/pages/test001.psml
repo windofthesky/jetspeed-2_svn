@@ -37,6 +37,16 @@ limitations under the License.
       <property name="z" value="33.33" />
       <property name="width" value="44.44" />
       <property name="height" value="55.55" />
+      <property name="custom-0" value="custom-value-0" />
+      <property name="custom-1" value="custom-value-1" />
+      <property name="custom-1" scope="role" scopeValue="role" value="custom-value-role-1" />
+      <property name="custom-2" value="custom-value-2" />
+      <property name="custom-2" scope="role" scopeValue="role" value="custom-value-role-2" />
+      <property name="custom-2" scope="group" scopeValue="group" value="custom-value-group-2" />
+      <property name="custom-3" value="custom-value-3" />
+      <property name="custom-3" scope="role" scopeValue="role" value="custom-value-role-3" />
+      <property name="custom-3" scope="group" scopeValue="group" value="custom-value-group-3" />
+      <property name="custom-3" scope="user" scopeValue="user" value="custom-value-user-3" />
       <preference name="pref0" readOnly="true">
         <value>pref0-value0</value>
         <value>pref0-value1</value>

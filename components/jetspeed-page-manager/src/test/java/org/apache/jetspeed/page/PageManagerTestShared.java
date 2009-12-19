@@ -77,6 +77,7 @@ import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
+import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.PermissionFactory;
 import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.Role;
@@ -391,6 +392,10 @@ interface PageManagerTestShared
                         {
                             return e;
                         }
+                        finally
+                        {
+                            JSSubject.clearSubject();
+                        }
                     }
                 }, null);
             if (setup != null)
@@ -438,6 +443,10 @@ interface PageManagerTestShared
                         catch (Exception e)
                         {
                             return e;
+                        }
+                        finally
+                        {
+                            JSSubject.clearSubject();
                         }
                     }
                 }, null);
@@ -510,6 +519,10 @@ interface PageManagerTestShared
                         {
                             return e;
                         }
+                        finally
+                        {
+                            JSSubject.clearSubject();
+                        }
                     }
                 }, null);
             if (userAccess != null)
@@ -571,6 +584,10 @@ interface PageManagerTestShared
                         catch (Exception e)
                         {
                             return e;
+                        }
+                        finally
+                        {
+                            JSSubject.clearSubject();
                         }
                     }
                 }, null);
@@ -648,6 +665,10 @@ interface PageManagerTestShared
                         {
                             return e;
                         }
+                        finally
+                        {
+                            JSSubject.clearSubject();
+                        }
                     }
                 }, null);
             if (guestAccess != null)
@@ -682,6 +703,10 @@ interface PageManagerTestShared
                         catch (Exception e)
                         {
                             return e;
+                        }
+                        finally
+                        {
+                            JSSubject.clearSubject();
                         }
                     }
                 }, null);
@@ -897,6 +922,16 @@ interface PageManagerTestShared
         }
     }
 
+    static class TestGroup extends AbstractTestPrincipal implements Group
+    {
+        private static final long serialVersionUID = 1L;
+
+        public TestGroup(String name)
+        {
+            super(JetspeedPrincipalType.GROUP, name);
+        }
+    }
+    
     static class TestRole extends AbstractTestPrincipal implements Role
     {
         private static final long serialVersionUID = 1L;

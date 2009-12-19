@@ -82,10 +82,7 @@ public class DatabasePageManagerCache implements ObjectCache
                 // paths cache
                 node.setConstraintsEnabled(constraintsEnabled);
                 node.setPermissionsEnabled(permissionsEnabled);
-                if (node instanceof FolderImpl)
-                {
-                    ((FolderImpl)node).setPageManager(pageManager);
-                }
+                node.setPageManager(pageManager);
             }
 
             /* (non-Javadoc)
@@ -99,10 +96,7 @@ public class DatabasePageManagerCache implements ObjectCache
                 // paths cache 
                 node.setConstraintsEnabled(constraintsEnabled);
                 node.setPermissionsEnabled(permissionsEnabled);
-                if (node instanceof FolderImpl)
-                {
-                    ((FolderImpl)node).setPageManager(pageManager);
-                }
+                node.setPageManager(pageManager);
             }
 
             /* (non-Javadoc)

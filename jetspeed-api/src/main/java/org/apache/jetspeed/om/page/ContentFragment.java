@@ -72,6 +72,26 @@ public interface ContentFragment
     /************** BaseFragmentElement **************/
 
     /**
+     * skin standard layout property name
+     */
+    String SKIN_PROPERTY_NAME = BaseFragmentElement.SKIN_PROPERTY_NAME;
+
+    /**
+     * decorator standard layout property name
+     */
+    String DECORATOR_PROPERTY_NAME = BaseFragmentElement.DECORATOR_PROPERTY_NAME;
+
+    /**
+     * state standard layout property name
+     */
+    String STATE_PROPERTY_NAME = BaseFragmentElement.STATE_PROPERTY_NAME;
+
+    /**
+     * mode standard layout property name
+     */
+    String MODE_PROPERTY_NAME = BaseFragmentElement.MODE_PROPERTY_NAME;
+
+    /**
      * row standard layout property name
      */
     String ROW_PROPERTY_NAME = BaseFragmentElement.ROW_PROPERTY_NAME;
@@ -112,31 +132,64 @@ public interface ContentFragment
     String HEIGHT_PROPERTY_NAME = BaseFragmentElement.HEIGHT_PROPERTY_NAME;
 
     /**
+     * global standard property scope
+     */
+    String GLOBAL_PROPERTY_SCOPE = BaseFragmentElement.GLOBAL_PROPERTY_SCOPE;
+
+    /**
+     * user standard property scope
+     */
+    String USER_PROPERTY_SCOPE = BaseFragmentElement.USER_PROPERTY_SCOPE;
+
+    /**
+     * role standard property scope
+     */
+    String ROLE_PROPERTY_SCOPE = BaseFragmentElement.ROLE_PROPERTY_SCOPE;
+
+    /**
+     * group standard property scope
+     */
+    String GROUP_PROPERTY_SCOPE = BaseFragmentElement.GROUP_PROPERTY_SCOPE;
+
+    /**
+     * group and role standard property scopes enabled flag
+     */
+    boolean GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED = BaseFragmentElement.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED;
+
+    /**
      * Returns the name of the skin associated to this fragment
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      */
     String getSkin();
 
     /**
      * Returns the name of the decorator bound to this fragment
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      */
     String getDecorator();
 
     /**
      * Returns the display state of this fragment. The state may have the
      * following values: "Normal","Minimized","Maximized","Hidden"
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      */
     String getState();
 
     /**
      * Returns the display mode of this fragment. The mode may have the
      * following values: "View","Edit","Help","Config","Print","Custom"
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      */
     String getMode();
 
     /**
-     * getProperty
-     *
      * Get named property value.
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      *
      * @param propName property name
      * @return value
@@ -144,9 +197,18 @@ public interface ContentFragment
     String getProperty(String propName);
     
     /**
-     * getIntProperty
-     * 
+     * Get named property value.
+     *
+     * @param propName property name
+     * @param scope the name of the property scope to retrieve 
+     * @return value
+     */
+    String getProperty(String propName, String scope);
+    
+    /**
      * Get named property value as integer.
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      *
      * @param propName property name
      * @return int value
@@ -154,9 +216,18 @@ public interface ContentFragment
     int getIntProperty(String propName);
     
     /**
-     * getFloatProperty
-     * 
+     * Get named property value as integer.
+     *
+     * @param propName property name
+     * @param scope the name of the property scope to retrieve 
+     * @return int value
+     */
+    int getIntProperty(String propName, String scope);
+    
+    /**
      * Get named property value as float.
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      *
      * @param propName property name
      * @return float value
@@ -164,73 +235,106 @@ public interface ContentFragment
     float getFloatProperty(String propName);
     
     /**
-     * getProperties
-     * 
-     * Get writable Map of properties by name.
+     * Get named property value as float.
      *
-     * @return properties map
+     * @param propName property name
+     * @param scope the name of the property scope to retrieve 
+     * @return float value
      */
-    Map getProperties();
+    float getFloatProperty(String propName, String scope);
+    
+    /**
+     * Get read-only list of fragment property objects that
+     * initially returns the set of properties for all scopes.
+     *
+     * @return list of FragmentProperty instances
+     */
+    List getProperties();
 
     /**
-     * get layout row property
+     * Get named property value map. Property values are returned
+     * for the most specific scope found, (i.e. user, role, group,
+     * or global scopes).
+     *
+     * @return map of fragment property values
+     */
+    Map getPropertiesMap();
+
+    /**
+     * Get layout row property.
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      *
      * @return row layout property
      **/
     int getLayoutRow();
 
     /**
-     * get layout column property
+     * Get layout column property.
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      *
      * @return column layout property
      **/
     int getLayoutColumn();
 
     /**
-     * get layout sizes property, (i.e. "25%,75%")
+     * Get layout sizes property, (i.e. "25%,75%").
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      * 
      * @return sizes layout property
      **/
     String getLayoutSizes();
     
     /**
-     * get layout x coordinate property
+     * Get layout x coordinate property.
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      *
      * @return the x coordinate value
      **/
     float getLayoutX();
 
     /**
-     * get layout y coordinate property
+     * Get layout y coordinate property.
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      *
      * @return the y coordinate value
      **/
     float getLayoutY();
 
     /**
-     * get layout z coordinate property
+     * Get layout z coordinate property.
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      *
      * @return the z coordinate value
      **/
     float getLayoutZ();
 
     /**
-     * get layout width property
+     * Get layout width property.
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      *
      * @return the width value
      **/
     float getLayoutWidth();
 
     /**
-     * get layout height property
+     * Get layout height property.
+     * Property value is returned for the most specific scope
+     * found, (i.e. user, role, group, or global scopes).
      *
      * @return the height value
      **/
     float getLayoutHeight();
 
     /**
-     * Get collection of fragment preference objects used
-     * to initialize user preferences
+     * Get read-only collection of fragment preference objects
+     * used to initialize user preferences
      * 
      * @return list of FragmentPreference objects
      */
@@ -369,7 +473,8 @@ public interface ContentFragment
 
     /**
      * Add portlet to fragment with specified row and column returning
-     * associated content fragment.
+     * associated content fragment. The default, (Global), scope row
+     * and column values are set.
      * 
      * @param type portlet type
      * @param name portlet name
@@ -389,11 +494,22 @@ public interface ContentFragment
     ContentFragment addPortlet(String type, String name);
     
     /**
-     * Update fragment portlet decorator.
+     * Update fragment portlet decorator. The default, (Global),
+     * scope value is updated.
      *  
      * @param decoratorName portlet decorator name
      */
     void updateDecorator(String decoratorName);
+    
+    /**
+     * Update fragment portlet decorator.
+     *  
+     * @param decoratorName portlet decorator name
+     * @param scope the name of the property scope to update
+     * @param scopeValue the scope discriminator value, (unless scope is GLOBAL
+     *                   or USER where the default user name is used if null)
+     */
+    void updateDecorator(String decoratorName, String scope, String scopeValue);
     
     /**
      * Update fragment name.
@@ -403,7 +519,8 @@ public interface ContentFragment
     void updateName(String name);
 
     /**
-     * Update fragment layout position.
+     * Update fragment layout position. The default, (Global),
+     * scope values are updated.
      * 
      * @param x fragment X coordinate or -1
      * @param y fragment Y coordinate or -1
@@ -412,6 +529,20 @@ public interface ContentFragment
      * @param height fragment portlet height or -1
      */
     void updatePosition(float x, float y, float z, float width, float height);
+
+    /**
+     * Update fragment layout position.
+     * 
+     * @param x fragment X coordinate or -1
+     * @param y fragment Y coordinate or -1
+     * @param z fragment Z level or -1
+     * @param width fragment portlet width or -1
+     * @param height fragment portlet height or -1
+     * @param scope the name of the property scope to update 
+     * @param scopeValue the scope discriminator value, (unless scope is GLOBAL
+     *                   or USER where the default user name is used if null)
+     */
+    void updatePosition(float x, float y, float z, float width, float height, String scope, String scopeValue);
     
     /**
      * Update preferences with new preferences set, accepting
@@ -424,7 +555,28 @@ public interface ContentFragment
     void updatePreferences(Map preferences);
 
     /**
-     * Update fragment row and column layout position.
+     * Update fragment property. The default, (Global), scope value
+     * is updated.
+     * 
+     * @param propName fragment property name
+     * @param propValue fragment property value
+     */
+    void updateProperty(String propName, String propValue);
+    
+    /**
+     * Update fragment property.
+     * 
+     * @param propName fragment property name
+     * @param propValue fragment property value
+     * @param scope the name of the property scope to update 
+     * @param scopeValue the scope discriminator value, (unless scope is GLOBAL
+     *                   or USER where the default user name is used if null)
+     */
+    void updateProperty(String propName, String propValue, String scope, String scopeValue);
+    
+    /**
+     * Update fragment row and column layout positions. The default, (Global),
+     * scope values are updated.
      * 
      * @param row fragment row position
      * @param column fragment column position
@@ -432,10 +584,33 @@ public interface ContentFragment
     void updateRowColumn(int row, int column);
     
     /**
-     * Update fragment portlet state and/or mode.
+     * Update fragment row and column layout positions.
+     * 
+     * @param row fragment row position
+     * @param column fragment column position
+     * @param scope the name of the property scope to update 
+     * @param scopeValue the scope discriminator value, (unless scope is GLOBAL
+     *                   or USER where the default user name is used if null)
+     */
+    void updateRowColumn(int row, int column, String scope, String scopeValue);
+    
+    /**
+     * Update fragment portlet state and/or mode. The default, (Global),
+     * scope values are updated.
      * 
      * @param portletState fragment portlet state or null
      * @param portletMode fragment portlet mode or null
      */
     void updateStateMode(String portletState, String portletMode);
+
+    /**
+     * Update fragment portlet state and/or mode.
+     * 
+     * @param portletState fragment portlet state or null
+     * @param portletMode fragment portlet mode or null
+     * @param scope the name of the property scope to update 
+     * @param scopeValue the scope discriminator value, (unless scope is GLOBAL
+     *                   or USER where the default user name is used if null)
+     */
+    void updateStateMode(String portletState, String portletMode, String scope, String scopeValue);
 }
