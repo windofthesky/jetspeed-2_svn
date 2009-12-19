@@ -16,11 +16,14 @@
  */
 package org.apache.jetspeed.pipeline;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Iterator;
+
+import org.apache.jetspeed.pipeline.valve.CleanupValve;
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
-
-import java.util.List;
 
 /**
  * Flexible implementation of a {@link Pipeline}. <p/> <br/><br/> Suggested
@@ -55,17 +58,39 @@ public class JetspeedPipeline implements Pipeline
     protected Valve[] valves;
 
     /**
+     * The set of CleanupValves associated with this Pipeline.
+     */
+    protected Valve[] cleanupValves;
+
+    /**
      * Constructor that provides the descriptor for building the pipeline
      */
     public JetspeedPipeline(String name, List valveList) throws Exception
     {
-        valves = (Valve[]) valveList.toArray(new Valve[valveList.size()]);
+        // split valves into cleanup and normal valves lists
+        List valvesList = new ArrayList();
+        List cleanupValvesList = new ArrayList();
+        Iterator valveIter = valveList.iterator();
+        while (valveIter.hasNext())
+        {
+            Valve valve = (Valve)valveIter.next();
+            if (valve instanceof CleanupValve)
+            {
+                cleanupValvesList.add(valve);
+            }
+            else
+            {
+                valvesList.add(valve);
+            }
+        }
+        // configure pipeline
+        valves = (Valve[]) valvesList.toArray(new Valve[valvesList.size()]);
+        cleanupValves = (Valve[]) cleanupValvesList.toArray(new Valve[cleanupValvesList.size()]);
         setName(name);
     }
 
     public void initialize() throws PipelineException
     {
-
     }
 
     /**
@@ -92,66 +117,116 @@ public class JetspeedPipeline implements Pipeline
     public synchronized void addValve(Valve valve)
     {
         // Add this Valve to the set associated with this Pipeline
-        Valve[] results = new Valve[valves.length + 1];
-        System.arraycopy(valves, 0, results, 0, valves.length);
-        results[valves.length] = valve;
-        valves = results;
+        if (valve instanceof CleanupValve)
+        {
+            cleanupValves = appendToValveArray(cleanupValves, valve);
+        }
+        else
+        {
+            valves = appendToValveArray(valves, valve);
+        }
     }
 
     public synchronized Valve[] getValves()
     {
-        Valve[] results = new Valve[valves.length];
-        System.arraycopy(valves, 0, results, 0, valves.length);
-        return results;
+        return copyValveArray(valves);
+    }
+
+    public synchronized Valve[] getCleanupValves()
+    {
+        return copyValveArray(cleanupValves);
     }
 
     public synchronized void removeValve(Valve valve)
     {
-        // Locate this Valve in our list
-        int index = -1;
-        for (int i = 0; i < valves.length; i++)
+        // Remove this Valve to the set associated with this Pipeline
+        if (valve instanceof CleanupValve)
         {
-            if (valve == valves[i])
-            {
-                index = i;
-                break;
-            }
+            cleanupValves = removeFromValveArray(cleanupValves, valve);
         }
-        if (index < 0) { return; }
-
-        // Remove this valve from our list
-        Valve[] results = new Valve[valves.length - 1];
-        int n = 0;
-        for (int i = 0; i < valves.length; i++)
+        else
         {
-            if (i == index)
-            {
-                continue;
-            }
-            results[n++] = valves[i];
+            valves = removeFromValveArray(valves, valve);
         }
-        valves = results;
     }
 
     public void invoke(RequestContext request) throws PipelineException
     {
-
-        Invocation invocation;
-        // TODO use java 5 locks or compare and swap if possible
-        synchronized (this)
+        try
         {
-            invocation = new Invocation(valves);
+            Invocation invocation;
+            synchronized (this)
+            {
+                invocation = new Invocation(valves);
+            }
+            // Invoke the first Valve in this pipeline for this request
+            invocation.invokeNext(request);
         }
-        // Invoke the first Valve in this pipeline for this request
-        invocation.invokeNext(request);
+        finally
+        {
+            // Invoke all cleanup valves swallowing any thrown exceptions
+            // for this request
+            Valve[] invokeCleanupValves;
+            synchronized (this)
+            {
+                invokeCleanupValves = copyValveArray(cleanupValves);
+            }
+            for (int i = 0; (i < invokeCleanupValves.length); i++)
+            {
+                Invocation cleanupInvocation = new Invocation(invokeCleanupValves[i]);
+                try
+                {
+                    cleanupInvocation.invokeNext(request);
+                }
+                catch (Throwable t)
+                {
+                }
+            }
+        }
+    }
+    
+    private static Valve[] copyValveArray(Valve[] array)
+    {
+        Valve[] newArray = new Valve[array.length];
+        System.arraycopy(array, 0, newArray, 0, array.length);
+        return newArray;
+    }
+
+    private static Valve[] appendToValveArray(Valve[] array, Valve valve)
+    {
+        Valve[] newArray = new Valve[array.length+1];
+        System.arraycopy(array, 0, newArray, 0, array.length);
+        newArray[array.length] = valve;
+        return newArray;
+    }
+
+    private static Valve[] removeFromValveArray(Valve[] array, Valve valve)
+    {
+        int index = -1;
+        for (int i = 0; ((i < array.length) && (index == -1)); i++)
+        {
+            index = ((array[i] == valve) ? i : -1);
+        }
+        if (index != -1)
+        {
+            Valve[] newArray = new Valve[array.length-1];
+            System.arraycopy(array, 0, newArray, 0, index);
+            System.arraycopy(array, index+1, newArray, index, array.length-index-1);
+            return newArray;
+        }
+        return array;
     }
 
     private static final class Invocation implements ValveContext
     {
-
         private final Valve[] valves;
 
         private int at = 0;
+
+        public Invocation(Valve valve)
+        {
+            this.valves = new Valve[]{valve};
+        }
 
         public Invocation(Valve[] valves)
         {

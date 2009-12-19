@@ -50,6 +50,14 @@ public interface Pipeline
     Valve[] getValves();
 
     /**
+     * <p>Return the set of all cleanup Valves in the pipeline.  If there
+     * are no such Valves, a zero-length array is returned.</p>
+     *
+     * @return An array of cleanup valves.
+     */
+    Valve[] getCleanupValves();
+
+    /**
      * <p>Cause the specified request and response to be processed by
      * the sequence of Valves associated with this pipeline, until one
      * of these Valves decides to end the processing.</p>

@@ -64,8 +64,13 @@ public class TestPipeline extends JetspeedTestCase
         assertNotNull("DecorationValve", valvesMap.get("DecorationValve"));
         assertNotNull("HeaderAggregatorValve", valvesMap.get("HeaderAggregatorValve"));
         assertNotNull("AggregatorValve", valvesMap.get("AggregatorValve"));
-        assertNotNull("CleanupValveImpl", valvesMap.get("CleanupValveImpl"));
-        
+        Valve[] cleanupValves = pipeline.getCleanupValves();
+        HashMap cleanupValvesMap = new HashMap(cleanupValves.length);
+        for (int i = 0; i < cleanupValves.length; i++)
+        {
+            cleanupValvesMap.put(cleanupValves[i].toString(), cleanupValves[i]);
+        }
+        assertNotNull("CleanupValveImpl", cleanupValvesMap.get("CleanupValveImpl"));
         
         assertNotNull(engine.getPipeline("action-pipeline"));
         assertNotNull(engine.getPipeline("portlet-pipeline"));
