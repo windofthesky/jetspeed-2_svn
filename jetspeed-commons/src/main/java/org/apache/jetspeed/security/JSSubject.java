@@ -226,5 +226,10 @@ public class JSSubject implements java.io.Serializable
 
 	}
 
-
+    /**
+     * Clear subject reference in current thread.
+     */
+    public static void clearSubject() {
+        threadLocal.remove();
+    }
 }
