@@ -1457,6 +1457,10 @@
                 <name>org.apache.jetspeed.database.driver</name>
                 <value>${org.apache.jetspeed.test.database.driver}</value>
               </property>
+              <property>
+                <name>org.apache.jetspeed.database.default.name</name>
+                <value>${org.apache.jetspeed.test.database.default.name}</value>
+              </property>
             </systemProperties>
           </configuration>
         </plugin>
