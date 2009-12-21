@@ -29,7 +29,6 @@ import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.BaseConcretePageElement;
-import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -165,24 +164,22 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
     {
         try
         {
-            // save original request in the event it is modified below
-            // and some down stream content portlet needs it set
-            request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, request.getPath());
+            String requestPath = request.getPath();
             if (log.isDebugEnabled())
             {
-                log.debug("Request path: "+request.getPath());
+                log.debug("Request path: "+requestPath);
             }
             
             // get profiler locators for request subject/principal using the profiler
             Subject subject = request.getSubject();
             if (subject == null)
             {
-                throw new ProfilerException("Missing subject for request: " + request.getPath());
+                throw new ProfilerException("Missing subject for request: " + requestPath);
             }            
             Principal principal = SubjectHelper.getBestPrincipal(subject, User.class);
             if (principal == null)
             {
-                throw new ProfilerException("Missing principal for request: " + request.getPath());
+                throw new ProfilerException("Missing principal for request: " + requestPath);
             }
             
             // get request specific profile locators if required
@@ -271,6 +268,12 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 request.setPage(contentPage);
                 request.setProfileLocators(requestContext.getLocators());
                 
+                // save original request for down stream content portlets
+                if (requestContext.isContentPage())
+                {
+                    request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, requestPath);
+                }
+
                 request.setAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE,getPageActionAccess(request));
 
                 if (log.isDebugEnabled())

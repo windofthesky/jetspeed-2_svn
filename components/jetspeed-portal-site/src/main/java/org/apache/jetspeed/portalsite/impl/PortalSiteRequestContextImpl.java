@@ -28,6 +28,7 @@ import java.util.Collections;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.FragmentReference;
+import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.Node;
@@ -80,7 +81,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * requestPage - cached request profiled page proxy
      */
     private BaseConcretePageElement requestPage;
-
+    
     /**
      * requestPageTemplate - cached request page template proxy
      */
@@ -287,6 +288,19 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
             return managedFragmentDefinitions;
         }
         return null;
+    }
+    
+    /**
+     * isContentPage - returns flag indicating request page is honoring
+     *                 a content request
+     *
+     * @return page template
+     * @throws NodeNotFoundException if page not found
+     * @throws SecurityException if page view access not granted
+     */
+    public boolean isContentPage() throws NodeNotFoundException
+    {
+        return (getPage() instanceof DynamicPage);
     }
 
     /**

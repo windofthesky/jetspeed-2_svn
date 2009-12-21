@@ -78,6 +78,16 @@ public interface PortalSiteRequestContext
      * @throws SecurityException if page view access not granted
      */
     Map getManagedFragmentDefinitions() throws NodeNotFoundException;
+    
+    /**
+     * isContentPage - returns flag indicating request page is honoring
+     *                 a content request
+     *
+     * @return page template
+     * @throws NodeNotFoundException if page not found
+     * @throws SecurityException if page view access not granted
+     */
+    boolean isContentPage() throws NodeNotFoundException;
 
     /**
      * getPage - get request profiled page proxy
