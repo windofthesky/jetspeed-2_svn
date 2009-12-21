@@ -65,6 +65,15 @@ public class TestDatabasePageManagerCache extends TestCase
     public void testDatabasePageManagerCache()
     {
         String result;
+
+        // check for distributed database support
+        String databaseName = System.getProperty("org.apache.jetspeed.database.default.name");
+        if ((databaseName != null) && databaseName.equals("derby"))
+        {
+            System.out.println("Database support not distributed: system limitation... test skipped");
+            log.warn("Database support not distributed: system limitation... test skipped");
+            return;
+        }
         
         // create and start servers
         final TestProgram server0 = new TestProgram("server-0", DatabasePageManagerServer.class, 0);
