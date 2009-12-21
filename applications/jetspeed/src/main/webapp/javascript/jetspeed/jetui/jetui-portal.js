@@ -270,8 +270,42 @@ YUI.add('jetui-portal', function(Y) {
             var window = Y.one("[id='" + windowId + "']");
             if (window) {
                 Y.log("data = " + window.data.get("name"));            	
-            }
-            // TODO: left off here
+            }            
+            var jetspeedZone = Y.one('#jetspeedZone');
+            if (!Y.Lang.isNull(jetspeedZone)) {
+        		var dragParent = window.get('parentNode');
+            	var parentColumn = dragParent.data.get('column');
+            	portal.reallocateColumn(parentColumn);
+
+            	window.data.set("x", 10);
+                window.data.set("y", 10);
+                window.setStyle('position', 'absolute');
+                window.setStyle('top', '10px');
+                window.setStyle('left', '10px');
+            	window.data.set('detached', true);
+            	window.data.set("toolbar", true);
+            	var drag = Y.DD.DDM.getDrag(window);
+            	drag.removeFromGroup("portals");
+            	drag.addToGroup("toolbars");
+            	drag.set('dragMode', 'point');
+            	var drop = Y.DD.DDM.getDrop(window);
+            	var i = 0;
+                while (i < Y.DD.DDM.targets.length) {
+                    if (Y.DD.DDM.targets[i] == drop) {
+                        Y.DD.DDM.targets.splice(i, 1);
+                        break;
+                    }
+                    i++;
+                }
+                jetspeedZone.appendChild(window);
+    			if (dragParent.get("children").size() == 0)
+    			{
+                    var drop = new Y.DD.Drop({
+                        node: dragParent,
+                        groups: ['portlets']            
+                    });
+    			}                
+            }            
         },
         
         onMoveComplete : function(id, o, args) { 
@@ -285,6 +319,7 @@ YUI.add('jetui-portal', function(Y) {
          * @method movePortlet persist the move operation to the persistent store over restful put request
          */
         movePortlet : function(drag, e) {
+            var portal = JETUI_YUI.getPortalInstance();        	
             var windowId =  drag.getAttribute('id');
             if (drag.data.get("toolbar") == false) {
             	var oldColumn = drag.data.get('column');
@@ -296,25 +331,25 @@ YUI.add('jetui-portal', function(Y) {
             		this.reallocateColumn(oldColumn); // moved from different column
             		drag.data.set('column', parentColumn);
             	}
-            	this.reallocateColumn(parentColumn);
-                var uri = this.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
+            	portal.reallocateColumn(parentColumn);
+                var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
                 uri += "&col=" + drag.data.get('column') + "&row=" + drag.data.get('row');
                 var config = {
-                        on: { complete: this.onMoveComplete },
+                        on: { complete: portal.onMoveComplete },
                         method: "PUT",
-                        headers: { "X-Portal-Path" : this.portalPagePath },
+                        headers: { "X-Portal-Path" : portal.portalPagePath },
                         arguments: { complete: [ windowId ] }
                     };
                 var request = Y.io(uri, config);
             }    	
             else
             {
-                var uri = this.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
-                uri += "&x=" + e.target.region.top + "&y=" + e.target.region.left;
+                var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
+                uri += "&x=" + e.target.region.top + "&y=" + e.target.region.left + "&detached=true";
                 var config = {
-                        on: { complete: this.onMoveComplete },
+                        on: { complete: portal.onMoveComplete },
                         method: "PUT",
-                        headers: { "X-Portal-Path" : this.portalPagePath },
+                        headers: { "X-Portal-Path" : portal.portalPagePath },
                         arguments: { complete: [ windowId ] }
                     };
                 var request = Y.io(uri, config);
@@ -524,7 +559,7 @@ YUI.add('jetui-portal', function(Y) {
             columns[parseInt(fragment.properties.column)].appendChild(v);
             
             var uri = portal.portalContextPath + "/portlet" + portal.portalPagePath + "?entity=" + fragment.id;
-            var request = Y.io(uri, { on: { complete: this.onPortletRenderComplete }, arguments: { complete: v } } );
+            var request = Y.io(uri, { on: { complete: portal.onPortletRenderComplete }, arguments: { complete: v } } );
         }
     });
     
@@ -566,7 +601,9 @@ YUI.add('jetui-portal', function(Y) {
             "toolbar" : { value : false },
             "detached" : { value : false },
             "column" : { value : 0 },
-            "row" : { value : 0 }
+            "row" : { value : 0 },
+            "x" : { value : 0 },
+            "y" : { value : 0 }
         }
     });
 
@@ -598,6 +635,7 @@ YUI.add('jetui-portal', function(Y) {
             Y.log("id  : " + this.get("id"));       
             Y.log("toolbar  : " + this.get("toolbar"));     
             Y.log("col, row  : " + this.get("column") + "," + this.get("row"));     
+            Y.log("x, y  : " + this.get("x") + "," + this.get("y"));     
             Y.log("---------");
         }
     });
@@ -611,9 +649,11 @@ YUI.add('jetui-portal', function(Y) {
         portlet.set("name", node.getAttribute("name"));
         portlet.set("id", node.getAttribute("id"));
         portlet.set("toolbar", Boolean(node.getAttribute("locked").toLowerCase() === 'true'));
-        portlet.set("detached", false);
+        portlet.set("detached", Boolean(node.getAttribute("detached").toLowerCase() === 'true'));
         portlet.set("column", node.getAttribute("column"));
         portlet.set("row", node.getAttribute("row"));
+        portlet.set("x", node.getAttribute("x"));
+        portlet.set("y", node.getAttribute("y"));
         node.data = portlet;
         return portlet;
     };

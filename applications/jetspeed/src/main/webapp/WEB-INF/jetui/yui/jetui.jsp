@@ -240,7 +240,7 @@ for (ContentFragment fragment : columnLayout.getDetachedPortlets())
 	String y = fragment.getProperty("y");
     String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
 %>
-   <div id='<%=fragment.getId()%>' detached='true' locked='<%=fragment.isLocked()%>' name='<%=fragment.getName()%>' column='0' row='0' style='position: absolute; top: <%=x%>px; left: <%=y%>px;'>
+   <div id='<%=fragment.getId()%>' detached='true' locked='<%=fragment.isLocked()%>' name='<%=fragment.getName()%>' column='0' row='0' x='<%=x%>' y='<%=y%>' style='position: absolute; top: <%=x%>px; left: <%=y%>px;'>
 <%=content%>
    </div>			    
 <% } %>
