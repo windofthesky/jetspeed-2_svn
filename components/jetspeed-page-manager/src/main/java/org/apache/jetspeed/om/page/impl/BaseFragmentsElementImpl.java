@@ -130,7 +130,7 @@ public abstract class BaseFragmentsElementImpl extends DocumentImpl implements B
             {
                 // add new fragment or copy configuration
                 // from previously removed fragment
-                if (removedFragment instanceof FragmentReferenceImpl)
+                if (removedFragment instanceof PageFragmentImpl)
                 {
                     // reuse previously removed fragment
                     reuseFragment = removedFragment;

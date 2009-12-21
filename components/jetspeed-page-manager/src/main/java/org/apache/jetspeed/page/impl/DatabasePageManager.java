@@ -1389,7 +1389,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
                 // update fragments/page and mark cache transaction
                 fragmentsElement.setParent(parent);
-                storeEntity( fragmentsElement, pageElementPath, true);
+                storeEntity(fragmentsElement, pageElementPath, true);
                 
                 // new fragments/page
                 newFragmentsElement[0] = true;
@@ -1400,7 +1400,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 fragmentsElement.checkAccess(JetspeedActions.EDIT);
 
                 // update fragments/page and mark cache transaction
-                storeEntity( fragmentsElement, fragmentsElement.getPath(), false);
+                storeEntity(fragmentsElement, fragmentsElement.getPath(), false);
 
                 // updated fragments/page
                 newFragmentsElement[0] = false;
@@ -2598,7 +2598,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     public void cleanupRequestCache()
     {
         // clear thread local cache on request completion
-        rollbackTransactions();
+        fragmentPropertyListsCache.remove();
     }
     
     /**
