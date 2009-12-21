@@ -17,7 +17,11 @@
 package org.apache.jetspeed.maven.fileutils;
 
 
-import org.apache.jetspeed.maven.utils.FileSystemUtils;
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -48,21 +52,56 @@ public class FileUtilsMojo extends AbstractMojo
      * @required
      */
     private String event;
-
+    
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         if (event.equals("copy"))
         {
-            FileSystemUtils.copy(srcDirectoryPath, destDirectoryPath);
+            copy(srcDirectoryPath, destDirectoryPath);
         }
         if (event.equals("move"))
         {
-            FileSystemUtils.copy(srcDirectoryPath, destDirectoryPath);
-            FileSystemUtils.delete(srcDirectoryPath);
+            move(srcDirectoryPath, destDirectoryPath);
         }
         else if (event.equals("delete"))
         {
-            FileSystemUtils.delete(srcDirectoryPath);
+            delete(srcDirectoryPath);
+        }
+    }
+    
+    private static void delete(String srcDirectoryPath) throws MojoExecutionException
+    {
+        try
+        {
+            FileUtils.deleteDirectory(new File(srcDirectoryPath));
+        }
+        catch (IOException IOex)
+        {
+            throw new MojoExecutionException("Error in deleting the directory", IOex);
+        }
+    }
+
+    private static void copy(String srcDirectoryPath, String destDir) throws MojoExecutionException
+    {
+        try
+        {
+            FileUtils.copyDirectory(new File(srcDirectoryPath), new File(destDir), FileFilterUtils.makeSVNAware(null));
+        }
+        catch (IOException IOex)
+        {
+            throw new MojoExecutionException("Error in copying the directory", IOex);
+        }
+    }
+
+    private static void move(String srcDirectoryPath, String destDir) throws MojoExecutionException
+    {
+        try
+        {
+            FileUtils.moveDirectory(new File(srcDirectoryPath), new File(destDir));
+        }
+        catch (IOException IOex)
+        {
+            throw new MojoExecutionException("Error in moving the directory", IOex);
         }
     }
 }

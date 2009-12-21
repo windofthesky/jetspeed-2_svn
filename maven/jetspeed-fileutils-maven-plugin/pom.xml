@@ -50,6 +50,11 @@
       <version>2.0.7</version>
       <scope>provided</scope>
     </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
+      </dependency>
   </dependencies>
   <build>
     <plugins>
