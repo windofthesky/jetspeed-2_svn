@@ -1291,14 +1291,22 @@ public abstract class AbstractPageManager
         while (props.hasNext())
         {
             FragmentProperty prop = (FragmentProperty)props.next();
-            if (copy.getProperty(prop.getName(), prop.getScope(), prop.getScopeValue()) == null)
+            String propName = prop.getName();
+            String propScope = prop.getScope();
+            String propScopeValue = prop.getScopeValue();
+            if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED || 
+                (propScope == null) ||
+                (!propScope.equals(FragmentProperty.GROUP_PROPERTY_SCOPE) && !propScope.equals(FragmentProperty.ROLE_PROPERTY_SCOPE)))
             {
-                FragmentProperty newProp = newFragmentProperty();
-                newProp.setName(prop.getName());
-                newProp.setScope(prop.getScope());
-                newProp.setScopeValue(prop.getScopeValue());
-                newProp.setValue(prop.getValue());
-                copy.getProperties().add(newProp);
+                if (copy.getProperty(propName, propScope, propScopeValue) == null)
+                {
+                    FragmentProperty newProp = newFragmentProperty();
+                    newProp.setName(propName);
+                    newProp.setScope(propScope);
+                    newProp.setScopeValue(propScopeValue);
+                    newProp.setValue(prop.getValue());
+                    copy.getProperties().add(newProp);
+                }
             }
         }
                   
