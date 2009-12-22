@@ -258,7 +258,7 @@ public class DeployMojo extends AbstractMojo
             else
             {
                 dobj.deployment.destination = getValue(dobj.deployment.destination, "jar".equals(dobj.type) ? "lib" : null);
-                dobj.deployment.expand = Boolean.FALSE;
+                dobj.deployment.expand = getValue(dobj.deployment.expand, Boolean.FALSE);
                 dobj.deployment.infuse = Boolean.FALSE;
             }
             if (destMap.get(dobj.deployment.destination) == null)
