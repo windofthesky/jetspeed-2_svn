@@ -66,6 +66,7 @@ public class SpacesServiceImpl implements Spaces
             Space defaultSpace = new SpaceImpl("Home", "/", "admin");
             result.add(defaultSpace);
             Folder root = pageManager.getFolder("/");
+            defaultSpace.setTitle(root.getTitle());
             Iterator spaces = root.getFolders().iterator();
             for (int ix = 0; spaces.hasNext(); ix++)
             {
