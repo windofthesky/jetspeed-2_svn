@@ -189,11 +189,11 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.ContentFragment#getFloatProperty(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.om.page.ContentFragment#getFloatProperty(java.lang.String, java.lang.String, java.lang.String)
      */
-    public float getFloatProperty(String propName, String scope)
+    public float getFloatProperty(String propName, String scope, String scopeValue)
     {
-        String propValue = getProperty(propName, scope);
+        String propValue = getProperty(propName, scope, scopeValue);
         if (propValue != null)
         {
             return Float.parseFloat(propValue);
@@ -235,11 +235,11 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.ContentFragment#getIntProperty(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.om.page.ContentFragment#getIntProperty(java.lang.String, java.lang.String, java.lang.String)
      */
-    public int getIntProperty(String propName, String scope)
+    public int getIntProperty(String propName, String scope, String scopeValue)
     {
-        String propValue = getProperty(propName, scope);
+        String propValue = getProperty(propName, scope, scopeValue);
         if (propValue != null)
         {
             return Integer.parseInt(propValue);
@@ -427,21 +427,24 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
                 String fragmentPropertyScope = fragmentProperty.getScope();
                 if (fragmentPropertyScope != null)
                 {
-                    if (fragmentPropertyScope.equals(FragmentProperty.USER_PROPERTY_SCOPE))
+                    if (fragmentPropertyScope.equals(USER_PROPERTY_SCOPE))
                     {
                         userValue = fragmentProperty.getValue();
                     }
-                    else if (groupValue == null)
+                    else if (GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
                     {
-                        if (fragmentPropertyScope.equals(FragmentProperty.GROUP_PROPERTY_SCOPE))
+                        if (groupValue == null)
                         {
-                            groupValue = fragmentProperty.getValue();
-                        }
-                        else if (roleValue == null)
-                        {
-                            if (fragmentPropertyScope.equals(FragmentProperty.ROLE_PROPERTY_SCOPE))
+                            if (fragmentPropertyScope.equals(GROUP_PROPERTY_SCOPE))
                             {
-                                roleValue = fragmentProperty.getValue();
+                                groupValue = fragmentProperty.getValue();
+                            }
+                            else if (roleValue == null)
+                            {
+                                if (fragmentPropertyScope.equals(ROLE_PROPERTY_SCOPE))
+                                {
+                                    roleValue = fragmentProperty.getValue();
+                                }
                             }
                         }
                     }
@@ -458,9 +461,9 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.ContentFragment#getProperty(java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.om.page.ContentFragment#getProperty(java.lang.String, java.lang.String, java.lang.String)
      */
-    public String getProperty(String propName, String scope)
+    public String getProperty(String propName, String scope, String scopeValue)
     {
         // iterate through properties list to get property value
         Iterator propertiesIter = getProperties().iterator();
@@ -469,11 +472,26 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
             FragmentProperty fragmentProperty = (FragmentProperty)propertiesIter.next();
             if (fragmentProperty.getName().equals(propName))
             {
+                // compare scopes
                 String fragmentPropertyScope = fragmentProperty.getScope();
-                if (((fragmentPropertyScope == null) && (scope == null)) ||
-                    ((fragmentPropertyScope != null) && fragmentPropertyScope.equals(scope)))
+                if ((fragmentPropertyScope == null) && (scope == null))
                 {
-                    return fragmentProperty.getValue();
+                    return fragmentProperty.getValue();                    
+                }
+                else if ((fragmentPropertyScope != null) && fragmentPropertyScope.equals(scope))
+                {
+                    // default user scope value
+                    if ((scopeValue == null) && scope.equals(USER_PROPERTY_SCOPE))
+                    {
+                        scopeValue = Utils.getCurrentUserScopeValue();
+                    }
+                    // compare scope values
+                    String fragmentPropertyScopeValue = fragmentProperty.getScopeValue();
+                    if (((fragmentPropertyScopeValue == null) && (scopeValue == null)) ||
+                        ((fragmentPropertyScopeValue != null) && fragmentPropertyScopeValue.equals(scopeValue)))
+                    {
+                        return fragmentProperty.getValue();                        
+                    }
                 }
             }
         }
@@ -1532,4 +1550,3 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
         this.id = id;
     }
 }
-        

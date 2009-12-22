@@ -32,14 +32,14 @@ import org.apache.jetspeed.om.page.PageTemplate;
 public interface PageLayoutComponent
 {
     /**
-     * global standard property scope
-     */
-    String GLOBAL_PROPERTY_SCOPE = ContentFragment.GLOBAL_PROPERTY_SCOPE;
-
-    /**
      * user standard property scope
      */
     String USER_PROPERTY_SCOPE = ContentFragment.USER_PROPERTY_SCOPE;
+
+    /**
+     * group standard property scope
+     */
+    String GROUP_PROPERTY_SCOPE = ContentFragment.GROUP_PROPERTY_SCOPE;
 
     /**
      * role standard property scope
@@ -47,9 +47,9 @@ public interface PageLayoutComponent
     String ROLE_PROPERTY_SCOPE = ContentFragment.ROLE_PROPERTY_SCOPE;
 
     /**
-     * group standard property scope
+     * global standard property scope
      */
-    String GROUP_PROPERTY_SCOPE = ContentFragment.GROUP_PROPERTY_SCOPE;
+    String GLOBAL_PROPERTY_SCOPE = ContentFragment.GLOBAL_PROPERTY_SCOPE;
 
     /**
      * group and role standard property scopes enabled flag

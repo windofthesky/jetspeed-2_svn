@@ -25,11 +25,6 @@ package org.apache.jetspeed.om.page;
 public interface FragmentProperty
 {
     /**
-     * global standard property scope
-     */
-    String GLOBAL_PROPERTY_SCOPE = null;
-
-    /**
      * user standard property scope
      */
     String USER_PROPERTY_SCOPE = "user";
@@ -43,6 +38,11 @@ public interface FragmentProperty
      * role standard property scope
      */
     String ROLE_PROPERTY_SCOPE = "role";
+
+    /**
+     * global standard property scope
+     */
+    String GLOBAL_PROPERTY_SCOPE = null;
 
     /**
      * group and role standard property scopes enabled flag

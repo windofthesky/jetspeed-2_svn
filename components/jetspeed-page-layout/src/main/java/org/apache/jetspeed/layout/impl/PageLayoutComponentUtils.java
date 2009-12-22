@@ -16,6 +16,15 @@
  */
 package org.apache.jetspeed.layout.impl;
 
+import java.security.AccessController;
+import java.security.Principal;
+
+import javax.security.auth.Subject;
+
+import org.apache.jetspeed.security.JSSubject;
+import org.apache.jetspeed.security.SubjectHelper;
+import org.apache.jetspeed.security.User;
+
 /**
  * Page layout component utilities.
  * 
@@ -57,6 +66,26 @@ public interface PageLayoutComponentUtils
         public static boolean isNull(float value)
         {
             return (value < 0);
+        }
+
+        /**
+         * Lookup current default user scope value.
+         * 
+         * @return current user principal name
+         */
+        public static String getCurrentUserScopeValue()
+        {
+            // lookup current user principal using subject
+            Subject subject = JSSubject.getSubject(AccessController.getContext());
+            if (subject != null)
+            {
+                Principal userPrincipal = SubjectHelper.getBestPrincipal(subject, User.class);
+                if (userPrincipal != null)
+                {
+                    return userPrincipal.getName();
+                }
+            }
+            return null;
         }
     }
 }

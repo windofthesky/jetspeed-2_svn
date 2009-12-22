@@ -90,11 +90,6 @@ public interface BaseFragmentElement extends BaseElement
     String HEIGHT_PROPERTY_NAME = "height";
 
     /**
-     * global standard property scope
-     */
-    String GLOBAL_PROPERTY_SCOPE = FragmentProperty.GLOBAL_PROPERTY_SCOPE;
-
-    /**
      * user standard property scope
      */
     String USER_PROPERTY_SCOPE = FragmentProperty.USER_PROPERTY_SCOPE;
@@ -108,6 +103,11 @@ public interface BaseFragmentElement extends BaseElement
      * role standard property scope
      */
     String ROLE_PROPERTY_SCOPE = FragmentProperty.ROLE_PROPERTY_SCOPE;
+
+    /**
+     * global standard property scope
+     */
+    String GLOBAL_PROPERTY_SCOPE = FragmentProperty.GLOBAL_PROPERTY_SCOPE;
 
     /**
      * group and role standard property scopes enabled flag

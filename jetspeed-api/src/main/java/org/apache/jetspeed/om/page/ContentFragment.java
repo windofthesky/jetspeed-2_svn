@@ -132,14 +132,14 @@ public interface ContentFragment
     String HEIGHT_PROPERTY_NAME = BaseFragmentElement.HEIGHT_PROPERTY_NAME;
 
     /**
-     * global standard property scope
-     */
-    String GLOBAL_PROPERTY_SCOPE = BaseFragmentElement.GLOBAL_PROPERTY_SCOPE;
-
-    /**
      * user standard property scope
      */
     String USER_PROPERTY_SCOPE = BaseFragmentElement.USER_PROPERTY_SCOPE;
+
+    /**
+     * group standard property scope
+     */
+    String GROUP_PROPERTY_SCOPE = BaseFragmentElement.GROUP_PROPERTY_SCOPE;
 
     /**
      * role standard property scope
@@ -147,9 +147,9 @@ public interface ContentFragment
     String ROLE_PROPERTY_SCOPE = BaseFragmentElement.ROLE_PROPERTY_SCOPE;
 
     /**
-     * group standard property scope
+     * global standard property scope
      */
-    String GROUP_PROPERTY_SCOPE = BaseFragmentElement.GROUP_PROPERTY_SCOPE;
+    String GLOBAL_PROPERTY_SCOPE = BaseFragmentElement.GLOBAL_PROPERTY_SCOPE;
 
     /**
      * group and role standard property scopes enabled flag
@@ -159,14 +159,14 @@ public interface ContentFragment
     /**
      * Returns the name of the skin associated to this fragment
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      */
     String getSkin();
 
     /**
      * Returns the name of the decorator bound to this fragment
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      */
     String getDecorator();
 
@@ -174,7 +174,7 @@ public interface ContentFragment
      * Returns the display state of this fragment. The state may have the
      * following values: "Normal","Minimized","Maximized","Hidden"
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      */
     String getState();
 
@@ -182,14 +182,14 @@ public interface ContentFragment
      * Returns the display mode of this fragment. The mode may have the
      * following values: "View","Edit","Help","Config","Print","Custom"
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      */
     String getMode();
 
     /**
      * Get named property value.
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      *
      * @param propName property name
      * @return value
@@ -201,14 +201,16 @@ public interface ContentFragment
      *
      * @param propName property name
      * @param scope the name of the property scope to retrieve 
+     * @param scopeValue the scope discriminator value, (unless scope is GLOBAL
+     *                   or USER where the default user name is used if null)
      * @return value
      */
-    String getProperty(String propName, String scope);
+    String getProperty(String propName, String scope, String scopeValue);
     
     /**
      * Get named property value as integer.
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      *
      * @param propName property name
      * @return int value
@@ -220,14 +222,16 @@ public interface ContentFragment
      *
      * @param propName property name
      * @param scope the name of the property scope to retrieve 
+     * @param scopeValue the scope discriminator value, (unless scope is GLOBAL
+     *                   or USER where the default user name is used if null)
      * @return int value
      */
-    int getIntProperty(String propName, String scope);
+    int getIntProperty(String propName, String scope, String scopeValue);
     
     /**
      * Get named property value as float.
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      *
      * @param propName property name
      * @return float value
@@ -239,9 +243,11 @@ public interface ContentFragment
      *
      * @param propName property name
      * @param scope the name of the property scope to retrieve 
+     * @param scopeValue the scope discriminator value, (unless scope is GLOBAL
+     *                   or USER where the default user name is used if null)
      * @return float value
      */
-    float getFloatProperty(String propName, String scope);
+    float getFloatProperty(String propName, String scope, String scopeValue);
     
     /**
      * Get read-only list of fragment property objects that
@@ -253,7 +259,7 @@ public interface ContentFragment
 
     /**
      * Get named property value map. Property values are returned
-     * for the most specific scope found, (i.e. user, role, group,
+     * for the most specific scope found, (i.e. user, group, role,
      * or global scopes).
      *
      * @return map of fragment property values
@@ -263,7 +269,7 @@ public interface ContentFragment
     /**
      * Get layout row property.
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      *
      * @return row layout property
      **/
@@ -272,7 +278,7 @@ public interface ContentFragment
     /**
      * Get layout column property.
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      *
      * @return column layout property
      **/
@@ -281,7 +287,7 @@ public interface ContentFragment
     /**
      * Get layout sizes property, (i.e. "25%,75%").
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      * 
      * @return sizes layout property
      **/
@@ -290,7 +296,7 @@ public interface ContentFragment
     /**
      * Get layout x coordinate property.
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      *
      * @return the x coordinate value
      **/
@@ -299,7 +305,7 @@ public interface ContentFragment
     /**
      * Get layout y coordinate property.
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      *
      * @return the y coordinate value
      **/
@@ -308,7 +314,7 @@ public interface ContentFragment
     /**
      * Get layout z coordinate property.
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      *
      * @return the z coordinate value
      **/
@@ -317,7 +323,7 @@ public interface ContentFragment
     /**
      * Get layout width property.
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      *
      * @return the width value
      **/
@@ -326,7 +332,7 @@ public interface ContentFragment
     /**
      * Get layout height property.
      * Property value is returned for the most specific scope
-     * found, (i.e. user, role, group, or global scopes).
+     * found, (i.e. user, group, role, or global scopes).
      *
      * @return the height value
      **/
