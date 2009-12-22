@@ -65,6 +65,8 @@ public class SiteView
      * ALT_CURRENT_PAGE_PATH - alternate expression used to match the current page
      */
     public final static String ALT_CURRENT_PAGE_PATH = "@";
+    public final static char ALT_CURRENT_PAGE_PATH_CHAR = '@';
+    public final static String ALT_CURRENT_PAGE_PATH_0 = "@0";
 
     /**
      * STANDARD_*_MENU_NAME - standard menu names
@@ -705,6 +707,15 @@ public class SiteView
             return currentPage;
         }
 
+        // match current node path
+        if (currentPath.equals(ALT_CURRENT_PAGE_PATH_0))
+        {
+            // return current node, (assume viewable)
+            List proxies = new ArrayList(1);
+            proxies.add(currentNode);
+            return currentNode;
+        }
+
         // convert absolute path to a root relative search
         // and default current folder
         if (currentPath.startsWith(Folder.PATH_SEPARATOR))
@@ -848,6 +859,79 @@ public class SiteView
             {
                 // current page not specified
                 return null;
+            }
+        }
+        
+        // convert pattern with indexed current node path expressions
+        if (currentNode != null)
+        {
+            // match current node path
+            if (currentRegexpPath.equals(ALT_CURRENT_PAGE_PATH_0))
+            {
+                // return current node, (assume viewable)
+                List proxies = new ArrayList(1);
+                proxies.add(currentNode);
+                return proxies;
+            }
+
+            // match current node path expression
+            int currentNodePathIndex = currentRegexpPath.indexOf(ALT_CURRENT_PAGE_PATH_CHAR);
+            String [] currentNodePathElements = null;
+            while (currentNodePathIndex != -1)
+            {
+                if (currentNodePathIndex+1 < currentRegexpPath.length())
+                {
+                    String currentNodePathElement = null;
+                    char currentNodePathElementIndexChar = currentRegexpPath.charAt(currentNodePathIndex+1);
+                    if ((currentNodePathElementIndexChar >= '0') && (currentNodePathElementIndexChar <= '9'))
+                    {
+                        // valid current node path pattern
+                        int currentNodePathElementIndex = (int)(currentNodePathElementIndexChar-'0');
+                        if (currentNodePathElementIndex > 0)
+                        {
+                            // use indexed current node path element
+                            if (currentNodePathElements == null)
+                            {
+                                // note: leading '/' in path makes index one based
+                                currentNodePathElements = currentNode.getPath().split(Folder.PATH_SEPARATOR);
+                            }
+                            if (currentNodePathElementIndex < currentNodePathElements.length)
+                            {
+                                currentNodePathElement = currentNodePathElements[currentNodePathElementIndex];
+                            }
+                        }
+                        else
+                        {
+                            // use full current node path trimmed of separators
+                            currentNodePathElement = currentNode.getPath();
+                            if (currentNodePathElement.endsWith(Folder.PATH_SEPARATOR))
+                            {
+                                currentNodePathElement = currentNodePathElement.substring(0, currentNodePathElement.length()-1);
+                            }
+                            if (currentNodePathElement.startsWith(Folder.PATH_SEPARATOR))
+                            {
+                                currentNodePathElement = currentNodePathElement.substring(1);
+                            }
+                        }
+                    }
+                    else if (currentNodePathElementIndexChar == '$')
+                    {
+                        // use last current node path element
+                        if (currentNodePathElements == null)
+                        {
+                            // note: leading '/' in path makes index one based
+                            currentNodePathElements = currentNode.getPath().split(Folder.PATH_SEPARATOR);
+                        }
+                        currentNodePathElement = currentNodePathElements[currentNodePathElements.length-1];
+                    }
+                    // replace current node path expression
+                    if (currentNodePathElement != null)
+                    {
+                        currentRegexpPath = currentRegexpPath.substring(0, currentNodePathIndex)+currentNodePathElement+currentRegexpPath.substring(currentNodePathIndex+2);
+                        currentNodePathIndex += currentNodePathElement.length()-1;
+                    }
+                }
+                currentNodePathIndex = currentRegexpPath.indexOf(ALT_CURRENT_PAGE_PATH_CHAR, currentNodePathIndex+1);
             }
         }
 

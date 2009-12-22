@@ -35,4 +35,6 @@ limitations under the License.
 
   <menu name="bread-crumbs" options="./" paths="true"/>
   <menu name="template-test" options="/page0.psml"/>
+  <menu name="current-page-test" options="~"/>
+  <menu name="current-path-test" regexp="true" options="/@1/*.psml"/>
 </folder>

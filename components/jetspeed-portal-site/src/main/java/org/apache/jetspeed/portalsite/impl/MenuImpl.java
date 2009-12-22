@@ -166,7 +166,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                     }
                     
                     // set relative element flag if options path is relative
-                    this.elementRelative = (this.elementRelative || !options.startsWith(Folder.PATH_SEPARATOR));
+                    this.elementRelative = (this.elementRelative || !options.startsWith(Folder.PATH_SEPARATOR) || options.contains(SiteView.ALT_CURRENT_PAGE_PATH));
                 }
 
                 // menu defined only with menu definition options
@@ -632,7 +632,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         }
 
                         // set relative element flag if path is relative
-                        elementRelative = (elementRelative || !optionPath.startsWith(Folder.PATH_SEPARATOR));
+                        elementRelative = (elementRelative || !optionPath.startsWith(Folder.PATH_SEPARATOR) || options.contains(SiteView.ALT_CURRENT_PAGE_PATH));
                     }
                 }
 

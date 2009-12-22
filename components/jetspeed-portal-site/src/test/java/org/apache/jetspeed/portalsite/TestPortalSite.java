@@ -275,7 +275,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/page0.psml", extractFileSystemPathFromId(rootPage0Proxy.getId()));
         List rootPage0ProxyMenus = rootPage0Proxy.getMenuDefinitions();
         assertNotNull(rootPage0ProxyMenus);
-        assertEquals(3 + aggregateView.getStandardMenuNames().size(), rootPage0ProxyMenus.size());
+        assertEquals(5 + aggregateView.getStandardMenuNames().size(), rootPage0ProxyMenus.size());
         Iterator menusIter = rootPage0ProxyMenus.iterator();
         MenuDefinition rootPage0ProxyTemplateTestMenu = (MenuDefinition)menusIter.next();
         assertEquals("template-test", rootPage0ProxyTemplateTestMenu.getName());
@@ -289,6 +289,10 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("bread-crumbs", rootPage0ProxyBreadCrumbMenu.getName());
         assertEquals("./", rootPage0ProxyBreadCrumbMenu.getOptions());
         assertEquals(true, rootPage0ProxyBreadCrumbMenu.isPaths());
+        MenuDefinition rootPage0ProxyCurrentPageTestMenu = (MenuDefinition)menusIter.next();
+        assertEquals("current-page-test", rootPage0ProxyCurrentPageTestMenu.getName());
+        MenuDefinition rootPage0ProxyCurrentPathTestMenu = (MenuDefinition)menusIter.next();
+        assertEquals("current-path-test", rootPage0ProxyCurrentPathTestMenu.getName());        
         for (int i = 0; (i < aggregateView.getStandardMenuNames().size()); i++)
         {
             assertTrue(aggregateView.getStandardMenuNames().contains(((MenuDefinition)menusIter.next()).getName()));
@@ -300,7 +304,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/_user/user/page2.psml", extractFileSystemPathFromId(rootPage2Proxy.getId()));
         List rootPage2ProxyMenus = rootPage2Proxy.getMenuDefinitions();
         assertNotNull(rootPage2ProxyMenus);
-        assertEquals(3 + aggregateView.getStandardMenuNames().size(), rootPage2ProxyMenus.size());
+        assertEquals(5 + aggregateView.getStandardMenuNames().size(), rootPage2ProxyMenus.size());
         menusIter = rootPage2ProxyMenus.iterator();
         MenuDefinition rootPage2ProxyTopMenu = (MenuDefinition)menusIter.next();
         assertEquals("top", rootPage2ProxyTopMenu.getName());
@@ -311,6 +315,10 @@ public class TestPortalSite extends AbstractSpringTestCase
         MenuDefinition rootPage2ProxyTemplateTestMenu = (MenuDefinition)menusIter.next();
         assertEquals("template-test", rootPage2ProxyTemplateTestMenu.getName());
         assertEquals("/page0.psml", rootPage2ProxyTemplateTestMenu.getOptions());
+        MenuDefinition rootPage2ProxyCurrentPageTestMenu = (MenuDefinition)menusIter.next();
+        assertEquals("current-page-test", rootPage0ProxyCurrentPageTestMenu.getName());
+        MenuDefinition rootPage2ProxyCurrentPathTestMenu = (MenuDefinition)menusIter.next();
+        assertEquals("current-path-test", rootPage0ProxyCurrentPathTestMenu.getName());        
         for (int i = 0; (i < aggregateView.getStandardMenuNames().size()); i++)
         {
             assertTrue(aggregateView.getStandardMenuNames().contains(((MenuDefinition)menusIter.next()).getName()));
@@ -687,10 +695,12 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(requestContext);
         Set customMenuNames = requestContext.getCustomMenuNames();
         assertNotNull(customMenuNames);
-        assertEquals(3, customMenuNames.size());
+        assertEquals(5, customMenuNames.size());
         assertTrue(customMenuNames.contains("top"));
         assertTrue(customMenuNames.contains("bread-crumbs"));
         assertTrue(customMenuNames.contains("template-test"));
+        assertTrue(customMenuNames.contains("current-page-test"));
+        assertTrue(customMenuNames.contains("current-path-test"));
         Menu topMenu = requestContext.getMenu("top");
         assertNotNull(topMenu);
         assertEquals(MenuElement.MENU_ELEMENT_TYPE, topMenu.getElementType());
@@ -800,6 +810,21 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals(1, templateTestElements.size());
         assertTrue(templateTestElements.get(0) instanceof MenuOption);
         assertEquals("/page1.psml", ((MenuOption)templateTestElements.get(0)).getUrl());
+        Menu currentPageTestMenu = requestContext.getMenu("current-page-test");
+        assertEquals("current-page-test", currentPageTestMenu.getName());
+        assertFalse(currentPageTestMenu.isEmpty());
+        List currentPageTestElements = currentPageTestMenu.getElements();
+        assertNotNull(currentPageTestElements);
+        assertEquals(1, currentPageTestElements.size());
+        assertTrue(currentPageTestElements.get(0) instanceof MenuOption);
+        assertEquals("/page2.psml", ((MenuOption)currentPageTestElements.get(0)).getUrl());
+        assertTrue(currentPageTestMenu.isSelected(requestContext));
+        assertTrue(((MenuOption)currentPageTestElements.get(0)).isSelected(requestContext));
+        Menu currentPathTestMenu = requestContext.getMenu("current-path-test");
+        assertEquals("current-path-test", currentPathTestMenu.getName());
+        assertTrue(currentPathTestMenu.isEmpty());
+        List currentPathTestElements = currentPathTestMenu.getElements();
+        assertNull(currentPathTestElements);
 
         // second request at /folder0
         locator = new JetspeedProfileLocator();
@@ -842,7 +867,27 @@ public class TestPortalSite extends AbstractSpringTestCase
         Menu navigationsMenu = requestContext.getMenu("navigations");
         assertNotNull(navigationsMenu);
         assertTrue(navigationsMenu.isEmpty());
-
+        currentPageTestMenu = requestContext.getMenu("current-page-test");
+        assertEquals("current-page-test", currentPageTestMenu.getName());
+        assertFalse(currentPageTestMenu.isEmpty());
+        currentPageTestElements = currentPageTestMenu.getElements();
+        assertNotNull(currentPageTestElements);
+        assertEquals(1, currentPageTestElements.size());
+        assertTrue(currentPageTestElements.get(0) instanceof MenuOption);
+        assertEquals("/folder0/page0.psml", ((MenuOption)currentPageTestElements.get(0)).getUrl());
+        assertTrue(currentPageTestMenu.isSelected(requestContext));
+        assertTrue(((MenuOption)currentPageTestElements.get(0)).isSelected(requestContext));
+        currentPathTestMenu = requestContext.getMenu("current-path-test");
+        assertEquals("current-path-test", currentPathTestMenu.getName());
+        assertFalse(currentPathTestMenu.isEmpty());
+        currentPathTestElements = currentPathTestMenu.getElements();
+        assertNotNull(currentPathTestElements);
+        assertEquals(1, currentPathTestElements.size());
+        assertTrue(currentPathTestElements.get(0) instanceof MenuOption);
+        assertEquals("/folder0/page0.psml", ((MenuOption)currentPathTestElements.get(0)).getUrl());
+        assertTrue(currentPathTestMenu.isSelected(requestContext));
+        assertTrue(((MenuOption)currentPathTestElements.get(0)).isSelected(requestContext));
+        
         // third request at /page1.psml
         locator = new JetspeedProfileLocator();
         locator.init(null, "/page1.psml");
