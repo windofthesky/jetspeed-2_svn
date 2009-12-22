@@ -43,11 +43,13 @@ import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.container.session.PortalSessionsManager;
 import org.apache.jetspeed.factory.PortletInstance;
+import org.apache.jetspeed.logger.JetspeedLogger;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.JetspeedPortletServices;
 import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.tools.pamanager.PortletApplicationManagement;
 import org.apache.jetspeed.util.DirectoryHelper;
+import org.apache.jetspeed.util.JetspeedLoggerUtil;
 import org.apache.pluto.container.PortletMimeResponseContext;
 
 /**
@@ -114,6 +116,8 @@ public class JetspeedContainerServlet extends HttpServlet
               throw new ServletException(JCS + " Initialization of PortletApplication at "+contextName+" without access to its real path not supported");
                 }
 
+            JetspeedLogger jsLogger = JetspeedLoggerUtil.getLogger(getClass());
+            jsLogger.info(INIT_START_MSG + contextName);
             context.log(INIT_START_MSG + contextName);            
             System.out.println(INIT_START_MSG + contextName);            
 
@@ -124,11 +128,13 @@ public class JetspeedContainerServlet extends HttpServlet
             catch (Exception e)
             {
                 String message = INIT_FAILED_MSG + contextName;
+                jsLogger.error(message, e);
                 context.log(message, e);
                 System.err.println(message);
                 throw new ServletException(message, e);
             }
 
+            jsLogger.info(INIT_DONE_MSG + contextName);
             context.log(INIT_DONE_MSG + contextName);
             System.out.println(INIT_DONE_MSG + contextName);
         }
@@ -149,6 +155,8 @@ public class JetspeedContainerServlet extends HttpServlet
         }
 */
         final String START_DELAYED_MSG = JCS + "Could not yet start portlet application at: "+contextName+". Starting back ground thread to start when the portal comes online.";
+        JetspeedLogger jsLogger = JetspeedLoggerUtil.getLogger(getClass());
+        jsLogger.info(START_DELAYED_MSG);
         context.log(START_DELAYED_MSG);
         startTimer = new Timer(true);
         startTimer.schedule(new TimerTask()
@@ -166,6 +174,8 @@ public class JetspeedContainerServlet extends HttpServlet
                         }
                         else
                         {
+                            JetspeedLogger jsLogger = JetspeedLoggerUtil.getLogger(getClass());
+                            jsLogger.info(START_DELAYED_MSG);
                             context.log(START_DELAYED_MSG);
                         }
                     }
@@ -176,8 +186,11 @@ public class JetspeedContainerServlet extends HttpServlet
 
     boolean attemptStart(ServletContext context, String contextName, String contextPath, String paDir, ClassLoader paClassLoader) 
     {
+        JetspeedLogger jsLogger = JetspeedLoggerUtil.getLogger(getClass());
+        
         try
         {
+            jsLogger.info(TRY_START_MSG + contextPath);
             context.log(TRY_START_MSG + contextPath);
             PortletServices services = JetspeedPortletServices.getSingleton();
             if (services != null)
@@ -192,6 +205,7 @@ public class JetspeedContainerServlet extends HttpServlet
                     started = true;
                     psm = (PortalSessionsManager)services.getService(PortalSessionsManager.SERVICE_NAME);
 
+                    jsLogger.info(STARTED_MSG + contextPath);
                     context.log(STARTED_MSG + contextPath);
                     return true;
                 }
@@ -199,6 +213,7 @@ public class JetspeedContainerServlet extends HttpServlet
         }
         catch (Exception e)
         {
+            jsLogger.error(INIT_FAILED_MSG + contextPath, e);
             context.log(INIT_FAILED_MSG + contextPath, e);
             return true; // don't try again
         }
@@ -310,6 +325,8 @@ public class JetspeedContainerServlet extends HttpServlet
         }
         catch (Throwable t)
         {
+            JetspeedLogger jsLogger = JetspeedLoggerUtil.getLogger(getClass());
+            
             if ( t instanceof UnavailableException )
             {
                 // destroy the portlet in the finally clause
@@ -319,7 +336,7 @@ public class JetspeedContainerServlet extends HttpServlet
             if (PortletWindow.Action.RENDER.equals(window.getAction())|| PortletWindow.Action.RESOURCE.equals(window.getAction()))
             {
                 ServletContext context = getServletContext();
-                context.log(JCS + "Error rendering portlet \"" + window.getPortletDefinition().getUniqueName() + "\": " + t.toString(), t);
+                jsLogger.error(JCS + "Error rendering portlet \"" + window.getPortletDefinition().getUniqueName() + "\": " + t.toString(), t);
                 PrintWriter writer = ((PortletMimeResponseContext)window.getPortletResponseContext()).getWriter();
                 if (writer != null)
                 {
@@ -406,6 +423,8 @@ public class JetspeedContainerServlet extends HttpServlet
                         PortletApplicationManagement pam = (PortletApplicationManagement) services.getService("PAM");
                         if ((pam != null) && pam.isStarted())
                         {
+                            JetspeedLogger jsLogger = JetspeedLoggerUtil.getLogger(getClass());
+                            jsLogger.info(STOP_MSG + contextName);
                             getServletContext().log(STOP_MSG + contextName);
                             try
                             {
@@ -413,6 +432,7 @@ public class JetspeedContainerServlet extends HttpServlet
                             }
                             catch (Exception e)
                             {
+                                jsLogger.error(STOP_FAILED_MSG + contextName, e);
                                 getServletContext().log(STOP_FAILED_MSG + contextName, e);
                             }
                         }

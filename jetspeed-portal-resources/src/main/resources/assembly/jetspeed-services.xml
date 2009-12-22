@@ -23,6 +23,9 @@
     <meta key="j2:cat" value="default" />
     <constructor-arg>
       <map>
+        <entry key="org.apache.jetspeed.logger.JetspeedLoggerFactory">
+          <bean class="org.apache.jetspeed.logger.impl.DefaultJetspeedLoggerFactory" />
+        </entry>
         <entry key="PortletRegistryComponent">
           <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
         </entry>
