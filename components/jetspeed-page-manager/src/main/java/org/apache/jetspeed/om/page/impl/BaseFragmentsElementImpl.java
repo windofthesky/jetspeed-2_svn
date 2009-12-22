@@ -38,8 +38,6 @@ public abstract class BaseFragmentsElementImpl extends DocumentImpl implements B
     private String ojbConcreteClass = getClass().getName();
     private Collection fragment;
 
-    private BaseFragmentElementImpl removedFragment;
-
     /**
      * Default constructor to specify security constraints
      */
@@ -84,72 +82,12 @@ public abstract class BaseFragmentsElementImpl extends DocumentImpl implements B
             }
             else if (!this.fragment.isEmpty())
             {
-                removedFragment = (BaseFragmentElementImpl)this.fragment.iterator().next();
                 this.fragment.clear();
             }
 
             // add new or reuse singleton fragment
             BaseFragmentElementImpl addFragment = (BaseFragmentElementImpl)fragment;
             BaseFragmentElementImpl reuseFragment = null;
-            if (fragment instanceof FragmentImpl)
-            {
-                // add new fragment or copy configuration
-                // from previously removed fragment
-                if (removedFragment instanceof FragmentImpl)
-                {
-                    // reuse previously removed fragment
-                    reuseFragment = removedFragment;
-                    addFragment = reuseFragment;
-                    removedFragment = null;
-                    // TODO: move this logic to copy methods on implementations
-                    FragmentImpl fragmentImpl = (FragmentImpl)fragment;
-                    FragmentImpl reuseFragmentImpl = (FragmentImpl)reuseFragment;
-                    reuseFragmentImpl.setName(fragmentImpl.getName());                
-                    reuseFragmentImpl.setType(fragmentImpl.getType());
-                    reuseFragmentImpl.getFragments().clear();
-                    reuseFragmentImpl.getFragments().addAll(fragmentImpl.getFragments());
-                }
-            }
-            else if (fragment instanceof FragmentReferenceImpl)
-            {
-                // add new fragment or copy configuration
-                // from previously removed fragment
-                if (removedFragment instanceof FragmentReferenceImpl)
-                {
-                    // reuse previously removed fragment
-                    reuseFragment = removedFragment;
-                    addFragment = reuseFragment;
-                    removedFragment = null;
-                    // TODO: move this logic to copy methods on implementations
-                    FragmentReferenceImpl fragmentImpl = (FragmentReferenceImpl)fragment;
-                    FragmentReferenceImpl reuseFragmentImpl = (FragmentReferenceImpl)reuseFragment;
-                    reuseFragmentImpl.setRefId(fragmentImpl.getRefId());                
-                }
-            }
-            else if (fragment instanceof PageFragmentImpl)
-            {
-                // add new fragment or copy configuration
-                // from previously removed fragment
-                if (removedFragment instanceof PageFragmentImpl)
-                {
-                    // reuse previously removed fragment
-                    reuseFragment = removedFragment;
-                    addFragment = reuseFragment;
-                    removedFragment = null;
-                }
-            }
-            if (reuseFragment != null)
-            {
-                // TODO: move this logic to copy methods on implementations
-                reuseFragment.setTitle(baseFragmentImpl.getTitle());
-                reuseFragment.setShortTitle(baseFragmentImpl.getShortTitle());
-                reuseFragment.setSkin(baseFragmentImpl.getSkin());
-                reuseFragment.setDecorator(baseFragmentImpl.getDecorator());
-                reuseFragment.setState(baseFragmentImpl.getState());
-                reuseFragment.setSecurityConstraints(baseFragmentImpl.getSecurityConstraints());
-                reuseFragment.setProperties(baseFragmentImpl.getProperties());
-                reuseFragment.setPreferences(baseFragmentImpl.getPreferences());
-            }
             this.fragment.add(addFragment);
 
             // set base fragments implementation in root and children fragments
@@ -161,7 +99,6 @@ public abstract class BaseFragmentsElementImpl extends DocumentImpl implements B
             // removed fragment for later reuse
             if ((this.fragment != null) && !this.fragment.isEmpty())
             {
-                removedFragment = (BaseFragmentElementImpl)this.fragment.iterator().next();
                 this.fragment.clear();
             }
         }
