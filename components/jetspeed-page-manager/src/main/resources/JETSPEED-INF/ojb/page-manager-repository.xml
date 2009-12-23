@@ -2831,6 +2831,22 @@
         access="anonymous"
       />
 
+      <reference-descriptor
+          name="fragment"
+          class-ref="org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl"
+          auto-retrieve="true"
+          auto-delete="link"
+          auto-update="link"
+          >
+         <foreignkey field-ref="fragmentId"/>
+      </reference-descriptor>
+
+      <field-descriptor
+         name="name"
+         column="NAME"
+         jdbc-type="VARCHAR"
+      />
+
       <field-descriptor
          name="scope"
          column="SCOPE"

@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentPropertyImpl;
 import org.apache.jetspeed.om.page.FragmentProperty;
 
@@ -28,11 +29,42 @@ import org.apache.jetspeed.om.page.FragmentProperty;
 public class FragmentPropertyImpl extends BaseFragmentPropertyImpl implements FragmentProperty
 {
     private int id;
+    private BaseFragmentElement fragment;
     private String name;
     private String scope;
     private String scopeValue;
     private String value;
 
+    /**
+     * Get implementation identity key.
+     * 
+     * @return identity key.
+     */
+    public int getIdentity()
+    {
+        return id;
+    }
+
+    /**
+     * Get owning fragment instance.
+     * 
+     * @return owning fragment
+     */
+    public BaseFragmentElement getFragment()
+    {
+        return fragment;
+    }
+    
+    /**
+     * Set owning fragment instance.
+     * 
+     * @param fragment owning fragment
+     */
+    public void setFragment(BaseFragmentElement fragment)
+    {
+        this.fragment = fragment;
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.FragmentProperty#getName()
      */
@@ -144,25 +176,15 @@ public class FragmentPropertyImpl extends BaseFragmentPropertyImpl implements Fr
     }
     
     /**
-     * Get implementation identity key.
-     * 
-     * @return identity key.
-     */
-    public int getIdentity()
-    {
-        return id;
-    }
-
-    /**
      * Test whether property object matches.
      * 
      * @param other match candidate
      * @return match flag
      */
-    boolean match(FragmentPropertyImpl other)
+    protected boolean match(FragmentProperty other)
     {
-        return ((((name != null) && name.equals(other.name)) || ((name == null) && (other.name == null))) &&
-                (((scope != null) && scope.equals(other.scope)) || ((scope == null) && (other.scope == null))) &&
-                (((scopeValue != null) && scopeValue.equals(other.scopeValue)) || ((scopeValue == null) && (other.scopeValue == null))));        
+        return ((((name != null) && name.equals(other.getName())) || ((name == null) && (other.getName() == null))) &&
+                (((scope != null) && scope.equals(other.getScope())) || ((scope == null) && (other.getScope() == null))) &&
+                (((scopeValue != null) && scopeValue.equals(other.getScopeValue())) || ((scopeValue == null) && (other.getScopeValue() == null))));
     }
 }

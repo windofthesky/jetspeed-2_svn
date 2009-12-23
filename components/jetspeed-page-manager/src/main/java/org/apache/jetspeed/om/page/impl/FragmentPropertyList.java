@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.jetspeed.om.page.BaseFragmentElement;;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
+import org.apache.jetspeed.om.page.FragmentProperty;
 
 /**
  * FragmentPropertyList
@@ -46,7 +47,7 @@ public class FragmentPropertyList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public synchronized void add(int index, Object element)
     {
         // implement for modifiable AbstractList:
         FragmentPropertyImpl add = (FragmentPropertyImpl)element;
@@ -73,7 +74,7 @@ public class FragmentPropertyList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public synchronized Object get(int index)
     {
         // implement for modifiable AbstractList
         return properties.get(index);
@@ -82,7 +83,7 @@ public class FragmentPropertyList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public synchronized Object remove(int index)
     {
         // implement for modifiable AbstractList:
         // save removed element 
@@ -93,7 +94,7 @@ public class FragmentPropertyList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public synchronized Object set(int index, Object element)
     {
         // implement for modifiable AbstractList:
         FragmentPropertyImpl set = (FragmentPropertyImpl)element;
@@ -127,7 +128,7 @@ public class FragmentPropertyList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#size()
      */
-    public int size()
+    public synchronized int size()
     {
         // implement for modifiable AbstractList
         return properties.size();
@@ -144,12 +145,32 @@ public class FragmentPropertyList extends AbstractList
     }
     
     /**
+     * Get underlying fragment properties list.
+     * 
+     * @return fragment property list
+     */
+    public List getProperties()
+    {
+        return properties;
+    }
+    
+    /**
+     * Get underlying removed fragment properties list.
+     * 
+     * @return removed fragment property list
+     */
+    public List getRemovedProperties()
+    {
+        return removedProperties;
+    }
+    
+    /**
      * Find matching property.
      * 
      * @param match match property
      * @return matching property
      */
-    protected FragmentPropertyImpl getMatchingProperty(FragmentPropertyImpl match)
+    public synchronized FragmentPropertyImpl getMatchingProperty(FragmentProperty match)
     {
         Iterator matchIter = properties.iterator();
         while (matchIter.hasNext())

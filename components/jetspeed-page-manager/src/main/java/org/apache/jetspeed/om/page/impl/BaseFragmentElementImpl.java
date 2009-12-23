@@ -27,6 +27,8 @@ import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.page.impl.DatabasePageManager;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+import org.apache.ojb.broker.PersistenceBroker;
+import org.apache.ojb.broker.PersistenceBrokerAware;
 
 /**
  * BaseFragmentElementImpl
@@ -34,7 +36,7 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public abstract class BaseFragmentElementImpl extends BaseElementImpl implements BaseFragmentElement
+public abstract class BaseFragmentElementImpl extends BaseElementImpl implements BaseFragmentElement, PersistenceBrokerAware
 {
     private String ojbConcreteClass = getClass().getName();
     private String fragmentId;
@@ -776,20 +778,17 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
         // if fragment is not newly constructed
         if (getIdentity() != 0)
         {
-            fragmentProperties = null;
             DatabasePageManager pageManager = getPageManager();
             if (pageManager != null)
             {
-                FragmentPropertyList properties = pageManager.getFragmentPropertiesList(this);
-                if (properties != null)
-                {
-                    return properties;
-                }
+                FragmentPropertyList properties = pageManager.getFragmentPropertiesList(this, fragmentProperties);
+                fragmentProperties = null;
+                return properties;
             }
         }
+        // create transient properties list place holder
         if (fragmentProperties == null)
         {
-            // create properties list place holder
             fragmentProperties = new FragmentPropertyList(this);
         }
         return fragmentProperties;
@@ -1066,6 +1065,79 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterDelete(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterDelete(PersistenceBroker broker)
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterInsert(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterInsert(PersistenceBroker broker)
+    {
+        // notify page manager of fragment insert so that fragment
+        // properties can be inserted as part of the insert operation
+        DatabasePageManager pageManager = getPageManager();
+        if (pageManager != null)
+        {
+            pageManager.updateFragmentPropertiesList(this, fragmentProperties);
+            fragmentProperties = null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterLookup(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterLookup(PersistenceBroker broker)
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#afterUpdate(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void afterUpdate(PersistenceBroker broker)
+    {
+        // notify page manager of fragment update so that fragment
+        // properties can be updated as part of the update operation
+        DatabasePageManager pageManager = getPageManager();
+        if (pageManager != null)
+        {
+            pageManager.updateFragmentPropertiesList(this, fragmentProperties);
+            fragmentProperties = null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeDelete(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void beforeDelete(PersistenceBroker broker)
+    {
+        // notify page manager of fragment delete so that fragment
+        // properties can be removed as part of the remove operation
+        DatabasePageManager pageManager = getPageManager();
+        if (pageManager != null)
+        {
+            pageManager.removeFragmentPropertiesList(this, fragmentProperties);
+            fragmentProperties = null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeInsert(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void beforeInsert(PersistenceBroker broker)
+    {
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.ojb.broker.PersistenceBrokerAware#beforeUpdate(org.apache.ojb.broker.PersistenceBroker)
+     */
+    public void beforeUpdate(PersistenceBroker broker)
+    {
+    }
+
     /**
      * Validate fragment using specified validation listener.
      * 

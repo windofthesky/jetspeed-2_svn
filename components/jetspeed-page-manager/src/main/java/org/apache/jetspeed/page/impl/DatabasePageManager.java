@@ -16,11 +16,14 @@
  */
 package org.apache.jetspeed.page.impl;
 
+import java.security.AccessController;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.security.auth.Subject;
 
@@ -104,6 +107,11 @@ import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
+import org.apache.jetspeed.security.Group;
+import org.apache.jetspeed.security.JSSubject;
+import org.apache.jetspeed.security.Role;
+import org.apache.jetspeed.security.SubjectHelper;
+import org.apache.jetspeed.security.User;
 import org.apache.ojb.broker.core.proxy.ProxyHelper;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
@@ -2607,26 +2615,121 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @param baseFragmentElement owning fragment of fragment property list
      * @return new or cached fragment property list
      */
-    public FragmentPropertyList getFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElement)
+    public FragmentPropertyList getFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElement, FragmentPropertyList transientList)
     {
-        // check thread local fragment property lists cache
-        String cacheKey = baseFragmentElement.getBaseFragmentsElement().getPath()+"/"+baseFragmentElement.getId();
-        Map cache = (Map)fragmentPropertyListsCache.get();
-        FragmentPropertyList list = ((cache != null) ? (FragmentPropertyList)cache.get(cacheKey) : null);
+        // access thread local fragment property lists cache
+        String threadLocalCacheKey = getFragmentPropertiesListThreadLocalCacheKey(baseFragmentElement);
+        Map threadLocalCache = (Map)fragmentPropertyListsCache.get();
+
+        // get cached persistent list
+        FragmentPropertyList list = ((threadLocalCache != null) ? (FragmentPropertyList)threadLocalCache.get(threadLocalCacheKey) : null);
         if (list == null)
         {
-            // create new fragment property list
-            list = new FragmentPropertyList(baseFragmentElement);
+            // use transient list or create new fragment property list
+            list = ((transientList != null) ? transientList : new FragmentPropertyList(baseFragmentElement));
             
-            // TODO: query for fragment property list using database query
+            // build fragment properties database query
+            Criteria filter = new Criteria();
+            filter.addEqualTo("fragment", new Integer(baseFragmentElement.getIdentity()));
+            Criteria scopesFilter = new Criteria();
+            Criteria globalScopeFilter = new Criteria();
+            globalScopeFilter.addIsNull("scope");
+            scopesFilter.addOrCriteria(globalScopeFilter);
+            // add scopes for current user, groups, and roles
+            Subject subject = JSSubject.getSubject(AccessController.getContext());
+            if (subject != null)
+            {
+                if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
+                {
+                    Set principals = subject.getPrincipals();
+                    Iterator principalsIter = principals.iterator();
+                    while (principalsIter.hasNext())
+                    {
+                        Principal principal = (Principal)principalsIter.next();
+                        if (principal instanceof User)
+                        {
+                            Criteria userScopeFilter = new Criteria();
+                            userScopeFilter.addEqualTo("scope", FragmentProperty.USER_PROPERTY_SCOPE);
+                            userScopeFilter.addEqualTo("scopeValue", principal.getName());
+                            scopesFilter.addOrCriteria(userScopeFilter);
+                        }
+                        else if (principal instanceof Group)
+                        {
+                            Criteria groupScopeFilter = new Criteria();
+                            groupScopeFilter.addEqualTo("scope", FragmentProperty.GROUP_PROPERTY_SCOPE);
+                            groupScopeFilter.addEqualTo("scopeValue", principal.getName());
+                            scopesFilter.addOrCriteria(groupScopeFilter);
+                        }
+                        else if (principal instanceof Role)
+                        {
+                            Criteria roleScopeFilter = new Criteria();
+                            roleScopeFilter.addEqualTo("scope", FragmentProperty.ROLE_PROPERTY_SCOPE);
+                            roleScopeFilter.addEqualTo("scopeValue", principal.getName());
+                            scopesFilter.addOrCriteria(roleScopeFilter);
+                        }
+                    }
+                }
+                else
+                {
+                    Principal userPrincipal = SubjectHelper.getBestPrincipal(subject, User.class);
+                    if (userPrincipal != null)
+                    {
+                        Criteria userScopeFilter = new Criteria();
+                        userScopeFilter.addEqualTo("scope", FragmentProperty.USER_PROPERTY_SCOPE);
+                        userScopeFilter.addEqualTo("scopeValue", userPrincipal.getName());
+                        scopesFilter.addOrCriteria(userScopeFilter);
+                    }
+                }
+            }
+            filter.addAndCriteria(scopesFilter);
+            // query for fragment properties for list using database query
+            QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
+            Collection fragmentProperties = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            list.getProperties().addAll(fragmentProperties);
         
             // save fragment property list in thread local cache
-            if (cache == null)
+            if (threadLocalCache == null)
             {
-                cache = new HashMap();
-                fragmentPropertyListsCache.set(cache);
+                threadLocalCache = new HashMap();
+                fragmentPropertyListsCache.set(threadLocalCache);
             }
-            cache.put(cacheKey, list);
+            threadLocalCache.put(threadLocalCacheKey, list);
+        }
+        else if (transientList != null)
+        {
+            synchronized (list)
+            {
+                synchronized (transientList)
+                {
+                    // merge into persistent list; this is unsafe due to the
+                    // lack of transactional isolation in shared objects, but
+                    // this should only happen before new objects are committed
+                    // and here we are assuming that only the current user has
+                    // access to the new objects
+                    Iterator sourceIter = transientList.iterator();
+                    while (sourceIter.hasNext())
+                    {
+                        FragmentProperty sourceProperty = (FragmentProperty)sourceIter.next();
+                        FragmentProperty targetProperty = list.getMatchingProperty(sourceProperty);
+                        if (targetProperty != null)
+                        {
+                            targetProperty.setValue(sourceProperty.getValue());
+                        }
+                        else
+                        {
+                            list.add(sourceProperty);
+                        }
+                    }
+                    
+                    // clear transient list
+                    transientList.getProperties().clear();
+                    List removedProperties = transientList.getRemovedProperties();
+                    if (removedProperties != null)
+                    {
+                        removedProperties.clear();
+                    }
+                }
+            }
         }
         return list;
     }
@@ -2636,9 +2739,35 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * 
      * @param list fragment property list
      */
-    public void updateFragmentPropertiesList(FragmentPropertyList list)
+    public void updateFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElement, FragmentPropertyList transientList)
     {
-        // TODO: NYI
+        // update persistent list
+        FragmentPropertyList list = getFragmentPropertiesList(baseFragmentElement, transientList);
+        if (list != null)
+        {
+            // update fragment properties in list in database
+            synchronized (list)
+            {
+                Iterator propertiesIter = list.getProperties().iterator();
+                while (propertiesIter.hasNext())
+                {
+                    FragmentPropertyImpl storeProperty = (FragmentPropertyImpl)propertiesIter.next();
+                    storeProperty.setFragment(baseFragmentElement);
+                    getPersistenceBrokerTemplate().store(storeProperty);
+                }
+                List removedProperties = list.getRemovedProperties();
+                if (removedProperties != null)
+                {
+                    Iterator removedPropertiesIter = removedProperties.iterator();
+                    while (removedPropertiesIter.hasNext())
+                    {
+                        FragmentPropertyImpl deleteProperty = (FragmentPropertyImpl)removedPropertiesIter.next();
+                        deleteProperty.setFragment(baseFragmentElement);
+                        getPersistenceBrokerTemplate().delete(deleteProperty);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -2646,11 +2775,74 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * 
      * @param list fragment property list
      */
-    public void removeFragmentPropertiesList(FragmentPropertyList list)
+    public void removeFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElement, FragmentPropertyList transientList)
     {
-        // TODO: NYI
-    }
+        // access thread local fragment property lists cache
+        String threadLocalCacheKey = getFragmentPropertiesListThreadLocalCacheKey(baseFragmentElement);
+        Map threadLocalCache = (Map)fragmentPropertyListsCache.get();
 
+        // remove cached persistent list
+        FragmentPropertyList list = ((threadLocalCache != null) ? (FragmentPropertyList)threadLocalCache.get(threadLocalCacheKey) : null);
+        if (list != null)
+        {
+            // remove list from cache
+            threadLocalCache.remove(threadLocalCacheKey);
+            // cleanup list
+            synchronized (list)
+            {
+                list.getProperties().clear();
+                List removedProperties = list.getRemovedProperties();
+                if (removedProperties != null)
+                {
+                    removedProperties.clear();
+                }
+            }
+        }
+        
+        // cleanup transient list
+        if (transientList != null)
+        {
+            synchronized (transientList)
+            {
+                transientList.getProperties().clear();
+                List removedProperties = transientList.getRemovedProperties();
+                if (removedProperties != null)
+                {
+                    removedProperties.clear();
+                }
+            }
+        }
+
+        // remove all fragment properties in list from database
+        Criteria filter = new Criteria();
+        filter.addEqualTo("fragment", new Integer(baseFragmentElement.getIdentity()));
+        QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
+        getPersistenceBrokerTemplate().deleteByQuery(query);
+    }
+    
+    /**
+     * Compute thread local cache key for fragment properties.
+     * 
+     * @param baseFragmentElement owner of fragment properties
+     * @return key string
+     */
+    private static String getFragmentPropertiesListThreadLocalCacheKey(BaseFragmentElementImpl baseFragmentElement)
+    {
+        // base key
+        String key = baseFragmentElement.getBaseFragmentsElement().getPath()+"/"+baseFragmentElement.getId();
+        // append current user if available
+        Subject subject = JSSubject.getSubject(AccessController.getContext());
+        if (subject != null)
+        {
+            Principal userPrincipal = SubjectHelper.getBestPrincipal(subject, User.class);
+            if (userPrincipal != null)
+            {
+                key = key+"/"+userPrincipal.getName();
+            }
+        }
+        return key;
+    }
+    
     /**
      * Rollback transactions registered with current thread.
      */

@@ -16,10 +16,16 @@
  */
 package org.apache.jetspeed.page;
 
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+
+import javax.security.auth.Subject;
+
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -47,6 +53,8 @@ import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.FailedToUpdateDocumentException;
 import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.security.JSSubject;
+import org.apache.jetspeed.security.PrincipalsSet;
 
 import junit.framework.Test;
 
@@ -286,17 +294,50 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         root.setTitle("Root Fragment");
         root.setState("Normal");
         root.setLayoutSizes("50%,50%");
-        /*
-        TODO: reenable once extended properties supported
         FragmentProperty property1 = pageManager.newFragmentProperty();
         property1.setName("custom-prop1");
         property1.setValue("custom-prop-value1");
         root.getProperties().add(property1);
         FragmentProperty property2 = pageManager.newFragmentProperty();
-        property2.setName("custom-prop1");
-        property2.setValue("custom-prop-value1");
+        property2.setName("custom-prop2");
+        property2.setValue("custom-prop-value2");
         root.getProperties().add(property2);
-        */
+        root.setProperty("custom-0", null, null, "custom-value-0");
+        root.setProperty("custom-1", null, null, "custom-value-1");
+        root.setProperty("custom-2", null, null, "custom-value-2");
+        root.setProperty("custom-3", null, null, "custom-value-3");
+        final Fragment userRootFragment = root;
+        Exception userException = (Exception)JSSubject.doAsPrivileged(constructUserSubject(), new PrivilegedAction()
+        {
+            public Object run()
+            {
+                try
+                {
+                    if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
+                    {
+                        userRootFragment.setProperty("custom-1", FragmentProperty.ROLE_PROPERTY_SCOPE, "role", "custom-value-role-1");
+                        userRootFragment.setProperty("custom-2", FragmentProperty.ROLE_PROPERTY_SCOPE, "role", "custom-value-role-2");
+                        userRootFragment.setProperty("custom-2", FragmentProperty.GROUP_PROPERTY_SCOPE, "group", "custom-value-group-2");
+                        userRootFragment.setProperty("custom-3", FragmentProperty.ROLE_PROPERTY_SCOPE, "role", "custom-value-role-3");
+                        userRootFragment.setProperty("custom-3", FragmentProperty.GROUP_PROPERTY_SCOPE, "group", "custom-value-group-3");
+                    }
+                    userRootFragment.setProperty("custom-3", FragmentProperty.USER_PROPERTY_SCOPE, "user", "custom-value-user-3");
+                    return null;
+                }
+                catch (Exception e)
+                {
+                    return e;
+                }
+                finally
+                {
+                    JSSubject.clearSubject();
+                }
+            }
+        }, null);
+        if (userException != null)
+        {
+            throw userException;
+        }
         
         Fragment portlet = pageManager.newPortletFragment();
         portlet.setName("security::LoginPortlet");
@@ -815,10 +856,64 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals("Normal", check.getRootFragment().getState());
             assertEquals("50%,50%", check.getRootFragment().getLayoutSizes());
             assertNotNull(check.getRootFragment().getProperties());
-            /*
-            TODO: reenable once extended properties supported
             assertEquals("custom-prop-value1", check.getRootFragment().getProperty("custom-prop1"));
-            */
+            assertEquals("custom-value-0", checkRootFragment.getProperty("custom-0"));
+            assertEquals("custom-value-1", checkRootFragment.getProperty("custom-1"));
+            assertEquals("custom-value-2", checkRootFragment.getProperty("custom-2"));
+            assertEquals("custom-value-3", checkRootFragment.getProperty("custom-3"));
+            final Fragment checkUserFragment = checkRootFragment;
+            Exception userException = (Exception)JSSubject.doAsPrivileged(constructUserSubject(), new PrivilegedAction()
+            {
+                public Object run()
+                {
+                    try
+                    {
+                        List properties = checkUserFragment.getProperties();
+                        assertNotNull(properties);
+                        assertEquals((FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED ? 12 : 7), properties.size());
+                        assertEquals("50%,50%", checkUserFragment.getProperty(Fragment.SIZES_PROPERTY_NAME));
+                        assertEquals("custom-value-0", checkUserFragment.getProperty("custom-0"));
+                        assertNull(checkUserFragment.getProperty("custom-0", Fragment.USER_PROPERTY_SCOPE, null));
+                        assertNull(checkUserFragment.getProperty("custom-0", Fragment.USER_PROPERTY_SCOPE, "user"));
+                        if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
+                        {
+                            assertEquals("custom-value-role-1", checkUserFragment.getProperty("custom-1"));
+                            assertNotNull(checkUserFragment.getProperty("custom-1", Fragment.ROLE_PROPERTY_SCOPE, "role"));
+                        }
+                        else
+                        {
+                            assertEquals("custom-value-1", checkUserFragment.getProperty("custom-1"));                        
+                        }
+                        assertNull(checkUserFragment.getProperty("custom-1", Fragment.USER_PROPERTY_SCOPE, "user"));
+                        if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
+                        {
+                            assertEquals("custom-value-group-2", checkUserFragment.getProperty("custom-2"));
+                            assertNotNull(checkUserFragment.getProperty("custom-2", Fragment.GROUP_PROPERTY_SCOPE, "group"));
+                        }
+                        else
+                        {
+                            assertEquals("custom-value-2", checkUserFragment.getProperty("custom-2"));                        
+                        }
+                        assertNull(checkUserFragment.getProperty("custom-2", Fragment.USER_PROPERTY_SCOPE, "user"));
+                        assertEquals("custom-value-user-3", checkUserFragment.getProperty("custom-3"));
+                        assertNotNull(checkUserFragment.getProperty("custom-3", Fragment.USER_PROPERTY_SCOPE, null));
+                        assertNotNull(checkUserFragment.getProperty("custom-3", Fragment.USER_PROPERTY_SCOPE, "user"));
+                        return null;
+                    }
+                    catch (Exception e)
+                    {
+                        return e;
+                    }
+                    finally
+                    {
+                        JSSubject.clearSubject();
+                    }
+                }
+            }, null);
+            if (userException != null)
+            {
+                throw userException;
+            }
             assertNotNull(checkRootFragment.getFragments());
             assertEquals(3, checkRootFragment.getFragments().size());
             BaseFragmentElement checkElement0 = (BaseFragmentElement)checkRootFragment.getFragments().get(0);
@@ -1045,8 +1140,6 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         Page page = pageManager.getPage("/default-page.psml");
         assertEquals("/default-page.psml", page.getPath());
         page.setTitle("UPDATED");
-        /*
-        TODO: reenable once extended properties supported
         FragmentProperty removeProperty = null;
         Iterator propertyIter = page.getRootFragment().getProperties().iterator();
         while (propertyIter.hasNext())
@@ -1058,7 +1151,6 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             }
         }
         page.getRootFragment().getProperties().remove(removeProperty);
-        */
         FragmentProperty property = pageManager.newFragmentProperty();
         property.setName("UPDATED");
         property.setValue("UPDATED");
@@ -1243,5 +1335,15 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(0, pmel.newNodeCount);
         assertEquals(0, pmel.updatedNodeCount);
         assertEquals(25, pmel.removedNodeCount);
+    }
+    
+    private Subject constructUserSubject()
+    {
+        // setup test subject
+        Set principals = new PrincipalsSet();
+        principals.add(new TestUser("user"));
+        principals.add(new TestGroup("group"));
+        principals.add(new TestRole("role"));
+        return new Subject(true, principals, new HashSet(), new HashSet());
     }
 }
