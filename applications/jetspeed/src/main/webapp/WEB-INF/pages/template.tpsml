@@ -27,7 +27,6 @@
     <page-fragment id="page-template">
       <property name="column" value="1"/>
       <property name="row" value="0"/>
-      <property name="width" value="60%"></property>      
     </page-fragment>
     
     <fragment id="jsToolbox" type="portlet" name="j2-admin::JetspeedToolbox">
