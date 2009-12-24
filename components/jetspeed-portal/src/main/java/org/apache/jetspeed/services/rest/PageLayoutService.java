@@ -447,24 +447,7 @@ public class PageLayoutService
                             }
                             rowCount++;
                             
-                        }
-                        
-//                        pageLayoutComponent.updateRowColumn(contentFragment, row, col);
-                        
-//                        SortedSet<ContentFragment> tailSet = set.tailSet(contentFragment);
-//                        
-//                        for (ContentFragment f : tailSet)
-//                        {
-//                            if (!f.getId().equals(contentFragment.getId()))
-//                            {
-//                                ++row;
-//                                
-//                                if (row != f.getLayoutRow())
-//                                {
-//                                    pageLayoutComponent.updateRowColumn(f, row, col);
-//                                }
-//                            }
-//                        }
+                        }                        
                     }
                 }
                 catch (Exception e)
