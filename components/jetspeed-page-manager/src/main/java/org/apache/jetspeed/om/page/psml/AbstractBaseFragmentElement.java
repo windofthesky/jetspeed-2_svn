@@ -655,11 +655,21 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
         this.preferences = preferences;  
     } 
     
-    AbstractBaseFragmentsElement getBaseFragmentsElement()
+    /**
+     * Get owning base fragments element.
+     * 
+     * @return base fragments element
+     */
+    public AbstractBaseFragmentsElement getBaseFragmentsElement()
     {
         return baseFragmentsElement;
     }
 
+    /**
+     * Set owning base fragments element.
+     * 
+     * @param base fragments element
+     */
     void setBaseFragmentsElement(AbstractBaseFragmentsElement baseFragmentsElement)
     {
         // set base fragments implementation

@@ -36,14 +36,18 @@ import org.apache.jetspeed.om.folder.psml.MenuExcludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.DynamicPage;
+import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+import org.apache.jetspeed.om.page.psml.AbstractBaseFragmentElement;
 import org.apache.jetspeed.om.page.psml.AbstractBaseFragmentsElement;
 import org.apache.jetspeed.om.page.psml.DynamicPageImpl;
 import org.apache.jetspeed.om.page.psml.FragmentDefinitionImpl;
@@ -63,6 +67,7 @@ import org.apache.jetspeed.page.FolderNotUpdatedException;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerSecurityUtils;
 import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.PageNotUpdatedException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -255,7 +260,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     public void updatePage(Page page) throws NodeException
     {
         PageImpl pageImpl = (PageImpl)page;
-        updateFragmentsElement(pageImpl, Page.DOCUMENT_TYPE);
+        updateFragmentsElement(pageImpl, Page.DOCUMENT_TYPE, true);
     }
 
     /**
@@ -268,7 +273,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     public void updatePageTemplate(PageTemplate pageTemplate) throws NodeException
     {
         PageTemplateImpl pageTemplateImpl = (PageTemplateImpl)pageTemplate;
-        updateFragmentsElement(pageTemplateImpl, PageTemplate.DOCUMENT_TYPE);
+        updateFragmentsElement(pageTemplateImpl, PageTemplate.DOCUMENT_TYPE, true);
     }
 
     /**
@@ -281,7 +286,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     public void updateDynamicPage(DynamicPage dynamicPage) throws NodeException
     {
         DynamicPageImpl dynamicPageImpl = (DynamicPageImpl)dynamicPage;
-        updateFragmentsElement(dynamicPageImpl, DynamicPage.DOCUMENT_TYPE);
+        updateFragmentsElement(dynamicPageImpl, DynamicPage.DOCUMENT_TYPE, true);
     }
 
     /**
@@ -294,7 +299,45 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
     public void updateFragmentDefinition(FragmentDefinition fragmentDefinition) throws NodeException
     {
         FragmentDefinitionImpl fragmentDefinitionImpl = (FragmentDefinitionImpl)fragmentDefinition;
-        updateFragmentsElement(fragmentDefinitionImpl, FragmentDefinition.DOCUMENT_TYPE);
+        updateFragmentsElement(fragmentDefinitionImpl, FragmentDefinition.DOCUMENT_TYPE, true);
+    }
+
+    /**
+     * <p>
+     * updateFragmentProperty
+     * </p>
+     * 
+     * @see org.apache.jetspeed.page.PageManager#updateFragmentProperties(org.apache.jetspeed.om.page.BaseFragmentElement, java.lang.String)
+     */
+    public void updateFragmentProperties(BaseFragmentElement fragment, String scope) throws NodeException, PageNotUpdatedException
+    {
+        // fragment property writes not supported: lookup and
+        // update entire page, dynamic page, page template, or
+        // fragment definition; security is checked unless user
+        // scope is specified
+        AbstractBaseFragmentElement fragmentElement = (AbstractBaseFragmentElement)fragment;
+        AbstractBaseFragmentsElement fragmentsElement = ((fragmentElement != null) ? fragmentElement.getBaseFragmentsElement() : null);
+        boolean checkEditAccess = ((scope == null) || !scope.equals(USER_PROPERTY_SCOPE));
+        if (fragmentsElement instanceof Page)
+        {
+            updateFragmentsElement(fragmentsElement, Page.DOCUMENT_TYPE, checkEditAccess);
+        }
+        else if (fragmentsElement instanceof DynamicPage)
+        {
+            updateFragmentsElement(fragmentsElement, DynamicPage.DOCUMENT_TYPE, checkEditAccess);
+        }
+        else if (fragmentsElement instanceof PageTemplate)
+        {
+            updateFragmentsElement(fragmentsElement, PageTemplate.DOCUMENT_TYPE, checkEditAccess);
+        }
+        else if (fragmentsElement instanceof FragmentDefinition)
+        {
+            updateFragmentsElement(fragmentsElement, FragmentDefinition.DOCUMENT_TYPE, checkEditAccess);
+        }
+        else
+        {
+            throw new PageNotUpdatedException("Unable to update fragment properties: no owning page");
+        }
     }
 
     /**
@@ -306,7 +349,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * @param documentType document type
      * @throws NodeException thrown on update error
      */
-    public void updateFragmentsElement(AbstractBaseFragmentsElement fragmentsElement, String documentType) throws NodeException
+    private void updateFragmentsElement(AbstractBaseFragmentsElement fragmentsElement, String documentType, boolean checkEditAccess) throws NodeException
     {
         // make sure path and related members are set
         if (fragmentsElement.getPath() != null)
@@ -342,8 +385,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             fragmentsElement.setPermissionsEnabled(handlerFactory.getPermissionsEnabled());
             fragmentsElement.setConstraintsEnabled(handlerFactory.getConstraintsEnabled());
             
-            // check for edit access
-            fragmentsElement.checkAccess(JetspeedActions.EDIT);
+            // check for edit/view access
+            fragmentsElement.checkAccess(checkEditAccess ? JetspeedActions.EDIT : JetspeedActions.VIEW);
             
             // update fragments/page
             handlerFactory.getDocumentHandler(documentType).updateDocument(fragmentsElement);
@@ -443,7 +486,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * @param documentType document type
      * @throws NodeException thrown on remove error
      */
-    public void removeFragmentsElement(AbstractBaseFragmentsElement fragmentsElement, String documentType) throws NodeException
+    private void removeFragmentsElement(AbstractBaseFragmentsElement fragmentsElement, String documentType) throws NodeException
     {
         // check for edit access
         fragmentsElement.checkAccess(JetspeedActions.EDIT);

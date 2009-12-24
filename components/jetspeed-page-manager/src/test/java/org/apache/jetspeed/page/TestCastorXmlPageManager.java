@@ -469,32 +469,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         f.setLayoutY(100.0F);
         f.setProperty("custom-0", null, null, "custom-value-0");
         f.setProperty("custom-1", null, null, "custom-value-1");
-        f.setProperty("custom-1", Fragment.USER_PROPERTY_SCOPE, "user", "custom-value-user-1");
         f.setProperty("custom-2", null, null, "custom-value-2");
-        final Fragment userFragment = f;
-        Exception userException = (Exception)JSSubject.doAsPrivileged(constructUserSubject(), new PrivilegedAction()
-        {
-            public Object run()
-            {
-                try
-                {
-                    userFragment.setProperty("custom-2", Fragment.USER_PROPERTY_SCOPE, null, "custom-value-user-2");
-                    return null;
-                }
-                catch (Exception e)
-                {
-                    return e;
-                }
-                finally
-                {
-                    JSSubject.clearSubject();
-                }
-            }
-        }, null);
-        if (userException != null)
-        {
-            throw userException;
-        }
         root.getFragments().add(f);
         FragmentReference fr = pageManager.newFragmentReference();
         fr.setRefId("test002");
@@ -524,6 +499,44 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
             e.printStackTrace();
             System.err.println(errmsg);
             assertNotNull(errmsg, null);
+        }
+        
+        final Fragment userFragment = (Fragment)((Fragment)page.getRootFragment()).getFragments().get(0);
+        Exception userException = (Exception)JSSubject.doAsPrivileged(constructUserSubject(), new PrivilegedAction()
+        {
+            public Object run()
+            {
+                try
+                {
+                    userFragment.setProperty("custom-1", Fragment.USER_PROPERTY_SCOPE, "user", "custom-value-user-1");
+                    userFragment.setProperty("custom-2", Fragment.USER_PROPERTY_SCOPE, null, "custom-value-user-2");
+
+                    try
+                    {
+                        pageManager.updateFragmentProperties(userFragment, PageManager.USER_PROPERTY_SCOPE);
+                    }
+                    catch (Exception e)
+                    {
+                        String errmsg = "Exception in page fragment properties update: " + e.toString();
+                        e.printStackTrace();
+                        System.err.println(errmsg);
+                        assertNotNull(errmsg, null);
+                    }
+                    return null;
+                }
+                catch (Exception e)
+                {
+                    return e;
+                }
+                finally
+                {
+                    JSSubject.clearSubject();
+                }
+            }
+        }, null);
+        if (userException != null)
+        {
+            throw userException;
         }
 
         page = pageManager.getPage("/test002.psml");

@@ -64,6 +64,36 @@ public interface PageManager
     public String SERVICE_NAME = "PageManager";
     
     /**
+     * user standard property scope
+     */
+    String USER_PROPERTY_SCOPE = FragmentProperty.USER_PROPERTY_SCOPE;
+
+    /**
+     * group standard property scope
+     */
+    String GROUP_PROPERTY_SCOPE = FragmentProperty.GROUP_PROPERTY_SCOPE;
+
+    /**
+     * role standard property scope
+     */
+    String ROLE_PROPERTY_SCOPE = FragmentProperty.ROLE_PROPERTY_SCOPE;
+
+    /**
+     * global standard property scope
+     */
+    String GLOBAL_PROPERTY_SCOPE = FragmentProperty.GLOBAL_PROPERTY_SCOPE;
+
+    /**
+     * all standard property scopes
+     */
+    String ALL_PROPERTY_SCOPE = "all";
+
+    /**
+     * group and role standard property scopes enabled flag
+     */
+    boolean GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED = FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED;
+
+    /**
      * <p>
      * getConstraintsEnabled
      * </p>
@@ -693,16 +723,30 @@ public interface PageManager
     /**
      * Update a fragment definition in persistent storage
      *
-     * @param dynamicPage The fragment definition to be updated.
+     * @param fragmentDefinition The fragment definition to be updated.
      */
     public void updateFragmentDefinition(FragmentDefinition fragmentDefinition) throws NodeException, PageNotUpdatedException;
 
     /**
      * Remove a fragment definition.
      *
-     * @param dynamicPage The fragment definition to be removed.
+     * @param fragmentDefinition The fragment definition to be removed.
      */
     public void removeFragmentDefinition(FragmentDefinition fragmentDefinition) throws NodeException, PageNotRemovedException;
+    
+    /**
+     * Update fragment properties for specified scope. Implementation
+     * may not be able to update fragment properties without updating
+     * entire page. Edit page security constraints will not be checked
+     * in these cases if the specified scope is user; this effectively
+     * circumvents security checks, so this method should only be used
+     * in places where the edits will be restricted to user fragment
+     * properties.
+     *
+     * @param fragment owner of fragment properties to update.
+     * @param scope fragment property scope to update, (user, group, role, global, or all).
+     */
+    public void updateFragmentProperties(BaseFragmentElement fragment, String scope) throws NodeException, PageNotUpdatedException;
     
     /**
      * Update a folder and all child folders

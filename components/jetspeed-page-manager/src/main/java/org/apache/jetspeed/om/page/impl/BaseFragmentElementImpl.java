@@ -25,6 +25,7 @@ import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
 import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.impl.DatabasePageManager;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.ojb.broker.PersistenceBroker;
@@ -1082,7 +1083,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
         DatabasePageManager pageManager = getPageManager();
         if (pageManager != null)
         {
-            pageManager.updateFragmentPropertiesList(this, fragmentProperties);
+            pageManager.updateFragmentPropertiesList(this, PageManager.ALL_PROPERTY_SCOPE, fragmentProperties);
             fragmentProperties = null;
         }
     }
@@ -1104,7 +1105,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
         DatabasePageManager pageManager = getPageManager();
         if (pageManager != null)
         {
-            pageManager.updateFragmentPropertiesList(this, fragmentProperties);
+            pageManager.updateFragmentPropertiesList(this, PageManager.ALL_PROPERTY_SCOPE, fragmentProperties);
             fragmentProperties = null;
         }
     }

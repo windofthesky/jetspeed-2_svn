@@ -142,7 +142,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
     
     public void testCreates() throws Exception
     {
-        PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+        final PageManager pageManager = (PageManager)scm.getComponent("pageManager");
         PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
         pageManager.addListener(pmel);
 
@@ -306,38 +306,6 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         root.setProperty("custom-1", null, null, "custom-value-1");
         root.setProperty("custom-2", null, null, "custom-value-2");
         root.setProperty("custom-3", null, null, "custom-value-3");
-        final Fragment userRootFragment = root;
-        Exception userException = (Exception)JSSubject.doAsPrivileged(constructUserSubject(), new PrivilegedAction()
-        {
-            public Object run()
-            {
-                try
-                {
-                    if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
-                    {
-                        userRootFragment.setProperty("custom-1", FragmentProperty.ROLE_PROPERTY_SCOPE, "role", "custom-value-role-1");
-                        userRootFragment.setProperty("custom-2", FragmentProperty.ROLE_PROPERTY_SCOPE, "role", "custom-value-role-2");
-                        userRootFragment.setProperty("custom-2", FragmentProperty.GROUP_PROPERTY_SCOPE, "group", "custom-value-group-2");
-                        userRootFragment.setProperty("custom-3", FragmentProperty.ROLE_PROPERTY_SCOPE, "role", "custom-value-role-3");
-                        userRootFragment.setProperty("custom-3", FragmentProperty.GROUP_PROPERTY_SCOPE, "group", "custom-value-group-3");
-                    }
-                    userRootFragment.setProperty("custom-3", FragmentProperty.USER_PROPERTY_SCOPE, "user", "custom-value-user-3");
-                    return null;
-                }
-                catch (Exception e)
-                {
-                    return e;
-                }
-                finally
-                {
-                    JSSubject.clearSubject();
-                }
-            }
-        }, null);
-        if (userException != null)
-        {
-            throw userException;
-        }
         
         Fragment portlet = pageManager.newPortletFragment();
         portlet.setName("security::LoginPortlet");
@@ -396,6 +364,46 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(1, folder.getPages().size());
         assertNotNull(pageManager.getPages(folder));
         assertEquals(1, pageManager.getPages(folder).size());
+        
+        final Fragment userRootFragment = (Fragment)page.getRootFragment();
+        Exception userException = (Exception)JSSubject.doAsPrivileged(constructUserSubject(), new PrivilegedAction()
+        {
+            public Object run()
+            {
+                try
+                {
+                    if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
+                    {
+                        userRootFragment.setProperty("custom-1", FragmentProperty.ROLE_PROPERTY_SCOPE, "role", "custom-value-role-1");
+                        userRootFragment.setProperty("custom-2", FragmentProperty.ROLE_PROPERTY_SCOPE, "role", "custom-value-role-2");
+                        userRootFragment.setProperty("custom-2", FragmentProperty.GROUP_PROPERTY_SCOPE, "group", "custom-value-group-2");
+                        userRootFragment.setProperty("custom-3", FragmentProperty.ROLE_PROPERTY_SCOPE, "role", "custom-value-role-3");
+                        userRootFragment.setProperty("custom-3", FragmentProperty.GROUP_PROPERTY_SCOPE, "group", "custom-value-group-3");
+                    }
+                    userRootFragment.setProperty("custom-3", FragmentProperty.USER_PROPERTY_SCOPE, "user", "custom-value-user-3");
+
+                    if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
+                    {
+                        pageManager.updateFragmentProperties(userRootFragment, PageManager.ROLE_PROPERTY_SCOPE);
+                        pageManager.updateFragmentProperties(userRootFragment, PageManager.GROUP_PROPERTY_SCOPE);
+                    }
+                    pageManager.updateFragmentProperties(userRootFragment, PageManager.USER_PROPERTY_SCOPE);
+                    return null;
+                }
+                catch (Exception e)
+                {
+                    return e;
+                }
+                finally
+                {
+                    JSSubject.clearSubject();
+                }
+            }
+        }, null);
+        if (userException != null)
+        {
+            throw userException;
+        }
 
         page = pageManager.newPage("/another-page.psml");
         assertEquals("Another Page", page.getTitle());

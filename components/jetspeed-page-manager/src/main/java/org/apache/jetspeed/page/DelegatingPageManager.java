@@ -22,6 +22,7 @@ import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Link;
@@ -320,6 +321,15 @@ public class DelegatingPageManager extends AbstractPageManager
      */
     public void removeFragmentDefinition(FragmentDefinition fragmentDefinition) throws NodeException,
             PageNotRemovedException
+    {
+        // TODO Auto-generated method stub
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#updateFragmentProperties(org.apache.jetspeed.om.page.BaseFragmentElement, java.lang.String)
+     */
+    public void updateFragmentProperties(BaseFragmentElement fragment, String scope) throws NodeException,
+            PageNotUpdatedException
     {
         // TODO Auto-generated method stub
     }

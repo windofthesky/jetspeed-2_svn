@@ -2609,16 +2609,52 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         fragmentPropertyListsCache.remove();
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.PageManager#updateFragmentProperties(org.apache.jetspeed.om.page.BaseFragmentElement, java.lang.String)
+     */
+    public void updateFragmentProperties(BaseFragmentElement fragment, String scope) throws NodeException, PageNotUpdatedException
+    {
+        try
+        {
+            // validate fragment element
+            BaseFragmentElementImpl baseFragmentElementImpl = (BaseFragmentElementImpl)fragment;
+            if (baseFragmentElementImpl.getIdentity() == 0)
+            {
+                throw new PageNotUpdatedException("Properties for transient fragment cannot be updated");
+            }
+            
+            // check access
+            boolean checkEditAccess = ((scope == null) || !scope.equals(USER_PROPERTY_SCOPE));
+            baseFragmentElementImpl.checkAccess(checkEditAccess ? JetspeedActions.EDIT : JetspeedActions.VIEW);
+
+            // update fragment properties
+            updateFragmentPropertiesList(baseFragmentElementImpl, scope, null);
+        }
+        catch (PageNotUpdatedException pnue)
+        {
+            throw pnue;
+        }
+        catch (SecurityException se)
+        {
+            throw se;
+        }
+        catch (Exception e)
+        {
+            throw new PageNotUpdatedException("Fragment properties for fragment " + fragment.getId() + " not updated.", e);
+        }        
+    }
+
     /**
      * Get and cache fragment property list for specified fragment.
      * 
-     * @param baseFragmentElement owning fragment of fragment property list
+     * @param baseFragmentElementImpl owning fragment of fragment property list
+     * @param transientList transient fragment property list
      * @return new or cached fragment property list
      */
-    public FragmentPropertyList getFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElement, FragmentPropertyList transientList)
+    public FragmentPropertyList getFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElementImpl, FragmentPropertyList transientList)
     {
         // access thread local fragment property lists cache
-        String threadLocalCacheKey = getFragmentPropertiesListThreadLocalCacheKey(baseFragmentElement);
+        String threadLocalCacheKey = getFragmentPropertiesListThreadLocalCacheKey(baseFragmentElementImpl);
         Map threadLocalCache = (Map)fragmentPropertyListsCache.get();
 
         // get cached persistent list
@@ -2626,11 +2662,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         if (list == null)
         {
             // use transient list or create new fragment property list
-            list = ((transientList != null) ? transientList : new FragmentPropertyList(baseFragmentElement));
+            list = ((transientList != null) ? transientList : new FragmentPropertyList(baseFragmentElementImpl));
             
             // build fragment properties database query
             Criteria filter = new Criteria();
-            filter.addEqualTo("fragment", new Integer(baseFragmentElement.getIdentity()));
+            filter.addEqualTo("fragment", new Integer(baseFragmentElementImpl.getIdentity()));
             Criteria scopesFilter = new Criteria();
             Criteria globalScopeFilter = new Criteria();
             globalScopeFilter.addIsNull("scope");
@@ -2639,7 +2675,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Subject subject = JSSubject.getSubject(AccessController.getContext());
             if (subject != null)
             {
-                if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
+                if (GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
                 {
                     Set principals = subject.getPrincipals();
                     Iterator principalsIter = principals.iterator();
@@ -2649,21 +2685,21 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                         if (principal instanceof User)
                         {
                             Criteria userScopeFilter = new Criteria();
-                            userScopeFilter.addEqualTo("scope", FragmentProperty.USER_PROPERTY_SCOPE);
+                            userScopeFilter.addEqualTo("scope", USER_PROPERTY_SCOPE);
                             userScopeFilter.addEqualTo("scopeValue", principal.getName());
                             scopesFilter.addOrCriteria(userScopeFilter);
                         }
                         else if (principal instanceof Group)
                         {
                             Criteria groupScopeFilter = new Criteria();
-                            groupScopeFilter.addEqualTo("scope", FragmentProperty.GROUP_PROPERTY_SCOPE);
+                            groupScopeFilter.addEqualTo("scope", GROUP_PROPERTY_SCOPE);
                             groupScopeFilter.addEqualTo("scopeValue", principal.getName());
                             scopesFilter.addOrCriteria(groupScopeFilter);
                         }
                         else if (principal instanceof Role)
                         {
                             Criteria roleScopeFilter = new Criteria();
-                            roleScopeFilter.addEqualTo("scope", FragmentProperty.ROLE_PROPERTY_SCOPE);
+                            roleScopeFilter.addEqualTo("scope", ROLE_PROPERTY_SCOPE);
                             roleScopeFilter.addEqualTo("scopeValue", principal.getName());
                             scopesFilter.addOrCriteria(roleScopeFilter);
                         }
@@ -2675,7 +2711,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     if (userPrincipal != null)
                     {
                         Criteria userScopeFilter = new Criteria();
-                        userScopeFilter.addEqualTo("scope", FragmentProperty.USER_PROPERTY_SCOPE);
+                        userScopeFilter.addEqualTo("scope", USER_PROPERTY_SCOPE);
                         userScopeFilter.addEqualTo("scopeValue", userPrincipal.getName());
                         scopesFilter.addOrCriteria(userScopeFilter);
                     }
@@ -2737,23 +2773,29 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /**
      * Update fragment property list.
      * 
-     * @param list fragment property list
+     * @param baseFragmentElementImpl fragment element
+     * @param scope fragment property scope to update
+     * @param transientList transient fragment property list
      */
-    public void updateFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElement, FragmentPropertyList transientList)
+    public void updateFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElementImpl, String scope, FragmentPropertyList transientList)
     {
         // update persistent list
-        FragmentPropertyList list = getFragmentPropertiesList(baseFragmentElement, transientList);
+        FragmentPropertyList list = getFragmentPropertiesList(baseFragmentElementImpl, transientList);
         if (list != null)
         {
             // update fragment properties in list in database
+            boolean updateAllScopes = ((scope != null) && scope.equals(ALL_PROPERTY_SCOPE));
             synchronized (list)
             {
                 Iterator propertiesIter = list.getProperties().iterator();
                 while (propertiesIter.hasNext())
                 {
                     FragmentPropertyImpl storeProperty = (FragmentPropertyImpl)propertiesIter.next();
-                    storeProperty.setFragment(baseFragmentElement);
-                    getPersistenceBrokerTemplate().store(storeProperty);
+                    storeProperty.setFragment(baseFragmentElementImpl);
+                    if (updateAllScopes || ((scope == null) && (storeProperty.getScope() == null)) || ((scope != null) && scope.equals(storeProperty.getScope())))
+                    {
+                        getPersistenceBrokerTemplate().store(storeProperty);
+                    }
                 }
                 List removedProperties = list.getRemovedProperties();
                 if (removedProperties != null)
@@ -2762,8 +2804,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     while (removedPropertiesIter.hasNext())
                     {
                         FragmentPropertyImpl deleteProperty = (FragmentPropertyImpl)removedPropertiesIter.next();
-                        deleteProperty.setFragment(baseFragmentElement);
-                        getPersistenceBrokerTemplate().delete(deleteProperty);
+                        deleteProperty.setFragment(baseFragmentElementImpl);
+                        if (updateAllScopes || ((scope == null) && (deleteProperty.getScope() == null)) || ((scope != null) && scope.equals(deleteProperty.getScope())))
+                        {
+                            getPersistenceBrokerTemplate().delete(deleteProperty);
+                        }
                     }
                 }
             }
@@ -2773,12 +2818,13 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /**
      * Remove fragment property list.
      * 
-     * @param list fragment property list
+     * @param baseFragmentElementImpl fragment element
+     * @param transientList transient fragment property list
      */
-    public void removeFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElement, FragmentPropertyList transientList)
+    public void removeFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElementImpl, FragmentPropertyList transientList)
     {
         // access thread local fragment property lists cache
-        String threadLocalCacheKey = getFragmentPropertiesListThreadLocalCacheKey(baseFragmentElement);
+        String threadLocalCacheKey = getFragmentPropertiesListThreadLocalCacheKey(baseFragmentElementImpl);
         Map threadLocalCache = (Map)fragmentPropertyListsCache.get();
 
         // remove cached persistent list
@@ -2815,7 +2861,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
         // remove all fragment properties in list from database
         Criteria filter = new Criteria();
-        filter.addEqualTo("fragment", new Integer(baseFragmentElement.getIdentity()));
+        filter.addEqualTo("fragment", new Integer(baseFragmentElementImpl.getIdentity()));
         QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
         getPersistenceBrokerTemplate().deleteByQuery(query);
     }
@@ -2823,13 +2869,13 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     /**
      * Compute thread local cache key for fragment properties.
      * 
-     * @param baseFragmentElement owner of fragment properties
+     * @param baseFragmentElementImpl owner of fragment properties
      * @return key string
      */
-    private static String getFragmentPropertiesListThreadLocalCacheKey(BaseFragmentElementImpl baseFragmentElement)
+    private static String getFragmentPropertiesListThreadLocalCacheKey(BaseFragmentElementImpl baseFragmentElementImpl)
     {
         // base key
-        String key = baseFragmentElement.getBaseFragmentsElement().getPath()+"/"+baseFragmentElement.getId();
+        String key = baseFragmentElementImpl.getBaseFragmentsElement().getPath()+"/"+baseFragmentElementImpl.getId();
         // append current user if available
         Subject subject = JSSubject.getSubject(AccessController.getContext());
         if (subject != null)
