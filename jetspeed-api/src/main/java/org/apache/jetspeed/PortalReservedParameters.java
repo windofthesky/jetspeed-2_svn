@@ -107,6 +107,13 @@ public interface PortalReservedParameters
     public static final String PORTLET_EXTENDED_DESCRIPTOR_RENDER_TIMEOUT = "timeout";
     
     /**
+     * A portlet can have a specific setting for the state of out-of-service that the portal will
+     * give up on rendering the portlet.
+     * The value is 'true' or 'false'.
+     */
+    public static final String PORTLET_EXTENDED_DESCRIPTOR_OUT_OF_SERVICE = "service.out";
+    
+    /**
      * A portlet can have a specific setting for the preview image.
      * The portlet preview image url 
      */

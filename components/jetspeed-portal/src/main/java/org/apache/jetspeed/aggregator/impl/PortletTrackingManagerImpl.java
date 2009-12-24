@@ -17,20 +17,25 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.aggregator.RenderTrackable;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.om.portlet.LocalizedField;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 
 /**
  * Tracks out of service status for portlets
  *  
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class PortletTrackingManagerImpl implements PortletTrackingManager
 {
@@ -82,6 +87,18 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
         {
             return true;
         }
+        
+        PortletDefinition def = window.getPortletDefinition();
+        Collection<LocalizedField> fields = def.getMetadata().getFields(PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_OUT_OF_SERVICE);
+        
+        if (fields != null && !fields.isEmpty())
+        {
+            if (BooleanUtils.toBoolean(fields.iterator().next().getValue()))
+            {
+                return true;
+            }
+        }
+        
         return false;
     }
     
