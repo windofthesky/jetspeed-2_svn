@@ -56,6 +56,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     private BaseConcretePageElement page;
     private BaseFragmentsElement definition;
     private Fragment fragment;
+    private BaseFragmentsElement referenceDefinition;
     private FragmentReference reference;
     private boolean instantlyRendered;
     private boolean locked;
@@ -112,16 +113,18 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * @param page PSML page
      * @param definition PSML page, page template, or fragment definition
      * @param fragment PSML fragment
-     * @param reference PSML page fragment reference
+     * @param reference definition PSML page or page template
+     * @param reference PSML fragment reference
      * @param locked locked flag
      */
-    public ContentFragmentImpl(PageLayoutComponent pageLayoutComponent, String id, BaseConcretePageElement page, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
+    public ContentFragmentImpl(PageLayoutComponent pageLayoutComponent, String id, BaseConcretePageElement page, BaseFragmentsElement definition, Fragment fragment, BaseFragmentsElement referenceDefinition, FragmentReference reference, boolean locked)
     {
         this.pageLayoutComponent = pageLayoutComponent;
         this.id = id;
         this.page = page;
         this.definition = definition;
         this.fragment = fragment;
+        this.referenceDefinition = referenceDefinition;
         this.reference = reference;
         this.locked = locked;
     }
@@ -1062,6 +1065,16 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
 
     /**
+     * Get content fragment PSML reference fragment definition.
+     * 
+     * @return the reference fragment definition
+     */
+    public BaseFragmentsElement getReferenceDefinition()
+    {
+        return referenceDefinition;
+    }
+
+    /**
      * Get content fragment PSML page reference fragment.
      * 
      * @return the reference fragment
@@ -1078,15 +1091,17 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * @param page PSML page
      * @param definition PSML page, page template, or fragment definition
      * @param fragment PSML fragment
-     * @param reference PSML page fragment reference
+     * @param reference definition PSML page or page template
+     * @param reference PSML fragment reference
      * @param locked locked flag
      */
-    public void initialize(PageLayoutComponent pageLayoutComponent, BaseConcretePageElement page, BaseFragmentsElement definition, Fragment fragment, FragmentReference reference, boolean locked)
+    public void initialize(PageLayoutComponent pageLayoutComponent, BaseConcretePageElement page, BaseFragmentsElement definition, Fragment fragment, BaseFragmentsElement referenceDefinition, FragmentReference reference, boolean locked)
     {
         this.pageLayoutComponent = pageLayoutComponent;
         this.page = page;
         this.definition = definition;
         this.fragment = fragment;
+        this.referenceDefinition = referenceDefinition;
         this.reference = reference;
         this.locked = locked;
     }
