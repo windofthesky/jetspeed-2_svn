@@ -97,6 +97,12 @@ public interface PortalReservedParameters
      */
     public static final String PORTLET_EXTENDED_DESCRIPTOR_RENDER_TIMEOUT = "timeout";
     
+    /** A portlet can have a specific setting for the state of out-of-service that the portal will
+     * give up on rendering the portlet.
+     * The value is 'true' or 'false'.
+     */
+    public static final String PORTLET_EXTENDED_DESCRIPTOR_OUT_OF_SERVICE = "service.out";
+    
     /**
      *  Until version 2.1, Jetspeed merged portal request parameters with portlet specific
      *  parameters, effectively allowing "shared" parameters.

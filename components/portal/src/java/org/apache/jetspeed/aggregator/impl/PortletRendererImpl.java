@@ -103,7 +103,16 @@ public class PortletRendererImpl implements PortletRenderer
      * OutOfService Cache
      */
     protected boolean overrideTitles = false;
-    public static final String OUT_OF_SERVICE_MESSAGE = "Portlet is not responding and has been taken out of service.";
+    
+    /**
+     * The default OutOfService message
+     */
+    public static final String DEFAULT_OUT_OF_SERVICE_MESSAGE = "Portlet is not responding and has been taken out of service.";
+    
+    /**
+     * The OutOfService message
+     */
+    protected String outOfServiceMessage = DEFAULT_OUT_OF_SERVICE_MESSAGE;
     
     public PortletRendererImpl(PortletContainer container, 
                                PortletWindowAccessor windowAccessor,
@@ -176,7 +185,12 @@ public class PortletRendererImpl implements PortletRenderer
     {
         // this.monitor.shutdown ?
     }
-
+    
+    public void setOutOfServiceMessage(String outOfServiceMessage)
+    {
+        this.outOfServiceMessage = outOfServiceMessage;
+    }
+    
     /**
      * Render the specified Page fragment. Result is returned in the
      * PortletResponse.
@@ -203,7 +217,7 @@ public class PortletRendererImpl implements PortletRenderer
             if (portletTracking.isOutOfService(portletWindow))
             {
                 log.info("Taking portlet out of service: " + portletDefinition.getUniqueName() + " for window " + fragment.getId());
-                fragment.overrideRenderedContent(OUT_OF_SERVICE_MESSAGE);
+                fragment.overrideRenderedContent(outOfServiceMessage);
                 return;
             }
             long timeoutMetadata = this.getTimeoutOnJob(portletDefinition);
@@ -321,7 +335,7 @@ public class PortletRendererImpl implements PortletRenderer
             }
             if (portletTracking.isOutOfService(portletWindow))
             {
-                fragment.overrideRenderedContent(OUT_OF_SERVICE_MESSAGE);
+                fragment.overrideRenderedContent(outOfServiceMessage);
                 return null;
             }
             int expirationCache = getExpirationCache(portletDefinition);
