@@ -896,16 +896,10 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         try
         {
             // validate content fragment and lookup current fragment
-            // and page or page template from page manager
+            // of page or page template from page manager and check
+            // edit or view access requirements
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            BaseConcretePageElement [] targetPage = new BaseConcretePageElement[]{null};
-            PageTemplate [] targetPageTemplate = new PageTemplate[]{null};
-            BaseFragmentElement [] targetFragment = new BaseFragmentElement[]{null};
-            lookupPageOrPageTemplateFragment(contentFragmentImpl, scope, targetPage, targetPageTemplate, targetFragment);
-            BaseFragmentElement fragment = targetFragment[0];
-            
-            // check for edit permission
-            fragment.checkAccess(JetspeedActions.EDIT);
+            BaseFragmentElement fragment = lookupPageOrPageTemplateFragment(contentFragmentImpl, scope);
             
             // update fragment decorator and page or page template in
             // page manager
@@ -919,7 +913,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             if (update)
             {
-                updatePageOrPageTemplate(targetPage, targetPageTemplate);
+                updatePageOrPageTemplateFragmentProperties(fragment, scope);
             }
             
             // update content context
@@ -1099,17 +1093,11 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         try
         {
             // validate content fragment and lookup current fragment
-            // and page or page template from page manager
+            // of page or page template from page manager and check
+            // edit or view access requirements
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            BaseConcretePageElement [] targetPage = new BaseConcretePageElement[]{null};
-            PageTemplate [] targetPageTemplate = new PageTemplate[]{null};
-            BaseFragmentElement [] targetFragment = new BaseFragmentElement[]{null};
-            lookupPageOrPageTemplateFragment(contentFragmentImpl, scope, targetPage, targetPageTemplate, targetFragment);
-            BaseFragmentElement fragment = targetFragment[0];
+            BaseFragmentElement fragment = lookupPageOrPageTemplateFragment(contentFragmentImpl, scope);
             
-            // check for edit permission
-            fragment.checkAccess(JetspeedActions.EDIT);            
-
             // update fragment position and page or page template
             // in page manager
             boolean update = false;
@@ -1155,7 +1143,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             if (update)
             {
-                updatePageOrPageTemplate(targetPage, targetPageTemplate);
+                updatePageOrPageTemplateFragmentProperties(fragment, scope);
             }
 
             // update content context
@@ -1280,17 +1268,11 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         try
         {
             // validate content fragment and lookup current fragment
-            // and page or page template from page manager
+            // of page or page template from page manager and check
+            // edit or view access requirements
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            BaseConcretePageElement [] targetPage = new BaseConcretePageElement[]{null};
-            PageTemplate [] targetPageTemplate = new PageTemplate[]{null};
-            BaseFragmentElement [] targetFragment = new BaseFragmentElement[]{null};
-            lookupPageOrPageTemplateFragment(contentFragmentImpl, scope, targetPage, targetPageTemplate, targetFragment);
-            BaseFragmentElement fragment = targetFragment[0];
+            BaseFragmentElement fragment = lookupPageOrPageTemplateFragment(contentFragmentImpl, scope);
             
-            // check for edit permission
-            fragment.checkAccess(JetspeedActions.EDIT);            
-
             // update fragment property and page or page template
             // in page manager
             propValue = (!Utils.isNull(propValue) ? propValue : null);
@@ -1298,7 +1280,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             if (((propValue == null) && (currentPropValue != null)) || ((propValue != null) && !propValue.equals(currentPropValue)))
             {
                 fragment.setProperty(propName, scope, scopeValue, propValue);
-                updatePageOrPageTemplate(targetPage, targetPageTemplate);
+                updatePageOrPageTemplateFragmentProperties(fragment, scope);
             }
 
             // update content context
@@ -1327,17 +1309,11 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         try
         {
             // validate content fragment and lookup current fragment
-            // and page or page template from page manager
+            // of page or page template from page manager and check
+            // edit or view access requirements
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            BaseConcretePageElement [] targetPage = new BaseConcretePageElement[]{null};
-            PageTemplate [] targetPageTemplate = new PageTemplate[]{null};
-            BaseFragmentElement [] targetFragment = new BaseFragmentElement[]{null};
-            lookupPageOrPageTemplateFragment(contentFragmentImpl, scope, targetPage, targetPageTemplate, targetFragment);
-            BaseFragmentElement fragment = targetFragment[0];
+            BaseFragmentElement fragment = lookupPageOrPageTemplateFragment(contentFragmentImpl, scope);
             
-            // check for edit permission
-            fragment.checkAccess(JetspeedActions.EDIT);            
-
             // update fragment row and column and page or page
             // template in page manager
             boolean update = false;
@@ -1359,7 +1335,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             if (update)
             {
-                updatePageOrPageTemplate(targetPage, targetPageTemplate);
+                updatePageOrPageTemplateFragmentProperties(fragment, scope);
             }
 
             // update content context
@@ -1395,16 +1371,10 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         try
         {
             // validate content fragment and lookup current fragment
-            // and page or page template from page manager
+            // of page or page template from page manager and check
+            // edit or view access requirements
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            BaseConcretePageElement [] targetPage = new BaseConcretePageElement[]{null};
-            PageTemplate [] targetPageTemplate = new PageTemplate[]{null};
-            BaseFragmentElement [] targetFragment = new BaseFragmentElement[]{null};
-            lookupPageOrPageTemplateFragment(contentFragmentImpl, scope, targetPage, targetPageTemplate, targetFragment);
-            BaseFragmentElement fragment = targetFragment[0];
-
-            // check for edit permission
-            fragment.checkAccess(JetspeedActions.EDIT);            
+            BaseFragmentElement fragment = lookupPageOrPageTemplateFragment(contentFragmentImpl, scope);
 
             // update fragment portlet state and mode and page or page
             // template in page manager
@@ -1427,7 +1397,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             if (update)
             {
-                updatePageOrPageTemplate(targetPage, targetPageTemplate);
+                updatePageOrPageTemplateFragmentProperties(fragment, scope);
             }
 
             // update content context
@@ -1959,21 +1929,18 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         }
         return false;
     }
-    
-    
+        
     /**
      * Lookup page or page template fragment to be updated via
      * scoped fragment property based edits.
      * 
      * @param contentFragmentImpl target content fragment
      * @param scope target fragment property scope
-     * @param page returned page
-     * @param pageTemplate returned page template
-     * @param fragment returned fragment
+     * @return fragment
      * @throws PageNotFoundException
      * @throws NodeException
      */
-    private void lookupPageOrPageTemplateFragment(ContentFragmentImpl contentFragmentImpl, String scope, BaseConcretePageElement [] page, PageTemplate [] pageTemplate, BaseFragmentElement [] fragment) throws PageNotFoundException, NodeException
+    private BaseFragmentElement lookupPageOrPageTemplateFragment(ContentFragmentImpl contentFragmentImpl, String scope) throws PageNotFoundException, NodeException
     {
         // validate content fragment
         boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
@@ -1993,46 +1960,46 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
         }
         
-        // retrieve current fragment and page or page template from page manager
+        // retrieve current fragment using page or page template from page manager
+        BaseFragmentElement fragment = null;
         if (contentFragmentDefinitionIsPage || contentFragmentDefinitionIsPageReference)
         {
-            page[0] = getPage(contentFragmentImpl.getPage().getPath());
+            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
             String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
-            fragment[0] = page[0].getFragmentById(pageFragmentId);
+            fragment = page.getFragmentById(pageFragmentId);
         }
         else if (contentFragmentDefinitionIsTemplate || contentFragmentDefinitionIsTemplateReference)
         {
             String pageTemplatePath = (contentFragmentDefinitionIsTemplate ? contentFragmentImpl.getDefinition().getPath() : contentFragmentImpl.getReferenceDefinition().getPath());
-            pageTemplate[0] = pageManager.getPageTemplate(pageTemplatePath);
+            PageTemplate pageTemplate = pageManager.getPageTemplate(pageTemplatePath);
             String pageTemplateFragmentId = (contentFragmentDefinitionIsTemplate ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
-            fragment[0] = pageTemplate[0].getFragmentById(pageTemplateFragmentId);
+            fragment = pageTemplate.getFragmentById(pageTemplateFragmentId);
         }
-        if (fragment[0] == null)
+        if (fragment == null)
         {
             throw new IllegalArgumentException("Fragment and page not consistent");                
         }
+        
+        // check for edit or view permission
+        boolean checkEditAccess = ((scope == null) || !scope.equals(FragmentProperty.USER_PROPERTY_SCOPE));
+        fragment.checkAccess(checkEditAccess ? JetspeedActions.EDIT : JetspeedActions.VIEW);
+        
+        return fragment;
     }
 
     /**
      * Update page or page template fragment to save scoped
      * fragment property based edits.
      * 
-     * @param page edited fragment page
-     * @param pageTemplate edited fragment page template
+     * @param fragment edited fragment
+     * @param scope edited fragment property scope
      * @throws PageNotUpdatedException
      * @throws NodeException
      */
-    private void updatePageOrPageTemplate(BaseConcretePageElement [] page, PageTemplate [] pageTemplate) throws PageNotUpdatedException, NodeException
+    private void updatePageOrPageTemplateFragmentProperties(BaseFragmentElement fragment, String scope) throws PageNotUpdatedException, NodeException
     {
-        // update fragment page or page template
-        if (page[0] != null)
-        {
-            updatePage(page[0]);
-        }
-        else if (pageTemplate[0] != null)
-        {
-            pageManager.updatePageTemplate(pageTemplate[0]);
-        }
+        // update page or page template fragment properties
+        pageManager.updateFragmentProperties(fragment, scope);
     }
 
     /**
