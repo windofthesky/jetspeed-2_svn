@@ -136,13 +136,13 @@ for (String style : jetui.getStyleSheets(rc))
 <tr>         
 <td>
 <div id='jstbLeft' class='jsLeftToolbar'>
-<div id='jsNavigator' class='xportal-layout-cell'>
+<div id='template-top2.jsPageNavigator' class='xportal-layout-cell'>
 <div id="jsNavigator2" class="portlet <%=pageDec%>">
     <div class="PTitle" >
       <div class="PTitleContent">Navigator</div>
     </div>
     <div class="PContentBorder">
-      <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span><%=navContent %></div>
+      <div class="PContent"><div id="nav-main"><%=navContent %></div></div>
     </div>
 <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4b0265f81058c137"><img src="http://s7.addthis.com/static/btn/sm-share-en.gif" width="83" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pub=xa-4b0265f81058c137"></script>
 </div>

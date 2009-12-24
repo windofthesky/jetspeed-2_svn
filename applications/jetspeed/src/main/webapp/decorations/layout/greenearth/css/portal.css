@@ -46,5 +46,15 @@ font-size: 7pt;
 #nav-top ul .first, #nav-top ul li:first-child { padding-top: 8px; }
 #nav-top ul .add { background: url(../../images/divider-nav-top.png) repeat-x; padding-top: 7px; }
  
+ #nav-main { width:100% }
+#nav-main .navmenu { margin: 5px 0; }
+#nav-main .navmenu ul, #nav-main .navmenu li { margin: 0 0 0 3px; padding: 2px; list-style-type:none; }
+#nav-main .navmenu li { padding-left: 2px; list-style-type:none; }
+#nav-main .navmenu li.closed { cursor: pointer; background: url(../images/icon-closed.png) no-repeat; }
+#nav-main .navmenu li.expanded { cursor: default; background: url(../images/icon-expanded.png) no-repeat; }
+#nav-main .navmenu li li { margin-left: -16px; list-style-type:none;}
+#nav-main .navmenu li.closed ul { display: none; }
+#nav-main .portlet { margin: 0; }
+ 
 /*  end layout decorator tigris additions  */
  
