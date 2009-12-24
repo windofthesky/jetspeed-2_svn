@@ -432,23 +432,39 @@ public class PageLayoutService
                         {
                             row = set.size();
                         }
-                        
+  
+                        int prevRow = contentFragment.getLayoutRow();
+                        boolean movingDown = (prevRow < row);
                         pageLayoutComponent.updateRowColumn(contentFragment, row, col);
-                        
-                        SortedSet<ContentFragment> tailSet = set.tailSet(contentFragment);
-                        
-                        for (ContentFragment f : tailSet)
+                        SortedSet<ContentFragment> sscf = this.getSortedChildFragmentSet(set, movingDown, contentFragment);
+                        int rowCount = 0;
+                        for (ContentFragment f : sscf)
                         {
-                            if (!f.getId().equals(contentFragment.getId()))
+                            if (f != contentFragment)
                             {
-                                ++row;
-                                
-                                if (row != f.getLayoutRow())
-                                {
-                                    pageLayoutComponent.updateRowColumn(f, row, col);
-                                }
+                                if (rowCount != f.getLayoutRow())
+                                    pageLayoutComponent.updateRowColumn(f, rowCount, col);                                    
                             }
+                            rowCount++;
+                            
                         }
+                        
+//                        pageLayoutComponent.updateRowColumn(contentFragment, row, col);
+                        
+//                        SortedSet<ContentFragment> tailSet = set.tailSet(contentFragment);
+//                        
+//                        for (ContentFragment f : tailSet)
+//                        {
+//                            if (!f.getId().equals(contentFragment.getId()))
+//                            {
+//                                ++row;
+//                                
+//                                if (row != f.getLayoutRow())
+//                                {
+//                                    pageLayoutComponent.updateRowColumn(f, row, col);
+//                                }
+//                            }
+//                        }
                     }
                 }
                 catch (Exception e)
@@ -718,6 +734,67 @@ public class PageLayoutService
                 return -1;
             }
         }
+    }
+
+    private class ExtendedContentFragmentRowComparator implements Comparator<ContentFragment>
+    {
+        private boolean movingDown;
+        private ContentFragment movingFragment;        
+        public ExtendedContentFragmentRowComparator(boolean movingDown, ContentFragment movingFragment)
+        {
+            this.movingDown = movingDown;
+            this.movingFragment = movingFragment;
+        }
+        public int compare(ContentFragment f1, ContentFragment f2)
+        {
+            int r1 = f1.getLayoutRow();
+            int r2 = f2.getLayoutRow();
+            
+            if (r1 == r2)
+            {
+                if (f1 == movingFragment)
+                {
+                    return (movingDown) ? 1: -1;
+                }
+                else if (f2 == movingFragment)
+                {
+                    return (movingDown) ? -1: 1;
+                }
+                return 0;
+            }
+            else if (r1 != -1 && r2 == -1)
+            {
+                return -1;
+            }
+            else if (r1 == -1 && r2 != -1)
+            {
+                return 1;
+            }
+            else if (r1 > r2)
+            {
+                return 1;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+    }
+
+    /**
+     * Returns child content fragment set array ordered by the column index from the layout content fragment.
+     * @param layoutFragment
+     * @param columnCount
+     * @return
+     */
+    private SortedSet<ContentFragment> getSortedChildFragmentSet(SortedSet<ContentFragment> layoutFragments, boolean movingDown, ContentFragment movedFragment)
+    {
+        SortedSet<ContentFragment> set = new TreeSet<ContentFragment>(new ExtendedContentFragmentRowComparator(movingDown, movedFragment));
+        for (ContentFragment child : layoutFragments)
+        {
+            set.add(child);
+        }        
+        return set;
     }
     
 }
