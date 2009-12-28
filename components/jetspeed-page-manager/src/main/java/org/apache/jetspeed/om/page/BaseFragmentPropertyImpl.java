@@ -18,6 +18,7 @@ package org.apache.jetspeed.om.page;
 
 import java.security.AccessController;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -146,6 +147,88 @@ public abstract class BaseFragmentPropertyImpl implements FragmentProperty
         }
         
         return valueFound;
+    }
+
+    /**
+     * Filter fragment properties in list based on current user.
+     * 
+     * @param properties unfiltered fragment properties list
+     * @return filtered fragment properties
+     */
+    public static List filterFragmentProperties(List properties)
+    {
+        List filteredProperties = new ArrayList();
+        
+        // iterate through properties list and merge with current
+        // principals to determine most specific property value
+        Set principals = null;
+        Principal userPrincipal = null;
+        boolean skipPropertyScopes = false;
+        Iterator propertiesIter = properties.iterator();
+        while (propertiesIter.hasNext())
+        {
+            FragmentProperty fragmentProperty = (FragmentProperty)propertiesIter.next();
+            String fragmentPropertyScope = fragmentProperty.getScope();
+            if (fragmentPropertyScope != null)
+            {
+                if (!skipPropertyScopes)
+                {
+                    // get principals
+                    if (principals == null)
+                    {
+                        // get current request context subject for principals
+                        Subject subject = JSSubject.getSubject(AccessController.getContext());
+                        if (subject != null)
+                        {
+                            if (GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
+                            {
+                                principals = subject.getPrincipals();
+                            }
+                            else
+                            {
+                                userPrincipal = SubjectHelper.getBestPrincipal(subject, User.class);
+                            }
+                        }
+                        else
+                        {
+                            skipPropertyScopes = true;
+                        }
+                    }
+                    String fragmentPropertyScopeValue = fragmentProperty.getScopeValue();
+                    if (userPrincipal != null)
+                    {
+                        // match user property scope and scope value with user principal
+                        if (fragmentPropertyScope.equals(USER_PROPERTY_SCOPE) && userPrincipal.getName().equals(fragmentPropertyScopeValue))
+                        {
+                            filteredProperties.add(fragmentProperty);
+                        }
+                    }
+                    else if (principals != null)
+                    {
+                        // match property scope and scope value with most specific
+                        // principal without a value
+                        Iterator principalsIter = principals.iterator();
+                        while (principalsIter.hasNext())
+                        {
+                            Principal principal = (Principal)principalsIter.next();
+                            if (principal.getName().equals(fragmentPropertyScopeValue) &&
+                                ((fragmentPropertyScope.equals(USER_PROPERTY_SCOPE) && (principal instanceof User)) ||
+                                 (fragmentPropertyScope.equals(GROUP_PROPERTY_SCOPE) && (principal instanceof Group)) ||
+                                 (fragmentPropertyScope.equals(ROLE_PROPERTY_SCOPE) && (principal instanceof Role))))
+                            {
+                                filteredProperties.add(fragmentProperty);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                filteredProperties.add(fragmentProperty);
+            }
+        }
+        
+        return filteredProperties;
     }
 
     /**

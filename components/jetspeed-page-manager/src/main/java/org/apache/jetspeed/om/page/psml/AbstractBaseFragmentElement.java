@@ -46,7 +46,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
 
     private String skin = null;
 
-    private List properties = new ArrayList();
+    private List propertyImpls = new ArrayList();
     
     private List preferences = new ArrayList();
     
@@ -233,7 +233,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
         }
 
         // find specified scoped property value
-        FragmentProperty fragmentProperty = PropertyImpl.findFragmentProperty(propName, propScope, propScopeValue, properties);
+        FragmentProperty fragmentProperty = PropertyImpl.findFragmentProperty(propName, propScope, propScopeValue, propertyImpls);
         if (fragmentProperty != null)
         {
             return fragmentProperty.getValue();
@@ -330,7 +330,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
         }
 
         // find specified scoped property value
-        FragmentProperty fragmentProperty = PropertyImpl.findFragmentProperty(propName, propScope, propScopeValue, properties);
+        FragmentProperty fragmentProperty = PropertyImpl.findFragmentProperty(propName, propScope, propScopeValue, propertyImpls);
 
         // add, set, or remove property
         if (propValue != null)
@@ -342,7 +342,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
                 fragmentProperty.setScope(propScope);
                 fragmentProperty.setScopeValue(propScopeValue);
                 fragmentProperty.setValue(propValue);
-                properties.add(fragmentProperty);
+                propertyImpls.add(fragmentProperty);
             }
             else
             {
@@ -351,7 +351,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
         }
         else if (fragmentProperty != null)
         {
-            properties.remove(fragmentProperty);
+            propertyImpls.remove(fragmentProperty);
         }
     }
     
@@ -376,7 +376,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public List getProperties()
     {
-        return properties;
+        return new PropertiesList(PropertyImpl.filterFragmentProperties(propertyImpls), propertyImpls);
     }
 
     /**
@@ -384,11 +384,11 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      */
     public void setProperties(List properties)
     {
-        if (properties == null)
-        {
-            properties = new ArrayList();
-        }
-        this.properties = properties;  
+        // get and remove all filtered properties and replace
+        // with new specified properties
+        List propertiesList = getProperties();
+        propertiesList.clear();
+        propertiesList.addAll(properties);
     } 
     
     /**
@@ -726,6 +726,26 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
         }
         return false;
     }
+    
+    /**
+     * Castor raw properties collection member access.
+     * 
+     * @return properties collection
+     */
+    public List getPropertyImpls()
+    {
+        return propertyImpls;
+    }
+
+    /**
+     * Castor raw properties collection member access.
+     * 
+     * @param propertiesImpls properties collection
+     */
+    public void setPropertyImpls(List propertiesImpls)
+    {
+        this.propertyImpls = propertyImpls;  
+    } 
     
     /**
      * unmarshalled - notification that this instance has been

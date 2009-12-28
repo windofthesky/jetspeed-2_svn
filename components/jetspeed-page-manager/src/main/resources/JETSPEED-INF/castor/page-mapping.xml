@@ -170,7 +170,7 @@
       <bind-xml name="short-title"/>
     </field>
 
-    <field name="properties"
+    <field name="propertyImpls"
            type="org.apache.jetspeed.om.page.psml.PropertyImpl" collection="arraylist">
       <bind-xml name="property"/>
     </field>

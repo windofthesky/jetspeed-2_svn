@@ -234,7 +234,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
         List properties = f.getProperties();
         assertNotNull(properties);
-        assertTrue(properties.size() == 17);
+        assertEquals(11, properties.size());
         assertEquals("0", f.getProperty(Fragment.ROW_PROPERTY_NAME));
         assertEquals(0, f.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
         assertEquals(0, f.getLayoutRow());
@@ -263,7 +263,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
                     assertTrue(userFragment.getId().equals("pe001"));
                     List properties = userFragment.getProperties();
                     assertNotNull(properties);
-                    assertTrue(properties.size() == 17);
+                    assertEquals((FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED ? 17 : 12), properties.size());
                     assertEquals("0", userFragment.getProperty(Fragment.ROW_PROPERTY_NAME));
                     assertEquals(0, userFragment.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
                     assertTrue((userFragment.getLayoutHeight() > 55.0F) && (userFragment.getLayoutHeight() < 56.0F));
@@ -332,7 +332,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
         properties = f.getProperties();
         assertNotNull(properties);
-        assertTrue(properties.size() == 2);
+        assertEquals(2, properties.size());
         assertEquals("0", f.getProperty(Fragment.ROW_PROPERTY_NAME));
         assertEquals(1, f.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
 
@@ -1473,11 +1473,11 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         List cloneProperties = cf.getProperties();
 
         assertNotNull(cloneProperties);
-        assertTrue(cloneProperties.size() == 4);
+        assertEquals(3, cloneProperties.size());
         assertEquals("0", cf.getProperty(Fragment.ROW_PROPERTY_NAME));
         assertEquals(0, cf.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
         assertEquals("custom-value", cf.getProperty("custom"));
-        assertEquals("custom-value-user", cf.getProperty("custom", Fragment.USER_PROPERTY_SCOPE, "user"));
+        assertNull(cf.getProperty("custom", Fragment.USER_PROPERTY_SCOPE, "user"));
 
         cf = (Fragment) cloneChildren.get(1);
         f = (Fragment) children.get(1);
@@ -1488,7 +1488,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
         properties = cf.getProperties();
         assertNotNull(properties);
-        assertTrue(properties.size() == 2);
+        assertEquals(2, properties.size());
         assertEquals("0", cf.getProperty(Fragment.ROW_PROPERTY_NAME));
         assertEquals(1, cf.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
 
