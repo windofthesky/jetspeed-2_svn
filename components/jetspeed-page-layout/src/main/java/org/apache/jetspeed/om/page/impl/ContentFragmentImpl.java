@@ -1374,6 +1374,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
             FragmentProperty findFragmentProperty = (FragmentProperty)propertiesIter.next();
             if (findFragmentProperty.getName().equals(propName))
             {
+                // compare scopes
                 String findFragmentPropertyScope = findFragmentProperty.getScope();
                 if ((scope == null) && (findFragmentPropertyScope == null))
                 {
@@ -1387,6 +1388,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
                     {
                         scopeValue = Utils.getCurrentUserScopeValue();
                     }
+                    // compare scope values                    
                     String findFragmentPropertyScopeValue = findFragmentProperty.getScopeValue();
                     if ((findFragmentPropertyScopeValue != null) && findFragmentPropertyScopeValue.equals(scopeValue))
                     {
@@ -1400,15 +1402,17 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
         // add, set, or remove property
         if (fragmentProperty != null)
         {
+            // remove old property setting
             getProperties().remove(fragmentProperty);                
         }
         if (value != null)
         {
             // default user scope value
-            if ((scopeValue == null) && scope.equals(USER_PROPERTY_SCOPE))
+            if ((scopeValue == null) && (scope != null) && scope.equals(USER_PROPERTY_SCOPE))
             {
                 scopeValue = Utils.getCurrentUserScopeValue();
             }
+            // add new property
             getProperties().add(new ContentFragmentPropertyImpl(propName, scope, scopeValue, value));
         }
     }
