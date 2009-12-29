@@ -141,19 +141,19 @@
       <bind-xml name="id" node="attribute"/>
     </field>
 
-    <field name="skin" type="string">
+    <field name="skinPropertyField" type="string">
       <bind-xml name="skin" node="attribute"/>
     </field>
 
-    <field name="state" type="string">
+    <field name="statePropertyField" type="string">
       <bind-xml name="state" node="attribute"/>
     </field>
 
-    <field name="mode" type="string">
+    <field name="modePropertyField" type="string">
       <bind-xml name="mode" node="attribute"/>
     </field>
 
-    <field name="decorator" type="string">
+    <field name="decoratorPropertyField" type="string">
       <bind-xml name="decorator" node="attribute"/>
     </field>
 

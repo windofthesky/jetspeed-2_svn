@@ -20,7 +20,6 @@ package org.apache.jetspeed.om.page.psml;
 import java.security.AccessController;
 import java.security.Permission;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.idgenerator.IdGenerator;
@@ -745,7 +744,87 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
     public void setPropertyImpls(List propertiesImpls)
     {
         this.propertyImpls = propertyImpls;  
-    } 
+    }
+    
+    /**
+     * Castor raw property member access.
+     * 
+     * @return property value
+     */
+    public String getStatePropertyField()
+    {
+        return state;
+    }
+
+    /**
+     * Castor raw property member access.
+     * 
+     * @param state property value
+     */
+    public void setStatePropertyField(String state)
+    {
+        this.state = state;
+    }
+
+    /**
+     * Castor raw property member access.
+     * 
+     * @return property value
+     */
+    public String getModePropertyField()
+    {
+        return mode;
+    }
+
+    /**
+     * Castor raw property member access.
+     * 
+     * @param mode property value
+     */
+    public void setModePropertyField(String mode)
+    {
+        this.mode = mode;
+    }
+
+    /**
+     * Castor raw property member access.
+     * 
+     * @return property value
+     */
+    public String getDecoratorPropertyField()
+    {
+        return decorator;
+    }
+
+    /**
+     * Castor raw property member access.
+     * 
+     * @param decorator property value
+     */
+    public void setDecoratorPropertyField(String decorator)
+    {
+        this.decorator = decorator;
+    }
+
+    /**
+     * Castor raw property member access.
+     * 
+     * @return property value
+     */
+    public String getSkinPropertyField()
+    {
+        return skin;
+    }
+
+    /**
+     * Castor raw property member access.
+     * 
+     * @param decorator property value
+     */
+    public void setSkinPropertyField(String skin)
+    {
+        this.skin = skin;
+    }
     
     /**
      * unmarshalled - notification that this instance has been

@@ -1286,7 +1286,8 @@ public abstract class AbstractPageManager
             copy.setSecurityConstraints(copiedSecurity);
         }
         
-        // copy properties
+        // copy properties, (only properties for global and
+        // current user/group/role specific values copied)
         Iterator props = source.getProperties().iterator();
         while (props.hasNext())
         {
@@ -1300,12 +1301,7 @@ public abstract class AbstractPageManager
             {
                 if (copy.getProperty(propName, propScope, propScopeValue) == null)
                 {
-                    FragmentProperty newProp = newFragmentProperty();
-                    newProp.setName(propName);
-                    newProp.setScope(propScope);
-                    newProp.setScopeValue(propScopeValue);
-                    newProp.setValue(prop.getValue());
-                    copy.getProperties().add(newProp);
+                    copy.setProperty(propName, propScope, propScopeValue, prop.getValue());
                 }
             }
         }
