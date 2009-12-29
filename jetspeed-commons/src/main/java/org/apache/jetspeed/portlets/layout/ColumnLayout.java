@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.page.ContentFragment;
 
 /**
@@ -166,20 +167,13 @@ public class ColumnLayout implements Serializable
             while (fragmentsItr.hasNext())
             {
                 ContentFragment fragment = (ContentFragment) fragmentsItr.next();
-                String jsdesktop = fragment.getProperty(NameValueProperty.NAME_VALUE_PROPERTY);
-                if (jsdesktop != null)
+                String windowState = fragment.getState();
+                if (windowState != null && windowState.equals(JetspeedActions.DETACH))
                 {
-                    NameValueProperty nvp = new NameValueProperty(jsdesktop);
-                    if (nvp.isDetached())
-                    {
-                        detachedPortlets.add(fragment);
-                        continue;
-                    }
-                    else if (nvp.isDecoratorRendered())
-                    {
-                        continue;
-                    }
+                    detachedPortlets.add(fragment);
+                    continue;
                 }
+                //else if (nvp.isDecoratorRendered())
                 doAdd(getColumn(fragment), getRow(getColumn(fragment), fragment), fragment);
             }
         }
@@ -766,7 +760,7 @@ public class ColumnLayout implements Serializable
      */
     protected final int getRow(int currentColumn, ContentFragment fragment)
     {
-        String propertyValue = fragment.getProperty(ContentFragment.ROW_PROPERTY_NAME);
+        String propertyValue = fragment.getProperty(ContentFragment.ROW_PROPERTY_NAME); 
         if (propertyValue != null)
         {
             return Integer.parseInt(propertyValue);
@@ -792,7 +786,7 @@ public class ColumnLayout implements Serializable
      */
     protected final int getColumn(ContentFragment fragment)
     {
-        String propertyValue = fragment.getProperty(ContentFragment.COLUMN_PROPERTY_NAME);
+        String propertyValue = fragment.getProperty(ContentFragment.COLUMN_PROPERTY_NAME); 
         if (propertyValue != null)
         {
             int columnNumber = Integer.parseInt(propertyValue);
@@ -842,20 +836,13 @@ public class ColumnLayout implements Serializable
         while (fragmentsItr.hasNext())
         {
             ContentFragment fragment = (ContentFragment) fragmentsItr.next();
-            String jsdesktop = fragment.getProperty(NameValueProperty.NAME_VALUE_PROPERTY);
-            if (jsdesktop != null)
+            String windowState = fragment.getState();
+            if (windowState != null && windowState.equals(JetspeedActions.DETACH))
             {
-                NameValueProperty nvp = new NameValueProperty(jsdesktop);
-                if (nvp.isDetached())
-                {
-                    detachedPortlets.add(fragment);
-                    continue;
-                }
-                else if (nvp.isDecoratorRendered())
-                {
-                    continue;
-                }
+                detachedPortlets.add(fragment);
+                continue;
             }
+            //    else if (nvp.isDecoratorRendered())
         }
     }
     

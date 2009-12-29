@@ -283,7 +283,7 @@ public class PageLayoutService
             }
             else
             {
-                layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), fragmentId);
+                layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), fragmentId );
                 
                 if (layoutFragment == null)
                 {
@@ -306,7 +306,7 @@ public class PageLayoutService
                 
                 if (newColumn != oldColumn)
                 {
-                    pageLayoutComponent.updateRowColumn(contentFragment, contentFragment.getLayoutRow(), newColumn);
+                    pageLayoutComponent.updateRowColumn(contentFragment, contentFragment.getLayoutRow(), newColumn, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
                     adjustPositionsOfChildFragments(layoutFragment, layoutColumnCount);
                 }
             }
@@ -323,7 +323,7 @@ public class PageLayoutService
                 
                 if (newColumn != oldColumn)
                 {
-                    pageLayoutComponent.updateRowColumn(contentFragment, contentFragment.getLayoutRow(), newColumn);
+                    pageLayoutComponent.updateRowColumn(contentFragment, contentFragment.getLayoutRow(), newColumn, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
                     adjustPositionsOfChildFragments(layoutFragment, layoutColumnCount);
                 }
             }
@@ -344,8 +344,8 @@ public class PageLayoutService
                             int column = contentFragment.getLayoutColumn();
                             int destRow = destFragment.getLayoutRow();
                             int destColumn = destFragment.getLayoutColumn();
-                            pageLayoutComponent.updateRowColumn(contentFragment, destRow, destColumn);
-                            pageLayoutComponent.updateRowColumn(destFragment, row, column);
+                            pageLayoutComponent.updateRowColumn(contentFragment, destRow, destColumn, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
+                            pageLayoutComponent.updateRowColumn(destFragment, row, column, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
                         }
                         
                         break;
@@ -378,7 +378,7 @@ public class PageLayoutService
                             int destRow = destFragment.getLayoutRow();
                             int destColumn = destFragment.getLayoutColumn();
                             pageLayoutComponent.updateRowColumn(contentFragment, destRow, destColumn);
-                            pageLayoutComponent.updateRowColumn(destFragment, row, column);
+                            pageLayoutComponent.updateRowColumn(destFragment, row, column, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
                         }
                         
                         break;
@@ -435,7 +435,7 @@ public class PageLayoutService
   
                         int prevRow = contentFragment.getLayoutRow();
                         boolean movingDown = (prevRow < row);
-                        pageLayoutComponent.updateRowColumn(contentFragment, row, col);
+                        pageLayoutComponent.updateRowColumn(contentFragment, row, col, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
                         SortedSet<ContentFragment> sscf = this.getSortedChildFragmentSet(set, movingDown, contentFragment);
                         int rowCount = 0;
                         for (ContentFragment f : sscf)
@@ -443,7 +443,7 @@ public class PageLayoutService
                             if (f != contentFragment)
                             {
                                 if (rowCount != f.getLayoutRow())
-                                    pageLayoutComponent.updateRowColumn(f, rowCount, col);                                    
+                                    pageLayoutComponent.updateRowColumn(f, rowCount, col, PageLayoutComponent.USER_PROPERTY_SCOPE, null);                                    
                             }
                             rowCount++;
                             
@@ -466,7 +466,8 @@ public class PageLayoutService
             
             try
             {
-                pageLayoutComponent.updatePosition(contentFragment, posX, posY, posZ, posWidth, posHeight);
+                pageLayoutComponent.updatePosition(contentFragment, posX, posY, posZ, posWidth, posHeight, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
+                pageLayoutComponent.updateStateMode(contentFragment, JetspeedActions.DETACH, null, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
             }
             catch (Exception e)
             {
@@ -656,7 +657,7 @@ public class PageLayoutService
             {
                 if (row != child.getLayoutRow() || -1 == child.getLayoutColumn())
                 {
-                    pageLayoutComponent.updateRowColumn(child, row, column);
+                    pageLayoutComponent.updateRowColumn(child, row, column, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
                 }
                 
                 ++row;

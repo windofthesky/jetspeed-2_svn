@@ -1,11 +1,19 @@
 //Use loader to grab the modules needed
 YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'dataschema-json', 'node', 'node-menunav', function(Y) {
 
+    var portal = JETUI_YUI.getPortalInstance();
 	var config = JETUI_YUI.config;
     Y.log("Starting up JETUI " +  config.engine + " engine...");
-	
-    var portal = JETUI_YUI.getPortalInstance();
         
+    if (config.engine == Y.JetUI.Portal.CSRE)
+    {
+    	Y.log("Initializing " + Y.JetUI.Portal.CSRE + " ...");
+    }    
+    else
+    {
+    	Y.log("Initializing " + Y.JetUI.Portal.SSRE + " ...");
+    }
+    	
     ////////////////////////////////////////////////////    
     // Create Navigator Portlet
     var navigator = new Y.JetUI.Portlet();
@@ -80,7 +88,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     }
     ////////////////////////////////////////////////////       
     // drag and drop
-    var nav = Y.one('#jsNavigator');
+    var nav = Y.one("[id='template-top2.jsPageNavigator']"); 
     if (!Y.Lang.isNull(nav)) {
 	    nav.data = navigator;
 	    var ddNav = new Y.DD.Drag({

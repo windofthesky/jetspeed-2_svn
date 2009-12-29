@@ -27,7 +27,6 @@ limitations under the License.
             <property name="column" value="0"></property>
             <property name="y" value="104.0"></property>
             <property name="x" value="1.0"></property>
-            <property name="jsdesktop" value="staticpos=false;fitheight=false"></property>                        
     </fragment>
     <fragment id="_jsToolbox-1001" type="portlet" name="j2-admin::JetspeedToolbox">
   	        <property name="z" value="201.0"></property>
@@ -37,7 +36,6 @@ limitations under the License.
             <property name="column" value="0"></property>
             <property name="y" value="500.0"></property>
             <property name="x" value="1.0"></property>
-            <property name="jsdesktop" value="staticpos=false;fitheight=false"></property>                        
     </fragment>
 
   </fragment>

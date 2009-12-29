@@ -81,7 +81,7 @@ public class Jetui
                 // need to have a better algorithm to determine number of columns and fragment column sizes
                 int numberOfColumns = 1;
                 String layoutType = "OneColumn";
-                String fragmentColumnSizes = rootFragment.getProperty("sizes");
+                String fragmentColumnSizes = rootFragment.getProperty(ContentFragment.SIZES_PROPERTY_NAME);
                 if (jetspeedLayout.indexOf("Two") > -1)
                 {
                     numberOfColumns = 2;

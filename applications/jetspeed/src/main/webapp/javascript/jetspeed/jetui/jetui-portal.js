@@ -18,7 +18,7 @@
  */
 
 YUI.add('jetui-portal', function(Y) {
-    
+
     /**
      * JetUI Portal JavaScript Framework
      *
@@ -64,8 +64,12 @@ YUI.add('jetui-portal', function(Y) {
          * @type String
          * @static
          */
-        NAME : 'Portal'
-        
+        NAME : 'Portal',
+    	/**
+    	 * Module Constants
+    	 */
+    	CSRE : 'CSRE',
+    	SSRE : 'SSRE'                
     });
     
     Y.extend(Y.JetUI.Portal, Y.Base, {
