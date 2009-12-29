@@ -11,7 +11,7 @@
     <fragment id="jsSpaceNavigator" type="portlet" name="j2-admin::SpaceNavigator" decorator='clear'>
             <property name="y" value="300"></property>
             <property name="x" value="20"></property>            
-            <property name="state" value="detached"></property>                        
+            <property name="state" value="detach"></property>                        
     </fragment>
 
     <fragment id="jsPageNavigator" type="portlet" name="j2-admin::PageNavigator">
