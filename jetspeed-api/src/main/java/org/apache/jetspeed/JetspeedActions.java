@@ -41,7 +41,8 @@ public class JetspeedActions
     public static final PortletMode EDIT_DEFAULTS_MODE = new PortletMode("edit_defaults");
     public static final PortletMode PREVIEW_MODE = new PortletMode("preview");
     public static final PortletMode PRINT_MODE = new PortletMode("print");
-    public static final WindowState SOLO_STATE = new WindowState("solo");
+    public static final WindowState SOLO_STATE = new WindowState("solo");   
+    public static final WindowState DETACH_STATE = new WindowState("detach");   
   
     public static final int MASK_MINIMIZE = 0x01;    
     public static final int MASK_MAXIMIZE = 0x02;
@@ -62,6 +63,9 @@ public class JetspeedActions
     public static final String MINIMIZE = WindowState.MINIMIZED.toString();
     public static final String MAXIMIZE = WindowState.MAXIMIZED.toString();
     public static final String SOLO = SOLO_STATE.toString();
+    public static final String DETACH = DETACH_STATE.toString();
+    
+    public static final String ACTION_CLOSE = "close";
     
     private static final List<PortletMode> standardPortletModes;
     private static final List<WindowState> standardWindowStates;
