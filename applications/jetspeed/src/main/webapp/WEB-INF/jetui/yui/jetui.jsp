@@ -28,6 +28,7 @@ limitations under the License.
 <%@ page import="org.apache.jetspeed.PortalReservedParameters" %>
 <%@ page import="org.apache.jetspeed.administration.PortalConfiguration" %>
 <%@ page import="org.apache.jetspeed.administration.PortalConfigurationConstants" %>
+<%@ page import="org.apache.jetspeed.decoration.Decoration" %>
 
 <%
   Jetui jetui = (Jetui)request.getAttribute("jetui");
@@ -43,6 +44,8 @@ limitations under the License.
   
   ContentFragment pageNav = jetui.getContentFragment("jsPageNavigator",  rc);
   ContentFragment toolbox = jetui.getContentFragment("jsToolbox",  rc);
+  ContentFragment jstbLeft = jetui.getContentFragment("jstbLeft",  rc);
+  ContentFragment jstbRight = jetui.getContentFragment("jstbRight",  rc);
   
   if (maximized != null)
   {
@@ -70,6 +73,22 @@ limitations under the License.
   String portalPagePath = rc.getPortalURL().getPath();
   if (portalPagePath == null || "".equals(portalPagePath)) {
       portalPagePath = "/";
+  }
+  String leftState = jstbLeft.getState();
+  String leftDisplayState = "display: block";
+  String leftToggleClass = "jstbToggle1";
+  if (leftState != null && leftState.equals("closed"))
+  {
+      leftDisplayState = "display: none";
+      leftToggleClass = "jstbToggle2";
+  }
+  String rightState = jstbRight.getState();
+  String rightDisplayState = "display: block";
+  String rightToggleClass = "jstbToggle2";
+  if (rightState != null && rightState.equals("closed"))
+  {
+      rightDisplayState = "display: none";
+      rightToggleClass = "jstbToggle1";
   }
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -123,7 +142,7 @@ for (String style : jetui.getStyleSheets(rc))
 <div class="header">
 <h1 class="logo">Jetspeed 2</h1>
 <div class="menu">
-&nbsp;<span style='position: absolute; left: 0px; top: 50px;' id='jstbLeftToggle' class='jstbToggle1'></span><span id='jstbRightToggle' class='jstbToggle2' style='position: absolute; right: 0px; top: 50px;'></span>
+&nbsp;<span style='position: absolute; left: 0px; top: 42px;' id='jstbLeftToggle' class='<%=leftToggleClass%>'></span><span id='jstbRightToggle' class='<%=rightToggleClass%>' style='position: absolute; right: 0px; top: 42px;'></span>
 </div>
 <%if (request.getUserPrincipal() != null) {%>
 <span class="layout-statusarea"><b><%=userInfo.get("user.name.given")%> <%=userInfo.get("user.name.family")%></b> | Profile | Tasks (5) | Notifications (2) | <a href="<%=request.getContextPath()%>/login/logout?org.apache.jetspeed.login.destination=<%=request.getContextPath()%>/ui">Log out</a></span>
@@ -135,7 +154,7 @@ for (String style : jetui.getStyleSheets(rc))
 <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
 <tr>         
 <td>
-<div id='jstbLeft' class='jsLeftToolbar'>
+<div id='jstbLeft' class='jsLeftToolbar' style='<%=leftDisplayState%>'>
 <div id='template-top2.jsPageNavigator' class='xportal-layout-cell'>
 <div id="jsNavigator2" class="portlet <%=pageDec%>">
     <div class="PTitle" >
@@ -144,7 +163,7 @@ for (String style : jetui.getStyleSheets(rc))
     <div class="PContentBorder">
       <div class="PContent"><div id="nav-main"><%=navContent %></div></div>
     </div>
-<a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4b0265f81058c137"><img src="http://s7.addthis.com/static/btn/sm-share-en.gif" width="83" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pub=xa-4b0265f81058c137"></script>
+<!--   <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4b0265f81058c137"><img src="http://s7.addthis.com/static/btn/sm-share-en.gif" width="83" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pub=xa-4b0265f81058c137"></script> -->
 </div>
 </div>
 </div>
@@ -190,6 +209,9 @@ for (String style : jetui.getStyleSheets(rc))
             int subindex = 0;
             for (ContentFragment fragment : collections)
             {
+                String state = fragment.getState();
+                if (state == null || !state.equals("detach"))
+                {
                    //String content = jetui.renderPortletWindow(fragment.getId(), fragment.getName(), rc);
                    String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
                    request.setAttribute("content", content);                    
@@ -203,6 +225,7 @@ for (String style : jetui.getStyleSheets(rc))
 <jsp:include page="jetui-portlet.jsp"/>
 <%          
                     subindex++;
+                }
             }
             index++;
 %>
@@ -214,7 +237,7 @@ for (String style : jetui.getStyleSheets(rc))
 </div>
 </td>
 <td>
-<div id='jstbRight' class='jsRightToolbar'>
+<div id='jstbRight' class='jsRightToolbar' style='<%=rightDisplayState%>'>
 <div id='jsToolbox' class='xportal-layout-cell'>
 <div id="jsToolbox2" class="portlet <%=pageDec%>">
     <div class="PTitle" >
@@ -239,11 +262,27 @@ for (ContentFragment fragment : columnLayout.getDetachedPortlets())
 	String x = fragment.getProperty(ContentFragment.X_PROPERTY_NAME);
 	String y = fragment.getProperty(ContentFragment.Y_PROPERTY_NAME);
     String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
+    Decoration.ActionsOption option = fragment.getDecoration().getActionsOption();  
+    if (option == Decoration.ActionsOption.HIDE) // TODO: HOVER, DROP DOWN not yet implemented
+    {
 %>
    <div id='<%=fragment.getId()%>' detached='true' locked='<%=fragment.isLocked()%>' name='<%=fragment.getName()%>' column='0' row='0' x='<%=x%>' y='<%=y%>' style='position: absolute; top: <%=x%>px; left: <%=y%>px;'>
 <%=content%>
    </div>			    
-<% } %>
+<% } else {   
+    request.setAttribute("content", content);                    
+    String decorator = fragment.getDecorator(); 
+    if (decorator == null)
+		    decorator = pageDec;
+    request.setAttribute("decorator", decorator);                    
+    request.setAttribute("fragment", fragment); 
+    request.setAttribute("detached", new Boolean(true));
+    %>
+<jsp:include page="jetui-portlet.jsp"/>
+<% 
+   }
+}
+%>
 
 <script src="<%=request.getContextPath()%>/jetui/engine/portal.js"></script>
 

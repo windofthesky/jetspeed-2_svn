@@ -32,14 +32,27 @@ limitations under the License.
 <%
     String content = (String)request.getAttribute("content");
     String decorator = (String)request.getAttribute("decorator");
+    Boolean detached = (Boolean)request.getAttribute("detached");    
     ContentFragment fragment = (ContentFragment)request.getAttribute("fragment");
     LayoutCoordinate coordinate = (LayoutCoordinate)request.getAttribute("coordinate");
     String title = "";
     boolean showTitle = fragment.getDecoration().getTitleOption() == Decoration.TitleOption.SHOW;   
     if (showTitle && fragment.getPortletContent() != null)
         title = fragment.getPortletContent().getTitle();
+    if (detached != null)
+    {
+    	String x = fragment.getProperty(ContentFragment.X_PROPERTY_NAME);
+    	String y = fragment.getProperty(ContentFragment.Y_PROPERTY_NAME);
+        
 %>
-    <div class="portal-layout-cell" id="<%=fragment.getId()%>" name="<%=fragment.getName()%>" column="<%=coordinate.getX()%>" row="<%=coordinate.getY()%>">
+    <div class="portal-layout-cell" x='<%=x%>' y='<%=y%>' id="<%=fragment.getId()%>" name="<%=fragment.getName()%>" column="0" row="0" style='position: absolute; top: <%=x%>px; left: <%=y%>px;' detached='true' locked='<%=fragment.isLocked()%>'>
+<%
+    }
+    else
+    {
+%>
+    <div class="portal-layout-cell" id="<%=fragment.getId()%>" name="<%=fragment.getName()%>" column="<%=coordinate.getX()%>" row="<%=coordinate.getY()%>" detached='false' locked='<%=fragment.isLocked()%>'>
+<%  }  %>
         <div class="portlet <%=decorator%>">
             <div class="PTitle" >
               <div class="PTitleContent"><%=title%></div>
@@ -55,7 +68,7 @@ limitations under the License.
                                 target = "";
  %>             
                  <a href="<%=action.getAction()%>" title="<%=action.getName()%>" class="action portlet-action" <%=target%>><img src="<%=request.getContextPath()%>/<%=action.getLink()%>" alt="<%=action.getAlt()%>" border="0" /></a>
-<%                  } // for loop               
+<%                       } // for loop               
 // FIXME: integrate close into standard actions, use security constraints on close action
 if (request.getUserPrincipal() != null && fragment.getDecoration().getActions().size() > 0)
 {

@@ -478,6 +478,33 @@ public class PageLayoutService
         return new ContentFragmentBean(contentFragment);
     }
 
+    @PUT
+    @Path("/fragment/{id}/mod/")
+    public ContentFragmentBean modifyContentFragment(@Context HttpServletRequest servletRequest,
+                                                   @Context UriInfo uriInfo,
+                                                   @PathParam("id") String fragmentId,
+                                                   @QueryParam("state") String state,
+                                                   @QueryParam("mode") String mode)
+    {
+        if (StringUtils.isBlank(fragmentId))
+        {
+            throw new WebApplicationException(new IllegalArgumentException("Fragment id not specified"));
+        }
+        
+        RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
+        ContentPage contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        ContentFragment contentFragment = contentPage.getFragmentById(fragmentId);        
+        if (contentFragment == null)
+        {
+            throw new WebApplicationException(new IllegalArgumentException("Fragment not found with the specified id: " + fragmentId));
+        }
+        if (!StringUtils.isBlank(state) || !StringUtils.isBlank(state))
+        {
+            pageLayoutComponent.updateStateMode(contentFragment, state, mode, PageLayoutComponent.USER_PROPERTY_SCOPE, null);            
+        }        
+        return new ContentFragmentBean(contentFragment);
+    }
+    
     @GET
     @Path("/decoration/fragment/{id}/")
     public DecorationBean getDecorationOfContentFragment(@Context HttpServletRequest servletRequest,
@@ -507,7 +534,7 @@ public class PageLayoutService
         
         return new DecorationBean(decoration);
     }
-    
+        
     /**
      * Returns the content page of the current portal request context with security check.
      * 
@@ -780,5 +807,4 @@ public class PageLayoutService
         }        
         return set;
     }
-    
 }

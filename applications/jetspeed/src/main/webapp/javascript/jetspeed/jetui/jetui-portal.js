@@ -169,17 +169,32 @@ YUI.add('jetui-portal', function(Y) {
          * @method toggleToolbar
          */
         toggleToolbar : function(toolbar, toggler, compareStyle) {
+            var portal = JETUI_YUI.getPortalInstance();        	
             toggler.toggleClass('jstbToggle1');
             toggler.toggleClass('jstbToggle2');
             var currentStyle = toggler.getAttribute('class');
             var nodelist = toolbar.get('children');
+            var state = 'normal';
+            var reverse = false;
             if (currentStyle == compareStyle) {
-                nodelist.setStyle('display', 'block');          
+            	toolbar.setStyle('display', 'block');
+            	nodelist.setStyle('display', 'block');
+            	reverse = true;
             } else {
-                nodelist.setStyle('display', 'none');           
+                nodelist.setStyle('display', 'none');
+                toolbar.setStyle('display', 'none');
+                state = 'closed';
             }
-            toolbar.fx.set('reverse', !toolbar.fx.get('reverse')); // toggle reverse 
-            toolbar.fx.run();
+            var windowId = (toolbar == portal.jstbLeft) ? 'template-top2.jstbLeft' : 'template-top2.jstbRight';
+            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/mod/?_type=json";
+            uri += "&state=" + state;
+            var config = {
+                    on: { complete: portal.onStateComplete },
+                    method: "PUT",
+                    headers: { "X-Portal-Path" : portal.portalPagePath },
+                    arguments: { complete: [ windowId ] }
+                };
+            var request = Y.io(uri, config);            
         },
         
         /**
@@ -313,6 +328,13 @@ YUI.add('jetui-portal', function(Y) {
         },
         
         onMoveComplete : function(id, o, args) { 
+            var id = id; // Transaction ID. 
+            var data = o.responseText; // Response data.
+            Y.log("move result = " + data);
+            var windowId = args.complete[0];
+        },             
+
+        onStateComplete : function(id, o, args) { 
             var id = id; // Transaction ID. 
             var data = o.responseText; // Response data.
             Y.log("move result = " + data);
@@ -638,6 +660,7 @@ YUI.add('jetui-portal', function(Y) {
             Y.log("name: " + this.get("name"));
             Y.log("id  : " + this.get("id"));       
             Y.log("toolbar  : " + this.get("toolbar"));     
+            Y.log("detached  : " + this.get("detached"));     
             Y.log("col, row  : " + this.get("column") + "," + this.get("row"));     
             Y.log("x, y  : " + this.get("x") + "," + this.get("y"));     
             Y.log("---------");
@@ -652,7 +675,7 @@ YUI.add('jetui-portal', function(Y) {
         var portlet = new Y.JetUI.Portlet();
         portlet.set("name", node.getAttribute("name"));
         portlet.set("id", node.getAttribute("id"));
-        portlet.set("toolbar", Boolean(node.getAttribute("locked").toLowerCase() === 'true'));
+        portlet.set("toolbar", Boolean(node.getAttribute("locked").toLowerCase() === 'true' || node.getAttribute("detached").toLowerCase() === 'true'));
         portlet.set("detached", Boolean(node.getAttribute("detached").toLowerCase() === 'true'));
         portlet.set("column", node.getAttribute("column"));
         portlet.set("row", node.getAttribute("row"));

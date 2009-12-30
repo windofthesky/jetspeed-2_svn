@@ -14,31 +14,32 @@
             <property name="state" value="detach"></property>                        
     </fragment>
 
-    <fragment id="jsPageNavigator" type="portlet" name="j2-admin::PageNavigator">
-  	        <property name="z" value="201.0"></property>
-            <property name="row" value="0"></property>
-            <property name="width" value="40"></property>
-            <property name="height" value="388.0"></property>
-            <property name="column" value="0"></property>
-            <property name="y" value="104.0"></property>
-            <property name="x" value="1.0"></property>            
-            <property name="state" value="normal"></property>                        
-    </fragment>
+   <fragment id="jstbLeft" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+        <property name="row" value="0"></property>
+        <property name="column" value="0"></property>
+	    <property name="state" value="normal"></property>                                
+	    <fragment id="jsPageNavigator" type="portlet" name="j2-admin::PageNavigator">
+	  	        <property name="row" value="0"></property>
+	            <property name="column" value="0"></property>
+	            <property name="state" value="leftdock"></property>                        
+	    </fragment>
+	</fragment>
+    
     <page-fragment id="page-template">
       <property name="column" value="1"/>
       <property name="row" value="0"/>
     </page-fragment>
-    
-    <fragment id="jsToolbox" type="portlet" name="j2-admin::JetspeedToolbox">
-  	        <property name="z" value="201.0"></property>
-            <property name="row" value="0"></property>
-            <property name="width" value="40"></property>
-            <property name="height" value="388.0"></property>
-            <property name="column" value="2"></property>
-            <property name="y" value="500.0"></property>
-            <property name="x" value="1.0"></property>
-            <property name="state" value="normal"></property>                        
-    </fragment>
+
+   <fragment id="jstbRight" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+        <property name="row" value="0"></property>
+        <property name="column" value="2"></property>    
+	    <property name="state" value="normal"></property>                                
+	    <fragment id="jsToolbox" type="portlet" name="j2-admin::JetspeedToolbox">
+	            <property name="row" value="0"></property>
+	            <property name="column" value="0"></property>
+	            <property name="state" value="rightdock"></property>                        
+	    </fragment>
+   </fragment>
     
 <!--    
     <fragment-reference id="page-template-wp-reference" refid="wp-definition">

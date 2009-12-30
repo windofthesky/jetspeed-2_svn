@@ -1,18 +1,10 @@
 //Use loader to grab the modules needed
-YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml', 'dataschema-xml', 'dataschema-json', 'node', 'node-menunav', function(Y) {
+YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'dataschema-xml', 'dataschema-json', 'node', 'node-menunav', function(Y) {
 
     var portal = JETUI_YUI.getPortalInstance();
 	var config = JETUI_YUI.config;
-    Y.log("Starting up JETUI " +  config.engine + " engine...");
-        
-    if (config.engine == Y.JetUI.Portal.CSRE)
-    {
-    	Y.log("Initializing " + Y.JetUI.Portal.CSRE + " ...");
-    }    
-    else
-    {
-    	Y.log("Initializing " + Y.JetUI.Portal.SSRE + " ...");
-    }
+    Y.log("Starting up JETUI " +  config.engine + " engine...");        
+    //if (config.engine == Y.JetUI.Portal.CSRE)
     	
     ////////////////////////////////////////////////////    
     // Create Navigator Portlet
@@ -26,44 +18,25 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
     toolbox.set("id", "_JetspeedToolbox");
     toolbox.set("toolbar", true);
     toolbox.set("detached", false);
-
-//    var toggleMoveMode = function(e) { 
-//	    window.location = window.location + "?toggle=move";
-//    }       
-//    Y.on("click", toggleMoveMode, "#jstbMoveMode");
     
     ////////////////////////////////////////////////////    
     // setup toolbar docking area and togglers    
     var lhsToggler = Y.one('#jstbLeftToggle');
     var rhsToggler = Y.one('#jstbRightToggle');    
-    // add fx plugin to docking area
     portal.jstbLeft = Y.one('#jstbLeft');
 	if (!Y.Lang.isNull(portal.jstbLeft)) {
-       portal.jstbLeft.plug(Y.Plugin.NodeFX, {
-	        from: { width: 1 },
-	        to: {
-	            width: function(node) { // dynamic in case of change
-	                return 200; //node.get('scrollWidth'); // get expanded height (offsetHeight may be zero)
-	            }
-	        },
-	        easing: Y.Easing.easeOut,
-	        duration: 0.3
-	       });
+   	   var currentStyle = portal.jstbLeft.getStyle('display');
+       var nodelist = portal.jstbLeft.get('children');
+       nodelist.setStyle('display', currentStyle);          
 	}
     portal.jstbRight = Y.one('#jstbRight')
 	if (!Y.Lang.isNull(portal.jstbRight)) {
-	    portal.jstbRight.plug(Y.Plugin.NodeFX, {
-	        from: { width: 1 },
-	        to: {
-	            width: function(node) { // dynamic in case of change
-	                return 200; //node.get('scrollWidth'); // get expanded height (offsetHeight may be zero)
-	            }
-	        },
-	        easing: Y.Easing.easeOut,
-	        duration: 0.3
-	    });        
+   	   var currentStyle = portal.jstbRight.getStyle('display');
+       var nodelist = portal.jstbRight.get('children');
+       nodelist.setStyle('display', currentStyle);          
 	}
     var onClickToolbar = function(e) {
+//    	Y.log("clickd on e.target = " + e.target);
 //    	nav.setStyle('z-index', '500');
     }
 
@@ -142,7 +115,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
         var dragGroups = ['portlets'];
         var dragMode = 'intersect';
         var dropGroups  = ['portlets', 'toolbars'];
-        if (portlet.get("toolbar") == true) {
+        if (portlet.get("toolbar") == true || portlet.get("detached") == true) {
 	        dragGroups = ['toolbars'],	        
 	        dragMode = 'point';
 	        dropGroups = [];
@@ -159,7 +132,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'anim', 'io', 'datatype-xml'
             node: v,
             groups: dropGroups            
         });
-    	//portlet.info();
+    	// portlet.info();
     });
     
     var dropLayouts = Y.Node.all(config.layoutStyle); 
