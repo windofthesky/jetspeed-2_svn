@@ -163,6 +163,12 @@ YUI.add('jetui-portal', function(Y) {
         destructor : function(cfg) { 
         },
         
+        booleanValue : function(s) {
+            if (s == null)
+            	return false;
+            return (s == "" || s.toLowerCase() == "false") ? false : true;          
+        },        
+        
         /**
          * Toggles toolbar
          * 
@@ -211,7 +217,7 @@ YUI.add('jetui-portal', function(Y) {
                 //node.plug(Y.Plugin.Drag);
                 var drop = new Y.DD.Drop({
                 node: dragParent,
-                groups: ['portlets']            
+                groups: ['grid']            
                 });
             }
             // BOZO: im manipulating internal DD structures, should find a way to detach the handler
@@ -269,7 +275,7 @@ YUI.add('jetui-portal', function(Y) {
             if (dragParent.get('children').size() == 0) {
                 var drop = new Y.DD.Drop({
                     node: dragParent,
-                    groups: ['portlets']            
+                    groups: ['grid']            
                 });
             }                           
         },
@@ -302,10 +308,10 @@ YUI.add('jetui-portal', function(Y) {
                 window.setStyle('top', '10px');
                 window.setStyle('left', '10px');
             	window.data.set('detached', true);
-            	window.data.set("toolbar", true);
+            	window.data.set("tool", false);
             	var drag = Y.DD.DDM.getDrag(window);
-            	drag.removeFromGroup("portals");
-            	drag.addToGroup("toolbars");
+            	drag.removeFromGroup("grid");
+            	drag.addToGroup("detached");
             	drag.set('dragMode', 'point');
             	var drop = Y.DD.DDM.getDrop(window);
             	var i = 0;
@@ -321,7 +327,7 @@ YUI.add('jetui-portal', function(Y) {
     			{
                     var drop = new Y.DD.Drop({
                         node: dragParent,
-                        groups: ['portlets']            
+                        groups: ['grid']            
                     });
     			}                
             }            
@@ -330,14 +336,12 @@ YUI.add('jetui-portal', function(Y) {
         onMoveComplete : function(id, o, args) { 
             var id = id; // Transaction ID. 
             var data = o.responseText; // Response data.
-            Y.log("move result = " + data);
             var windowId = args.complete[0];
         },             
 
         onStateComplete : function(id, o, args) { 
             var id = id; // Transaction ID. 
             var data = o.responseText; // Response data.
-            Y.log("move result = " + data);
             var windowId = args.complete[0];
         },             
         
@@ -347,7 +351,7 @@ YUI.add('jetui-portal', function(Y) {
         movePortlet : function(drag, e) {
             var portal = JETUI_YUI.getPortalInstance();        	
             var windowId =  drag.getAttribute('id');
-            if (drag.data.get("toolbar") == false) {
+            if (drag.data.get("detached") == false) {
             	var oldColumn = drag.data.get('column');
             	var oldRow = drag.data.get('row');        	
         		var dragParent = drag.get('parentNode');
@@ -380,6 +384,7 @@ YUI.add('jetui-portal', function(Y) {
                     };
                 var request = Y.io(uri, config);
             }        	
+            // TODO: handle toolbar moves
         },
                 
         reallocateColumn : function(column) {
@@ -414,7 +419,7 @@ YUI.add('jetui-portal', function(Y) {
                 {
                     var drop = new Y.DD.Drop({
                         node: parent,
-                        groups: ['portlets']            
+                        groups: ['grid']            
                     });
                 }
             }
@@ -558,10 +563,10 @@ YUI.add('jetui-portal', function(Y) {
             v.setAttribute("column", fragment.properties.column);
             
             var portlet = Y.JetUI.Portlet.attach(v);
-            var dragGroups = ['portlets'];
+            var dragGroups = ['grid'];
             var dragMode = 'intersect';
-            var dropGroups  = ['portlets', 'toolbars'];
-            if (portlet.get("toolbar") == false) {
+            var dropGroups  = ['grid'];
+            if (portlet.get("detached") == false) {
                 var ddNav = new Y.DD.Drag({
                     node: v,
                     groups: dragGroups,
@@ -624,8 +629,9 @@ YUI.add('jetui-portal', function(Y) {
         ATTRS: {
             "name" : { value: "undefined" }, 
             "id" : { value: "0" },
-            "toolbar" : { value : false },
+            "tool" : { value : false },
             "detached" : { value : false },
+            "locked" : { value : false },
             "column" : { value : 0 },
             "row" : { value : 0 },
             "x" : { value : 0 },
@@ -659,24 +665,30 @@ YUI.add('jetui-portal', function(Y) {
         info : function() {
             Y.log("name: " + this.get("name"));
             Y.log("id  : " + this.get("id"));       
-            Y.log("toolbar  : " + this.get("toolbar"));     
+            Y.log("tool  : " + this.get("tool"));     
             Y.log("detached  : " + this.get("detached"));     
+            Y.log("locked  : " + this.get("locked"));     
             Y.log("col, row  : " + this.get("column") + "," + this.get("row"));     
             Y.log("x, y  : " + this.get("x") + "," + this.get("y"));     
             Y.log("---------");
         }
     });
-    
+
     /**
      * Create a portlet window and attach the portlet window to the sepcified node.
      * @method attach
      */
     Y.JetUI.Portlet.attach = function(node) {
+        var portal = JETUI_YUI.getPortalInstance();        	    	
         var portlet = new Y.JetUI.Portlet();
         portlet.set("name", node.getAttribute("name"));
         portlet.set("id", node.getAttribute("id"));
-        portlet.set("toolbar", Boolean(node.getAttribute("locked").toLowerCase() === 'true' || node.getAttribute("detached").toLowerCase() === 'true'));
-        portlet.set("detached", Boolean(node.getAttribute("detached").toLowerCase() === 'true'));
+        var tool = portal.booleanValue(node.getAttribute("tool"));
+        portlet.set("tool", tool);
+        var detached = portal.booleanValue(node.getAttribute("detached"));
+        portlet.set("detached", detached);
+        var locked = portal.booleanValue(node.getAttribute("locked"));
+        portlet.set("locked", locked);
         portlet.set("column", node.getAttribute("column"));
         portlet.set("row", node.getAttribute("row"));
         portlet.set("x", node.getAttribute("x"));
@@ -721,8 +733,9 @@ YUI.add('jetui-portal', function(Y) {
             "name" : { value: "undefined" }, 
             "id" : { value: "0" },
             "nested" : { value : false },
-            "column" : { value : 0 },
             "locked" : { value : false },
+            "toolbar" : { value : false },
+            "column" : { value : 0 },
             "row" : { value : 0 }
         }
     });
@@ -755,6 +768,7 @@ YUI.add('jetui-portal', function(Y) {
             Y.log("id  : " + this.get("id"));       
             Y.log("nested  : " + this.get("nested"));       
             Y.log("locked  : " + this.get("locked"));       
+            Y.log("toolbar  : " + this.get("toolbar"));       
             Y.log("col, row  : " + this.get("column") + "," + this.get("row"));     
             Y.log("---------");
         }
@@ -765,13 +779,15 @@ YUI.add('jetui-portal', function(Y) {
      * @method attach
      */
     Y.JetUI.Layout.attach = function(node) {
-        var layout = new Y.JetUI.Layout();
+        var portal = JETUI_YUI.getPortalInstance();        	    	
+    	var layout = new Y.JetUI.Layout();
         layout.set("name", node.getAttribute("name"));
         layout.set("id", node.getAttribute("id"));
         layout.set("nested", false);
-        var locked = node.getAttribute("locked");
-        locked = (locked == null || locked == "false") ? false : true;          
+        var locked = portal.booleanValue(node.getAttribute("locked"));
         layout.set("locked", locked);
+        var toolbar = portal.booleanValue(node.getAttribute("toolbar"));
+        layout.set("toolbar", toolbar);
         layout.set("column", node.getAttribute("column"));        
         layout.set("row", 0);
         node.data = layout;

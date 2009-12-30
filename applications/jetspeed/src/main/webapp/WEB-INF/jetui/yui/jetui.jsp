@@ -20,6 +20,7 @@ limitations under the License.
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="org.apache.jetspeed.ui.Jetui" %>
+<%@ page import="org.apache.jetspeed.ui.Toolbar" %>
 <%@ page import="org.apache.jetspeed.request.RequestContext" %>
 <%@ page import="org.apache.jetspeed.om.page.ContentFragment" %>
 <%@ page import="org.apache.jetspeed.om.page.ContentPage" %>
@@ -38,28 +39,9 @@ limitations under the License.
   ContentPage portalPage = rc.getPage();
   ContentFragment maximized = (ContentFragment)request.getAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
   ColumnLayout columnLayout = (ColumnLayout)request.getAttribute("columnLayout");
-  
-  String navContent = null;
-  String tbContent = null;
-  
-  ContentFragment pageNav = jetui.getContentFragment("jsPageNavigator",  rc);
-  ContentFragment toolbox = jetui.getContentFragment("jsToolbox",  rc);
   ContentFragment jstbLeft = jetui.getContentFragment("jstbLeft",  rc);
-  ContentFragment jstbRight = jetui.getContentFragment("jstbRight",  rc);
-  
-  if (maximized != null)
-  {
-      navContent = jetui.renderPortletWindow(pageNav.getId(), pageNav.getName(), rc);
-      tbContent = jetui.renderPortletWindow(toolbox.getId(), pageNav.getName(), rc);
-  }
-  else
-  {
-      navContent = jetui.getRenderedContent(pageNav, rc);
-      tbContent = jetui.getRenderedContent(toolbox, rc);
-  }
-  
+  ContentFragment jstbRight = jetui.getContentFragment("jstbRight",  rc);   
   String breadcrumbs = jetui.renderPortletWindow("jsBreadcrumbMenu", "j2-admin::BreadcrumbMenu", rc);
-  
   String encoding = "text/html"; 
   if (response.getCharacterEncoding() != null)
   {
@@ -74,22 +56,29 @@ limitations under the License.
   if (portalPagePath == null || "".equals(portalPagePath)) {
       portalPagePath = "/";
   }
-  String leftState = jstbLeft.getState();
+  // Toolbars
+  Toolbar ltb = jetui.getToolbar(rc, Toolbar.Orientation.LEFT);  
+  Toolbar rtb = jetui.getToolbar(rc, Toolbar.Orientation.RIGHT);
   String leftDisplayState = "display: block";
   String leftToggleClass = "jstbToggle1";
-  if (leftState != null && leftState.equals("closed"))
+  String rightDisplayState = "display: block";
+  String rightToggleClass = "jstbToggle2"; 
+  if (ltb != null)
   {
+  	if (ltb.isClosed())
+  	{
       leftDisplayState = "display: none";
       leftToggleClass = "jstbToggle2";
+  	}
   }
-  String rightState = jstbRight.getState();
-  String rightDisplayState = "display: block";
-  String rightToggleClass = "jstbToggle2";
-  if (rightState != null && rightState.equals("closed"))
-  {
+  if (rtb != null)
+  {  
+  	if (rtb.isClosed())
+  	{
       rightDisplayState = "display: none";
       rightToggleClass = "jstbToggle1";
-  }
+  	}
+  }  
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -142,7 +131,7 @@ for (String style : jetui.getStyleSheets(rc))
 <div class="header">
 <h1 class="logo">Jetspeed 2</h1>
 <div class="menu">
-&nbsp;<span style='position: absolute; left: 0px; top: 42px;' id='jstbLeftToggle' class='<%=leftToggleClass%>'></span><span id='jstbRightToggle' class='<%=rightToggleClass%>' style='position: absolute; right: 0px; top: 42px;'></span>
+&nbsp;<% if (ltb != null) { %><span style='position: absolute; left: 0px; top: 42px;' id='jstbLeftToggle' class='<%=leftToggleClass%>'></span><% } if (rtb != null) { %><span id='jstbRightToggle' class='<%=rightToggleClass%>' style='position: absolute; right: 0px; top: 42px;'></span><% } %>
 </div>
 <%if (request.getUserPrincipal() != null) {%>
 <span class="layout-statusarea"><b><%=userInfo.get("user.name.given")%> <%=userInfo.get("user.name.family")%></b> | Profile | Tasks (5) | Notifications (2) | <a href="<%=request.getContextPath()%>/login/logout?org.apache.jetspeed.login.destination=<%=request.getContextPath()%>/ui">Log out</a></span>
@@ -154,19 +143,43 @@ for (String style : jetui.getStyleSheets(rc))
 <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
 <tr>         
 <td>
-<div id='jstbLeft' class='jsLeftToolbar' style='<%=leftDisplayState%>'>
-<div id='template-top2.jsPageNavigator' class='xportal-layout-cell'>
-<div id="jsNavigator2" class="portlet <%=pageDec%>">
+<%
+if (ltb != null)
+{
+%>
+<div id='<%=ltb.getId()%>' class='<%=ltb.getCssClass()%>' style='<%=leftDisplayState%>'>
+<%
+  for (ContentFragment tool : ltb.getTools())
+  {
+      String decorator = tool.getDecorator(); 
+      if (decorator == null)
+  		    decorator = pageDec;
+      String navContent;
+      if (maximized != null)
+          navContent = jetui.renderPortletWindow(tool.getId(), tool.getName(), rc);
+      else
+          navContent = jetui.getRenderedContent(tool, rc);
+      String title = "";      
+      boolean showTitle = tool.getDecoration().getTitleOption() == Decoration.TitleOption.SHOW;   
+      if (showTitle && tool.getPortletContent() != null)
+          title = tool.getPortletContent().getTitle();      
+%>
+<div id='<%=tool.getId()%>' class='portal-toolbar-cell' detached='false' locked='<%=tool.isLocked()%>' name='<%=tool.getName()%>' tool='true'>
+<div class="portlet <%=decorator%>">
     <div class="PTitle" >
-      <div class="PTitleContent">Navigator</div>
+      <div class="PTitleContent"><%=title%></div>
     </div>
     <div class="PContentBorder">
-      <div class="PContent"><div id="nav-main"><%=navContent %></div></div>
+      <div class="PContent"><div id="nav-main"><%=navContent%></div></div>
     </div>
-<!--   <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4b0265f81058c137"><img src="http://s7.addthis.com/static/btn/sm-share-en.gif" width="83" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pub=xa-4b0265f81058c137"></script> -->
+<!--  TODO: make this a portlet <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4b0265f81058c137"><img src="http://s7.addthis.com/static/btn/sm-share-en.gif" width="83" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pub=xa-4b0265f81058c137"></script> -->
 </div>
 </div>
+<% } %>
 </div>
+<% 
+} // endif ltb
+%>
 </td>
 <td id='jsMainarea' class='jsMainarea'>
 <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span><%=breadcrumbs%></div>
@@ -237,18 +250,42 @@ for (String style : jetui.getStyleSheets(rc))
 </div>
 </td>
 <td>
-<div id='jstbRight' class='jsRightToolbar' style='<%=rightDisplayState%>'>
-<div id='jsToolbox' class='xportal-layout-cell'>
-<div id="jsToolbox2" class="portlet <%=pageDec%>">
+<%
+if (rtb != null)
+{
+%>
+<div id='<%=rtb.getId()%>' class='<%=rtb.getCssClass()%>' style='<%=rightDisplayState%>'>
+<%
+  for (ContentFragment tool : rtb.getTools())
+  {
+      String decorator = tool.getDecorator(); 
+      if (decorator == null)
+  		    decorator = pageDec;            
+      String tbContent;
+      if (maximized != null)
+          tbContent = jetui.renderPortletWindow(tool.getId(), tool.getName(), rc);
+      else
+          tbContent = jetui.getRenderedContent(tool, rc);
+      String title = "";      
+      boolean showTitle = tool.getDecoration().getTitleOption() == Decoration.TitleOption.SHOW;   
+      if (showTitle && tool.getPortletContent() != null)
+          title = tool.getPortletContent().getTitle();      
+%>
+<div id='<%=tool.getId()%>' class='portal-toolbar-cell' detached='false' locked='<%=tool.isLocked()%>' name='<%=tool.getName()%>' tool='true'>
+<div class="portlet <%=decorator%>">
     <div class="PTitle" >
-      <div class="PTitleContent">Toolbox</div>
+      <div class="PTitleContent"><%=title%></div>
     </div>
     <div class="PContentBorder">
-      <div class="PContent"><%=tbContent %></div>
+      <div class="PContent"><%=tbContent%></div>
     </div>
 </div>
-</div> 
 </div>
+<% } %>
+</div>
+<% 
+} // endif rtb
+%>
 </td>
 </tr>
 </table>

@@ -246,4 +246,29 @@ public class Jetui
     {
         return this.pc;
     }
+    
+    public Toolbar getToolbar(RequestContext context, Toolbar.Orientation orientation)
+    {
+        Toolbar toolbar = null;
+        String id;
+        if (orientation == Toolbar.Orientation.LEFT)
+        {
+            id = Toolbar.LEFT_TOOLBAR_ID;
+        }
+        else if (orientation == Toolbar.Orientation.RIGHT)
+        {
+            id = Toolbar.RIGHT_TOOLBAR_ID;            
+        }
+        else
+            return toolbar;
+        ContentPage page = context.getPage();
+        ContentFragment cf = page.getFragmentByFragmentId(id);
+        toolbar = new Toolbar(orientation, id, cf);
+        toolbar.setCssClass(cf.getProperty("class"));
+        String state = cf.getProperty("state");
+        if (state != null)
+            toolbar.setClosed(state.equals("closed"));
+        return toolbar;
+    }
+    
 }

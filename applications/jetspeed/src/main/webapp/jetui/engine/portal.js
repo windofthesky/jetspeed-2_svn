@@ -4,20 +4,6 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
     var portal = JETUI_YUI.getPortalInstance();
 	var config = JETUI_YUI.config;
     Y.log("Starting up JETUI " +  config.engine + " engine...");        
-    //if (config.engine == Y.JetUI.Portal.CSRE)
-    	
-    ////////////////////////////////////////////////////    
-    // Create Navigator Portlet
-    var navigator = new Y.JetUI.Portlet();
-    navigator.set("name", "j2-admin::PageNavigator");
-    navigator.set("id", "_PageNavigator");
-    navigator.set("toolbar", true);
-    navigator.set("detached", false);
-    var toolbox = new Y.JetUI.Portlet();
-    toolbox.set("name", "j2-admin::JetspeedToolbox");
-    toolbox.set("id", "_JetspeedToolbox");
-    toolbox.set("toolbar", true);
-    toolbox.set("detached", false);
     
     ////////////////////////////////////////////////////    
     // setup toolbar docking area and togglers    
@@ -61,39 +47,13 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
     }
     ////////////////////////////////////////////////////       
     // drag and drop
-    var nav = Y.one("[id='template-top2.jsPageNavigator']"); 
-    if (!Y.Lang.isNull(nav)) {
-	    nav.data = navigator;
-	    var ddNav = new Y.DD.Drag({
-	        node: nav,
-	        groups: ['toolbars'],
-	        dragMode: 'point'                
-	    }).plug(Y.Plugin.DDProxy, { 
-	      	 moveOnEnd: false         	    	
-	    });    
-	    ddNav.addHandle(config.dragHandleStyle);
-	    nav.on('click', onClickToolbar);
-    }    
     var jetspeedZone = Y.one('#jetspeedZone');
     if (!Y.Lang.isNull(jetspeedZone)) {   
 	    var jzDrop = new Y.DD.Drop({
 	        node: jetspeedZone,
-	        groups: ['toolbars']        
+	        groups: ['detached']        
 	    });
     }    
-    var tb = Y.one('#jsToolbox');
-    if (!Y.Lang.isNull(tb)) {    
-	    tb.data = toolbox;
-	    var ddToolbox = new Y.DD.Drag({
-	        node: tb,
-	        groups: ['toolbars'],                 
-	        dragMode: 'point'        
-	    }).plug(Y.Plugin.DDProxy, { 
-	      	 moveOnEnd: false         	    	
-	    });    
-	    ddToolbox.addHandle(config.dragHandleStyle); 
-	    tb.on('click', onClickToolbar);
-    }
     var jstbLeft = Y.one('#jstbLeft');
     if (!Y.Lang.isNull(jstbLeft)) {    
 	    var drop = new Y.DD.Drop({
@@ -110,43 +70,44 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
     }
 	var draggablePortlets = Y.Node.all(config.portletStyle);    
     draggablePortlets.each(function(v, k) {
-        var portlet = Y.JetUI.Portlet.attach(v);
-    	//Y.log("portlet = " + v.getAttribute("name") + v.getAttribute("id") + "locked = " + v.getAttribute("locked"));
-        var dragGroups = ['portlets'];
-        var dragMode = 'intersect';
-        var dropGroups  = ['portlets', 'toolbars'];
-        if (portlet.get("toolbar") == true || portlet.get("detached") == true) {
-	        dragGroups = ['toolbars'],	        
-	        dragMode = 'point';
-	        dropGroups = [];
-        }        
-        var ddNav = new Y.DD.Drag({
-            node: v,
-            groups: dragGroups,
-            dragMode: dragMode                    
-        }).plug(Y.Plugin.DDProxy, { 
-          	 moveOnEnd: false         	    	
-        });    
-        ddNav.addHandle(config.dragHandleStyle);
-    	var drop = new Y.DD.Drop({
-            node: v,
-            groups: dropGroups            
-        });
-    	// portlet.info();
+    	if (v.getAttribute("id") != "jsPortletTemplate")
+    	{
+	        var portlet = Y.JetUI.Portlet.attach(v);
+	        var dragGroups = ['grid'];
+	        var dragMode = 'intersect';
+	        var dropGroups  = ['grid'];
+	        if (portlet.get("detached") == true) {
+		        dragGroups = ['detached'],	        
+		        dragMode = 'point';
+		        dropGroups = [];
+	        }        
+	        var ddNav = new Y.DD.Drag({
+	            node: v,
+	            groups: dragGroups,
+	            dragMode: dragMode                    
+	        }).plug(Y.Plugin.DDProxy, { 
+	          	 moveOnEnd: false         	    	
+	        });    
+	        ddNav.addHandle(config.dragHandleStyle);
+	    	var drop = new Y.DD.Drop({
+	            node: v,
+	            groups: dropGroups            
+	        });
+	    	//portlet.info();
+    	}
     });
     
     var dropLayouts = Y.Node.all(config.layoutStyle); 
     dropLayouts.each(function(v, k) {
-    	//Y.log("layout = " + v.getAttribute("name") + v.getAttribute("id"));
         var layout = Y.JetUI.Layout.attach(v);
-        //layout.info();
         if (v.get('children').size() == 0)
         {
 	    	var drop = new Y.DD.Drop({
 	        node: v,
-	        groups: ['portlets']            
+	        groups: ['grid']            
 	    	});
         }
+        //layout.info();        
     });
     
     var closeWindows = Y.Node.all('.portlet-action-close');
@@ -163,7 +124,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 	    var portal = JETUI_YUI.getPortalInstance();
 		var drop = e.drop.get('node'),
             drag = e.drag.get('node');
-        if (drag.data.get("toolbar"))
+        if (drag.data.get("detached"))
         {        	
             if (drop == portal.jstbLeft || drop == portal.jstbRight)
             {
@@ -200,7 +161,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
         if (drag.target) {
             drag.target.set('locked', false);
         }
-        if (drag.get('node').data.get("toolbar"))
+        if (drag.get('node').data.get("detached"))
         {
             drag.get('node').setStyle('visibility', '');        	
         }
@@ -221,7 +182,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
         var srcNode = drag.get('node');
         dragNode.set('innerHTML', srcNode.get('innerHTML'));
 
-        if (drag.get('node').data.get("toolbar"))
+        if (drag.get('node').data.get("detached"))
         {
         	drag.get('node').setStyle('visibility', 'hidden');        	
         }
@@ -260,7 +221,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
         }        
         portal.lastX = x;
         
-        if (e.drag.get('node').data.get("toolbar"))
+        if (e.drag.get('node').data.get("detached"))
         {        
             var drop = e.drop.get('node'),
             drag = e.drag.get('node');            
@@ -299,7 +260,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 		    	}	    	
 		    	else if (y >= region.top && y <= region.bottom && x >= region.left && x <= region.right)
 		    	{
-		    		// Y.log("**** HIT");
+		    		//Y.log("**** HIT");
 		    		portal.isMoving = true;
 		    		portal.moveToGrid(e); 
 		    		portal.isMoving = false;
