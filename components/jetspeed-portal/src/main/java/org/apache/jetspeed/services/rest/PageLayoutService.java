@@ -89,7 +89,14 @@ public class PageLayoutService
         this.portletRegistry = portletRegistry;
         this.securityBehavior = securityBehavior;
     }
-    
+
+    public PageLayoutService(PageLayoutComponent pageLayoutComponent)
+    {
+        this.pageLayoutComponent = pageLayoutComponent;
+        this.portletRegistry = null;
+        this.securityBehavior = null;
+    }
+
     @GET
     @Path("/page/")
     public ContentPageBean getContentPage(@Context HttpServletRequest servletRequest,
@@ -466,6 +473,10 @@ public class PageLayoutService
             
             try
             {
+                if (layoutFragmentId != null && layoutFragmentId.equals("detach"))
+                {
+                    // first time detach, need to reorder
+                }
                 pageLayoutComponent.updatePosition(contentFragment, posX, posY, posZ, posWidth, posHeight, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
                 pageLayoutComponent.updateStateMode(contentFragment, JetspeedActions.DETACH, null, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
             }
@@ -604,20 +615,23 @@ public class PageLayoutService
         
         if (StringUtils.isBlank(sizes))
         {
-            PortletDefinition layoutPortletDef = portletRegistry.getPortletDefinitionByUniqueName(layoutFragment.getName(), true);
-            InitParam initParam = layoutPortletDef.getInitParam("sizes");
-            
-            if (initParam != null)
+            if (portletRegistry != null)
             {
-                sizes = initParam.getParamValue();
-            }
-            else
-            {
-                initParam = layoutPortletDef.getInitParam("columns");
+                PortletDefinition layoutPortletDef = portletRegistry.getPortletDefinitionByUniqueName(layoutFragment.getName(), true);
+                InitParam initParam = layoutPortletDef.getInitParam("sizes");
                 
                 if (initParam != null)
                 {
-                    return Integer.parseInt(initParam.getParamValue());
+                    sizes = initParam.getParamValue();
+                }
+                else
+                {
+                    initParam = layoutPortletDef.getInitParam("columns");
+                    
+                    if (initParam != null)
+                    {
+                        return Integer.parseInt(initParam.getParamValue());
+                    }
                 }
             }
         }
@@ -722,8 +736,19 @@ public class PageLayoutService
         public int compare(ContentFragment f1, ContentFragment f2)
         {
             int r1 = f1.getLayoutRow();
-            int r2 = f2.getLayoutRow();
-            
+            int r2 = f2.getLayoutRow();            
+            String s1 = f1.getState(); 
+            String s2 = f2.getState();
+            if (!StringUtils.isEmpty(s1) && s1.equals(JetspeedActions.DETACH))
+            {
+                if (StringUtils.isEmpty(s2) || !s2.equals(JetspeedActions.DETACH))
+                    return -1;                
+            }
+            else if (!StringUtils.isEmpty(s2) && s2.equals(JetspeedActions.DETACH))
+            {
+                if (StringUtils.isEmpty(s1) || !s1.equals(JetspeedActions.DETACH))
+                    return 1;                                
+            }
             if (r1 == r2)
             {
                 return 0;
@@ -760,7 +785,18 @@ public class PageLayoutService
         {
             int r1 = f1.getLayoutRow();
             int r2 = f2.getLayoutRow();
-            
+            String s1 = f1.getState(); 
+            String s2 = f2.getState();
+            if (!StringUtils.isEmpty(s1) && s1.equals(JetspeedActions.DETACH))
+            {
+                if (StringUtils.isEmpty(s2) || !s2.equals(JetspeedActions.DETACH))
+                    return -1;                
+            }
+            else if (!StringUtils.isEmpty(s2) && s2.equals(JetspeedActions.DETACH))
+            {
+                if (StringUtils.isEmpty(s1) || !s1.equals(JetspeedActions.DETACH))
+                    return 1;                                
+            }            
             if (r1 == r2)
             {
                 if (f1 == movingFragment)

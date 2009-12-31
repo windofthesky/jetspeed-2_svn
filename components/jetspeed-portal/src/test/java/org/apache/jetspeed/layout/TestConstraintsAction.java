@@ -18,10 +18,8 @@ package org.apache.jetspeed.layout;
 
 import java.io.File;
 import java.security.PrivilegedAction;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.Subject;
@@ -40,14 +38,11 @@ import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.security.JSSubject;
-import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.SecurityAttributeType;
-import org.apache.jetspeed.security.SecurityAttributeTypes;
 import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.impl.TransientJetspeedPrincipal;
 import org.apache.jetspeed.test.JetspeedTestCase;
+import org.apache.jetspeed.testhelpers.AbstractTestPrincipal;
 import org.jmock.Mock;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -271,6 +266,7 @@ public class TestConstraintsAction extends JetspeedTestCase
         Set principals = new HashSet();
         principals.add(new TestUser("admin"));
         principals.add(new TestRole("admin"));
+        principals.add(new TestRole("user"));        
         Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
         
         JSSubject.doAsPrivileged(subject, new PrivilegedAction()
@@ -291,72 +287,7 @@ public class TestConstraintsAction extends JetspeedTestCase
      
         
     }
-    
-    static class AbstractTestPrincipal extends TransientJetspeedPrincipal
-    {
-        private static final SecurityAttributeTypes attributeTypes = new SecurityAttributeTypes()
-        {
-
-            public Map<String, SecurityAttributeType> getAttributeTypeMap()
-            {
-                return Collections.emptyMap();
-            }
-
-            public Map<String, SecurityAttributeType> getAttributeTypeMap(String category)
-            {
-                return Collections.emptyMap();
-            }
-
-            public boolean isExtendable()
-            {
-                return false;
-            }
-
-            public boolean isReadOnly()
-            {
-                return true;
-            }
-        };
         
-        private JetspeedPrincipalType type;
-        
-        private static final long serialVersionUID = 1L;
-        
-
-        public AbstractTestPrincipal(final String type, String name)
-        {
-            super(type, name);
-            this.type = new JetspeedPrincipalType()
-            {               
-                public SecurityAttributeTypes getAttributeTypes()
-                {
-                    return attributeTypes;
-                }
-
-                public String getClassName()
-                {
-                    return null;
-                }
-
-                public String getName()
-                {
-                    return type;
-                }
-
-                public Class<JetspeedPrincipal> getPrincipalClass()
-                {
-                    return null;
-                }
-            };
-        }
-
-        @Override
-        public synchronized JetspeedPrincipalType getType()
-        {
-            return type;
-        }
-    }
-    
     static class TestUser extends AbstractTestPrincipal implements User
     {
         private static final long serialVersionUID = 1L;

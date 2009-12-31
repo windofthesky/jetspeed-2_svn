@@ -293,20 +293,20 @@ YUI.add('jetui-portal', function(Y) {
                 windowId = windowId.replace(/^jetspeed-detach-/, "");
             }
             var window = Y.one("[id='" + windowId + "']");
-            if (window) {
-                Y.log("data = " + window.data.get("name"));            	
-            }            
             var jetspeedZone = Y.one('#jetspeedZone');
             if (!Y.Lang.isNull(jetspeedZone)) {
         		var dragParent = window.get('parentNode');
             	var parentColumn = dragParent.data.get('column');
             	portal.reallocateColumn(parentColumn);
 
-            	window.data.set("x", 10);
-                window.data.set("y", 10);
+            	var pos = window.get('region');
+            	var x =  pos.top + 5;
+            	var y =  pos.left + 5;
+            	window.data.set("x", x);
+                window.data.set("y", y);
                 window.setStyle('position', 'absolute');
-                window.setStyle('top', '10px');
-                window.setStyle('left', '10px');
+                window.setStyle('top', x + 'px');
+                window.setStyle('left', y + 'px');
             	window.data.set('detached', true);
             	window.data.set("tool", false);
             	var drag = Y.DD.DDM.getDrag(window);
@@ -329,7 +329,17 @@ YUI.add('jetui-portal', function(Y) {
                         node: dragParent,
                         groups: ['grid']            
                     });
-    			}                
+    			}
+              var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
+              uri += "&x=" + x + "&y=" + y + "&layout=detach";
+              var config = {
+                      on: { complete: portal.onMoveComplete },
+                      method: "PUT",
+                      headers: { "X-Portal-Path" : portal.portalPagePath },
+                      arguments: { complete: [ windowId ] }
+                  };
+              var request = Y.io(uri, config);
+    			
             }            
         },
         
@@ -375,7 +385,7 @@ YUI.add('jetui-portal', function(Y) {
             else
             {
                 var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
-                uri += "&x=" + e.target.region.top + "&y=" + e.target.region.left + "&detached=true";
+                uri += "&x=" + e.target.region.top + "&y=" + e.target.region.left;
                 var config = {
                         on: { complete: portal.onMoveComplete },
                         method: "PUT",
