@@ -702,22 +702,41 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     public String getTitle(ContentFragment f)
     {
         String title = null;
+        
         if (f != null)
         {
             title = f.getTitle();
+            
             if (title == null && f.getPortletContent() != null)
             {
                 title = f.getPortletContent().getTitle();
             }
-            else
+            
+            if (title == null)
             {
-                title = f.getName();
-                if (title != null && title.indexOf("::") > -1)
+                PortletWindow portletWindow = requestContext.getPortletWindow(f);
+            
+                if (portletWindow != null)
                 {
-                    title = title.substring(title.indexOf("::")+2);
+                    title = requestContext.getPreferedLanguage(portletWindow.getPortletDefinition()).getTitle();
+                    
+                    if (title == null)
+                    {
+                        title = portletWindow.getPortletDefinition().getPortletName();
+                    }
+                }
+                else
+                {
+                    title = f.getName();
+                    
+                    if (title != null && title.indexOf("::") > -1)
+                    {
+                        title = title.substring(title.indexOf("::") + 2);
+                    }
                 }
             }
         }
+        
         return title;
     }
 
