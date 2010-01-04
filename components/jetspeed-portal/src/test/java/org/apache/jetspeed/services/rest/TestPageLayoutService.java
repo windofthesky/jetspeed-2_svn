@@ -27,11 +27,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.impl.LayoutValve;
 import org.apache.jetspeed.mocks.ResourceLocatingServletContext;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.portlet.InitParam;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.JetspeedRequestContext;
 import org.apache.jetspeed.request.RequestContext;
@@ -44,6 +47,12 @@ import org.apache.jetspeed.services.beans.ContentFragmentBean;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.AbstractTestPrincipal;
 import org.jmock.Mock;
+import org.jmock.core.Constraint;
+import org.jmock.core.InvocationMatcher;
+import org.jmock.core.constraint.IsEqual;
+import org.jmock.core.constraint.IsInstanceOf;
+import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
+import org.jmock.core.stub.ReturnStub;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -67,6 +76,7 @@ public class TestPageLayoutService extends JetspeedTestCase
     private PageManager pageManager;
     private PageLayoutComponent layoutManager;
     private PageLayoutService pageLayoutService;
+    private PortletRegistry portletRegistry;
 
     public static void main(String[] args)
     {
@@ -79,7 +89,7 @@ public class TestPageLayoutService extends JetspeedTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-
+        
         MockServletConfig servletConfig = new MockServletConfig();        
         ResourceLocatingServletContext servletContent = new ResourceLocatingServletContext(new File(getBaseDir()));        
         servletConfig.setServletContext(servletContent);
@@ -103,8 +113,11 @@ public class TestPageLayoutService extends JetspeedTestCase
         assertNotNull(pageManager);
         layoutManager = (PageLayoutComponent)cm.getComponent("org.apache.jetspeed.layout.PageLayoutComponent");
         assertNotNull(layoutManager);
-        pageLayoutService = (PageLayoutService)cm.getComponent("jaxrsPageLayoutService");
-        assertNotNull(pageLayoutService);        
+
+        portletRegistry = createMockPortletRegistry();
+        assertNotNull(portletRegistry);
+
+        pageLayoutService = new PageLayoutService(layoutManager, portletRegistry);
     }
 
     protected void tearDown() throws Exception
@@ -116,9 +129,6 @@ public class TestPageLayoutService extends JetspeedTestCase
     public void testRunner()
     throws Exception
     {
-        if (0 == 0)
-            return; // UNDER DEVELOPMENT, let it pass for now....
-        
         RequestContextComponent rcc = (RequestContextComponent) new Mock(RequestContextComponent.class).proxy();        
         MockServletConfig config = new MockServletConfig();
         MockServletContext context = new MockServletContext();
@@ -132,12 +142,13 @@ public class TestPageLayoutService extends JetspeedTestCase
         principals.add(new TestUser("admin"));
         principals.add(new TestRole("user"));
         principals.add(new TestRole("admin"));
-        Subject subject = new Subject(true, principals, new HashSet(), new HashSet());        
-        JSSubject.doAsPrivileged(subject, new PrivilegedAction()
+        Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
+        
+        Object ret = JSSubject.doAsPrivileged(subject, new PrivilegedAction()
                 {
                     public Object run() 
                     {
-                         try
+                        try
                         {
                             executeGridMoves(request, rc);                 
                             return null;
@@ -147,22 +158,85 @@ public class TestPageLayoutService extends JetspeedTestCase
                             return e;
                         }                    
                     }
-                }, null);        
+                }, null);
+        
+        assertFalse("Exception occurrred: " + ret, ret instanceof Throwable);
     }
     
-    public void executeGridMoves(HttpServletRequest request, RequestContext rc) throws Exception
+    private void executeGridMoves(HttpServletRequest request, RequestContext rc) throws Exception
     {
         Page grid = pageManager.getPage("grid.psml");
         assertNotNull("default page not found", grid);
+        
         ContentPage page = layoutManager.newContentPage(grid, null, null);
         rc.setPage(page);
-        ContentFragmentBean cfb = this.pageLayoutService.moveContentFragment(request, null, "dp-1.dp-3", null, null, "1", "0", null, null, null, null, null);
-        assertEquals(cfb.getId(), "dp-1.dp-3");
-        assertEquals(cfb.getProperties().get("row"), "1");
-        assertEquals(cfb.getProperties().get("column"), "0");        
-    }    
         
-    static class TestUser extends AbstractTestPrincipal implements User
+        ContentFragmentBean cfb = pageLayoutService.moveContentFragment(request, null, "dp-0.dp-00", null, null, "1", "0", null, null, null, null, null);
+        assertEquals(cfb.getId(), "dp-0.dp-00");
+        assertEquals(cfb.getProperties().get("column"), "0");
+        assertEquals(cfb.getProperties().get("row"), "1");
+        
+        cfb = pageLayoutService.moveContentFragment(request, null, "dp-0.dp-02", null, "right", null, null, null, null, null, null, null);
+        assertEquals(cfb.getId(), "dp-0.dp-02");
+        assertEquals(cfb.getProperties().get("column"), "1");
+        assertEquals(cfb.getProperties().get("row"), "2");
+
+        cfb = pageLayoutService.moveContentFragment(request, null, "dp-0.dp-02", null, "down", null, null, null, null, null, null, null);
+        assertEquals(cfb.getId(), "dp-0.dp-02");
+        assertEquals(cfb.getProperties().get("column"), "1");
+        assertEquals(cfb.getProperties().get("row"), "3");
+        
+        cfb = pageLayoutService.moveContentFragment(request, null, "dp-0.dp-02", null, "up", null, null, null, null, null, null, null);
+        assertEquals(cfb.getId(), "dp-0.dp-02");
+        assertEquals(cfb.getProperties().get("column"), "1");
+        assertEquals(cfb.getProperties().get("row"), "2");
+        
+        cfb = pageLayoutService.moveContentFragment(request, null, "dp-0.dp-02", null, "left", null, null, null, null, null, null, null);
+        assertEquals(cfb.getId(), "dp-0.dp-02");
+        assertEquals(cfb.getProperties().get("column"), "0");
+        assertEquals(cfb.getProperties().get("row"), "2");
+    }
+    
+    private PortletRegistry createMockPortletRegistry()
+    {
+        Mock portletRegistryMock;
+        PortletRegistry portletRegistry;
+        Mock portletDefMock;
+        PortletDefinition portletDef;
+
+        Mock portletSizesParamMock;
+        InitParam portletSizesParam;
+        
+        portletRegistryMock = new Mock(PortletRegistry.class);
+        portletRegistry = (PortletRegistry) portletRegistryMock.proxy();
+        
+        portletDefMock = new Mock(PortletDefinition.class);
+        portletDef = (PortletDefinition) portletDefMock.proxy();
+
+        portletSizesParamMock = new Mock(InitParam.class);
+        portletSizesParam = (InitParam) portletSizesParamMock.proxy();
+
+        expectAndReturn(new InvokeAtLeastOnceMatcher(), portletSizesParamMock, "getParamValue", "33%,66%");
+        expectAndReturn(new InvokeAtLeastOnceMatcher(), portletRegistryMock, "getPortletDefinitionByUniqueName", portletDef);
+        expectAndReturn(new InvokeAtLeastOnceMatcher(), portletDefMock, "getInitParam", new Constraint[] {new IsEqual("sizes")}, portletSizesParam);
+        
+        return portletRegistry;
+    }
+
+    private void expectAndReturn(InvocationMatcher matcher, Mock mock, String methodName, Constraint[] constraints, Object returnValue)
+    {
+        mock.expects(matcher).method(methodName)
+                            .with(constraints)
+                            .will(new ReturnStub(returnValue));
+    }
+    
+    private void expectAndReturn(InvocationMatcher matcher, Mock mock, String methodName, Object returnValue)
+    {
+        mock.expects(matcher).method(methodName)
+                            .will(new ReturnStub(returnValue));
+    }
+    
+    private static class TestUser extends AbstractTestPrincipal implements User
     {
         private static final long serialVersionUID = 1L;
 
@@ -172,7 +246,7 @@ public class TestPageLayoutService extends JetspeedTestCase
         }
     }
 
-    static class TestRole extends AbstractTestPrincipal implements Role
+    private static class TestRole extends AbstractTestPrincipal implements Role
     {
         private static final long serialVersionUID = 1L;
 

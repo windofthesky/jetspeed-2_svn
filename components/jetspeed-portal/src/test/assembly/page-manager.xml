@@ -26,7 +26,7 @@ limitations under the License.
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>.psml</value></constructor-arg>
        <constructor-arg index="3" ><value>org.apache.jetspeed.om.page.psml.PageImpl</value></constructor-arg>       
-       <constructor-arg index="4" ><value>${applicationRoot}/src/test/testdata/pages/pages</value></constructor-arg>
+       <constructor-arg index="4" ><value>${applicationRoot}/target/test-classes/webapp/WEB-INF/pages</value></constructor-arg>
        <constructor-arg index="5" ><ref bean="PageFileCache"/></constructor-arg>
   </bean>
   
@@ -36,7 +36,7 @@ limitations under the License.
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>.tpsml</value></constructor-arg>
        <constructor-arg index="3" ><value>org.apache.jetspeed.om.page.psml.PageTemplateImpl</value></constructor-arg>       
-       <constructor-arg index="4" ><value>${applicationRoot}/src/test/testdata/pages/pages</value></constructor-arg>
+       <constructor-arg index="4" ><value>${applicationRoot}/target/test-classes/webapp/WEB-INF/pages</value></constructor-arg>
        <constructor-arg index="5" ><ref bean="PageFileCache"/></constructor-arg>
   </bean>
   
@@ -46,7 +46,7 @@ limitations under the License.
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>.dpsml</value></constructor-arg>
        <constructor-arg index="3" ><value>org.apache.jetspeed.om.page.psml.DynamicPageImpl</value></constructor-arg>       
-       <constructor-arg index="4" ><value>${applicationRoot}/src/test/testdata/pages/pages</value></constructor-arg>
+       <constructor-arg index="4" ><value>${applicationRoot}/target/test-classes/webapp/WEB-INF/pages</value></constructor-arg>
        <constructor-arg index="5" ><ref bean="PageFileCache"/></constructor-arg>
   </bean>
   
@@ -56,7 +56,7 @@ limitations under the License.
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>.fpsml</value></constructor-arg>
        <constructor-arg index="3" ><value>org.apache.jetspeed.om.page.psml.FragmentDefinitionImpl</value></constructor-arg>       
-       <constructor-arg index="4" ><value>${applicationRoot}/src/test/testdata/pages/pages</value></constructor-arg>
+       <constructor-arg index="4" ><value>${applicationRoot}/target/test-classes/webapp/WEB-INF/pages</value></constructor-arg>
        <constructor-arg index="5" ><ref bean="PageFileCache"/></constructor-arg>
   </bean>
   
@@ -66,7 +66,7 @@ limitations under the License.
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>.link</value></constructor-arg>
        <constructor-arg index="3" ><value>org.apache.jetspeed.om.page.psml.LinkImpl</value></constructor-arg>       
-       <constructor-arg index="4" ><value>${applicationRoot}/src/test/testdata/pages/pages</value></constructor-arg>
+       <constructor-arg index="4" ><value>${applicationRoot}/target/test-classes/webapp/WEB-INF/pages</value></constructor-arg>
        <constructor-arg index="5" ><ref bean="PageFileCache"/></constructor-arg>
   </bean>
   
@@ -76,7 +76,7 @@ limitations under the License.
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>folder.metadata</value></constructor-arg>
        <constructor-arg index="3" ><value>org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl</value></constructor-arg>       
-       <constructor-arg index="4" ><value>${applicationRoot}/src/test/testdata/pages/pages</value></constructor-arg>
+       <constructor-arg index="4" ><value>${applicationRoot}/target/test-classes/webapp/WEB-INF/pages</value></constructor-arg>
        <constructor-arg index="5" ><ref bean="PageFileCache"/></constructor-arg>
   </bean>
   
@@ -86,7 +86,7 @@ limitations under the License.
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>page.security</value></constructor-arg>
        <constructor-arg index="3" ><value>org.apache.jetspeed.om.page.psml.PageSecurityImpl</value></constructor-arg>       
-       <constructor-arg index="4" ><value>${applicationRoot}/src/test/testdata/pages/pages</value></constructor-arg>
+       <constructor-arg index="4" ><value>${applicationRoot}/target/test-classes/webapp/WEB-INF/pages</value></constructor-arg>
        <constructor-arg index="5" ><ref bean="PageFileCache"/></constructor-arg>
   </bean>
   
@@ -122,7 +122,7 @@ limitations under the License.
   <bean id="FolderHandler"         
        class="org.apache.jetspeed.page.document.psml.FileSystemFolderHandler" >         
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
-       <constructor-arg index="1"><value>${applicationRoot}/src/test/testdata/pages/pages</value></constructor-arg>
+       <constructor-arg index="1"><value>${applicationRoot}/target/test-classes/webapp/WEB-INF/pages</value></constructor-arg>
        <constructor-arg index="2"><ref bean="DocumentHandlerFactory"/></constructor-arg>
        <constructor-arg index="3"><ref bean="PageFileCache"/></constructor-arg>        
   </bean>
