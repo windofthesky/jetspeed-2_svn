@@ -63,6 +63,7 @@ import org.apache.jetspeed.services.title.DynamicTitleService;
 import org.apache.jetspeed.util.ArgUtil;
 import org.apache.jetspeed.util.Path;
 import org.apache.pluto.om.entity.PortletEntity;
+import org.apache.pluto.om.window.PortletWindow;
 import org.apache.velocity.context.Context;
 
 /**
@@ -741,13 +742,17 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         {
             try
             {
-
-                return titleService.getDynamicTitle(windowAccess.getPortletWindow(f), getRequestContext().getRequest());
+                title = titleService.getDynamicTitle(windowAccess.getPortletWindow(f), getRequestContext().getRequest());
+                
+                if (title == null)
+                {
+                    title = getTitleFromPortletDefinition(entity);
+                }
             }
             catch (Exception e)
             {
                 log.error("Unable to reteive portlet title: " + e.getMessage(), e);
-                return "Title Error: " + e.getMessage();
+                title = "Title Error: " + e.getMessage();
             }
         }
 
@@ -766,17 +771,25 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
      */
     public String getTitle(PortletEntity entity)
     {
+        String title = null;
+        
         try
         {
-            return titleService.getDynamicTitle(windowAccess.getPortletWindow(getCurrentFragment()),
+            title = titleService.getDynamicTitle(windowAccess.getPortletWindow(getCurrentFragment()),
                     getRequestContext().getRequest());
+            
+            if (title == null)
+            {
+                title = getTitleFromPortletDefinition(entity);
+            }
         }
         catch (Exception e)
         {
             log.error("Unable to reteive portlet title: " + e.getMessage(), e);
-            return "Title Error: " + e.getMessage();
+            title = "Title Error: " + e.getMessage();
         }
-
+        
+        return title;
     }
 
     public Object getComponent(String name)
@@ -869,6 +882,27 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         ContentFragment contentFragment = new ContentFragmentImpl(fragment, new HashMap(), true);
         renderer.renderNow(contentFragment, context);
         return contentFragment.getRenderedContent();
+    }
+    
+    private String getTitleFromPortletDefinition(PortletEntity entity)
+    {
+         String title = null;
+         
+         if (entity != null && entity.getPortletDefinition() != null)
+         {
+             title = requestContext.getPreferedLanguage(entity.getPortletDefinition()).getTitle();
+         }
+         
+         if (title == null && entity.getPortletDefinition() != null)
+         {
+             title = entity.getPortletDefinition().getName();
+         }
+         else if (title == null)
+         {
+             title = "Invalid portlet entity " + entity.getId();
+         }
+         
+         return title;
     }
 
 }
