@@ -119,6 +119,11 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
     detachWindows.each(function(v, k) {
         v.on('click', portal.detachPortlet);
     });
+
+    var attachWindows = Y.Node.all('.portlet-action-attach');
+    attachWindows.each(function(v, k) {
+        v.on('click', portal.attachPortlet);
+    });
     
 	Y.DD.DDM.on('drag:drophit', function(e) {
 	    var portal = JETUI_YUI.getPortalInstance();

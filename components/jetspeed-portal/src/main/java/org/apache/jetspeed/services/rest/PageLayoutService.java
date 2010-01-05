@@ -333,7 +333,12 @@ public class PageLayoutService
                 try
                 {
                     ContentFragment layoutFragment = null;
-                    
+                    boolean attach = false;
+                    if (!StringUtils.isBlank(layoutFragmentId) && layoutFragmentId.equals("attach"))
+                    {
+                    	layoutFragmentId = null;
+                    	attach = true;
+                    }
                     if (!StringUtils.isBlank(layoutFragmentId))
                     {
                         layoutFragment = contentPage.getFragmentByFragmentId(layoutFragmentId);
@@ -364,12 +369,18 @@ public class PageLayoutService
                     
                     // synchronize back to the page layout root fragment
                     contentPage = ppc.syncPageFragments(PageLayoutComponent.USER_PROPERTY_SCOPE, null);
+                    if (attach)
+                    	pageLayoutComponent.updateStateMode(contentFragment, JetspeedActions.NORMAL, null, PageLayoutComponent.USER_PROPERTY_SCOPE, null);                    
                 }
                 catch (Exception e)
                 {
                     throw new WebApplicationException(e);
                 }
             }
+            else if (!StringUtils.isBlank(layoutFragmentId) && layoutFragmentId.equals("attach"))
+            {
+              	pageLayoutComponent.updateStateMode(contentFragment, JetspeedActions.NORMAL, null, PageLayoutComponent.USER_PROPERTY_SCOPE, null);                    
+            }            
         }
         else
         {
@@ -403,8 +414,7 @@ public class PageLayoutService
             {
                 throw new WebApplicationException(e);
             }
-        }
-        
+        }        
         return new ContentFragmentBean(contentFragment);
     }
 

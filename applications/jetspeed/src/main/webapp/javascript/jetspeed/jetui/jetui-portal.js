@@ -289,58 +289,132 @@ YUI.add('jetui-portal', function(Y) {
             if (e instanceof String) {
                 windowId = e;
             } else {
-                var windowId = e.currentTarget.getAttribute("id");
+                windowId = e.currentTarget.getAttribute("id");
                 windowId = windowId.replace(/^jetspeed-detach-/, "");
             }
             var window = Y.one("[id='" + windowId + "']");
             var jetspeedZone = Y.one('#jetspeedZone');
             if (!Y.Lang.isNull(jetspeedZone)) {
-        		var dragParent = window.get('parentNode');
-            	var parentColumn = dragParent.data.get('column');
-            	portal.reallocateColumn(parentColumn);
-
-            	var pos = window.get('region');
-            	var x =  pos.top + 5;
-            	var y =  pos.left + 5;
-            	window.data.set("x", x);
-                window.data.set("y", y);
-                window.setStyle('position', 'absolute');
-                window.setStyle('top', x + 'px');
-                window.setStyle('left', y + 'px');
-            	window.data.set('detached', true);
-            	window.data.set("tool", false);
-            	var drag = Y.DD.DDM.getDrag(window);
-            	drag.removeFromGroup("grid");
-            	drag.addToGroup("detached");
-            	drag.set('dragMode', 'point');
-            	var drop = Y.DD.DDM.getDrop(window);
-            	var i = 0;
-                while (i < Y.DD.DDM.targets.length) {
-                    if (Y.DD.DDM.targets[i] == drop) {
-                        Y.DD.DDM.targets.splice(i, 1);
-                        break;
-                    }
-                    i++;
-                }
-                jetspeedZone.appendChild(window);
-    			if (dragParent.get("children").size() == 0)
-    			{
-                    var drop = new Y.DD.Drop({
-                        node: dragParent,
-                        groups: ['grid']            
-                    });
-    			}
-              var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
-              uri += "&x=" + x + "&y=" + y + "&layout=detach";
-              var config = {
+	    		var dragParent = window.get('parentNode');
+	        	var parentColumn = dragParent.data.get('column');
+	        	portal.reallocateColumn(parentColumn);
+	
+	        	var pos = window.get('region');
+	        	var x =  pos.top + 5;
+	        	var y =  pos.left + 5;
+	        	window.data.set("x", x);
+	            window.data.set("y", y);
+	            window.setStyle('position', 'absolute');
+	            window.setStyle('top', x + 'px');
+	            window.setStyle('left', y + 'px');
+	        	window.data.set('detached', true);
+	        	window.data.set("tool", false);
+	        	var drag = Y.DD.DDM.getDrag(window);
+	        	drag.removeFromGroup("grid");
+	        	drag.addToGroup("detached");
+	        	drag.set('dragMode', 'point');
+	        	var drop = Y.DD.DDM.getDrop(window);
+	        	var i = 0;
+	            while (i < Y.DD.DDM.targets.length) {
+	                if (Y.DD.DDM.targets[i] == drop) {
+	                    Y.DD.DDM.targets.splice(i, 1);
+	                    break;
+	                }
+	                i++;
+	            }
+	            jetspeedZone.appendChild(window);
+				if (dragParent.get("children").size() == 0)
+				{
+	                var drop = new Y.DD.Drop({
+	                    node: dragParent,
+	                    groups: ['grid']            
+	                });
+				}
+				e.currentTarget.on('click', portal.attachPortlet);
+	        	e.currentTarget.setAttribute("title", "attach");
+	        	e.currentTarget.setAttribute("class", "portlet-action-attach");
+	        	var imgsrc = e.target.getAttribute("src");
+		        if (imgsrc != null) {
+		        		e.target.setAttribute("src", imgsrc.replace("/detach/", "attach"));
+		        		e.target.setAttribute("alt", "Attach");
+	        	}
+		        var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
+		        uri += "&x=" + x + "&y=" + y + "&layout=detach";
+		        var config = {
                       on: { complete: portal.onMoveComplete },
                       method: "PUT",
                       headers: { "X-Portal-Path" : portal.portalPagePath },
                       arguments: { complete: [ windowId ] }
                   };
-              var request = Y.io(uri, config);
-    			
+		        var request = Y.io(uri, config);    			
             }            
+        },
+
+        /**
+         * @method attachPortlet attaches a portlet from a z-order top detached window to a grid position
+         */
+        attachPortlet : function(e) {
+            var portal = JETUI_YUI.getPortalInstance();
+            var windowId = null;
+            if (e instanceof String) {
+                windowId = e;
+            } else {
+                windowId = e.currentTarget.getAttribute("id");
+                windowId = windowId.replace(/^jetspeed-detach-/, "");
+            }
+            var window = Y.one("[id='" + windowId + "']");
+            var col = window.data.get("column");
+            var layout = null;
+            var count = 0;
+            Y.Node.all(JetuiConfiguration.layoutStyle).each(function(v, k) {
+            	if (count == col) {
+            		layout = v;
+            	}
+            	count++;
+            });
+            if (layout != null)
+            {
+            	var row = layout.get('children').size();
+	            window.setAttribute("row", row);
+	            window.setAttribute("detached", "false");
+	        	window.data.set("row", row);
+	            window.data.set("col", col);
+	            window.setStyle('position', '');
+	            window.setStyle('top', '');
+	            window.setStyle('left', '');
+	        	window.data.set('detached', false);
+				e.currentTarget.on('click', portal.detachPortlet);
+	        	e.currentTarget.setAttribute("title", "detach");
+	        	e.currentTarget.setAttribute("class", "portlet-action-detach");
+	        	var imgsrc = e.target.getAttribute("src");
+		        if (imgsrc != null) {
+		        	e.target.setAttribute("src", imgsrc.replace("/attach/", "detach"));
+		        	e.target.setAttribute("alt", "Detach");
+	        	}	        	
+	        	var drag = Y.DD.DDM.getDrag(window);
+	        	drag.removeFromGroup("detached");
+	        	drag.addToGroup("grid");
+	        	drag.set('dragMode', 'intersect');
+	        	var drop = Y.DD.DDM.getDrop(window);
+	        	var i = 0;
+	            while (i < Y.DD.DDM.targets.length) {
+	                if (Y.DD.DDM.targets[i] == drop) {
+	                    Y.DD.DDM.targets.splice(i, 1);
+	                    break;
+	                }
+	                i++;
+	            }
+	            layout.appendChild(window);
+	            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
+	            uri += "&row=" + row + "&col=" + col + "&layout=attach";
+	            var config = {
+	                  on: { complete: portal.onMoveComplete },
+	                  method: "PUT",
+	                  headers: { "X-Portal-Path" : portal.portalPagePath },
+	                  arguments: { complete: [ windowId ] }
+	              };
+	            var request = Y.io(uri, config);
+            }
         },
         
         onMoveComplete : function(id, o, args) { 
