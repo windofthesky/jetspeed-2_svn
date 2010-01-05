@@ -26,7 +26,7 @@ limitations under the License.
       <img src="#GetPageResource('images/Jetspeed_blue_sm.png')" alt="Jetspeed 2 Powered" border="0" />
     </p>
 #if ($jetspeed.isAjaxCustomizationEnabled())
-<script src="#BaseHref()/jetui/engine/portal.js"></script>
+<script src="#BaseHref()jetui/engine/portal.js"></script>
 <div id="jsPortletTemplate" class="portal-layout-cell yui-dd-draggable yui-dd-drop" style="display: none">
   <div class="portlet ${layoutDecoration.name}">
     <div class="PTitle">

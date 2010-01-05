@@ -36,7 +36,7 @@ limitations under the License.
 <html>
 <head> 
 #if ($jetspeed.isAjaxCustomizationEnabled())
-<script type="text/javascript" src="#BaseHref()/javascript/yui/build/yui/yui-min.js"></script>
+<script type="text/javascript" src="#BaseHref()javascript/yui/build/yui/yui-min.js"></script>
 <script language="javascript">
 var JetuiConfiguration = {
 	engine: '$pc.getString("jetui.render.engine")',
@@ -50,17 +50,17 @@ var JetuiConfiguration = {
 	portalPagePath: "${portalPagePath}"			
 };
 var JETUI_YUI = {
-  base: "#BaseHref()/javascript/yui/build/",
+  base: "#BaseHref()javascript/yui/build/",
   timeout: 10000, 
   debug: true, 
   useBrowserConsole: true,
   config: JetuiConfiguration,    
   modules: {
-    'jetui-portal': { fullpath: "#BaseHref()/javascript/jetspeed/jetui/jetui-portal.js" }
+    'jetui-portal': { fullpath: "#BaseHref()javascript/jetspeed/jetui/jetui-portal.js" }
   }
 }; // ({classNamePrefix: 'jet'})
 </script>
-<link rel="stylesheet" type="text/css" href="#BaseHref()/jetui/css/portal.css"/>
+<link rel="stylesheet" type="text/css" href="#BaseHref()jetui/css/portal.css"/>
 #end
 
 #includeHeaderResource()
