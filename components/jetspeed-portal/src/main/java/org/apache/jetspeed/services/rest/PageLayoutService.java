@@ -381,12 +381,23 @@ public class PageLayoutService
             
             try
             {
-                if (layoutFragmentId != null && layoutFragmentId.equals("detach"))
-                {
-                    //pageLayoutComponent.moveFragment(contentPage, layoutFragmentId, fromFragmentId, toFragmentId)
-                }
                 pageLayoutComponent.updatePosition(contentFragment, posX, posY, posZ, posWidth, posHeight, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
                 pageLayoutComponent.updateStateMode(contentFragment, JetspeedActions.DETACH, null, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
+                if (layoutFragmentId != null && layoutFragmentId.equals("detach"))
+                {
+                    // first time detach, reallocate column and move it to the back
+                    ContentFragment layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), fragmentId);                    
+                    if (layoutFragment == null)
+                    {
+                        throw new WebApplicationException(new IllegalArgumentException("Layout fragment not found for the fragment: " + fragmentId));
+                    }                    
+                    PortletPlacementContext ppc = new PortletPlacementContextImpl(contentPage, portletRegistry, layoutFragment);
+                    int col = contentFragment.getLayoutColumn();
+                    int row = ppc.getNumberRows((col <= 0) ? 0 : col - 1);
+                    Coordinate coordinate = new CoordinateImpl(col, contentFragment.getLayoutRow(), col, row);
+                    ppc.moveAbsolute(contentFragment, coordinate);
+                    contentPage = ppc.syncPageFragments(PageLayoutComponent.USER_PROPERTY_SCOPE, null);
+                }
             }
             catch (Exception e)
             {

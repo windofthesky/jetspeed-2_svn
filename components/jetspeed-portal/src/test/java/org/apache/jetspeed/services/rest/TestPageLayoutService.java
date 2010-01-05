@@ -24,6 +24,7 @@ import java.util.Set;
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
@@ -31,6 +32,7 @@ import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.impl.LayoutValve;
 import org.apache.jetspeed.mocks.ResourceLocatingServletContext;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.portlet.InitParam;
@@ -150,7 +152,8 @@ public class TestPageLayoutService extends JetspeedTestCase
                     {
                         try
                         {
-                            executeGridMoves(request, rc);                 
+                            executeGridMoves(request, rc);     
+                            executeDetachedMoves(request, rc);
                             return null;
                         }
                         catch (Exception e)
@@ -165,9 +168,11 @@ public class TestPageLayoutService extends JetspeedTestCase
     
     private void executeGridMoves(HttpServletRequest request, RequestContext rc) throws Exception
     {
-        Page grid = pageManager.getPage("grid.psml");
-        assertNotNull("default page not found", grid);
-        
+        Page src = pageManager.getPage("grid.psml");
+        assertNotNull("default page not found", src);
+        Page grid = pageManager.copyPage(src, "grid-1.psml", true);
+        pageManager.updatePage(grid);
+       
         ContentPage page = layoutManager.newContentPage(grid, null, null);
         rc.setPage(page);
         
@@ -195,6 +200,45 @@ public class TestPageLayoutService extends JetspeedTestCase
         assertEquals(cfb.getId(), "dp-0.dp-02");
         assertEquals(cfb.getProperties().get("column"), "0");
         assertEquals(cfb.getProperties().get("row"), "2");
+        
+        pageManager.removePage(grid);
+    }
+
+    private void executeDetachedMoves(HttpServletRequest request, RequestContext rc) throws Exception
+    {
+        Page src = pageManager.getPage("grid.psml");
+        assertNotNull("default page not found", src);
+        Page grid = pageManager.copyPage(src, "grid-2.psml", true);
+        pageManager.updatePage(grid);
+       
+        ContentPage page = layoutManager.newContentPage(grid, null, null);
+        rc.setPage(page);
+
+        ContentFragmentBean cfb = pageLayoutService.moveContentFragment(request, null, "dp-0.dp-10", "detach", null, null, null, "491.0", "14.0", null, null, null);
+        assertEquals(cfb.getId(), "dp-0.dp-10");
+        assertEquals(cfb.getProperties().get("column"), "1");
+        assertEquals(cfb.getProperties().get("row"), "3");
+        assertEquals(cfb.getProperties().get("x"), "491.0");
+        assertEquals(cfb.getProperties().get("y"), "14.0");
+        assertEquals(cfb.getState(), JetspeedActions.DETACH);
+        ContentFragment dp10 = page.getFragmentByFragmentId("dp-10");
+        assertNotNull(dp10);
+        assertEquals(dp10.getLayoutRow(), 3);
+        assertEquals(dp10.getLayoutX(), (float)491.0);
+        assertEquals(dp10.getLayoutY(), (float)14.0);
+        assertEquals(dp10.getState(), JetspeedActions.DETACH);
+        // test shift up of all rows not detached
+        ContentFragment dp11 = page.getFragmentByFragmentId("dp-11");
+        assertNotNull(dp11);
+        assertEquals(dp11.getLayoutRow(), 0);
+        ContentFragment dp12 = page.getFragmentByFragmentId("dp-12");
+        assertNotNull(dp12);
+        assertEquals(dp12.getLayoutRow(), 1);
+        ContentFragment dp13 = page.getFragmentByFragmentId("dp-13");
+        assertNotNull(dp13);
+        assertEquals(dp13.getLayoutRow(), 2);
+        
+        pageManager.removePage(grid);        
     }
     
     private PortletRegistry createMockPortletRegistry()
