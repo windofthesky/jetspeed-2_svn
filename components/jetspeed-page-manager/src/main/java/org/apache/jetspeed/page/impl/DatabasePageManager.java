@@ -166,11 +166,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     
     private PageManager pageManagerProxy;
 
-    public DatabasePageManager(String repositoryPath, IdGenerator generator, boolean isPermissionsSecurity, boolean isConstraintsSecurity, JetspeedCache oidCache, JetspeedCache pathCache)
+    public DatabasePageManager(String repositoryPath, IdGenerator generator, boolean isPermissionsSecurity, boolean isConstraintsSecurity, JetspeedCache oidCache, JetspeedCache pathCache, JetspeedCache propertiesCache, JetspeedCache propertiesPathCache)
     {
         super(repositoryPath);
         delegator = new DelegatingPageManager(generator, isPermissionsSecurity, isConstraintsSecurity, modelClasses);
-        DatabasePageManagerCache.cacheInit(oidCache, pathCache, this);
+        DatabasePageManagerCache.cacheInit(oidCache, pathCache, propertiesCache, propertiesPathCache, this);
     }
 
     /**
@@ -1414,7 +1414,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 newFragmentsElement[0] = false;
             }
             
-            // return parent folder to update is caches after update
+            // return parent folder to update its caches after update
             return parent;
         }
         catch (PageNotUpdatedException pnue)
@@ -1606,15 +1606,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 }
 
                 // create root folder or update folder and mark cache transaction
-                storeEntity(folder, folderPath);
-                if (newFolder && (folderImpl.getIdentity() != 0))
-                {
-                    DatabasePageManagerCache.addTransaction(new TransactionedOperation(folderPath, TransactionedOperation.ADD_OPERATION));
-                }
-                else
-                {
-                    DatabasePageManagerCache.addTransaction(new TransactionedOperation(folderPath, TransactionedOperation.UPDATE_OPERATION));
-                }
+                storeEntity(folder, folderPath, (newFolder && (folderImpl.getIdentity() != 0)));
 
                 // reset parent folder folders cache in case
                 // parent is holding an out of date copy of
@@ -2622,13 +2614,30 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             {
                 throw new PageNotUpdatedException("Properties for transient fragment cannot be updated");
             }
-            
-            // check access
-            boolean checkEditAccess = ((scope == null) || !scope.equals(USER_PROPERTY_SCOPE));
-            baseFragmentElementImpl.checkAccess(checkEditAccess ? JetspeedActions.EDIT : JetspeedActions.VIEW);
 
-            // update fragment properties
-            updateFragmentPropertiesList(baseFragmentElementImpl, scope, null);
+            // update lists only if not global or all scope
+            if ((scope != null) && !scope.equals(ALL_PROPERTY_SCOPE))
+            {
+                // check access
+                boolean checkEditAccess = !scope.equals(USER_PROPERTY_SCOPE);
+                baseFragmentElementImpl.checkAccess(checkEditAccess ? JetspeedActions.EDIT : JetspeedActions.VIEW);
+
+                // update fragment properties
+                updateFragmentPropertyList(baseFragmentElementImpl, scope, null);
+            }
+            else
+            {
+                // update entire page 
+                BaseFragmentsElementImpl baseFragmentsElementImpl = ((baseFragmentElementImpl != null) ? baseFragmentElementImpl.getBaseFragmentsElement() : null);
+                if (baseFragmentsElementImpl != null)
+                {
+                    updateFragmentsElement(baseFragmentsElementImpl, new boolean[]{false});
+                }
+                else
+                {
+                    throw new PageNotUpdatedException("Unable to update fragment properties: no owning page");
+                }
+            }
         }
         catch (PageNotUpdatedException pnue)
         {
@@ -2651,14 +2660,30 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @param transientList transient fragment property list
      * @return new or cached fragment property list
      */
-    public FragmentPropertyList getFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElementImpl, FragmentPropertyList transientList)
+    public FragmentPropertyList getFragmentPropertyList(BaseFragmentElementImpl baseFragmentElementImpl, FragmentPropertyList transientList)
     {
         // access thread local fragment property lists cache
-        String threadLocalCacheKey = getFragmentPropertiesListThreadLocalCacheKey(baseFragmentElementImpl);
+        String cacheKey = getFragmentPropertyListCacheKey(baseFragmentElementImpl);
         Map threadLocalCache = (Map)fragmentPropertyListsCache.get();
 
         // get cached persistent list
-        FragmentPropertyList list = ((threadLocalCache != null) ? (FragmentPropertyList)threadLocalCache.get(threadLocalCacheKey) : null);
+        FragmentPropertyList list = ((threadLocalCache != null) ? (FragmentPropertyList)threadLocalCache.get(cacheKey) : null);
+        if (list == null)
+        {
+            // lookup fragment property list in cache
+            list = DatabasePageManagerCache.fragmentPropertyListCacheLookup(cacheKey);
+            
+            // save fragment property list in thread local cache
+            if (list != null)
+            {
+                if (threadLocalCache == null)
+                {
+                    threadLocalCache = new HashMap();
+                    fragmentPropertyListsCache.set(threadLocalCache);
+                }
+                threadLocalCache.put(cacheKey, list);
+            }
+        }
         if (list == null)
         {
             // use transient list or create new fragment property list
@@ -2729,7 +2754,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 threadLocalCache = new HashMap();
                 fragmentPropertyListsCache.set(threadLocalCache);
             }
-            threadLocalCache.put(threadLocalCacheKey, list);
+            threadLocalCache.put(cacheKey, list);
+
+            // save fragment property list in cache
+            DatabasePageManagerCache.fragmentPropertyListCacheAdd(cacheKey, list, false, false);
         }
         else if (transientList != null)
         {
@@ -2777,23 +2805,37 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @param scope fragment property scope to update
      * @param transientList transient fragment property list
      */
-    public void updateFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElementImpl, String scope, FragmentPropertyList transientList)
+    public void updateFragmentPropertyList(BaseFragmentElementImpl baseFragmentElementImpl, String scope, FragmentPropertyList transientList)
     {
         // update persistent list
-        FragmentPropertyList list = getFragmentPropertiesList(baseFragmentElementImpl, transientList);
+        FragmentPropertyList list = getFragmentPropertyList(baseFragmentElementImpl, transientList);
         if (list != null)
         {
             // update fragment properties in list in database
             boolean updateAllScopes = ((scope != null) && scope.equals(ALL_PROPERTY_SCOPE));
             synchronized (list)
             {
+                // store property objects for add/update
+                boolean update = false;
+                boolean sharedUpdate = false;
                 Iterator propertiesIter = list.getProperties().iterator();
                 while (propertiesIter.hasNext())
                 {
                     FragmentPropertyImpl storeProperty = (FragmentPropertyImpl)propertiesIter.next();
                     storeProperty.setFragment(baseFragmentElementImpl);
-                    if (updateAllScopes || ((scope == null) && (storeProperty.getScope() == null)) || ((scope != null) && scope.equals(storeProperty.getScope())))
+                    String storePropertyScope = storeProperty.getScope();
+                    if (updateAllScopes || ((scope == null) && (storePropertyScope == null)) || ((scope != null) && scope.equals(storePropertyScope)))
                     {
+                        // track operation type
+                        if (storeProperty.getIdentity() != 0)
+                        {
+                            update = true;
+                        }
+                        if ((storePropertyScope == null) || !storePropertyScope.equals(USER_PROPERTY_SCOPE))
+                        {
+                            sharedUpdate = true;
+                        }
+                        // store property object
                         getPersistenceBrokerTemplate().store(storeProperty);
                     }
                 }
@@ -2805,12 +2847,26 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     {
                         FragmentPropertyImpl deleteProperty = (FragmentPropertyImpl)removedPropertiesIter.next();
                         deleteProperty.setFragment(baseFragmentElementImpl);
-                        if (updateAllScopes || ((scope == null) && (deleteProperty.getScope() == null)) || ((scope != null) && scope.equals(deleteProperty.getScope())))
+                        String deletePropertyScope = deleteProperty.getScope();
+                        if (updateAllScopes || ((scope == null) && (deletePropertyScope == null)) || ((scope != null) && scope.equals(deletePropertyScope)))
                         {
+                            // track operation type
+                            update = true;
+                            if ((deletePropertyScope == null) || !deletePropertyScope.equals(USER_PROPERTY_SCOPE))
+                            {
+                                sharedUpdate = true;
+                            }
+                            // delete property object
                             getPersistenceBrokerTemplate().delete(deleteProperty);
                         }
                     }
                 }
+                
+                // interoperate with cache to signal update operations and
+                // record thread transactions
+                String cacheKey = getFragmentPropertyListCacheKey(baseFragmentElementImpl);
+                String transactionOperationPath = DatabasePageManagerCache.fragmentPropertyListCacheAdd(cacheKey, list, (update || sharedUpdate), sharedUpdate);
+                DatabasePageManagerCache.addTransaction(new TransactionedOperation(transactionOperationPath, (update ? TransactionedOperation.UPDATE_FRAGMENT_PROPERTIES_OPERATION : TransactionedOperation.ADD_FRAGMENT_PROPERTIES_OPERATION)));
             }
         }
     }
@@ -2821,18 +2877,18 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @param baseFragmentElementImpl fragment element
      * @param transientList transient fragment property list
      */
-    public void removeFragmentPropertiesList(BaseFragmentElementImpl baseFragmentElementImpl, FragmentPropertyList transientList)
+    public void removeFragmentPropertyList(BaseFragmentElementImpl baseFragmentElementImpl, FragmentPropertyList transientList)
     {
         // access thread local fragment property lists cache
-        String threadLocalCacheKey = getFragmentPropertiesListThreadLocalCacheKey(baseFragmentElementImpl);
+        String cacheKey = getFragmentPropertyListCacheKey(baseFragmentElementImpl);
         Map threadLocalCache = (Map)fragmentPropertyListsCache.get();
 
         // remove cached persistent list
-        FragmentPropertyList list = ((threadLocalCache != null) ? (FragmentPropertyList)threadLocalCache.get(threadLocalCacheKey) : null);
+        FragmentPropertyList list = ((threadLocalCache != null) ? (FragmentPropertyList)threadLocalCache.get(cacheKey) : null);
         if (list != null)
         {
             // remove list from cache
-            threadLocalCache.remove(threadLocalCacheKey);
+            threadLocalCache.remove(cacheKey);
             // cleanup list
             synchronized (list)
             {
@@ -2864,6 +2920,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         filter.addEqualTo("fragment", new Integer(baseFragmentElementImpl.getIdentity()));
         QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
         getPersistenceBrokerTemplate().deleteByQuery(query);
+        
+        // interoperate with cache to signal remove operations
+        String path = baseFragmentElementImpl.getBaseFragmentsElement().getPath();
+        DatabasePageManagerCache.fragmentPropertyListCacheRemove(path);
     }
     
     /**
@@ -2872,7 +2932,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @param baseFragmentElementImpl owner of fragment properties
      * @return key string
      */
-    private static String getFragmentPropertiesListThreadLocalCacheKey(BaseFragmentElementImpl baseFragmentElementImpl)
+    private static String getFragmentPropertyListCacheKey(BaseFragmentElementImpl baseFragmentElementImpl)
     {
         // base key
         String key = baseFragmentElementImpl.getBaseFragmentsElement().getPath()+"/"+baseFragmentElementImpl.getId();

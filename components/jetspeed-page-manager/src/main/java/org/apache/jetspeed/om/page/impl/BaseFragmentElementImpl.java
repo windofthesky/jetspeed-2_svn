@@ -782,7 +782,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
             DatabasePageManager pageManager = getPageManager();
             if (pageManager != null)
             {
-                FragmentPropertyList properties = pageManager.getFragmentPropertiesList(this, fragmentProperties);
+                FragmentPropertyList properties = pageManager.getFragmentPropertyList(this, fragmentProperties);
                 fragmentProperties = null;
                 return properties;
             }
@@ -1083,7 +1083,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
         DatabasePageManager pageManager = getPageManager();
         if (pageManager != null)
         {
-            pageManager.updateFragmentPropertiesList(this, PageManager.ALL_PROPERTY_SCOPE, fragmentProperties);
+            pageManager.updateFragmentPropertyList(this, PageManager.ALL_PROPERTY_SCOPE, fragmentProperties);
             fragmentProperties = null;
         }
     }
@@ -1105,7 +1105,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
         DatabasePageManager pageManager = getPageManager();
         if (pageManager != null)
         {
-            pageManager.updateFragmentPropertiesList(this, PageManager.ALL_PROPERTY_SCOPE, fragmentProperties);
+            pageManager.updateFragmentPropertyList(this, PageManager.ALL_PROPERTY_SCOPE, fragmentProperties);
             fragmentProperties = null;
         }
     }
@@ -1120,7 +1120,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
         DatabasePageManager pageManager = getPageManager();
         if (pageManager != null)
         {
-            pageManager.removeFragmentPropertiesList(this, fragmentProperties);
+            pageManager.removeFragmentPropertyList(this, fragmentProperties);
             fragmentProperties = null;
         }
     }

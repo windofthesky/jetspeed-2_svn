@@ -30,6 +30,8 @@ public class TransactionedOperation
 {
     public static final int ADD_OPERATION = 0;
     public static final int UPDATE_OPERATION = 1;
+    public static final int ADD_FRAGMENT_PROPERTIES_OPERATION = 2;
+    public static final int UPDATE_FRAGMENT_PROPERTIES_OPERATION = 3;
     private String path;
     private int transactionType;
     

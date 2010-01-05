@@ -547,4 +547,27 @@
                                                replicateRemovals=true"/>
     </cache>
 
+    <cache name="pageManagerPropertiesCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+           memoryStoreEvictionPolicy="LFU"/>
+
+    <cache name="pageManagerPropertiesPathCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+           memoryStoreEvictionPolicy="LFU">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                                   properties="replicateAsynchronously=true,
+                                               replicatePuts=false,
+                                               replicateUpdates=false,
+                                               replicateUpdatesViaCopy=false,
+                                               replicateRemovals=true"/>
+    </cache>
+
 </ehcache>

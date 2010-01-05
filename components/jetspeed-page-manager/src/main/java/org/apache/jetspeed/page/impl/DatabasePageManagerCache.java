@@ -17,16 +17,21 @@
 package org.apache.jetspeed.page.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.impl.FolderImpl;
+import org.apache.jetspeed.om.page.impl.FragmentPropertyList;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.impl.NodeImpl;
 import org.apache.ojb.broker.Identity;
@@ -45,6 +50,9 @@ public class DatabasePageManagerCache implements ObjectCache
     
     private static JetspeedCache oidCache;
     private static JetspeedCache pathCache;
+    private static JetspeedCache propertiesCache;
+    private static JetspeedCache propertiesPathCache;
+    private static Map propertiesCacheIndexMap;
     private static boolean constraintsEnabled;
     private static boolean permissionsEnabled;
     private static PageManager pageManager;
@@ -60,11 +68,14 @@ public class DatabasePageManagerCache implements ObjectCache
      *
      * @param pageManager configured page manager
      */
-    public synchronized static void cacheInit(final JetspeedCache oidCache, final JetspeedCache pathCache, final DatabasePageManager pageManager)
+    public synchronized static void cacheInit(final JetspeedCache oidCache, final JetspeedCache pathCache, final JetspeedCache propertiesCache, final JetspeedCache propertiesPathCache, final DatabasePageManager pageManager)
     {
         // initialize
         DatabasePageManagerCache.oidCache = oidCache;
         DatabasePageManagerCache.pathCache = pathCache;
+        DatabasePageManagerCache.propertiesCache = propertiesCache;
+        DatabasePageManagerCache.propertiesPathCache = propertiesPathCache;
+        propertiesCacheIndexMap = new HashMap();
         constraintsEnabled = pageManager.getConstraintsEnabled();
         permissionsEnabled = pageManager.getPermissionsEnabled();
         
@@ -90,13 +101,7 @@ public class DatabasePageManagerCache implements ObjectCache
              */
             public void notifyElementChanged(final JetspeedCache cache, final boolean local, final Object key, final Object element)
             {
-                final NodeImpl node = (NodeImpl)element;
-                // infuse node with page manager configuration
-                // or the page manager itself and add to the
-                // paths cache 
-                node.setConstraintsEnabled(constraintsEnabled);
-                node.setPermissionsEnabled(permissionsEnabled);
-                node.setPageManager(pageManager);
+                notifyElementAdded(cache, local, key, element);
             }
 
             /* (non-Javadoc)
@@ -104,12 +109,7 @@ public class DatabasePageManagerCache implements ObjectCache
              */
             public void notifyElementEvicted(final JetspeedCache cache, final boolean local, final Object key, final Object element)
             {
-                final NodeImpl node = (NodeImpl)element;
-                // reset internal FolderImpl caches
-                if (node instanceof FolderImpl)
-                {
-                    ((FolderImpl)node).resetAll(false);
-                }
+                notifyElementRemoved(cache, local, key, element);
             }
 
             /* (non-Javadoc)
@@ -117,12 +117,7 @@ public class DatabasePageManagerCache implements ObjectCache
              */
             public void notifyElementExpired(final JetspeedCache cache, final boolean local, final Object key, final Object element)
             {
-                final NodeImpl node = (NodeImpl)element;
-                // reset internal FolderImpl caches
-                if (node instanceof FolderImpl)
-                {
-                    ((FolderImpl)node).resetAll(false);
-                }
+                notifyElementRemoved(cache, local, key, element);
             }
 
             /* (non-Javadoc)
@@ -210,10 +205,201 @@ public class DatabasePageManagerCache implements ObjectCache
                                 {
                                     ((FolderImpl)parentNode).resetAll(false);
                                 }
+                                // remove all indexed cache keys for page path from
+                                // properties cache index
+                                Set index = (Set)propertiesCacheIndexMap.get(path);
+                                if (index != null)
+                                {
+                                    // remove all indexed cache keys
+                                    Iterator cacheKeyIter = index.iterator();
+                                    while (cacheKeyIter.hasNext())
+                                    {
+                                        String cacheKey = (String)cacheKeyIter.next();
+                                        propertiesCache.removeQuiet(cacheKey);
+                                        propertiesPathCache.removeQuiet(cacheKey);
+                                    }
+                                    propertiesCacheIndexMap.remove(path);
+                                }
                                 // ensure removed from cache
                                 pathCache.removeQuiet(path);
                             }
                         }                        
+                    }
+                }
+            }
+        }, false);
+        
+        // setup local properties cache listener
+        propertiesCache.addEventListener(new JetspeedCacheEventListener()
+        {
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementAdded(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementAdded(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+                final String cacheKey = (String)key;
+                final FragmentPropertyList fragmentPropertyList = (FragmentPropertyList)element;
+                if (fragmentPropertyList != null)
+                {
+                    // add cache key to properties cache index
+                    final String path = fragmentPropertyList.getFragmentImpl().getBaseFragmentsElement().getPath();
+                    synchronized (DatabasePageManagerCache.class)
+                    {
+                        Set index = (Set)propertiesCacheIndexMap.get(path);
+                        if (index == null)
+                        {
+                            index = new HashSet();
+                            propertiesCacheIndexMap.put(path, index);
+                        }
+                        index.add(cacheKey);
+                    }
+                }
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementChanged(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementChanged(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+                notifyElementAdded(cache, local, key, element);
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementEvicted(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementEvicted(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+                notifyElementRemoved(cache, local, key, element);
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementExpired(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementExpired(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+                notifyElementRemoved(cache, local, key, element);
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementRemoved(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementRemoved(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+                final String cacheKeyOrPath = (String)key;
+                final FragmentPropertyList fragmentPropertyList = (FragmentPropertyList)element;
+                if (fragmentPropertyList != null)
+                {
+                    // remove single cache key from properties cache index
+                    final String path = fragmentPropertyList.getFragmentImpl().getBaseFragmentsElement().getPath();
+                    synchronized (DatabasePageManagerCache.class)
+                    {
+                        Set index = (Set)propertiesCacheIndexMap.get(path);
+                        if (index != null)
+                        {
+                            index.remove(cacheKeyOrPath);
+                            if (index.isEmpty())
+                            {
+                                propertiesCacheIndexMap.remove(path);
+                            }
+                        }
+                    }
+                }
+                else if (cacheKeyOrPath != null)
+                {
+                    // remove all indexed cache keys from properties cache index
+                    synchronized (DatabasePageManagerCache.class)
+                    {
+                        Set index = (Set)propertiesCacheIndexMap.get(cacheKeyOrPath);
+                        if (index != null)
+                        {
+                            // remove all indexed cache keys
+                            Iterator cacheKeyIter = index.iterator();
+                            while (cacheKeyIter.hasNext())
+                            {
+                                String cacheKey = (String)cacheKeyIter.next();
+                                propertiesCache.removeQuiet(cacheKey);
+                            }
+                            propertiesCacheIndexMap.remove(cacheKeyOrPath);
+                        }
+                    }                    
+                }
+                else if (cacheKeyOrPath != null)
+                {
+                    // remove all cache keys from properties cache index
+                    synchronized (DatabasePageManagerCache.class)
+                    {
+                        propertiesCacheIndexMap.clear();
+                    }
+                }
+            }
+        }, true);
+        
+        // setup remote properties path cache listener
+        propertiesPathCache.addEventListener(new JetspeedCacheEventListener()
+        {
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementAdded(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementAdded(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementChanged(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementChanged(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementEvicted(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementEvicted(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementExpired(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementExpired(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+            }
+
+            /* (non-Javadoc)
+             * @see org.apache.jetspeed.cache.JetspeedCacheEventListener#notifyElementRemoved(org.apache.jetspeed.cache.JetspeedCache, boolean, java.lang.Object, java.lang.Object)
+             */
+            public void notifyElementRemoved(final JetspeedCache cache, final boolean local, final Object key, final Object element)
+            {
+                final DatabasePageManagerCacheObject cacheObject = (DatabasePageManagerCacheObject)element;
+                // remove cache object from local properties cache
+                if (cacheObject != null)
+                {
+                    final String cacheKeyOrPath = cacheObject.getPath();
+                    if (cacheKeyOrPath != null)
+                    {
+                        synchronized (DatabasePageManagerCache.class)
+                        {
+                            // find all indexed cache keys for path
+                            Set index = (Set)propertiesCacheIndexMap.get(cacheKeyOrPath);
+                            if (index != null)
+                            {
+                                // remove all indexed cache keys
+                                Set indexClone = new HashSet(index);
+                                Iterator cacheKeyIter = indexClone.iterator();
+                                while (cacheKeyIter.hasNext())
+                                {
+                                    String cacheKey = (String)cacheKeyIter.next();
+                                    propertiesCache.remove(cacheKey);
+                                    propertiesPathCache.removeQuiet(cacheKey);
+                                }
+                            }
+                            else
+                            {
+                                // assume path is cache key to remove
+                                propertiesCache.remove(cacheKeyOrPath);
+                                propertiesPathCache.removeQuiet(cacheKeyOrPath);
+                            }
+                        }
                     }
                 }
             }
@@ -284,26 +470,30 @@ public class DatabasePageManagerCache implements ObjectCache
         if (obj instanceof NodeImpl)
         {
             final NodeImpl node = (NodeImpl)obj;
-            final String nodePath = node.getPath();
+            final String path = node.getPath();
 
             // add node to caches; note that removes force notification
             // of update to distributed caches
             oidCache.remove(oid);
-            final CacheElement element = oidCache.createElement(oid, node);
-            oidCache.put(element);
-            final boolean removed = pathCache.remove(nodePath);
-            final CacheElement pathElement = pathCache.createElement(nodePath, new DatabasePageManagerCacheObject(oid, nodePath));
+            final boolean removed = pathCache.remove(path);
+            final CacheElement pathElement = pathCache.createElement(path, new DatabasePageManagerCacheObject(oid, path));
             pathCache.put(pathElement);
             // if a remove was not successful from the path cache, update
             // notification to distributed peers was not performed;
             // for updates of objects evicted from the cache or newly
             // created ones, this is problematic: remove and put into
             // path cache a second time to force
-            if (!removed && updatePathsList.contains(nodePath))
+            if (!removed && updatePathsList.contains(path))
             {
-                pathCache.remove(nodePath);
+                pathCache.remove(path);
                 pathCache.put(pathElement);
             }
+            // add node to local oid cache by key after removes from
+            // distributed path cache since those removes will remove
+            // from local oid cache in notifications, (despite the
+            // 'local' listener registration)
+            final CacheElement element = oidCache.createElement(oid, node);
+            oidCache.put(element);
         }
     }
 
@@ -323,22 +513,32 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public synchronized static void cacheClear()
     {
-        // remove all items from oid cache individually
-        // to ensure notifications are run to detach
-        // elements; do not invoke oidCache.clear()
+        // remove all items from oid and properties caches
+        // individually to ensure notifications are run to
+        // detach elements; do not invoke JetspeedCache.clear()
         final Iterator removeOidIter = oidCache.getKeys().iterator();
         while (removeOidIter.hasNext())
         {
             oidCache.remove((Identity)removeOidIter.next());
         }
-        // remove all items from path cache individually
+        final Iterator removePropertiesIter = propertiesCache.getKeys().iterator();
+        while (removePropertiesIter.hasNext())
+        {
+            propertiesCache.remove(removePropertiesIter.next());
+        }
+        // remove all items from path caches individually
         // to avoid potential distributed clear invocation
         // that would be performed against all peers; do
-        // not invoke pathCache.clear()
+        // not invoke JetspeedCache.clear()
         final Iterator removePathIter = pathCache.getKeys().iterator();
         while (removePathIter.hasNext())
         {
             pathCache.removeQuiet(removePathIter.next());
+        }
+        final Iterator removePropertiesPathIter = propertiesPathCache.getKeys().iterator();
+        while (removePropertiesPathIter.hasNext())
+        {
+            propertiesPathCache.removeQuiet(removePropertiesPathIter.next());
         }
     }
 
@@ -375,20 +575,20 @@ public class DatabasePageManagerCache implements ObjectCache
             final NodeImpl node = (NodeImpl)cacheLookup(oid);
             if (node != null)
             {
-                final String nodePath = node.getPath();
+                final String path = node.getPath();
                 // remove from caches; note that removes are
                 // propagated to distributed caches
                 oidCache.remove(oid);
-                final boolean removed = pathCache.remove(nodePath);
+                final boolean removed = pathCache.remove(path);
                 // if a remove was not successful from the path cache,
                 // remove notification to distributed peers was not
                 // performed; this is problematic: put into path cache
                 // and remove a second time to force
                 if (!removed)
                 {
-                    final CacheElement pathElement = pathCache.createElement(nodePath, new DatabasePageManagerCacheObject(oid, nodePath));
+                    final CacheElement pathElement = pathCache.createElement(path, new DatabasePageManagerCacheObject(oid, path));
                     pathCache.put(pathElement);
-                    pathCache.remove(nodePath);
+                    pathCache.remove(path);
                 }
             }
         }
@@ -441,6 +641,103 @@ public class DatabasePageManagerCache implements ObjectCache
     }
     
     /**
+     * Add new or update cached fragment property list.
+     * 
+     * @param cacheKey cache key for fragment property list
+     * @param fragmentPropertyList fragment property list
+     * @param update flag indicating update
+     * @param sharedUpdate flag indicating shared property update that requires path cache eviction
+     * @return transaction operation path
+     */
+    public synchronized static String fragmentPropertyListCacheAdd(String cacheKey, FragmentPropertyList fragmentPropertyList, boolean update, boolean sharedUpdate)
+    {
+        // remove locally cached fragment lists by cache key or
+        // path based on update scope
+        final String path = fragmentPropertyList.getFragmentImpl().getBaseFragmentsElement().getPath();
+        final String updatePathOrCacheKey = ((update && sharedUpdate) ? path : cacheKey);
+        propertiesCache.remove(updatePathOrCacheKey);
+        // update remote caches by cache key or path
+        if (update)
+        {
+            // perform remote update via path or cache key depending
+            // on scope of update operation
+            final boolean removed = propertiesPathCache.remove(updatePathOrCacheKey);
+            // if a remove was not successful from the path cache, update
+            // notification to distributed peers was not performed;
+            // for updates of objects evicted from the cache or newly
+            // created ones, this is problematic: put into path cache a
+            // and remove a second time to force
+            if (!removed)
+            {
+                final CacheElement propertiesPathElement = propertiesPathCache.createElement(updatePathOrCacheKey, new DatabasePageManagerCacheObject(updatePathOrCacheKey));
+                propertiesPathCache.put(propertiesPathElement);
+                propertiesPathCache.remove(updatePathOrCacheKey);
+            }
+        }
+        // ensure cache key in properties path cache
+        if (propertiesPathCache.get(cacheKey) == null)
+        {
+            final CacheElement propertiesPathElement = propertiesPathCache.createElement(cacheKey, new DatabasePageManagerCacheObject(cacheKey));
+            propertiesPathCache.put(propertiesPathElement);
+        }
+        // add fragment properties list to local cache by key after
+        // removes from distributed path cache since those removes
+        // will remove from local cache in notifications, (despite the
+        // 'local' listener registration)
+        final CacheElement propertiesElement = propertiesCache.createElement(cacheKey, fragmentPropertyList);
+        propertiesCache.put(propertiesElement);
+        // return update path or cache key as transaction operation path
+        return updatePathOrCacheKey;
+    }
+    
+    /**
+     * Lookup fragment property list by cache key.
+     * 
+     * @param cacheKey cache key for fragment property list
+     * @return fragment property list
+     */
+    public synchronized static FragmentPropertyList fragmentPropertyListCacheLookup(String cacheKey)
+    {
+        // return fragment properties list cached locally by key
+        if (cacheKey != null)
+        {
+            final CacheElement propertiesElement = propertiesCache.get(cacheKey);
+            if (propertiesElement != null)
+            {
+                return (FragmentPropertyList)propertiesElement.getContent();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Remove fragment property list from local and remote caches.
+     * 
+     * @param cacheKeyOrPath cache key or path for fragment property list
+     */
+    public synchronized static void fragmentPropertyListCacheRemove(String cacheKeyOrPath)
+    {
+        // remove fragment properties list cached locally by key
+        // and notify remote caches by cache key or path
+        if (cacheKeyOrPath != null)
+        {
+            propertiesCache.remove(cacheKeyOrPath);
+            final boolean removed = propertiesPathCache.remove(cacheKeyOrPath);
+            // if a remove was not successful from the path cache, update
+            // notification to distributed peers was not performed;
+            // for updates of objects evicted from the cache, this is
+            // problematic: put into path cache and remove a second time
+            // to force notification
+            if (!removed)
+            {
+                final CacheElement propertiesPathElement = propertiesPathCache.createElement(cacheKeyOrPath, new DatabasePageManagerCacheObject(cacheKeyOrPath));
+                propertiesPathCache.put(propertiesPathElement);
+                propertiesPathCache.remove(cacheKeyOrPath);                
+            }
+        }
+    }
+
+    /**
      * Get transactions registered on current thread
      * 
      * @return transactions list
@@ -476,7 +773,16 @@ public class DatabasePageManagerCache implements ObjectCache
         while (transactions.hasNext())
         {
             final TransactionedOperation operation = (TransactionedOperation)transactions.next();
-            cacheRemove(operation.getPath());
+            if ((operation.getTransactionType() == TransactionedOperation.ADD_OPERATION) ||
+                (operation.getTransactionType() == TransactionedOperation.UPDATE_OPERATION))
+            {
+                cacheRemove(operation.getPath());
+            }
+            else if ((operation.getTransactionType() == TransactionedOperation.ADD_FRAGMENT_PROPERTIES_OPERATION) ||
+                     (operation.getTransactionType() == TransactionedOperation.UPDATE_FRAGMENT_PROPERTIES_OPERATION))
+            {
+                fragmentPropertyListCacheRemove(operation.getPath());
+            }
         }
     }
 
@@ -495,7 +801,7 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public static boolean isDistributed()
     {
-        return pathCache.isDistributed();
+        return (pathCache.isDistributed() && propertiesPathCache.isDistributed());
     }
 
     // OJB Constructor

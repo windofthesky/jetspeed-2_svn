@@ -98,9 +98,9 @@ import org.apache.jetspeed.cache.impl.EhCacheImpl;
  * @version $Id: $
  *          
  */
-interface PageManagerTestShared
+public interface PageManagerTestShared
 {
-    class Shared
+    public class Shared
     {
         /**
          * makeCastorXMLPageManager
@@ -847,7 +847,7 @@ interface PageManagerTestShared
         }
     }
     
-    static class AbstractTestPrincipal extends TransientJetspeedPrincipal
+    public static abstract class AbstractTestPrincipal extends TransientJetspeedPrincipal
     {
         private static final SecurityAttributeTypes attributeTypes = new SecurityAttributeTypes()
         {
@@ -905,14 +905,13 @@ interface PageManagerTestShared
             };
         }
 
-        @Override
         public synchronized JetspeedPrincipalType getType()
         {
             return type;
         }
     }
     
-    static class TestUser extends AbstractTestPrincipal implements User
+    public static class TestUser extends AbstractTestPrincipal implements User
     {
         private static final long serialVersionUID = 1L;
 
@@ -922,7 +921,7 @@ interface PageManagerTestShared
         }
     }
 
-    static class TestGroup extends AbstractTestPrincipal implements Group
+    public static class TestGroup extends AbstractTestPrincipal implements Group
     {
         private static final long serialVersionUID = 1L;
 
@@ -932,7 +931,7 @@ interface PageManagerTestShared
         }
     }
     
-    static class TestRole extends AbstractTestPrincipal implements Role
+    public static class TestRole extends AbstractTestPrincipal implements Role
     {
         private static final long serialVersionUID = 1L;
 
@@ -942,7 +941,7 @@ interface PageManagerTestShared
         }
     }
     
-    static class TestPermissionFactory implements PermissionFactory
+    public static class TestPermissionFactory implements PermissionFactory
     {
         private static Map<String, JetspeedPermissionFactory> factories = new HashMap<String, JetspeedPermissionFactory>();
         static

@@ -33,9 +33,11 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.cache.impl.EhCacheConfigResource;
+import org.apache.jetspeed.om.page.FragmentProperty;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.jetspeed.cache.impl.EhCacheConfigResource;
 
 /**
  * TestDatabasePageManagerCache
@@ -135,8 +137,28 @@ public class TestDatabasePageManagerCache extends TestCase
             assertTrue(!result.contains("Exception"));
             result = server1.execute("pageManager.reset();");
             assertTrue(!result.contains("Exception"));
+
+            // login servers setting test user, group, and role principal names
+            result = server0.execute("pageManagerServer.setUser(\"user\");");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("pageManagerServer.setGroup(\"group\");");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("pageManagerServer.setRole(\"role\");");
+            assertTrue(!result.contains("Exception"));
+            result = server1.execute("pageManagerServer.setUser(\"user\");");
+            assertTrue(!result.contains("Exception"));
+            result = server1.execute("pageManagerServer.setGroup(\"group\");");
+            assertTrue(!result.contains("Exception"));
+            result = server1.execute("pageManagerServer.setRole(\"role\");");
+            assertTrue(!result.contains("Exception"));
             
-            // create folder and documents in first page manager
+            // reset request cache
+            result = server0.execute("pageManager.cleanupRequestCache();");
+            assertTrue(!result.contains("Exception"));
+            result = server1.execute("pageManager.cleanupRequestCache();");
+            assertTrue(!result.contains("Exception"));
+            
+            // create folders, documents, and properties in first page manager
             result = server0.execute("folder = pageManager.newFolder(\"/\");");
             assertTrue(!result.contains("Exception"));
             result = server0.execute("folder.setTitle(\"Root Folder\");");
@@ -147,11 +169,27 @@ public class TestDatabasePageManagerCache extends TestCase
             assertTrue(!result.contains("Exception"));
             result = server0.execute("page.setTitle(\"Default Page\");");
             assertTrue(!result.contains("Exception"));
+            result = server0.execute("fragment = page.getRootFragment();");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("fragment.setTitle(\"Default Page Root Fragment\");");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("fragment.setState(\"DEFAULT\");");
+            assertTrue(!result.contains("Exception"));
             result = server0.execute("pageManager.updatePage(page);");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("fragment.setState(\""+FragmentProperty.USER_PROPERTY_SCOPE+"\", null, \"USER\");");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("pageManager.updateFragmentProperties(fragment, \""+FragmentProperty.USER_PROPERTY_SCOPE+"\");");
             assertTrue(!result.contains("Exception"));
             result = server0.execute("page = pageManager.newPage(\"/another-page.psml\");");
             assertTrue(!result.contains("Exception"));
             result = server0.execute("page.setTitle(\"Another Page\");");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("fragment = page.getRootFragment();");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("fragment.setTitle(\"Another Page Root Fragment\");");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("fragment.setState(\"DEFAULT\");");
             assertTrue(!result.contains("Exception"));
             result = server0.execute("pageManager.updatePage(page);");
             assertTrue(!result.contains("Exception"));
@@ -197,14 +235,25 @@ public class TestDatabasePageManagerCache extends TestCase
             assertTrue(!result.contains("Exception"));
             result = server0.execute("pageManager.updatePageSecurity(pageSecurity);");
             assertTrue(!result.contains("Exception"));
+            
+            // wait for cache notifications to propagate between servers
+            Thread.sleep(500);
 
-            // populate folders and documents in second page manager
+            // populate folders, documents, and properties in second page manager
             result = server1.execute("pageManager.getFolder(\"/\").getTitle();");
             assertTrue(result.endsWith("Root Folder"));
             result = server1.execute("pageManager.getPage(\"/default-page.psml\").getTitle();");
             assertTrue(result.endsWith("Default Page"));
+            result = server1.execute("pageManager.getPage(\"/default-page.psml\").getRootFragment().getTitle();");
+            assertTrue(result.endsWith("Default Page Root Fragment"));
+            result = server1.execute("pageManager.getPage(\"/default-page.psml\").getRootFragment().getState();");
+            assertTrue(result.endsWith("USER"));
             result = server1.execute("pageManager.getPage(\"/another-page.psml\").getTitle();");
             assertTrue(result.endsWith("Another Page"));
+            result = server1.execute("pageManager.getPage(\"/another-page.psml\").getRootFragment().getTitle();");
+            assertTrue(result.endsWith("Another Page Root Fragment"));
+            result = server1.execute("pageManager.getPage(\"/another-page.psml\").getRootFragment().getState();");
+            assertTrue(result.endsWith("DEFAULT"));
             result = server1.execute("pageManager.getPage(\"/some-other-page.psml\").getTitle();");
             assertTrue(result.endsWith("Some Other Page"));            
             result = server1.execute("pageManager.getLink(\"/default.link\").getTitle();");
@@ -220,10 +269,18 @@ public class TestDatabasePageManagerCache extends TestCase
             result = server1.execute("pageManager.getPageSecurity().getPath();");
             assertTrue(result.endsWith("/page.security"));
             
-            // update/remove objects in second page manager
+            // update/remove objects and properties in second page manager
             result = server1.execute("page = pageManager.getPage(\"/default-page.psml\");");
             assertTrue(!result.contains("Exception"));
             result = server1.execute("page.setTitle(\"Edited Default Page\");");
+            assertTrue(!result.contains("Exception"));
+            result = server1.execute("pageManager.updatePage(page);");
+            assertTrue(!result.contains("Exception"));
+            result = server1.execute("page = pageManager.getPage(\"/another-page.psml\");");
+            assertTrue(!result.contains("Exception"));
+            result = server1.execute("fragment = page.getRootFragment();");
+            assertTrue(!result.contains("Exception"));
+            result = server1.execute("fragment.setState(\"DEFAULT2\");");
             assertTrue(!result.contains("Exception"));
             result = server1.execute("pageManager.updatePage(page);");
             assertTrue(!result.contains("Exception"));
@@ -246,11 +303,17 @@ public class TestDatabasePageManagerCache extends TestCase
             result = server1.execute("folder = pageManager.getFolder(\"/deep-1\");");
             assertTrue(!result.contains("Exception"));
             result = server1.execute("pageManager.removeFolder(folder);");
-            assertTrue(!result.contains("Exception"));            
+            assertTrue(!result.contains("Exception"));
             
-            // test objects in both page managers for cache coherency
+            // reset request cache
+            result = server1.execute("pageManager.cleanupRequestCache();");
+            assertTrue(!result.contains("Exception"));
+            
+            // test objects and properties in both page managers for cache coherence
             result = server1.execute("pageManager.getPage(\"/default-page.psml\").getTitle();");
             assertTrue(result.endsWith("Edited Default Page"));
+            result = server1.execute("pageManager.getPage(\"/another-page.psml\").getRootFragment().getState();");
+            assertTrue(result.endsWith("DEFAULT2"));
             result = server1.execute("pageManager.getPage(\"/some-other-page.psml\");");
             assertTrue(result.contains("PageNotFoundException"));
             result = server1.execute("pageManager.getFolder(\"/\").getPages().size();");
@@ -266,6 +329,7 @@ public class TestDatabasePageManagerCache extends TestCase
             result = server1.execute("pageManager.getFolder(\"/\").getFolders().size();");
             assertTrue(result.endsWith("1"));
             boolean defaultPageUpdated = false;
+            boolean anotherPageStateUpdated = false;
             boolean someOtherPageRemoved = false;
             boolean rootFolderPagesCountTwo = false;
             boolean defaultLinkUpdated = false;
@@ -276,11 +340,20 @@ public class TestDatabasePageManagerCache extends TestCase
             long coherencyCheckStarted = System.currentTimeMillis();
             do
             {
-                // check cache coherency
+                // reset request cache
+                result = server0.execute("pageManager.cleanupRequestCache();");
+                assertTrue(!result.contains("Exception"));
+
+                // check cache coherence
                 if (!defaultPageUpdated)
                 {
                     result = server0.execute("pageManager.getPage(\"/default-page.psml\").getTitle();");
                     defaultPageUpdated = result.endsWith("Edited Default Page");
+                }
+                if (!anotherPageStateUpdated)
+                {
+                    result = server0.execute("pageManager.getPage(\"/another-page.psml\").getRootFragment().getState();");
+                    anotherPageStateUpdated = result.endsWith("DEFAULT2");
                 }
                 if (!someOtherPageRemoved)
                 {
@@ -318,14 +391,15 @@ public class TestDatabasePageManagerCache extends TestCase
                     rootFolderFoldersCountOne = result.endsWith("1");
                 }
                 
-                // wait for cache coherency
-                if (!defaultPageUpdated || !someOtherPageRemoved || !rootFolderPagesCountTwo || !defaultLinkUpdated || !deep0FolderUpdated || !deepPage1Removed || !deep1FolderRemoved || !rootFolderFoldersCountOne)
+                // wait for cache coherence
+                if (!defaultPageUpdated || !anotherPageStateUpdated || !someOtherPageRemoved || !rootFolderPagesCountTwo || !defaultLinkUpdated || !deep0FolderUpdated || !deepPage1Removed || !deep1FolderRemoved || !rootFolderFoldersCountOne)
                 {
                     Thread.sleep(250);
                 }
             }
-            while ((!defaultPageUpdated || !someOtherPageRemoved || !rootFolderPagesCountTwo || !defaultLinkUpdated || !deep0FolderUpdated || !deepPage1Removed || !deep1FolderRemoved || !rootFolderFoldersCountOne) && (System.currentTimeMillis()-coherencyCheckStarted < 5000));
+            while ((!defaultPageUpdated || !anotherPageStateUpdated || !someOtherPageRemoved || !rootFolderPagesCountTwo || !defaultLinkUpdated || !deep0FolderUpdated || !deepPage1Removed || !deep1FolderRemoved || !rootFolderFoldersCountOne) && (System.currentTimeMillis()-coherencyCheckStarted < 5000));
             assertTrue(defaultPageUpdated);
+            assertTrue(anotherPageStateUpdated);
             assertTrue(someOtherPageRemoved);
             assertTrue(rootFolderPagesCountTwo);
             assertTrue(defaultLinkUpdated);
@@ -334,21 +408,41 @@ public class TestDatabasePageManagerCache extends TestCase
             assertTrue(deep1FolderRemoved);
             assertTrue(rootFolderFoldersCountOne);
 
-            // add new objects in first page manager
-            result = server0.execute("page = pageManager.newPage(\"/new-page.psml\");");
-            assertTrue(result.indexOf("Exception") == -1);
-            result = server0.execute("page.setTitle(\"New Page\");");
-            assertTrue(result.indexOf("Exception") == -1);
-            result = server0.execute("pageManager.updatePage(page);");
-            assertTrue(result.indexOf("Exception") == -1);
-            result = server0.execute("folder = pageManager.newFolder(\"/deep-2\");");
-            assertTrue(result.indexOf("Exception") == -1);
-            result = server0.execute("folder.setTitle(\"Deep 2 Folder\");");
-            assertTrue(result.indexOf("Exception") == -1);
-            result = server0.execute("pageManager.updateFolder(folder);");
-            assertTrue(result.indexOf("Exception") == -1);
+            // reset request cache
+            result = server0.execute("pageManager.cleanupRequestCache();");
+            assertTrue(!result.contains("Exception"));
+            result = server1.execute("pageManager.cleanupRequestCache();");
+            assertTrue(!result.contains("Exception"));
             
-            // test objects in both page managers for cache coherency
+            // update properties/add new objects in first page manager
+            result = server0.execute("page = pageManager.getPage(\"/default-page.psml\");");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("fragment = page.getRootFragment();");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("fragment.setState(\""+FragmentProperty.USER_PROPERTY_SCOPE+"\", null, \"USER2\");");
+            assertTrue(!result.contains("Exception"));            
+            result = server0.execute("pageManager.updateFragmentProperties(fragment, \""+FragmentProperty.USER_PROPERTY_SCOPE+"\");");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("page = pageManager.newPage(\"/new-page.psml\");");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("page.setTitle(\"New Page\");");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("pageManager.updatePage(page);");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("folder = pageManager.newFolder(\"/deep-2\");");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("folder.setTitle(\"Deep 2 Folder\");");
+            assertTrue(!result.contains("Exception"));
+            result = server0.execute("pageManager.updateFolder(folder);");
+            assertTrue(!result.contains("Exception"));
+            
+            // reset request cache
+            result = server0.execute("pageManager.cleanupRequestCache();");
+            assertTrue(!result.contains("Exception"));
+            
+            // test objects in both page managers for cache coherence
+            result = server0.execute("pageManager.getPage(\"/default-page.psml\").getRootFragment().getState();");
+            assertTrue(result.endsWith("USER2"));
             result = server0.execute("pageManager.getFolder(\"/\").getPages().size();");
             assertTrue(result.endsWith("3"));
             result = server0.execute("pageManager.getFolder(\"/\").getFolders().size();");
@@ -357,6 +451,7 @@ public class TestDatabasePageManagerCache extends TestCase
             assertTrue(result.endsWith("New Page"));
             result = server0.execute("pageManager.getFolder(\"/deep-2\").getTitle();");
             assertTrue(result.endsWith("Deep 2 Folder"));
+            boolean defaultPageUserStateUpdated = false;
             boolean rootFolderPagesCountThree = false;
             boolean rootFolderFoldersCountTwo = false;
             boolean newPageCreated = false;
@@ -364,7 +459,16 @@ public class TestDatabasePageManagerCache extends TestCase
             coherencyCheckStarted = System.currentTimeMillis();
             do
             {
-                // check cache coherency
+                // reset request cache
+                result = server1.execute("pageManager.cleanupRequestCache();");
+                assertTrue(!result.contains("Exception"));
+                
+                // check cache coherence
+                if (!defaultPageUserStateUpdated)
+                {
+                    result = server1.execute("pageManager.getPage(\"/default-page.psml\").getRootFragment().getState();");
+                    defaultPageUserStateUpdated = result.endsWith("USER2");                    
+                }
                 if (!rootFolderPagesCountThree)
                 {
                     result = server1.execute("pageManager.getFolder(\"/\").getPages().size();");
@@ -386,17 +490,30 @@ public class TestDatabasePageManagerCache extends TestCase
                     deep2FolderCreated = result.endsWith("Deep 2 Folder");
                 }
 
-                // wait for cache coherency
-                if (!rootFolderPagesCountThree || !rootFolderFoldersCountTwo || !newPageCreated || !deep2FolderCreated)
+                // wait for cache coherence
+                if (!defaultPageUserStateUpdated || !rootFolderPagesCountThree || !rootFolderFoldersCountTwo || !newPageCreated || !deep2FolderCreated)
                 {
                     Thread.sleep(250);
                 }
             }
-            while ((!rootFolderPagesCountThree || !rootFolderFoldersCountTwo || !newPageCreated || !deep2FolderCreated) && (System.currentTimeMillis()-coherencyCheckStarted < 5000));
+            while ((!defaultPageUserStateUpdated || !rootFolderPagesCountThree || !rootFolderFoldersCountTwo || !newPageCreated || !deep2FolderCreated) && (System.currentTimeMillis()-coherencyCheckStarted < 5000));
+            assertTrue(defaultPageUserStateUpdated);
             assertTrue(rootFolderPagesCountThree);
             assertTrue(rootFolderFoldersCountTwo);
             assertTrue(newPageCreated);
             assertTrue(deep2FolderCreated);
+            
+            // reset request cache
+            result = server0.execute("pageManager.cleanupRequestCache();");
+            assertTrue(!result.contains("Exception"));
+            result = server1.execute("pageManager.cleanupRequestCache();");
+            assertTrue(!result.contains("Exception"));
+            
+            // return servers to anonymous mode
+            result = server0.execute("pageManagerServer.setUser(null);");
+            assertTrue(!result.contains("Exception"));
+            result = server1.execute("pageManagerServer.setUser(null);");
+            assertTrue(!result.contains("Exception"));            
 
             // reset database page managers
             result = server0.execute("pageManager.reset();");

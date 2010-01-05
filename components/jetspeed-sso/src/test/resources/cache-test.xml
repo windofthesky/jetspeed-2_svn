@@ -276,6 +276,18 @@
         <property name="cacheName" value="pageManagerPathCache"/>
     </bean>
     
+    <bean id="ehPageManagerPropertiesCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <meta key="j2:cat" value="default or cache"/>
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="pageManagerPropertiesCache"/>
+    </bean>
+    
+    <bean id="ehPageManagerPropertiesPathCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <meta key="j2:cat" value="default or cache"/>
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="pageManagerPropertiesPathCache"/>
+    </bean>
+    
     <bean id="pageManagerOidCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
         <meta key="j2:cat" value="default or cache"/>
         <constructor-arg><ref bean="ehPageManagerOidCache"/></constructor-arg>
@@ -284,6 +296,16 @@
     <bean id="pageManagerPathCache" class="org.apache.jetspeed.cache.impl.EhCacheDistributedImpl">
         <meta key="j2:cat" value="default or cache"/>
         <constructor-arg><ref bean="ehPageManagerPathCache"/></constructor-arg>
+    </bean>
+    
+    <bean id="pageManagerPropertiesCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+        <meta key="j2:cat" value="default or cache"/>
+        <constructor-arg><ref bean="ehPageManagerPropertiesCache"/></constructor-arg>
+    </bean>
+    
+    <bean id="pageManagerPropertiesPathCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+        <meta key="j2:cat" value="default or cache"/>
+        <constructor-arg><ref bean="ehPageManagerPropertiesPathCache"/></constructor-arg>
     </bean>
     
 </beans>

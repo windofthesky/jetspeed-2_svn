@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.FragmentProperty;
 
 /**
@@ -32,12 +31,12 @@ import org.apache.jetspeed.om.page.FragmentProperty;
  */
 public class FragmentPropertyList extends AbstractList
 {
-    private BaseFragmentElement fragment;
+    private BaseFragmentElementImpl fragment;
 
     private List properties;
     private List removedProperties;
 
-    public FragmentPropertyList(BaseFragmentElement fragment)
+    public FragmentPropertyList(BaseFragmentElementImpl fragment)
     {
         super();
         this.properties = new ArrayList();
@@ -139,7 +138,7 @@ public class FragmentPropertyList extends AbstractList
      * 
      * @return fragment owner
      */
-    public BaseFragmentElement getFragment()
+    public BaseFragmentElementImpl getFragmentImpl()
     {
         return fragment;
     }
