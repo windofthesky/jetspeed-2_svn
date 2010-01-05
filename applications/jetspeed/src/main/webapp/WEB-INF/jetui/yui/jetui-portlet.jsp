@@ -43,9 +43,10 @@ limitations under the License.
     {
     	String x = fragment.getProperty(ContentFragment.X_PROPERTY_NAME);
     	String y = fragment.getProperty(ContentFragment.Y_PROPERTY_NAME);
-        
+    	int row = fragment.getLayoutRow();
+        int col = fragment.getLayoutColumn();
 %>
-    <div class="portal-layout-cell" x='<%=x%>' y='<%=y%>' id="<%=fragment.getId()%>" name="<%=fragment.getName()%>" column="0" row="0" style='position: absolute; top: <%=x%>px; left: <%=y%>px;' detached='true' locked='<%=fragment.isLocked()%>'>
+    <div class="portal-layout-cell" x='<%=x%>' y='<%=y%>' id="<%=fragment.getId()%>" name="<%=fragment.getName()%>" column="<%=col%>" row="<%=row%>" style='position: absolute; top: <%=x%>px; left: <%=y%>px;' detached='true' locked='<%=fragment.isLocked()%>'>
 <%
     }
     else
@@ -75,9 +76,9 @@ if (request.getUserPrincipal() != null && fragment.getDecoration().getActions().
 %>
                  <span style='cursor: pointer; z-index: 1000;' id='jetspeed-close-<%=fragment.getId()%>' title="close" class="portlet-action-close"><img src="<%=request.getContextPath()%>/decorations/images/close.gif" alt="Close" border="0" /></span>
 <% if (detached != null) { %>                               
-                 <span style='cursor: pointer; z-index: 1000;' id='jetspeed-detach-<%=fragment.getId()%>' title="attach" class="portlet-action-attach"><img src="<%=request.getContextPath()%>/decorations/images/attach.gif" alt="Attach" border="0" /></span>              
+                 <span style='cursor: pointer; z-index: 1000;' id='jetspeed-detach-<%=fragment.getId()%>' title="attach" class="portlet-action-attach"><img src="<%=request.getContextPath()%>/decorations/images/attach.gif" alt="Attach" border="0" id='jetspeed-detach-img-<%=fragment.getId()%>'/></span>              
 <% } else {  %>
-                 <span style='cursor: pointer; z-index: 1000;' id='jetspeed-detach-<%=fragment.getId()%>' title="detach" class="portlet-action-detach"><img src="<%=request.getContextPath()%>/decorations/images/detach.gif" alt="Detach" border="0" /></span>              
+                 <span style='cursor: pointer; z-index: 1000;' id='jetspeed-detach-<%=fragment.getId()%>' title="detach" class="portlet-action-detach"><img src="<%=request.getContextPath()%>/decorations/images/detach.gif" alt="Detach" border="0" id='jetspeed-detach-img-<%=fragment.getId()%>'/></span>              
 <% } }  } %>
                 </div>
               </div>

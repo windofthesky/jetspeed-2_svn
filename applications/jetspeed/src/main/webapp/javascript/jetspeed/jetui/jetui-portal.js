@@ -285,13 +285,8 @@ YUI.add('jetui-portal', function(Y) {
          */
         detachPortlet : function(e) {
             var portal = JETUI_YUI.getPortalInstance();
-            var windowId = null;
-            if (e instanceof String) {
-                windowId = e;
-            } else {
-                windowId = e.currentTarget.getAttribute("id");
-                windowId = windowId.replace(/^jetspeed-detach-/, "");
-            }
+            var actionId = e.currentTarget.getAttribute("id");
+            var windowId = actionId.replace(/^jetspeed-detach-/, "");
             var window = Y.one("[id='" + windowId + "']");
             var jetspeedZone = Y.one('#jetspeedZone');
             if (!Y.Lang.isNull(jetspeedZone)) {
@@ -330,14 +325,21 @@ YUI.add('jetui-portal', function(Y) {
 	                    groups: ['grid']            
 	                });
 				}
-				e.currentTarget.on('click', portal.attachPortlet);
-	        	e.currentTarget.setAttribute("title", "attach");
-	        	e.currentTarget.setAttribute("class", "portlet-action-attach");
-	        	var imgsrc = e.target.getAttribute("src");
-		        if (imgsrc != null) {
-		        		e.target.setAttribute("src", imgsrc.replace("/detach/", "attach"));
-		        		e.target.setAttribute("alt", "Attach");
-	        	}
+	            var action = Y.one("[id='" + actionId + "']");
+	            if (!Y.Lang.isNull(action)) {
+	            	Y.Event.purgeElement("[id='" + actionId + "']", false, "click"); 
+		            action.on('click', portal.attachPortlet);
+		        	action.setAttribute("title", "attach");
+		        	action.setAttribute("class", "portlet-action-attach");
+		            var imgid = actionId.replace(/^jetspeed-detach-/, "jetspeed-detach-img-");
+		        	var img = Y.one("[id='" + imgid + "']");;
+		        	var imgsrc = img.getAttribute("src");
+			        if (imgsrc != null) {
+			        	var s = imgsrc.replace("detach", "attach");
+			        	img.setAttribute("src", s);
+			        	img.setAttribute("alt", "Attach");
+		        	}
+	            }
 		        var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
 		        uri += "&x=" + x + "&y=" + y + "&layout=detach";
 		        var config = {
@@ -355,13 +357,8 @@ YUI.add('jetui-portal', function(Y) {
          */
         attachPortlet : function(e) {
             var portal = JETUI_YUI.getPortalInstance();
-            var windowId = null;
-            if (e instanceof String) {
-                windowId = e;
-            } else {
-                windowId = e.currentTarget.getAttribute("id");
-                windowId = windowId.replace(/^jetspeed-detach-/, "");
-            }
+            var actionId = e.currentTarget.getAttribute("id");
+            var windowId = actionId.replace(/^jetspeed-detach-/, "");
             var window = Y.one("[id='" + windowId + "']");
             var col = window.data.get("column");
             var layout = null;
@@ -383,14 +380,22 @@ YUI.add('jetui-portal', function(Y) {
 	            window.setStyle('top', '');
 	            window.setStyle('left', '');
 	        	window.data.set('detached', false);
-				e.currentTarget.on('click', portal.detachPortlet);
-	        	e.currentTarget.setAttribute("title", "detach");
-	        	e.currentTarget.setAttribute("class", "portlet-action-detach");
-	        	var imgsrc = e.target.getAttribute("src");
-		        if (imgsrc != null) {
-		        	e.target.setAttribute("src", imgsrc.replace("/attach/", "detach"));
-		        	e.target.setAttribute("alt", "Detach");
-	        	}	        	
+	        	
+	            var action = Y.one("[id='" + actionId + "']");
+	            if (!Y.Lang.isNull(action)) {
+	            	Y.Event.purgeElement("[id='" + actionId + "']", false, "click"); 
+		            action.on('click', portal.detachPortlet);
+		        	action.setAttribute("title", "detach");
+		        	action.setAttribute("class", "portlet-action-detach");
+		            var imgid = actionId.replace(/^jetspeed-detach-/, "jetspeed-detach-img-");
+		        	var img = Y.one("[id='" + imgid + "']");;
+		        	var imgsrc = img.getAttribute("src");
+			        if (imgsrc != null) {
+			        	var s = imgsrc.replace("attach", "detach");
+			        	img.setAttribute("src", s);
+			        	img.setAttribute("alt", "Detach");
+		        	}
+	            }
 	        	var drag = Y.DD.DDM.getDrag(window);
 	        	drag.removeFromGroup("detached");
 	        	drag.addToGroup("grid");

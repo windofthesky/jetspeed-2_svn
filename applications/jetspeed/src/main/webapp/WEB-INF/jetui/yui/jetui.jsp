@@ -298,12 +298,14 @@ for (ContentFragment fragment : columnLayout.getDetachedPortlets())
 {
 	String x = fragment.getProperty(ContentFragment.X_PROPERTY_NAME);
 	String y = fragment.getProperty(ContentFragment.Y_PROPERTY_NAME);
+	int row = fragment.getLayoutRow();
+    int col = fragment.getLayoutColumn();	
     String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
     Decoration.ActionsOption option = fragment.getDecoration().getActionsOption();  
     if (option == Decoration.ActionsOption.HIDE) // TODO: HOVER, DROP DOWN not yet implemented
     {
 %>
-   <div id='<%=fragment.getId()%>' detached='true' locked='<%=fragment.isLocked()%>' name='<%=fragment.getName()%>' column='0' row='0' x='<%=x%>' y='<%=y%>' style='position: absolute; top: <%=x%>px; left: <%=y%>px;'>
+   <div id='<%=fragment.getId()%>' detached='true' locked='<%=fragment.isLocked()%>' name='<%=fragment.getName()%>' column='<%=col%>' row='<%=row%>' x='<%=x%>' y='<%=y%>' style='position: absolute; top: <%=x%>px; left: <%=y%>px;'>
 <%=content%>
    </div>			    
 <% } else {   
