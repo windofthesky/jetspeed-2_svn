@@ -153,8 +153,18 @@ public interface PortletPlacementContext
      * Takes the internal portlet placement state and writes it back
      * out to the root fragment for the managed page layout.
      * 
+     * @param scope the name of the property scope to update 
+     * @param scopeValue the scope discriminator value, (unless scope is GLOBAL
+     *                   or USER where the default user name is used if null)
      * @return the managed page layout with updated fragment state.
      */
+    public ContentPage syncPageFragments(String scope, String scopeValue);
+
+    /**
+     * Takes the internal portlet placement state and writes it back
+     * out to the root fragment for the managed page layout.
+     * 
+     * @return the managed page layout with updated fragment state.
+     */    
     public ContentPage syncPageFragments();
-        
 }

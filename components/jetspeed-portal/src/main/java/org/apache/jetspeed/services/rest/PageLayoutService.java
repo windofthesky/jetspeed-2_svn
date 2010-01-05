@@ -315,7 +315,7 @@ public class PageLayoutService
                 }
                 
                 // synchronize back to the page layout root fragment
-                contentPage = ppc.syncPageFragments();
+                contentPage = ppc.syncPageFragments(PageLayoutComponent.USER_PROPERTY_SCOPE, null);
             }
             catch (PortletPlacementException e)
             {
@@ -363,7 +363,7 @@ public class PageLayoutService
                     }
                     
                     // synchronize back to the page layout root fragment
-                    contentPage = ppc.syncPageFragments();
+                    contentPage = ppc.syncPageFragments(PageLayoutComponent.USER_PROPERTY_SCOPE, null);
                 }
                 catch (Exception e)
                 {
@@ -383,9 +383,8 @@ public class PageLayoutService
             {
                 if (layoutFragmentId != null && layoutFragmentId.equals("detach"))
                 {
-                    // first time detach, need to reorder
+                    //pageLayoutComponent.moveFragment(contentPage, layoutFragmentId, fromFragmentId, toFragmentId)
                 }
-                
                 pageLayoutComponent.updatePosition(contentFragment, posX, posY, posZ, posWidth, posHeight, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
                 pageLayoutComponent.updateStateMode(contentFragment, JetspeedActions.DETACH, null, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
             }

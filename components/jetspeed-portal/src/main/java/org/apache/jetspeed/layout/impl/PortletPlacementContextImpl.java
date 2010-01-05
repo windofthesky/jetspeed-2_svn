@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.Coordinate;
+import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.PortletPlacementException;
 import org.apache.jetspeed.layout.PortletPlacementContext;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -423,9 +424,16 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
      */
     public ContentPage syncPageFragments()
     {
-    	syncFragments( true, -1 );
+    	syncFragments(true, -1, null, null);
     	//debugFragments( "syncPage" );
     	return this.page;
+    }
+
+    public ContentPage syncPageFragments(String scope, String scopeValue)
+    {
+        syncFragments(true, -1, scope, scopeValue);
+        //debugFragments( "syncPage" );
+        return this.page;
     }
     
     protected int getLatestColumn( Coordinate coordinate )
@@ -451,7 +459,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
     	return row;
     }
     
-    protected void syncFragments( boolean updateFragmentObjects, int onlyForColumnIndex )
+    protected void syncFragments(boolean updateFragmentObjects, int onlyForColumnIndex, String scope, String scopeValue)
     {
         for ( int colIndex = 0; colIndex < this.columnsList.length; colIndex++ )
         {
@@ -475,7 +483,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 	        		}
 	        		if ( updateFragmentObjects )
 	                {
-	        		    fragment.updateRowColumn(rowIndex, colIndex);
+	        		    fragment.updateRowColumn(rowIndex, colIndex, scope, scopeValue);
 	                }
 	            }
         	}
@@ -613,7 +621,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 			CoordinateImpl coordinate = new CoordinateImpl( newCol, newRow );
         	this.fragmentCoordinateMap.put( fragment.getId(), coordinate );
 			this.fragmentMap.put( fragment.getId(), fragment );
-			syncFragments( false, newCol );
+			syncFragments(false, newCol, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
 		}
 		else
 		{
@@ -638,9 +646,9 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 				
 				this.fragmentMap.put( fragment.getId(), fragment );
 				
-				syncFragments( false, currentCol );
+				syncFragments(false, currentCol, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
 				if ( columnChanged )
-					syncFragments( false, newCol );
+					syncFragments(false, newCol, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
 			}
 		}
 		return (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
@@ -681,9 +689,9 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 				
 				this.fragmentMap.put( fragment.getId(), fragment );
 				
-				syncFragments( false, currentCol );
+				syncFragments(false, currentCol, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
 				if ( newCol != currentCol )
-					syncFragments( false, newCol );
+					syncFragments(false, newCol, PageLayoutComponent.USER_PROPERTY_SCOPE, null);
 			}
 		}
 		return (Coordinate)this.fragmentCoordinateMap.get( fragment.getId() );
@@ -730,7 +738,7 @@ public class PortletPlacementContextImpl implements PortletPlacementContext
 		this.fragmentCoordinateMap.remove( fragment.getId() );
 		this.fragmentMap.remove( fragment.getId() );
 		
-		syncFragments( false, currentCol );
+		syncFragments(false, currentCol, null, null);
 		
 		return currentCoordinate;
 	}
