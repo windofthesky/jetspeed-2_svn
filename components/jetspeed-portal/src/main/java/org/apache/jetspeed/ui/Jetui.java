@@ -263,11 +263,14 @@ public class Jetui
             return toolbar;
         ContentPage page = context.getPage();
         ContentFragment cf = page.getFragmentByFragmentId(id);
-        toolbar = new Toolbar(orientation, id, cf);
-        toolbar.setCssClass(cf.getProperty("class"));
-        String state = cf.getProperty("state");
-        if (state != null)
-            toolbar.setClosed(state.equals("closed"));
+        if (cf != null) 
+        {
+            toolbar = new Toolbar(orientation, id, cf);
+            toolbar.setCssClass(cf.getProperty("class"));
+            String state = cf.getProperty("state");
+            if (state != null)
+                toolbar.setClosed(state.equals("closed"));
+        }
         return toolbar;
     }
     
