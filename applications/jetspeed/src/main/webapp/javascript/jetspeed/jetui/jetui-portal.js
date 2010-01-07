@@ -332,12 +332,15 @@ YUI.add('jetui-portal', function(Y) {
 		        	action.setAttribute("title", "attach");
 		        	action.setAttribute("class", "portlet-action-attach");
 		            var imgid = actionId.replace(/^jetspeed-detach-/, "jetspeed-detach-img-");
-		        	var img = Y.one("[id='" + imgid + "']");;
-		        	var imgsrc = img.getAttribute("src");
-			        if (imgsrc != null) {
-			        	var s = imgsrc.replace("detach", "attach");
-			        	img.setAttribute("src", s);
-			        	img.setAttribute("alt", "Attach");
+		        	var img = Y.one("[id='" + imgid + "']");
+		        	if (!Y.Lang.isNull(img))
+		        	{
+			        	var imgsrc = img.getAttribute("src");
+				        if (imgsrc != null) {
+				        	var s = imgsrc.replace("detach", "attach");
+				        	img.setAttribute("src", s);
+				        	img.setAttribute("alt", "Attach");
+			        	}
 		        	}
 	            }
 		        var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
@@ -389,11 +392,14 @@ YUI.add('jetui-portal', function(Y) {
 		        	action.setAttribute("class", "portlet-action-detach");
 		            var imgid = actionId.replace(/^jetspeed-detach-/, "jetspeed-detach-img-");
 		        	var img = Y.one("[id='" + imgid + "']");;
-		        	var imgsrc = img.getAttribute("src");
-			        if (imgsrc != null) {
-			        	var s = imgsrc.replace("attach", "detach");
-			        	img.setAttribute("src", s);
-			        	img.setAttribute("alt", "Detach");
+		            if (!Y.Lang.isNull(img))
+		        	{		            
+			        	var imgsrc = img.getAttribute("src");
+				        if (imgsrc != null) {
+				        	var s = imgsrc.replace("attach", "detach");
+				        	img.setAttribute("src", s);
+				        	img.setAttribute("alt", "Detach");
+			        	}
 		        	}
 	            }
 	        	var drag = Y.DD.DDM.getDrag(window);

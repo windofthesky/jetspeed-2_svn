@@ -80,19 +80,22 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 		        dragGroups = ['detached'],	        
 		        dragMode = 'point';
 		        dropGroups = [];
-	        }        
-	        var ddNav = new Y.DD.Drag({
-	            node: v,
-	            groups: dragGroups,
-	            dragMode: dragMode                    
-	        }).plug(Y.Plugin.DDProxy, { 
-	          	 moveOnEnd: false         	    	
-	        });    
-	        ddNav.addHandle(config.dragHandleStyle);
-	    	var drop = new Y.DD.Drop({
-	            node: v,
-	            groups: dropGroups            
-	        });
+	        }
+	        if (portlet.get("tool") == false)
+	        {
+		        var ddNav = new Y.DD.Drag({
+		            node: v,
+		            groups: dragGroups,
+		            dragMode: dragMode                    
+		        }).plug(Y.Plugin.DDProxy, { 
+		          	 moveOnEnd: false         	    	
+		        });    
+		        ddNav.addHandle(config.dragHandleStyle);
+		    	var drop = new Y.DD.Drop({
+		            node: v,
+		            groups: dropGroups            
+		        });
+	        }
 	    	//portlet.info();
     	}
     });

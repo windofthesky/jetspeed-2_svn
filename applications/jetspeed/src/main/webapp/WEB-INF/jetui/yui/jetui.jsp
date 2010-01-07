@@ -111,20 +111,12 @@ var JETUI_YUI = {
 }; // ({classNamePrefix: 'jet'})
 </script>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/jetui/css/portal.css"/>
-
 <%=jetui.includeHeaderResources(rc)%>
-
 <%
-// define layout objects (preferedLocale, rootFragment, site, theme, layoutDecorator)
-// decorator macros
-// defineNavigationConstants()
-
 for (String style : jetui.getStyleSheets(rc))
 {%>
 <link rel="stylesheet" type="text/css" media="screen, projection" href="<%=request.getContextPath()%>/<%=style%>"/>
-<%}
-%>
-
+<%}%>
 <body class="yui-skin-sam">
 <div id='jetspeedZone'>
 <div id="layout-<%=pageDec%>" class="layout-<%=pageDec%>" >
