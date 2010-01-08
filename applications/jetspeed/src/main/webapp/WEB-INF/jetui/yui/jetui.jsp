@@ -19,6 +19,7 @@ limitations under the License.
 <%@ page import="java.util.Collection" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="org.apache.jetspeed.JetspeedActions" %>
 <%@ page import="org.apache.jetspeed.ui.Jetui" %>
 <%@ page import="org.apache.jetspeed.ui.Toolbar" %>
 <%@ page import="org.apache.jetspeed.request.RequestContext" %>
@@ -187,6 +188,7 @@ if (ltb != null)
         request.setAttribute("decorator", decorator);
         request.setAttribute("fragment", maximized);
 		request.setAttribute("coordinate", columnLayout.getCoordinate(maximized));
+        // request.setAttribute("detached", new Boolean(true));            
 %>
 <div id="column_id_0"
      class="portal-layout-column"
@@ -215,7 +217,7 @@ if (ltb != null)
             for (ContentFragment fragment : collections)
             {
                 String state = fragment.getState();
-                if (state == null || !state.equals("detach"))
+                if (state == null || !state.equals(JetspeedActions.DETACH))
                 {
                    //String content = jetui.renderPortletWindow(fragment.getId(), fragment.getName(), rc);
                    String content = jetui.getRenderedContent((ContentFragment)fragment, rc);

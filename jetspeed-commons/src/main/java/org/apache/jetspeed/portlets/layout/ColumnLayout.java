@@ -158,18 +158,23 @@ public class ColumnLayout implements Serializable
      *            are used.
      * @throws LayoutEventException
      */
-    public ColumnLayout(int numberOfColumns, String layoutType, Collection<ContentFragment> fragments, String[] columnWidths) throws LayoutEventException
+    public ColumnLayout(int numberOfColumns, String layoutType, Collection<ContentFragment> fragments, String[] columnWidths, ContentFragment maximized) throws LayoutEventException
     {
         this(numberOfColumns, layoutType, columnWidths);
         Iterator<ContentFragment> fragmentsItr = fragments.iterator();
         try
         {
+            if (maximized != null)
+            {
+                doAdd(getColumn(maximized), getRow(getColumn(maximized), maximized), maximized);
+                return;
+            }
             while (fragmentsItr.hasNext())
             {
                 ContentFragment fragment = (ContentFragment) fragmentsItr.next();
                 String windowState = fragment.getState();
                 if (windowState != null && windowState.equals(JetspeedActions.DETACH))
-                {
+                {                    
                     detachedPortlets.add(fragment);
                     continue;
                 }
@@ -184,6 +189,11 @@ public class ColumnLayout implements Serializable
             // setting would cause this exception.
             throw new LayoutError("A malformed fragment could not be adjusted.", e);
         }
+    }
+    
+    public ColumnLayout(int numberOfColumns, String layoutType, Collection<ContentFragment> fragments, String[] columnWidths) throws LayoutEventException
+    {
+        this(numberOfColumns, layoutType, fragments, columnWidths, null);
     }
 
     /**

@@ -115,7 +115,7 @@ public class Jetui
             }
             else
             {
-                ColumnLayout columnLayout = new ColumnLayout(1, "maximized", rootFragment.getFragments(), new String[] { "100%" });
+                ColumnLayout columnLayout = new ColumnLayout(1, "maximized", rootFragment.getFragments(), new String[] { "100%" }, maximized);
                 request.setAttribute("columnLayout", columnLayout);                
             }
             dispatcher.include(request.getRequest(), request.getResponse());            

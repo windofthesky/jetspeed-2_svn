@@ -53,28 +53,28 @@ public class JetuiAggregatorImpl extends AsyncPageAggregatorImpl implements Page
 
     protected void renderMaximizedWindow(RequestContext context, ContentPage page, ContentFragment layoutContentFragment, PortletWindow window)
     {
-//        boolean maxedLayout = false;
-//        PortletWindow layoutWindow;
-//        if (window.getFragment().getId().equals(layoutContentFragment.getId()))
-//        {
-//            layoutWindow = window;
-//            maxedLayout = true;
-//        }
-//        else
-//        {
-//            layoutWindow = context.getPortletWindow(layoutContentFragment);
-//        }
+        boolean maxedLayout = false;
+        PortletWindow layoutWindow;
+        if (window.getFragment().getId().equals(layoutContentFragment.getId()))
+        {
+            layoutWindow = window;
+            maxedLayout = true;
+        }
+        else
+        {
+            layoutWindow = context.getPortletWindow(layoutContentFragment);
+        }
 
           context.setAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE, window.getFragment());
-//        layoutWindow.setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootContentFragment());
+          layoutWindow.setAttribute(PortalReservedParameters.MAXIMIZED_LAYOUT_ATTRIBUTE, page.getRootFragment());
 
         try
         {
             renderer.renderNow(window.getFragment(), context);
-//            if (!maxedLayout)
-//            {
-//                renderer.renderNow(layoutContentFragment, context);
-//            }
+            if (!maxedLayout)
+            {
+                renderer.renderNow(layoutContentFragment, context);
+            }
         }
         catch (Exception e)
         {
