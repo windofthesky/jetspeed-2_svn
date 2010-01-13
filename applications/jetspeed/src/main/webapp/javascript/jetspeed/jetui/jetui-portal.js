@@ -181,17 +181,15 @@ YUI.add('jetui-portal', function(Y) {
             var currentStyle = toggler.getAttribute('class');
             var nodelist = toolbar.get('children');
             var state = 'normal';
-            var reverse = false;
             if (currentStyle == compareStyle) {
             	toolbar.setStyle('display', 'block');
             	nodelist.setStyle('display', 'block');
-            	reverse = true;
             } else {
                 nodelist.setStyle('display', 'none');
                 toolbar.setStyle('display', 'none');
                 state = 'closed';
             }
-            var windowId = (toolbar == portal.jstbLeft) ? 'template-top2.jstbLeft' : 'template-top2.jstbRight';
+            var windowId = (toolbar == portal.jstbLeft) ? 'template-top2.jstbLeft' : 'template-top2.jstbRight'; // FIXME: don't hard code template
             var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/mod/?_type=json";
             uri += "&state=" + state;
             var config = {
@@ -202,6 +200,36 @@ YUI.add('jetui-portal', function(Y) {
                 };
             var request = Y.io(uri, config);            
         },
+        
+        /**
+         * Toggles a tool or window state
+         *  (fragment id is option
+         * @method toggleState shoot
+         */
+        toggleState : function(windowId) {
+            var portal = JETUI_YUI.getPortalInstance();
+        	var window = Y.one("[id='" + windowId + "']");
+            if (!Y.Lang.isNull(window)) {
+            	var state = window.data.get('state');
+            	if (state == null || state == "normal") {
+	                window.setStyle('display', 'none');
+	                state = 'minimized';
+	            } else {
+	        		window.setStyle('display', 'block');
+	            	state = 'normal';	            	
+	            }
+            	window.data.set('state', state);	        	
+	            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/mod/?_type=json";
+	            uri += "&state=" + state;
+	            var config = {
+	                    on: { complete: portal.onStateComplete },
+	                    method: "PUT",
+	                    headers: { "X-Portal-Path" : portal.portalPagePath },
+	                    arguments: { complete: [ windowId ] }
+	                };
+	            var request = Y.io(uri, config);            
+            }
+        },        
         
         /**
          * @method moveToLayout moves a portlet window to layout column grid position in the browser
@@ -643,14 +671,14 @@ YUI.add('jetui-portal', function(Y) {
                 var request = Y.io(uri, config);
             }
         },
-        
+                
         /**
          * @method addPortlet
          */
         addPortlet : function(fragment) {
             var portal = JETUI_YUI.getPortalInstance();
             var templatePanel = Y.Node.one("#jsPortletTemplate");
-            var v = templatePanel.cloneNode(true);
+            var v = templatePanel.cloneNode(true);            
             v.setStyle('display', '');
             v.set("id", fragment.id);
             v.setAttribute("name", fragment.name);
@@ -726,6 +754,7 @@ YUI.add('jetui-portal', function(Y) {
             "id" : { value: "0" },
             "tool" : { value : false },
             "detached" : { value : false },
+            "state" : { value : "normal" },
             "locked" : { value : false },
             "column" : { value : 0 },
             "row" : { value : 0 },
@@ -782,6 +811,9 @@ YUI.add('jetui-portal', function(Y) {
         portlet.set("tool", tool);
         var detached = portal.booleanValue(node.getAttribute("detached"));
         portlet.set("detached", detached);
+        var display = node.getStyle('display');
+        if (display != null && display == 'none')
+        	portlet.set("state", "minimized");
         var locked = portal.booleanValue(node.getAttribute("locked"));
         portlet.set("locked", locked);
         portlet.set("column", node.getAttribute("column"));

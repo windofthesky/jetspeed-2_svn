@@ -96,7 +96,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 		            groups: dropGroups            
 		        });
 	        }
-	    	//portlet.info();
+	    	// portlet.info();
     	}
     });
     

@@ -262,7 +262,7 @@ public class Jetui
         else
             return toolbar;
         ContentPage page = context.getPage();
-        ContentFragment cf = page.getFragmentByFragmentId(id);
+        ContentFragment cf = page.getFragmentByFragmentId(id); 
         if (cf != null) 
         {
             toolbar = new Toolbar(orientation, id, cf);
@@ -272,6 +272,22 @@ public class Jetui
                 toolbar.setClosed(state.equals("closed"));
         }
         return toolbar;
+    }
+    
+    public ContentFragment getToolbox(RequestContext context)
+    {
+        List<ContentFragment> result = context.getPage().getFragmentsByName("j2-admin::JetspeedToolbox");
+        if (result != null && result.size() > 0)
+            return result.get(0);
+        return null;
+    }
+
+    public ContentFragment getPageNavigator(RequestContext context)
+    {
+        List<ContentFragment> result = context.getPage().getFragmentsByName("j2-admin::PageNavigator");
+        if (result != null && result.size() > 0)
+            return result.get(0);
+        return null;
     }
     
 }
