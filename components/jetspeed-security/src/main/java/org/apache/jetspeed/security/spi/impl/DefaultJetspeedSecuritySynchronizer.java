@@ -291,6 +291,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                         logger.error("Unexpected SecurityException trying to remove (" + relatedPrincipal.getType().getName() + "," +
                                      principal.getType().getName() + "," + associationName + ") association during synchronization.", e);
                     }
+                    // TODO: proper exception handling!
                 }
             }
         }
@@ -317,6 +318,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         {
             logger.error("Unexpected SecurityException during synchronization.", e);
         }
+        // TODO: proper exception handling!
     }
 
     protected JetspeedPrincipal synchronizePrincipalAttributes(Entity entity)
@@ -349,6 +351,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                     {
                         logger.error("Unexpected exception in adding new pricipal of type " + updatedPrincipal.getType().getName() + ".", sexp);
                     }
+                    // TODO: proper exception handling!
                 }
                 attrsToBeUpdated.addAll(mappedEntityAttrs.values());
             }
@@ -410,6 +413,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                         {
                             logger.error("Unexpected exception for attribute " + addedEntityAttr.getMappedName() + ".", e);
                         }
+                        // TODO: proper exception handling!
                     }
                 }
             }
@@ -432,9 +436,10 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                         }
                         catch (SecurityException e)
                         {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            logger.error("Unexpected SecurityException: could not remove attribute "+principalAttrEntry.getKey()+" for principal " + updatedPrincipal.getName() + " of type " +
+                                         updatedPrincipal.getType().getName(), e);
                         }
+                        // TODO: proper exception handling!
                     }
                 }
                 // step 3, update synchronized principal
@@ -452,6 +457,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                         logger.error("Unexpected SecurityException: could not synchronize principal " + updatedPrincipal.getName() + " of type " +
                                      updatedPrincipal.getType().getName(), e);
                     }
+                    // TODO: proper exception handling!
                 }
             }
         }

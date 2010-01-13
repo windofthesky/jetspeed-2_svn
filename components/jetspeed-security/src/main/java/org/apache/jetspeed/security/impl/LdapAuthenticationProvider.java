@@ -16,11 +16,7 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.util.Hashtable;
-
 import javax.naming.AuthenticationException;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -34,47 +30,60 @@ import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.mapping.ldap.util.DnUtils;
 import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialManager;
-import org.apache.jetspeed.security.spi.impl.ldap.LdapContextProxy;
+
+import org.springframework.ldap.pool.factory.PoolingContextSource;
+import org.springframework.ldap.core.DistinguishedName;
+import org.springframework.ldap.filter.AndFilter;
+import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.filter.Filter;
+import org.springframework.ldap.filter.HardcodedFilter;
+import org.springframework.ldap.support.LdapUtils;
 
 /**
- * @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>
- * @version $Id:
+ * @author <a href="mailto:ate@apache.org">Ate Douma</a>
+ * @version $Id$
  */
 public class LdapAuthenticationProvider extends BaseAuthenticationProvider
 {
     private JetspeedSecuritySynchronizer synchronizer;
     private UserPasswordCredentialManager upcm;
     private UserManager manager;
-    private LdapContextProxy context;
+    private PoolingContextSource poolingContextsource;
+    private String userEntryPrefix;
+    private DistinguishedName userSearchPath;
+    private SearchControls searchControls;
+    private Filter userFilter;
 
-    public LdapAuthenticationProvider(String providerName, String providerDescription, String loginConfig, UserPasswordCredentialManager upcm,
-                                      UserManager manager)
+    public LdapAuthenticationProvider(String providerName, String providerDescription, String loginConfig, 
+                                       UserPasswordCredentialManager upcm, UserManager manager, JetspeedSecuritySynchronizer synchronizer,  PoolingContextSource poolingContextSource, 
+                                       String ldapBase, String userSearchBase, String userFilter, String userEntryPrefix, String searchScope)
     {
         super(providerName, providerDescription, loginConfig);
         this.upcm = upcm;
         this.manager = manager;
-    }
-
-    public void setContext(LdapContextProxy context)
-    {
-        this.context = context;
-    }
-
-    public void setSynchronizer(JetspeedSecuritySynchronizer synchronizer)
-    {
         this.synchronizer = synchronizer;
+        this.poolingContextsource = poolingContextSource;
+        this.userEntryPrefix = userEntryPrefix;        
+        this.userSearchPath = new DistinguishedName(ldapBase);
+        this.userSearchPath.append(new DistinguishedName(userSearchBase));
+        if (!StringUtils.isEmpty(userFilter))
+        {
+            this.userFilter = new HardcodedFilter(userFilter);
+        }        
+        this.searchControls = new SearchControls();
+        this.searchControls.setReturningAttributes(new String[]{});
+        this.searchControls.setReturningObjFlag(true);
+        this.searchControls.setSearchScope(Integer.parseInt(searchScope));
     }
 
     public AuthenticatedUser authenticate(String userName, String password) throws SecurityException
     {
         AuthenticatedUser authUser = null;
-        boolean authenticated = false;
         try
         {
-            if (userName == null)
+            if (StringUtils.isEmpty(userName))
             {
                 throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
             }
@@ -82,16 +91,17 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
             {
                 throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
             }
-            authenticated = authenticateUser(userName, password);
-            if (authenticated)
+            authenticateUser(userName, password);
+            if (synchronizer != null)
             {
-                User user = getUser(userName);
-                authUser = new AuthenticatedUserImpl(user, new UserCredentialImpl(upcm.getPasswordCredential(user)));
+                synchronizer.synchronizeUserPrincipal(userName,false);
             }
+            User user = manager.getUser(userName);
+            authUser = new AuthenticatedUserImpl(user, new UserCredentialImpl(upcm.getPasswordCredential(user)));
         }
         catch (SecurityException authEx)
         {
-            if (authEx.getCause().getMessage().equalsIgnoreCase("[LDAP: error code 49 - Invalid Credentials]"))
+            if (authEx.getCause() != null && authEx.getCause().getMessage().equalsIgnoreCase("[LDAP: error code 49 - Invalid Credentials]"))
             {
                 throw new SecurityException(SecurityException.INCORRECT_PASSWORD);
             }
@@ -103,40 +113,39 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         return authUser;
     }
 
-    private User getUser(String userName) throws SecurityException
+    private void authenticateUser(String userName, String password) throws SecurityException
     {
-        if (synchronizer != null)
-        {
-            synchronizer.synchronizeUserPrincipal(userName,false);
-        }
-        return manager.getUser(userName);
-    }
-
-    private boolean authenticateUser(String userName, String password) throws SecurityException
-    {
+        DirContext ctx = null;
         try
         {
-            Hashtable env = (Hashtable) context.getCtx().getEnvironment().clone();
-            // String savedPassword = String.valueOf(getPassword(uid));
-            String dn = lookupByUid(userName);
+            Filter filter = new EqualsFilter(userEntryPrefix, userName);
+            if (userFilter != null)
+            {
+                filter = new AndFilter().and(userFilter).and(filter);
+            }
+            ctx = poolingContextsource.getReadOnlyContext();
+            NamingEnumeration<SearchResult> results = ctx.search(userSearchPath, filter.encode(), searchControls);
+            LdapUtils.closeContext(ctx);
+            ctx = null;
+            
+            String dn = null;            
+            if (null != results && results.hasMore())
+            {
+                SearchResult result = results.next();
+                dn = result.getName();
+                if (result.isRelative())
+                {
+                    DistinguishedName name = (DistinguishedName)userSearchPath.clone();
+                    name.append(new DistinguishedName(dn));
+                    dn = name.encode();
+                }
+            }
             if (dn == null)
             {
                 throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
             }
-            // Build user dn using lookup value, just appending the user filter after the uid won't work when users
-            // are/can be stored in a subtree (searchScope sub-tree)
-            // The looked up dn though is/should always be correct, just need to append the root context.
-            if (!StringUtils.isEmpty(context.getRootContext()))
-            {
-                if (DnUtils.encodeDn(dn).indexOf(DnUtils.encodeDn(context.getRootContext())) < 0)
-                {
-                    dn += "," + DnUtils.encodeDn(context.getRootContext());
-                }
-            }
-            env.put(Context.SECURITY_PRINCIPAL, dn);
-            env.put(Context.SECURITY_CREDENTIALS, password);
-            new InitialContext(env);
-            return true;
+            // Note: this "authenticating" context is (logically) not pooled
+            ctx = poolingContextsource.getContextSource().getContext(dn, password);
         }
         catch (AuthenticationException aex)
         {
@@ -146,86 +155,9 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         {
             throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(), "authenticateUser", nex.getMessage()));
         }
-    }
-
-    public String lookupByUid(final String uid) throws SecurityException
-    {
-        try
+        finally
         {
-            SearchControls cons = setSearchControls();
-            NamingEnumeration searchResults = searchByWildcardedUid(uid, cons);
-            return getFirstDnForUid(searchResults);
+            LdapUtils.closeContext(ctx);
         }
-        catch (NamingException e)
-        {
-            throw new SecurityException(e);
-        }
-    }
-
-    protected SearchControls setSearchControls()
-    {
-        SearchControls controls = new SearchControls();
-        controls.setReturningAttributes(new String[] {});
-        controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        controls.setReturningObjFlag(true);
-        return controls;
-    }
-
-    protected NamingEnumeration searchByWildcardedUid(final String filter, SearchControls cons) throws NamingException
-    {
-        // usa a template method to use users/groups/roles
-        String query = "";
-        if (StringUtils.isEmpty(getSearchSuffix()))
-        {
-            query = "(" + context.getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")";
-        }
-        else
-        {
-            query = "(&(" + context.getEntryPrefix() + "=" + (StringUtils.isEmpty(filter) ? "*" : filter) + ")" + getSearchSuffix() + ")";
-        }
-        // logger.debug("searchByWildCardedUid = " + query);
-        cons.setSearchScope(Integer.parseInt(context.getMemberShipSearchScope()));
-        // TODO: added this here for OpenLDAP (when users are stored in ou=People,o=evenSeas)
-        // String searchBase = StringUtils.replace(getSearchDomain(), "," + context.getRootContext(), "");
-        NamingEnumeration results = ((DirContext) context.getCtx()).search(getSearchDomain(), query, cons);
-        return results;
-    }
-
-    private String getFirstDnForUid(NamingEnumeration searchResults) throws NamingException
-    {
-        String userDn = null;
-        while ((null != searchResults) && searchResults.hasMore())
-        {
-            SearchResult searchResult = (SearchResult) searchResults.next();
-            userDn = searchResult.getName();
-            String searchDomain = getSearchDomain();
-            if (searchDomain.length() > 0)
-            {
-                userDn += "," + StringUtils.replace(searchDomain, "," + context.getRootContext(), "");
-            }
-        }
-        return userDn;
-    }
-
-    private String getSearchSuffix()
-    {
-        return context.getUserFilter();
-    }
-
-    private String getSearchDomain()
-    {
-        StringBuffer searchDomain = new StringBuffer();
-        if (!StringUtils.isEmpty(context.getUserSearchBase()))
-        {
-            searchDomain.append(context.getUserSearchBase());
-        }
-        if (searchDomain.length() == 0)
-        {
-            if (!StringUtils.isEmpty(context.getRootContext()))
-            {
-                searchDomain.append(context.getRootContext());
-            }
-        }
-        return searchDomain.toString();
     }
 }

@@ -73,18 +73,20 @@
     <constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />
   </bean>
 
-  <bean id="org.apache.jetspeed.security.AuthenticationProvider"
-    class="org.apache.jetspeed.security.impl.LdapAuthenticationProvider">
+  <bean id="org.apache.jetspeed.security.AuthenticationProvider" class="org.apache.jetspeed.security.impl.LdapAuthenticationProvider">
     <meta key="j2:cat" value="ldapSecurity" />
-    <constructor-arg index="0" value="ldapAuthenticationProvider" />
-    <constructor-arg index="1" value="Ldap Authentication Provider" />
-    <constructor-arg index="2">
-      <value>login.conf</value>
-    </constructor-arg>
-    <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" />
-    <constructor-arg index="4" ref="org.apache.jetspeed.security.UserManager" />
-    <property name="context" ref="ldapContext" />
-    <property name="synchronizer" ref="org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer" />
+    <constructor-arg index="0"  value="ldapAuthenticationProvider" />
+    <constructor-arg index="1"  value="Ldap Authentication Provider" />
+    <constructor-arg index="2"  value="login.conf"/>
+    <constructor-arg index="3"  ref="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" />
+    <constructor-arg index="4"  ref="org.apache.jetspeed.security.UserManager" />
+    <constructor-arg index="5"  ref="org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer" />
+    <constructor-arg index="6"  ref="LdapSpringContext" />
+    <constructor-arg index="7"  value="${ldap.base}" />
+    <constructor-arg index="8"  value="${ldap.user.searchBase}" />
+    <constructor-arg index="9"  value="${ldap.user.filter}" />
+    <constructor-arg index="10"  value="${ldap.user.entryPrefix}" />
+    <constructor-arg index="11" value="${ldap.search.scope}" />
   </bean>
 
   <bean id="org.apache.jetspeed.security.mapping.SecurityEntityManager"
@@ -112,7 +114,7 @@
     <property name="searchDN" value="${ldap.user.searchBase}" />
     <property name="searchFilter">
       <bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
-        <constructor-arg index="0" value="(objectClass=inetOrgPerson)" />
+        <constructor-arg index="0" value="${ldap.user.filter}" />
       </bean>
     </property>
     <property name="ldapIdAttribute" value="uid" />
@@ -156,7 +158,7 @@
     <property name="searchDN" value="${ldap.role.searchBase}" />
     <property name="searchFilter">
       <bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
-        <constructor-arg index="0" value="(objectClass=groupOfUniqueNames)" />
+        <constructor-arg index="0" value="${ldap.role.filter}" />
       </bean>
     </property>
     <property name="ldapIdAttribute" value="cn" />
@@ -181,7 +183,6 @@
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
           <property name="required" value="true" />
-          <property name="requiredDefaultValue" value="uid=foobar" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="member" />
@@ -201,7 +202,7 @@
     <property name="searchDN" value="${ldap.group.searchBase}" />
     <property name="searchFilter">
       <bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
-        <constructor-arg index="0" value="(objectClass=groupOfUniqueNames)" />
+        <constructor-arg index="0" value="${ldap.group.filter}" />
       </bean>
     </property>
     <property name="ldapIdAttribute" value="cn" />
@@ -226,7 +227,6 @@
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
           <property name="required" value="true" />
-          <property name="requiredDefaultValue" value="uid=foobar" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="member" />
@@ -311,40 +311,37 @@
     </property>
   </bean>
   
-  <bean id="LdapSpringContext" class="org.springframework.ldap.core.support.LdapContextSource">
+  <bean id="ldapEnvironmentProperties" class="org.springframework.beans.factory.config.MapFactoryBean">
     <meta key="j2:cat" value="ldapSecurity" />
-    <property name="url">
-          <value>${ldap.url}</value>
+    <property name="sourceMap">
+      <map>
+            <!--  specify additional ldap context environment parameters like the GullibleSSLSocketFactory if you need it for ldaps://         
+            <entry key="java.naming.ldap.factory.socket" value="org.apache.jetspeed.security.util.GullibleSSLSocketFactory" />
+            -->
+      </map>
     </property>
-    <property name="base">
-          <value>${ldap.base}</value>
-    </property>
-    <property name="userDn">
-          <value>${ldap.userDn}</value>
-    </property>
-    <property name="password">
-          <value>${ldap.password}</value>
-    </property>    
   </bean>
 
-  <bean id="ldapContext" class="org.apache.jetspeed.security.spi.impl.ldap.LdapContextProxy"
-    depends-on="LdapSpringContext">
+  <bean id="LdapSpringContext" class="org.springframework.ldap.pool.factory.PoolingContextSource">
     <meta key="j2:cat" value="ldapSecurity" />
-    <constructor-arg index="0" ref="LdapSpringContext" />
-    <constructor-arg index="1">
-    	<value>${ldap.context.factory}</value>
-    </constructor-arg>  
-    <constructor-arg index="2">
-       	<value>${ldap.user.filter}</value>
-    </constructor-arg>
-    <constructor-arg index="3">
-       	<value>${ldap.search.scope}</value>
-    </constructor-arg>
-    <constructor-arg index="4">
-       	<value>${ldap.user.searchBase}</value>
-    </constructor-arg>	    
-    <constructor-arg index="5">
-       	<value>${ldap.user.entryPrefix}</value>
-    </constructor-arg>	    
+    <property name="contextSource">
+      <bean class="org.springframework.ldap.core.support.LdapContextSource">
+        <property name="url" value="${ldap.url}"/>
+        <property name="base" value="${ldap.base}"/>
+        <property name="userDn" value="${ldap.userDn}"/>
+        <property name="password" value="${ldap.password}"/>
+        <property name="baseEnvironmentProperties" ref="ldapEnvironmentProperties"/>
+        <property name="pooled" value="false"/>
+      </bean>  
+    </property>
+    <property name="dirContextValidator">
+      <bean class="org.springframework.ldap.pool.validation.DefaultDirContextValidator">
+        <property name="base" value="${ldap.user.searchBase}"/>
+      </bean>
+    </property>
+    <property name="maxActive" value="${ldap.context.pool.maxActive}"/>
+    <property name="maxIdle" value="${ldap.context.pool.maxIdle}"/>
+    <property name="testOnBorrow" value="true" />
   </bean>
+  
 </beans>

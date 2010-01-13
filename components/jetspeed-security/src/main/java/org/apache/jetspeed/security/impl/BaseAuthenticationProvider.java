@@ -23,9 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.jetspeed.components.util.system.SystemResourceUtil;
 import org.apache.jetspeed.components.util.system.ClassLoaderSystemResourceUtilImpl;
-import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.AuthenticationProvider;
-import org.apache.jetspeed.security.SecurityException;
 
 /**
  * @see org.apache.jetspeed.security.AuthenticationProvider
