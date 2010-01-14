@@ -325,6 +325,7 @@ for (ContentFragment fragment : columnLayout.getDetachedPortlets())
       <div class="PTitleContent">Loading...</div>
       <div class="PActionBar">
         <span style='cursor: pointer; z-index: 1000;' id='jetspeed-close-XXX' title="close" class="portlet-action-close"><img src="<%=request.getContextPath()%>/decorations/portlet/jetspeed/images/close.gif" alt="Close" border="0" /></span>
+        <span style='cursor: pointer; z-index: 1000;' id='jetspeed-detach-XXX' title="detach" class="portlet-action-detach"><img src="<%=request.getContextPath()%>/decorations/images/detach.gif" alt="Detach" border="0" id='jetspeed-detach-img-XXX'/></span>              
       </div>
     </div>
     <div class="PContentBorder">

@@ -200,6 +200,24 @@ YUI.add('jetui-portal', function(Y) {
                 };
             var request = Y.io(uri, config);            
         },
+
+        /**
+         * Updates toolbar state
+         * 
+         * @method updateToolbar
+         */        
+        updateToolbar : function(toolbar, state) {
+            var portal = JETUI_YUI.getPortalInstance();        	
+            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + toolbar + "/mod/?_type=json";
+            uri += "&state=" + state;
+            var config = {
+                    on: { complete: portal.onStateComplete },
+                    method: "PUT",
+                    headers: { "X-Portal-Path" : portal.portalPagePath },
+                    arguments: { complete: [ toolbar ] }
+                };
+            var request = Y.io(uri, config);            
+        },
         
         /**
          * Toggles a tool or window state
@@ -635,6 +653,7 @@ YUI.add('jetui-portal', function(Y) {
             var titleElem = null;
             var actionBarElem = null;
             var closeElem = null;
+            var detachElem = null;
             var contentElem = null;
             var children = v.getElementsByTagName("*");
             children.each(function(v, k) {
@@ -646,7 +665,9 @@ YUI.add('jetui-portal', function(Y) {
                     contentElem = v;
                 } else if (/^jetspeed-close/.test("" + v.get("id"))) {
                     closeElem = v;
-                }
+	            } else if (/^jetspeed-detach/.test("" + v.get("id"))) {
+	                detachElem = v;
+	            }                
             });
             var title = o.getResponseHeader("JS_PORTLET_TITLE");
             if (titleElem) {
@@ -655,6 +676,10 @@ YUI.add('jetui-portal', function(Y) {
             if (closeElem) {
                 closeElem.setAttribute("id", "jetspeed-close-" + windowId);
                 closeElem.on('click', portal.removePortlet);
+            }
+            if (detachElem) {
+                detachElem.setAttribute("id", "jetspeed-detach-" + windowId);
+                detachElem.on('click', portal.detachPortlet);
             }
             var portletContent = o.responseText;
             if (contentElem) {
