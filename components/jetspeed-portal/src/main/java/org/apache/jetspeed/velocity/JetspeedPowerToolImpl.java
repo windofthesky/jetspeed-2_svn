@@ -905,21 +905,24 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         return this.ajaxCustomization;
     }
 
-    public Map getUserAttributes()
+    public Map<String,String> getUserAttributes()
     {
         RequestContext rc = getRequestContext();
-        Map map = null;
+        Map<String,String> map = null;
         Principal principal = rc.getRequest().getUserPrincipal();
         if (principal instanceof UserSubjectPrincipal)
         {
             UserSubjectPrincipal jp = (UserSubjectPrincipal)principal;
             map = jp.getUser().getInfoMap();
-            if (map.get("user.name.given") == null)
-                map.put("user.name.given", "");
-            if (map.get("user.name.family") == null)
-                map.put("user.name.family", jp.getName());            
         }
         return map;
+    }
+    
+    public String getUserAttribute(String attributeName, String defaultValue)
+    {
+        Map<String,String> infoMap = getUserAttributes();
+        String value = infoMap != null ? infoMap.get(attributeName) : null;
+        return value != null ? value : defaultValue;
     }
 
     public PortalConfiguration getPortalConfiguration()

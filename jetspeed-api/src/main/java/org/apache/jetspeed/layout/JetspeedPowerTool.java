@@ -279,7 +279,15 @@ public interface JetspeedPowerTool
      */
     boolean isAjaxCustomizationEnabled();
     
-    Map getUserAttributes();
+    /**
+     * @return an unmodifiable Map of the User "info" attributes or null if not authenticated
+     */
+    Map<String,String> getUserAttributes();
+    
+    /**
+     * @return the value for the User "info" attribute or the provided defaultValue if not authenticated or if the attribute is undefined
+     */
+    String getUserAttribute(String attributeName, String defaultValue);
     
     PortalConfiguration getPortalConfiguration();
     
