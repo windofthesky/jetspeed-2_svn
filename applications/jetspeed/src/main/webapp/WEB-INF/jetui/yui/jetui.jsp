@@ -36,7 +36,12 @@ limitations under the License.
   Jetui jetui = (Jetui)request.getAttribute("jetui");
   PortalConfiguration pc = jetui.getPortalConfiguration();
   RequestContext rc = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
-  Map userInfo = jetui.getUserAttributes(rc);
+  String userNameFamily = null;
+  String userNameGiven = null;
+  if (request.getUserPrincipal() != null) {
+    userNameFamily = jetui.getUserAttribute(rc,"user.name.family",request.getUserPrincipal().getName());
+    userNameGiven = jetui.getUserAttribute(rc,"user.name.given","");
+  }
   ContentPage portalPage = rc.getPage();
   ContentFragment maximized = (ContentFragment)request.getAttribute(PortalReservedParameters.MAXIMIZED_FRAGMENT_ATTRIBUTE);
   ColumnLayout columnLayout = (ColumnLayout)request.getAttribute("columnLayout");
@@ -127,7 +132,7 @@ for (String style : jetui.getStyleSheets(rc))
 &nbsp;<% if (ltb != null) { %><span style='position: absolute; left: 0px; top: 42px;' id='jstbLeftToggle' class='<%=leftToggleClass%>'></span><% } if (rtb != null) { %><span id='jstbRightToggle' class='<%=rightToggleClass%>' style='position: absolute; right: 0px; top: 42px;'></span><% } %>
 </div>
 <%if (request.getUserPrincipal() != null) {%>
-<span class="layout-statusarea"><b><%=userInfo.get("user.name.given")%> <%=userInfo.get("user.name.family")%></b> | Profile | Tasks (5) | Notifications (2) | <a href="<%=request.getContextPath()%>/login/logout?org.apache.jetspeed.login.destination=<%=request.getContextPath()%>/ui">Log out</a></span>
+<span class="layout-statusarea"><b><%=userNameGiven%> <%=userNameFamily%></b> | Profile | Tasks (5) | Notifications (2) | <a href="<%=request.getContextPath()%>/login/logout?org.apache.jetspeed.login.destination=<%=request.getContextPath()%>/ui">Log out</a></span>
 <% } %>
 <!-- <span class="layout-search"><input type='text' size='14'/></span><span class="layout-search2"><img height='18' src="<%=request.getContextPath()%>/images/search.png"/></span>  -->
 </div> <!-- end header -->

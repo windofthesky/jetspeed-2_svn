@@ -226,21 +226,26 @@ public class Jetui
         }
     }
  
-    public Map getUserAttributes(RequestContext rc)
+    public Map<String,String> getUserAttributes(RequestContext rc)
     {
-        Map map = null;
+        Map<String,String> map = null;
         Principal principal = rc.getRequest().getUserPrincipal();
         if (principal instanceof UserSubjectPrincipal)
         {
             UserSubjectPrincipal jp = (UserSubjectPrincipal)principal;
             map = jp.getUser().getInfoMap();
-            if (map.get("user.name.given") == null)
-                map.put("user.name.given", "");
-            if (map.get("user.name.family") == null)
-                map.put("user.name.family", jp.getName());            
         }
         return map;
     }
+    
+    public String getUserAttribute(RequestContext rc, String attributeName, String defaultValue)
+    {
+        Map<String,String> infoMap = getUserAttributes(rc);
+        String value = infoMap != null ? infoMap.get(attributeName) : null;
+        return value != null ? value : defaultValue;
+    }
+
+    
     
     public PortalConfiguration getPortalConfiguration()
     {
