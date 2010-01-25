@@ -32,7 +32,6 @@ import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionEvent;
 
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.BaseConcretePageElement;
@@ -262,6 +261,29 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 // types matched, continue below with native portal resolution
                 // of request
                 String systemType = contentTypeMapper.mapSystemType(requestPath);
+                if ((systemType != null) && contentTypeMapper.isContentTypeFallbackEnabled())
+                {
+                    // test for exact system match if content fallback enabled;
+                    // clear system type if not found
+                    SiteView view = getSiteView();
+                    if (view != null)
+                    {
+                        try
+                        {
+                            view.getNodeProxy(requestPath, null, false, false);
+                        }
+                        catch (NodeNotFoundException nnfe)
+                        {
+                            // log fallback mapping
+                            if (log.isDebugEnabled())
+                            {
+                                log.debug("System request: requestPath="+requestPath+" does not exist: fallback to content type");
+                            }                    
+                            systemType = null;
+                        }
+                    }
+                }
+                // if not system type, test for content type
                 if (systemType == null)
                 {
                     // test for content type mappings; if no content type matched

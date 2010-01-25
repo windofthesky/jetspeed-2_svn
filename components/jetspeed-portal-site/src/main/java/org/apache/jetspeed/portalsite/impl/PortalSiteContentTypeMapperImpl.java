@@ -15,9 +15,10 @@ import org.apache.jetspeed.portalsite.PortalSiteContentTypeMapper;
 public class PortalSiteContentTypeMapperImpl implements PortalSiteContentTypeMapper
 {
     public static final String DEFAULT_PAGE_SYSTEM_TYPE_SUFFIX = Page.DOCUMENT_TYPE;
-    
+
     private List<ContentTypeMapping> contentTypeMappings;
     private List<RequestPathMapping> requestPathMappings;
+    private boolean enableContentTypeFallback;
     
     /**
      * Construct default PortalSite content type mapper implementation.
@@ -34,7 +35,19 @@ public class PortalSiteContentTypeMapperImpl implements PortalSiteContentTypeMap
      */
     public PortalSiteContentTypeMapperImpl(List<ContentTypeMapping> contentTypeMappings)
     {
-        this(contentTypeMappings, null);
+        this(contentTypeMappings, null, false);
+    }
+
+    /**
+     * Construct default PortalSite content type mapper implementation.
+     * 
+     * @param contentTypeMappings mappings to determine content type from request path
+     * @param enableContentTypeFallback enable content type fallback for missing system
+     *                                  type page, folder, etc. requests
+     */
+    public PortalSiteContentTypeMapperImpl(List<ContentTypeMapping> contentTypeMappings, boolean enableContentTypeFallback)
+    {
+        this(contentTypeMappings, null, enableContentTypeFallback);
     }
 
     /**
@@ -46,8 +59,23 @@ public class PortalSiteContentTypeMapperImpl implements PortalSiteContentTypeMap
      */
     public PortalSiteContentTypeMapperImpl(List<ContentTypeMapping> contentTypeMappings, List<RequestPathMapping> requestPathMappings)
     {        
+        this(contentTypeMappings, requestPathMappings, false);
+    }
+
+    /**
+     * Construct default PortalSite content type mapper implementation.
+     * 
+     * @param contentTypeMappings mappings to determine content type from request path
+     * @param requestPathMappings mappings to determine request path from server name,
+     *                            content type, and request path
+     * @param enableContentTypeFallback enable content type fallback for missing system
+     *                                  type page, folder, etc. requests
+     */
+    public PortalSiteContentTypeMapperImpl(List<ContentTypeMapping> contentTypeMappings, List<RequestPathMapping> requestPathMappings, boolean enableContentTypeFallback)
+    {        
         this.contentTypeMappings = contentTypeMappings;
         this.requestPathMappings = requestPathMappings;
+        this.enableContentTypeFallback = enableContentTypeFallback;
     }
 
     /* (non-Javadoc)
@@ -68,6 +96,14 @@ public class PortalSiteContentTypeMapperImpl implements PortalSiteContentTypeMap
             }
         }
         return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.portalsite.PortalSiteContentTypeMapper#isContentTypeFallbackEnabled()
+     */
+    public boolean isContentTypeFallbackEnabled()
+    {
+        return enableContentTypeFallback;
     }
 
     /* (non-Javadoc)

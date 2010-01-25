@@ -1481,6 +1481,19 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertTrue(requestPageProxy instanceof DynamicPage);
         assertEquals("docpage.dpsml", requestPageProxy.getName());
         assertEquals("/contentfolder/pub/docpage.dpsml", extractFileSystemPathFromId(requestPageProxy.getId()));
+
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/document.psml");
+        locator.add("user", true, false, "user");
+        locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        requestPageProxy = requestContext.getPage();
+        assertNotNull(requestPageProxy);
+        assertTrue(requestPageProxy instanceof DynamicPage);
+        assertEquals("contentpage.dpsml", requestPageProxy.getName());
+        assertEquals("/contentpage.dpsml", extractFileSystemPathFromId(requestPageProxy.getId()));
     }
 
     /**

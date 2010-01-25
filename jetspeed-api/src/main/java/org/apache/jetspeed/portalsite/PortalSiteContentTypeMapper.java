@@ -38,6 +38,14 @@ public interface PortalSiteContentTypeMapper
     String mapSystemType(String requestPath);
 
     /**
+     * isContentTypeFallbackEnabled - enable content type fallback for missing
+     *                                system type page, folder, etc. requests
+     *
+     * @return content type fallback enabled flag
+     */
+    boolean isContentTypeFallbackEnabled();
+
+    /**
      * mapContentType - map request to content type used to select dynamic
      *                  pages; implementation should return null to handle
      *                  request as page and folder lookup.
