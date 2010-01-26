@@ -1429,6 +1429,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertTrue(requestPageProxy instanceof DynamicPage);
         assertEquals("docpage.dpsml", requestPageProxy.getName());
         assertEquals("/docpage.dpsml", extractFileSystemPathFromId(requestPageProxy.getId()));
+        assertNotNull(requestContext.getPageContentPath());
+        assertEquals("/document", requestContext.getPageContentPath());
 
         locator = new JetspeedProfileLocator();
         locator.init(null, "/contentfolder/document.doc");
@@ -1442,6 +1444,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertTrue(requestPageProxy instanceof DynamicPage);
         assertEquals("docpage.dpsml", requestPageProxy.getName());
         assertEquals("/contentfolder/docpage.dpsml", extractFileSystemPathFromId(requestPageProxy.getId()));
+        assertNotNull(requestContext.getPageContentPath());
+        assertEquals("/contentfolder/document", requestContext.getPageContentPath());
 
         locator = new JetspeedProfileLocator();
         locator.init(null, "/contentfolder/document.txt");
@@ -1455,6 +1459,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertTrue(requestPageProxy instanceof DynamicPage);
         assertEquals("contentpage.dpsml", requestPageProxy.getName());
         assertEquals("/contentpage.dpsml", extractFileSystemPathFromId(requestPageProxy.getId()));
+        assertNotNull(requestContext.getPageContentPath());
+        assertEquals("/contentfolder/document", requestContext.getPageContentPath());
 
         locator = new JetspeedProfileLocator();
         locator.init(null, "/preview/document.doc");
@@ -1468,6 +1474,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertTrue(requestPageProxy instanceof DynamicPage);
         assertEquals("docpage.dpsml", requestPageProxy.getName());
         assertEquals("/docpage.dpsml", extractFileSystemPathFromId(requestPageProxy.getId()));
+        assertNotNull(requestContext.getPageContentPath());
+        assertEquals("/preview/document", requestContext.getPageContentPath());
 
         locator = new JetspeedProfileLocator();
         locator.init(null, "/preview/contentfolder/draft/document.doc", "test.domain.com");
@@ -1481,6 +1489,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertTrue(requestPageProxy instanceof DynamicPage);
         assertEquals("docpage.dpsml", requestPageProxy.getName());
         assertEquals("/contentfolder/pub/docpage.dpsml", extractFileSystemPathFromId(requestPageProxy.getId()));
+        assertNotNull(requestContext.getPageContentPath());
+        assertEquals("/preview/contentfolder/draft/document", requestContext.getPageContentPath());
 
         locator = new JetspeedProfileLocator();
         locator.init(null, "/document.psml");
@@ -1494,6 +1504,53 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertTrue(requestPageProxy instanceof DynamicPage);
         assertEquals("contentpage.dpsml", requestPageProxy.getName());
         assertEquals("/contentpage.dpsml", extractFileSystemPathFromId(requestPageProxy.getId()));
+        assertNotNull(requestContext.getPageContentPath());
+        assertEquals("/document", requestContext.getPageContentPath());
+
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/document.psml");
+        locator.add("user", true, false, "user");
+        locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        requestPageProxy = requestContext.getPage();
+        assertNotNull(requestPageProxy);
+        assertTrue(requestPageProxy instanceof DynamicPage);
+        assertEquals("contentpage.dpsml", requestPageProxy.getName());
+        assertEquals("/contentpage.dpsml", extractFileSystemPathFromId(requestPageProxy.getId()));
+        assertNotNull(requestContext.getPageContentPath());
+        assertEquals("/document", requestContext.getPageContentPath());
+
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/preview/folder0/page0.doc");
+        locator.add("user", true, false, "user");
+        locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        requestPageProxy = requestContext.getPage();
+        assertNotNull(requestPageProxy);
+        assertTrue(requestPageProxy instanceof Page);
+        assertEquals("page0.psml", requestPageProxy.getName());
+        assertEquals("/folder0/page0.psml", extractFileSystemPathFromId(requestPageProxy.getId()));
+        assertNotNull(requestContext.getPageContentPath());
+        assertEquals("/preview/folder0/page0", requestContext.getPageContentPath());
+
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/page2.doc");
+        locator.add("user", true, false, "user");
+        locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        requestPageProxy = requestContext.getPage();
+        assertNotNull(requestPageProxy);
+        assertTrue(requestPageProxy instanceof Page);
+        assertEquals("page2.psml", requestPageProxy.getName());
+        assertEquals("/_user/user/page2.psml", extractFileSystemPathFromId(requestPageProxy.getId()));
+        assertNotNull(requestContext.getPageContentPath());
+        assertEquals("/page2", requestContext.getPageContentPath());
     }
 
     /**

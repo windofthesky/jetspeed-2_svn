@@ -56,14 +56,39 @@ public interface PortalSiteContentTypeMapper
     String mapContentType(String requestPath);
 
     /**
-     * mapRequestPath - map content request path given previously mapped content
-     *                  type; implementation should return null to indicate no
-     *                  mapping is available.
+     * mapSystemRequestPath - map content request path given previously mapped
+     *                        content type to existing system page or folder;
+     *                        implementation should return null to indicate no
+     *                        mapping is available.
      *
      * @param serverName request server name
      * @param contentType mapped content type
      * @param requestPath raw portal request path
-     * @return mapped request path or null
+     * @return mapped system page or folder path or null
      */
-    String mapRequestPath(String serverName, String contentType, String requestPath);
+    String mapSystemRequestPath(String serverName, String contentType, String requestPath);
+
+    /**
+     * mapDynamicRequestPath - map content request path given previously mapped
+     *                         content type to dynamic page; implementation should
+     *                         return null to indicate no mapping is available.
+     *
+     * @param serverName request server name
+     * @param contentType mapped content type
+     * @param requestPath raw portal request path
+     * @return mapped dynamic page path or null
+     */
+    String mapDynamicRequestPath(String serverName, String contentType, String requestPath);
+
+    /**
+     * mapContentRequestPath - map content request path given previously mapped
+     *                         content type to external content path; implementation
+     *                         should return null to indicate no mapping is available.
+     *
+     * @param serverName request server name
+     * @param contentType mapped content type
+     * @param requestPath raw portal request path
+     * @return mapped dynamic page path or null
+     */
+    String mapContentRequestPath(String serverName, String contentType, String requestPath);
 }

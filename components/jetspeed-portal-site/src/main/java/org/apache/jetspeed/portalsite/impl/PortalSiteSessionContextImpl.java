@@ -219,11 +219,12 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      * @param forceReservedVisible force reserved/hidden folders visible for request
+     * @param requestPageContentPath returned content path associated with selected page
      * @return selected page proxy for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public BaseConcretePageElement selectRequestPage(Map requestProfileLocators, boolean requestFallback, boolean useHistory, boolean forceReservedVisible) throws NodeNotFoundException
+    public BaseConcretePageElement selectRequestPage(Map requestProfileLocators, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, String [] requestPageContentPath) throws NodeNotFoundException
     {
         // validate and update session profile locators if modified
         if (updateSessionProfileLocators(requestProfileLocators, forceReservedVisible))
@@ -296,25 +297,79 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         {
                             log.debug("Content request: requestPath="+requestPath+", mapped to content type: "+contentType);
                         }
-
-                        // support request path mapping of content requests
-                        String mappedRequestPath = contentTypeMapper.mapRequestPath(requestServerName, contentType, requestPath);
-                        if (mappedRequestPath != null)
+                        
+                        // generate external content path if mapping defined
+                        String contentPageRequestPath = contentTypeMapper.mapContentRequestPath(requestServerName, contentType, requestPath);
+                        if (contentPageRequestPath != null)
                         {
                             // log mapping
                             if (log.isDebugEnabled())
                             {
-                                log.debug("Mapped content request: serverName="+requestServerName+", contentType="+contentType+", requestPath="+requestPath+", mapped to: "+mappedRequestPath);
+                                log.debug("Mapped content request to content path: serverName="+requestServerName+", contentType="+contentType+", requestPath="+requestPath+", mapped to: "+contentPageRequestPath);
                             }
-                            requestPath = mappedRequestPath;
+                            
+                            if (requestPageContentPath != null)
+                            {
+                                requestPageContentPath[0] = contentPageRequestPath;
+                            }
                         }
 
-                        // attempt to match content request against dynamic pages
-                        // using profile locators and site view; start at root
-                        // folder until path no longer matches and search from
-                        // there back up toward the root for dynamic pages by
-                        // content type; fallback to wildcard content type
-                        return selectContentRequestPage(requestPath, contentType);
+                        // support request path mapping of system page requests
+                        String systemPageRequestPath = contentTypeMapper.mapSystemRequestPath(requestServerName, contentType, requestPath);
+                        if (systemPageRequestPath != null)
+                        {
+                            // verify system page existence
+                            SiteView view = getSiteView();
+                            if (view != null)
+                            {
+                                try
+                                {
+                                    if (view.getNodeProxy(systemPageRequestPath, null, false, false) instanceof Page)
+                                    {
+                                        systemType = PortalSiteContentTypeMapper.PAGE_SYSTEM_TYPE;
+                                    }
+                                }
+                                catch (NodeNotFoundException nnfe)
+                                {
+                                }
+                            }
+
+                            // log mapping
+                            if (systemType != null)
+                            {
+                                if (log.isDebugEnabled())
+                                {
+                                    log.debug("Mapped content request to existing system page: serverName="+requestServerName+", contentType="+contentType+", requestPath="+requestPath+", mapped to: "+systemPageRequestPath);
+                                }
+ 
+                                requestPath = systemPageRequestPath;
+                            }
+                        }
+
+                        // if not mapped to a system type, continue with content
+                        // dynamic page selection 
+                        if (systemType == null)
+                        {
+                            // support request path mapping of dynamic page requests
+                            String dynamicPageRequestPath = contentTypeMapper.mapDynamicRequestPath(requestServerName, contentType, requestPath);
+                            if (dynamicPageRequestPath != null)
+                            {
+                                // log mapping
+                                if (log.isDebugEnabled())
+                                {
+                                    log.debug("Mapped content request to dynamic page: serverName="+requestServerName+", contentType="+contentType+", requestPath="+requestPath+", mapped to: "+dynamicPageRequestPath);
+                                }
+                                
+                                requestPath = dynamicPageRequestPath;
+                            }
+
+                            // attempt to match content request against dynamic pages
+                            // using profile locators and site view; start at root
+                            // folder until path no longer matches and search from
+                            // there back up toward the root for dynamic pages by
+                            // content type; fallback to wildcard content type
+                            return selectContentRequestPage(requestPath, contentType);
+                        }
                     }
                 }
                 else

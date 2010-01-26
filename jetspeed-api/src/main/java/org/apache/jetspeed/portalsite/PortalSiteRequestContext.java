@@ -99,6 +99,15 @@ public interface PortalSiteRequestContext
     BaseConcretePageElement getPage() throws NodeNotFoundException;
 
     /**
+     * getPageContentPath - get content path associated with request page
+     *  
+     * @return content path
+     * @throws NodeNotFoundException if page not found
+     * @throws SecurityException if page view access not granted
+     */
+    String getPageContentPath() throws NodeNotFoundException;
+
+    /**
      * getPageTemplate - get page template proxy for request profiled page
      *  
      * @return page template proxy if found or null

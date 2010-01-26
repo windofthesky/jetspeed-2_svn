@@ -272,6 +272,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 if (requestContext.isContentPage())
                 {
                     request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, requestPath);
+                    request.setAttribute(PortalReservedParameters.CONTENT_PATH_ATTRIBUTE, requestContext.getPageContentPath());
                 }
 
                 request.setAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE,getPageActionAccess(request));

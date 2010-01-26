@@ -170,6 +170,7 @@ limitations under the License.
   <bean id="org.apache.jetspeed.portalsite.PortalSiteContentTypeMapper" 
        name="portalSiteContentTypeMapper"
        class="org.apache.jetspeed.portalsite.impl.PortalSiteContentTypeMapperImpl">         
+       <!-- content type mapping -->
        <constructor-arg index="0">
            <list>
                <bean class="org.apache.jetspeed.portalsite.impl.ContentTypeMapping">
@@ -178,6 +179,7 @@ limitations under the License.
                </bean>
            </list>
        </constructor-arg>
+       <!-- dynamic page path mapping -->
        <constructor-arg index="1">
            <list>
                <bean class="org.apache.jetspeed.portalsite.impl.RequestPathMapping">
@@ -192,7 +194,30 @@ limitations under the License.
                </bean>
            </list>
        </constructor-arg>
-       <constructor-arg index="2"><value>true</value></constructor-arg>
+       <!-- system page path mapping -->
+       <constructor-arg index="2">
+           <list>
+               <bean class="org.apache.jetspeed.portalsite.impl.RequestPathMapping">
+                   <constructor-arg index="0"><value>/preview/</value></constructor-arg>
+                   <constructor-arg index="1"><value>/</value></constructor-arg>
+               </bean>
+               <bean class="org.apache.jetspeed.portalsite.impl.RequestPathMapping">
+                   <constructor-arg index="0"><value>[.](\w+)&#36;</value></constructor-arg> <!-- use &#36; for '$' -->
+                   <constructor-arg index="1"><value>.psml</value></constructor-arg>
+               </bean>
+           </list>
+       </constructor-arg>
+       <!-- external content path mapping -->
+       <constructor-arg index="3">
+           <list>
+               <bean class="org.apache.jetspeed.portalsite.impl.RequestPathMapping">
+                   <constructor-arg index="0"><value>[.](\w+)&#36;</value></constructor-arg> <!-- use &#36; for '$' -->
+                   <constructor-arg index="1"><value></value></constructor-arg>
+               </bean>
+           </list>
+       </constructor-arg>
+       <!-- enable content type fallback -->
+       <constructor-arg index="4"><value>true</value></constructor-arg>
   </bean>
   <bean id="org.apache.jetspeed.portalsite.PortalSite" 
        name="portalSite"

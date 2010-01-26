@@ -83,6 +83,11 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     private BaseConcretePageElement requestPage;
     
     /**
+     * requestPageContentPath - cached content path mapped for request page
+     */
+    private String requestPageContentPath;
+    
+    /**
      * requestPageTemplate - cached request page template proxy
      */
     private PageTemplate requestPageTemplate;
@@ -312,14 +317,31 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public BaseConcretePageElement getPage() throws NodeNotFoundException
     {
-        // select request page from session context using
-        // request profile locators if not previously
-        // cached in this context
+        // select request page and associated content path from
+        // session context using request profile locators if not
+        // previously cached in this context
         if (requestPage == null)
         {
-            requestPage = sessionContext.selectRequestPage(requestProfileLocators, requestFallback, useHistory, forceReservedVisible);            
+            String [] selectedRequestPageContentPath = new String[]{null};
+            requestPage = sessionContext.selectRequestPage(requestProfileLocators, requestFallback, useHistory, forceReservedVisible, selectedRequestPageContentPath);
+            if (requestPage != null)
+            {
+                requestPageContentPath = selectedRequestPageContentPath[0];
+            }
         }
         return requestPage;
+    }
+
+    /**
+     * getPageContentPath - get content path associated with request page
+     *  
+     * @return content path
+     * @throws NodeNotFoundException if page not found
+     * @throws SecurityException if page view access not granted
+     */
+    public String getPageContentPath() throws NodeNotFoundException
+    {
+        return ((getPage() != null) ? requestPageContentPath : null);
     }
 
     /**
