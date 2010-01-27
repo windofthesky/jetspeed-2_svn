@@ -201,10 +201,6 @@ limitations under the License.
                    <constructor-arg index="0"><value>/preview/</value></constructor-arg>
                    <constructor-arg index="1"><value>/</value></constructor-arg>
                </bean>
-               <bean class="org.apache.jetspeed.portalsite.impl.RequestPathMapping">
-                   <constructor-arg index="0"><value>[.](\w+)&#36;</value></constructor-arg> <!-- use &#36; for '$' -->
-                   <constructor-arg index="1"><value>.psml</value></constructor-arg>
-               </bean>
            </list>
        </constructor-arg>
        <!-- external content path mapping -->

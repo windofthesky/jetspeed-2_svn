@@ -2,6 +2,7 @@ package org.apache.jetspeed.portalsite.impl;
 
 import java.util.List;
 
+import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.portalsite.PortalSiteContentTypeMapper;
 
@@ -133,7 +134,24 @@ public class PortalSiteContentTypeMapperImpl implements PortalSiteContentTypeMap
      */
     public String mapSystemRequestPath(String serverName, String contentType, String requestPath)
     {
-        return mapRequestPath(systemRequestPathMappings, serverName, contentType, requestPath);
+        String mappedSystemRequestPath = mapRequestPath(systemRequestPathMappings, serverName, contentType, requestPath);
+        if (mappedSystemRequestPath != null)
+        {
+            // replace or append page extension to mapped path
+            if (!mappedSystemRequestPath.endsWith(Page.DOCUMENT_TYPE) && !mappedSystemRequestPath.endsWith(Folder.PATH_SEPARATOR))
+            {
+                // strip existing extension
+                int lastPathSeparatorIndex = mappedSystemRequestPath.lastIndexOf(Folder.PATH_SEPARATOR_CHAR);
+                int lastExtensionSeparatorIndex = mappedSystemRequestPath.lastIndexOf('.');
+                if (lastExtensionSeparatorIndex > lastPathSeparatorIndex)
+                {
+                    mappedSystemRequestPath = mappedSystemRequestPath.substring(0, lastExtensionSeparatorIndex);
+                }
+                // append page extension
+                mappedSystemRequestPath += Page.DOCUMENT_TYPE;
+            }
+        }
+        return mappedSystemRequestPath;
     }
 
     /* (non-Javadoc)
@@ -178,20 +196,15 @@ public class PortalSiteContentTypeMapperImpl implements PortalSiteContentTypeMap
     {
         if (requestPathMappings != null)
         {
-            boolean requestPathMapped = false;
             for (RequestPathMapping mapping : requestPathMappings)
             {
                 String mappedRequestPath = mapping.map(serverName, contentType, requestPath);
                 if ((mappedRequestPath != null) && !mappedRequestPath.equals(requestPath))
                 {
                     requestPath = mappedRequestPath;
-                    requestPathMapped = true;
                 }
             }
-            if (requestPathMapped)
-            {
-                return requestPath;
-            }
+            return requestPath;
         }
         return null;
     }
