@@ -1188,7 +1188,7 @@ limitations under the License.
         </preference>    
         <preference>
             <name>newUserTemplateDirectory</name>
-            <value>/_user/template/</value>
+            <value>/_template/new-user/</value>
         </preference>        
         <preference>
      		<name>subsiteRootFolder</name>
@@ -1815,7 +1815,7 @@ limitations under the License.
         </preference>
         <preference>
             <name>newUserTemplateDirectory</name>
-            <value>/_user/template-dev/</value>
+            <value>/_template/dev/</value>
         </preference>        
         <preference>
      		<name>requiredRole</name>

@@ -88,7 +88,7 @@
      <user>
 	   <name>joe</name>
 	   <password>xxx</password>
-       <template>/_user/template/</template>
+       <template>/_template/new-user/</template>
 		 
        <roles>admin, user</roles>
        <groups>dev,groupa, groupb</groups>

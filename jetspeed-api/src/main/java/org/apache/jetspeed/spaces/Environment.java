@@ -16,7 +16,8 @@
  */
 package org.apache.jetspeed.spaces;
 
-import java.util.List;
+import java.util.Locale;
+
 
 /**
  * Container for spaces
@@ -25,17 +26,93 @@ import java.util.List;
  * @version $Id$
  */
 public interface Environment
-{
+{    
+    public static final String META_ENV_OWNER   = "env-owner";
+	
+	/**
+	 * Retrieve the name of the environment
+	 * 
+	 * @return the name of the environment
+	 */
     String getName();
+    
+    /**
+     * Retrieve the localized title of the environment for the requested locale
+     * 
+     * @param locale the locale of the string
+     * @return the localized title
+     */
+    String getTitle(Locale locale);
+
+    /**
+     * Retrieve unlocalized title of the environment 
+     * 
+     * @return the unlocalized title
+     */
     String getTitle();
-    String getPath();
-    void setPath(String path);
-    String getOwner();
+    
+    /**
+     * Set the title of environment for the given locale
+     * 
+     * @param locale the locale of the string
+     * @param title
+     */
+    void setTitle(String title, Locale locale);
+
+    /**
+     * Set the title of environment 
+     * 
+     * @param title
+     */
     void setTitle(String title);
+    
+	/**
+	 * Retrieve the path of the environment, which can be implementation specific
+	 * 
+	 * @return the path to where the environment is stored
+	 */    
+    String getPath();
+        
+    /**
+     * Retrieve the description of this environment
+     * @param locale the locale of the string
+     * @return
+     */
+    String getDescription(Locale locale);
+    
+    /**
+     * Sets the description on this environment
+     *  
+     * @param description
+     * @param locale the locale of the string
+     */
+    void setDescription(String description, Locale locale);
+
+    /**
+     * Retrieve the description of this environment
+     * @return
+     */
     String getDescription();
+    
+    /**
+     * Sets the description on this environment
+     *  
+     * @param description
+     */
     void setDescription(String description);
-    List<Space> getSpaces();
-    void addSpace(Space space);
-    void removeSpace(Space space);
-    Dashboard getDashboard();
+    
+    /**
+     * Retrieves the owner, a portal user name, for this environment
+     * 
+     * @return the name of the environment owner
+     */
+    String getOwner();
+
+    /**
+     * Sets the owner on this environment
+     *  
+     * @param owner
+     */
+    void setOwner(String owner);
+        
 }

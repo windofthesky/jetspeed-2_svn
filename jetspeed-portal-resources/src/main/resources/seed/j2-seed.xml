@@ -400,7 +400,7 @@
 				<Rule locator="page" rule="subsite-by-hostname"/>
 			</Rules>
 		</User>
-	<User name="tomcat" userTemplate='/_user/template/' subsite='_hostname/localhost'>
+	<User name="tomcat" userTemplate='/_template/new-user/' subsite='_hostname/localhost'>
 			<credentials password="tomcat" enabled="TRUE" requiresUpdate="FALSE"/>
 			<roles></roles>
 			<groups></groups>

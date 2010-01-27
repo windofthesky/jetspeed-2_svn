@@ -17,83 +17,129 @@
 package org.apache.jetspeed.spaces;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.Fragment;
 
 /**
- * Space object 
+ * Space implementation, wrappers around a root level folder 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class SpaceImpl implements Space, Serializable
-{
-    private String name;
-    private String description;
-    private String title;
-    private String owner;
-    private List<String> templates = new ArrayList<String>();
-    private String path;
+public class SpaceImpl extends BaseSpaceImpl implements Space, Serializable
+{    
+    private static final long serialVersionUID = 1L;    
     
-    public SpaceImpl(String name, String path, String owner)
+    public SpaceImpl(Folder folder)
     {
-        this.name = name;        
-        this.path = path;
-        this.owner = owner;
-    }
+        this.backingFolder = folder;
+    }   
     
-    public void addTemplate(String template)
+	@Override
+	protected String getOwnerFieldName() 
+	{
+		return META_SPACE_OWNER;
+	}
+
+    public void setTheme(String themeName)
     {
-        templates.add(template);
+    	backingFolder.setDefaultDecorator(themeName, Fragment.LAYOUT);
+    	backingFolder.setDefaultDecorator(themeName, Fragment.PORTLET);
     }
 
-    public String getDescription()
+    public String getTheme()
     {
-        return description;
+    	return backingFolder.getDefaultDecorator(Fragment.LAYOUT);
     }
 
-    public String getName()
+    public String getDomainPath()
     {
-        return name;
-    }
-
-    public List<String> getTemplates()
-    {
-        return templates;
-    }
-
-    public String getTitle()
-    {
-        return title;
-    }
-
-    public void removeTemplate(String template)
-    {
-        templates.remove(template);
-    }
-
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
-
-    public void setTitle(String title)
-    {
-        this.title = title;
+        return SpacesServiceImpl.retrieveField(backingFolder, Locale.ENGLISH, META_SPACE_DOMAIN_PATH);
     }
     
-    public String getPath()
+    public void setDomainPath(String domainPath)
     {
-        return path;       
+        SpacesServiceImpl.updateField(backingFolder, Locale.ENGLISH, META_SPACE_DOMAIN_PATH, domainPath);    	
     }
 
-    public void setPath(String path)
+    public String getImage()
     {
-        this.path = path;
+        return SpacesServiceImpl.retrieveField(backingFolder, Locale.ENGLISH, META_SPACE_IMAGE);
+    }
+	    
+    public void setImage(String pathToImage)
+    {
+        SpacesServiceImpl.updateField(backingFolder, Locale.ENGLISH, META_SPACE_DOMAIN_PATH, pathToImage);    	    	
     }
     
-    public String getOwner()
+	public String getDashboard() 
+	{
+		String name = backingFolder.getDefaultPage();
+		if (name == null)
+			name = Folder.FALLBACK_DEFAULT_PAGE;
+		return name;
+	}
+
+    public void setDashboard(String dashboard)
     {
-        return owner;
+    	backingFolder.setDefaultPage(dashboard);
     }
-}
+    	
+    public void addSecuredGroup(String group)
+    {
+    	// TODO Auto-generated method stub
+    }
+
+    public void addSecuredRole(String role)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void addSecuredUser(String user)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public List<String> getSecuredGroup()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<String> getSecuredRoles()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<String> getSecuredUsers()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    public void removeSecuredGroup(String group)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void removeSecuredRole(String role)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void removeSecuredUser(String user)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+ }

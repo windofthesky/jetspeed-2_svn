@@ -49,7 +49,7 @@ public class CreateUserTemplatePagesValveImpl extends ProfilerValveImpl
     public static final String USER_TEMPLATE_FOLDER_REQUEST_ATTR_KEY = "org.apache.jetspeed.profiler.UserTemplateFolder";
     
     protected PageManager pageManager;
-    protected String defaultTemplateFolder = "/_user/template/";
+    protected String defaultTemplateFolder = "/_template/new-user/";
 
     /**
      * CreateUserTemplatePagesValveImpl - constructor

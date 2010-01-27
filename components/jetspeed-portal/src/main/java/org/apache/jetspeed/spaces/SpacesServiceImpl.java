@@ -19,21 +19,22 @@ package org.apache.jetspeed.spaces;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
+import org.apache.jetspeed.administration.AdminUtil;
 import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
-import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.Node;
-import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.spaces.Space;
-import org.apache.jetspeed.spaces.SpaceImpl;
-import org.apache.jetspeed.spaces.Spaces;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Spaces Services
@@ -43,6 +44,8 @@ import org.apache.jetspeed.spaces.Spaces;
  */
 public class SpacesServiceImpl implements Spaces
 {
+    protected static Logger log = LoggerFactory.getLogger(SpacesServiceImpl.class);    
+  	
     private PageManager pageManager;
     private TemplateLocator decoratorLocator;
     
@@ -51,95 +54,341 @@ public class SpacesServiceImpl implements Spaces
         this.pageManager = pageManager;
         this.decoratorLocator = decoratorLocator;
     }
-    
-    public Space addSpace(Space space)
+
+    public List<Environment> listEnvironments()
     {
-        // TODO Auto-generated method stub
-        return null;
+        List<Environment> envs = new LinkedList<Environment>();
+        Folder envFolder = null;
+        try
+        {
+            envFolder = pageManager.getFolder(ENVIRONMENTS_LOCATION);
+            Iterator<Folder> it = envFolder.getFolders().iterator(); 
+            while (it.hasNext())
+            {
+                Folder backingFolder = it.next();
+                Environment env = loadEnvironment(backingFolder);
+                envs.add(env);
+            }            
+        }
+        catch (Exception e)
+        {
+            // its OK to have no environments, optional feature
+        }
+        return envs;
+    }
+    
+    public Environment createEnvironment(String envName, String owner) throws SpacesException
+    {
+    	Folder folder = pageManager.newFolder(makeEnvironmentPath(envName));
+    	// TODO: store owner in security constraints
+    	updateField(folder, Locale.ENGLISH, Environment.META_ENV_OWNER, owner);
+    	try
+    	{
+    		pageManager.updateFolder(folder);
+    	}
+    	catch (Exception e)
+    	{
+    		throw new SpacesException(e);
+    	}
+    	return new EnvironmentImpl(folder);
     }
 
+    public void storeEnvironment(Environment env) throws SpacesException
+    {
+    	try
+    	{
+	    	if (env instanceof EnvironmentImpl)
+	    	{
+	    		pageManager.updateFolder(((EnvironmentImpl)env).getBackingFolder());
+	    	}
+    	}
+    	catch (Exception e)
+    	{
+    		throw new SpacesException(e);
+    	}
+    }
+
+    public void deleteEnvironment(Environment env) throws SpacesException    
+    {
+    	try
+    	{
+	    	if (env instanceof EnvironmentImpl)
+	    	{
+	    		pageManager.removeFolder(((EnvironmentImpl)env).getBackingFolder());
+	    	}
+    	}
+    	catch (Exception e)
+    	{
+    		throw new SpacesException(e);
+    	}
+    }
+    
+    public Environment lookupEnvironment(String envName) 
+    {
+    	try 
+    	{
+			Environment env = new EnvironmentImpl(pageManager.getFolder(makeEnvironmentPath(envName)));
+			return env;
+		} 
+    	catch (FolderNotFoundException e) 
+    	{
+		} 
+    	catch (Exception e) 
+    	{
+    		log.error("lookupEnvironment", e);        	    		
+		}
+    	return null;
+    }
+    
     public List<Space> listSpaces()
     {
         List<Space> result = new ArrayList<Space>();
         try
         {
-            Space defaultSpace = new SpaceImpl("Home", "/", "admin");
-            result.add(defaultSpace);
-            Folder root = pageManager.getFolder("/");
-            defaultSpace.setTitle(root.getTitle());
-            Iterator spaces = root.getFolders().iterator();
+            Folder root = pageManager.getFolder(Folder.PATH_SEPARATOR);
+            Space defaultSpace = loadSpace(root);
+            result.add(defaultSpace);            
+            Iterator<Folder> spaces = root.getFolders().iterator();
             for (int ix = 0; spaces.hasNext(); ix++)
             {
-                Node node = (Node)spaces.next();
-                if (node.isHidden())
+                Folder folder = spaces.next();
+                if (folder.isHidden() || folder.isReserved())
                     continue;
-                Collection<LocalizedField> fields = node.getMetadata().getFields("space-owner");
-                if (fields != null)
-                {
-                    Iterator<LocalizedField> it = fields.iterator();
-                    while (it.hasNext())
-                    {
-                        LocalizedField field = it.next();
-                        Space space = new SpaceImpl(node.getName(), node.getPath(), field.getValue());
-                        space.setTitle(node.getTitle());
-                        result.add(space);
-                    }
-                }
+                Space space = loadSpace(folder);
+                result.add(space);
             }
         }
-        catch (FolderNotFoundException e)
+        catch (Exception e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (InvalidFolderException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (NodeException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    		log.error("listSpaces", e);        	
         }            
         return result;
     }
-
-    public void removeSpace(Space space)
+    
+    public List<Space> listSpaces(String envName)
     {
-        // TODO Auto-generated method stub
-
+        List<Space> result = new ArrayList<Space>();
+        Folder envFolder = null;
+        try
+        {    	
+        	envFolder = pageManager.getFolder(makeEnvironmentPath(envName));        	
+        }
+    	catch (FolderNotFoundException e) 
+    	{
+    		return result;
+    	}
+        catch (Exception e)
+        {
+    		log.error("listSpaces", e);        	
+        }
+        try
+        {
+	        Iterator<Link> links = envFolder.getLinks().iterator();
+	        while (links.hasNext())
+	        {
+	        	Link link = links.next();
+	        	String spacePath = link.getPath();
+	        	Folder folder = pageManager.getFolder(spacePath);
+                if (folder.isHidden() || folder.isReserved())
+                	continue;
+	        	result.add(loadSpace(folder));
+	        }
+        }
+    	catch (FolderNotFoundException e) 
+    	{
+		} 
+    	catch (Exception e) 
+    	{
+    		log.error("listSpaces", e);        	
+		}        
+        return result;
     }
 
-    public Environment addEnvironment(Environment env)
+    public Space createSpace(String spaceName, Folder templateFolder, String owner) throws SpacesException
     {
-        // TODO Auto-generated method stub
-        return null;
+    	String spacePath = makeSpacePath(spaceName);
+        Folder spaceFolder = null;
+        boolean found = false;        
+        try
+        {
+            spaceFolder = this.pageManager.getFolder(spacePath);
+            found = (spaceFolder != null);
+        }
+        catch (Exception ignore)
+        {}        
+        try
+        {
+            if (!found)
+            {
+                pageManager.deepCopyFolder(templateFolder, spacePath, owner);
+            }
+            else
+            {
+                pageManager.deepMergeFolder(templateFolder, spacePath, owner);
+            }
+            
+            spaceFolder = pageManager.getFolder(spacePath);
+            Space space = loadSpace(spaceFolder);
+            space.setOwner(owner);
+            storeSpace(space);
+            return space;    	
+        }
+        catch (Exception e)
+        {
+        	throw new SpacesException(e);
+        }        
+    }
+    
+    public Space createSpace(String spaceName, String owner) throws SpacesException
+    {
+    	Folder folder = pageManager.newFolder(makeSpacePath(spaceName));
+    	// TODO: store owner in security constraints
+    	updateField(folder, Locale.ENGLISH, Space.META_SPACE_OWNER, owner);
+    	try
+    	{
+    		pageManager.updateFolder(folder);
+    	}
+    	catch (Exception e)
+    	{
+    		throw new SpacesException(e);
+    	}
+    	return new SpaceImpl(folder);    	
     }
 
-    public Space addPage(Space space, Page page)
+    public void storeSpace(Space space) throws SpacesException
     {
-        // TODO Auto-generated method stub
-        return null;
+    	try
+    	{
+	    	if (space instanceof SpaceImpl)
+	    	{
+	    		pageManager.updateFolder(((SpaceImpl)space).getBackingFolder());
+	    	}
+    	}
+    	catch (Exception e)
+    	{
+    		throw new SpacesException(e);
+    	}    	
     }
-
-    public Space addSpace(Environment env, Space space)
+    
+    public void deleteSpace(Space space) throws SpacesException
     {
-        // TODO Auto-generated method stub
-        return null;
+    	try
+    	{
+	    	if (space instanceof SpaceImpl)
+	    	{
+	    		pageManager.removeFolder(((SpaceImpl)space).getBackingFolder());
+	    		// TODO: remove from environments
+	    	}
+    	}
+    	catch (Exception e)
+    	{
+    		throw new SpacesException(e);
+    	}
     }
-
-    public List<Environment> listEnvironments()
+        
+    public Space lookupSpace(String spaceName) 
     {
-        // lets just give em the default folder / as an environment for now
-        List<Environment> env = new ArrayList<Environment>();
-        Environment ev = new EnvironmentImpl("Public", "/", "admin");
-        ev.getSpaces().clear();
-        ev.getSpaces().addAll(this.listSpaces());
-        env.add(ev);
-        return env;
+    	try 
+    	{
+			Space space = new SpaceImpl(pageManager.getFolder(makeSpacePath(spaceName)));
+			return space;
+		} 
+    	catch (FolderNotFoundException e) 
+    	{
+		} 
+    	catch (Exception e) 
+    	{
+    		log.error("lookupSpace", e);        	
+		}
+    	return null;
     }
-
+    
+    public void addSpaceToEnvironment(Space space, Environment env) throws SpacesException
+    {
+		try
+		{
+    		String path = AdminUtil.concatenatePaths(ENVIRONMENTS_LOCATION, env.getPath());
+    		path = AdminUtil.concatenatePaths(path, space.getName());
+			Link link = pageManager.newLink(path);
+    		link.setUrl(space.getPath());
+    		pageManager.updateLink(link);
+		}
+		catch (Exception e)
+		{
+			throw new SpacesException(e);
+		}
+    }
+    
+    public void removeSpaceFromEnvironment(Space space, Environment env) throws SpacesException
+    {
+		try
+		{
+    		String path = AdminUtil.concatenatePaths(ENVIRONMENTS_LOCATION, env.getPath());
+    		path = AdminUtil.concatenatePaths(path, space.getName());
+    		Link link ;
+    		try
+    		{
+    			link = pageManager.getLink(path);
+    		}
+    		catch (Exception e)
+    		{
+    			return; // not found
+    		}    		
+    		pageManager.removeLink(link);
+		}
+		catch (Exception e)
+		{
+			throw new SpacesException(e);
+		}
+    }
+    
+    public boolean isSpaceInEnvironment(Space space, Environment env)
+    {
+		String path = AdminUtil.concatenatePaths(ENVIRONMENTS_LOCATION, env.getPath());
+		path = AdminUtil.concatenatePaths(path, space.getName());
+    	try
+		{
+    		Link link = pageManager.getLink(path);
+    		return true;
+		}
+		catch (Exception e)
+		{
+		}    		    
+		return false; // not found		
+    }
+        
+    public void deletePage(Page page) throws SpacesException
+    {
+    	try
+    	{
+    		pageManager.removePage(page);    		
+    	}
+    	catch (Exception e)
+    	{
+    		throw new SpacesException(e);
+    	}
+    }
+ 
+	public List<Folder> listFolders(Space space) 
+	{
+        List<Folder> result = new ArrayList<Folder>();
+        try
+        {
+            Folder root = pageManager.getFolder(space.getPath());
+            Iterator folders = root.getFolders().iterator();
+            for (int ix = 0; folders.hasNext(); ix++)
+            {
+                Node folder = (Node)folders.next();
+                result.add((Folder)folder);
+            }
+        }
+        catch (Exception e)
+        {
+        	log.error("listFolders", e);
+        }
+        return result;        
+	}
+    
     public List<Link> listLinks(Space space)
     {
         List<Link> result = new ArrayList<Link>();
@@ -155,8 +404,7 @@ public class SpacesServiceImpl implements Spaces
         }
         catch (Exception e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        	log.error("listLinks", e);
         }
         return result;        
     }
@@ -176,34 +424,83 @@ public class SpacesServiceImpl implements Spaces
         }
         catch (Exception e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        	log.error("listPages", e);
         }
         return result;        
     }
-
-    public List<Space> listSpaces(Environment env)
+    
+    /*
+     * Helpers
+     */
+    static protected boolean updateMetaField(Collection<LocalizedField> fields, Locale locale, String name, String value)
     {
-        // TODO Auto-generated method stub
+        Iterator<LocalizedField> it = fields.iterator();
+        while (it.hasNext())
+        {
+            LocalizedField field = it.next();
+            if (locale == null || field.getLocale().equals(locale))
+            {
+                field.setValue(value);
+                return true;
+            }
+        }       
+        return false;
+    }
+
+    static protected String retrieveField(Folder folder, Locale locale, String name)
+    {
+        GenericMetadata metadata = folder.getMetadata();
+        Collection<LocalizedField> fields = metadata.getFields();
+        if (fields != null)
+        {
+            Iterator<LocalizedField> it = fields.iterator();
+            while (it.hasNext())
+            {
+                LocalizedField field = it.next();
+                if (locale == null || field.getLocale().equals(locale))
+                {                
+                    return field.getValue();
+                }
+            }
+        }
         return null;
     }
-
-    public void removeEnvironment(Environment env)
+    
+    static protected void updateField(Folder folder, Locale locale, String name, String value)
     {
-        // TODO Auto-generated method stub
+    	Locale addLocale = (locale == null) ? Locale.ENGLISH : locale;
+        GenericMetadata metadata = folder.getMetadata();
+        Collection<LocalizedField> fields = metadata.getFields();
+        if (fields == null || fields.size() == 0)
+            metadata.addField(addLocale, name, value);
+        else
+        {
+            if (!updateMetaField(fields, locale, name, value))
+            {
+                metadata.addField(addLocale, name, value); 
+            }
+        }
         
     }
 
-    public void removePage(Space space, Page page)
+    protected Space loadSpace(Folder f)
     {
-        // TODO Auto-generated method stub
-        
+        return new SpaceImpl(f);
     }
 
-    public void removeSpace(Environment env, Space space)
+    protected Environment loadEnvironment(Folder f)
     {
-        // TODO Auto-generated method stub
-        
-    }        
+        return new EnvironmentImpl(f);
+    }
 
+    protected String makeSpacePath(String spaceName)
+    {
+    	return AdminUtil.concatenatePaths(Folder.PATH_SEPARATOR, spaceName);
+    }
+
+    protected String makeEnvironmentPath(String envName)
+    {
+    	return AdminUtil.concatenatePaths(ENVIRONMENTS_LOCATION, envName); 
+    }
+    
 }

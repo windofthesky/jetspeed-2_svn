@@ -16,93 +16,29 @@
  */
 package org.apache.jetspeed.spaces;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+
+import org.apache.jetspeed.om.folder.Folder;
 
 /**
- * Environment object 
+ * Environment implementation, environments are collections of folders holding links to other folders 
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class EnvironmentImpl implements Environment
-{
-    private String name;
-    private String description;
-    private String title;
-    private String owner;
-    private List<Space> spaces = new ArrayList<Space>();
-    private String path;
+public class EnvironmentImpl extends BaseSpaceImpl implements Environment, Serializable
+{  
+    private static final long serialVersionUID = 1L;    
     
-    public EnvironmentImpl(String name, String path, String owner)
+    public EnvironmentImpl(Folder folder)
     {
-        this.name = name;        
-        this.path = path;
-        this.owner = owner;
-    }
+        this.backingFolder = folder;
+    }   
     
-
-    public String getDescription()
+	@Override    
+    protected String getOwnerFieldName()
     {
-        return description;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-
-    public String getTitle()
-    {
-        return title;
-    }
-
-
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
-
-    public void setTitle(String title)
-    {
-        this.title = title;
-    }
+    	return META_ENV_OWNER;
+    }	
     
-    public String getPath()
-    {
-        return path;       
-    }
-
-    public void setPath(String path)
-    {
-        this.path = path;
-    }
-    
-    public String getOwner()
-    {
-        return owner;
-    }
-
-    public void addSpace(Space space)
-    {
-        spaces.add(space);
-    }
-
-    public Dashboard getDashboard()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public List<Space> getSpaces()
-    {
-        return spaces;
-    }
-
-    public void removeSpace(Space space)
-    {
-        // TODO Auto-generated method stub
-        
-    }
 }

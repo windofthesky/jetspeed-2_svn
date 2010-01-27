@@ -54,7 +54,7 @@ public class RefreshUserHomepageValveImpl extends ProfilerValveImpl
 
     protected PageManager pageManager;
     protected UserManager userManager;
-    protected String defaultTemplateFolder = "/_user/template/";
+    protected String defaultTemplateFolder = "/_template/new-user/";
     protected boolean removeBeforeCopy;
 
     /**

@@ -18,6 +18,7 @@ limitations under the License.
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd">
   <title>Root Folder</title>  
+  <metadata name='space-owner' xml:lang='en'>admin</metadata>  
   <metadata name="title" xml:lang="fr">Répertoire racine</metadata>
   <metadata name="title" xml:lang="ja">ルートフォルダ</metadata>
   <metadata name="title" xml:lang="es">Carpeta raiz</metadata>

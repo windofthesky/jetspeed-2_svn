@@ -71,7 +71,7 @@ public class AdminUtil
         return retval;        
     }
     
-    protected String concatenatePaths(String base, String path)
+    static public String concatenatePaths(String base, String path)
     {
         String result = "";
         if (base == null)
