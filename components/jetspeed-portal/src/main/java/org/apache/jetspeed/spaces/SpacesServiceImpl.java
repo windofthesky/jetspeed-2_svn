@@ -204,14 +204,13 @@ public class SpacesServiceImpl implements Spaces
         return result;
     }
 
-    public Space createSpace(String spaceName, Folder templateFolder, String owner) throws SpacesException
+    public Space storeSpaceFromTemplate(Space space, Folder templateFolder) throws SpacesException
     {
-    	String spacePath = makeSpacePath(spaceName);
         Folder spaceFolder = null;
         boolean found = false;        
         try
         {
-            spaceFolder = this.pageManager.getFolder(spacePath);
+            spaceFolder = this.pageManager.getFolder(space.getPath());
             found = (spaceFolder != null);
         }
         catch (Exception ignore)
@@ -220,16 +219,13 @@ public class SpacesServiceImpl implements Spaces
         {
             if (!found)
             {
-                pageManager.deepCopyFolder(templateFolder, spacePath, owner);
+                pageManager.deepCopyFolder(templateFolder, space.getPath(), space.getOwner());
             }
             else
             {
-                pageManager.deepMergeFolder(templateFolder, spacePath, owner);
-            }
-            
-            spaceFolder = pageManager.getFolder(spacePath);
-            Space space = loadSpace(spaceFolder);
-            space.setOwner(owner);
+                pageManager.deepMergeFolder(templateFolder, space.getPath(), space.getOwner());
+            }            
+            spaceFolder = pageManager.getFolder(space.getPath());
             storeSpace(space);
             return space;    	
         }
@@ -239,20 +235,15 @@ public class SpacesServiceImpl implements Spaces
         }        
     }
     
-    public Space createSpace(String spaceName, String owner) throws SpacesException
+    public Space newSpace(String spaceName, String owner) throws SpacesException
     {
-    	Folder folder = pageManager.newFolder(makeSpacePath(spaceName));
-    	// TODO: store owner in security constraints
-    	updateField(folder, Locale.ENGLISH, Space.META_SPACE_OWNER, owner);
-    	try
-    	{
-    		pageManager.updateFolder(folder);
-    	}
-    	catch (Exception e)
-    	{
-    		throw new SpacesException(e);
-    	}
-    	return new SpaceImpl(folder);    	
+    	String spacePath = makeSpacePath(spaceName);
+    	if (pageManager.folderExists(spacePath))
+    		throw new SpacesException("Space " + spaceName + " already exists");
+    	Folder folder = pageManager.newFolder(spacePath);
+    	Space space = new SpaceImpl(folder);
+    	space.setOwner(owner);
+    	return space;
     }
 
     public void storeSpace(Space space) throws SpacesException
@@ -440,8 +431,11 @@ public class SpacesServiceImpl implements Spaces
             LocalizedField field = it.next();
             if (locale == null || field.getLocale().equals(locale))
             {
-                field.setValue(value);
-                return true;
+            	if (field.getName().equals(name))
+            	{
+            		field.setValue(value);
+            		return true;
+            	}
             }
         }       
         return false;

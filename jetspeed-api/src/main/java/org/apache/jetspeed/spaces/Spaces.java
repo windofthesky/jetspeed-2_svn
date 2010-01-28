@@ -91,25 +91,23 @@ public interface Spaces
     List<Space> listSpaces(String envName);
 
     /**
-     * Setup and create a new space folder area
+     * Setup and create a new space folder area cloning entire contents of template folder
      * 
-     * @param spaceName the name of the space to create (not the path to the space)
+     * @param space the space not yet persisted, should be created with newSpace
      * @param templateFolder the template to use to create the space folder from
-     * @param owner the owner (user) of the space
      * @return a newly created space representing the space folder
      * @throws a SpacesException in case the object could not be persisted
      */
-    Space createSpace(String spaceName, Folder templateFolder, String owner) throws SpacesException;
+    Space storeSpaceFromTemplate(Space space, Folder templateFolder) throws SpacesException;
 
     /**
-     * Creates a space without a template
+     * Creates a space in memory object, not persisted 
      * 
      * @param spaceName the name of the space to create (not the path to the space)
      * @param owner the owner (user) of the space
-     * @return a newly created space representing the space folder
-     * @throws a SpacesException in case the object could not be persisted
+     * @return a newly created space 
      */
-    Space createSpace(String spaceName, String owner)  throws SpacesException;
+    Space newSpace(String spaceName, String owner) throws SpacesException;
     
     /**
      * Stores a space to the portal
