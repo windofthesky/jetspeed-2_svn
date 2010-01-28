@@ -21,12 +21,12 @@ limitations under the License.
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
 
   <title>Public Share</title>
-  <metadata name="title" xml:lang="ja">ä¸€èˆ¬å…±æœ‰</metadata>
+  <metadata name="title" xml:lang="ja">一般共有</metadata>
   <metadata name="title" xml:lang="es">Carpeta compartida</metadata>
-  <metadata name="title" xml:lang="hu">NyilvÃ¡nos megosztÃ¡s</metadata>
-  <metadata name="title" xml:lang="zh">å…¬å¼€å…±äº«</metadata>
-  <metadata name="title" xml:lang="zh-TW">å…¬é–‹å…±ç”¨</metadata>
-  <metadata name="title" xml:lang="ko">ì�¼ë°˜ ê³µìœ </metadata>
+  <metadata name="title" xml:lang="hu">Nyilvános megosztás</metadata>
+  <metadata name="title" xml:lang="zh">公开共享</metadata>
+  <metadata name="title" xml:lang="zh-TW">公開共用</metadata>
+  <metadata name="title" xml:lang="ko">일반 공유</metadata>
 
   <fragment id="ps-1000" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="ps-1001" type="portlet" name="rss::RSS">

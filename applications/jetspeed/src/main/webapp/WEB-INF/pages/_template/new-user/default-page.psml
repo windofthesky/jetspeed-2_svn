@@ -18,12 +18,12 @@ limitations under the License.
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
   <title>User Home</title>
-  <metadata name="title" xml:lang="ja">ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ›ãƒ¼ãƒ </metadata>
+  <metadata name="title" xml:lang="ja">ユーザーホーム</metadata>
   <metadata name="title" xml:lang="es">Carpeta de Usuario</metadata>
-  <metadata name="title" xml:lang="hu">FelhasznÃ¡lÃ³ HOME-ja</metadata>
-  <metadata name="title" xml:lang="zh">ç”¨æˆ·ä¸»é¡µ</metadata>
-  <metadata name="title" xml:lang="zh-TW">ç”¨æˆ¶ä¸»é �</metadata>
-  <metadata name="title" xml:lang="ko">ì‚¬ìš©ìž� í™ˆ</metadata>
+  <metadata name="title" xml:lang="hu">Felhasználó HOME-ja</metadata>
+  <metadata name="title" xml:lang="zh">用户主页</metadata>
+  <metadata name="title" xml:lang="zh-TW">用戶主頁</metadata>
+  <metadata name="title" xml:lang="ko">사용자 홈</metadata>
 
   <fragment id="uhtemp-1000" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
     <fragment id="uhtemp-1001" type="portlet" name="rss::RSS">
