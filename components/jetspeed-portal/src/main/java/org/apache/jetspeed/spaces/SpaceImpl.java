@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Fragment;
 
@@ -140,6 +141,35 @@ public class SpaceImpl extends BaseSpaceImpl implements Space, Serializable
     {
         // TODO Auto-generated method stub
         
+    }
+    
+    @SuppressWarnings("unchecked")
+	public String getSecurityConstraint()
+    {
+    	if (backingFolder.getSecurityConstraints() == null)
+    		return "";
+    	List<String> refs = (List<String>)backingFolder.getSecurityConstraints().getSecurityConstraintsRefs();
+    	if (refs == null || refs.isEmpty())
+    		return "";
+    	return refs.get(0); // TODO: support 0..n constraints
+    }
+
+    public void setSecurityConstraint(String constraint)
+    {
+    	if (backingFolder.getSecurityConstraints() == null)
+    	{
+            SecurityConstraints cons = backingFolder.newSecurityConstraints();
+            backingFolder.setSecurityConstraints(cons);    		
+    	}
+    	List<String> refs = (List<String>)backingFolder.getSecurityConstraints().getSecurityConstraintsRefs();
+    	if (refs.size() == 0)
+    	{
+    		refs.add(constraint); 
+    	}
+    	else
+    	{
+    		refs.set(0, constraint);
+    	}
     }
     
  }

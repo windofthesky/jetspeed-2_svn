@@ -257,5 +257,14 @@ public interface Space
      * @param template
      */
 //    void removeTemplate(String template);    
-    
+
+    /**
+     * Get the security constraint on this space
+     */
+    String getSecurityConstraint();
+
+    /**
+     * Set the security constraint on this space
+     */
+    void setSecurityConstraint(String constraint);
 }

@@ -453,7 +453,10 @@ public class SpacesServiceImpl implements Spaces
                 LocalizedField field = it.next();
                 if (locale == null || field.getLocale().equals(locale))
                 {                
-                    return field.getValue();
+                	if (field.getName().equals(name))
+                	{
+                		return field.getValue();
+                	}
                 }
             }
         }
