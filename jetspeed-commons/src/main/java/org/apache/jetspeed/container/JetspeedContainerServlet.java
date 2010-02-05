@@ -86,8 +86,6 @@ public class JetspeedContainerServlet extends HttpServlet
     
     public synchronized final void init(ServletConfig config) throws ServletException
     {
-        paLogger = null;
-        
         synchronized (this.getClass())
         {            
             super.init(config);
@@ -455,5 +453,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 }
             }
         }
+        
+        paLogger = null;
     }
 }
