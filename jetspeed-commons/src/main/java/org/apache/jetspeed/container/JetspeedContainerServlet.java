@@ -61,8 +61,12 @@ import org.apache.pluto.container.PortletMimeResponseContext;
 public class JetspeedContainerServlet extends HttpServlet 
 {
     private static final long serialVersionUID = -7900846019170204195L;
+    
+    private JetspeedLogger paLogger;
+    
     private boolean started = false;
     private PortalSessionsManager psm;
+    
     // default visibility for more optimal access by the startTimer
     Timer startTimer = null;
     String contextName;
@@ -82,6 +86,8 @@ public class JetspeedContainerServlet extends HttpServlet
     
     public synchronized final void init(ServletConfig config) throws ServletException
     {
+        paLogger = null;
+        
         synchronized (this.getClass())
         {            
             super.init(config);
@@ -109,21 +115,20 @@ public class JetspeedContainerServlet extends HttpServlet
                 throw new ServletException(JCS + "Portlet Application contextPath must start with a  \"/\"."); 
             }
             
-            
             String paDir = context.getRealPath("/");
             if ( paDir == null )
-                {
-              throw new ServletException(JCS + " Initialization of PortletApplication at "+contextName+" without access to its real path not supported");
-                }
-
-            JetspeedLogger jsLogger = JetspeedLoggerUtil.getLogger(getClass());
+            {
+                throw new ServletException(JCS + " Initialization of PortletApplication at "+contextName+" without access to its real path not supported");
+            }
+            
+            JetspeedLogger jsLogger = JetspeedLoggerUtil.getSharedLogger(getClass());
             jsLogger.info(INIT_START_MSG + contextName);
             context.log(INIT_START_MSG + contextName);            
             System.out.println(INIT_START_MSG + contextName);            
 
             try
             {                
-              startPortletApplication(context, paDir, Thread.currentThread().getContextClassLoader());
+                startPortletApplication(context, paDir, Thread.currentThread().getContextClassLoader());
             }
             catch (Exception e)
             {
@@ -133,7 +138,7 @@ public class JetspeedContainerServlet extends HttpServlet
                 System.err.println(message);
                 throw new ServletException(message, e);
             }
-
+            
             jsLogger.info(INIT_DONE_MSG + contextName);
             context.log(INIT_DONE_MSG + contextName);
             System.out.println(INIT_DONE_MSG + contextName);
@@ -155,7 +160,7 @@ public class JetspeedContainerServlet extends HttpServlet
         }
 */
         final String START_DELAYED_MSG = JCS + "Could not yet start portlet application at: "+contextName+". Starting back ground thread to start when the portal comes online.";
-        JetspeedLogger jsLogger = JetspeedLoggerUtil.getLogger(getClass());
+        JetspeedLogger jsLogger = JetspeedLoggerUtil.getSharedLogger(getClass());
         jsLogger.info(START_DELAYED_MSG);
         context.log(START_DELAYED_MSG);
         startTimer = new Timer(true);
@@ -174,7 +179,7 @@ public class JetspeedContainerServlet extends HttpServlet
                         }
                         else
                         {
-                            JetspeedLogger jsLogger = JetspeedLoggerUtil.getLogger(getClass());
+                            JetspeedLogger jsLogger = JetspeedLoggerUtil.getSharedLogger(getClass());
                             jsLogger.info(START_DELAYED_MSG);
                             context.log(START_DELAYED_MSG);
                         }
@@ -186,7 +191,7 @@ public class JetspeedContainerServlet extends HttpServlet
 
     boolean attemptStart(ServletContext context, String contextName, String contextPath, String paDir, ClassLoader paClassLoader) 
     {
-        JetspeedLogger jsLogger = JetspeedLoggerUtil.getLogger(getClass());
+        JetspeedLogger jsLogger = JetspeedLoggerUtil.getSharedLogger(getClass());
         
         try
         {
@@ -325,7 +330,15 @@ public class JetspeedContainerServlet extends HttpServlet
         }
         catch (Throwable t)
         {
-            JetspeedLogger jsLogger = JetspeedLoggerUtil.getLogger(getClass());
+            if (paLogger == null)
+            {
+                paLogger = JetspeedLoggerUtil.getLocalLogger(getClass());
+                
+                if (paLogger == null)
+                {
+                    paLogger = JetspeedLoggerUtil.getSharedLogger(getClass());
+                }
+            }
             
             if ( t instanceof UnavailableException )
             {
@@ -336,7 +349,7 @@ public class JetspeedContainerServlet extends HttpServlet
             if (PortletWindow.Action.RENDER.equals(window.getAction())|| PortletWindow.Action.RESOURCE.equals(window.getAction()))
             {
                 ServletContext context = getServletContext();
-                jsLogger.error(JCS + "Error rendering portlet \"" + window.getPortletDefinition().getUniqueName() + "\": " + t.toString(), t);
+                paLogger.error(JCS + "Error rendering portlet \"" + window.getPortletDefinition().getUniqueName() + "\": " + t.toString(), t);
                 PrintWriter writer = ((PortletMimeResponseContext)window.getPortletResponseContext()).getWriter();
                 if (writer != null)
                 {
@@ -423,7 +436,7 @@ public class JetspeedContainerServlet extends HttpServlet
                         PortletApplicationManagement pam = (PortletApplicationManagement) services.getService("PAM");
                         if ((pam != null) && pam.isStarted())
                         {
-                            JetspeedLogger jsLogger = JetspeedLoggerUtil.getLogger(getClass());
+                            JetspeedLogger jsLogger = JetspeedLoggerUtil.getSharedLogger(getClass());
                             jsLogger.info(STOP_MSG + contextName);
                             getServletContext().log(STOP_MSG + contextName);
                             try
