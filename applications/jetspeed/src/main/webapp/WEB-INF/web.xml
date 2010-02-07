@@ -43,12 +43,19 @@ limitations under the License.
           <param-value>48</param-value>
       </init-param>
   </filter>
-<!--  
+  <!--  
   <filter>
     <filter-name>PortalFilter</filter-name>
     <filter-class>org.apache.jetspeed.login.filter.PortalFilter</filter-class>   
   </filter>
--->
+  -->
+  <!--
+  <filter>
+    <filter-name>OpenIDPortalFilter</filter-name>
+    <filter-class>org.apache.jetspeed.openid.filter.OpenIDPortalFilter</filter-class>
+  </filter>
+  -->
+
   <filter-mapping>
     <filter-name>XXSUrlAttackFilter</filter-name>
     <url-pattern>/*</url-pattern>
@@ -58,12 +65,19 @@ limitations under the License.
       <filter-name>staticResourceCachingFilter</filter-name>
       <servlet-name>default</servlet-name>
   </filter-mapping>
-<!--  
+  <!--  
   <filter-mapping>
     <filter-name>PortalFilter</filter-name>
     <url-pattern>/*</url-pattern>    
   </filter-mapping>  
--->  
+  -->
+  <!--  
+  <filter-mapping>
+    <filter-name>OpenIDPortalFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  -->
+
   <listener>
     <listener-class>org.apache.jetspeed.engine.JetspeedServlet</listener-class>
   </listener>
@@ -148,6 +162,76 @@ limitations under the License.
     <servlet-name>DiagnosticsServlet</servlet-name>
  	<jsp-file>/server-diag.jsp</jsp-file>
   </servlet>
+
+  <!-- OpenID Relaying Party Servlet -->
+  <!--
+  <servlet>
+    <description>
+      OpenID Relaying Party, (RP), servlet used to return discovery
+      metadata at OpenID realm and to process authentication return
+      requests.
+    </description>
+    <display-name>OpenID Relaying Party Servlet</display-name>
+    <servlet-name>OpenIDRelayingPartyServlet</servlet-name>
+    <servlet-class>org.apache.jetspeed.openid.OpenIDRelayingPartyServlet</servlet-class>
+    <init-param>
+      <description>Discovery domain to URL mapping.</description>
+      <param-name>discovery.gmail.com</param-name>
+      <param-value>https://www.google.com/accounts/o8/id</param-value>
+    </init-param>
+    <init-param>
+      <description>Discovery domain to URL mapping.</description>
+      <param-name>discovery.yahoo.com</param-name>
+      <param-value>http://yahoo.com</param-value>
+    </init-param>
+    <init-param>
+      <description>Discovery domain to URL mapping.</description>
+      <param-name>discovery.myopenid.com</param-name>
+      <param-value>http://myopenid.com</param-value>
+    </init-param>
+    <init-param>
+      <description>Enable servlet init parameter registration configuration.</description>
+      <param-name>enableRegistrationConfig</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <description>Enable new user registration.</description>
+      <param-name>enableRegistration</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <description>Global new user template directory to be used for registration.</description>
+      <param-name>newUserTemplateDirectory</param-name>
+      <param-value>/_template/new-user/</param-value>
+    </init-param>
+    <init-param>
+      <description>Global subsite root folder to be used for registration.</description>
+      <param-name>subsiteRootFolder</param-name>
+      <param-value></param-value>
+    </init-param>
+    <init-param>
+      <description>Global roles to be assigned at registration.</description>
+      <param-name>roles</param-name>
+      <param-value>user</param-value>
+    </init-param>
+    <init-param>
+      <description>Global groups to be assigned at registration.</description>
+      <param-name>groups</param-name>
+      <param-value></param-value>
+    </init-param>
+    <init-param>
+      <description>Global profiling rule names to be assigned at registration.</description>
+      <param-name>rulesNames</param-name>
+      <param-value>page</param-value>
+    </init-param>
+    <init-param>
+      <description>Global profiling rule values to be assigned at registration.</description>
+      <param-name>rulesValues</param-name>
+      <param-value>j2</param-value>
+    </init-param>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  -->
 
   <servlet-mapping>
       <servlet-name>DiagnosticsServlet</servlet-name>
@@ -246,6 +330,15 @@ limitations under the License.
     <servlet-name>ManagerServlet</servlet-name>
     <url-pattern>/manager/*</url-pattern>
   </servlet-mapping>
+
+  <!-- OpenID Relaying Party Servlet -->
+  <!--
+  <servlet-mapping>
+    <servlet-name>OpenIDRelayingPartyServlet</servlet-name>
+    <url-pattern>/openid</url-pattern>
+    <url-pattern>/openid/*</url-pattern>
+  </servlet-mapping>
+  -->
 
   <!-- The Usual Welcome File List -->
   <welcome-file-list>

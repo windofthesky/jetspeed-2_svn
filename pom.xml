@@ -291,7 +291,7 @@
     <org.apache.portals.applications.apa-rss.version>1.0</org.apache.portals.applications.apa-rss.version>
     <org.apache.portals.applications.apa-webcontent.version>1.1-SNAPSHOT</org.apache.portals.applications.apa-webcontent.version>
     <org.apache.portals.applications.apa-dbbrowser.version>1.0</org.apache.portals.applications.apa-dbbrowser.version>
-
+    <org.openid4java.version>0.9.5</org.openid4java.version>
     <oro.version>2.0.8</oro.version>
     <portals.portlet2-api-spec.version>1.0</portals.portlet2-api-spec.version>
     <regexp.version>1.2</regexp.version>
@@ -306,7 +306,7 @@
     <velocity-tools.version>1.3</velocity-tools.version>
     <velocity.version>1.6.3</velocity.version>
     <xalan.version>2.4.1</xalan.version>
-    <xerces.version>2.3.0</xerces.version>
+    <xerces.version>2.8.1</xerces.version>
     <xml-apis.version>2.0.2</xml-apis.version>
     <asm.version>2.2</asm.version>
     <ccpp.version>1.0</ccpp.version>
@@ -1391,6 +1391,19 @@
         <artifactId>commonj-twm</artifactId>
         <version>${commonj.version}</version>
         <scope>provided</scope>
+      </dependency>
+
+      <!-- OpenID -->
+      <dependency>
+        <groupId>org.openid4java</groupId>
+        <artifactId>openid4java-consumer</artifactId>
+        <version>${org.openid4java.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
     </dependencies>
