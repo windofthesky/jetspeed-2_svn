@@ -44,7 +44,7 @@ font-size: 7pt;
 #nav-top #envList { width: 145px; }
 #nav-top #spaceList { width: 250px; }
 #nav-top ul .first, #nav-top ul li:first-child { padding-top: 8px; }
-#nav-top ul .add { background: url(../../images/divider-nav-top.png) repeat-x; padding-top: 7px; }
+#nav-top li .separator { background: url(../../images/divider-nav-top.png) repeat-x; padding-top: 7px; }
 
 #nav-main { width:100% }
 #nav-main .navmenu { margin: 5px 0; }
