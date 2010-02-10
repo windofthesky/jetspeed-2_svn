@@ -33,6 +33,7 @@ import org.apache.jetspeed.headerresource.HeaderResourceFactory;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
@@ -293,6 +294,24 @@ public class Jetui
         if (result != null && result.size() > 0)
             return result.get(0);
         return null;
+    }
+    
+    public String getPortletIcon(RequestContext context, String windowId, String defaultPortletIcon)
+    {
+        String portletIcon = null;
+        PortletWindow window = context.getPortletWindow(windowId);
+        
+        if (window != null && window.getPortletDefinition() != null)
+        {
+            InitParam portletIconInitParam = window.getPortletDefinition().getInitParam("portlet-icon");
+            
+            if (portletIconInitParam != null)
+            {
+                portletIcon = portletIconInitParam.getParamValue();
+            }
+        }
+        
+        return (portletIcon != null ? portletIcon : defaultPortletIcon);
     }
     
 }
