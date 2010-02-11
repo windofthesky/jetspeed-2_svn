@@ -35,6 +35,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -106,7 +107,16 @@ public class PageLayoutService
                                           @Context UriInfo uriInfo)
     {
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
-        ContentPage contentPage = getContentPage(requestContext, JetspeedActions.VIEW);
+        ContentPage contentPage = null;
+        try
+        {
+            contentPage = getContentPage(requestContext, JetspeedActions.VIEW);
+        }
+        catch (SecurityException e)
+        {
+            throw new WebApplicationException(e, Status.FORBIDDEN);
+        }
+        
         return new ContentPageBean(contentPage);
     }
     
@@ -122,7 +132,15 @@ public class PageLayoutService
         }
         
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
-        ContentPage contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        ContentPage contentPage = null;
+        try
+        {
+            contentPage = getContentPage(requestContext, JetspeedActions.VIEW);
+        }
+        catch (SecurityException e)
+        {
+            throw new WebApplicationException(e, Status.FORBIDDEN);
+        }
         ContentFragment contentFragment = contentPage.getFragmentById(fragmentId);
         
         if (contentFragment == null)
@@ -149,7 +167,15 @@ public class PageLayoutService
         }
         
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
-        ContentPage contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        ContentPage contentPage = null;
+        try
+        {
+            contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        }
+        catch (SecurityException e)
+        {
+            throw new WebApplicationException(e, Status.FORBIDDEN);
+        }
         
         int row = NumberUtils.toInt(rowParam, -1);
         int col = NumberUtils.toInt(colParam, -1);
@@ -202,7 +228,15 @@ public class PageLayoutService
         }
         
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
-        ContentPage contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        ContentPage contentPage = null;
+        try
+        {
+            contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        }
+        catch (SecurityException e)
+        {
+            throw new WebApplicationException(e, Status.FORBIDDEN);
+        }
         ContentFragment contentFragment = contentPage.getFragmentById(fragmentId);
         
         if (contentFragment == null)
@@ -254,7 +288,15 @@ public class PageLayoutService
         }
         
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
-        ContentPage contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        ContentPage contentPage = null;
+        try
+        {
+            contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        }
+        catch (SecurityException e)
+        {
+            throw new WebApplicationException(e, Status.FORBIDDEN);
+        }
         ContentFragment contentFragment = contentPage.getFragmentById(fragmentId);
         
         if (contentFragment == null)
@@ -432,7 +474,15 @@ public class PageLayoutService
         }
         
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
-        ContentPage contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        ContentPage contentPage = null;
+        try
+        {
+            contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        }
+        catch (SecurityException e)
+        {
+            throw new WebApplicationException(e, Status.FORBIDDEN);
+        }
         ContentFragment contentFragment = contentPage.getFragmentById(fragmentId);
         
         if (contentFragment == null)
@@ -460,7 +510,15 @@ public class PageLayoutService
         }
         
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
-        ContentPage contentPage = getContentPage(requestContext, JetspeedActions.EDIT);
+        ContentPage contentPage = null;
+        try
+        {
+            contentPage = getContentPage(requestContext, JetspeedActions.VIEW);
+        }
+        catch (SecurityException e)
+        {
+            throw new WebApplicationException(e, Status.FORBIDDEN);
+        }
         ContentFragment contentFragment = contentPage.getFragmentById(fragmentId);
         
         if (contentFragment == null)
@@ -477,30 +535,23 @@ public class PageLayoutService
         
         return new DecorationBean(decoration);
     }
-        
+    
     /**
      * Returns the content page of the current portal request context with security check.
      * 
      * @param requestContext the portal request context
      * @param action the action to check the security against.
      * @return
-     * @throws WebApplicationException
+     * @throws SecurityException
      */
-    private ContentPage getContentPage(RequestContext requestContext, String action) throws WebApplicationException
+    private ContentPage getContentPage(RequestContext requestContext, String action) throws SecurityException
     {
-        try
+        if (securityBehavior != null && !securityBehavior.checkAccess(requestContext, action))
         {
-            if (securityBehavior != null && !securityBehavior.checkAccess(requestContext, action))
-            {
-                throw new SecurityException("Insufficient access to view page");
-            }
-            
-            return requestContext.getPage();
+            throw new SecurityException("Insufficient access to view page");
         }
-        catch (Exception e)
-        {
-            throw new WebApplicationException(e);
-        }
+        
+        return requestContext.getPage();
     }
     
     /**
