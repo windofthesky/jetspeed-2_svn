@@ -427,8 +427,9 @@ text-decoration:none;
 text-decoration: underline;
 }
 
-.layout-oldstyle .default-tabs{padding-top: 75px; margin-top: 0px; margin-bottom: 0px;}
-.layout-oldstyle .default-tabs li{display: block; float: left; margin: 0px;}
+.layout-oldstyle .default-tabs{margin: 1px; padding: 0px;}
+.layout-oldstyle .default-tabs ul{display: block; float: left;}
+.layout-oldstyle .default-tabs li{display: block; float: left; margin: 0px; padding: 0px;}
 .layout-oldstyle .default-tabs a{
 font-weight: normal; 
 white-space: nowrap; 
@@ -436,13 +437,11 @@ display: block;
 float: left; 
 width: auto;
 background: url("../images/documenttabs.png") repeat-x; 
-margin-right: 2px;
+margin: 0px;
 color: #dddddd;
-padding: 8px;
+padding: 4px 2px;
 text-decoration: none;
 font-size: 11px;
-padding-left: 15px; 
-padding-right: 15px;
 }
 
 .layout-oldstyle .default-tabs .selected a{background-position: 0px -30px; color: white}
