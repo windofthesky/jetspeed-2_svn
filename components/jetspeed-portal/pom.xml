@@ -188,6 +188,10 @@
       <groupId>org.openid4java</groupId>
       <artifactId>openid4java-consumer</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.step2</groupId>
+      <artifactId>step2-common</artifactId>
+    </dependency>
 
     <!-- Test Dependencies -->
     <dependency>

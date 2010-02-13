@@ -21,6 +21,8 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import javax.security.auth.Subject;
 import javax.servlet.ServletConfig;
@@ -34,6 +36,11 @@ import org.openid4java.consumer.ConsumerManager;
 import org.openid4java.consumer.VerificationResult;
 import org.openid4java.discovery.DiscoveryInformation;
 import org.openid4java.discovery.Identifier;
+import org.openid4java.discovery.UrlIdentifier;
+import org.openid4java.discovery.html.HtmlResolver;
+import org.openid4java.discovery.xri.XriDotNetProxyResolver;
+import org.openid4java.discovery.xri.XriResolver;
+import org.openid4java.discovery.yadis.YadisResolver;
 import org.openid4java.message.AuthRequest;
 import org.openid4java.message.AuthSuccess;
 import org.openid4java.message.ParameterList;
@@ -52,10 +59,29 @@ import org.apache.jetspeed.audit.AuditActivity;
 import org.apache.jetspeed.cache.UserContentCacheManager;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.openid.OpenIDRegistrationConfiguration;
+import org.apache.jetspeed.openid.step2.GoogleHostMetaFetcher;
 import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+
+import com.google.step2.discovery.DefaultHostMetaFetcher;
+import com.google.step2.discovery.Discovery2;
+import com.google.step2.discovery.HostMetaFetcher;
+import com.google.step2.discovery.IdpIdentifier;
+import com.google.step2.discovery.LegacyXrdsResolver;
+import com.google.step2.discovery.ParallelHostMetaFetcher;
+import com.google.step2.discovery.SecureDiscoveryInformation;
+import com.google.step2.discovery.SecureUrlIdentifier;
+import com.google.step2.discovery.XrdDiscoveryResolver;
+import com.google.step2.http.DefaultHttpFetcher;
+import com.google.step2.http.HttpFetcher;
+import com.google.step2.xmlsimplesign.CachedCertPathValidator;
+import com.google.step2.xmlsimplesign.CertValidator;
+import com.google.step2.xmlsimplesign.DefaultCertValidator;
+import com.google.step2.xmlsimplesign.DefaultTrustRootsProvider;
+import com.google.step2.xmlsimplesign.TrustRootsProvider;
+import com.google.step2.xmlsimplesign.Verifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,8 +99,14 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
 
     private static final Logger log = LoggerFactory.getLogger(OpenIDRelayingPartyServlet.class);
     
+    private static final long OPEN_ID_DISCOVERY_TIMEOUT_SECONDS = 10L;
+
     private static final String OPEN_ID_DISCOVERY_INIT_PARAM_NAME_PREFIX = "discovery.";
+    private static final String OPEN_ID_CONSUMER_INIT_PARAM_NAME_PREFIX = "consumer.";
+    private static final String OPEN_ID_CONSUMER_INIT_PARAM_NAME_VALUE = "openid4java";
+    private static final String STEP2_CONSUMER_INIT_PARAM_NAME_VALUE = "step2";
     
+    private static final String OPEN_ID_PROVIDER_ATTR_NAME = "org.apache.jetspeed.openid.provider";
     private static final String OPEN_ID_DISCOVERY_INFO_ATTR_NAME = "org.apache.jetspeed.openid.discoveryinfo";
 
     private static final String USER_ATTRIBUTE_EMAIL = "user.business-info.online.email";
@@ -84,6 +116,7 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
     private static final String USER_ATTRIBUTE_NICKNAME = "user.name.nickName";
     
     private ConsumerManager openIDConsumerManager;
+    private ConsumerManager openIDStep2ConsumerManager;
     private UserManager portalUserManager;
     private PortalAdministration portalAdministration;
     private AuditActivity portalAudit;
@@ -101,7 +134,37 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
         // setup OpenID
         try
         {
+            // standard OpenID implementation
             openIDConsumerManager = new ConsumerManager();
+            // assemble Step2 OpenID implementation; TODO: utilize a more
+            // robust HTTPFetcher implementation since the DefaultHttpFetcher
+            // may not be entirely thread safe due to connection manager
+            // configuration in HttpComponents, (this is why there are 4
+            // discrete instances of DefaultHttpFetcher used below).
+            HostMetaFetcher step2GoogleHostMetaFetcher = new GoogleHostMetaFetcher(new DefaultHttpFetcher());
+            HostMetaFetcher step2DefaultHostMetaFetcher = new DefaultHostMetaFetcher(new DefaultHttpFetcher());
+            ThreadFactory parallelThreadFactory = new ThreadFactory()
+            {
+                public Thread newThread(Runnable r)
+                {
+                    Thread newThread = Executors.defaultThreadFactory().newThread(r);
+                    newThread.setName(getClass().getSimpleName()+"-"+newThread.getName());
+                    newThread.setDaemon(true);
+                    return newThread;
+                }
+            };
+            HostMetaFetcher step2HostMetaFetcher = new ParallelHostMetaFetcher(Executors.newFixedThreadPool(10, parallelThreadFactory), OPEN_ID_DISCOVERY_TIMEOUT_SECONDS, step2GoogleHostMetaFetcher, step2DefaultHostMetaFetcher);
+            TrustRootsProvider step2XrdsTrustProvider = new DefaultTrustRootsProvider();
+            CachedCertPathValidator step2XrdsCertPathValidator = new CachedCertPathValidator(step2XrdsTrustProvider);
+            Verifier step2XrdsVerifier = new Verifier(step2XrdsCertPathValidator, new DefaultHttpFetcher());
+            CertValidator step2XrdsCertValidator = new DefaultCertValidator();
+            XrdDiscoveryResolver step2XrdResolver = new LegacyXrdsResolver(new DefaultHttpFetcher(), step2XrdsVerifier, step2XrdsCertValidator);
+            HtmlResolver step2HtmlResolver = new HtmlResolver();
+            YadisResolver step2YadisResolver = new YadisResolver();
+            XriResolver step2XriResolver = new XriDotNetProxyResolver();
+            Discovery2 step2Discovery = new Discovery2(step2HostMetaFetcher, step2XrdResolver, step2HtmlResolver, step2YadisResolver, step2XriResolver);
+            openIDStep2ConsumerManager = new ConsumerManager();
+            openIDStep2ConsumerManager.setDiscovery(step2Discovery);
         }
         catch (OpenIDException oide)
         {
@@ -139,6 +202,7 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
         portalAuthenticationConfiguration = null;
         portalAdministration = null;
         portalUserManager = null;
+        openIDStep2ConsumerManager = null;
         openIDConsumerManager = null;
         super.destroy();
     }
@@ -212,20 +276,46 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                 boolean discoveredProvider = false;
                 try
                 {
-                    // default user supplied discovery string
+                    // default user supplied discovery string and provider
                     String userSuppliedDiscoveryString = discovery;
-                    if ((provider == null) && (userSuppliedDiscoveryString != null) &&
-                        !userSuppliedDiscoveryString.startsWith("http://") && !userSuppliedDiscoveryString.startsWith("https://") &&
-                        !userSuppliedDiscoveryString.startsWith("xri://"))
+                    if ((provider == null) && (userSuppliedDiscoveryString != null))
                     {
-                        int emailDomainSeparatorIndex = userSuppliedDiscoveryString.indexOf('@');
-                        if (emailDomainSeparatorIndex != -1)
+                        if (!userSuppliedDiscoveryString.startsWith("http://") && !userSuppliedDiscoveryString.startsWith("https://"))
                         {
-                            provider = userSuppliedDiscoveryString.substring(emailDomainSeparatorIndex+1);
+                            if (!userSuppliedDiscoveryString.startsWith("xri://") && !userSuppliedDiscoveryString.startsWith("=") && !userSuppliedDiscoveryString.startsWith("@"))
+                            {
+                                // extract provider from email address
+                                int emailDomainSeparatorIndex = userSuppliedDiscoveryString.indexOf('@');
+                                if (emailDomainSeparatorIndex != -1)
+                                {
+                                    // extract provider host name from email address
+                                    provider = userSuppliedDiscoveryString.substring(emailDomainSeparatorIndex+1);
+                                }
+                                else if (Character.isLetterOrDigit(userSuppliedDiscoveryString.charAt(0)))
+                                {
+                                    provider = userSuppliedDiscoveryString;
+                                }
+                            }
                         }
-                        else if (Character.isLetterOrDigit(userSuppliedDiscoveryString.charAt(0)))
+                        else
                         {
-                            provider = userSuppliedDiscoveryString;
+                            // extract provider from URL host name
+                            int domainIndex = userSuppliedDiscoveryString.indexOf("://")+3;
+                            int endDomainIndex = userSuppliedDiscoveryString.indexOf('/', domainIndex);
+                            if (endDomainIndex == -1)
+                            {
+                                endDomainIndex = userSuppliedDiscoveryString.length();
+                            }
+                            provider = userSuppliedDiscoveryString.substring(domainIndex, endDomainIndex);
+                            domainIndex = provider.lastIndexOf('.', provider.length());
+                            if (domainIndex > 0)
+                            {
+                                domainIndex = provider.lastIndexOf('.', domainIndex-1);
+                            }
+                            if (domainIndex != -1)
+                            {
+                                provider = provider.substring(domainIndex);
+                            }
                         }
                     }
                     if (provider != null)
@@ -233,20 +323,54 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                         String providerSuppliedDiscoveryString = getInitParameter(OPEN_ID_DISCOVERY_INIT_PARAM_NAME_PREFIX+provider);
                         if (providerSuppliedDiscoveryString != null)
                         {
+                            // lookup override discovery string from configuration
                             userSuppliedDiscoveryString = providerSuppliedDiscoveryString;
+                        }
+                        else if (userSuppliedDiscoveryString == null)
+                        {
+                            // use provider for discover string if not specified
+                            userSuppliedDiscoveryString = provider;
                         }
                     }
 
+                    // select consumer implementation based on provider
+                    String providerConsumer = OPEN_ID_CONSUMER_INIT_PARAM_NAME_VALUE;
+                    ConsumerManager providerOpenIDConsumerManager = openIDConsumerManager;
+                    if (provider != null)
+                    {
+                        String consumer = getInitParameter(OPEN_ID_CONSUMER_INIT_PARAM_NAME_PREFIX+provider);
+                        if ((consumer != null) && consumer.equals(STEP2_CONSUMER_INIT_PARAM_NAME_VALUE))
+                        {
+                            providerConsumer = STEP2_CONSUMER_INIT_PARAM_NAME_VALUE;
+                            providerOpenIDConsumerManager = openIDStep2ConsumerManager;
+                        }
+                    }
+                    
                     // OpenID discovery
                     DiscoveryInformation discovered = null;
                     try
                     {
                         if (userSuppliedDiscoveryString != null)
                         {
-                            List discoveries = openIDConsumerManager.discover(userSuppliedDiscoveryString);
+                            List discoveries = null;
+                            if (providerConsumer.equals(STEP2_CONSUMER_INIT_PARAM_NAME_VALUE))
+                            {
+                                // verify discovery string is likely a host name
+                                if ((userSuppliedDiscoveryString.indexOf("://") == -1) && (userSuppliedDiscoveryString.indexOf('@') == -1) && (userSuppliedDiscoveryString.indexOf('=') == -1))
+                                {
+                                    // Step2 OpenId discovery
+                                    IdpIdentifier providerIdentifier = new IdpIdentifier(userSuppliedDiscoveryString);
+                                    discoveries = providerOpenIDConsumerManager.getDiscovery().discover(providerIdentifier);                                    
+                                }
+                            }
+                            else
+                            {
+                                // standard OpenId discovery
+                                discoveries = providerOpenIDConsumerManager.discover(userSuppliedDiscoveryString);
+                            }
                             if ((discoveries != null) && !discoveries.isEmpty())
                             {
-                                discovered = openIDConsumerManager.associate(discoveries);
+                                discovered = providerOpenIDConsumerManager.associate(discoveries);
                             }
                         }
                     }
@@ -256,17 +380,18 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                     }
                     if (discovered == null)
                     {
-                        throw new RuntimeException("No OpenID provider discovered");                    
+                        throw new RuntimeException("No OpenID provider discovered for: "+userSuppliedDiscoveryString);                    
                     }
                     discoveredProvider = true;
 
                     // log OpenID provider
                     if (log.isDebugEnabled())
                     {
-                        log.debug("Discovered OpenID provider endpoint: "+discovered.getOPEndpoint());
+                        log.debug("Discovered OpenID provider endpoint: "+discovered.getOPEndpoint()+", ["+discovered.getClass().getSimpleName()+"]");
                     }
 
                     // save OpenID provider in session
+                    request.getSession().setAttribute(OPEN_ID_PROVIDER_ATTR_NAME, provider);
                     request.getSession().setAttribute(OPEN_ID_DISCOVERY_INFO_ATTR_NAME, discovered);
 
                     // create OpenID authentication request and redirect
@@ -275,7 +400,7 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                     try
                     {
                         // authentication request
-                        AuthRequest authRequest = openIDConsumerManager.authenticate(discovered, authReturnToURL, openIDRealmURL);
+                        AuthRequest authRequest = providerOpenIDConsumerManager.authenticate(discovered, authReturnToURL, openIDRealmURL);
                         // request attribute exchange data
                         FetchRequest axRequest = FetchRequest.createFetchRequest();
                         axRequest.addAttribute("email", "http://axschema.org/contact/email", true);
@@ -338,6 +463,7 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                     ParameterList authParams = new ParameterList(request.getParameterMap());
 
                     // retrieve OpenID provider from session
+                    String provider = (String)request.getSession().getAttribute(OPEN_ID_PROVIDER_ATTR_NAME);
                     DiscoveryInformation discovered = (DiscoveryInformation)request.getSession().getAttribute(OPEN_ID_DISCOVERY_INFO_ATTR_NAME);
 
                     // reconstruct the authenticated request URL
@@ -349,19 +475,33 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                     }
                     String authRequestURL = authRequestURLBuffer.toString();
 
+                    // select consumer implementation based on provider
+                    String providerConsumer = OPEN_ID_CONSUMER_INIT_PARAM_NAME_VALUE;
+                    if (provider != null)
+                    {
+                        String consumer = getInitParameter(OPEN_ID_CONSUMER_INIT_PARAM_NAME_PREFIX+provider);
+                        if ((consumer != null) && consumer.equals(STEP2_CONSUMER_INIT_PARAM_NAME_VALUE))
+                        {
+                            providerConsumer = STEP2_CONSUMER_INIT_PARAM_NAME_VALUE;
+                        }
+                    }
+                    
                     // verify the authenticated request
-                    VerificationResult verification = null;
-                    try
+                    VerificationResults verificationResults = null;
+                    if (providerConsumer.equals(STEP2_CONSUMER_INIT_PARAM_NAME_VALUE))
                     {
-                        verification = openIDConsumerManager.verify(authRequestURL, authParams, discovered);
+                        // Step2 OpenId verification
+                        verificationResults = openIDStep2Verification(authRequestURL, authParams, discovered);
                     }
-                    catch (OpenIDException oide)
+                    else
                     {
-                        throw new RuntimeException("Unexpected OpenID authenticated verification exception: "+oide, oide);
+                        // standard OpenId verification
+                        verificationResults = openIDVerification(authRequestURL, authParams, discovered);
                     }
+                    VerificationResult verification = verificationResults.verification;
+                    Identifier verifiedIdentifier = verificationResults.verifiedIdentifier;
 
                     // extract identifier from verified authenticated request
-                    Identifier verifiedIdentifier = verification.getVerifiedId();
                     if (verifiedIdentifier == null)
                     {
                         throw new RuntimeException("Verified identifier unavailable for authenticated OpenID login");                    
@@ -650,5 +790,197 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
         }
         openIDRealmURLBuilder.append(request.getContextPath()+request.getServletPath());
         return openIDRealmURLBuilder.toString();        
-    }    
+    }
+    
+    /**
+     * OpenID authenticated request verification results.
+     */
+    private class VerificationResults
+    {
+        public VerificationResult verification = null;
+        public Identifier verifiedIdentifier = null;
+    }
+    
+    /**
+     * Standard OpenId authenticated request verification.
+     * 
+     * @param authRequestURL authenticated request URL
+     * @param authParams authenticated request parameters
+     * @param discovered discovery information
+     * @return verification result
+     */
+    private VerificationResults openIDVerification(String authRequestURL, ParameterList authParams, DiscoveryInformation discovered)
+    {
+        try
+        {
+            if (log.isDebugEnabled())
+            {
+                log.debug("Verify standard OpenID authentication request using: "+discovered.getOPEndpoint());
+            }
+
+            VerificationResults results = new VerificationResults();
+            // verify using previously discovered discovery information
+            results.verification = openIDConsumerManager.verify(authRequestURL, authParams, discovered);
+
+            if (log.isDebugEnabled() && (results.verification != null))
+            {
+                log.debug("Verified standard OpenID authentication request: "+authRequestURL);
+            }            
+            
+            // return verified identifier
+            results.verifiedIdentifier = results.verification.getVerifiedId();
+
+            if (log.isDebugEnabled() && (results.verifiedIdentifier != null))
+            {
+                log.debug("Verified standard OpenID authentication request identity: "+results.verifiedIdentifier);
+            }
+            
+            return results;
+        }
+        catch (OpenIDException oide)
+        {
+            throw new RuntimeException("Unexpected standard OpenId authenticated request verification exception: "+oide, oide);
+        }
+    }
+
+    /**
+     * Step2 OpenId authenticated request verification.
+     * 
+     * @param authRequestURL authenticated request URL
+     * @param authParams authenticated request parameters
+     * @param discovered discovery information
+     * @return verification result
+     */
+    private VerificationResults openIDStep2Verification(String authRequestURL, ParameterList authParams, DiscoveryInformation discovered)
+    {
+        try
+        {
+            VerificationResults results = new VerificationResults();
+            // verify OpenId authentication request
+            String openIdMode = authParams.getParameterValue("openid.mode");
+            if ((openIdMode != null) && openIdMode.equals("id_res"))
+            {
+                AuthSuccess authResponse = AuthSuccess.createAuthSuccess(authParams);
+                if ((authResponse != null) && authResponse.isVersion2() && (authResponse.getIdentity() != null) && (authResponse.getClaimed() != null))
+                {
+                    // get OpenId identifier
+                    String providerId = authResponse.getIdentity();
+                    Identifier responseClaimedId = openIDStep2ConsumerManager.getDiscovery().parseIdentifier(authResponse.getClaimed(), true);
+                    String responseEndpoint = authResponse.getOpEndpoint();
+                    
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug("Step2 discovery for identity: "+responseClaimedId);
+                    }
+
+                    // get Step2 secure discovery information
+                    SecureDiscoveryInformation secureDiscovered = null;
+                    
+                    // validate previously discovered secure discovery information
+                    if (discovered instanceof SecureDiscoveryInformation)
+                    {
+                        // check for matching version, identifiers, and endpoints
+                        if (discovered.isVersion2() && discovered.hasClaimedIdentifier() && discovered.getClaimedIdentifier().equals(responseClaimedId) && discovered.getOPEndpoint().equals(responseEndpoint))
+                        {
+                            String discoveredProviderId = (discovered.hasDelegateIdentifier() ? discovered.getDelegateIdentifier() : discovered.getClaimedIdentifier().getIdentifier());
+                            if (discoveredProviderId.equals(providerId))
+                            {
+                                secureDiscovered = (SecureDiscoveryInformation)discovered;
+
+                                if (log.isDebugEnabled())
+                                {
+                                    log.debug("Matched previously discovered Step2 secure discovery information for "+responseClaimedId+" identity: "+secureDiscovered.getOPEndpoint());
+                                }
+                            }
+                        }
+                    }
+
+                    // discover secure discovery information if necessary
+                    if (secureDiscovered == null)
+                    {
+                        // perform discovery on claimed identifier
+                        List<SecureDiscoveryInformation> discoveredInfos = openIDStep2ConsumerManager.getDiscovery().discover(responseClaimedId);
+                        // match secure discovered information: prefer previously associated matches
+                        for (SecureDiscoveryInformation discoveredInfo : discoveredInfos)
+                        {
+                            // match secure discovered information
+                            String version = discoveredInfo.getVersion();
+                            if ((version != null) && version.equals(DiscoveryInformation.OPENID2_OP) && discoveredInfo.isVersion2() && discoveredInfo.getOPEndpoint().equals(responseEndpoint))
+                            {
+                                String discoveredProviderId = (discoveredInfo.hasDelegateIdentifier() ? discoveredInfo.getDelegateIdentifier() : discoveredInfo.getClaimedIdentifier().getIdentifier());
+                                if (discoveredProviderId.equals(providerId))
+                                {
+                                    // match previously associated or first discovered
+                                    if (openIDStep2ConsumerManager.getPrivateAssociationStore().load(discoveredInfo.getOPEndpoint().toString(), authResponse.getHandle()) != null)
+                                    {
+                                        secureDiscovered = discoveredInfo;
+                                        break;
+                                    }
+                                    else if (secureDiscovered == null)
+                                    {
+                                        secureDiscovered = discoveredInfo;                                    
+                                    }
+                                }                            
+                            }
+                        }
+
+                        if (log.isDebugEnabled() && (secureDiscovered != null))
+                        {
+                            log.debug("Discovered Step2 secure discovery information for "+responseClaimedId+" identity: "+secureDiscovered.getOPEndpoint());
+                        }
+                    }
+
+                    if (log.isDebugEnabled() && (secureDiscovered != null))
+                    {
+                        log.debug("Verify Step2 OpenID authentication request using: "+secureDiscovered.getOPEndpoint());
+                    }
+
+                    // verify using secure discovery information
+                    results.verification = openIDStep2ConsumerManager.verify(authRequestURL, authParams, secureDiscovered);
+
+                    if (log.isDebugEnabled() && (results.verification != null))
+                    {
+                        log.debug("Verified Step2 OpenID authentication request: "+authRequestURL);
+                    }
+                    
+                    // verify secure verified identifier
+                    if ((results.verification.getAuthResponse() instanceof AuthSuccess) && (results.verification.getVerifiedId() != null))
+                    {
+                        // verify secure verification
+                        boolean secureVerification = ((secureDiscovered != null) && (secureDiscovered.getClaimedIdentifier() != null) && secureDiscovered.isSecure());
+                        if (secureVerification)
+                        {
+                            try
+                            {
+                                UrlIdentifier verifiedClaimedId = new UrlIdentifier(results.verification.getVerifiedId().getIdentifier(), true);
+                                secureVerification = secureDiscovered.getClaimedIdentifier().getIdentifier().equals(verifiedClaimedId.getIdentifier());
+                            }
+                            catch (OpenIDException oide)
+                            {
+                                secureVerification = false;
+                            }
+                        }
+                        
+                        // return verified identifier
+                        Identifier verifiedId = results.verification.getVerifiedId();
+                        results.verifiedIdentifier = (secureVerification ? new SecureUrlIdentifier(verifiedId) : verifiedId);
+
+                        if (log.isDebugEnabled())
+                        {
+                            log.debug("Verified Step2 OpenID authentication request identity: "+results.verifiedIdentifier);
+                        }
+                    }
+                    else
+                    {
+                        throw new RuntimeException("Step2 OpenId authenticated request verification failed");
+                    }
+                }
+            }
+            return results;
+        }
+        catch (OpenIDException oide)
+        {
+            throw new RuntimeException("Unexpected Step2 OpenId authenticated request verification exception: "+oide, oide);
+        }
+    }
 }
