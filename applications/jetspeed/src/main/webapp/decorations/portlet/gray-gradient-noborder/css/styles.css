@@ -29,9 +29,24 @@ limitations under the License.
     padding-top: 2px;
     padding-bottom: 16px;
     padding-right: 2px; 
-    color: #01375D;
-    
+    color: #01375D;    
     background-image: url(../images/grad2gray.png);    
+}
+.gray-gradient-noborder .PTitle
+{
+    padding-top: 2px;
+    padding-bottom: 16px;
+    padding-right: 2px; 
+    color: #01375D;    
+    background-image: url(../images/grad2gray.png);    
+}
+.gray-gradient-noborder .PTitleActive
+{
+    padding-top: 2px;
+    padding-bottom: 16px;
+    padding-right: 2px;
+    color: #ffffff; 
+    background: #01375D;    
 }
 
 .gray-gradient-noborder .PTitleContent

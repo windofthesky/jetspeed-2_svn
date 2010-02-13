@@ -1,5 +1,5 @@
 //Use loader to grab the modules needed
-YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'dataschema-xml', 'dataschema-json', 'node', 'node-menunav', function(Y) {
+YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'dataschema-xml', 'dataschema-json', 'node', 'dom-style', function(Y) {
 
     var portal = JETUI_YUI.getPortalInstance();
 	var config = JETUI_YUI.config;
@@ -21,9 +21,9 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
        var nodelist = portal.jstbRight.get('children');
        nodelist.setStyle('display', currentStyle);          
 	}
-    var onClickToolbar = function(e) {
-//    	Y.log("clickd on e.target = " + e.target);
-//    	nav.setStyle('z-index', '500');
+    var onClickPortlet = function(e) {
+        var portal = JETUI_YUI.getPortalInstance();
+        portal.activateWindow(e.currentTarget);        
     }
 
     var onClickToggler = function(e) {
@@ -80,6 +80,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 		        dragGroups = ['detached'],	        
 		        dragMode = 'point';
 		        dropGroups = [];
+		        portal.addResizeHandle(v);
 	        }
 	        if (portlet.get("tool") == false)
 	        {
@@ -95,8 +96,9 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 		            node: v,
 		            groups: dropGroups            
 		        });
-	        }
-	    	// portlet.info();
+	        }	        
+	        v.on('click', onClickPortlet);		        
+	        // portlet.info();
     	}
     });
     
@@ -169,6 +171,16 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
         if (drag.target) {
             drag.target.set('locked', false);
         }
+        var srcNode = drag.get('node');
+        if (srcNode.data == 'resize') {
+	        var dragParent = srcNode.get('parentNode');
+	        var region = dragParent.get('region');
+	        var mt = portal.calculateResizeMargin(dragParent);
+        	srcNode.setStyle('top', (region.bottom - region.top - mt) + "px");
+			srcNode.setStyle('left', (region.right - region.left - mt) + "px");        				        
+        	srcNode.setStyle('visibility', '');        	
+        	return;
+        }
         if (drag.get('node').data.get("detached"))
         {
             drag.get('node').setStyle('visibility', '');        	
@@ -185,14 +197,25 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
     });        	
     
     Y.DD.DDM.on('drag:start', function(e) {
-        var drag = e.target;
+        var portal = JETUI_YUI.getPortalInstance();
+    	var drag = e.target;
         var dragNode = drag.get('dragNode');
         var srcNode = drag.get('node');
+        if (srcNode.data == 'resize') {
+        	dragNode.set('innerHTML', srcNode.get('innerHTML'));
+        	srcNode.setStyle('visibility', 'hidden');
+            var dragParent = srcNode.get('parentNode');        	
+            portal.activateWindow(dragParent);                	                	
+        	return;
+    	}
+        portal.activateWindow(srcNode);                	                	
+        
         dragNode.set('innerHTML', srcNode.get('innerHTML'));
 
         if (drag.get('node').data.get("detached"))
         {
-        	drag.get('node').setStyle('visibility', 'hidden');        	
+        	drag.get('node').setStyle('visibility', 'hidden');
+            portal.activateWindow(srcNode);                	
         }
         else
         {
@@ -204,6 +227,29 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
         portal.lastY = drag.mouseXY[1];
     });
 
+    Y.DD.DDM.on('drag:drag', function(e) {
+    	var drag = e.target;
+        var srcNode = drag.get('node');    	
+        if (srcNode.data == 'resize') {
+	        var dragParent = drag.get('node').get('parentNode');
+	        var box = portal.findChildByClass(dragParent, ['portlet ', 'PContentBorder'], 0);
+	        var content = portal.findChildByClass(box, ['PContent'], 0);	        
+	    	var left = parseInt(dragParent.getStyle('left'));
+	    	var top =  parseInt(dragParent.getStyle('top'));
+	    	var width = (drag.mouseXY[0] - left) + "px";
+	    	var height = (drag.mouseXY[1] - top) + "px";
+	    	if (!Y.Lang.isNull(box)) {
+		    	box.setStyle('width', width);
+		    	box.setStyle('height', height);
+	    	}	    	
+	    	if (!Y.Lang.isNull(content)) {
+		    	content.setStyle('width', (drag.mouseXY[0] - left - 4) + "px"); // TODO: calculate padding, border (4)
+		    	content.setStyle('height', height );
+	    	}	    	
+	    	var region = dragParent.get('region');
+        }
+    });
+    
     Y.DD.DDM.on('drag:over', function(e) {
         var portal = JETUI_YUI.getPortalInstance();
     	if (portal.isMoving)

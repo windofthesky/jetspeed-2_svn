@@ -42,7 +42,18 @@ limitations under the License.
     background-image: url(../images/grad2gray.png);  
   
 }
-
+.gray-gradient .PTitleActive
+{
+    padding-left:2px;
+    padding-top: 2px;
+    padding-bottom: 16px;
+    padding-right: 2px; 
+    border-left: 1px solid #999999;
+    border-right: 1px solid #999999;
+    border-top: 1px solid #999999;
+    color: #ffffff;
+    background: #01375D;   
+}
 .gray-gradient .PTitleContent
 {
     font-weight:bold;

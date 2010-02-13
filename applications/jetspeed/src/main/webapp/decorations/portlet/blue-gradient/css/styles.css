@@ -32,9 +32,20 @@ limitations under the License.
     border-left: 1px solid #517B94;
     border-right: 1px solid #517B94;
     border-top: 1px solid #517B94;
-    color: #01375D;    
-    
+    color: #01375D;        
     background-image: url(../images/grad2blue.png);
+}
+.blue-gradient .PTitleActive
+{
+    padding-left:2px;
+    padding-top: 2px;
+    padding-bottom: 16px;
+    padding-right: 2px; 
+    border-left: 1px solid #517B94;
+    border-right: 1px solid #517B94;
+    border-top: 1px solid #517B94;
+    background: #01375D;
+    color: #ffffff;        
 }
 
 .blue-gradient .PTitleContent

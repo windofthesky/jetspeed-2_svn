@@ -141,6 +141,11 @@ YUI.add('jetui-portal', function(Y) {
         lastX : 0,
         
         /**
+         * Active window selected
+         */
+        activeWindow : null,
+        
+        /**
          * Construction logic executed during instantiation.
          *
          * @method initializer
@@ -204,7 +209,7 @@ YUI.add('jetui-portal', function(Y) {
         /**
          * Updates toolbar state
          * 
-         * @method updateToolbar
+         * @method up`dateToolbar
          */        
         updateToolbar : function(toolbar, state) {
             var portal = JETUI_YUI.getPortalInstance();        	
@@ -266,10 +271,10 @@ YUI.add('jetui-portal', function(Y) {
                 groups: ['grid']            
                 });
             }
-            // BOZO: im manipulating internal DD structures, should find a way to detach the handler
             var i = 0;
             while (i < Y.DD.DDM.targets.length) {
                 if (Y.DD.DDM.targets[i] == e.drop) {
+                	Y.log("found it!");
                     Y.DD.DDM.targets.splice(i, 1);
                     break;
                 }
@@ -278,7 +283,7 @@ YUI.add('jetui-portal', function(Y) {
             // I don't think this is working
             e.drop.unplug(Y.Plugin.Drop);
         },
- 
+        
         /**
          * @method moveToGrid moves a portlet window to another grid position in the browser
          * this is a client side only operation. Operates in grid (non-detached) mode.
@@ -389,6 +394,7 @@ YUI.add('jetui-portal', function(Y) {
 			        	}
 		        	}
 	            }
+	            portal.addResizeHandle(window);
 		        var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
 		        uri += "&x=" + x + "&y=" + y + "&layout=detach";
 		        var config = {
@@ -397,7 +403,8 @@ YUI.add('jetui-portal', function(Y) {
                       headers: { "X-Portal-Path" : portal.portalPagePath },
                       arguments: { complete: [ windowId ] }
                   };
-		        var request = Y.io(uri, config);    			
+		        var request = Y.io(uri, config); 
+		        portal.activateWindow(window);
             }            
         },
 
@@ -462,6 +469,8 @@ YUI.add('jetui-portal', function(Y) {
 	                i++;
 	            }
 	            layout.appendChild(window);
+	            portal.removeResizeHandle(window);
+	            portal.removeWidthHeight(window);
 	            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
 	            uri += "&row=" + row + "&col=" + col + "&layout=attach";
 	            var config = {
@@ -739,9 +748,164 @@ YUI.add('jetui-portal', function(Y) {
             
             var uri = portal.portalContextPath + "/portlet" + portal.portalPagePath + "?entity=" + fragment.id;
             var request = Y.io(uri, { on: { complete: portal.onPortletRenderComplete }, arguments: { complete: v } } );
+        },
+
+        /**
+         * @method addResizeHandle
+         */        
+        addResizeHandle : function(v) {
+            var portal = JETUI_YUI.getPortalInstance();        	
+        	var region = v.get('region');        	
+	        var mt = portal.calculateResizeMargin(v);
+	        var rh = Y.Node.create("<div class='resizeHandle'/>");
+        	rh.setStyle('position', 'absolute');
+			rh.setStyle('top', (region.bottom - region.top - mt) + "px");
+			rh.setStyle('left', (region.right - region.left - mt) + "px");        				        
+	        v.appendChild(rh);		        
+	        rh.data = 'resize';
+	        var rhDrag = new Y.DD.Drag({
+	            node: rh,
+	            groups: [],
+	            dragMode: 'point'                    
+	        }).plug(Y.Plugin.DDProxy, { 
+	          	 moveOnEnd: false         	    	
+	        });    
+	        rhDrag.addHandle('.resizeHandle');		                	
+        },
+
+        /**
+         * @method removeResizeHandle
+         */        
+        removeResizeHandle : function(v) {
+	 		v.get('children').each(function(v2,k2) {
+	 			var cl = v2.getAttribute('class');
+			    if (cl.indexOf('resizeHandle') == 0) {
+			    	v2.remove();
+			    	return;
+			    }
+	 		});        	
+        },
+
+        removeWidthHeight : function(v) {
+	 		v.get('children').each(function(v2,k2) {
+	 			var cl = v2.getAttribute('class');
+			    if (cl.indexOf('portlet') == 0) {
+			 		v2.get('children').each(function(v3,k3) {
+			 			var cl = v3.getAttribute('class');
+					    if (cl.indexOf('PContentBorder') == 0) {
+					    	v3.setStyle('width', '');
+					    	v3.setStyle('height', '');
+					 		v3.get('children').each(function(v4,k4) {
+					 			var cl = v4.getAttribute('class');
+							    if (cl.indexOf('PContent') == 0) {
+							    	v4.setStyle('width', '');
+							    	v4.setStyle('height', '');
+							    }
+					 		});
+					    }
+			 		});
+			    }
+	 		});        	        	
+        },
+        
+        /**
+         * @method calculateResizeMargin
+         */                	
+        calculateResizeMargin : function(v) {
+	        var mtt = null;
+	 		v.get('children').each(function(v2,k2) {
+	 			var cl = v2.getAttribute('class');
+			    if (cl.indexOf('portlet') == 0) {				    	
+			    	mtt = v2.getComputedStyle('marginTop'); // TODO: margin-top could be different from other 3 margins
+			    	if (!Y.Lang.isNull(mtt)) {
+			    		mtt = parseInt(mtt);
+			    	}
+			    	return;
+			    }
+	 		});
+	    	var mt = (mtt*2) + 7; // 7 is approx the diameter of the handle image
+	    	return mt;
+        },
+        
+        /**
+         * @method find Child By Class
+         */
+        findChildByClass : function(node, styles, index) {
+        	var portal = JETUI_YUI.getPortalInstance();
+        	var result = null;
+			node.get('children').each(function(v,k) {
+				 var cl = v.getAttribute('class');
+			     if (cl.indexOf(styles[index]) == 0) {
+			    	 if (index + 1 < styles.length) {
+			    		 index = index + 1;
+			    		 var res = portal.findChildByClass(v, styles, 1);
+          	             if (!Y.Lang.isNull(res)) {
+          	            	 result =  res;
+          	            	 return result;
+          	             }
+			    	 }
+			    	 else {
+      	            	 result =  v;
+			    		 return result;
+			    	 }
+			     }
+			});        	
+			return result;
+        },
+        
+        activateWindow : function(active) {
+            var portal = JETUI_YUI.getPortalInstance();        	
+            if (!Y.Lang.isNull(portal.activeWindow) && portal.activeWindow == active) {
+            	return; // clicking on active window, do nothing
+            }
+        	active.setStyle('zIndex', portal.calculateNextZIndex());
+        	Y.log("current target = " + active);
+            var title = portal.findChildByClass(active, ['portlet ', 'PTitle'], 0);
+            if (!Y.Lang.isNull(title)) {
+            	//var unselect = title.getComputedStyle('background'); // this deadended for me, was not working
+            	title.setAttribute('class', 'PTitleActive');
+            	var drag = Y.DD.DDM.getDrag(active);
+            	drag.removeHandle(".PTitle");        	
+            	drag.addHandle(".PTitleActive");
+                if (!Y.Lang.isNull(portal.activeWindow)) {
+                	var title = portal.findChildByClass(portal.activeWindow, ['portlet ', 'PTitleActive'], 0);
+                    if (!Y.Lang.isNull(title)) {                            
+                    	var drag = Y.DD.DDM.getDrag(portal.activeWindow);
+                    	drag.removeHandle(".PTitleActive");        	
+                    	drag.addHandle(".PTitle");
+                    	title.setAttribute('class', 'PTitle');
+                     }
+                 }
+            }
+        	portal.activeWindow = active;                                    	
+        },
+        
+        /**
+         * @method calculateNextZIndex
+         */                	
+        calculateNextZIndex : function() {
+        	var next = 10;
+        	var draggablePortlets = Y.Node.all(JetuiConfiguration.portletStyle);    
+            draggablePortlets.each(function(v, k) {
+            	if (v.getAttribute("id") != "jsPortletTemplate")
+            	{
+        	        var portlet = v.data;
+        	        if (portlet.get("detached") == true) {
+        	        	var zi = v.getStyle('zIndex');
+        	            if (!Y.Lang.isNull(zi)) {
+        	            	var zi = parseInt(zi);
+        	            	if (zi > next) {
+        	            		next = zi;
+        	            	}        	            		
+        	            }
+
+        	        }
+            	}
+            });            	
+            return next + 1;
         }
     });
-    
+
     /**
      * Create a portlet window to represent a portal window.
      *

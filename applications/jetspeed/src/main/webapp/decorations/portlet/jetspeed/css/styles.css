@@ -22,6 +22,7 @@ limitations under the License.
 /* font */
 .jetspeed .PTitleLeft,
 .jetspeed .PTitle,
+.jetspeed .PTitleActive,
 .jetspeed .PTitleContent,
 .jetspeed .PTitleRight,
 .jetspeed .PContentLeft,
@@ -51,6 +52,20 @@ limitations under the License.
 /*    border-bottom:1px solid #b4b4b4;*/
     height:5px;
 }
+
+.jetspeed .PTitleActive
+{
+    padding-bottom: 16px;
+    color: #ffffff;
+    background: #05549C;
+    border-right:1px solid #b4b4b4;
+    border-left:1px solid #b4b4b4;
+    border-top:1px solid #b4b4b4;
+/*    border-bottom:1px solid #b4b4b4;*/
+    height:5px;
+}
+
+
 
 .jetspeed .PTitleContent
 {

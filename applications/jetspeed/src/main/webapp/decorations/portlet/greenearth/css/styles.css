@@ -22,6 +22,7 @@ limitations under the License.
 /* font */
 .greenearth .PTitleLeft,
 .greenearth .PTitle,
+.greenearth .PTitleActive,
 .greenearth .PTitleContent,
 .greenearth .PTitleRight,
 .greenearth .PContentLeft,
@@ -45,6 +46,18 @@ limitations under the License.
     padding-bottom: 16px;
     color: #363738;
     background:#f2f2f2;
+    border-right:1px solid #b4b4b4;
+    border-left:1px solid #b4b4b4;
+    border-top:1px solid #b4b4b4;
+/*    border-bottom:1px solid #b4b4b4;*/
+    height:5px;
+}
+
+.greenearth .PTitleActive
+{
+    padding-bottom: 16px;
+    color: #363738;
+    background: #79B400;
     border-right:1px solid #b4b4b4;
     border-left:1px solid #b4b4b4;
     border-top:1px solid #b4b4b4;

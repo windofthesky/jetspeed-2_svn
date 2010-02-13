@@ -22,6 +22,7 @@ limitations under the License.
 /* font */
 .turbo .PTitleLeft,
 .turbo .PTitle,
+.turbo .PTitleActive,
 .turbo .PTitleContent,
 .turbo .PTitleRight,
 .turbo .PContentLeft,
@@ -45,6 +46,17 @@ limitations under the License.
     padding-bottom: 16px;
     color: #363738;
     background:#f2f2f2;
+    border-right:1px solid #b4b4b4;
+    border-left:1px solid #b4b4b4;
+    border-top:1px solid #b4b4b4;
+/*    border-bottom:1px solid #b4b4b4;*/
+    height:5px;
+}
+.turbo .PTitleActive
+{
+    padding-bottom: 16px;
+    color: #ffffff;
+    background:#193B53;
     border-right:1px solid #b4b4b4;
     border-left:1px solid #b4b4b4;
     border-top:1px solid #b4b4b4;

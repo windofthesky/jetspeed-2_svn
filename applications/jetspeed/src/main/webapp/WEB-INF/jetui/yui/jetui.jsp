@@ -338,6 +338,5 @@ for (ContentFragment fragment : columnLayout.getDetachedPortlets())
     </div>
   </div>
 </div>
-
 </body>
 </html>
