@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.HashSet;
 import java.util.List;
@@ -50,6 +49,7 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Supports;
 import org.apache.jetspeed.util.BaseObjectProxy;
+import org.apache.jetspeed.util.GenericPortletUtils;
 
 /**
  * PortletObjectProxy
@@ -149,17 +149,11 @@ public class PortletObjectProxy extends BaseObjectProxy
         
         if (portletObject instanceof GenericPortlet)
         {
-            try
+            this.portletDoEditMethod = GenericPortletUtils.getRenderModeHelperMethod((GenericPortlet) portletObject, PortletMode.EDIT);
+            
+            if (this.portletDoEditMethod != null)
             {
-                this.portletDoEditMethod = this.portletObject.getClass().getMethod("doEdit", new Class [] { RenderRequest.class, RenderResponse.class });
-                
-                if (Modifier.isPublic(this.portletDoEditMethod.getModifiers()))
-                {
-                    this.genericPortletInvocable = true;
-                }
-            }
-            catch (NoSuchMethodException e)
-            {
+                this.genericPortletInvocable = true;
             }
         }
     }

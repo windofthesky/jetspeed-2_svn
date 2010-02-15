@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.factory;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,16 +26,16 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import javax.portlet.GenericPortlet;
 import javax.portlet.Portlet;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletURLGenerationListener;
 import javax.portlet.PreferencesValidator;
 import javax.portlet.UnavailableException;
 import javax.portlet.filter.PortletFilter;
 import javax.servlet.ServletContext;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.ContainerInfo;
 import org.apache.jetspeed.container.JetspeedPortletConfig;
@@ -47,8 +48,11 @@ import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.Listener;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.util.GenericPortletUtils;
 import org.apache.pluto.container.RequestDispatcherService;
 import org.apache.portals.bridges.common.ServletContextProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -702,6 +706,52 @@ public class JetspeedPortletFactory implements PortletFactory
         }
         
         return filterInstance;
+    }
+
+    public boolean hasRenderHelperMethod(PortletDefinition pd, PortletMode mode)
+    {
+        PortletInstance portletInstance = null;
+        String paName = pd.getApplication().getName();
+        String pdName = pd.getPortletName();
+        
+        Map<String, PortletInstance> instanceCache = this.portletCache.get(paName);
+        
+        if (instanceCache != null)
+        {
+            portletInstance = instanceCache.get(pdName);
+        }
+        
+        if (portletInstance != null)
+        {
+            return portletInstance.hasRenderHelperMethod(mode);
+        }
+        else
+        {
+            ClassLoader paCl = classLoaderMap.get(paName);
+            
+            if (paCl != null) 
+            {
+                try
+                {
+                    Class<?> portletClazz = paCl.loadClass(pd.getPortletClass());
+                    
+                    if (GenericPortlet.class.isAssignableFrom(portletClazz))
+                    {
+                        Method helperMethod = GenericPortletUtils.getRenderModeHelperMethod((Class<? extends GenericPortlet>) portletClazz, mode);
+                        
+                        if (helperMethod != null)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                catch (ClassNotFoundException e)
+                {
+                }
+            }
+            
+            return false;
+        }
     }
 
 }

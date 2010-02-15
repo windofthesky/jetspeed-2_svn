@@ -18,6 +18,9 @@ package org.apache.jetspeed.factory;
 
 import javax.portlet.EventPortlet;
 import javax.portlet.Portlet;
+import javax.portlet.PortletMode;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import javax.portlet.ResourceServingPortlet;
 
 import org.apache.jetspeed.container.JetspeedPortletConfig;
@@ -31,7 +34,47 @@ import org.apache.jetspeed.container.JetspeedPortletConfig;
  */
 public interface PortletInstance extends Portlet, EventPortlet, ResourceServingPortlet
 {
+    
+    /**
+     * Returns Jetspeed portlet config object.
+     * @return
+     */
     JetspeedPortletConfig getConfig();
+    
+    /**
+     * Returns the real portlet object instance. This portlet object instance
+     * can be a proxy instance. You can check if it is a proxy by using {@link #isProxyInstance()}.
+     * @return
+     */
     Portlet getRealPortlet();
+    
+    /**
+     * True if the real portlet object instance is a proxy instance.
+     * @return
+     */
     boolean isProxyInstance();
+    
+    /**
+     * Returns true when the real portlet object instance is type of javax.portlet.GenericPortlet
+     * and the instance contains a helper method for the portlet mode with public access.
+     * <P>
+     * The helper methods can be overriden from the <CODE>javax.portlet.GenericPortlet</CODE> such as the following methods</CODE> 
+     * or annotated with <CODE>@RenderMode (javax.portlet.RenderMode)</CODE>.
+     * <ul>
+     *   <li><code>doView</code> for handling <code>view</code> requests</li>
+     *   <li><code>doEdit</code> for handling <code>edit</code> requests</li>
+     *   <li><code>doHelp</code> for handling <code>help</code> requests</li>
+     * </ul>
+     * </P>
+     * 
+     * @param mode
+     * @return
+     * 
+     * @see javax.portlet.RenderMode
+     * @see javax.portlet.GenericPortlet#doView(RenderRequest, RenderResponse)
+     * @see javax.portlet.GenericPortlet#doEdit(RenderRequest, RenderResponse)
+     * @see javax.portlet.GenericPortlet#doHelp(RenderRequest, RenderResponse)
+     */
+    boolean hasRenderHelperMethod(PortletMode mode);
+    
 }

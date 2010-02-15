@@ -26,28 +26,29 @@ import java.util.Properties;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.cache.JetspeedContentCache;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
+import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.Supports;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
-import org.apache.jetspeed.container.PortletWindow;
-import org.apache.jetspeed.om.portlet.Supports;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Assigns decorations and page actions to all of the portlet Fragments within
@@ -97,32 +98,46 @@ public class DecorationValve extends AbstractValve implements Valve
      */
     private boolean autoSwitchingToEditDefaultsModes = true;
          
-     /**
-      * For security constraint checks
-      */
-     protected SecurityAccessController accessController;
+    /**
+     * For security constraint checks
+     */
+    protected SecurityAccessController accessController;
+    
+    /**
+     * For portlet instance helper method support checks.
+     */
+    private PortletFactory portletFactory;
 
-     public DecorationValve(DecorationFactory decorationFactory, SecurityAccessController accessController)
-     {
-         this(decorationFactory, accessController, null);
-     }
+    public DecorationValve(DecorationFactory decorationFactory, SecurityAccessController accessController)
+    {
+        this(decorationFactory, accessController, null);
+    }
      
-     public DecorationValve(DecorationFactory decorationFactory,
-                            SecurityAccessController accessController, JetspeedContentCache cache)
-     {    
-         this(decorationFactory, accessController, cache, false);
-     }
+    public DecorationValve(DecorationFactory decorationFactory,
+                           SecurityAccessController accessController, JetspeedContentCache cache)
+    {    
+        this(decorationFactory, accessController, cache, false);
+    }
      
-     public DecorationValve(DecorationFactory decorationFactory,
-                                 SecurityAccessController accessController, JetspeedContentCache cache,
-                                 boolean useSessionForThemeCaching)
-     {       
+    public DecorationValve(DecorationFactory decorationFactory,
+                           SecurityAccessController accessController, JetspeedContentCache cache,
+                           boolean useSessionForThemeCaching)
+    {
+        this(decorationFactory, accessController, cache, useSessionForThemeCaching, null);
+    }
+    
+    public DecorationValve(DecorationFactory decorationFactory,
+                           SecurityAccessController accessController, 
+                           JetspeedContentCache cache, boolean useSessionForThemeCaching,
+                           PortletFactory portletFactory)
+    {       
         this.decorationFactory = decorationFactory;
         this.defaultDecoratorActionsFactory = new DefaultDecoratorActionsFactory();        
         //added the accessController in portlet decorater for checking the actions
         this.accessController = accessController;        
         this.cache = cache;
         this.useSessionForThemeCaching = useSessionForThemeCaching;
+        this.portletFactory = portletFactory;
     }
     
     public void invoke(RequestContext requestContext, ValveContext context) throws PipelineException
@@ -393,7 +408,7 @@ public class DecorationValve extends AbstractValve implements Valve
                         }
                         if ( ! equalsCurrentMode || isAjaxRequest )
                         {
-                            if ( (supportsPortletMode(supports,customMode) || isAutoSwitchableCustomMode(supports, customMode))
+                            if ( (supportsPortletMode(supports,customMode) || isAutoSwitchableCustomMode(window, customMode))
                                  && (!PortletMode.EDIT.equals(customMode) || pageActionAccess.isEditAllowed())
                                  && pageActionAccess.checkPortletMode(fragmentId, portletName, mappedMode)
                                  )
@@ -697,16 +712,16 @@ public class DecorationValve extends AbstractValve implements Valve
         return this.autoSwitchingForConfigMode;
     }
     
-    private boolean isAutoSwitchableCustomMode(List<Supports> supports, PortletMode customMode)
+    private boolean isAutoSwitchableCustomMode(PortletWindow window, PortletMode customMode)
     {
         if (this.autoSwitchingForConfigMode && JetspeedActions.CONFIG_MODE.equals(customMode))
         {
             return true;
         }
         
-        if (this.autoSwitchingToEditDefaultsModes)
+        if (this.autoSwitchingToEditDefaultsModes && JetspeedActions.EDIT_DEFAULTS_MODE.equals(customMode) && portletFactory != null)
         {
-            if (supportsPortletMode(supports,PortletMode.EDIT) && JetspeedActions.EDIT_DEFAULTS_MODE.equals(customMode))
+            if (portletFactory.hasRenderHelperMethod(window.getPortletDefinition(), PortletMode.EDIT))
             {
                 return true;
             }

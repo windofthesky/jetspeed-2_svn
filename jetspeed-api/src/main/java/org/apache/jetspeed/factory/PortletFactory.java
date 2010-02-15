@@ -21,8 +21,11 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletURLGenerationListener;
 import javax.portlet.PreferencesValidator;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.PortalContext;
@@ -57,4 +60,27 @@ public interface PortletFactory
     ResourceBundle getResourceBundle(PortletDefinition pd, Locale locale);
     List<PortletURLGenerationListener> getPortletApplicationListeners(PortletApplication pa) throws PortletException;
     PortletFilterInstance getPortletFilterInstance(PortletApplication pa, String filterName) throws PortletException;
+    
+    /**
+     * Returns true when the portlet class is type of javax.portlet.GenericPortlet
+     * and it contains a helper method for the portlet mode with public access.
+     * <P>
+     * The helper methods can be overriden from the <CODE>javax.portlet.GenericPortlet</CODE> such as the following methods</CODE> 
+     * or annotated with <CODE>@RenderMode (javax.portlet.RenderMode)</CODE>.
+     * <ul>
+     *   <li><code>doView</code> for handling <code>view</code> requests</li>
+     *   <li><code>doEdit</code> for handling <code>edit</code> requests</li>
+     *   <li><code>doHelp</code> for handling <code>help</code> requests</li>
+     * </ul>
+     * </P>
+     * 
+     * @param mode
+     * @return
+     * 
+     * @see javax.portlet.RenderMode
+     * @see javax.portlet.GenericPortlet#doView(RenderRequest, RenderResponse)
+     * @see javax.portlet.GenericPortlet#doEdit(RenderRequest, RenderResponse)
+     * @see javax.portlet.GenericPortlet#doHelp(RenderRequest, RenderResponse)
+     */
+    boolean hasRenderHelperMethod( PortletDefinition pd, PortletMode mode );
 }

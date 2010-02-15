@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletRequestDispatcher;
 import javax.portlet.PortletURLGenerationListener;
 import javax.portlet.PreferencesValidator;
@@ -83,5 +84,10 @@ public final class PortletFactoryMock implements PortletFactory
     public ResourceBundle getResourceBundle(PortletApplication pa, Locale locale)
     {
         return null;
+    }
+
+    public boolean hasRenderHelperMethod(PortletDefinition pd, PortletMode mode)
+    {
+        return false;
     }
 }

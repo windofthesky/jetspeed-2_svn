@@ -29,6 +29,9 @@ import org.apache.jetspeed.portlet.PortletObjectProxy;
  */
 public class JetspeedPortletProxyInstance extends JetspeedPortletInstance
 {
+    
+    private Portlet proxiedPortlet;
+    
     public JetspeedPortletProxyInstance(String portletName, Portlet portlet, 
                                         boolean autoSwitchEditDefaultsModeToEditMode, 
                                         boolean autoSwitchConfigMode, String customConfigModePortletUniqueName)
@@ -36,6 +39,7 @@ public class JetspeedPortletProxyInstance extends JetspeedPortletInstance
         super(portletName, 
               (Portlet) PortletObjectProxy.createProxy(portlet, autoSwitchEditDefaultsModeToEditMode, 
                                                        autoSwitchConfigMode, customConfigModePortletUniqueName));
+        this.proxiedPortlet = portlet;
     }
     
     public JetspeedPortletProxyInstance(String portletName, Portlet portlet, 
@@ -47,10 +51,19 @@ public class JetspeedPortletProxyInstance extends JetspeedPortletInstance
               (Portlet) PortletObjectProxy.createProxy(portlet, autoSwitchEditDefaultsModeToEditMode, 
                                                        autoSwitchConfigMode, customConfigModePortletUniqueName,
                                                        autoSwitchPreviewMode, customPreviewModePortletUniqueName));
+        this.proxiedPortlet = portlet;
     }
     
+    @Override
     public boolean isProxyInstance()
     {
         return true;
     }
+    
+    @Override
+    protected Portlet getNonProxyPortletObject()
+    {
+        return proxiedPortlet;
+    }
+    
 }
