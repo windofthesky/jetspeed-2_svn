@@ -49,10 +49,12 @@ limitations under the License.
     <filter-class>org.apache.jetspeed.login.filter.PortalFilter</filter-class>   
   </filter>
   -->
+  <!--  
   <filter>
     <filter-name>OpenIDPortalFilter</filter-name>
     <filter-class>org.apache.jetspeed.openid.filter.OpenIDPortalFilter</filter-class>
   </filter>
+  -->
 
   <filter-mapping>
     <filter-name>XXSUrlAttackFilter</filter-name>
@@ -69,10 +71,12 @@ limitations under the License.
     <url-pattern>/*</url-pattern>    
   </filter-mapping>  
   -->
+  <!--
   <filter-mapping>
     <filter-name>OpenIDPortalFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  -->
 
   <listener>
     <listener-class>org.apache.jetspeed.engine.JetspeedServlet</listener-class>
@@ -160,6 +164,7 @@ limitations under the License.
   </servlet>
 
   <!-- OpenID Relaying Party Servlet -->
+  <!--
   <servlet>
     <description>
       OpenID Relaying Party, (RP), servlet used to return discovery
@@ -216,6 +221,7 @@ limitations under the License.
     </init-param>
     <load-on-startup>2</load-on-startup>
   </servlet>
+  -->
 
   <servlet-mapping>
       <servlet-name>DiagnosticsServlet</servlet-name>
@@ -316,11 +322,13 @@ limitations under the License.
   </servlet-mapping>
 
   <!-- OpenID Relaying Party Servlet -->
+  <!--
   <servlet-mapping>
     <servlet-name>OpenIDRelayingPartyServlet</servlet-name>
     <url-pattern>/openid</url-pattern>
     <url-pattern>/openid/*</url-pattern>
   </servlet-mapping>
+  -->
 
   <!-- The Usual Welcome File List -->
   <welcome-file-list>
