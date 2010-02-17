@@ -462,6 +462,13 @@ font-size:8pt;
 text-decoration: underline;
 }
 
+.layout-greenearth .navmenu ul { margin: 0 0 0 3px; padding: 2px; }
+.layout-greenearth .navmenu li { margin: 0 0 0 3px; padding: 2px; }
+.layout-greenearth .navmenu li.closed { cursor: pointer; background: url(../../images/icon-closed.png) no-repeat; }
+.layout-greenearth .navmenu li.expanded { cursor: default; background: url(../../images/icon-expanded.png) no-repeat; }
+.layout-greenearth .navmenu li li { }
+.layout-greenearth .navmenu li.closed ul { display: none; }
+
 .layout-greenearth .default-tabs{margin: 1px; padding: 0px;}
 .layout-greenearth .default-tabs ul{display: block; float: left;}
 .layout-greenearth .default-tabs li{display: block; float: left; margin: 0px; padding: 0px;}

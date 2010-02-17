@@ -427,6 +427,13 @@ text-decoration:none;
 text-decoration: underline;
 }
 
+.layout-oldstyle .navmenu ul { margin: 0 0 0 3px; padding: 2px; }
+.layout-oldstyle .navmenu li { margin: 0 0 0 3px; padding: 2px; }
+.layout-oldstyle .navmenu li.closed { cursor: pointer; background: url(../../images/icon-closed.png) no-repeat; }
+.layout-oldstyle .navmenu li.expanded { cursor: default; background: url(../../images/icon-expanded.png) no-repeat; }
+.layout-oldstyle .navmenu li li { }
+.layout-oldstyle .navmenu li.closed ul { display: none; }
+
 .layout-oldstyle .default-tabs{margin: 1px; padding: 0px;}
 .layout-oldstyle .default-tabs ul{display: block; float: left;}
 .layout-oldstyle .default-tabs li{display: block; float: left; margin: 0px; padding: 0px;}
