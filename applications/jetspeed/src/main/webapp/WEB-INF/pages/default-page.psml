@@ -49,32 +49,6 @@ limitations under the License.
         <property name="row" value="4"/>
         <property name="column" value="1"/>
     </fragment-reference>       
-    <fragment id="dp-12-openid" type="portlet" name="j2-admin::OpenIDLoginPortlet">
-      <property layout="TwoColumns" name="row" value="5" />
-      <property layout="TwoColumns" name="column" value="1" />
-      <preference name="providerLabels" readOnly="false">
-        <value>Hippo</value>
-      </preference>
-      <preference name="providerDomains" readOnly="false">
-        <value>1hippo.com</value>
-      </preference>
-      <preference name="enableOpenIDEntry" readOnly="false">
-        <value>false</value>
-      </preference>
-    </fragment>                                
-    <fragment id="dp-10-openid" type="portlet" name="j2-admin::OpenIDIFramePortlet">
-      <property layout="TwoColumns" name="row" value="6" />
-      <property layout="TwoColumns" name="column" value="1" />
-      <preference name="SRC">
-        <value>https://docs.google.com/a/1hippo.com/Doc?docid=0Adkmj1bZDnN5ZGM2aDUyNmdfMzNndjdkanNnNA&amp;hl=en</value>
-      </preference>
-      <preference name="REQUIREDOPENIDPROVIDERLABEL">
-        <value>Hippo</value>
-      </preference>
-      <preference name="REQUIREDOPENIDPROVIDER">
-        <value>1hippo.com</value>
-      </preference>
-    </fragment>
     <fragment id="dp-7" type="portlet" name="demo::PickANumberPortlet" >
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
