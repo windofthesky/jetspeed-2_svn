@@ -75,7 +75,6 @@ import com.google.step2.discovery.SecureDiscoveryInformation;
 import com.google.step2.discovery.SecureUrlIdentifier;
 import com.google.step2.discovery.XrdDiscoveryResolver;
 import com.google.step2.http.DefaultHttpFetcher;
-import com.google.step2.http.HttpFetcher;
 import com.google.step2.xmlsimplesign.CachedCertPathValidator;
 import com.google.step2.xmlsimplesign.CertValidator;
 import com.google.step2.xmlsimplesign.DefaultCertValidator;
@@ -728,6 +727,7 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                         portalUserContentCacheManager.evictUserContentCache(portalUser.getName(), request.getSession().getId());
                     }                         
                     // configure portal session with logged in session
+                    request.getSession().setAttribute(PortalReservedParameters.SESSION_OPEN_ID_PROVIDER, provider);
                     request.getSession().setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
 
                     // log/audit portal user login
