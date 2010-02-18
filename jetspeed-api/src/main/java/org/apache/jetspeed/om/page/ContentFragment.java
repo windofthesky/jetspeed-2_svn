@@ -22,6 +22,8 @@ import java.util.Map;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.layout.PageLayoutComponent;
+import org.apache.jetspeed.om.common.SecurityConstraint;
+import org.apache.jetspeed.om.common.SecurityConstraints;
 
 /**
  * ContentFragment is a read-only version of the {@link org.apache.jetspeed.om.page.Fragment}
@@ -36,6 +38,27 @@ import org.apache.jetspeed.layout.PageLayoutComponent;
 public interface ContentFragment
 {
     /************** SecuredResource **************/
+
+    /**
+     * Get security constraints.
+     *
+     * @return security constraints for resource
+     */
+    SecurityConstraints getSecurityConstraints();
+    
+    /**
+     * Create new security constraints.
+     *
+     * @return a newly created SecurityConstraints object
+     */
+    SecurityConstraints newSecurityConstraints();
+
+    /**
+     * Create new security constraint.
+     *
+     * @return a newly created SecurityConstraint object
+     */
+    SecurityConstraint newSecurityConstraint();
 
     /**
      * Check security access to fragment.
@@ -599,6 +622,13 @@ public interface ContentFragment
      *                   or USER where the default user name is used if null)
      */
     void updateRowColumn(int row, int column, String scope, String scopeValue);
+    
+    /**
+     * Update fragment security constraints.
+     *
+     * @param constraints security constraints for resource
+     */
+    void updateSecurityConstraints(SecurityConstraints constraints);
     
     /**
      * Update fragment portlet state and/or mode. The default, (Global),

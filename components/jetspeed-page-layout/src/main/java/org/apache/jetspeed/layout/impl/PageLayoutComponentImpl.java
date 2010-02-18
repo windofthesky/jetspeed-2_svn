@@ -31,6 +31,8 @@ import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.PageNotRemovedException;
 import org.apache.jetspeed.page.PageNotUpdatedException;
+import org.apache.jetspeed.om.common.SecurityConstraint;
+import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
@@ -51,6 +53,8 @@ import org.apache.jetspeed.om.page.impl.ContentFragmentPreferenceImpl;
 import org.apache.jetspeed.om.page.impl.ContentFragmentPropertyImpl;
 import org.apache.jetspeed.om.page.impl.ContentLocalizedFieldImpl;
 import org.apache.jetspeed.om.page.impl.ContentPageImpl;
+import org.apache.jetspeed.om.page.impl.ContentSecurityConstraint;
+import org.apache.jetspeed.om.page.impl.ContentSecurityConstraints;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.NodeException;
@@ -1355,6 +1359,86 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#updateSecurityConstraints(org.apache.jetspeed.om.page.ContentFragment, org.apache.jetspeed.om.common.SecurityConstraints)
+     */
+    public void updateSecurityConstraints(ContentFragment contentFragment, SecurityConstraints constraints)
+    {
+        log.debug("PageLayoutComponentImpl.updateSecurityConstraints() invoked");
+        try
+        {
+            // validate content fragment
+            ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
+            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
+            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
+            {
+                throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
+            }
+            
+            // retrieve current fragment and page from page manager
+            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
+            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
+            BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
+            if (fragment == null)
+            {
+                throw new IllegalArgumentException("Fragment and page not consistent");                
+            }
+
+            // check for edit permission
+            fragment.checkAccess(JetspeedActions.EDIT);            
+
+            // update fragment preferences and page in page manager
+            fragment.setSecurityConstraints(null);
+            if ((constraints != null) && !constraints.isEmpty())
+            {
+                SecurityConstraints fragmentConstraints = fragment.newSecurityConstraints();
+                String constraintsOwner = constraints.getOwner();
+                if (constraintsOwner != null)
+                {
+                    fragmentConstraints.setOwner(constraintsOwner);
+                }
+                List constraintsConstraints = constraints.getSecurityConstraints();
+                if ((constraintsConstraints != null) || !constraintsConstraints.isEmpty())
+                {
+                    List fragmentConstraintsConstraints = new ArrayList(constraintsConstraints.size());
+                    Iterator constraintsIter = constraintsConstraints.iterator();
+                    while (constraintsIter.hasNext())
+                    {
+                        SecurityConstraint constraint = (SecurityConstraint)constraintsIter.next();
+                        SecurityConstraint fragmentConstraintsConstraint = fragment.newSecurityConstraint();
+                        fragmentConstraintsConstraint.setGroups(constraint.getGroups());
+                        fragmentConstraintsConstraint.setPermissions(constraint.getPermissions());
+                        fragmentConstraintsConstraint.setRoles(constraint.getRoles());
+                        fragmentConstraintsConstraint.setUsers(constraint.getUsers());
+                        fragmentConstraintsConstraints.add(fragmentConstraintsConstraint);
+                    }
+                    fragmentConstraints.setSecurityConstraints(fragmentConstraintsConstraints);
+                }
+                List constraintsConstraintsRefs = constraints.getSecurityConstraintsRefs();
+                if ((constraintsConstraintsRefs != null) || !constraintsConstraintsRefs.isEmpty())
+                {
+                    List fragmentConstraintsConstraintsRefs = new ArrayList(constraintsConstraintsRefs.size());
+                    Iterator constraintsRefsIter = constraintsConstraintsRefs.iterator();
+                    while (constraintsRefsIter.hasNext())
+                    {
+                        fragmentConstraintsConstraintsRefs.add((String)constraintsRefsIter.next());
+                    }
+                    fragmentConstraints.setSecurityConstraintsRefs(fragmentConstraintsConstraintsRefs);
+                }
+                fragment.setSecurityConstraints(fragmentConstraints);
+            }
+            updatePage(page);
+
+            // update content context
+            contentFragmentImpl.setSecurityConstraints(constraints);
+        }
+        catch (Exception e)
+        {
+            throw new PageLayoutComponentException("Unexpected exception: "+e, e);
+        }
+        
+    }
+    
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.layout.PageLayoutComponent#updateStateMode(org.apache.jetspeed.om.page.ContentFragment, java.lang.String, java.lang.String)
      */
     public void updateStateMode(ContentFragment contentFragment, String portletState, String portletMode)
@@ -1613,6 +1697,8 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             contentFragmentImpl = newContentFragment(contentFragmentId, page, fragmentDefinitions, definition, fragmentFragment, null, null, locked);
             // set content fragment attributes
             mergeContentFragmentAttributes(contentFragmentImpl, fragmentFragment);
+            // set content fragment security constraints
+            setContentFragmentSecurityConstraints(contentFragmentImpl, fragmentFragment);
         }
         else if (fragment instanceof PageFragment)
         {
@@ -1632,6 +1718,8 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
                 mergeContentFragmentAttributes(contentFragmentImpl, pageFragmentFragment);
                 // inherit fragment reference attributes
                 mergeContentFragmentAttributes(contentFragmentImpl, fragmentReferenceFragment);
+                // set content fragment security constraints
+                setContentFragmentSecurityConstraints(contentFragmentImpl, fragmentReferenceFragment);
                 // merge content fragment attributes
                 mergeContentFragmentAttributes(contentFragmentImpl, fragmentFragment[0]);
             }
@@ -1645,9 +1733,11 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
                 mergeContentFragmentAttributes(contentFragmentImpl, pageFragmentFragment);
                 // merge content fragment attributes
                 mergeContentFragmentAttributes(contentFragmentImpl, fragmentFragment);
+                // set content fragment security constraints
+                setContentFragmentSecurityConstraints(contentFragmentImpl, fragmentFragment);
             }
         }
-        else  if (fragment instanceof FragmentReference)
+        else if (fragment instanceof FragmentReference)
         {
             // consume fragment reference and build fragment hierarchy from
             // referenced fragment
@@ -1657,6 +1747,8 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             contentFragmentImpl = newContentFragment(contentFragmentId, page, fragmentDefinitions, definition, fragmentReferenceFragment, fragmentFragment);
             // inherit fragment reference attributes
             mergeContentFragmentAttributes(contentFragmentImpl, fragmentReferenceFragment);
+            // set content fragment security constraints
+            setContentFragmentSecurityConstraints(contentFragmentImpl, fragmentReferenceFragment);
             // merge content fragment attributes
             mergeContentFragmentAttributes(contentFragmentImpl, fragmentFragment[0]);
         }
@@ -1851,6 +1943,50 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             if (contentFragmentImpl.getTitle() == null)
             {
                 contentFragmentImpl.setTitle(fragment.getTitle());
+            }
+        }
+    }
+    
+    /**
+     * Set content fragment security constraints from source PSML fragment.
+     * 
+     * @param contentFragmentImpl target content fragment
+     * @param fragment source PSML fragment
+     */
+    private void setContentFragmentSecurityConstraints(ContentFragmentImpl contentFragmentImpl, BaseFragmentElement fragment)
+    {
+        // set content fragment attributes
+        if ((contentFragmentImpl != null) && (fragment != null))
+        {
+            SecurityConstraints fragmentConstraints = fragment.getSecurityConstraints();
+            if ((fragmentConstraints != null) && !fragmentConstraints.isEmpty())
+            {
+                String contentConstraintsOwner = fragmentConstraints.getOwner();
+                List contentConstraintsConstraints = null;
+                List fragmentConstraintsConstraints = fragmentConstraints.getSecurityConstraints();
+                if ((fragmentConstraintsConstraints != null) && !fragmentConstraintsConstraints.isEmpty())
+                {
+                    contentConstraintsConstraints = new ArrayList(fragmentConstraintsConstraints.size());
+                    Iterator constraintsIter = fragmentConstraintsConstraints.iterator();
+                    while (constraintsIter.hasNext())
+                    {
+                        SecurityConstraint fragmentConstraint = (SecurityConstraint)constraintsIter.next();
+                        contentConstraintsConstraints.add(new ContentSecurityConstraint(false, fragmentConstraint.getGroups(), fragmentConstraint.getPermissions(), fragmentConstraint.getRoles(), fragmentConstraint.getUsers()));
+                    }
+                }
+                List contentConstraintsConstraintsRefs = null;
+                List fragmentConstraintsConstraintsRefs = fragmentConstraints.getSecurityConstraintsRefs();
+                if ((fragmentConstraintsConstraintsRefs != null) && !fragmentConstraintsConstraintsRefs.isEmpty())
+                {
+                    contentConstraintsConstraintsRefs = new ArrayList(fragmentConstraintsConstraintsRefs.size());
+                    Iterator constraintsRefsIter = fragmentConstraintsConstraintsRefs.iterator();
+                    while (constraintsRefsIter.hasNext())
+                    {
+                        contentConstraintsConstraintsRefs.add((String)constraintsRefsIter.next());
+                    }
+                }
+                SecurityConstraints contentConstraints = new ContentSecurityConstraints(false, contentConstraintsOwner, contentConstraintsConstraints, contentConstraintsConstraintsRefs);
+                contentFragmentImpl.setSecurityConstraints(contentConstraints);
             }
         }
     }

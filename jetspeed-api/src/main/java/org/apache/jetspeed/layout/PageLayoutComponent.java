@@ -18,6 +18,7 @@ package org.apache.jetspeed.layout;
 
 import java.util.Map;
 
+import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.BaseConcretePageElement;
@@ -342,6 +343,14 @@ public interface PageLayoutComponent
      * @param scopeValue properties scope value
      */
     void updateRowColumn(ContentFragment contentFragment, int row, int column, String scope, String scopeValue);
+
+    /**
+     * Update fragment security constraints.
+     * 
+     * @param contentFragment content fragment context
+     * @param constraints security constraints
+     */
+    void updateSecurityConstraints(ContentFragment contentFragment, SecurityConstraints constraints);
     
     /**
      * Update global fragment portlet state and/or mode.

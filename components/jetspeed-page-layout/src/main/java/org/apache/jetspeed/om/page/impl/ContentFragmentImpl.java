@@ -29,6 +29,8 @@ import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.impl.PageLayoutComponentUtils;
+import org.apache.jetspeed.om.common.SecurityConstraint;
+import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -72,6 +74,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     private String shortTitle;
     private String title;
     private String type;
+    private SecurityConstraints constraints;
 
     /**
      * Construct new dynamic content fragment with
@@ -127,6 +130,30 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
         this.referenceDefinition = referenceDefinition;
         this.reference = reference;
         this.locked = locked;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#getSecurityConstraints()
+     */
+    public SecurityConstraints getSecurityConstraints()
+    {
+        return constraints;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#newSecurityConstraint()
+     */
+    public SecurityConstraint newSecurityConstraint()
+    {
+        return new ContentSecurityConstraint(true, null, null, null, null);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#newSecurityConstraints()
+     */
+    public SecurityConstraints newSecurityConstraints()
+    {
+        return new ContentSecurityConstraints(true, null, null, null);
     }
 
     /* (non-Javadoc)
@@ -847,6 +874,23 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#updateSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
+     */
+    public void updateSecurityConstraints(SecurityConstraints constraints)
+    {
+        if (pageLayoutComponent != null)
+        {
+            // delegate to page layout component
+            pageLayoutComponent.updateSecurityConstraints(this, constraints);
+        }
+        else
+        {
+            // perform locally only
+            setSecurityConstraints(constraints);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#updateStateMode(java.lang.String, java.lang.String)
      */
     public void updateStateMode(String portletState, String portletMode)
@@ -1495,6 +1539,16 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
         }        
     }
 
+    /**
+     * Set content security constraints.
+     * 
+     * @param constraints security constraints
+     */
+    public void setSecurityConstraints(SecurityConstraints constraints)
+    {
+        this.constraints = constraints;
+    }
+    
     /**
      * Set content fragment short title.
      * 
