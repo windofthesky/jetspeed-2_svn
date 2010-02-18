@@ -1397,7 +1397,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
                     fragmentConstraints.setOwner(constraintsOwner);
                 }
                 List constraintsConstraints = constraints.getSecurityConstraints();
-                if ((constraintsConstraints != null) || !constraintsConstraints.isEmpty())
+                if ((constraintsConstraints != null) && !constraintsConstraints.isEmpty())
                 {
                     List fragmentConstraintsConstraints = new ArrayList(constraintsConstraints.size());
                     Iterator constraintsIter = constraintsConstraints.iterator();
@@ -1414,7 +1414,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
                     fragmentConstraints.setSecurityConstraints(fragmentConstraintsConstraints);
                 }
                 List constraintsConstraintsRefs = constraints.getSecurityConstraintsRefs();
-                if ((constraintsConstraintsRefs != null) || !constraintsConstraintsRefs.isEmpty())
+                if ((constraintsConstraintsRefs != null) && !constraintsConstraintsRefs.isEmpty())
                 {
                     List fragmentConstraintsConstraintsRefs = new ArrayList(constraintsConstraintsRefs.size());
                     Iterator constraintsRefsIter = constraintsConstraintsRefs.iterator();
