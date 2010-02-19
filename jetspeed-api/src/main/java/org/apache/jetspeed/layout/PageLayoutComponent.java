@@ -32,6 +32,8 @@ import org.apache.jetspeed.om.page.PageTemplate;
  */
 public interface PageLayoutComponent
 {
+    static final String CONTENT_FRAGMENT_ID_SEPARATOR = "$"; // javascript identifier safe separator
+    
     /**
      * user standard property scope
      */

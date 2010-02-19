@@ -73,8 +73,6 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
 {
     private static final Logger log = LoggerFactory.getLogger(PageLayoutComponentImpl.class);
     
-    public static final String CONTENT_FRAGMENT_ID_SEPARATOR = "$"; // javascript identifier safe separator
-    
     private PageManager pageManager;
     
     /**

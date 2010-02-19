@@ -31,7 +31,6 @@ import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.impl.LayoutValve;
-import org.apache.jetspeed.layout.impl.PageLayoutComponentImpl;
 import org.apache.jetspeed.mocks.ResourceLocatingServletContext;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
@@ -70,7 +69,7 @@ import com.mockrunner.mock.web.MockServletContext;
  */
 public class TestPageLayoutService extends JetspeedTestCase
 {
-    private static final String CFIS = PageLayoutComponentImpl.CONTENT_FRAGMENT_ID_SEPARATOR;
+    private static final String CFIS = PageLayoutComponent.CONTENT_FRAGMENT_ID_SEPARATOR;
 
     private ComponentManager cm;
 
