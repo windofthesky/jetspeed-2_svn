@@ -371,13 +371,14 @@ public class JetspeedPortletFactory implements PortletFactory
             Map<String, Map<Locale, ResourceBundle>> portletResourceBundleCache = portletsResourceBundleCache.get(paName);
             if (portletResourceBundleCache == null)
             {
-                portletResourceBundleCache = Collections.synchronizedMap(new HashMap<String, Map<Locale, ResourceBundle>>());
-                portletsResourceBundleCache.put(paName, portletResourceBundleCache);
+                portletsResourceBundleCache.put(paName, Collections.synchronizedMap(new HashMap<String, Map<Locale, ResourceBundle>>()));
+                portletResourceBundleCache = portletsResourceBundleCache.get(paName);
             }
             Map<Locale, ResourceBundle> bundleCache = portletResourceBundleCache.get(pdName);
             if (bundleCache == null)
             {
-                bundleCache = Collections.synchronizedMap(new HashMap<Locale, ResourceBundle>());
+                portletResourceBundleCache.put(pdName, Collections.synchronizedMap(new HashMap<Locale, ResourceBundle>()));
+                bundleCache = portletResourceBundleCache.get(pdName);
             }
             bundle = bundleCache.get(locale);
             if (bundle == null)
@@ -753,5 +754,5 @@ public class JetspeedPortletFactory implements PortletFactory
             return false;
         }
     }
-
+    
 }
