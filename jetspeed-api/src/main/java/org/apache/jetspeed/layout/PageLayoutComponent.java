@@ -32,7 +32,7 @@ import org.apache.jetspeed.om.page.PageTemplate;
  */
 public interface PageLayoutComponent
 {
-    static final String CONTENT_FRAGMENT_ID_SEPARATOR = "$"; // javascript identifier safe separator
+    static final String CONTENT_FRAGMENT_ID_SEPARATOR = "__"; // javascript identifier and css selector safe separator
     
     /**
      * user standard property scope
