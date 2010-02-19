@@ -31,6 +31,7 @@ import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.impl.LayoutValve;
+import org.apache.jetspeed.layout.impl.PageLayoutComponentImpl;
 import org.apache.jetspeed.mocks.ResourceLocatingServletContext;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
@@ -52,7 +53,6 @@ import org.jmock.Mock;
 import org.jmock.core.Constraint;
 import org.jmock.core.InvocationMatcher;
 import org.jmock.core.constraint.IsEqual;
-import org.jmock.core.constraint.IsInstanceOf;
 import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
 import org.jmock.core.stub.ReturnStub;
 
@@ -70,6 +70,7 @@ import com.mockrunner.mock.web.MockServletContext;
  */
 public class TestPageLayoutService extends JetspeedTestCase
 {
+    private static final String CFIS = PageLayoutComponentImpl.CONTENT_FRAGMENT_ID_SEPARATOR;
 
     private ComponentManager cm;
 
@@ -176,28 +177,28 @@ public class TestPageLayoutService extends JetspeedTestCase
         ContentPage page = layoutManager.newContentPage(grid, null, null);
         rc.setPage(page);
         
-        ContentFragmentBean cfb = pageLayoutService.moveContentFragment(request, null, "dp-0.dp-00", null, null, "1", "0", null, null, null, null, null);
-        assertEquals(cfb.getId(), "dp-0.dp-00");
+        ContentFragmentBean cfb = pageLayoutService.moveContentFragment(request, null, "dp-0"+CFIS+"dp-00", null, null, "1", "0", null, null, null, null, null);
+        assertEquals(cfb.getId(), "dp-0"+CFIS+"dp-00");
         assertEquals(cfb.getProperties().get("column"), "0");
         assertEquals(cfb.getProperties().get("row"), "1");
         
-        cfb = pageLayoutService.moveContentFragment(request, null, "dp-0.dp-02", null, "right", null, null, null, null, null, null, null);
-        assertEquals(cfb.getId(), "dp-0.dp-02");
+        cfb = pageLayoutService.moveContentFragment(request, null, "dp-0"+CFIS+"dp-02", null, "right", null, null, null, null, null, null, null);
+        assertEquals(cfb.getId(), "dp-0"+CFIS+"dp-02");
         assertEquals(cfb.getProperties().get("column"), "1");
         assertEquals(cfb.getProperties().get("row"), "2");
 
-        cfb = pageLayoutService.moveContentFragment(request, null, "dp-0.dp-02", null, "down", null, null, null, null, null, null, null);
-        assertEquals(cfb.getId(), "dp-0.dp-02");
+        cfb = pageLayoutService.moveContentFragment(request, null, "dp-0"+CFIS+"dp-02", null, "down", null, null, null, null, null, null, null);
+        assertEquals(cfb.getId(), "dp-0"+CFIS+"dp-02");
         assertEquals(cfb.getProperties().get("column"), "1");
         assertEquals(cfb.getProperties().get("row"), "3");
         
-        cfb = pageLayoutService.moveContentFragment(request, null, "dp-0.dp-02", null, "up", null, null, null, null, null, null, null);
-        assertEquals(cfb.getId(), "dp-0.dp-02");
+        cfb = pageLayoutService.moveContentFragment(request, null, "dp-0"+CFIS+"dp-02", null, "up", null, null, null, null, null, null, null);
+        assertEquals(cfb.getId(), "dp-0"+CFIS+"dp-02");
         assertEquals(cfb.getProperties().get("column"), "1");
         assertEquals(cfb.getProperties().get("row"), "2");
         
-        cfb = pageLayoutService.moveContentFragment(request, null, "dp-0.dp-02", null, "left", null, null, null, null, null, null, null);
-        assertEquals(cfb.getId(), "dp-0.dp-02");
+        cfb = pageLayoutService.moveContentFragment(request, null, "dp-0"+CFIS+"dp-02", null, "left", null, null, null, null, null, null, null);
+        assertEquals(cfb.getId(), "dp-0"+CFIS+"dp-02");
         assertEquals(cfb.getProperties().get("column"), "0");
         assertEquals(cfb.getProperties().get("row"), "2");
         
@@ -214,8 +215,8 @@ public class TestPageLayoutService extends JetspeedTestCase
         ContentPage page = layoutManager.newContentPage(grid, null, null);
         rc.setPage(page);
 
-        ContentFragmentBean cfb = pageLayoutService.moveContentFragment(request, null, "dp-0.dp-10", "detach", null, null, null, "491.0", "14.0", null, null, null);
-        assertEquals(cfb.getId(), "dp-0.dp-10");
+        ContentFragmentBean cfb = pageLayoutService.moveContentFragment(request, null, "dp-0"+CFIS+"dp-10", "detach", null, null, null, "491.0", "14.0", null, null, null);
+        assertEquals(cfb.getId(), "dp-0"+CFIS+"dp-10");
         assertEquals(cfb.getProperties().get("column"), "1");
         assertEquals(cfb.getProperties().get("row"), "3");
         assertEquals(cfb.getProperties().get("x"), "491.0");

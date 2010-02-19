@@ -73,6 +73,8 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
 {
     private static final Logger log = LoggerFactory.getLogger(PageLayoutComponentImpl.class);
     
+    public static final String CONTENT_FRAGMENT_ID_SEPARATOR = "$"; // javascript identifier safe separator
+    
     private PageManager pageManager;
     
     /**
@@ -152,7 +154,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
                 contentFragmentImpl.setLayoutColumn(null, null, column);
             }
             pageRootContentFragmentImpl.getFragments().add(contentFragmentImpl);
-            String newContentFragmentId = pageRootContentFragmentImpl.getId()+"."+contentFragmentImpl.getFragment().getId();
+            String newContentFragmentId = pageRootContentFragmentImpl.getId()+CONTENT_FRAGMENT_ID_SEPARATOR+contentFragmentImpl.getFragment().getId();
             contentFragmentImpl.setId(newContentFragmentId);            
             return contentFragmentImpl;
         }
@@ -489,7 +491,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // update content context
             fromContentFragmentImpl.removeFragmentById(fragmentId);
             toContentFragmentImpl.getFragments().add(contentFragmentImpl);
-            String newContentFragmentId = toContentFragmentImpl.getId()+"."+contentFragmentImpl.getFragment().getId();
+            String newContentFragmentId = toContentFragmentImpl.getId()+CONTENT_FRAGMENT_ID_SEPARATOR+contentFragmentImpl.getFragment().getId();
             contentFragmentImpl.setId(newContentFragmentId);
         }
         catch (Exception e)
@@ -1693,7 +1695,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // construct content fragment to reflect fragment hierarchy
             Fragment fragmentFragment = (Fragment)fragment;
-            contentFragmentId = ((parentId != null) ? parentId+"."+fragmentFragment.getId() : fragmentFragment.getId());
+            contentFragmentId = ((parentId != null) ? parentId+CONTENT_FRAGMENT_ID_SEPARATOR+fragmentFragment.getId() : fragmentFragment.getId());
             contentFragmentImpl = newContentFragment(contentFragmentId, page, fragmentDefinitions, definition, fragmentFragment, null, null, locked);
             // set content fragment attributes
             mergeContentFragmentAttributes(contentFragmentImpl, fragmentFragment);
@@ -1704,14 +1706,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // consume page fragment and build fragment hierarchy from page
             PageFragment pageFragmentFragment = (PageFragment)fragment;
-            contentFragmentId = ((parentId != null) ? parentId+"."+pageFragmentFragment.getId() : pageFragmentFragment.getId());
+            contentFragmentId = ((parentId != null) ? parentId+CONTENT_FRAGMENT_ID_SEPARATOR+pageFragmentFragment.getId() : pageFragmentFragment.getId());
             BaseFragmentElement pageRootFragment = page.getRootFragment();
             if (pageRootFragment instanceof FragmentReference)
             {
                 // consume top level page fragment reference and build fragment
                 // hierarchy from referenced fragment
                 FragmentReference fragmentReferenceFragment = (FragmentReference)pageRootFragment;
-                contentFragmentId += "."+fragmentReferenceFragment.getId();
+                contentFragmentId += CONTENT_FRAGMENT_ID_SEPARATOR+fragmentReferenceFragment.getId();
                 Fragment [] fragmentFragment = new Fragment[]{null};
                 contentFragmentImpl = newContentFragment(contentFragmentId, page, fragmentDefinitions, page, fragmentReferenceFragment, fragmentFragment);
                 // inherit page fragment attributes
@@ -1727,7 +1729,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 // construct content fragment to reflect page fragment hierarchy
                 Fragment fragmentFragment = (Fragment)pageRootFragment;
-                contentFragmentId += "."+fragmentFragment.getId();
+                contentFragmentId += CONTENT_FRAGMENT_ID_SEPARATOR+fragmentFragment.getId();
                 contentFragmentImpl = newContentFragment(contentFragmentId, page, fragmentDefinitions, page, fragmentFragment, null, null, false);
                 // inherit page fragment attributes
                 mergeContentFragmentAttributes(contentFragmentImpl, pageFragmentFragment);
@@ -1742,7 +1744,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // consume fragment reference and build fragment hierarchy from
             // referenced fragment
             FragmentReference fragmentReferenceFragment = (FragmentReference)fragment;
-            contentFragmentId = ((parentId != null) ? parentId+"."+fragmentReferenceFragment.getId() : fragmentReferenceFragment.getId());
+            contentFragmentId = ((parentId != null) ? parentId+CONTENT_FRAGMENT_ID_SEPARATOR+fragmentReferenceFragment.getId() : fragmentReferenceFragment.getId());
             Fragment [] fragmentFragment = new Fragment[]{null};
             contentFragmentImpl = newContentFragment(contentFragmentId, page, fragmentDefinitions, definition, fragmentReferenceFragment, fragmentFragment);
             // inherit fragment reference attributes
@@ -1774,7 +1776,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         if ((fragmentDefinition != null) && (fragmentDefinition.getRootFragment() instanceof Fragment))
         {
             fragmentFragment[0] = (Fragment)fragmentDefinition.getRootFragment();
-            String contentFragmentId = parentId+"."+fragmentFragment[0].getId();                
+            String contentFragmentId = parentId+CONTENT_FRAGMENT_ID_SEPARATOR+fragmentFragment[0].getId();                
             return newContentFragment(contentFragmentId, page, fragmentDefinitions, fragmentDefinition, fragmentFragment[0], definition, fragmentReference, true);
         }
         return null;
