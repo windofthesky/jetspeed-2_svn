@@ -194,7 +194,7 @@ YUI.add('jetui-portal', function(Y) {
                 toolbar.setStyle('display', 'none');
                 state = 'closed';
             }
-            var windowId = (toolbar == portal.jstbLeft) ? 'template-top2.jstbLeft' : 'template-top2.jstbRight'; // FIXME: don't hard code template
+            var windowId = (toolbar == portal.jstbLeft) ? 'template-top2__jstbLeft' : 'template-top2__jstbRight'; // FIXME: don't hard code template
             var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/mod/?_type=json";
             uri += "&state=" + state;
             var config = {
