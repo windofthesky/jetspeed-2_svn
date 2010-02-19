@@ -71,10 +71,10 @@ public interface ContentFragment
     /************** BaseElement **************/
 
     /**
-     * Returns the unique Id of this element. This id is guaranteed to be unique
-     * from the complete portal and is suitable to be used as a unique key.
+     * Returns the unique fully qualified id of this element. This id is guaranteed
+     * to be unique within the portal and is suitable to be used as a key.
      *
-     * @return the unique id of this element.
+     * @return the unique fully qualified id of this element.
      */
     String getId();
 
@@ -408,6 +408,16 @@ public interface ContentFragment
     List getFragments();
     
     /************** ContentFragment **************/
+
+    /**
+     * Returns the unique fragment id of this element. This id is guaranteed to be
+     * unique per fragment within the portal and is suitable to be used as a key.
+     * Note that multiple content fragments can have the same fragment id since
+     * a single fragment may be rendered multiple times within a page.
+     *
+     * @return the unique fragment id of this element.
+     */
+    String getFragmentId();
 
     /**
      * 

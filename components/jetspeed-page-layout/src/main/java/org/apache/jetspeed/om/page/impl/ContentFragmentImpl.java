@@ -232,6 +232,14 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#getFragmentId()
+     */
+    public String getFragmentId()
+    {
+        return ((fragment != null) ? fragment.getId() : null);
+    }
+    
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#getFragments()
      */
     public List getFragments()

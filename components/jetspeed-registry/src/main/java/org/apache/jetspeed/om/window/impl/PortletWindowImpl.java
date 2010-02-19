@@ -57,6 +57,7 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Render
     private static final long serialVersionUID = 6578938580906866201L;
     
     private String id;
+    private String portletEntityId;
     private ContentFragment fragment;
     private Map<String, Object> attributes;
     
@@ -90,6 +91,7 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Render
     {
         this.requestContext = requestContext;
         this.id = fragment.getId();
+        this.portletEntityId = fragment.getFragmentId();
         this.fragment = fragment;
         this.pd = pd;
         this.valid = pd != null;
@@ -102,6 +104,8 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Render
 
     public String getWindowId()
     {
+        // return unique content fragment id that will
+        // identify a unique portlet window per page
         return id;
     }
 
@@ -117,7 +121,11 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Render
     
     public String getPortletEntityId()
     {
-        return id;
+        // return unique fragment id that will identify
+        // a unique fragment per portal that may appear
+        // in multiple pages or potentially multiple times
+        // in a single page
+        return portletEntityId;
     }
 
     public String toString()
@@ -127,6 +135,8 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Render
     
     public String getStringId()
     {
+        // return unique content fragment id that will
+        // identify a unique portlet window per page
         return id;
     }
     
