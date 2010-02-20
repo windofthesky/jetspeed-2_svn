@@ -1141,7 +1141,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 if (height != fragment.getLayoutHeight())
                 {
-                    fragment.setLayoutWidth(scope, scopeValue, height);
+                    fragment.setLayoutHeight(scope, scopeValue, height);
                     update = true;
                 }
             }
