@@ -243,8 +243,8 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 		    	box.setStyle('height', height);
 	    	}	    	
 	    	if (!Y.Lang.isNull(content)) {
-		    	content.setStyle('width', (drag.mouseXY[0] - left - 4) + "px"); // TODO: calculate padding, border (4)
-		    	content.setStyle('height', height );
+		    	content.setStyle('width', (drag.mouseXY[0] - left - portal.margins[1]) + "px"); 
+		    	content.setStyle('height', (drag.mouseXY[1] - top - portal.margins[2]) + "px");
 	    	}	    	
 	    	var region = dragParent.get('region');
         }

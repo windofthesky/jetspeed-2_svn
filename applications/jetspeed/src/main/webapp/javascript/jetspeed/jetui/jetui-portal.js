@@ -146,6 +146,11 @@ YUI.add('jetui-portal', function(Y) {
         activeWindow : null,
         
         /**
+         * Margins (resizeHandler, PContent left margin, PContent top margin
+         */
+        margins: [7, 4, 0],
+        
+        /**
          * Construction logic executed during instantiation.
          *
          * @method initializer
@@ -156,6 +161,7 @@ YUI.add('jetui-portal', function(Y) {
                 this.portalContextPath = cfg.portalContextPath;
                 this.portalServletPath = cfg.portalServletPath;
                 this.portalPagePath = cfg.portalPagePath;
+                this.margins = cfg.margins;
             }
         },
         
@@ -823,7 +829,8 @@ YUI.add('jetui-portal', function(Y) {
 			    	return;
 			    }
 	 		});
-	    	var mt = (mtt*2) + 7; // 7 is approx the diameter of the handle image
+        	var portal = JETUI_YUI.getPortalInstance();
+	 		var mt = (mtt*2) + portal.margins[0]; // TODO: use array index constants
 	    	return mt;
         },
         

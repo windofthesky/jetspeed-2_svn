@@ -15,12 +15,12 @@
     border: 1px dotted black;
 }
 .jstbToggle1 {
-    background:transparent url("/jetspeed/jetui/css/layout_sprite.png") no-repeat -20px -120px;
+    background:transparent url("layout_sprite.png") no-repeat -20px -120px;
 	height: 14px;
     width: 18px;
 }
 .jstbToggle2 {
-    background:transparent url("/jetspeed/jetui/css/layout_sprite.png") no-repeat -20px -140px;
+    background:transparent url("layout_sprite.png") no-repeat -20px -140px;
 	height: 14px;
     width: 18px;    
 }
@@ -37,7 +37,7 @@
    cursor: move;
 }
 .resizeHandle {
-    background:transparent url("/jetspeed/jetui/css/layout_sprite.png") no-repeat -20px -60px;
+    background:transparent url("layout_sprite.png") no-repeat -20px -60px;
 	height:14px;
     width: 14px;
     cursor: move;    

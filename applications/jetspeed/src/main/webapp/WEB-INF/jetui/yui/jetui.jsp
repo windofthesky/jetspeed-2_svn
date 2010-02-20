@@ -103,7 +103,8 @@ var JetuiConfiguration = {
 	dragHandleStyle: "<%=pc.getString(PortalConfigurationConstants.JETUI_STYLE_DRAG_HANDLE)%>",
 	portalContextPath: "<%=portalContextPath%>",
 	portalServletPath: "<%=portalServletPath%>",
-	portalPagePath: "<%=portalPagePath%>"
+	portalPagePath: "<%=portalPagePath%>",
+	margins: [7, 4, 0]	
 };
 var JETUI_YUI = {
   base: "<%=request.getContextPath()%>/javascript/yui/build/",
