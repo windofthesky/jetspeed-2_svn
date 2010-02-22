@@ -467,6 +467,8 @@ text-decoration: underline;
 .layout-purpleplanet .navmenu li.expanded { cursor: default; background: url(../../images/icon-expanded.png) no-repeat; }
 .layout-purpleplanet .navmenu li li { }
 .layout-purpleplanet .navmenu li.closed ul { display: none; }
+.layout-purpleplanet .navmenu .dropdown { display: inline-block; border: none; cursor: pointer; background: url(../../images/treedropdown.png); background-position: 0px 0px; width: 15px; height: 16px; margin-left: 10px;}
+.layout-purpleplanet .navmenu .dropdownActive { display: inline-block; border: none; cursor: pointer; background: url(../../images/treedropdown.png); background-position: 0px -16px; width: 15px; height: 16px; margin-left: 10px;}
 
 .layout-purpleplanet .default-tabs{margin: 1px; padding: 0px;}
 .layout-purpleplanet .default-tabs ul{display: block; float: left;}

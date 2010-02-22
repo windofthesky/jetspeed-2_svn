@@ -468,6 +468,8 @@ text-decoration: underline;
 .layout-jetspeed .navmenu li.expanded { cursor: default; background: url(../../images/icon-expanded.png) no-repeat; }
 .layout-jetspeed .navmenu li li { }
 .layout-jetspeed .navmenu li.closed ul { display: none; }
+.layout-jetspeed .navmenu .dropdown { display: inline-block; border: none; cursor: pointer; background: url(../../images/treedropdown.png); background-position: 0px 0px; width: 15px; height: 16px; margin-left: 10px;}
+.layout-jetspeed .navmenu .dropdownActive { display: inline-block; border: none; cursor: pointer; background: url(../../images/treedropdown.png); background-position: 0px -16px; width: 15px; height: 16px; margin-left: 10px;}
 
 .layout-jetspeed .default-tabs{margin: 1px; padding: 0px;}
 .layout-jetspeed .default-tabs ul{display: block; float: left;}
