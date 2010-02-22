@@ -20,30 +20,21 @@ limitations under the License.
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
  
-  <title>Welcome to Jetspeed 2</title>
-  <metadata name="title" xml:lang="fr">Bienvenue a Jetspeed</metadata>
-  <metadata name="title" xml:lang="ja">Jetspeed 2 へようこそ</metadata>
-  <metadata name="title" xml:lang="es">¡Bienvenido a Jetspeed 2!</metadata>
-  <metadata name="title" xml:lang="hu">Köszönti a Jetspeed 2!</metadata>
-  <metadata name="title" xml:lang="zh">欢迎来到Jetspeed 2</metadata>
-  <metadata name="title" xml:lang="zh-TW">歡迎來到Jetspeed 2</metadata>
-  <metadata name="title" xml:lang="ko">Jetspeed 2 에 오신 것을 환영합니다</metadata>
+  <title>About Jetspeed</title>
 
-  	<fragment id="jsmin-2" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    	<fragment id="jsmin-3" type="portlet" name="j2-admin::LoginPortlet">
-      		<property name="row" value="0" />
-      		<property name="column" value="0" />
+   <fragment id="jsabout-10" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
+    	<fragment id="jsabout-11" type="portlet" name="j2-admin::WelcomeToJetspeed">
+      		<property layout="TwoColumns" name="row" value="0" />
+      		<property layout="TwoColumns" name="column" value="0" />
     	</fragment>                                
-    	<fragment id="jsmin-4" type="portlet" name="j2-admin::LocaleSelector">
-      		<property name="row" value="0" />
-      		<property name="column" value="1" />
+    	<fragment id="jsbout-12" type="portlet" name="j2-admin::AboutJetspeed">
+      		<property layout="TwoColumns" name="row" value="0" />
+      		<property layout="TwoColumns" name="column" value="1" />
     	</fragment>                                
-    	<fragment id="jsmin-5" type="portlet" name="j2-admin::ForgottenPasswordPortlet">
-      		<property name="row" value="1" />
-      		<property name="column" value="1" />
-    	</fragment>    	                                
-   </fragment>
+    </fragment>
+    
   <security-constraints>
     <security-constraints-ref>public-view</security-constraints-ref>
   </security-constraints>
+    
 </page>
