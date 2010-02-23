@@ -148,7 +148,7 @@ YUI.add('jetui-portal', function(Y) {
         /**
          * Margins (resizeHandler, PContent left margin, PContent top margin
          */
-        margins: [7, 4, 0],
+        margins: [7, 4, 0, 17],
         
         /**
          * Construction logic executed during instantiation.
@@ -400,9 +400,11 @@ YUI.add('jetui-portal', function(Y) {
 			        	}
 		        	}
 	            }
-	            portal.addResizeHandle(window);
+	            portal.addResizeHandle(window, true);
 		        var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
 		        uri += "&x=" + x + "&y=" + y + "&layout=detach";
+		        var region = window.get('region');		        
+		        uri += "&w=" + (region.right - region.left) + "&h=" + (region.bottom - region.top);
 		        var config = {
                       on: { complete: portal.onMoveComplete },
                       method: "PUT",
@@ -475,8 +477,9 @@ YUI.add('jetui-portal', function(Y) {
 	                i++;
 	            }
 	            layout.appendChild(window);
-	            portal.removeResizeHandle(window);
-	            portal.removeWidthHeight(window);
+	            var pcontent =  portal.findChildByClass(window, ['portlet', 'PContentBorder', 'PContent'], 0);
+	            portal.removeResizeHandle(pcontent);
+	            portal.removeWidthHeight(pcontent);
 	            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
 	            uri += "&row=" + row + "&col=" + col + "&layout=attach";
 	            var config = {
@@ -542,7 +545,24 @@ YUI.add('jetui-portal', function(Y) {
             }        	
             // TODO: handle toolbar moves
         },
-                
+
+        /**
+         * @method resizePortlet persist the resize operation to the persistent store over restful put request
+         */
+        resizePortlet : function(node, height, width) {
+            var portal = JETUI_YUI.getPortalInstance();
+            var windowId =  node.getAttribute('id');            
+            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
+            uri += "&w=" + width + "&h=" + height;
+            var config = {
+                    on: { complete: portal.onMoveComplete },
+                    method: "PUT",
+                    headers: { "X-Portal-Path" : portal.portalPagePath },
+                    arguments: { complete: [ windowId ] }
+                };
+            var request = Y.io(uri, config);
+        },
+        
         reallocateColumn : function(column) {
     	    var columns = Y.Node.all(JetuiConfiguration.layoutStyle); 
     	    columns.each(function(v, k) {
@@ -759,16 +779,24 @@ YUI.add('jetui-portal', function(Y) {
         /**
          * @method addResizeHandle
          */        
-        addResizeHandle : function(v) {
+        addResizeHandle : function(v, alwaysAdd) {
             var portal = JETUI_YUI.getPortalInstance();        	
-        	var region = v.get('region');        	
-	        var mt = portal.calculateResizeMargin(v);
-	        var rh = Y.Node.create("<div class='resizeHandle'/>");
-        	rh.setStyle('position', 'absolute');
-			rh.setStyle('top', (region.bottom - region.top - mt) + "px");
-			rh.setStyle('left', (region.right - region.left - mt) + "px");        				        
-	        v.appendChild(rh);		        
-	        rh.data = 'resize';
+        	var pcontent = portal.findChildByClass(v, ['portlet', 'PContentBorder', 'PContent'], 0);
+        	var region = pcontent.get('region');
+        	var rh = portal.findChildByClass(pcontent, ['resizeHandle'], 0);
+	    	if (Y.Lang.isNull(rh)) {
+	    		if (alwaysAdd == false) {
+	    			return;
+	    		}
+		        var rh = Y.Node.create("<div class='resizeHandle'/>");
+	        	rh.setStyle('position', 'absolute');
+	        	pcontent.setStyle('height', (region.bottom - region.top) + "px")
+				pcontent.setStyle('width', (region.right - region.left) + "px");        				        
+	        	rh.setStyle('top', (region.bottom - region.top + portal.margins[3]) + "px");
+				rh.setStyle('left', (region.right - region.left) + "px");        				        
+		        pcontent.appendChild(rh);	    		
+	    	}
+	        rh.data = { kind: 'resize', window: v, parent: pcontent };
 	        var rhDrag = new Y.DD.Drag({
 	            node: rh,
 	            groups: [],
@@ -793,25 +821,8 @@ YUI.add('jetui-portal', function(Y) {
         },
 
         removeWidthHeight : function(v) {
-	 		v.get('children').each(function(v2,k2) {
-	 			var cl = v2.getAttribute('class');
-			    if (cl.indexOf('portlet') == 0) {
-			 		v2.get('children').each(function(v3,k3) {
-			 			var cl = v3.getAttribute('class');
-					    if (cl.indexOf('PContentBorder') == 0) {
-					    	v3.setStyle('width', '');
-					    	v3.setStyle('height', '');
-					 		v3.get('children').each(function(v4,k4) {
-					 			var cl = v4.getAttribute('class');
-							    if (cl.indexOf('PContent') == 0) {
-							    	v4.setStyle('width', '');
-							    	v4.setStyle('height', '');
-							    }
-					 		});
-					    }
-			 		});
-			    }
-	 		});        	        	
+	    	v.setStyle('width', '');
+	    	v.setStyle('height', '');
         },
         
         /**
@@ -845,7 +856,7 @@ YUI.add('jetui-portal', function(Y) {
 			     if (cl.indexOf(styles[index]) == 0) {
 			    	 if (index + 1 < styles.length) {
 			    		 index = index + 1;
-			    		 var res = portal.findChildByClass(v, styles, 1);
+			    		 var res = portal.findChildByClass(v, styles, index);
           	             if (!Y.Lang.isNull(res)) {
           	            	 result =  res;
           	            	 return result;

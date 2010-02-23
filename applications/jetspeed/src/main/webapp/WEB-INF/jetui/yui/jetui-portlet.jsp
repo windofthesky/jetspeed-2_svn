@@ -29,7 +29,10 @@ limitations under the License.
 <%@ page import="org.apache.jetspeed.decoration.Decoration" %>
 <%@ page import="org.apache.jetspeed.decoration.DecoratorAction" %>
 <%@ page import="org.apache.jetspeed.PortalReservedParameters" %>
+<%@ page import="org.apache.jetspeed.container.PortletWindow" %>
+<%@ page import="javax.portlet.WindowState" %>
 <%
+	RequestContext rc = (RequestContext)request.getAttribute(RequestContext.REQUEST_PORTALENV);
     String content = (String)request.getAttribute("content");
     String decorator = (String)request.getAttribute("decorator");
     Boolean detached = (Boolean)request.getAttribute("detached");    
@@ -83,7 +86,32 @@ if (request.getUserPrincipal() != null && fragment.getDecoration().getActions().
                 </div>
               </div>
                <div class="PContentBorder">
-                 <div class="PContent"><%=content%></div>
+<% if (request.getUserPrincipal() != null && detached != null) 
+{
+	PortletWindow win = rc.getPortletWindow(fragment.getId());
+	if (win.getWindowState().equals(WindowState.MINIMIZED))
+	{
+%>		
+        <div class="PContent"></div>                
+<%	
+	}
+	else
+	{
+		String x = fragment.getProperty(ContentFragment.X_PROPERTY_NAME);
+		String y = fragment.getProperty(ContentFragment.Y_PROPERTY_NAME);	
+		String h = fragment.getProperty(ContentFragment.HEIGHT_PROPERTY_NAME);
+		String w = fragment.getProperty(ContentFragment.WIDTH_PROPERTY_NAME);
+		if (x == null) x = "0"; if (y == null) y = "0";
+		if (h == null) h = "100"; if (w == null) w = "150";
+		int top = new Double(Double.parseDouble(h)).intValue() + 17; // FIXME: hardcoded 
+		double left = new Double(Double.parseDouble(w)).intValue();
+%>                 
+                 <div class="PContent" style='height: <%=h%>px; width: <%=w%>px;'><%=content%>                
+                    <div class="resizeHandle" style='position: absolute; top: <%=top%>px; left: <%=left%>px;'></div>
+<% } } else { %>
+                 <div class="PContent"><%=content%>                
+<% } %>                    
+                 </div>
                </div>
             </div>
           </div>

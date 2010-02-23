@@ -80,7 +80,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 		        dragGroups = ['detached'],	        
 		        dragMode = 'point';
 		        dropGroups = [];
-		        portal.addResizeHandle(v);
+		        portal.addResizeHandle(v, false);
 	        }
 	        if (portlet.get("tool") == false)
 	        {
@@ -167,18 +167,24 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
     });
 	
     Y.DD.DDM.on('drag:end', function(e) {
-        var drag = e.target;
+    	var drag = e.target;
         if (drag.target) {
             drag.target.set('locked', false);
         }
+        var portal = JETUI_YUI.getPortalInstance();
         var srcNode = drag.get('node');
-        if (srcNode.data == 'resize') {
-	        var dragParent = srcNode.get('parentNode');
+        if (srcNode.data.kind == 'resize') {
+	        var dragParent = srcNode.data.parent; // DST: srcNode.get('parentNode');
 	        var region = dragParent.get('region');
-	        var mt = portal.calculateResizeMargin(dragParent);
-        	srcNode.setStyle('top', (region.bottom - region.top - mt) + "px");
-			srcNode.setStyle('left', (region.right - region.left - mt) + "px");        				        
-        	srcNode.setStyle('visibility', '');        	
+	    	var height = parseInt(dragParent.getStyle('height'));
+	    	var width = parseInt(dragParent.getStyle('width'));
+	        var top = height + portal.margins[3];
+	        var left = width;
+	        srcNode.setStyle('top', top + "px");
+	        srcNode.setStyle('left', left + "px");
+	        srcNode.set('innerHTML', '');
+        	srcNode.setStyle('visibility', '');   
+        	portal.resizePortlet(srcNode.data.window, height, width);
         	return;
         }
         if (drag.get('node').data.get("detached"))
@@ -201,11 +207,11 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
     	var drag = e.target;
         var dragNode = drag.get('dragNode');
         var srcNode = drag.get('node');
-        if (srcNode.data == 'resize') {
-        	dragNode.set('innerHTML', srcNode.get('innerHTML'));
+        if (srcNode.data.kind == 'resize') {
+        	dragNode.set('innerHTML', '<b>...Move</b>'); //srcNode.get('innerHTML'));
         	srcNode.setStyle('visibility', 'hidden');
-            var dragParent = srcNode.get('parentNode');        	
-            portal.activateWindow(dragParent);                	                	
+            var dragWindow = srcNode.data.window; //srcNode.get('parentNode');        	
+            portal.activateWindow(dragWindow);                	                	
         	return;
     	}
         portal.activateWindow(srcNode);                	                	
@@ -230,23 +236,30 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
     Y.DD.DDM.on('drag:drag', function(e) {
     	var drag = e.target;
         var srcNode = drag.get('node');    	
-        if (srcNode.data == 'resize') {
-	        var dragParent = drag.get('node').get('parentNode');
-	        var box = portal.findChildByClass(dragParent, ['portlet ', 'PContentBorder'], 0);
-	        var content = portal.findChildByClass(box, ['PContent'], 0);	        
-	    	var left = parseInt(dragParent.getStyle('left'));
-	    	var top =  parseInt(dragParent.getStyle('top'));
+        if (srcNode.data.kind == 'resize') {
+	        var dragWindow = srcNode.data.window; // DST: drag.get('node').get('parentNode');
+	        var box = srcNode.data.parent.get('parentNode');
+	        var content = srcNode.data.parent;
+//	        var box = portal.findChildByClass(dragParent, ['portlet ', 'PContentBorder'], 0);
+//	        var content = portal.findChildByClass(box, ['PContent'], 0);	        
+	    	var left = parseInt(dragWindow.getStyle('left'));
+	    	var top =  parseInt(dragWindow.getStyle('top'));
 	    	var width = (drag.mouseXY[0] - left) + "px";
 	    	var height = (drag.mouseXY[1] - top) + "px";
-	    	if (!Y.Lang.isNull(box)) {
-		    	box.setStyle('width', width);
-		    	box.setStyle('height', height);
-	    	}	    	
+//	    	dragWindow.setStyle('width', width);
+//	    	dragWindow.setStyle('height', height);
+	    	
+//	    	if (!Y.Lang.isNull(box)) {
+//		    	box.setStyle('width', width);
+//		    	box.setStyle('height', height);
+//	    	}	    	
 	    	if (!Y.Lang.isNull(content)) {
-		    	content.setStyle('width', (drag.mouseXY[0] - left - portal.margins[1]) + "px"); 
-		    	content.setStyle('height', (drag.mouseXY[1] - top - portal.margins[2]) + "px");
+//		    	content.setStyle('width', (drag.mouseXY[0] - left - portal.margins[1]) + "px"); 
+//		    	content.setStyle('height', (drag.mouseXY[1] - top - portal.margins[2]) + "px");
+		    	content.setStyle('width', width);
+		    	content.setStyle('height', height);
 	    	}	    	
-	    	var region = dragParent.get('region');
+//	    	var region = dragParent.get('region');
         }
     });
     

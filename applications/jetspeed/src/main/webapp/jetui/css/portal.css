@@ -38,8 +38,8 @@
 }
 .resizeHandle {
     background:transparent url("layout_sprite.png") no-repeat -20px -60px;
-	height:14px;
-    width: 14px;
-    cursor: move;    
+	height:10px;
+    width: 9px;
+    cursor: move;
 }
 

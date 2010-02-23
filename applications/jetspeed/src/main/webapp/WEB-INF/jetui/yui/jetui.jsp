@@ -104,7 +104,7 @@ var JetuiConfiguration = {
 	portalContextPath: "<%=portalContextPath%>",
 	portalServletPath: "<%=portalServletPath%>",
 	portalPagePath: "<%=portalPagePath%>",
-	margins: [7, 4, 0]	
+	margins: [7, 4, 0, 17]	
 };
 var JETUI_YUI = {
   base: "<%=request.getContextPath()%>/javascript/yui/build/",
@@ -298,6 +298,8 @@ for (ContentFragment fragment : columnLayout.getDetachedPortlets())
 {
 	String x = fragment.getProperty(ContentFragment.X_PROPERTY_NAME);
 	String y = fragment.getProperty(ContentFragment.Y_PROPERTY_NAME);
+	String h = fragment.getProperty(ContentFragment.HEIGHT_PROPERTY_NAME);
+	String w = fragment.getProperty(ContentFragment.WIDTH_PROPERTY_NAME);
 	int row = fragment.getLayoutRow();
     int col = fragment.getLayoutColumn();	
     String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
@@ -305,7 +307,7 @@ for (ContentFragment fragment : columnLayout.getDetachedPortlets())
     if (option == Decoration.ActionsOption.HIDE) // TODO: HOVER, DROP DOWN not yet implemented
     {
 %>
-   <div id='<%=fragment.getId()%>' detached='true' locked='<%=fragment.isLocked()%>' name='<%=fragment.getName()%>' column='<%=col%>' row='<%=row%>' x='<%=x%>' y='<%=y%>' style='position: absolute; top: <%=x%>px; left: <%=y%>px;'>
+   <div id='<%=fragment.getId()%>' detached='true' locked='<%=fragment.isLocked()%>' name='<%=fragment.getName()%>' column='<%=col%>' row='<%=row%>' x='<%=x%>' y='<%=y%>' style='position: absolute; top: <%=x%>px; left: <%=y%>px; height: <%=h%>px; width: <%=w%>px;'>
 <%=content%>
    </div>			    
 <% } else {   
