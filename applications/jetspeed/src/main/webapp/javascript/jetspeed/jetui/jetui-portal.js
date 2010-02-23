@@ -803,7 +803,7 @@ YUI.add('jetui-portal', function(Y) {
 	        	pcontent.setStyle('height', (region.bottom - region.top) + "px")
 				pcontent.setStyle('width', (region.right - region.left) + "px");        				        
 	        	rh.setStyle('top', (region.bottom - region.top + portal.margins[3]) + "px");
-				rh.setStyle('left', (region.right - region.left) + "px");        				        
+				rh.setStyle('left', (region.right - region.left + portal.margins[0]) + "px");        				        
 		        pcontent.appendChild(rh);	    		
 	    	}
 	        rh.data = { kind: 'resize', window: v, parent: pcontent };
