@@ -151,6 +151,16 @@ YUI.add('jetui-portal', function(Y) {
         margins: [7, 4, 0, 17],
         
         /**
+         * Modal window base z-index
+         */
+        modalWindowBaseZIndex : 16777271,
+        
+        /**
+         * Screen mask element z-index
+         */
+        screenMaskZIndex : 16777271 - 1,
+        
+        /**
          * Construction logic executed during instantiation.
          *
          * @method initializer
@@ -921,6 +931,27 @@ YUI.add('jetui-portal', function(Y) {
             	}
             });            	
             return next + 1;
+        },
+        
+        /**
+         * @method setScreenMask
+         */
+        setScreenMask : function(mask) {
+            var maskNode = Y.one("#jetspeedScreenMaskNode");
+            if (!mask) {
+                if (maskNode) {
+                    maskNode.setStyle("display", "none");
+                }
+            } else {
+                if (!maskNode) {
+                    maskNode = Y.Node.create("<div id='jetspeedScreenMaskNode'></div>");
+                    maskNode.setStyles( { "display": "none", 
+                        "position": "fixed", "overflow": "hidden", "left": "0px", "top": "0px", "width": "100%", "height": "100%", "z-index": 16777270, 
+                        "padding": "0px", "margin": "0px", "background": "rgba(255, 255, 255, 0.5)" } );
+                    Y.one("BODY").appendChild(maskNode);
+                }
+                maskNode.setStyle("display", "");
+            }
         }
     });
 
