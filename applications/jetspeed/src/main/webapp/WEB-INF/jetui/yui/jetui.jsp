@@ -104,7 +104,7 @@ var JetuiConfiguration = {
 	portalContextPath: "<%=portalContextPath%>",
 	portalServletPath: "<%=portalServletPath%>",
 	portalPagePath: "<%=portalPagePath%>",
-	margins: [7, 4, 0, 17]	
+	margins: [0, 4, 0, 17]	
 };
 var JETUI_YUI = {
   base: "<%=request.getContextPath()%>/javascript/yui/build/",
