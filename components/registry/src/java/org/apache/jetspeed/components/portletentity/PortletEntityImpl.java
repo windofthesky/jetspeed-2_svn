@@ -42,9 +42,11 @@ import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.om.common.portlet.MutablePortletEntity;
 import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.om.common.portlet.PrincipalAware;
+import org.apache.jetspeed.om.common.preference.PreferenceSetComposite;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.portlet.impl.FragmentPortletDefinition;
 import org.apache.jetspeed.om.preference.FragmentPreference;
+import org.apache.jetspeed.om.preference.impl.FragmentPreferenceSet;
 import org.apache.jetspeed.om.preference.impl.PrefsPreference;
 import org.apache.jetspeed.om.preference.impl.PrefsPreferenceSetImpl;
 import org.apache.jetspeed.om.window.impl.PortletWindowListImpl;
@@ -78,7 +80,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     protected static RequestContextComponent rcc;
     protected static PageManager pm;
     
-    protected PrefsPreferenceSetImpl pagePreferenceSet;
+    protected PreferenceSetComposite pagePreferenceSet;
     protected Map perPrincipalPrefs = Collections.synchronizedMap(new HashMap());
     private PortletApplicationEntity applicationEntity = null;
     private PortletWindowList portletWindows = new PortletWindowListImpl();
@@ -172,39 +174,14 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
     
     private PreferenceSet getPreferenceSetFromPage()
     {
-        PrefsPreferenceSetImpl preferenceSet = this.pagePreferenceSet;
+        PreferenceSetComposite preferenceSet = this.pagePreferenceSet;
         
-        try
+        if (preferenceSet == null || !dirty)
         {
-            if (preferenceSet == null || !dirty)
-            {
-                String prefNodePath = MutablePortletEntity.PORTLET_ENTITY_ROOT + "/" + 
-                                            getId() +"/"+ PrefsPreference.PORTLET_PREFERENCES_ROOT;
-
-                Preferences prefNode = Preferences.systemRoot().node(prefNodePath);
-                preferenceSet = new PrefsPreferenceSetImpl(prefNode);
-                this.pagePreferenceSet = preferenceSet;
-                
-                List fragmentPreferences = this.fragment.getPreferences();
-                
-                if (fragmentPreferences != null)
-                {
-                    for (Iterator it = fragmentPreferences.iterator(); it.hasNext(); )
-                    {
-                        FragmentPreference preference = (FragmentPreference) it.next();
-                        List preferenceValues = preference.getValueList();
-                        preferenceSet.add(preference.getName(), preferenceValues);
-                    }
-                }
-                dirty = true;
-            }
-        }
-        catch (BackingStoreException e)
-        {
-            String msg = "Preference backing store failed: " + e.toString();
-            IllegalStateException ise = new IllegalStateException(msg);
-            ise.initCause(e);
-            throw ise;
+            preferenceSet = new FragmentPreferenceSet(fragment, pm);
+            
+            this.pagePreferenceSet = preferenceSet;
+            dirty = true;
         }
         return preferenceSet;
     }
@@ -370,7 +347,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
 
     public void reset() throws IOException
     {
-        dirty = true;
+        dirty = false;
         getPreferenceSet(getPrincipal());        
     }
 
@@ -567,7 +544,7 @@ public class PortletEntityImpl implements MutablePortletEntity, PrincipalAware, 
      * <p>
      * preRemoval
      * </p>
-     *	not implemented.
+     *  not implemented.
      *
      * @see org.apache.jetspeed.components.persistence.store.RemovalAware#preRemoval(org.apache.jetspeed.components.persistence.store.PersistenceStore)
      * @param store
