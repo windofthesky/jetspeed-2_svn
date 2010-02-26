@@ -179,7 +179,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 	    	var height = parseInt(dragParent.getStyle('height'));
 	    	var width = parseInt(dragParent.getStyle('width'));
 	        var top = height + portal.margins[3];
-	        var left = width;
+	        var left = width + portal.margins[0];
 	        srcNode.setStyle('top', top + "px");
 	        srcNode.setStyle('left', left + "px");
 	        srcNode.set('innerHTML', '');
