@@ -18,6 +18,7 @@
 package org.apache.jetspeed.ui;
 
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +28,9 @@ import javax.servlet.RequestDispatcher;
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.decoration.DecorationFactory;
+import org.apache.jetspeed.decoration.LayoutDecoration;
+import org.apache.jetspeed.decoration.PortletDecoration;
 import org.apache.jetspeed.decoration.Theme;
 import org.apache.jetspeed.headerresource.HeaderResource;
 import org.apache.jetspeed.headerresource.HeaderResourceFactory;
@@ -54,15 +58,17 @@ public class Jetui
     private HeaderResourceFactory headerFactory;
     private PageLayoutComponent pageLayoutComponent;
     private PortalConfiguration pc;
+    private DecorationFactory decorationFactory;
     private String layoutTemplate;
     
     public Jetui(PortletRenderer renderer, HeaderResourceFactory headerFactory, PageLayoutComponent pageLayoutComponent, 
-            PortalConfiguration pc, String layoutTemplate)
+            PortalConfiguration pc, DecorationFactory decorationFactory, String layoutTemplate)
     {
         this.renderer = renderer;
         this.headerFactory = headerFactory;
         this.pageLayoutComponent = pageLayoutComponent;
         this.pc = pc;
+        this.decorationFactory = decorationFactory;
         this.layoutTemplate = layoutTemplate;
     }
     
@@ -157,7 +163,37 @@ public class Jetui
     
     public Set<String> getStyleSheets(RequestContext context)
     {
-        return getTheme(context).getStyleSheets();
+        return getStyleSheets(context, null);
+    }
+    
+    public Set<String> getStyleSheets(RequestContext context, String overrideDecoratorName)
+    {
+        if (overrideDecoratorName == null)
+        {
+            return getTheme(context).getStyleSheets();
+        }
+        else
+        {
+            Set<String> styleSheets = new HashSet<String>();
+            
+            LayoutDecoration layoutDecoration = decorationFactory.getLayoutDecoration(overrideDecoratorName, context);
+            
+            if (layoutDecoration != null)
+            {
+                styleSheets.add(layoutDecoration.getStyleSheet());
+                styleSheets.add(layoutDecoration.getStyleSheetPortal());
+            }
+            
+            PortletDecoration portletDecoration = decorationFactory.getPortletDecoration(overrideDecoratorName, context);
+            
+            if (portletDecoration != null)
+            {
+                styleSheets.add(portletDecoration.getStyleSheet());
+                styleSheets.add(portletDecoration.getStyleSheetPortal());
+            }
+            
+            return styleSheets;
+        }
     }
     
     public String includeHeaderResources(RequestContext context)
@@ -313,5 +349,7 @@ public class Jetui
         
         return (portletIcon != null ? portletIcon : defaultPortletIcon);
     }
+    
+    
     
 }

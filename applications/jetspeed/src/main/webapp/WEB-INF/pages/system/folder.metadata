@@ -19,6 +19,11 @@ limitations under the License.
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd">
     
   <title>System Folder</title>  
-  <metadata name='space-owner' xml:lang='en'>admin</metadata>  
+  <metadata name='space-owner' xml:lang='en'>admin</metadata>
+  
+  <defaults
+     layout-decorator="inherit"
+     portlet-decorator="inherit"
+  />
   
 </folder>

@@ -19,6 +19,7 @@ limitations under the License.
 <%@ page import="java.util.Collection" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.util.Set" %>
 <%@ page import="org.apache.jetspeed.JetspeedActions" %>
 <%@ page import="org.apache.jetspeed.ui.Jetui" %>
 <%@ page import="org.apache.jetspeed.ui.Toolbar" %>
@@ -55,6 +56,7 @@ limitations under the License.
   }
   String baseUrl = jetui.getBaseURL(rc);
   String pageDec = jetui.getTheme(rc).getPageLayoutDecoration().getName();
+  boolean inheritDec = "inherit".equals(pageDec);
   
   String portalContextPath = request.getContextPath();
   String portalServletPath = request.getServletPath();
@@ -84,7 +86,16 @@ limitations under the License.
       rightDisplayState = "display: none";
       rightToggleClass = "jstbToggle1";
   	}
-  }  
+  }
+  
+  String inheritDecorationName = null;
+  if (inheritDec) {
+    inheritDecorationName = request.getParameter("_inheritdeco");
+    if (inheritDecorationName != null) {
+      pageDec = inheritDecorationName;
+    }
+  }
+  Set<String> styleSheets = jetui.getStyleSheets(rc, inheritDecorationName);
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -119,14 +130,13 @@ var JETUI_YUI = {
 </script>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/jetui/css/portal.css"/>
 <%=jetui.includeHeaderResources(rc)%>
-<%
-for (String style : jetui.getStyleSheets(rc))
-{%>
+<% for (String style : styleSheets) { %>
 <link rel="stylesheet" type="text/css" media="screen, projection" href="<%=request.getContextPath()%>/<%=style%>"/>
-<%}%>
+<% } %>
 <body class="yui-skin-sam">
 <div id='jetspeedZone'>
 <div id="layout-<%=pageDec%>" class="layout-<%=pageDec%>" >
+<% if (!inheritDec) { %>
 <div class="header">
 <h1 class="logo">Jetspeed 2</h1>
 <div class="menu">
@@ -137,7 +147,7 @@ for (String style : jetui.getStyleSheets(rc))
 <% } %>
 <!-- <span class="layout-search"><input type='text' size='14'/></span><span class="layout-search2"><img height='18' src="<%=request.getContextPath()%>/images/search.png"/></span>  -->
 </div> <!-- end header -->
-
+<% } %>
 <!-- main area -->
 <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
 <tr>         
@@ -181,7 +191,9 @@ if (ltb != null)
 %>
 </td>
 <td id='jsMainarea' class='jsMainarea'>
+<% if (!inheritDec) { %>
 <div class="PContent"><span style="line-height:0.005px;">&nbsp;</span><%=breadcrumbs%></div>
+<% } %>
 <div id="jsFragments" class="portal-nested-layout portal-nested-layout-TwoColumns">
 <%
     if (maximized != null)
@@ -229,9 +241,10 @@ if (ltb != null)
                    String content = jetui.getRenderedContent((ContentFragment)fragment, rc);
                    request.setAttribute("content", content);                    
                    String decorator = fragment.getDecorator(); 
-                   if (decorator == null)
-    	       		    decorator = pageDec;
-                   request.setAttribute("decorator", decorator);                    
+                   if (decorator == null) {
+    	       		   decorator = pageDec;
+                   }
+                   request.setAttribute("decorator", inheritDecorationName == null ? decorator : inheritDecorationName);
                    request.setAttribute("fragment", fragment);      
                    request.setAttribute("coordinate", columnLayout.getCoordinate(fragment));
 %>
