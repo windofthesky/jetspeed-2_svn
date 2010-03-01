@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
@@ -64,19 +65,28 @@ public class LoginProxyServlet extends HttpServlet
 
         parameter = request.getParameter(LoginConstants.DESTINATION);
         if (parameter != null)
+        {
+            parameter = StringEscapeUtils.escapeHtml(parameter);
             session.setAttribute(LoginConstants.DESTINATION, parameter);
+        }
         else
             session.removeAttribute(LoginConstants.DESTINATION);
         if (credentialsFromRequest)
         {
             username = request.getParameter(LoginConstants.USERNAME);
             if (username != null)
+            {
+                username = StringEscapeUtils.escapeHtml(username);
                 session.setAttribute(LoginConstants.USERNAME, username);
+            }
             else
                 session.removeAttribute(LoginConstants.USERNAME);
             parameter = request.getParameter(LoginConstants.PASSWORD);
             if (parameter != null)
+            {
+                parameter = StringEscapeUtils.escapeHtml(parameter);
                 session.setAttribute(LoginConstants.PASSWORD, parameter);
+            }
             else
                 session.removeAttribute(LoginConstants.PASSWORD);
         }
