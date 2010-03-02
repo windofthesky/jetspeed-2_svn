@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.userinfo.impl;
 
-import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,15 +27,12 @@ import javax.security.auth.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.components.portletregistry.RegistryEventListener;
 import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.JetspeedPrincipal;
-import org.apache.jetspeed.security.SubjectHelper;
-import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
  * <p>
@@ -47,26 +43,20 @@ import org.apache.jetspeed.userinfo.UserInfoManager;
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  * @version $Id$
  */
-public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements UserInfoManager
+public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements RegistryEventListener
 {
 
     /** Logger */
     private static final Logger log = LoggerFactory.getLogger(UserInfoManagerImpl.class);
 
-    // TODO: needs cache invalidation when portlet application user info configuration changes
     /** Map to cache user info keys for each mapped portlet application. */
     private static Map<String, List<UserAttributeRef>> appUserInfoAttrCache = Collections.synchronizedMap(new HashMap<String,List<UserAttributeRef>>());
-
-    /** The user manager */
-    protected UserManager userMgr;
+    
+    private static final SubjectUserAttributeSourceImpl subjectUserAttributeSource = new SubjectUserAttributeSourceImpl();
 
     /** The portlet registry. */
     protected PortletRegistry registry;
     
-    protected UserInfoManagerImpl()
-    {
-    }
-
     /**
      * <p>
      * Constructor providing access to the {@link UserManager}.
@@ -75,47 +65,26 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
      * @param userMgr The user manager.
      * @param registry The portlet registry component.
      */
-    public UserInfoManagerImpl(UserManager userMgr, PortletRegistry registry)
+    public UserInfoManagerImpl(PortletRegistry registry)
     {
-        this.userMgr = userMgr;
         this.registry = registry;
-    }
-
-    /**
-     * <p>
-     * Constructor providing access to the {@link UserManager}and specifying
-     * which property set to use for user information.
-     * </p>
-     * 
-     * @param userMgr The user manager.
-     * @param registry The portlet registry component.
-     * @param userInfoPropertySet The user information property set.
-     *  
-     */
-    public UserInfoManagerImpl(UserManager userMgr, PortletRegistry registry, String userInfoPropertySet)
-    {
-        this.userMgr = userMgr;
-        this.registry = registry;
+        registry.addRegistryListener(this);
     }
 
     public Map<String, String> getUserInfoMap(String appName, RequestContext context)
     {
         if (log.isDebugEnabled())
+        {
             log.debug("Getting user info for portlet application: " + appName);
-        
-        Map<String, String> userInfo = getUserInformation(context);
-        if (null == userInfo)
-        {
-            log.debug(PortletRequest.USER_INFO + " is null");
-            return null;
-        }
-        else if (userInfo.isEmpty())
-        {
-            log.debug(PortletRequest.USER_INFO + " is empty");
-            return Collections.emptyMap();
         }
         
-        return mapUserInfo(userInfo, getLinkedUserAttr(appName));
+        Map<String, String> userInfo = null;
+        Subject subject = context.getSubject();
+        if (null != subject)
+        {
+            userInfo = subjectUserAttributeSource.getUserAttributeMap(subject, getLinkedUserAttr(appName), context);
+        }        
+        return userInfo;
     }
     
     protected List<UserAttributeRef> getLinkedUserAttr(String appName)
@@ -139,67 +108,25 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
         return linkedUserAttr;
     }
 
-    /**
-     * <p>
-     * Maps the user info properties retrieved from the user information to the
-     * user info attribute declared in the portlet.xml descriptor.
-     * </p>
-     * 
-     * @param userInfo The user info attributes.
-     * @param userAttributes The declarative portlet user attributes.
-     * @param userAttributeRefs The declarative jetspeed portlet extension user
-     *            attributes reference.
-     * @return The user info map.
-     */
-    protected Map<String, String> mapUserInfo(Map<String, String> userInfo, List<UserAttributeRef> linkedUserAttributes)
+    public void applicationRemoved(PortletApplication app)
     {
-        Map<String, String>userInfoMap = new HashMap<String, String>();
-        if (linkedUserAttributes != null)
-        {
-            for (UserAttributeRef currentAttributeRef : linkedUserAttributes)
-            {
-                String key = currentAttributeRef.getNameLink();
-                String name = currentAttributeRef.getName();
-                if (key == null)
-                {                
-                    key = name;
-                }
-                if (userInfo.containsKey(key))
-                {
-                    userInfoMap.put(name, userInfo.get(key));
-                }
-            }
-        }
-        return userInfoMap;
+        // clear cache element
+        appUserInfoAttrCache.remove(app.getName());
     }
 
-    /**
-     * <p>
-     * Gets the user info from the user's request.
-     * </p>
-     * <p>
-     * If no user is logged in, return null.
-     * </p>
-     * 
-     * @param context The request context.
-     * @return The user info.
-     */
-    private Map<String, String> getUserInformation(RequestContext context)
+    public void applicationUpdated(PortletApplication app)
     {
-        Map<String, String> userInfo = null;
-        Subject subject = context.getSubject();
-        if (null != subject)
-        {
-            Principal userPrincipal = SubjectHelper.getPrincipal(subject, User.class);
-            if (null != userPrincipal)
-            {
-                log.debug("Got user principal: " + userPrincipal.getName());
-                if (userPrincipal instanceof JetspeedPrincipal)
-                {
-                    return ((JetspeedPrincipal)userPrincipal).getInfoMap();
-                }
-            }
-        }
-        return userInfo;
+        // clear cache element
+        appUserInfoAttrCache.remove(app.getName());
+    }
+
+    public void portletRemoved(PortletDefinition def)
+    {
+        // ignore
+    }
+
+    public void portletUpdated(PortletDefinition def)
+    {
+        // ignore
     }
 }

@@ -23,10 +23,7 @@
         name="org.apache.pluto.services.UserInfoService"
     class="org.apache.jetspeed.userinfo.impl.UserInfoManagerImpl">
     <meta key="j2:cat" value="default" />
-    <constructor-arg index="0">
-      <ref bean="org.apache.jetspeed.security.UserManager" />
-    </constructor-arg>
-    <constructor-arg index="1">
+    <constructor-arg>
       <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
     </constructor-arg>
   </bean>
@@ -34,24 +31,15 @@
 
   <!-- Multi-source User Info Manager 
     
-    <bean id="org.apache.jetspeed.userinfo.UserInfoManager" 	
-    class="org.apache.jetspeed.userinfo.impl.MultiSourceUserInfoManagerImpl">
-    <property name="portletRegistry">
-    <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>
-    </property>
-    <property name="sources">
-    <list>
-    <ref bean="org.apache.jetspeed.userinfo.impl.UserManagerUserAttributeSourceImpl"/>
-    </list>
-    </property>
-    </bean>
-    
-    <bean id="org.apache.jetspeed.userinfo.impl.UserManagerUserAttributeSourceImpl"	
-    class="org.apache.jetspeed.userinfo.impl.UserManagerUserAttributeSourceImpl">      
-    <property name="userManager">
-    <ref bean="org.apache.jetspeed.security.UserManager"/>
-    </property>
-    </bean>
+  <bean id="org.apache.jetspeed.userinfo.MultiUserInfoManager"
+         class="org.apache.jetspeed.userinfo.impl.MultiSourceUserInfoManagerImpl">
+     <constructor-arg><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
+     <constructor-arg>
+        <list>
+           <bean class="org.apache.jetspeed.userinfo.impl.SubjectUserAttributeSourceImpl"/>      
+        </list>
+     </constructor-arg>
+  </bean>
   -->
 
 </beans>

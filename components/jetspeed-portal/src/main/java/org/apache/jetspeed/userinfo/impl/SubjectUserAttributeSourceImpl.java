@@ -27,11 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.userinfo.UserAttributeRetrievalException;
 import org.apache.jetspeed.userinfo.UserAttributeSource;
 
 /**
@@ -41,23 +38,11 @@ import org.apache.jetspeed.userinfo.UserAttributeSource;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public class UserManagerUserAttributeSourceImpl implements UserAttributeSource
+public class SubjectUserAttributeSourceImpl implements UserAttributeSource
 {
 
     /** Logger */
-    private static final Logger log = LoggerFactory.getLogger(UserManagerUserAttributeSourceImpl.class);
-
-    /** The user manager */
-    private UserManager userManager;
-
-    /**
-     * @param userManager
-     *            The userManager to set.
-     */
-    public void setUserManager(UserManager userManager)
-    {
-        this.userManager = userManager;
-    }
+    private static final Logger log = LoggerFactory.getLogger(SubjectUserAttributeSourceImpl.class);
 
     /*
      * (non-Javadoc)
@@ -65,7 +50,6 @@ public class UserManagerUserAttributeSourceImpl implements UserAttributeSource
      * @see org.jetspeed.userinfo.UserAttributeSource#getUserAttributeMap(javax.security.auth.Subject, java.util.Set)
      */
     public Map<String, String> getUserAttributeMap(Subject subject, Collection<UserAttributeRef> userAttributeRefs, RequestContext context)
-            throws UserAttributeRetrievalException
     {
 
         Map<String,String> userAttributeMap = new HashMap<String,String>();
@@ -73,30 +57,24 @@ public class UserManagerUserAttributeSourceImpl implements UserAttributeSource
         if (null != userPrincipal)
         {
             log.debug("Got user principal: " + userPrincipal.getName());
-            try
+            Map<String, String> userInfo = ((User)userPrincipal).getInfoMap();
+            if (userAttributeRefs != null)
             {
-                if (userManager.userExists(userPrincipal.getName()))
+                for (UserAttributeRef currentAttributeRef : userAttributeRefs)
                 {
-                    User user = userManager.getUser(userPrincipal.getName());
-                    Map<String, String> userInfo = user.getInfoMap();
-                    for (UserAttributeRef currentAttributeRef : userAttributeRefs)
+                    String key = currentAttributeRef.getNameLink();
+                    String name = currentAttributeRef.getName();
+                    if (key == null)
+                    {                
+                        key = name;
+                    }
+                    if (userInfo.containsKey(key))
                     {
-                        String value = userInfo.get(currentAttributeRef.getName());
-                        if (value != null)
-                        {
-                            userAttributeMap.put(currentAttributeRef.getName(), value);
-                        }
-
+                        userAttributeMap.put(name, userInfo.get(key));
                     }
                 }
             }
-            catch (SecurityException sex)
-            {
-                log.warn("Unexpected SecurityException in UserInfoManager", sex);
-            }
         }
-
         return userAttributeMap;
     }
-
 }

@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.om.portlet.impl.UserAttributeRefImpl;
-import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.jetspeed.container.PortletWindow;
 
 /**
@@ -37,7 +37,7 @@ import org.apache.jetspeed.container.PortletWindow;
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  * @version $Id$
  */
-public abstract class AbstractUserInfoManagerImpl
+public abstract class AbstractUserInfoManagerImpl implements UserInfoManager
 {
     /** Logger */
     private static final Logger log = LoggerFactory.getLogger(UserInfoManagerImpl.class);
@@ -111,7 +111,4 @@ public abstract class AbstractUserInfoManagerImpl
         PortletWindow portletWindow = (PortletWindow)window;
         return getUserInfoMap(portletWindow.getPortletDefinition().getApplication().getName(), portletWindow.getRequestContext());        
     }
-
-    public abstract Map<String, String> getUserInfoMap(String appName, RequestContext context);
-    
 }

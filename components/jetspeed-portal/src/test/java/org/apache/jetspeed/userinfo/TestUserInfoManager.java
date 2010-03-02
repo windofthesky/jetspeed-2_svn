@@ -62,7 +62,7 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
         super.setUp();
 
         ums = (UserManager) scm.getComponent("org.apache.jetspeed.security.UserManager");
-        single = (UserInfoManager) scm.getComponent("org.apache.jetspeed.userinfo.UserInfoManager");
+        single = (UserInfoManager) scm.getComponent("org.apache.jetspeed.userinfo.MultiUserInfoManager");
     }
 
     public void tearDown() throws Exception
@@ -129,7 +129,9 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
         // Without linked attributes
         // There are no preferences associated to the user profile.
         Map<String, String> userInfo = uim.getUserInfoMap(portletApp.getName(), request);
-//        assertNull(PortletRequest.USER_INFO + " is null", userInfo);
+        // disabled test: UserInfoManager doesn't return null anymore for a more efficient solution
+        // PortletRequest.getAttribute(USER_INFO) == null for unauthorised users but that requires a different test setup 
+        // assertNull(PortletRequest.USER_INFO + " is null", userInfo);
 
         // The user has preferences associated to the user profile.
         initUser();

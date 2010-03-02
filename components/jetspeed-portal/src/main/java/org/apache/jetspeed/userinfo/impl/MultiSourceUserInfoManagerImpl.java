@@ -40,32 +40,34 @@ import org.apache.jetspeed.userinfo.UserAttributeSource;
  */
 public class MultiSourceUserInfoManagerImpl extends UserInfoManagerImpl
 {
-
     /** Logger */
     private static final Logger log = LoggerFactory.getLogger(MultiSourceUserInfoManagerImpl.class);
 
     private List<UserAttributeSource> sources;
+    
+    public MultiSourceUserInfoManagerImpl(PortletRegistry registry, List<UserAttributeSource> sources)
+    {
+        super(registry);
+        this.sources = sources;
+    }
 
     public Map<String,String> getUserInfoMap(String appName, RequestContext context)
     {
-        Map<String,String> userInfoMap = null;
+        Map<String,String> userInfoMap = new HashMap<String,String>();
         try
         {
             Subject subject = context.getSubject();
             if (null != subject)
             {
+                List<UserAttributeRef> linkedUserAttributes = getLinkedUserAttr(appName);
                 
-            }
-            userInfoMap = new HashMap<String,String>();
-            
-            List<UserAttributeRef> linkedUserAttributes = getLinkedUserAttr(appName);
-            
-            for (UserAttributeSource source : sources)
-            {
-                Map<String, String> sourceMap = source.getUserAttributeMap(subject, linkedUserAttributes, context);
-                if (sourceMap != null)
+                for (UserAttributeSource source : sources)
                 {
-                    userInfoMap.putAll(sourceMap);
+                    Map<String, String> sourceMap = source.getUserAttributeMap(subject, linkedUserAttributes, context);
+                    if (sourceMap != null)
+                    {
+                        userInfoMap.putAll(sourceMap);
+                    }
                 }
             }
         } 
@@ -77,23 +79,4 @@ public class MultiSourceUserInfoManagerImpl extends UserInfoManagerImpl
         }
         return userInfoMap;
     }
-
-    /**
-     * @param sources
-     *            The sources to set.
-     */
-    public void setSources(List<UserAttributeSource> sources)
-    {
-        this.sources = sources;
-    }
-
-    /**
-     * @param portletRegistry
-     *            The portletRegistry to set.
-     */
-    public void setPortletRegistry(PortletRegistry portletRegistry)
-    {
-        registry = portletRegistry;
-    }
-
 }
