@@ -22,18 +22,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.portlet.PortletRequest;
 import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.userinfo.UserAttributeRetrievalException;
 import org.apache.jetspeed.userinfo.UserAttributeSource;
-import org.apache.jetspeed.userinfo.UserInfoManager;
-import org.apache.jetspeed.userinfo.impl.AbstractUserInfoManagerImpl;
 import org.apache.pluto.om.common.ObjectID;
 
 /**
@@ -44,76 +40,47 @@ import org.apache.pluto.om.common.ObjectID;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id: $
  */
-public class MultiSourceUserInfoManagerImpl extends AbstractUserInfoManagerImpl
-        implements UserInfoManager
+public class MultiSourceUserInfoManagerImpl extends UserInfoManagerImpl
 {
 
     /** Logger */
-    private static final Log log = LogFactory
-            .getLog(MultiSourceUserInfoManagerImpl.class);
+    private static final Log log = LogFactory.getLog(MultiSourceUserInfoManagerImpl.class);
 
     private List sources;
 
-    private PortletRegistry portletRegistry;
-   
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.jetspeed.userinfo.UserInfoManager#getUserInfoMap(org.apache.pluto.om.common.ObjectID,
-     *      org.apache.jetspeed.request.RequestContext)
-     */
-    public Map getUserInfoMap(ObjectID oid, RequestContext context)
+    public MultiSourceUserInfoManagerImpl(PortletRegistry registry, List sources)
     {
-
-        try
-        {
-            Map userInfoMap = new HashMap();
-            Subject subject = context.getSubject();
-            MutablePortletApplication pa = portletRegistry
-                    .getPortletApplication(oid);
-//System.out.println("*** PA = " + pa);            
-            if (null == pa)
-            {
-                log.debug(PortletRequest.USER_INFO + " is set to null");
-                return null;
-            }
-            Collection userAttributes = pa.getUserAttributes();
-            Collection userAttributeRefs = pa.getUserAttributeRefs();
-            Collection linkedUserAttributes = mapLinkedUserAttributes(
-                    userAttributes, userAttributeRefs);
-            for (Iterator iter = sources.iterator(); iter.hasNext();)
-            {
-                UserAttributeSource source = (UserAttributeSource) iter.next();
-                Map sourceMap;
-
-                sourceMap = source.getUserAttributeMap(subject,
-                        linkedUserAttributes, context);
-                userInfoMap.putAll(sourceMap);
-            }
-            return userInfoMap;
-        } catch (UserAttributeRetrievalException e)
-        {
-            // Until external api is changed return
-            e.printStackTrace();            
-            return null;
-        }
-    }
-
-    /**
-     * @param sources
-     *            The sources to set.
-     */
-    public void setSources(List sources)
-    {
+        super(registry);
         this.sources = sources;
     }
 
-    /**
-     * @param portletRegistry
-     *            The portletRegistry to set.
-     */
-    public void setPortletRegistry(PortletRegistry portletRegistry)
+    public Map getUserInfoMap(ObjectID oid, RequestContext context)
     {
-        this.portletRegistry = portletRegistry;
+        Map userInfoMap = new HashMap();
+        try
+        {
+            Subject subject = context.getSubject();
+            if (null != subject)
+            {
+                Collection linkedUserAttributes = getLinkedUserAttr(oid);
+                
+                for (Iterator iter = sources.iterator(); iter.hasNext();)
+                {
+                    UserAttributeSource source = (UserAttributeSource) iter.next();
+                    Map sourceMap = source.getUserAttributeMap(subject, linkedUserAttributes, context);
+                    if (sourceMap != null)
+                    {
+                        userInfoMap.putAll(sourceMap);
+                    }
+                }
+            }
+        } 
+        catch (UserAttributeRetrievalException e)
+        {
+            // Until external api is changed return
+            log.error(e.getMessage(), e);          
+            return null;
+        }
+        return userInfoMap;
     }
 }

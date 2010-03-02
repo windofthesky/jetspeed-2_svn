@@ -487,8 +487,10 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
         Object value = super.getAttribute(name);
         if (name.equals(PortletRequest.USER_INFO))
         {
+            value = null;
             JetspeedRequestContext context = (JetspeedRequestContext) getAttribute(PortalReservedParameters.REQUEST_CONTEXT_ATTRIBUTE);
-            if (null != context)
+            // USER_INFO only available (!=null) for authenticated user)
+            if (null != context && getUserPrincipal() != null)
             {
                 String entityID = "--NULL--";
                 PortletEntity entity = portletWindow.getPortletEntity();
@@ -509,7 +511,6 @@ public class ServletRequestImpl extends HttpServletRequestWrapper implements Por
                 {
                     log.error("Entity is null:" + entityID);
                 }
-
             }
         }
         else

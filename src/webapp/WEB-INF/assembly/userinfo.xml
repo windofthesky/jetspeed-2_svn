@@ -29,23 +29,16 @@ limitations under the License.
 
 <!-- Multi-source User Info Manager 
 
-  <bean id="org.apache.jetspeed.userinfo.UserInfoManager" 	
+  <bean id="org.apache.jetspeed.userinfo.MultiUserInfoManager"  
          class="org.apache.jetspeed.userinfo.impl.MultiSourceUserInfoManagerImpl">
-		 <property name="portletRegistry">
-		    <ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/>
-		  </property>
-		  <property name="sources">
-		     <list>
-		         <ref bean="org.apache.jetspeed.userinfo.impl.UserManagerUserAttributeSourceImpl"/>
-		     </list>
-	     </property>
-  </bean>
-  
-  <bean id="org.apache.jetspeed.userinfo.impl.UserManagerUserAttributeSourceImpl"	
-    class="org.apache.jetspeed.userinfo.impl.UserManagerUserAttributeSourceImpl">      
-      <property name="userManager">
-         <ref bean="org.apache.jetspeed.security.UserManager"/>
-      </property>
+     <constructor-arg><ref bean="org.apache.jetspeed.components.portletregistry.PortletRegistry"/></constructor-arg>
+     <constructor-arg>
+        <list>
+           <bean class="org.apache.jetspeed.userinfo.impl.UserManagerUserAttributeSourceImpl">
+             <constructor-arg ><ref bean="org.apache.jetspeed.security.UserManager"/></constructor-arg>                
+           </bean>      
+        </list>
+      </constructor-arg>
   </bean>
   -->
   

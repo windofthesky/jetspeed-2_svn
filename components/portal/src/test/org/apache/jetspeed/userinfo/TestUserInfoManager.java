@@ -65,7 +65,7 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
     {
         super.setUp();
 
-        single = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.UserInfoManager");
+        single = (UserInfoManager) ctx.getBean("org.apache.jetspeed.userinfo.MultiUserInfoManager");
         portletRegistry = (PortletRegistry) ctx.getBean("portletRegistry");
     }
 
@@ -119,7 +119,9 @@ public class TestUserInfoManager extends AbstractSecurityTestcase
         // Without linked attributes
         // There are no preferences associated to the user profile.
         Map userInfo = uim.getUserInfoMap(portletApp.getId(), request);
-        assertNull(PortletRequest.USER_INFO + " is null", userInfo);
+        // disabled test: UserInfoManager doesn't return null anymore for a more efficient solution
+        // PortletRequest.getAttribute(USER_INFO) == null for unauthorised users but that requires a different test setup 
+        // assertNull(PortletRequest.USER_INFO + " is null", userInfo);
 
         // The user has preferences associated to the user profile.
         initUser();

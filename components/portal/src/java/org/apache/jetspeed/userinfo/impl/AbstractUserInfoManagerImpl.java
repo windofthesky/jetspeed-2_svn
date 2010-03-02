@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.om.common.UserAttribute;
 import org.apache.jetspeed.om.common.UserAttributeRef;
 import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
+import org.apache.jetspeed.userinfo.UserInfoManager;
 
 /**
  * <p> Common user info management support
@@ -33,7 +34,7 @@ import org.apache.jetspeed.om.impl.UserAttributeRefImpl;
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  * @version $Id$
  */
-public abstract class AbstractUserInfoManagerImpl
+public abstract class AbstractUserInfoManagerImpl implements UserInfoManager
 {
     /** Logger */
     private static final Log log = LogFactory.getLog(UserInfoManagerImpl.class);
@@ -53,6 +54,7 @@ public abstract class AbstractUserInfoManagerImpl
      */
     protected Collection mapLinkedUserAttributes(Collection userAttributes, Collection userAttributeRefs)
     {
+        UserAttributeRefImpl impl;
         Collection linkedUserAttributes = new ArrayList();
         if ((null != userAttributeRefs) && (userAttributeRefs.size() > 0))
         {
@@ -61,29 +63,29 @@ public abstract class AbstractUserInfoManagerImpl
             {
                 UserAttribute currentAttribute = (UserAttribute) attrIter.next();
                 boolean linkedAttribute = false;
-                if (null != currentAttribute)
+                impl = new UserAttributeRefImpl();
+                Iterator attrRefsIter = userAttributeRefs.iterator();
+                while (attrRefsIter.hasNext())
                 {
-                    Iterator attrRefsIter = userAttributeRefs.iterator();
-                    while (attrRefsIter.hasNext())
+                    UserAttributeRef currentAttributeRef = (UserAttributeRef) attrRefsIter.next();
+                    if ((currentAttribute.getName()).equals(currentAttributeRef.getNameLink()))
                     {
-                        UserAttributeRef currentAttributeRef = (UserAttributeRef) attrRefsIter.next();
-                        if (null != currentAttributeRef)
+                        if (log.isDebugEnabled())
                         {
-                            if ((currentAttribute.getName()).equals(currentAttributeRef.getNameLink()))
-                            {
-                                if (log.isDebugEnabled())
-                                    log.debug("Linking user attribute ref: [[name, " + currentAttribute.getName()
-                                            + "], [linked name, " + currentAttributeRef.getName() + "]]");
-                                linkedUserAttributes.add(currentAttributeRef);
-                                linkedAttribute = true;
-                            }
+                            log.debug("Linking user attribute ref: [[name, " + currentAttribute.getName()
+                                    + "], [linked name, " + currentAttributeRef.getName() + "]]");
                         }
+                        impl.setName(currentAttributeRef.getName());
+                        impl.setNameLink(currentAttributeRef.getNameLink());
+                        linkedAttribute = true;
+                        break;
                     }
                 }
                 if (!linkedAttribute)
                 {
-                    linkedUserAttributes.add(new UserAttributeRefImpl(currentAttribute));
+                    impl.setName(currentAttribute.getName());
                 }
+                linkedUserAttributes.add(impl);
             }
         }
         else
@@ -92,10 +94,11 @@ public abstract class AbstractUserInfoManagerImpl
             while (attrIter.hasNext())
             {
                 UserAttribute currentAttribute = (UserAttribute) attrIter.next();
-                linkedUserAttributes.add(new UserAttributeRefImpl(currentAttribute));
+                impl = new UserAttributeRefImpl();
+                impl.setName(currentAttribute.getName());
+                linkedUserAttributes.add(impl);
             }
         }
         return linkedUserAttributes;
     }
-
 }

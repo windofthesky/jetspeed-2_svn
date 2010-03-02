@@ -16,14 +16,11 @@
  */
 package org.apache.jetspeed.userinfo.impl;
 
-import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 import javax.portlet.PortletRequest;
 import javax.security.auth.Subject;
@@ -31,15 +28,12 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.om.common.UserAttributeRef;
+import org.apache.jetspeed.components.portletregistry.RegistryEventListener;
 import org.apache.jetspeed.om.common.portlet.MutablePortletApplication;
+import org.apache.jetspeed.om.common.portlet.PortletDefinitionComposite;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.userinfo.UserInfoManager;
 import org.apache.pluto.om.common.ObjectID;
 
 /**
@@ -51,43 +45,35 @@ import org.apache.pluto.om.common.ObjectID;
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  * @version $Id$
  */
-public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements UserInfoManager
+public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements RegistryEventListener
 {
 
     /** Logger */
     private static final Log log = LogFactory.getLog(UserInfoManagerImpl.class);
+    
+    /** Map to cache user info keys for each mapped portlet application. */
+    private static Map appUserInfoAttrCache = Collections.synchronizedMap(new HashMap());
 
-    // TODO Same caching issue as usual. We should look into JCS. That wil do
-    // for now.
-    /** Map used to cache user info maps for each mapped portlet application. */
-    private static Map userInfoMapCache;
-
-    /** The user information property set. */
-    String userInfoPropertySet;
-
+    private UserManagerUserAttributeSourceImpl userManagerUserAttributeSource;
+    
     /** The user manager */
-    UserManager userMgr;
+    protected UserManager userMgr;
 
     /** The portlet registry. */
-    PortletRegistry registry;
+    protected PortletRegistry registry;
 
-    /** The object id of the portlet application being processed. */
-    String oid;
-
+    protected UserInfoManagerImpl(PortletRegistry registry)
+    {
+        this.registry = registry;
+        registry.addRegistryListener(this);
+    }
     /**
-     * <p>
-     * Constructor providing access to the {@link UserManager}.
-     * </p>
-     * 
      * @param userMgr The user manager.
      * @param registry The portlet registry component.
      */
     public UserInfoManagerImpl(UserManager userMgr, PortletRegistry registry)
     {
-        this.userMgr = userMgr;
-        this.registry = registry;
-        this.userInfoPropertySet = User.USER_INFO_PROPERTY_SET;
-        initUserInfoMapCache();
+        this(userMgr,registry, User.USER_INFO_PROPERTY_SET);
     }
 
     /**
@@ -103,10 +89,9 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
      */
     public UserInfoManagerImpl(UserManager userMgr, PortletRegistry registry, String userInfoPropertySet)
     {
+        this(registry);
         this.userMgr = userMgr;
-        this.registry = registry;
-        this.userInfoPropertySet = userInfoPropertySet;
-        initUserInfoMapCache();
+        this.userManagerUserAttributeSource = new UserManagerUserAttributeSourceImpl(userMgr, userInfoPropertySet);
     }
 
     /**
@@ -115,148 +100,60 @@ public class UserInfoManagerImpl extends AbstractUserInfoManagerImpl implements 
      */
     public Map getUserInfoMap(ObjectID oid, RequestContext context)
     {
+        String appOid = oid.toString();
+        
         if (log.isDebugEnabled())
-            log.debug("Getting user info for portlet application: " + oid.toString());
+            log.debug("Getting user info for portlet application: " + appOid);
 
-        // Check if user info map is in cache.
-        if (userInfoMapCache.containsKey(oid))
-        {
-            return (Map) userInfoMapCache.get(oid);
-        }
-        // Not in cache, map user info.
-        Preferences userPrefs = getUserPreferences(context);
-        if (null == userPrefs)
-        {
-            log.debug(PortletRequest.USER_INFO + " is set to null");
-            return null;
-        }
-
-        MutablePortletApplication pa = registry.getPortletApplication(oid);
-        if (null == pa)
-        {
-            log.debug(PortletRequest.USER_INFO + " is set to null");
-            return null;
-        }
-        Preferences userInfoPrefs = userPrefs.node(userInfoPropertySet);
-        Collection userAttributes = pa.getUserAttributes();
-        Collection userAttributeRefs = pa.getUserAttributeRefs();
-        Map userInfoMap = mapUserInfo(userInfoPrefs, userAttributes, userAttributeRefs);
-
-        return userInfoMap;
-    }
-
-    /**
-     * <p>
-     * Maps the user info properties retrieved from the user preferences to the
-     * user info attribute declared in the portlet.xml descriptor.
-     * </p>
-     * 
-     * @param userInfoPrefs The user info preferences.
-     * @param userAttributes The declarative portlet user attributes.
-     * @param userAttributeRefs The declarative jetspeed portlet extension user
-     *            attributes reference.
-     * @return The user info map.
-     */
-    private Map mapUserInfo(Preferences userInfoPrefs, Collection userAttributes, Collection userAttributeRefs)
-    {
-        if ((null == userAttributes) || (userAttributes.size() == 0))
-        {
-            return null;
-        }
-
-        Map userInfoMap = new HashMap();
-        String[] propertyKeys = null;
-        try
-        {
-            propertyKeys = userInfoPrefs.keys();
-            if ((null != propertyKeys) && log.isDebugEnabled())
-                log.debug("Found " + propertyKeys.length + " children for " + userInfoPrefs.absolutePath());
-        }
-        catch (BackingStoreException bse)
-        {
-            log.error("BackingStoreException: " + bse.toString());
-        }
-        if (null == propertyKeys)
-        {
-            return null;
-        }
-
-        Collection linkedUserAttributes = mapLinkedUserAttributes(userAttributes, userAttributeRefs);
-        Iterator iter = linkedUserAttributes.iterator();
-        while (iter.hasNext())
-        {
-            UserAttributeRef currentAttributeRef = (UserAttributeRef) iter.next();
-            if (null != currentAttributeRef)
-            {
-                for (int i = 0; i < propertyKeys.length; i++)
-                {
-                    if (null != currentAttributeRef.getNameLink())
-                    {
-                        if ((currentAttributeRef.getNameLink()).equals(propertyKeys[i]))
-                        {
-                            userInfoMap.put(currentAttributeRef.getName(), userInfoPrefs.get(propertyKeys[i], null));
-                        }
-                    }
-                    else
-                    {
-                        if ((currentAttributeRef.getName()).equals(propertyKeys[i]))
-                        {
-                            userInfoMap.put(currentAttributeRef.getName(), userInfoPrefs.get(propertyKeys[i], null));
-                        }
-                    }
-                }
-            }
-        }
-
-        userInfoMapCache.put(oid, userInfoMap);
-
-        return userInfoMap;
-    }
-
-    /**
-     * <p>
-     * Gets the user preferences from the user's request.
-     * </p>
-     * <p>
-     * If no user is logged in, return null.
-     * </p>
-     * 
-     * @param context The request context.
-     * @return The user preferences.
-     */
-    private Preferences getUserPreferences(RequestContext context)
-    {
-        Preferences userPrefs = null;
+        Map userInfo = null;
         Subject subject = context.getSubject();
         if (null != subject)
         {
-            Principal userPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
-            if (null != userPrincipal)
-            {
-                log.debug("Got user principal: " + userPrincipal.getName());
-                try
-                {
-                    if (userMgr.userExists(userPrincipal.getName()))
-                    {
-                        User user = userMgr.getUser(userPrincipal.getName());
-                        userPrefs = user.getPreferences();
-                    }
-                }
-                catch (SecurityException sex)
-                {
-                    log.warn("Unexpected SecurityException in UserInfoManager", sex);
-                }
-            }
-        }
-        return userPrefs;
+            userInfo = userManagerUserAttributeSource.getUserAttributeMap(subject, getLinkedUserAttr(oid), context);
+        }        
+        return userInfo;
     }
 
-    private void initUserInfoMapCache()
+    protected Collection getLinkedUserAttr(ObjectID oid)
     {
-        if (null == userInfoMapCache)
+        // Check if user info map is in cache.
+        Collection linkedUserAttr = (List)appUserInfoAttrCache.get(oid);
+        
+        if (linkedUserAttr == null)
         {
-            userInfoMapCache = Collections.synchronizedMap(new HashMap());
+            MutablePortletApplication pa = registry.getPortletApplication(oid);
+            if (null == pa)
+            {
+                log.debug(PortletRequest.USER_INFO + " is set to null");
+                return null;
+            }
+            Collection userAttributes = pa.getUserAttributes();
+            Collection userAttributeRefs = pa.getUserAttributeRefs();
+            linkedUserAttr = mapLinkedUserAttributes(userAttributes, userAttributeRefs);
+            appUserInfoAttrCache.put(oid, linkedUserAttr);
         }
+        return linkedUserAttr;
+    }
+    
+    public void applicationRemoved(MutablePortletApplication app)
+    {
+        // clear cache element
+        appUserInfoAttrCache.remove(app.getId());
     }
 
+    public void applicationUpdated(MutablePortletApplication app)
+    {
+        // clear cache element
+        appUserInfoAttrCache.remove(app.getId());
+    }
+
+    public void portletRemoved(PortletDefinitionComposite def)
+    {
+        // ignore
+    }
+
+    public void portletUpdated(PortletDefinitionComposite def)
+    {
+        // ignore
+    }
 }

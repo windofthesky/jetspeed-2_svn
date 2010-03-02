@@ -18,9 +18,11 @@ package org.apache.jetspeed.userinfo.impl;
 
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.security.auth.Subject;
@@ -34,7 +36,6 @@ import org.apache.jetspeed.security.SecurityHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.UserPrincipal;
-import org.apache.jetspeed.userinfo.UserAttributeRetrievalException;
 import org.apache.jetspeed.userinfo.UserAttributeSource;
 
 /**
@@ -50,57 +51,96 @@ public class UserManagerUserAttributeSourceImpl implements UserAttributeSource
     /** Logger */
     private static final Log log = LogFactory.getLog(UserManagerUserAttributeSourceImpl.class);
 
+    private static final String USER_INFO_MAP_KEY = UserManagerUserAttributeSourceImpl.class.getName()+".user_info_map";
+    
     /** The user manager */
     private UserManager userManager;
+    /** The user information property set. */
+    private String userInfoPropertySet;
 
-    /**
-     * @param userManager
-     *            The userManager to set.
-     */
-    public void setUserManager(UserManager userManager)
+    public UserManagerUserAttributeSourceImpl(UserManager userManager)
     {
-        this.userManager = userManager;
+        this(userManager, User.USER_INFO_PROPERTY_SET);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jetspeed.userinfo.UserAttributeSource#getUserAttributeMap(javax.security.auth.Subject, java.util.Set)
-     */
-    public Map getUserAttributeMap(Subject subject, Collection userAttributeRefs, RequestContext context)
-            throws UserAttributeRetrievalException
+    public UserManagerUserAttributeSourceImpl(UserManager userManager, String userInfoPropertySet)
     {
+        this.userManager = userManager;
+        this.userInfoPropertySet = userInfoPropertySet;
+    }
 
+    public Map getUserAttributeMap(Subject subject, Collection userAttributeRefs, RequestContext context)
+    {
         Map userAttributeMap = new HashMap();
         Principal userPrincipal = SecurityHelper.getPrincipal(subject, UserPrincipal.class);
         if (null != userPrincipal)
         {
             log.debug("Got user principal: " + userPrincipal.getName());
-            try
+            // first check session already contains userInfo map
+            String userName = userPrincipal.getName();
+            String userInfoKey = USER_INFO_MAP_KEY+"."+userName;
+            Map userInfo = (Map)context.getSessionAttribute(userInfoKey);
+            if (userInfo == null)
             {
-                if (userManager.userExists(userPrincipal.getName()))
+                userInfo = Collections.EMPTY_MAP;
+                try
                 {
-                    User user = userManager.getUser(userPrincipal.getName());
-                    Preferences userInfoPrefs = user.getPreferences();
-                    for (Iterator iter = userAttributeRefs.iterator(); iter.hasNext();)
+                    if (userManager.userExists(userName))
                     {
-                        UserAttributeRef currentAttributeRef = (UserAttributeRef) iter.next();
-                        Object value = userInfoPrefs.get(currentAttributeRef.getName(), null);
-                        if (value != null)
+                        User user = userManager.getUser(userPrincipal.getName());
+                        Preferences userPrefs = user.getPreferences();
+                        if (null != userPrefs)
                         {
-                            userAttributeMap.put(currentAttributeRef.getName(), value);
+                            Preferences userInfoPrefs = userPrefs.node(userInfoPropertySet);
+                            String[] propertyKeys = null;
+                            try
+                            {
+                                propertyKeys = userInfoPrefs.keys();
+                                if ((null != propertyKeys) && log.isDebugEnabled())
+                                {
+                                    log.debug("Found " + propertyKeys.length + " children for " + userInfoPrefs.absolutePath());
+                                }
+                            }
+                            catch (BackingStoreException bse)
+                            {
+                                log.error("BackingStoreException: " + bse.toString());
+                            }
+                            if (null != propertyKeys && propertyKeys.length > 0)
+                            {
+                                userInfo = new HashMap();
+                                for (int i = 0; i < propertyKeys.length; i++)
+                                {
+                                    userInfo.put(propertyKeys[i], userInfoPrefs.get(propertyKeys[i], null));
+                                }
+                            }
                         }
-
                     }
                 }
+                catch (SecurityException sex)
+                {
+                    log.warn("Unexpected SecurityException in UserInfoManager", sex);
+                }                
+                context.setSessionAttribute(userInfoKey, userInfo);
             }
-            catch (SecurityException sex)
+            if (userAttributeRefs != null)
             {
-                log.warn("Unexpected SecurityException in UserInfoManager", sex);
-            }
+                Iterator iter = userAttributeRefs.iterator();
+                while (iter.hasNext())
+                {
+                    UserAttributeRef currentAttributeRef = (UserAttributeRef)iter.next();
+                    String key = currentAttributeRef.getNameLink();
+                    String name = currentAttributeRef.getName();
+                    if (key == null)
+                    {                
+                        key = name;
+                    }
+                    if (userInfo.containsKey(key))
+                    {
+                        userAttributeMap.put(name, userInfo.get(key));
+                    }
+                }
+            }            
         }
-
         return userAttributeMap;
     }
-
 }
