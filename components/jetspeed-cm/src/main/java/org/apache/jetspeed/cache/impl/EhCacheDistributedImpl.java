@@ -247,7 +247,11 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 				else if (action == CacheElement.ActionAdded)
 					refList.put(arg1.getKey(), arg1);
 				e.notifyChange(action);
-				notifyListeners(local, action,arg1.getKey(),arg1.getObjectValue());
+	            notifyListeners(local, action, arg1.getKey(), arg1.getObjectValue());
+			}
+			else
+			{
+	            notifyListeners(local, action, arg1.getKey(), null);
 			}
 		} catch (Exception e)
 		{

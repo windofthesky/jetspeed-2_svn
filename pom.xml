@@ -259,7 +259,7 @@
     <ddlutils.version>r551445-patched-75</ddlutils.version>
     <directory.version>0.9.3</directory.version>
     <dom4j.version>1.6.1</dom4j.version>
-    <ehcache.version>1.5.0</ehcache.version>
+    <ehcache.version>1.7.2</ehcache.version>
     <hsqldb.version>1.8.0.2</hsqldb.version>
     <javolution.version>4.0.2</javolution.version>
     <javax.activation.version>1.1</javax.activation.version>
@@ -932,14 +932,8 @@
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
-        <artifactId>ehcache</artifactId>
+        <artifactId>ehcache-core</artifactId>
         <version>${ehcache.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <!-- defining dom4j just to be able to exclude
@@ -1100,11 +1094,6 @@
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
-        <version>${xerces.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>xerces</groupId>
-        <artifactId>xerces</artifactId>
         <version>${xerces.version}</version>
       </dependency>
       <dependency>

@@ -165,12 +165,12 @@ public class EhPortletContentCacheImpl extends EhCacheImpl implements JetspeedCo
 
     public int getTimeToIdleSeconds()
     {
-        return (int)ehcache.getTimeToIdleSeconds();
+        return (int)ehcache.getCacheConfiguration().getTimeToIdleSeconds();
     }
 
     public int getTimeToLiveSeconds()
     {
-        return (int)ehcache.getTimeToLiveSeconds();
+        return (int)ehcache.getCacheConfiguration().getTimeToLiveSeconds();
     }
 
     public boolean isKeyInCache(Object key)

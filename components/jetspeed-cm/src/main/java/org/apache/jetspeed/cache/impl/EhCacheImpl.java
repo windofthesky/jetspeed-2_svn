@@ -54,12 +54,12 @@ public class EhCacheImpl implements JetspeedCache
 
     public int getTimeToIdleSeconds()
     {
-        return (int)ehcache.getTimeToIdleSeconds();
+        return (int)ehcache.getCacheConfiguration().getTimeToIdleSeconds();
     }
 
     public int getTimeToLiveSeconds()
     {
-        return (int)ehcache.getTimeToLiveSeconds();
+        return (int)ehcache.getCacheConfiguration().getTimeToLiveSeconds();
     }
 
     public boolean isKeyInCache(Object key)
@@ -193,7 +193,7 @@ public class EhCacheImpl implements JetspeedCache
         // check if cache part of a distributed cluster
         try
         {
-            CacheManagerPeerProvider peerProvider = ehcache.getCacheManager().getCachePeerProvider();
+            CacheManagerPeerProvider peerProvider = ehcache.getCacheManager().getCacheManagerPeerProvider("RMI");
             return ((peerProvider != null) && (peerProvider.listRemoteCachePeers(ehcache).size() > 0));
         }
         catch (CacheException ce)
