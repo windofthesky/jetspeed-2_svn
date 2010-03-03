@@ -32,34 +32,68 @@ public class TransactionedOperation
     public static final int UPDATE_OPERATION = 1;
     public static final int ADD_FRAGMENT_PROPERTIES_OPERATION = 2;
     public static final int UPDATE_FRAGMENT_PROPERTIES_OPERATION = 3;
+    public static final int ADD_PRINCIPAL_FRAGMENT_PROPERTIES_OPERATION = 4;
+    public static final int UPDATE_PRINCIPAL_FRAGMENT_PROPERTIES_OPERATION = 5;
     private String path;
+    private String fragmentKey;
+    private String principalKey;
     private int transactionType;
     
-    public TransactionedOperation(String path, int type)
+    public TransactionedOperation(String key, int type)
     {
-        this.path = path;
         this.transactionType = type;
+        switch (transactionType)
+        {
+            case ADD_OPERATION:
+            case UPDATE_OPERATION:
+                this.path = key;
+                break;
+            case ADD_FRAGMENT_PROPERTIES_OPERATION:
+            case UPDATE_FRAGMENT_PROPERTIES_OPERATION:
+                this.fragmentKey = key;
+                break;
+            case ADD_PRINCIPAL_FRAGMENT_PROPERTIES_OPERATION:
+            case UPDATE_PRINCIPAL_FRAGMENT_PROPERTIES_OPERATION:
+                this.principalKey = key;
+                break;
+        }
     }
-
     
     public String getPath()
     {
         return path;
     }
-
     
     public void setPath(String path)
     {
         this.path = path;
     }
 
+    public String getFragmentKey()
+    {
+        return fragmentKey;
+    }
+    
+    public void setFragmentKey(String fragmentKey)
+    {
+        this.fragmentKey = fragmentKey;
+    }
+
+    public String getPrincipalKey()
+    {
+        return principalKey;
+    }
+    
+    public void setPrincipalKey(String principalKey)
+    {
+        this.principalKey = principalKey;
+    }
     
     public int getTransactionType()
     {
         return transactionType;
     }
-
-    
+   
     public void setTransactionType(int transactionType)
     {
         this.transactionType = transactionType;

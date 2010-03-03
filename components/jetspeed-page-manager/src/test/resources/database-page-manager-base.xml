@@ -56,6 +56,16 @@ limitations under the License.
         <property name="cacheName" value="pageManagerPropertiesPathCache"/>
     </bean>
     
+    <bean id="ehPageManagerPrincipalPropertiesCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="pageManagerPrincipalPropertiesCache"/>
+    </bean>
+    
+    <bean id="ehPageManagerPrincipalPropertiesPathCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="pageManagerPrincipalPropertiesPathCache"/>
+    </bean>
+    
     <bean id="pageManagerOidCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
         <constructor-arg><ref bean="ehPageManagerOidCache"/></constructor-arg>
     </bean>
@@ -70,6 +80,14 @@ limitations under the License.
     
     <bean id="pageManagerPropertiesPathCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
         <constructor-arg><ref bean="ehPageManagerPropertiesPathCache"/></constructor-arg>
+    </bean>
+    
+    <bean id="pageManagerPrincipalPropertiesCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+        <constructor-arg><ref bean="ehPageManagerPrincipalPropertiesCache"/></constructor-arg>
+    </bean>
+    
+    <bean id="pageManagerPrincipalPropertiesPathCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+        <constructor-arg><ref bean="ehPageManagerPrincipalPropertiesPathCache"/></constructor-arg>
     </bean>
     
     <!-- Transaction Proxying -->

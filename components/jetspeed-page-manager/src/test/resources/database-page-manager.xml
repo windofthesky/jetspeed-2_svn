@@ -39,6 +39,10 @@ limitations under the License.
         <constructor-arg index="6"><ref bean="pageManagerPropertiesCache"/></constructor-arg>
         <!-- fragment properties path cache -->
         <constructor-arg index="7"><ref bean="pageManagerPropertiesPathCache"/></constructor-arg>
+        <!-- principal fragment properties cache -->
+        <constructor-arg index="8"><ref bean="pageManagerPrincipalPropertiesCache"/></constructor-arg>
+        <!-- principal fragment properties path cache -->
+        <constructor-arg index="9"><ref bean="pageManagerPrincipalPropertiesPathCache"/></constructor-arg>
     </bean>
 
 </beans>

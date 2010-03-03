@@ -533,4 +533,20 @@
            timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
            memoryStoreEvictionPolicy="LFU"/>
 
+    <cache name="pageManagerPrincipalPropertiesCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+           memoryStoreEvictionPolicy="LFU"/>
+
+    <cache name="pageManagerPrincipalPropertiesPathCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
+           memoryStoreEvictionPolicy="LFU"/>
+
 </ehcache>

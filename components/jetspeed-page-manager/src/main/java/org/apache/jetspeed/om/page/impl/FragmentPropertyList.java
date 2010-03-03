@@ -182,6 +182,18 @@ public class FragmentPropertyList extends AbstractList
         }
         return null;
     }
+    
+    /**
+     * Clear all transient properties.
+     */
+    public synchronized void clearProperties()
+    {
+        properties.clear();
+        if (removedProperties != null)
+        {
+            removedProperties.clear();
+        }
+    }
 
     /**
      * Recycle removed property.

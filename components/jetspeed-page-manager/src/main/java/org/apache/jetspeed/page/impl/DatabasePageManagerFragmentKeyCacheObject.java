@@ -18,56 +18,24 @@ package org.apache.jetspeed.page.impl;
 
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.DistributedCacheObject;
-import org.apache.ojb.broker.Identity;
 
 /**
- * DatabasePageManagerCacheObject
+ * DatabasePageManagerFragmentKeyCacheObject
  * 
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id: $
 */
-public class DatabasePageManagerCacheObject implements DistributedCacheObject
+public class DatabasePageManagerFragmentKeyCacheObject implements DistributedCacheObject
 {
-    private static final long serialVersionUID = 3575475610695136850L;
-
-    // Members
+    private static final long serialVersionUID = 1L;
     
-    private Identity id = null;
-    private String path = null;
-
-    // Constructor
+    private String fragmentKey;
     
-    /**
-     * Construct new cache object with id and path
-     * 
-     * @param path
-     */
-    public DatabasePageManagerCacheObject(final String path)
+    public DatabasePageManagerFragmentKeyCacheObject(String fragmentKey)
     {
-        this.path = path;
+        this.fragmentKey = fragmentKey;
     }
 
-    /**
-     * Construct new cache object with id and path
-     * 
-     * @param id
-     * @param path
-     */
-    public DatabasePageManagerCacheObject(final Identity id, final String path)
-    {
-        this(path);
-        this.id = id;
-    }
-
-    /**
-     * Serialization constructor
-     */
-    public DatabasePageManagerCacheObject()
-    {
-    }
-
-    // Implementation
-    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.cache.DistributedCacheObject#notifyChange(int)
      */
@@ -92,10 +60,10 @@ public class DatabasePageManagerCacheObject implements DistributedCacheObject
      */
     public boolean equals(Object obj)
     {
-        if ((obj != null) && (obj instanceof DatabasePageManagerCacheObject))
+        if ((obj != null) && (obj instanceof DatabasePageManagerFragmentKeyCacheObject))
         {
-            final DatabasePageManagerCacheObject other = (DatabasePageManagerCacheObject) obj;
-            return path.equals(other.path);
+            final DatabasePageManagerFragmentKeyCacheObject other = (DatabasePageManagerFragmentKeyCacheObject) obj;
+            return fragmentKey.equals(other.fragmentKey);
         }
         return false;
     }
@@ -105,24 +73,14 @@ public class DatabasePageManagerCacheObject implements DistributedCacheObject
      */
     public int hashCode()
     {
-        return getPath().hashCode();
-    }
-
-    // Data access
-    
-    /**
-     * @return wrapper id
-     */
-    public Identity getId()
-    {
-        return id;
+        return getFragmentKey().hashCode();
     }
 
     /**
-     * @return wrapper path
+     * @return the fragmentKey
      */
-    public String getPath()
+    public String getFragmentKey()
     {
-        return path;
+        return fragmentKey;
     }
 }

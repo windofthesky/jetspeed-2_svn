@@ -260,6 +260,14 @@
     <constructor-arg index="7">
       <ref bean="pageManagerPropertiesPathCache"/>
     </constructor-arg>
+    <!-- principal fragment properties cache -->
+    <constructor-arg index="8">
+      <ref bean="pageManagerPrincipalPropertiesCache"/>
+    </constructor-arg>
+    <!-- principal fragment properties path cache -->
+    <constructor-arg index="9">
+      <ref bean="pageManagerPrincipalPropertiesPathCache"/>
+    </constructor-arg>
   </bean>
 
   <bean id="dbPageManager" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">

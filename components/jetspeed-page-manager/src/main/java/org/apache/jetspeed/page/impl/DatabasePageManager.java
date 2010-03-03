@@ -18,6 +18,7 @@ package org.apache.jetspeed.page.impl;
 
 import java.security.AccessController;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -117,6 +118,9 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * DatabasePageManager
  * 
@@ -126,6 +130,8 @@ import org.apache.ojb.broker.query.QueryFactory;
  */
 public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport implements PageManager
 {
+    private static Logger log = LoggerFactory.getLogger(DatabasePageManager.class);
+    
     private static ThreadLocal fragmentPropertyListsCache = new ThreadLocal();
     
     private static Map modelClasses = new HashMap();
@@ -166,11 +172,12 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     
     private PageManager pageManagerProxy;
 
-    public DatabasePageManager(String repositoryPath, IdGenerator generator, boolean isPermissionsSecurity, boolean isConstraintsSecurity, JetspeedCache oidCache, JetspeedCache pathCache, JetspeedCache propertiesCache, JetspeedCache propertiesPathCache)
+    public DatabasePageManager(String repositoryPath, IdGenerator generator, boolean isPermissionsSecurity, boolean isConstraintsSecurity, JetspeedCache oidCache, JetspeedCache pathCache,
+                               JetspeedCache propertiesCache, JetspeedCache propertiesPathCache, JetspeedCache principalPropertiesCache, JetspeedCache principalPropertiesPathCache)
     {
         super(repositoryPath);
         delegator = new DelegatingPageManager(generator, isPermissionsSecurity, isConstraintsSecurity, modelClasses);
-        DatabasePageManagerCache.cacheInit(oidCache, pathCache, propertiesCache, propertiesPathCache, this);
+        DatabasePageManagerCache.cacheInit(oidCache, pathCache, propertiesCache, propertiesPathCache, principalPropertiesCache, principalPropertiesPathCache, this);
     }
 
     /**
@@ -2561,11 +2568,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         if (pages.length > 0 && pages[0].getPath().equals("/tx__test1.psml"))
         {
             // for tx testing
-            System.out.println("Adding first page");
+            log.debug("Adding first page");
             this.updatePage(pages[0]);
-            System.out.println("Adding second page");
+            log.debug("Adding second page");
             this.updatePage(pages[1]);
-            System.out.println("About to throw ex");
+            log.debug("About to throw ex");
             throw new NodeException("Its gonna blow captain!");
         }
         for (int ix = 0; ix < pages.length; ix++)
@@ -2663,41 +2670,32 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     public FragmentPropertyList getFragmentPropertyList(BaseFragmentElementImpl baseFragmentElementImpl, FragmentPropertyList transientList)
     {
         // access thread local fragment property lists cache
-        String cacheKey = getFragmentPropertyListCacheKey(baseFragmentElementImpl);
+        String fragmentKey = getFragmentPropertyListFragmentKey(baseFragmentElementImpl);
+        Subject subject = JSSubject.getSubject(AccessController.getContext());
+        Principal userPrincipal = ((subject != null) ? SubjectHelper.getBestPrincipal(subject, User.class) : null);
+        String fragmentListKey = getFragmentPropertyListKey(fragmentKey, userPrincipal);
         Map threadLocalCache = (Map)fragmentPropertyListsCache.get();
+        FragmentPropertyList list = ((threadLocalCache != null) ? (FragmentPropertyList)threadLocalCache.get(fragmentListKey) : null);
 
-        // get cached persistent list
-        FragmentPropertyList list = ((threadLocalCache != null) ? (FragmentPropertyList)threadLocalCache.get(cacheKey) : null);
+        // get and cache persistent list
         if (list == null)
         {
-            // lookup fragment property list in cache
-            list = DatabasePageManagerCache.fragmentPropertyListCacheLookup(cacheKey);
-            
-            // save fragment property list in thread local cache
-            if (list != null)
+            // get cached fragment property list components or
+            // query from database if not cached and cache
+            DatabasePageManagerCachedFragmentPropertyList globalFragmentPropertyList = DatabasePageManagerCache.fragmentPropertyListCacheLookup(fragmentKey);
+            if (globalFragmentPropertyList == null)
             {
-                if (threadLocalCache == null)
-                {
-                    threadLocalCache = new HashMap();
-                    fragmentPropertyListsCache.set(threadLocalCache);
-                }
-                threadLocalCache.put(cacheKey, list);
+                globalFragmentPropertyList = new DatabasePageManagerCachedFragmentPropertyList(baseFragmentElementImpl.getBaseFragmentsElement().getPath());
+                Criteria filter = new Criteria();
+                filter.addEqualTo("fragment", new Integer(baseFragmentElementImpl.getIdentity()));
+                filter.addIsNull("scope");
+                QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
+                Collection fragmentProperties = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+                globalFragmentPropertyList.addAll(fragmentProperties);
+                DatabasePageManagerCache.fragmentPropertyListCacheAdd(fragmentKey, globalFragmentPropertyList, false);
             }
-        }
-        if (list == null)
-        {
-            // use transient list or create new fragment property list
-            list = ((transientList != null) ? transientList : new FragmentPropertyList(baseFragmentElementImpl));
-            
-            // build fragment properties database query
-            Criteria filter = new Criteria();
-            filter.addEqualTo("fragment", new Integer(baseFragmentElementImpl.getIdentity()));
-            Criteria scopesFilter = new Criteria();
-            Criteria globalScopeFilter = new Criteria();
-            globalScopeFilter.addIsNull("scope");
-            scopesFilter.addOrCriteria(globalScopeFilter);
-            // add scopes for current user, groups, and roles
-            Subject subject = JSSubject.getSubject(AccessController.getContext());
+            Map principalFragmentPropertyLists = null;
+            DatabasePageManagerCachedFragmentPropertyList userFragmentPropertyList = null;
             if (subject != null)
             {
                 if (GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
@@ -2707,61 +2705,116 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     while (principalsIter.hasNext())
                     {
                         Principal principal = (Principal)principalsIter.next();
+                        String principalScope = null;
                         if (principal instanceof User)
                         {
-                            Criteria userScopeFilter = new Criteria();
-                            userScopeFilter.addEqualTo("scope", USER_PROPERTY_SCOPE);
-                            userScopeFilter.addEqualTo("scopeValue", principal.getName());
-                            scopesFilter.addOrCriteria(userScopeFilter);
+                            principalScope = USER_PROPERTY_SCOPE;
                         }
                         else if (principal instanceof Group)
                         {
-                            Criteria groupScopeFilter = new Criteria();
-                            groupScopeFilter.addEqualTo("scope", GROUP_PROPERTY_SCOPE);
-                            groupScopeFilter.addEqualTo("scopeValue", principal.getName());
-                            scopesFilter.addOrCriteria(groupScopeFilter);
+                            principalScope = GROUP_PROPERTY_SCOPE;
                         }
                         else if (principal instanceof Role)
                         {
-                            Criteria roleScopeFilter = new Criteria();
-                            roleScopeFilter.addEqualTo("scope", ROLE_PROPERTY_SCOPE);
-                            roleScopeFilter.addEqualTo("scopeValue", principal.getName());
-                            scopesFilter.addOrCriteria(roleScopeFilter);
+                            principalScope = ROLE_PROPERTY_SCOPE;
+                        }
+                        if (principalScope != null)
+                        {
+                            String principalKey = getFragmentPropertyListPrincipalKey(principalScope, principal.getName());
+                            DatabasePageManagerCachedFragmentPropertyList principalFragmentPropertyList = DatabasePageManagerCache.principalFragmentPropertyListCacheLookup(principalKey);
+                            if (principalFragmentPropertyList == null)
+                            {
+                                principalFragmentPropertyList = new DatabasePageManagerCachedFragmentPropertyList(principalScope, principalKey);
+                                Criteria filter = new Criteria();
+                                filter.addEqualTo("scope", principalScope);
+                                filter.addEqualTo("scopeValue", principal.getName());
+                                QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
+                                Collection fragmentProperties = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+                                principalFragmentPropertyList.addAll(fragmentProperties);
+                                DatabasePageManagerCache.principalFragmentPropertyListCacheAdd(principalKey, principalFragmentPropertyList, false);
+                            }
+                            if (principalFragmentPropertyList != null)
+                            {
+                                if (principalFragmentPropertyLists == null)
+                                {
+                                    principalFragmentPropertyLists = new HashMap();
+                                }
+                                principalFragmentPropertyLists.put(principalKey, principalFragmentPropertyList);
+                            }
                         }
                     }
                 }
-                else
+                else if (userPrincipal != null)
                 {
-                    Principal userPrincipal = SubjectHelper.getBestPrincipal(subject, User.class);
-                    if (userPrincipal != null)
+                    String principalKey = getFragmentPropertyListPrincipalKey(USER_PROPERTY_SCOPE, userPrincipal.getName());
+                    userFragmentPropertyList = DatabasePageManagerCache.principalFragmentPropertyListCacheLookup(principalKey);
+                    if (userFragmentPropertyList == null)
                     {
-                        Criteria userScopeFilter = new Criteria();
-                        userScopeFilter.addEqualTo("scope", USER_PROPERTY_SCOPE);
-                        userScopeFilter.addEqualTo("scopeValue", userPrincipal.getName());
-                        scopesFilter.addOrCriteria(userScopeFilter);
+                        userFragmentPropertyList = new DatabasePageManagerCachedFragmentPropertyList(USER_PROPERTY_SCOPE, principalKey);
+                        Criteria filter = new Criteria();
+                        filter.addEqualTo("scope", USER_PROPERTY_SCOPE);
+                        filter.addEqualTo("scopeValue", userPrincipal.getName());
+                        QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
+                        Collection fragmentProperties = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+                        userFragmentPropertyList.addAll(fragmentProperties);
+                        DatabasePageManagerCache.principalFragmentPropertyListCacheAdd(principalKey, userFragmentPropertyList, false);
                     }
                 }
             }
-            filter.addAndCriteria(scopesFilter);
-            // query for fragment properties for list using database query
-            QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
-            Collection fragmentProperties = getPersistenceBrokerTemplate().getCollectionByQuery(query);
-            list.getProperties().addAll(fragmentProperties);
-        
-            // save fragment property list in thread local cache
-            if (threadLocalCache == null)
+            
+            // assemble fragment property list instance, (use transient
+            // list or create new fragment property list)
+            list = new FragmentPropertyList(baseFragmentElementImpl);
+            list.getProperties().addAll(globalFragmentPropertyList);
+            if (subject != null)
             {
-                threadLocalCache = new HashMap();
-                fragmentPropertyListsCache.set(threadLocalCache);
+                if (GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
+                {
+                    if (principalFragmentPropertyLists != null)
+                    {                        
+                        Set principals = subject.getPrincipals();
+                        Iterator principalsIter = principals.iterator();
+                        while (principalsIter.hasNext())
+                        {
+                            Principal principal = (Principal)principalsIter.next();
+                            String principalScope = null;
+                            if (principal instanceof User)
+                            {
+                                principalScope = USER_PROPERTY_SCOPE;
+                            }
+                            else if (principal instanceof Group)
+                            {
+                                principalScope = GROUP_PROPERTY_SCOPE;
+                            }
+                            else if (principal instanceof Role)
+                            {
+                                principalScope = ROLE_PROPERTY_SCOPE;
+                            }
+                            if (principalScope != null)
+                            {
+                                String principalKey = getFragmentPropertyListPrincipalKey(principalScope, principal.getName());
+                                DatabasePageManagerCachedFragmentPropertyList principalFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)principalFragmentPropertyLists.get(principalKey);
+                                List principalFragmentProperties = filterPrincipalFragmentPropertyList(principalFragmentPropertyList, baseFragmentElementImpl);
+                                if (principalFragmentProperties != null)
+                                {
+                                    list.getProperties().addAll(principalFragmentProperties);
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (userFragmentPropertyList != null)
+                {
+                    List userFragmentProperties = filterPrincipalFragmentPropertyList(userFragmentPropertyList, baseFragmentElementImpl);
+                    if (userFragmentProperties != null)
+                    {
+                        list.getProperties().addAll(userFragmentProperties);
+                    }
+                }
             }
-            threadLocalCache.put(cacheKey, list);
 
-            // save fragment property list in cache
-            DatabasePageManagerCache.fragmentPropertyListCacheAdd(cacheKey, list, false, false);
-        }
-        else if (transientList != null)
-        {
-            synchronized (list)
+            // merge results into transient list if specified
+            if ((list != null) && (transientList != null))
             {
                 synchronized (transientList)
                 {
@@ -2786,14 +2839,17 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     }
                     
                     // clear transient list
-                    transientList.getProperties().clear();
-                    List removedProperties = transientList.getRemovedProperties();
-                    if (removedProperties != null)
-                    {
-                        removedProperties.clear();
-                    }
+                    transientList.clearProperties();
                 }
             }
+
+            // save fragment property list in thread local cache
+            if (threadLocalCache == null)
+            {
+                threadLocalCache = new HashMap();
+                fragmentPropertyListsCache.set(threadLocalCache);
+            }
+            threadLocalCache.put(fragmentListKey, list);
         }
         return list;
     }
@@ -2811,35 +2867,141 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         FragmentPropertyList list = getFragmentPropertyList(baseFragmentElementImpl, transientList);
         if (list != null)
         {
+            // get subject
+            Subject subject = JSSubject.getSubject(AccessController.getContext());
+            Principal userPrincipal = ((subject != null) ? SubjectHelper.getBestPrincipal(subject, User.class) : null);
+            String userPrincipalKey = ((userPrincipal != null) ? getFragmentPropertyListPrincipalKey(USER_PROPERTY_SCOPE, userPrincipal.getName()) : null);
+            
             // update fragment properties in list in database
             boolean updateAllScopes = ((scope != null) && scope.equals(ALL_PROPERTY_SCOPE));
             synchronized (list)
             {
-                // store property objects for add/update
-                boolean update = false;
-                boolean sharedUpdate = false;
-                Iterator propertiesIter = list.getProperties().iterator();
+                // store property objects for add/update and decompose
+                // update into cache updates, (assumes scoped property
+                // extents are fully represented in list).
+                boolean updateTransaction = false;
+                DatabasePageManagerCachedFragmentPropertyList globalFragmentPropertyList = null;
+                Map principalPartialFragmentPropertyLists = null;
+                String fragmentKey = getFragmentPropertyListFragmentKey(baseFragmentElementImpl);
+                List properties = list.getProperties();
+                List removedProperties = list.getRemovedProperties();
+                
+                // construct scoped properties lists for cache updates from
+                // all properties, (add, update, and remove)
+                List allProperties = new ArrayList(properties);
+                if (removedProperties != null)
+                {
+                    allProperties.addAll(removedProperties);                    
+                }
+                Iterator allPropertiesIter = allProperties.iterator();
+                while (allPropertiesIter.hasNext())
+                {
+                    FragmentPropertyImpl property = (FragmentPropertyImpl)allPropertiesIter.next();
+                    property.setFragment(baseFragmentElementImpl);
+                    String propertyScope = property.getScope();
+                    String propertyScopeValue = property.getScopeValue();
+                    if (updateAllScopes || ((scope == null) && (propertyScope == null)) || ((scope != null) && scope.equals(propertyScope)))
+                    {
+                        // classify property by scopes and create scoped lists
+                        if (propertyScope == null)
+                        {
+                            if (globalFragmentPropertyList == null)
+                            {
+                                globalFragmentPropertyList = new DatabasePageManagerCachedFragmentPropertyList(baseFragmentElementImpl.getBaseFragmentsElement().getPath());
+                            }
+                        }
+                        else if ((subject != null) && GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
+                        {
+                            boolean subjectHasPrincipal = false;
+                            if (propertyScope.equals(USER_PROPERTY_SCOPE))
+                            {
+                                subjectHasPrincipal = ((userPrincipal != null) && userPrincipal.getName().equals(propertyScopeValue));
+                            }
+                            else if (propertyScope.equals(GROUP_PROPERTY_SCOPE))
+                            {
+                                subjectHasPrincipal = (SubjectHelper.getPrincipal(subject, Group.class, propertyScopeValue) != null);
+                            }
+                            else if (propertyScope.equals(ROLE_PROPERTY_SCOPE))
+                            {
+                                subjectHasPrincipal = (SubjectHelper.getPrincipal(subject, Role.class, propertyScopeValue) != null);
+                            }
+                            if (subjectHasPrincipal)
+                            {
+                                if (principalPartialFragmentPropertyLists == null)
+                                {
+                                    principalPartialFragmentPropertyLists = new HashMap();
+                                }
+                                String principalKey = getFragmentPropertyListPrincipalKey(propertyScope, propertyScopeValue);
+                                DatabasePageManagerCachedFragmentPropertyList principalPartialFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)principalPartialFragmentPropertyLists.get(principalKey);
+                                if (principalPartialFragmentPropertyList == null)
+                                {
+                                    principalPartialFragmentPropertyList = new DatabasePageManagerCachedFragmentPropertyList(propertyScope, principalKey);
+                                    principalPartialFragmentPropertyLists.put(principalKey, principalPartialFragmentPropertyList);
+                                }
+                            }
+                        }
+                        else if ((subject != null) && propertyScope.equals(USER_PROPERTY_SCOPE))
+                        {
+                            if ((userPrincipal != null) && userPrincipal.getName().equals(propertyScopeValue))
+                            {
+                                if (principalPartialFragmentPropertyLists == null)
+                                {
+                                    principalPartialFragmentPropertyLists = new HashMap();
+                                }
+                                DatabasePageManagerCachedFragmentPropertyList principalPartialFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)principalPartialFragmentPropertyLists.get(userPrincipalKey);
+                                if (principalPartialFragmentPropertyList == null)
+                                {
+                                    principalPartialFragmentPropertyList = new DatabasePageManagerCachedFragmentPropertyList(USER_PROPERTY_SCOPE, userPrincipalKey);
+                                    principalPartialFragmentPropertyLists.put(userPrincipalKey, principalPartialFragmentPropertyList);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // populate properties lists for cache updates and
+                // update persistent properties
+                Iterator propertiesIter = properties.iterator();
                 while (propertiesIter.hasNext())
                 {
                     FragmentPropertyImpl storeProperty = (FragmentPropertyImpl)propertiesIter.next();
-                    storeProperty.setFragment(baseFragmentElementImpl);
                     String storePropertyScope = storeProperty.getScope();
+                    String storePropertyScopeValue = storeProperty.getScopeValue();
                     if (updateAllScopes || ((scope == null) && (storePropertyScope == null)) || ((scope != null) && scope.equals(storePropertyScope)))
                     {
-                        // track operation type
-                        if (storeProperty.getIdentity() != 0)
+                        // classify and decompose update into individual caches:
+                        // allow update only if scoped properties list created above
+                        // exists since the subject matching rules are checked there
+                        updateTransaction = (updateTransaction || (storeProperty.getIdentity() != 0));
+                        boolean store = false;
+                        if (storePropertyScope == null)
                         {
-                            update = true;
+                            if (globalFragmentPropertyList != null)
+                            {
+                                globalFragmentPropertyList.add(storeProperty);
+                                store = true;
+                            }
                         }
-                        if ((storePropertyScope == null) || !storePropertyScope.equals(USER_PROPERTY_SCOPE))
+                        else if (subject != null)
                         {
-                            sharedUpdate = true;
+                            if (principalPartialFragmentPropertyLists != null)
+                            {
+                                String principalKey = getFragmentPropertyListPrincipalKey(storePropertyScope, storePropertyScopeValue);
+                                DatabasePageManagerCachedFragmentPropertyList principalPartialFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)principalPartialFragmentPropertyLists.get(principalKey);
+                                if (principalPartialFragmentPropertyList != null)
+                                {
+                                    principalPartialFragmentPropertyList.add(storeProperty);
+                                    store = true;
+                                }
+                            }
                         }
-                        // store property object
-                        getPersistenceBrokerTemplate().store(storeProperty);
+                        // store persistent property object
+                        if (store)
+                        {
+                            getPersistenceBrokerTemplate().store(storeProperty);
+                        }
                     }
                 }
-                List removedProperties = list.getRemovedProperties();
                 if (removedProperties != null)
                 {
                     Iterator removedPropertiesIter = removedProperties.iterator();
@@ -2848,25 +3010,66 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                         FragmentPropertyImpl deleteProperty = (FragmentPropertyImpl)removedPropertiesIter.next();
                         deleteProperty.setFragment(baseFragmentElementImpl);
                         String deletePropertyScope = deleteProperty.getScope();
+                        String deletePropertyScopeValue = deleteProperty.getScopeValue();
                         if (updateAllScopes || ((scope == null) && (deletePropertyScope == null)) || ((scope != null) && scope.equals(deletePropertyScope)))
                         {
-                            // track operation type
-                            update = true;
-                            if ((deletePropertyScope == null) || !deletePropertyScope.equals(USER_PROPERTY_SCOPE))
+                            // classify and decompose delete: allow delete only
+                            // if scoped properties list created above exists
+                            // since the subject matching rules are checked there
+                            updateTransaction = true;
+                            boolean delete = false;
+                            if (deletePropertyScope == null)
                             {
-                                sharedUpdate = true;
+                                delete = (globalFragmentPropertyList != null);
                             }
-                            // delete property object
-                            getPersistenceBrokerTemplate().delete(deleteProperty);
+                            else if (subject != null)
+                            {
+                                if (principalPartialFragmentPropertyLists != null)
+                                {
+                                    String principalKey = getFragmentPropertyListPrincipalKey(deletePropertyScope, deletePropertyScopeValue);
+                                    delete = principalPartialFragmentPropertyLists.containsKey(principalKey);
+                                }
+                            }
+                            // delete persistent property object
+                            if (delete)
+                            {
+                                getPersistenceBrokerTemplate().delete(deleteProperty);
+                            }
                         }
                     }
                 }
                 
                 // interoperate with cache to signal update operations and
                 // record thread transactions
-                String cacheKey = getFragmentPropertyListCacheKey(baseFragmentElementImpl);
-                String transactionOperationPath = DatabasePageManagerCache.fragmentPropertyListCacheAdd(cacheKey, list, (update || sharedUpdate), sharedUpdate);
-                DatabasePageManagerCache.addTransaction(new TransactionedOperation(transactionOperationPath, (update ? TransactionedOperation.UPDATE_FRAGMENT_PROPERTIES_OPERATION : TransactionedOperation.ADD_FRAGMENT_PROPERTIES_OPERATION)));
+                if (globalFragmentPropertyList != null)
+                {
+                    // cache new global fragment property list
+                    DatabasePageManagerCache.fragmentPropertyListCacheAdd(fragmentKey, globalFragmentPropertyList, true);
+                    DatabasePageManagerCache.addTransaction(new TransactionedOperation(fragmentKey, (updateTransaction ? TransactionedOperation.UPDATE_FRAGMENT_PROPERTIES_OPERATION : TransactionedOperation.ADD_FRAGMENT_PROPERTIES_OPERATION)));
+                }
+                if (principalPartialFragmentPropertyLists != null)
+                {
+                    // update cached principal scoped fragment property lists
+                    Iterator listsIter = principalPartialFragmentPropertyLists.entrySet().iterator();
+                    while (listsIter.hasNext())
+                    {
+                        Map.Entry entry = (Map.Entry)listsIter.next();
+                        String principalKey = (String)entry.getKey();
+                        DatabasePageManagerCachedFragmentPropertyList principalPartialFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)entry.getValue();
+                        // update cached principal scoped fragment property list
+                        DatabasePageManagerCachedFragmentPropertyList cachedPrincipalFragmentPropertyList = DatabasePageManagerCache.principalFragmentPropertyListCacheLookup(principalKey);
+                        if (cachedPrincipalFragmentPropertyList != null)
+                        {
+                            synchronized (cachedPrincipalFragmentPropertyList)
+                            {
+                                removeAllPrincipalFragmentPropertyList(cachedPrincipalFragmentPropertyList, baseFragmentElementImpl);
+                                cachedPrincipalFragmentPropertyList.addAll(principalPartialFragmentPropertyList);
+                            }
+                            DatabasePageManagerCache.principalFragmentPropertyListCacheAdd(principalKey, cachedPrincipalFragmentPropertyList, true);
+                        }
+                        DatabasePageManagerCache.addTransaction(new TransactionedOperation(principalKey, (updateTransaction ? TransactionedOperation.UPDATE_PRINCIPAL_FRAGMENT_PROPERTIES_OPERATION : TransactionedOperation.ADD_PRINCIPAL_FRAGMENT_PROPERTIES_OPERATION)));
+                    }
+                }
             }
         }
     }
@@ -2880,73 +3083,125 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     public void removeFragmentPropertyList(BaseFragmentElementImpl baseFragmentElementImpl, FragmentPropertyList transientList)
     {
         // access thread local fragment property lists cache
-        String cacheKey = getFragmentPropertyListCacheKey(baseFragmentElementImpl);
+        String fragmentKey = getFragmentPropertyListFragmentKey(baseFragmentElementImpl);
+        Subject subject = JSSubject.getSubject(AccessController.getContext());
+        Principal userPrincipal = ((subject != null) ? SubjectHelper.getBestPrincipal(subject, User.class) : null);
+        String fragmentListKey = getFragmentPropertyListKey(fragmentKey, userPrincipal);
         Map threadLocalCache = (Map)fragmentPropertyListsCache.get();
+        FragmentPropertyList list = ((threadLocalCache != null) ? (FragmentPropertyList)threadLocalCache.get(fragmentListKey) : null);
 
         // remove cached persistent list
-        FragmentPropertyList list = ((threadLocalCache != null) ? (FragmentPropertyList)threadLocalCache.get(cacheKey) : null);
         if (list != null)
         {
             // remove list from cache
-            threadLocalCache.remove(cacheKey);
+            threadLocalCache.remove(fragmentKey);
             // cleanup list
-            synchronized (list)
-            {
-                list.getProperties().clear();
-                List removedProperties = list.getRemovedProperties();
-                if (removedProperties != null)
-                {
-                    removedProperties.clear();
-                }
-            }
+            list.clearProperties();
         }
-        
         // cleanup transient list
         if (transientList != null)
         {
-            synchronized (transientList)
-            {
-                transientList.getProperties().clear();
-                List removedProperties = transientList.getRemovedProperties();
-                if (removedProperties != null)
-                {
-                    removedProperties.clear();
-                }
-            }
+            transientList.clearProperties();
         }
 
         // remove all fragment properties in list from database
+        Integer fragmentId = new Integer(baseFragmentElementImpl.getIdentity());
         Criteria filter = new Criteria();
-        filter.addEqualTo("fragment", new Integer(baseFragmentElementImpl.getIdentity()));
+        filter.addEqualTo("fragment", fragmentId);
         QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
         getPersistenceBrokerTemplate().deleteByQuery(query);
         
         // interoperate with cache to signal remove operations
-        String path = baseFragmentElementImpl.getBaseFragmentsElement().getPath();
-        DatabasePageManagerCache.fragmentPropertyListCacheRemove(path);
+        DatabasePageManagerCache.fragmentPropertyListCacheRemove(fragmentKey);
+        DatabasePageManagerCache.addTransaction(new TransactionedOperation(fragmentKey, TransactionedOperation.UPDATE_FRAGMENT_PROPERTIES_OPERATION));
     }
     
     /**
-     * Compute thread local cache key for fragment properties.
+     * Compute thread local fragment property list key for fragment properties.
+     * 
+     * @param fragmentKey fragment key
+     * @param userPrincipal current subject user principal
+     * @return fragment property list key string
+     */
+    private static String getFragmentPropertyListKey(String fragmentKey, Principal userPrincipal)
+    {
+        if (userPrincipal != null)
+        {
+            return fragmentKey+"/"+userPrincipal.getName();
+        }
+        return fragmentKey;
+    }
+    
+    /**
+     * Compute fragment key for fragment properties.
      * 
      * @param baseFragmentElementImpl owner of fragment properties
-     * @return key string
+     * @return fragment key string
      */
-    private static String getFragmentPropertyListCacheKey(BaseFragmentElementImpl baseFragmentElementImpl)
+    private static String getFragmentPropertyListFragmentKey(BaseFragmentElementImpl baseFragmentElementImpl)
     {
-        // base key
-        String key = baseFragmentElementImpl.getBaseFragmentsElement().getPath()+"/"+baseFragmentElementImpl.getId();
-        // append current user if available
-        Subject subject = JSSubject.getSubject(AccessController.getContext());
-        if (subject != null)
+        return baseFragmentElementImpl.getBaseFragmentsElement().getPath()+"/"+baseFragmentElementImpl.getId()+":"+baseFragmentElementImpl.getIdentity();
+    }
+    
+    /**
+     * Compute principal key for fragment properties.
+     * 
+     * @param principalType principal type
+     * @param principalName principal name
+     * @return principal key string
+     */
+    private static String getFragmentPropertyListPrincipalKey(String principalType, String principalName)
+    {
+        return principalType+":"+principalName;
+    }
+    
+    /**
+     * Filter principal fragment property list.
+     * 
+     * @param principalFragmentPropertyList principal fragment property list
+     * @param baseFragmentElementImpl fragment property owning fragment
+     * @return fragment property list for owning fragment
+     */
+    private static List filterPrincipalFragmentPropertyList(DatabasePageManagerCachedFragmentPropertyList principalFragmentPropertyList, BaseFragmentElementImpl baseFragmentElementImpl)
+    {
+        List filteredList = null;
+        synchronized (principalFragmentPropertyList)
         {
-            Principal userPrincipal = SubjectHelper.getBestPrincipal(subject, User.class);
-            if (userPrincipal != null)
+            for (Iterator iter = principalFragmentPropertyList.iterator(); iter.hasNext();)
             {
-                key = key+"/"+userPrincipal.getName();
+                FragmentPropertyImpl fragmentProperty = (FragmentPropertyImpl)iter.next();
+                if (((BaseFragmentElementImpl)fragmentProperty.getFragment()).getIdentity() == baseFragmentElementImpl.getIdentity())
+                {
+                    if (filteredList == null)
+                    {
+                        filteredList = new ArrayList();
+                    }
+                    filteredList.add(fragmentProperty);
+                }
             }
         }
-        return key;
+        return filteredList;
+    }
+    
+    /**
+     * Remove matching principal fragment properties from list.
+     * 
+     * @param principalFragmentPropertyList principal fragment property list
+     * @param baseFragmentElementImpl fragment property owning fragment
+     */
+    private static void removeAllPrincipalFragmentPropertyList(DatabasePageManagerCachedFragmentPropertyList principalFragmentPropertyList, BaseFragmentElementImpl baseFragmentElementImpl)
+    {
+        synchronized (principalFragmentPropertyList)
+        {
+            for (Iterator iter = principalFragmentPropertyList.iterator(); iter.hasNext();)
+            {
+                FragmentPropertyImpl fragmentProperty = (FragmentPropertyImpl)iter.next();
+                if (((BaseFragmentElementImpl)fragmentProperty.getFragment()).getIdentity() == baseFragmentElementImpl.getIdentity())
+                {
+                    iter.remove();
+                }
+            }
+        }
     }
     
     /**

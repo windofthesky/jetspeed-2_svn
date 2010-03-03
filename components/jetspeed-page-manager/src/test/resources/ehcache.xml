@@ -64,6 +64,22 @@
            timeToLiveSeconds="150"
            memoryStoreEvictionPolicy="LFU"/>
 
+    <cache name="pageManagerPrincipalPropertiesCache"
+           maxElementsInMemory="128"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="150"
+           timeToLiveSeconds="150"
+           memoryStoreEvictionPolicy="LFU"/>
+
+    <cache name="pageManagerPrincipalPropertiesPathCache"
+           maxElementsInMemory="128"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="150"
+           timeToLiveSeconds="150"
+           memoryStoreEvictionPolicy="LFU"/>
+
     <cache name="pageFileCache"
            maxElementsInMemory="100"
            eternal="false"
