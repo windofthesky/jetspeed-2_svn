@@ -46,7 +46,7 @@ limitations under the License.
 #PageActionBar()
 <!-- end of header -->
 </div>   
-<div id="layout-${layoutFragment.id}" class="#PageBaseCSSClass()" >
+<div id="layout-${rootFragment.id}" class="#PageBaseCSSClass()" >
 <div class="header">
 <h1 class="logo">Jetspeed 2</h1>
 <div class="menu">

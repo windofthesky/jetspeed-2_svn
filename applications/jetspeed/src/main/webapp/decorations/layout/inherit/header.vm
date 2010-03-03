@@ -76,7 +76,7 @@ var JETUI_YUI = {
 </head>
 <body class="#PageBaseCSSClass()">
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
-<div id="layout-${layoutFragment.id}" class="#PageBaseCSSClass()" >
+<div id="layout-${rootFragment.id}" class="#PageBaseCSSClass()" >
 #if (!$jetspeed.isAjaxCustomizationEnabled())
     <!-- Content Table -->
     <table cellpadding="0" cellspacing="0" border="0" width="100%" id="main">
