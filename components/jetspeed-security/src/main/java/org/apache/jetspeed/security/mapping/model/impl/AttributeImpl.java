@@ -137,7 +137,7 @@ public class AttributeImpl implements Attribute
             if (values != null){
                 Iterator<String> valIter = values.iterator();
                 while (valIter.hasNext()){
-                    sb.append(values.getClass());
+                    sb.append(valIter.next());
                     if (valIter.hasNext()){
                         sb.append(",");
                     }
