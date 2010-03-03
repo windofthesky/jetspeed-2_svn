@@ -281,7 +281,7 @@ public class SpacesServiceImpl implements Spaces
     {
     	try 
     	{
-			Space space = new SpaceImpl(pageManager.getFolder(makeSpacePath(spaceName)));
+			Space space = loadSpace(pageManager.getFolder(makeSpacePath(spaceName)));
 			return space;
 		} 
     	catch (FolderNotFoundException e) 
@@ -293,6 +293,26 @@ public class SpacesServiceImpl implements Spaces
 		}
     	return null;
     }
+    
+    public Space lookupUserSpace(String username)
+    {
+    	String spaceName = Folder.USER_FOLDER + username;
+    	try 
+    	{    		
+			Folder folder = pageManager.getFolder(makeSpacePath(spaceName));
+			Space space = loadSpace(folder);
+			return space;
+		} 
+    	catch (FolderNotFoundException e) 
+    	{
+		} 
+    	catch (Exception e) 
+    	{
+    		log.error("lookupSpace", e);        	
+		}
+    	return null;
+    }
+
     
     public void addSpaceToEnvironment(Space space, Environment env) throws SpacesException
     {

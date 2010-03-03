@@ -17,12 +17,13 @@ limitations under the License.
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd">
-  <title >Home</title>  
-
+  <title >Dev Manager Home</title>
+  <short-title>My Space</short-title>  
+  <metadata name='space-owner' xml:lang='en'>devmgr</metadata>  
   <document-order>default-page.psml</document-order>
   <document-order>account.psml</document-order>
-  
   <security-constraints>
     <owner>devmgr</owner>
-  </security-constraints>  
+  </security-constraints>
+    
 </folder>

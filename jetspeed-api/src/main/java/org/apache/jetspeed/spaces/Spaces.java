@@ -74,7 +74,6 @@ public interface Spaces
      */
     Environment lookupEnvironment(String envName);
     
-    
     /**
      * Lists all unique spaces in the portal, regardless of environment
      *  
@@ -133,6 +132,13 @@ public interface Spaces
      * @return the found space object from the persistent store, or null if not found
      */
     Space lookupSpace(String spaceName);
+    
+    /**
+     * Retrieve the user space for a user
+     * @param username
+     * @return the user space for a user
+     */
+    Space lookupUserSpace(String username);
     
     /**
      * Adds a space to the list of spaces for the given environment

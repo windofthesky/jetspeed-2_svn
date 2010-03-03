@@ -285,13 +285,10 @@ public class PortalAdministrationImpl implements PortalAdministration
                             // deep copy from the default folder template tree, creating a deep-copy of the template
                             // in the new user's folder tree
                             Folder source = innerPageManager.getFolder(innerFolderTemplate);
-                            
-                            
                             innerPageManager.deepCopyFolder(source, innerSubsite, innerUserName);
                             Folder newFolder = pageManager.getFolder(innerSubsite);                            
-                            newFolder.setTitle("Home Folder");
-                            newFolder.setShortTitle("Home");
-                             
+                            newFolder.setTitle("My Home Space");
+                            newFolder.setShortTitle("My Space");                             
                             return null;
                         }
                         catch (SecurityException s1)

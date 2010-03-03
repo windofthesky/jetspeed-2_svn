@@ -138,6 +138,16 @@
     </constructor-arg>
   </bean>
 
+  <bean id="pageValve" class="org.apache.jetspeed.pipeline.valve.impl.PageValveImpl" init-method="initialize">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg index="0">
+      <ref bean="org.apache.jetspeed.page.PageManager" />
+    </constructor-arg>
+    <constructor-arg index="1">
+      <ref bean="org.apache.jetspeed.layout.PageLayoutComponent" />
+    </constructor-arg>
+	</bean>
+	
   <!-- 
     To create a new page when a user first logs in from their roles,
     add this valve after each profilerValve entry in the pipeline configs 
@@ -924,7 +934,7 @@
         <ref bean="localizationValve" />
         <ref bean="passwordCredentialValve" />
         <ref bean="loginValidationValve" />
-        <ref bean="profilerValve" />
+        <ref bean="pageValve" />
         <ref bean="refreshUserHomepageValve" />
         <!--
           JS2-806  
