@@ -32,6 +32,7 @@ public class InlinePortletResourceBundle extends ListResourceBundle
     private final static String KEYWORDS_KEY = "javax.portlet.keywords";
 
     private Object[][] contents;
+    private ResourceBundle parent;
 
     public InlinePortletResourceBundle(String title, String shortTitle, String keywords)
     {
@@ -69,6 +70,12 @@ public class InlinePortletResourceBundle extends ListResourceBundle
     
     public void setParent(ResourceBundle parent)
     {
+        this.parent = parent;
         super.setParent(parent);
+    }
+    
+    ResourceBundle getParent()
+    {
+        return parent;
     }
 }

@@ -83,4 +83,21 @@ public interface PortletFactory
      * @see javax.portlet.GenericPortlet#doHelp(RenderRequest, RenderResponse)
      */
     boolean hasRenderHelperMethod( PortletDefinition pd, PortletMode mode );
+    
+    /**
+     * Tries to reload resource bundles of portlet application.
+     * @param pa portlet application
+     * @return True if the reloading has been succeeded.
+     * @throws PortletException
+     */
+    void reloadResourceBundles(PortletApplication pa) throws PortletException;
+    
+    /**
+     * Tries to reload resource bundles of portlet definition.
+     * @param pd portlet definition
+     * @return True if the reloading has been succeeded.
+     * @throws PortletException
+     */
+    void reloadResourceBundles(PortletDefinition pd) throws PortletException;
+    
 }

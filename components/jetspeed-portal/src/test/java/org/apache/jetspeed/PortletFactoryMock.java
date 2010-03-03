@@ -90,4 +90,12 @@ public final class PortletFactoryMock implements PortletFactory
     {
         return false;
     }
+
+    public void reloadResourceBundles(PortletApplication pa) throws PortletException
+    {
+    }
+
+    public void reloadResourceBundles(PortletDefinition pd) throws PortletException
+    {
+    }
 }

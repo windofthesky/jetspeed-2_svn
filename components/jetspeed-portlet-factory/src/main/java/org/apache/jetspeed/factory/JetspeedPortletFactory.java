@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.factory;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 import javax.portlet.GenericPortlet;
@@ -49,6 +51,7 @@ import org.apache.jetspeed.om.portlet.Listener;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.util.GenericPortletUtils;
+import org.apache.jetspeed.util.ReloadablePropertyResourceBundle;
 import org.apache.pluto.container.RequestDispatcherService;
 import org.apache.portals.bridges.common.ServletContextProvider;
 import org.slf4j.Logger;
@@ -145,14 +148,21 @@ public class JetspeedPortletFactory implements PortletFactory
     protected ResourceBundle loadResourceBundle( Locale locale, String bundleName, ClassLoader cl )
     {
         ResourceBundle resourceBundle = null;
+        
         try
         {
             resourceBundle = ResourceBundle.getBundle(bundleName, locale, cl);
+            
+            if (resourceBundle instanceof PropertyResourceBundle)
+            {
+                resourceBundle = new ReloadablePropertyResourceBundle((PropertyResourceBundle) resourceBundle, bundleName);
+            }
         }
         catch (MissingResourceException x)
         {
             return null;
         }
+        
         return resourceBundle;
     }
     
@@ -752,6 +762,96 @@ public class JetspeedPortletFactory implements PortletFactory
             }
             
             return false;
+        }
+    }
+
+    public void reloadResourceBundles(PortletApplication pa) throws PortletException
+    {
+        String paName = pa.getName();
+        Map<Locale, ResourceBundle> bundleCache = applicationResourceBundleCache.get(paName);
+        
+        if (bundleCache != null)
+        {
+            List<Locale> locales = null;
+            
+            synchronized (bundleCache)
+            {
+                locales = new ArrayList<Locale>(bundleCache.keySet());
+            }
+            
+            for (Locale locale : locales)
+            {
+                ResourceBundle bundle = bundleCache.get(locale);
+                
+                if (bundle != null)
+                {
+                    if (bundle instanceof InlinePortletResourceBundle)
+                    {
+                        bundle = ((InlinePortletResourceBundle) bundle).getParent();
+                    }
+                    
+                    if (bundle instanceof ReloadablePropertyResourceBundle)
+                    {
+                        try
+                        {
+                            ((ReloadablePropertyResourceBundle) bundle).reload(getPortletApplicationClassLoader(pa));
+                        }
+                        catch (IOException e)
+                        {
+                            log.error("Failed to reload resource bundle of " + paName + " for locale, " + locale, e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void reloadResourceBundles(PortletDefinition pd) throws PortletException
+    {
+        PortletApplication pa = pd.getApplication();
+        String paName = pa.getName();
+        String pdName = pd.getPortletName();
+        
+        Map<String, Map<Locale, ResourceBundle>> portletResourceBundleCache = portletsResourceBundleCache.get(paName);
+        
+        if (portletResourceBundleCache != null)
+        {
+            Map<Locale, ResourceBundle> bundleCache = portletResourceBundleCache.get(pdName);
+            
+            if (bundleCache != null)
+            {
+                List<Locale> locales = null;
+                
+                synchronized (bundleCache)
+                {
+                    locales = new ArrayList<Locale>(bundleCache.keySet());
+                }
+                
+                for (Locale locale : locales)
+                {
+                    ResourceBundle bundle = bundleCache.get(locale);
+                    
+                    if (bundle != null)
+                    {
+                        if (bundle instanceof InlinePortletResourceBundle)
+                        {
+                            bundle = ((InlinePortletResourceBundle) bundle).getParent();
+                        }
+                        
+                        if (bundle instanceof ReloadablePropertyResourceBundle)
+                        {
+                            try
+                            {
+                                ((ReloadablePropertyResourceBundle) bundle).reload(getPortletApplicationClassLoader(pa));
+                            }
+                            catch (IOException e)
+                            {
+                                log.error("Failed to reload resource bundle of " + paName + "::" + pdName + " for locale, " + locale, e);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     
