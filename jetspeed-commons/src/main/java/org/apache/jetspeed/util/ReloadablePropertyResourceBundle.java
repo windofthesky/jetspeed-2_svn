@@ -17,8 +17,12 @@
 package org.apache.jetspeed.util;
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Properties;
@@ -75,7 +79,17 @@ public class ReloadablePropertyResourceBundle extends ResourceBundle
         
         try
         {
-            is = loader.getResourceAsStream(resPath);
+            URL url = loader.getResource(resPath);
+            
+            if ("file".equals(url.getProtocol()))
+            {
+                is = new FileInputStream(new File(url.toURI()));
+            }
+            else
+            {
+                is = url.openStream();
+            }
+            
             bis = new BufferedInputStream(is);
             props.load(bis);
             
@@ -83,6 +97,10 @@ public class ReloadablePropertyResourceBundle extends ResourceBundle
             {
                 overridingProps = props;
             }
+        }
+        catch (URISyntaxException e)
+        {
+            throw new IOException(e.toString());
         }
         finally
         {
