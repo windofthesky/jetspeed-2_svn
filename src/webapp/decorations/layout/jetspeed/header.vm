@@ -37,7 +37,7 @@ limitations under the License.
 <body class="#PageBaseCSSClass()">
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
 
-<div id="layout-${layoutFragment.id}" class="#PageBaseCSSClass()" >
+<div id="layout-${rootFragment.id}" class="#PageBaseCSSClass()" >
 <p>
 <img src="#GetPageResource('images/jetspeed-logo.gif')" alt="Jetspeed 2 Logo" border="0">
 </p>
