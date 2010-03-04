@@ -1032,6 +1032,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     // and stale flag
                     clearSessionProfileLocators();
                     profileLocators = requestProfileLocators;
+                    forceReservedVisible = requestForceReservedVisible;
                     userPrincipal = currentUserPrincipal;
                     updated = true;
                 }

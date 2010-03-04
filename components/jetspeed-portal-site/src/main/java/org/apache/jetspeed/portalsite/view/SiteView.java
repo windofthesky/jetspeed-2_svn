@@ -385,7 +385,7 @@ public class SiteView
             boolean navigatedPathRoot = false;
 
             // reset advance of the profile locator offset by one
-            // to accomodate automatic iteration within locator loop
+            // to accommodate automatic iteration within locator loop
             int skipProfileLocatorIterations = -1;
 
             // form locator properties into a complete path
@@ -1147,7 +1147,7 @@ public class SiteView
 
     /**
      * pathRegexpPattern - tests for and converts simple path wildcard
-     *                     and character class regular exressions to
+     *                     and character class regular expressions to
      *                     perl5/standard java pattern syntax
      *
      * @param regexp - candidate path regular expression
