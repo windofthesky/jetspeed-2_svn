@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Locale;
 
 import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.page.document.Node;
 
 /**
  * This interface describes common features of portal-site
@@ -105,4 +106,29 @@ public interface MenuElement extends Serializable
      * @return skin name
      */
     String getSkin();
+
+    /**
+     * isEditable - get editable access flag for menu option
+     *
+     * @return editable flag
+     */
+    boolean isEditable();
+
+    /**
+     * getNode - get Node proxy from site view associated with element
+     *
+     * @return proxy folder, page, or link node
+     */
+    Node getNode();
+
+    /**
+     * getManagedNode - get underlying managed concrete Node
+     *                  associated with menu element; note that the
+     *                  node returned is not necessarily deterministic
+     *                  if the mapping of profiled folders, pages,
+     *                  and links is not mapped 1:1
+     *
+     * @return concrete folder, page, or link node
+     */
+    Node getManagedNode();
 }

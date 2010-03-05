@@ -75,6 +75,19 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
     /**
      * MenuImpl - request/session context dependent constructor
      *
+     * @param view site view used to construct menu
+     * @param definition menu definition
+     * @param context request context
+     * @param menus related menu definition names set
+     */
+    public MenuImpl(MenuDefinition definition, PortalSiteRequestContextImpl context, Set menus)
+    {
+        this((MenuImpl)null, definition, context, menus);
+    }
+
+    /**
+     * MenuImpl - request/session context dependent constructor
+     *
      * @param parent containing menu implementation
      * @param definition menu definition
      * @param context request context
@@ -82,11 +95,22 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      */
     public MenuImpl(MenuImpl parent, MenuDefinition definition, PortalSiteRequestContextImpl context, Set menus)
     {
-        super(parent);
-        this.definition = definition;
+        this(((PortalSiteSessionContextImpl)context.getSessionContext()).getSiteView(), parent, definition, context, menus);
+    }
 
-        // get site view from context
-        SiteView view = ((PortalSiteSessionContextImpl)context.getSessionContext()).getSiteView();
+    /**
+     * MenuImpl - request/session context dependent constructor
+     *
+     * @param view site view used to construct menu
+     * @param parent containing menu implementation
+     * @param definition menu definition
+     * @param context request context
+     * @param menus related menu definition names set
+     */
+    protected MenuImpl(SiteView view, MenuImpl parent, MenuDefinition definition, PortalSiteRequestContextImpl context, Set menus)
+    {
+        super(view, parent);
+        this.definition = definition;
         if (view != null)
         {
             // define menu node for titles and metadata if options
@@ -170,7 +194,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                 }
 
                 // menu defined only with menu definition options
-                this.elements = constructMenuElements(context, view, options, overrideOptionProxies, definition.getDepth(), definition.isPaths(), definition.isRegexp(), definition.getProfile(), definition.getOrder());
+                this.elements = constructMenuElements(view, context, options, overrideOptionProxies, definition.getDepth(), definition.isPaths(), definition.isRegexp(), definition.getProfile(), definition.getOrder());
             }
             else
             {
@@ -214,7 +238,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         {
                             order = definition.getOrder();
                         }
-                        List optionsAndMenus = constructMenuElements(context, view, optionDefinition.getOptions(), null, optionDefinition.getDepth(), optionDefinition.isPaths(), optionDefinition.isRegexp(), locatorName, order);
+                        List optionsAndMenus = constructMenuElements(view, context, optionDefinition.getOptions(), null, optionDefinition.getDepth(), optionDefinition.isPaths(), optionDefinition.isRegexp(), locatorName, order);
 
                         // append option and menu elements to current separator
                         // elements list
@@ -256,7 +280,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         // construct new separator and reset separator
                         // and separator option/menu elements list
                         MenuSeparatorDefinition separatorDefinition = (MenuSeparatorDefinition)menuElement;
-                        separator = new MenuSeparatorImpl(this, separatorDefinition);
+                        separator = new MenuSeparatorImpl(view, this, separatorDefinition);
                         if (separatedElements != null)
                         {
                             separatedElements.clear();
@@ -266,7 +290,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                     {
                         // construct nested menu element from definition
                         MenuDefinition menuDefinition = (MenuDefinition)menuElement;
-                        MenuImpl nestedMenu = new MenuImpl(this, menuDefinition, context, menus);
+                        MenuImpl nestedMenu = new MenuImpl(view, this, menuDefinition, context, menus);
 
                         // append menu element to current separated elements list
                         if (separatedElements == null)
@@ -464,18 +488,6 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
     }
 
     /**
-     * MenuImpl - request/session context dependent constructor
-     *
-     * @param definition menu definition
-     * @param context request context
-     * @param menus related menu definition names set
-     */
-    public MenuImpl(MenuDefinition definition, PortalSiteRequestContextImpl context, Set menus)
-    {
-        this(null, definition, context, menus);
-    }
-
-    /**
      * appendMenuElement - append to ordered list of unique menu
      *                     option/menu elements
      * 
@@ -550,7 +562,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param locatorName profile locator name
      * @param order ordering patterns list
      */
-    private List constructMenuElements(PortalSiteRequestContextImpl context, SiteView view, String options, List overrideElementProxies, int depth, boolean paths, boolean regexp, String locatorName, String order)
+    private List constructMenuElements(SiteView view, PortalSiteRequestContextImpl context, String options, List overrideElementProxies, int depth, boolean paths, boolean regexp, String locatorName, String order)
     {
         if (options != null)
         {
@@ -738,7 +750,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                 {
                     // construct menu definition and associated menu
                     MenuDefinition nestedMenuDefinition = new DefaultMenuDefinition(elementProxy.getUrl(), depth - 1, locatorName);
-                    menuElement = new MenuImpl(this, nestedMenuDefinition, context, null);
+                    menuElement = new MenuImpl(view, this, nestedMenuDefinition, context, null);
                 }
                 else
                 {
@@ -747,7 +759,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                     {
                         defaultMenuOptionsDefinition = new DefaultMenuOptionsDefinition(options, depth, paths, regexp, locatorName, order);
                     }
-                    menuElement = new MenuOptionImpl(this, elementProxy, defaultMenuOptionsDefinition);
+                    menuElement = new MenuOptionImpl(view, this, elementProxy, defaultMenuOptionsDefinition);
                 }
 
                 // replace element proxy with menu element

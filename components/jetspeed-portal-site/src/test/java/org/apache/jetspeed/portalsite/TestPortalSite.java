@@ -739,6 +739,10 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertTrue(element instanceof Menu);
                 assertEquals("/folder0", ((Menu)element).getUrl());
                 assertTrue(((Menu)element).getParentMenu() == topMenu);
+                assertTrue(element.getNode() instanceof Folder);
+                assertEquals("/folder0", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Folder);
+                assertEquals("/folder0", element.getManagedNode().getPath());
                 assertFalse(((Menu)element).isEmpty());
                 List elements = ((Menu)element).getElements();
                 assertNotNull(elements);
@@ -752,6 +756,10 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertTrue(element instanceof Menu);
                 assertEquals("/folder1", ((Menu)element).getUrl());
                 assertTrue(((Menu)element).getParentMenu() == topMenu);
+                assertTrue(element.getNode() instanceof Folder);
+                assertEquals("/folder1", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Folder);
+                assertEquals("/_user/user/folder1", element.getManagedNode().getPath());
                 assertFalse(((Menu)element).isEmpty());
                 List elements = ((Menu)element).getElements();
                 assertNotNull(elements);
@@ -766,16 +774,28 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertTrue(element instanceof MenuOption);
                 assertEquals("/page2.psml", ((MenuOption)element).getUrl());
                 assertEquals(MenuOption.PAGE_OPTION_TYPE, ((MenuOption)element).getType());
+                assertTrue(element.getNode() instanceof Page);
+                assertEquals("/page2.psml", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Page);
+                assertEquals("/_user/user/_mediatype/html/page2.psml", element.getManagedNode().getPath());
             }
             else if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/page1.psml"))
             {
                 assertTrue(element instanceof MenuOption);
                 assertEquals("/page1.psml", ((MenuOption)element).getUrl());
+                assertTrue(element.getNode() instanceof Page);
+                assertEquals("/page1.psml", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Page);
+                assertEquals("/page1.psml", element.getManagedNode().getPath());
             }
             else if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/page0.psml"))
             {
                 assertTrue(element instanceof MenuOption);
                 assertEquals("/page0.psml", ((MenuOption)element).getUrl());
+                assertTrue(element.getNode() instanceof Page);
+                assertEquals("/page0.psml", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Page);
+                assertEquals("/page0.psml", element.getManagedNode().getPath());
             }
             else if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/link1.link"))
             {
@@ -783,6 +803,10 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertEquals("http://link1", ((MenuOption)element).getUrl());
                 assertEquals("top", ((MenuOption)element).getTarget());
                 assertEquals(MenuOption.LINK_OPTION_TYPE, ((MenuOption)element).getType());
+                assertTrue(element.getNode() instanceof Link);
+                assertEquals("/link1.link", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Link);
+                assertEquals("/link1.link", element.getManagedNode().getPath());
             }
             else if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/link0.link"))
             {
@@ -790,6 +814,10 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertEquals("http://link0", ((MenuOption)element).getUrl());
                 assertNull(((MenuOption)element).getTarget());
                 assertEquals("dhtml-pull-down", element.getSkin());
+                assertTrue(element.getNode() instanceof Link);
+                assertEquals("/link0.link", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Link);
+                assertEquals("/_group/group/link0.link", element.getManagedNode().getPath());
             }
             else
             {
@@ -961,11 +989,19 @@ public class TestPortalSite extends AbstractSpringTestCase
             {
                 assertTrue(element instanceof MenuOption);
                 assertEquals(MenuOption.FOLDER_OPTION_TYPE, ((MenuOption)element).getType());
+                assertTrue(element.getNode() instanceof Folder);
+                assertEquals("/folder0", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Folder);
+                assertEquals("/folder0", element.getManagedNode().getPath());
             }
             else if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("group folder1"))
             {
                 assertTrue(element instanceof MenuOption);
                 assertEquals(MenuOption.FOLDER_OPTION_TYPE, ((MenuOption)element).getType());
+                assertTrue(element.getNode() instanceof Folder);
+                assertEquals("/folder1", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Folder);
+                assertEquals("/_user/user/folder1", element.getManagedNode().getPath());
             }
             else if (element.getElementType().equals(MenuElement.SEPARATOR_ELEMENT_TYPE) &&
                      (element instanceof MenuSeparator) &&
@@ -976,12 +1012,20 @@ public class TestPortalSite extends AbstractSpringTestCase
             {
                 assertTrue(element instanceof MenuOption);
                 assertEquals(MenuOption.LINK_OPTION_TYPE, ((MenuOption)element).getType());
+                assertTrue(element.getNode() instanceof Link);
+                assertEquals("/link1.link", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Link);
+                assertEquals("/link1.link", element.getManagedNode().getPath());
             }
             else if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/link0.link"))
             {
                 assertTrue(element instanceof MenuOption);
                 assertEquals(MenuOption.LINK_OPTION_TYPE, ((MenuOption)element).getType());
                 assertEquals("left-navigations", element.getSkin());
+                assertTrue(element.getNode() instanceof Link);
+                assertEquals("/link0.link", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Link);
+                assertEquals("/_group/group/link0.link", element.getManagedNode().getPath());
             }
             else
             {

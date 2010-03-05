@@ -18,10 +18,15 @@ package org.apache.jetspeed.portalsite.impl;
 
 import java.util.Locale;
 
+import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.Link;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.portalsite.Menu;
 import org.apache.jetspeed.portalsite.MenuElement;
+import org.apache.jetspeed.portalsite.view.SiteView;
 
 /**
  * This abstract class implements common features of portal-site
@@ -32,6 +37,11 @@ import org.apache.jetspeed.portalsite.MenuElement;
  */
 public abstract class MenuElementImpl implements MenuElement, Cloneable
 {
+    /**
+     * view - site view this proxy is part of
+     */
+    private SiteView view;
+
     /**
      * parentMenu - parent menu implementation
      */
@@ -58,22 +68,25 @@ public abstract class MenuElementImpl implements MenuElement, Cloneable
     /**
      * MenuElementImpl - constructor
      *
+     * @param view site view used to construct menu element
      * @param parent containing menu implementation
      */
-    protected MenuElementImpl(MenuImpl parent)
+    protected MenuElementImpl(SiteView view, MenuImpl parent)
     {
+        this.view = view;
         this.parent = parent;
     }
 
     /**
      * MenuElementImpl - node proxy constructor
      *
+     * @param view site view used to construct menu element
      * @param parent containing menu implementation
      * @param node menu element node proxy
      */
-    protected MenuElementImpl(MenuImpl parent, Node node)
+    protected MenuElementImpl(SiteView view, MenuImpl parent, Node node)
     {
-        this(parent);
+        this(view, parent);
         this.node = node;
     }
 
@@ -124,6 +137,16 @@ public abstract class MenuElementImpl implements MenuElement, Cloneable
      *         SEPARATOR_ELEMENT_TYPE
      */
     public abstract String getElementType();
+    
+    /**
+     * getView - return site view for this menu element
+     *
+     * @return site view
+     */
+    protected SiteView getView()
+    {
+        return view;
+    }
 
     /**
      * getParentMenu - get menu that contains menu element 
@@ -275,7 +298,7 @@ public abstract class MenuElementImpl implements MenuElement, Cloneable
      *
      * @return node proxy
      */
-    protected Node getNode()
+    public Node getNode()
     {
         return node;
     } 
@@ -289,4 +312,53 @@ public abstract class MenuElementImpl implements MenuElement, Cloneable
     {
         this.node = node;
     } 
+    
+    /**
+     * isEditable - get editable access flag for menu option
+     *
+     * @return editable flag
+     */
+    public boolean isEditable()
+    {
+        try
+        {
+            getNode().checkAccess(JetspeedActions.EDIT);
+            return true;
+        }
+        catch (SecurityException se)
+        {
+            return false;
+        }
+    }
+
+    /**
+     * getManagedNode - get underlying managed concrete Node
+     *                  associated with menu element; note that the
+     *                  node returned is not necessarily deterministic
+     *                  if the mapping of profiled folders, pages,
+     *                  and links is not mapped 1:1
+     *
+     * @return concrete folder, page, or link node
+     */
+    public Node getManagedNode()
+    {
+        SiteView view = getView();
+        if (view != null)
+        {
+            Node node = getNode();
+            if (node instanceof Page)
+            {
+                return view.getManagedPage((Page)node);
+            }
+            else if (node instanceof Link)
+            {
+                return view.getManagedLink((Link)node);
+            }
+            else if (node instanceof Folder)
+            {
+                return view.getManagedFolder((Folder)node);
+            }
+        }
+        return null;
+    }
 }

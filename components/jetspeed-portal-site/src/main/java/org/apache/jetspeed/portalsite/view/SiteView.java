@@ -33,6 +33,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.page.proxy.DynamicPageProxy;
 import org.apache.jetspeed.om.page.proxy.FragmentDefinitionProxy;
+import org.apache.jetspeed.om.page.proxy.LinkProxy;
 import org.apache.jetspeed.om.page.proxy.PageProxy;
 import org.apache.jetspeed.om.page.proxy.PageTemplateProxy;
 import org.apache.jetspeed.page.PageManager;
@@ -1346,6 +1347,38 @@ public class SiteView
         // return associated delegate managed page
         PageProxy pageProxy = (PageProxy)NodeProxy.getNodeProxy(page);
         return ((pageProxy != null) ? pageProxy.getPage() : null);
+    }
+
+    /**
+     * getManagedLink - get concrete link instance from link proxy;
+     *                  implemented here to hide view proxy manipulation
+     *                  from more general portal site implementation
+     *  
+     * @param link link proxy
+     * @return managed link
+     */
+    public Link getManagedLink(Link link)
+    {
+        // access link proxy from specified page and
+        // return associated delegate managed link
+        LinkProxy linkProxy = (LinkProxy)NodeProxy.getNodeProxy(link);
+        return ((linkProxy != null) ? linkProxy.getLink() : null);
+    }
+
+    /**
+     * getManagedFolder - get concrete folder instance from folder proxy;
+     *                    implemented here to hide view proxy manipulation
+     *                    from more general portal site implementation
+     *  
+     * @param folder folder proxy
+     * @return managed folder
+     */
+    public Folder getManagedFolder(Folder folder)
+    {
+        // access folder proxy from specified folder and
+        // return associated delegate managed folder
+        FolderProxy folderProxy = (FolderProxy)NodeProxy.getNodeProxy(folder);
+        return ((folderProxy != null) ? folderProxy.getDefaultFolder() : null);
     }
 
     /**

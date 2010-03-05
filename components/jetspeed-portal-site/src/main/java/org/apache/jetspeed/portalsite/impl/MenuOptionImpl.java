@@ -25,6 +25,7 @@ import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.portalsite.MenuOption;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
+import org.apache.jetspeed.portalsite.view.SiteView;
 
 /**
  * This class implements the portal-site menu option
@@ -43,13 +44,14 @@ public class MenuOptionImpl extends MenuElementImpl implements MenuOption, Clone
     /**
      * MenuOptionImpl - constructor
      *
+     * @param view site view used to construct menu option
      * @param parent containing menu implementation
      * @param node menu option node proxy
      * @param definition menu option definition
      */
-    public MenuOptionImpl(MenuImpl parent, Node node, MenuOptionsDefinition definition)
+    public MenuOptionImpl(SiteView view, MenuImpl parent, Node node, MenuOptionsDefinition definition)
     {
-        super(parent, node);
+        super(view, parent, node);
         this.definition = definition;
     }
 
