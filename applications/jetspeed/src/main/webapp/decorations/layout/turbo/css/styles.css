@@ -468,8 +468,6 @@ text-decoration: underline;
 .layout-turbo .navmenu li.expanded { cursor: default; background: url(../../images/icon-expanded.png) no-repeat; }
 .layout-turbo .navmenu li li { }
 .layout-turbo .navmenu li.closed ul { display: none; }
-.layout-turbo .navmenu .dropdown { display: inline-block; border: none; cursor: pointer; background: url(../../images/treedropdown.png); background-position: 0px 0px; width: 15px; height: 16px; margin-left: 10px;}
-.layout-turbo .navmenu .dropdownActive { display: inline-block; border: none; cursor: pointer; background: url(../../images/treedropdown.png); background-position: 0px -16px; width: 15px; height: 16px; margin-left: 10px;}
 
 .layout-turbo .default-tabs{margin: 1px; padding: 0px;}
 .layout-turbo .default-tabs ul{display: block; float: left;}
