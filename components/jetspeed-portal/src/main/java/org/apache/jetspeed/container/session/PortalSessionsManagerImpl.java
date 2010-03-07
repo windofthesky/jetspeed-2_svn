@@ -73,13 +73,46 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
     public void portalSessionCreated(HttpSession portalSession)
     {
         PortalSessionMonitor psm = null;
+        boolean newMonitor = false;
         
         synchronized (this) 
         {
-            psm = new PortalSessionMonitorImpl(++portalSessionKeySequence, forceInvalidate);
+            psm = (PortalSessionMonitor)portalSession.getAttribute(PortalSessionMonitor.SESSION_KEY);
+            if (psm != null)
+            {
+                // An existing session is been "recreated", or a new sessionID has been set
+                // Tomcat 5.5.29+/6.0.21+ has a new feature called changeSessionIdOnAuthentication, see: https://issues.apache.org/bugzilla/show_bug.cgi?id=45255
+                // which can cause this
+                if (psm.getSessionId() != portalSession.getId())
+                {
+                    // update all sessionID keys and the portal session registry key  
+                    PortalSessionRegistry psr = portalSessionsRegistry.remove(psm.getSessionId());
+                    if (psr != null)
+                    {
+                        // update session and specifically the sessionId in psm
+                        psm.valueBound(new HttpSessionBindingEvent(portalSession, null));
+                        for (PortletApplicationSessionMonitor pasm : valuesShallowCopy(psr.sessionMonitors.values()))
+                        {
+                            pasm.syncPortalSessionId(psm);
+                        }
+                        portalSessionsRegistry.put(psm.getSessionId(), psr);                       
+                    }
+                    else
+                    {
+                        psm = null;
+                    }
+                }
+            }            
+            if (psm == null)
+            {
+                psm = new PortalSessionMonitorImpl(++portalSessionKeySequence, forceInvalidate);
+                newMonitor = true;
+            }
         }
-        
-        portalSession.setAttribute(PortalSessionMonitor.SESSION_KEY, psm);
+        if (newMonitor)
+        {
+            portalSession.setAttribute(PortalSessionMonitor.SESSION_KEY, psm);
+        }
         // register it as if activated
         portalSessionDidActivate(psm);
     }

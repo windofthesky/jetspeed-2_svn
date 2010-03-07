@@ -36,4 +36,5 @@ public interface PortletApplicationSessionMonitor extends HttpSessionBindingList
     String getContextPath();
     void invalidateSession();
     HttpSession getSession();
+    void syncPortalSessionId(PortalSessionMonitor psm);
 }

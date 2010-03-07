@@ -156,6 +156,17 @@ public class PortletApplicationSessionMonitorImpl implements PortletApplicationS
         session = null;
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.container.session.PortletApplicationSessionMonitor#portalSessionUpdated(org.apache.jetspeed.container.session.PortalSessionMonitor)
+     */
+    public void syncPortalSessionId(PortalSessionMonitor psm)
+    {
+        if (psm != null && psm.getSessionKey() == getPortalSessionKey())
+        {
+            this.portalSessionId = psm.getSessionId();
+        }
+    }
+
     private PortalSessionsManager getManager()
     {
         PortletServices services = JetspeedPortletServices.getSingleton();
