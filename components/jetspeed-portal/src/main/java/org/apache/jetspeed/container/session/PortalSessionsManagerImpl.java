@@ -20,10 +20,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionBindingEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,16 +43,16 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
     {
         long portalSessionKey;
         PortalSessionMonitor psm;
-        Map sessionMonitors;
+        Map<String,PortletApplicationSessionMonitor> sessionMonitors;
         
         PortalSessionRegistry()
         {
-            sessionMonitors = Collections.synchronizedMap(new HashMap());
+            sessionMonitors = Collections.synchronizedMap(new HashMap<String,PortletApplicationSessionMonitor>());
         }
     }
     
     private long portalSessionKeySequence;
-    private Map portalSessionsRegistry;
+    private Map<String,PortalSessionRegistry> portalSessionsRegistry;
     private boolean forceInvalidate;
     
     public PortalSessionsManagerImpl()
@@ -63,7 +63,7 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
     public PortalSessionsManagerImpl(boolean forceInvalidate)
     {
         portalSessionKeySequence = System.currentTimeMillis();
-        portalSessionsRegistry = Collections.synchronizedMap(new HashMap());
+        portalSessionsRegistry = Collections.synchronizedMap(new HashMap<String,PortalSessionRegistry>());
         this.forceInvalidate = forceInvalidate;
     }
     
@@ -97,7 +97,7 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
      */
     public void portalSessionDidActivate(PortalSessionMonitor restoredPsm)
     {
-        PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.get(restoredPsm.getSessionId());
+        PortalSessionRegistry psr = portalSessionsRegistry.get(restoredPsm.getSessionId());
         if ( psr != null && psr.portalSessionKey != -1 && psr.portalSessionKey != restoredPsm.getSessionKey() )
         {
             // looks like Client didn't join the previous portal session while the sessionId is reused (cookies disabled?)
@@ -115,11 +115,8 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
         psr.portalSessionKey = restoredPsm.getSessionKey();
         // validate registered paSessions are in sync
         // we iterate with shallow copy of paSessions to avoid conflicts with concurrent updates of paSessions
-        Iterator iter = valuesShallowCopy(psr.sessionMonitors.values()).iterator();
-        PortletApplicationSessionMonitor pasm;
-        while (iter.hasNext())
+        for (PortletApplicationSessionMonitor pasm : valuesShallowCopy(psr.sessionMonitors.values()))
         {
-            pasm = (PortletApplicationSessionMonitor)iter.next();
             if ( pasm.getPortalSessionKey() != psr.portalSessionKey )
             {
                 pasm.invalidateSession();
@@ -134,14 +131,13 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
      */
     public void portalSessionDestroyed(PortalSessionMonitor psm)
     {
-        PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.remove(psm.getSessionId());
+        PortalSessionRegistry psr = portalSessionsRegistry.remove(psm.getSessionId());
         if ( psr != null )
         {
             // we iterate with shallow copy of paSessions to avoid conflicts with concurrent updates of paSessions
-            Iterator iter = valuesShallowCopy(psr.sessionMonitors.values()).iterator();
-            while (iter.hasNext())
+            for (PortletApplicationSessionMonitor pasm : valuesShallowCopy(psr.sessionMonitors.values()))
             {
-                ((PortletApplicationSessionMonitor) iter.next()).invalidateSession();
+                pasm.invalidateSession();
             }
             
             try
@@ -171,7 +167,7 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
                 return;
             }
 
-            PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.get(portalSession.getId());
+            PortalSessionRegistry psr = portalSessionsRegistry.get(portalSession.getId());
             if (psr == null)
             {
                 // yet unexplained condition: the HttpSessionListener on the portal application *should* have registered the session!!!
@@ -192,9 +188,9 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
                     portalSessionDidActivate(psm);
                 }
                 // now retrieve the just created psr again
-                psr = (PortalSessionRegistry)portalSessionsRegistry.get(portalSession.getId());
+                psr = portalSessionsRegistry.get(portalSession.getId());
             }
-            PortletApplicationSessionMonitor pasm = (PortletApplicationSessionMonitor)psr.sessionMonitors.get(contextPath);
+            PortletApplicationSessionMonitor pasm = psr.sessionMonitors.get(contextPath);
             if ( pasm != null )
             {
                 try
@@ -234,7 +230,7 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
      */
     public void sessionWillPassivate(PortletApplicationSessionMonitor pasm)
     {
-        PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.get(pasm.getPortalSessionId());
+        PortalSessionRegistry psr = portalSessionsRegistry.get(pasm.getPortalSessionId());
         if (psr != null )
         {
             psr.sessionMonitors.remove(pasm.getContextPath());
@@ -246,7 +242,7 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
      */
     public void sessionDidActivate(PortletApplicationSessionMonitor restoredPasm)
     {
-        PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.get(restoredPasm.getPortalSessionId());
+        PortalSessionRegistry psr = portalSessionsRegistry.get(restoredPasm.getPortalSessionId());
         if ( psr == null )
         {
             // looks like the portalSession was passivated or the paSession was replicated to another JVM while its related portalSession wasn't (yet)
@@ -268,7 +264,7 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
      */
     public void sessionDestroyed(PortletApplicationSessionMonitor pasm)
     {
-        PortalSessionRegistry psr = (PortalSessionRegistry)portalSessionsRegistry.get(pasm.getPortalSessionId());
+        PortalSessionRegistry psr = portalSessionsRegistry.get(pasm.getPortalSessionId());
         if ( psr != null )
         {
             psr.sessionMonitors.remove(pasm.getContextPath());
@@ -299,7 +295,7 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
      * @param inValues
      * @return shallow copy
      */
-    private Collection valuesShallowCopy(Collection inValues) {
-        return Arrays.asList(inValues.toArray());
+    private Collection<PortletApplicationSessionMonitor> valuesShallowCopy(Collection<PortletApplicationSessionMonitor> inValues) {
+        return Arrays.asList(inValues.toArray(new PortletApplicationSessionMonitor[0]));
     }
 }
