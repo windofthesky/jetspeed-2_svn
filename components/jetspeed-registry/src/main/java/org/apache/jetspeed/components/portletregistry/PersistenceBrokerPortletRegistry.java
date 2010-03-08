@@ -310,11 +310,14 @@ public class PersistenceBrokerPortletRegistry
             if (listeners != null && !listeners.isEmpty())
             {
                 PortletDefinition pd = this.getPortletDefinitionByUniqueName((String)key);
-                for (int ix=0; ix < listeners.size(); ix++)
+                if (pd != null)
                 {
-                    RegistryEventListener listener = listeners.get(ix);
-                    listener.portletRemoved(pd);
-                }        
+                    for (int ix=0; ix < listeners.size(); ix++)
+                    {
+                        RegistryEventListener listener = listeners.get(ix);
+                        listener.portletRemoved(pd);
+                    }        
+                }
             }           
         }
         else
@@ -324,11 +327,14 @@ public class PersistenceBrokerPortletRegistry
             if (listeners != null && !listeners.isEmpty())
             {
                 PortletApplication pa = this.getPortletApplication((String)key);
-                for (int ix=0; ix < listeners.size(); ix++)
+                if (pa != null)
                 {
-                    RegistryEventListener listener = listeners.get(ix);
-                    listener.applicationRemoved(pa);
-                }        
+                    for (int ix=0; ix < listeners.size(); ix++)
+                    {
+                        RegistryEventListener listener = listeners.get(ix);
+                        listener.applicationRemoved(pa);
+                    }        
+                }
             }
             
         }
