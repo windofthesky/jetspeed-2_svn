@@ -48,14 +48,19 @@ public class GenericMetadataBean implements Serializable
     
     public GenericMetadataBean(final GenericMetadata metadata)
     {
-        List<LocalizedFieldBean> localizedFieldBeanList = new ArrayList<LocalizedFieldBean>();
+        Collection<LocalizedField> fields = metadata.getFields();
         
-        for (LocalizedField field : metadata.getFields())
+        if (fields != null)
         {
-            localizedFieldBeanList.add(new LocalizedFieldBean(field));
-        }
+            List<LocalizedFieldBean> localizedFieldBeanList = new ArrayList<LocalizedFieldBean>();
+            
+            for (LocalizedField field : fields)
+            {
+                localizedFieldBeanList.add(new LocalizedFieldBean(field));
+            }
         
-        localizedFieldBeans = localizedFieldBeanList;
+            localizedFieldBeans = localizedFieldBeanList;
+        }
     }
     
     @XmlElementWrapper(name="fields")
