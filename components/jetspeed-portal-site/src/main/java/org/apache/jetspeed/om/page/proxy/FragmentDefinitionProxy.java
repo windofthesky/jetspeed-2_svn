@@ -24,7 +24,7 @@ import java.lang.reflect.Proxy;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 
 /**
  * This class proxies PSML FragmentDefinition instances to create
@@ -49,7 +49,7 @@ public class FragmentDefinitionProxy extends NodeProxy implements InvocationHand
      * @param parentFolder view parent proxy folder
      * @param fragmentDefinition proxy delegate
      */
-    public static FragmentDefinition newInstance(SiteView view, String locatorName, Folder parentFolder, FragmentDefinition fragmentDefinition)
+    public static FragmentDefinition newInstance(SearchPathsSiteView view, String locatorName, Folder parentFolder, FragmentDefinition fragmentDefinition)
     {
         return (FragmentDefinition)Proxy.newProxyInstance(fragmentDefinition.getClass().getClassLoader(), new Class[]{FragmentDefinition.class}, new FragmentDefinitionProxy(view, locatorName, parentFolder, fragmentDefinition));
     }
@@ -63,7 +63,7 @@ public class FragmentDefinitionProxy extends NodeProxy implements InvocationHand
      * @param parentFolder view parent proxy folder
      * @param fragmentDefinition proxy delegate
      */
-    private FragmentDefinitionProxy(SiteView view, String locatorName, Folder parentFolder, FragmentDefinition fragmentDefinition)
+    private FragmentDefinitionProxy(SearchPathsSiteView view, String locatorName, Folder parentFolder, FragmentDefinition fragmentDefinition)
     {
         super(view, locatorName, parentFolder, fragmentDefinition.getName(), false);
         this.fragmentDefinition = fragmentDefinition;

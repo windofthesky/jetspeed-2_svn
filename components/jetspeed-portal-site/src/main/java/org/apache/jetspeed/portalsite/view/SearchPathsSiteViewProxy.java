@@ -26,12 +26,12 @@ import java.lang.reflect.Proxy;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public abstract class SiteViewProxy
+public abstract class SearchPathsSiteViewProxy
 {
     /**
      * view - site view this proxy is part of
      */
-    private SiteView view;
+    private SearchPathsSiteView view;
 
     /**
      * locatorName - name of profile locator name associated
@@ -48,7 +48,7 @@ public abstract class SiteViewProxy
      *                    the derived delegate of this proxy in
      *                    the site view
      */
-    protected SiteViewProxy(SiteView view, String locatorName)
+    protected SearchPathsSiteViewProxy(SearchPathsSiteView view, String locatorName)
     {
         this.view = view;
         this.locatorName = locatorName;
@@ -59,7 +59,7 @@ public abstract class SiteViewProxy
      *
      * @return site view
      */
-    public SiteView getView()
+    public SearchPathsSiteView getView()
     {
         return view;
     }
@@ -105,14 +105,14 @@ public abstract class SiteViewProxy
      * @param proxy proxy instance
      * @return site view invocation handler instance
      */
-    public static SiteViewProxy getSiteViewProxy(Object proxy)
+    public static SearchPathsSiteViewProxy getSiteViewProxy(Object proxy)
     {
         if ((proxy != null) && Proxy.isProxyClass(proxy.getClass()))
         {
             Object proxyHandler = Proxy.getInvocationHandler(proxy);
-            if (proxyHandler instanceof SiteViewProxy)
+            if (proxyHandler instanceof SearchPathsSiteViewProxy)
             {
-                return (SiteViewProxy)proxyHandler;
+                return (SearchPathsSiteViewProxy)proxyHandler;
             }
         }
         return null;

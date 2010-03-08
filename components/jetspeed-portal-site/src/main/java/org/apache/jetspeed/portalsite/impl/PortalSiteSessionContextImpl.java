@@ -46,7 +46,9 @@ import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.portalsite.PortalSiteContentTypeMapper;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.portalsite.PortalSiteSessionContext;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.AbstractSiteView;
+import org.apache.jetspeed.portalsite.view.PhysicalSiteView;
+import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 import org.apache.jetspeed.portalsite.view.SiteViewMenuDefinitionLocator;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfileLocatorProperty;
@@ -113,7 +115,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     /**
      * siteView - session site view
      */
-    private transient SiteView siteView;
+    private transient AbstractSiteView siteView;
 
     /**
      * folderPageHistory - map of last page visited by folder 
@@ -211,7 +213,71 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     }
 
     /**
-     * selectRequestPage - select page proxy for request given profile locators
+     * newRequestContext - create a new request context instance without profiling
+     *                     support with fallback and history
+     *
+     * @param requestPath request path
+     * @param requestServerName request server name
+     * @return new request context instance
+     */
+    public PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName)
+    {
+        return new PortalSiteRequestContextImpl(this, requestPath, requestServerName, true, true);
+    }
+
+    /**
+     * newRequestContext - create a new request context instance without profiling
+     *                     support with history
+     *
+     * @param requestPath request path
+     * @param requestServerName request server name
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @return new request context instance
+     */
+    public PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, boolean requestFallback)
+    {
+        return new PortalSiteRequestContextImpl(this, requestPath, requestServerName, requestFallback, true);
+    }
+
+    /**
+     * newRequestContext - create a new request context instance without profiling
+     *                     support
+     *
+     * @param requestPath request path
+     * @param requestServerName request server name
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     * @return new request context instance
+     */
+    public PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, boolean requestFallback, boolean useHistory)
+    {
+        return new PortalSiteRequestContextImpl(this, requestPath, requestServerName, requestFallback, useHistory);
+    }
+
+    /**
+     * selectRequestPage - select page view for request given profile locators
+     *
+     * @param requestPath request path
+     * @param requestServerName request server name
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     * @param requestPageContentPath returned content path associated with selected page
+     * @return selected page view for request
+     * @throws NodeNotFoundException if not found
+     * @throws SecurityException if view access not granted
+     */
+    public BaseConcretePageElement selectRequestPage(String requestPath, String requestServerName, boolean requestFallback, boolean useHistory, String [] requestPageContentPath) throws NodeNotFoundException
+    {
+        return selectRequestPage(null, requestPath, requestServerName, requestFallback, useHistory, false, requestPageContentPath);
+    }
+
+    /**
+     * selectRequestPage - select page view for request given profile locators
      *
      * @param requestProfileLocators map of profile locators for request
      * @param requestFallback flag specifying whether to fallback to root folder
@@ -220,35 +286,61 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *                   history to select default page per site folder
      * @param forceReservedVisible force reserved/hidden folders visible for request
      * @param requestPageContentPath returned content path associated with selected page
-     * @return selected page proxy for request
+     * @return selected page view for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
     public BaseConcretePageElement selectRequestPage(Map requestProfileLocators, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, String [] requestPageContentPath) throws NodeNotFoundException
     {
+        return selectRequestPage(requestProfileLocators, null, null, requestFallback, useHistory, forceReservedVisible, requestPageContentPath);
+    }
+    
+    /**
+     * selectRequestPage - select page view for request given profile locators
+     *
+     * @param requestProfileLocators map of profile locators for request
+     * @param requestPath request path if no locators specified
+     * @param requestServerName request server name if no locators specified
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     * @param forceReservedVisible force reserved/hidden folders visible for request
+     * @param requestPageContentPath returned content path associated with selected page
+     * @return selected page view for request
+     * @throws NodeNotFoundException if not found
+     * @throws SecurityException if view access not granted
+     */
+    private BaseConcretePageElement selectRequestPage(Map requestProfileLocators, String requestPath, String requestServerName, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, String [] requestPageContentPath) throws NodeNotFoundException
+    {
         // validate and update session profile locators if modified
         if (updateSessionProfileLocators(requestProfileLocators, forceReservedVisible))
         {
             // extract page request path and server from the locators
-            String requestPath = Folder.PATH_SEPARATOR;
-            String requestServerName = null;
-            ProfileLocator locator = (ProfileLocator)requestProfileLocators.get(ProfileLocator.PAGE_LOCATOR);
-            if (locator != null)
+            // if specified, otherwise use specified parameters
+            ProfileLocator locator = null;
+            if (requestProfileLocators != null)
             {
-                // use 'page' locator to determine request page by executing
-                // profile locator to determine path
-                requestPath = getRequestPathFromLocator(locator);
+                requestPath = Folder.PATH_SEPARATOR;
+                requestServerName = null;
+                locator = (ProfileLocator)requestProfileLocators.get(ProfileLocator.PAGE_LOCATOR);
+                if (locator != null)
+                {
+                    // use 'page' locator to determine request page by executing
+                    // profile locator to determine path
+                    requestPath = getRequestPathFromLocator(locator);
+                }
+                else
+                {
+                    // 'page' locator unavailable, use first locator since
+                    // all locators should have identical request paths, (do
+                    // not execute profile locator though to determine path:
+                    // simply use the request path)
+                    locator = (ProfileLocator)requestProfileLocators.values().iterator().next();
+                    requestPath = locator.getRequestPath();
+                }
+                requestServerName = locator.getRequestServerName();
             }
-            else
-            {
-                // 'page' locator unavailable, use first locator since
-                // all locators should have identical request paths, (do
-                // not execute profile locator though to determine path:
-                // simply use the request path)
-                locator = (ProfileLocator)requestProfileLocators.values().iterator().next();
-                requestPath = locator.getRequestPath();
-            }
-            requestServerName = locator.getRequestServerName();
             if (log.isDebugEnabled())
             {
                 log.debug("Select request page: requestPath="+requestPath+", requestServerName: "+requestServerName);
@@ -266,12 +358,12 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 {
                     // test for exact system match if content fallback enabled;
                     // clear system type if not found
-                    SiteView view = getSiteView();
+                    AbstractSiteView view = getSiteView();
                     if (view != null)
                     {
                         try
                         {
-                            view.getNodeProxy(requestPath, null, false, false);
+                            view.getNodeView(requestPath, null, false, false);
                         }
                         catch (NodeNotFoundException nnfe)
                         {
@@ -319,12 +411,12 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         if (systemPageRequestPath != null)
                         {
                             // verify system page existence
-                            SiteView view = getSiteView();
+                            AbstractSiteView view = getSiteView();
                             if (view != null)
                             {
                                 try
                                 {
-                                    if (view.getNodeProxy(systemPageRequestPath, null, false, false) instanceof Page)
+                                    if (view.getNodeView(systemPageRequestPath, null, false, false) instanceof Page)
                                     {
                                         systemType = PortalSiteContentTypeMapper.PAGE_SYSTEM_TYPE;
                                     }
@@ -563,14 +655,14 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     }
 
     /**
-     * selectRequestPage - select page proxy for request for specified
+     * selectRequestPage - select page view for request for specified
      *                     path given profile locators and site view
      *                     associated with this context
      *
      * @param requestPath request path
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
-     * @return selected page proxy for request
+     * @return selected page view for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
@@ -580,7 +672,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         SecurityException accessException = null;
 
         // valid SiteView required from session profile locators
-        SiteView view = getSiteView();
+        AbstractSiteView view = getSiteView();
         if (view != null)
         {
             // default request to root folder if not specified
@@ -602,7 +694,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             try
             {
                 // try page or folder request url
-                requestNode = view.getNodeProxy(requestPath, null, false, false);
+                requestNode = view.getNodeView(requestPath, null, false, false);
             }
             catch (NodeNotFoundException nnfe)
             {
@@ -612,7 +704,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 {
                     // retry folder request url
                     requestPath = requestPath.substring(0, requestPath.length() - Folder.FALLBACK_DEFAULT_PAGE.length());
-                    requestNode = view.getNodeProxy(requestPath, null, true, false);
+                    requestNode = view.getNodeView(requestPath, null, true, false);
                 }
                 else
                 {
@@ -737,7 +829,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         }
                     }
                     
-                    // get default page for folder proxy if more than one
+                    // get default page for folder view if more than one
                     // page is available to choose from
                     if (requestFolderPages.size() > 1)
                     {
@@ -778,7 +870,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     }
                     
                     // default page not available, select first page
-                    // proxy in request folder; save last visited
+                    // view in request folder; save last visited
                     // non-hidden page for folder path and return default page
                     requestPage = (Page)requestFolderPages.iterator().next();
                     if (!requestPage.isHidden())
@@ -824,14 +916,14 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     }
     
     /**
-     * selectContentRequestPage - select dynamic page proxy for request for
+     * selectContentRequestPage - select dynamic page view for request for
      *                            specified content request path and content
      *                            type given profile locators and site view
      *                            associated with this context
      *
      * @param requestPath request path
      * @param contentType content type
-     * @return selected dynamic page proxy for request
+     * @return selected dynamic page view for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
@@ -841,7 +933,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         SecurityException accessException = null;
 
         // valid SiteView required from session profile locators
-        SiteView view = getSiteView();
+        AbstractSiteView view = getSiteView();
         if (view != null)
         {
             // default request to root folder if not specified
@@ -858,7 +950,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             
             // search for deepest matching content request path
             // that matches request path; start with root folder in view
-            Folder contentRequestFolder = (Folder)view.getNodeProxy(Folder.PATH_SEPARATOR, null, false, false);
+            Folder contentRequestFolder = (Folder)view.getNodeView(Folder.PATH_SEPARATOR, null, false, false);
             String contentRequestPath = contentRequestFolder.getPath();
             String contentRequestFile = null;
             for (;;)
@@ -948,11 +1040,23 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     }
 
     /**
-     * getRequestRootFolder - select root folder proxy for given profile locators
+     * getRequestRootFolder - select root folder view for given profile locators
+     *
+     * @return root folder view for request
+     * @throws NodeNotFoundException if not found
+     * @throws SecurityException if view access not granted
+     */
+    public Folder getRequestRootFolder() throws NodeNotFoundException
+    {
+        return getRequestRootFolder(null, false);
+    }
+
+    /**
+     * getRequestRootFolder - select root folder view for given profile locators
      *
      * @param requestProfileLocators map of profile locators for request
      * @param requestForceReservedVisible force reserved/hidden folders visible for request
-     * @return root folder proxy for request
+     * @return root folder view for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
@@ -962,11 +1066,11 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         if (updateSessionProfileLocators(requestProfileLocators, requestForceReservedVisible))
         {
             // valid site view required from session profile locators
-            SiteView view = getSiteView();
+            AbstractSiteView view = getSiteView();
             if (view != null)
             {
-                // return root folder proxy from session site view
-                return view.getRootFolderProxy();
+                // return root folder view from session site view
+                return view.getRootFolderView();
             }
         }
 
@@ -984,8 +1088,8 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     private boolean updateSessionProfileLocators(Map requestProfileLocators, boolean requestForceReservedVisible)
     {
-        // request profile locators are required
-        if ((requestProfileLocators != null) && !requestProfileLocators.isEmpty())
+        // valid request profile locators are required
+        if ((requestProfileLocators == null) || !requestProfileLocators.isEmpty())
         {
             // get current user principal; ignore derivative
             // changes in role and group principals
@@ -1022,8 +1126,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             {
                 userUpdate = (((userPrincipal == null) && (currentUserPrincipal != null)) ||
                               ((userPrincipal != null) && !userPrincipal.equals(currentUserPrincipal)));
-                locatorsUpdate = ((profileLocators == null) ||
-                                  !locatorsEquals(profileLocators, requestProfileLocators));
+                locatorsUpdate = !locatorsEquals(profileLocators, requestProfileLocators);
                 forceReservedVisibleUpdate = (forceReservedVisible != requestForceReservedVisible);
                 if (stale || userUpdate || locatorsUpdate || forceReservedVisibleUpdate)
                 {
@@ -1147,18 +1250,20 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *
      * @return site view instance
      */
-    public SiteView getSiteView()
+    public AbstractSiteView getSiteView()
     {
         // get or create site view
-        SiteView view = siteView;
-        if (view == null)
+        AbstractSiteView view = siteView;
+        while (view == null)
         {
             // access site view and test for creation
+            Map createViewProfileLocators = null;
             boolean createView = false;
             synchronized (this)
             {
                 view = siteView;
-                createView = ((view == null) && (pageManager != null) && (profileLocators != null));
+                createView = ((view == null) && (pageManager != null));
+                createViewProfileLocators = profileLocators;
             }
 
             // create new site view if necessary
@@ -1171,13 +1276,20 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 // may arrive during construction of the site view which
                 // might then result in synchronized deadlock with page
                 // manager or page manager cache internals
-                view = new SiteView(pageManager, profileLocators, forceReservedVisible);
+                if (createViewProfileLocators != null)
+                {
+                    view = new SearchPathsSiteView(pageManager, createViewProfileLocators, forceReservedVisible);
+                }
+                else
+                {
+                    view = new PhysicalSiteView(pageManager);                    
+                }
 
                 // update site view if not already made available by another
                 // request thread
                 synchronized (this)
                 {
-                    if ((siteView == null) && (pageManager != null) && (profileLocators != null))
+                    if ((siteView == null) && (pageManager != null) && (profileLocators == createViewProfileLocators))
                     {
                         siteView = view;
                         viewCreated = true;
@@ -1189,7 +1301,14 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             // log site view creation
             if (viewCreated && log.isDebugEnabled())
             {
-                log.debug("Created site view: search paths=" + view.getSearchPathsString());
+                if (view instanceof SearchPathsSiteView)
+                {
+                    log.debug("Created search path site view: search paths=" + ((SearchPathsSiteView)view).getSearchPathsString());
+                }
+                else if (view instanceof PhysicalSiteView)
+                {
+                    log.debug("Created physical site view");
+                }
             }
         }
         
@@ -1245,50 +1364,50 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     public Set getStandardMenuNames()
     {
         // return standard menu names defined for site view
-        SiteView view = getSiteView();
+        AbstractSiteView view = getSiteView();
         return ((view != null) ? view.getStandardMenuNames() : null);            
     }
 
     /**
-     * getMenuDefinitionLocators - get list of node proxy menu definition
+     * getMenuDefinitionLocators - get list of node view menu definition
      *                             locators from site view
      *
-     * @param node site view node proxy
+     * @param node site view node view
      * @return definition locator list
      */
     public List getMenuDefinitionLocators(Node node)
     {
         // return menu definition locators for node in site view
-        SiteView view = getSiteView();
+        AbstractSiteView view = getSiteView();
         return ((view != null) ? view.getMenuDefinitionLocators(node) : null);            
     }
 
     /**
-     * getMenuDefinitionLocator - get named node proxy menu definition
+     * getMenuDefinitionLocator - get named node view menu definition
      *                            locator from site view
      *
-     * @param node site view node proxy
+     * @param node site view node view
      * @param name menu definition name
      * @return menu definition locator
      */
     public SiteViewMenuDefinitionLocator getMenuDefinitionLocator(Node node, String name)
     {
         // return named menu definition locator for node in site view
-        SiteView view = getSiteView();
+        AbstractSiteView view = getSiteView();
         return ((view != null) ? view.getMenuDefinitionLocator(node, name) : null);            
     }
 
     /**
      * getManagedConcretePage - get concrete page or dynamic page instance
-     *                          from page proxy
+     *                          from page view
      *  
-     * @param page page proxy
+     * @param page page view
      * @return managed page
      */
     public BaseConcretePageElement getManagedPage(BaseConcretePageElement page)
     {
         // return managed page or dynamic page in site view
-        SiteView view = getSiteView();
+        AbstractSiteView view = getSiteView();
         if (page instanceof Page)
         {
             return ((view != null) ? view.getManagedPage((Page)page) : null);
@@ -1302,43 +1421,43 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
 
     /**
      * getManagedPageTemplate - get concrete page template instance from page
-     *                          template proxy
+     *                          template view
      *  
-     * @param pageTemplate page template proxy
+     * @param pageTemplate page template view
      * @return managed page template
      */
     public PageTemplate getManagedPageTemplate(PageTemplate pageTemplate)
     {
         // return managed page template in site view
-        SiteView view = getSiteView();
+        AbstractSiteView view = getSiteView();
         return ((view != null) ? view.getManagedPageTemplate(pageTemplate) : null);            
     }
 
     /**
      * getManagedDynamicPage - get concrete dynamic page instance from dynamic
-     *                         page proxy
+     *                         page view
      *  
-     * @param dynamicPage dynamic page proxy
+     * @param dynamicPage dynamic page view
      * @return managed dynamic page
      */
     public DynamicPage getManagedDynamicPage(DynamicPage dynamicPage)
     {
         // return managed dynamic page in site view
-        SiteView view = getSiteView();
+        AbstractSiteView view = getSiteView();
         return ((view != null) ? view.getManagedDynamicPage(dynamicPage) : null);            
     }
 
     /**
      * getManagedFragmentDefinition - get concrete dynamic page instance from
-     *                                fragment definition proxy
+     *                                fragment definition view
      *  
-     * @param fragmentDefinition fragment definition proxy
+     * @param fragmentDefinition fragment definition view
      * @return managed fragment definition
      */
     public FragmentDefinition getManagedFragmentDefinition(FragmentDefinition fragmentDefinition)
     {
         // return managed fragment definition in site view
-        SiteView view = getSiteView();
+        AbstractSiteView view = getSiteView();
         return ((view != null) ? view.getManagedFragmentDefinition(fragmentDefinition) : null);            
     }
 
@@ -1374,10 +1493,14 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     private static boolean locatorsEquals(Map locators0, Map locators1)
     {
-        // trivial comparison
+        // trivial comparisons
         if (locators0 == locators1)
         {
             return true;
+        }
+        if ((locators0 == null) || (locators1 == null))
+        {
+            return false;
         }
 
         // compare locator map sizes
@@ -1439,13 +1562,12 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *
      * @param locator request profile locator
      * @return request path
-     
+     */     
     private static String locatorRequestPath(ProfileLocator locator)
     {
         // use request path in locator as default
         return locatorRequestPath(locator, locator.getRequestPath());
     }
-    */
 
     /**
      * locatorRequestPath - extract request specific path from profile locator
@@ -1453,7 +1575,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @param locator request profile locator
      * @param requestPath request path
      * @return request path
-     
+     */
     private static String locatorRequestPath(ProfileLocator locator, String requestPath)
     {
         // search locator using the most specific,
@@ -1508,7 +1630,6 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         }
         return requestPath;
     }
-    */
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.PageManagerEventListener#newNode(org.apache.jetspeed.page.document.Node)

@@ -26,7 +26,7 @@ import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.portalsite.Menu;
 import org.apache.jetspeed.portalsite.MenuElement;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.AbstractSiteView;
 
 /**
  * This abstract class implements common features of portal-site
@@ -38,9 +38,9 @@ import org.apache.jetspeed.portalsite.view.SiteView;
 public abstract class MenuElementImpl implements MenuElement, Cloneable
 {
     /**
-     * view - site view this proxy is part of
+     * view - site view this menu element is part of
      */
-    private SiteView view;
+    private AbstractSiteView view;
 
     /**
      * parentMenu - parent menu implementation
@@ -48,7 +48,7 @@ public abstract class MenuElementImpl implements MenuElement, Cloneable
     private MenuImpl parent;
 
     /**
-     * node - underlying node proxy associated with this
+     * node - underlying node view associated with this
      *        menu element in the site view
      */
     private Node node;
@@ -71,20 +71,20 @@ public abstract class MenuElementImpl implements MenuElement, Cloneable
      * @param view site view used to construct menu element
      * @param parent containing menu implementation
      */
-    protected MenuElementImpl(SiteView view, MenuImpl parent)
+    protected MenuElementImpl(AbstractSiteView view, MenuImpl parent)
     {
         this.view = view;
         this.parent = parent;
     }
 
     /**
-     * MenuElementImpl - node proxy constructor
+     * MenuElementImpl - node view constructor
      *
      * @param view site view used to construct menu element
      * @param parent containing menu implementation
-     * @param node menu element node proxy
+     * @param node menu element node view
      */
-    protected MenuElementImpl(SiteView view, MenuImpl parent, Node node)
+    protected MenuElementImpl(AbstractSiteView view, MenuImpl parent, Node node)
     {
         this(view, parent);
         this.node = node;
@@ -143,7 +143,7 @@ public abstract class MenuElementImpl implements MenuElement, Cloneable
      *
      * @return site view
      */
-    protected SiteView getView()
+    protected AbstractSiteView getView()
     {
         return view;
     }
@@ -294,9 +294,9 @@ public abstract class MenuElementImpl implements MenuElement, Cloneable
     }
 
     /**
-     * getNode - get menu element node proxy in the site view
+     * getNode - get menu element node in the site view
      *
-     * @return node proxy
+     * @return node view
      */
     public Node getNode()
     {
@@ -304,9 +304,9 @@ public abstract class MenuElementImpl implements MenuElement, Cloneable
     } 
 
     /**
-     * setNode - set menu element node proxy in the site view
+     * setNode - set menu element node in the site view
      *
-     * @param node node proxy
+     * @param node node view
      */
     protected void setNode(Node node)
     {
@@ -342,7 +342,6 @@ public abstract class MenuElementImpl implements MenuElement, Cloneable
      */
     public Node getManagedNode()
     {
-        SiteView view = getView();
         if (view != null)
         {
             Node node = getNode();

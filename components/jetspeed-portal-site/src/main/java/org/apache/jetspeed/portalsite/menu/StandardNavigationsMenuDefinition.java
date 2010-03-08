@@ -28,7 +28,7 @@ import org.apache.jetspeed.om.folder.impl.StandardMenuIncludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.StandardMenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.StandardMenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.Link;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.AbstractSiteView;
 
 /**
  * This class provides a menu definition for the standard
@@ -60,7 +60,7 @@ public class StandardNavigationsMenuDefinition extends StandardMenuDefinitionImp
      */
     public String getName()
     {
-        return SiteView.STANDARD_NAVIGATIONS_MENU_NAME;
+        return AbstractSiteView.STANDARD_NAVIGATIONS_MENU_NAME;
     }
 
     /**
@@ -132,7 +132,7 @@ public class StandardNavigationsMenuDefinition extends StandardMenuDefinitionImp
                      */
                     public String getName()
                     {
-                        return SiteView.CUSTOM_PAGE_NAVIGATIONS_MENU_NAME;
+                        return AbstractSiteView.CUSTOM_PAGE_NAVIGATIONS_MENU_NAME;
                     }
                 });
             menuElements.add(new StandardMenuSeparatorDefinitionImpl()

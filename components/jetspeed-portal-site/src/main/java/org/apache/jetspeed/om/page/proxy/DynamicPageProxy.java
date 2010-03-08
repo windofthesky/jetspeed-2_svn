@@ -25,7 +25,7 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.proxy.FolderProxy;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 
 /**
  * This class proxies PSML DynamicPage instances to create a logical
@@ -55,7 +55,7 @@ public class DynamicPageProxy extends NodeProxy implements InvocationHandler
      * @param parentFolder view parent proxy folder
      * @param dynamicPage proxy delegate
      */
-    public static DynamicPage newInstance(SiteView view, String locatorName, Folder parentFolder, DynamicPage dynamicPage)
+    public static DynamicPage newInstance(SearchPathsSiteView view, String locatorName, Folder parentFolder, DynamicPage dynamicPage)
     {
         return (DynamicPage)Proxy.newProxyInstance(dynamicPage.getClass().getClassLoader(), new Class[]{DynamicPage.class}, new DynamicPageProxy(view, locatorName, parentFolder, dynamicPage));
     }
@@ -69,7 +69,7 @@ public class DynamicPageProxy extends NodeProxy implements InvocationHandler
      * @param parentFolder view parent proxy folder
      * @param dynamicPage proxy delegate
      */
-    private DynamicPageProxy(SiteView view, String locatorName, Folder parentFolder, DynamicPage dynamicPage)
+    private DynamicPageProxy(SearchPathsSiteView view, String locatorName, Folder parentFolder, DynamicPage dynamicPage)
     {
         super(view, locatorName, parentFolder, dynamicPage.getName(), dynamicPage.isHidden());
         this.dynamicPage = dynamicPage;

@@ -24,7 +24,7 @@ import java.lang.reflect.Proxy;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 
 /**
  * This class proxies PSML Link instances to create a logical view
@@ -49,7 +49,7 @@ public class LinkProxy extends NodeProxy implements InvocationHandler
      * @param parentFolder view parent proxy folder
      * @param link proxy delegate
      */
-    public static Link newInstance(SiteView view, String locatorName, Folder parentFolder, Link link)
+    public static Link newInstance(SearchPathsSiteView view, String locatorName, Folder parentFolder, Link link)
     {
         return (Link)Proxy.newProxyInstance(link.getClass().getClassLoader(), new Class[]{Link.class}, new LinkProxy(view, locatorName, parentFolder, link));
     }
@@ -63,7 +63,7 @@ public class LinkProxy extends NodeProxy implements InvocationHandler
      * @param parentFolder view parent proxy folder
      * @param link proxy delegate
      */
-    private LinkProxy(SiteView view, String locatorName, Folder parentFolder, Link link)
+    private LinkProxy(SearchPathsSiteView view, String locatorName, Folder parentFolder, Link link)
     {
         super(view, locatorName, parentFolder, link.getName(), link.isHidden());
         this.link = link;

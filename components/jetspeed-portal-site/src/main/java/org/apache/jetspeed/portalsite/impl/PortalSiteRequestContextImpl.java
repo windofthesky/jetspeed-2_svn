@@ -61,6 +61,16 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     private Map requestProfileLocators;
 
     /**
+     * requestPath - request path if not using profile locators
+     */
+    private String requestPath;
+    
+    /**
+     * requestServerName - request server name if not using profile locators
+     */
+    private String requestServerName;
+        
+    /**
      * requestFallback - flag indicating whether request should fallback to root folder
      *                   if locators do not select a page or access is forbidden
      */
@@ -78,7 +88,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     private boolean forceReservedVisible;
 
     /**
-     * requestPage - cached request profiled page proxy
+     * requestPage - cached request profiled page view
      */
     private BaseConcretePageElement requestPage;
     
@@ -88,57 +98,57 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     private String requestPageContentPath;
     
     /**
-     * requestPageTemplate - cached request page template proxy
+     * requestPageTemplate - cached request page template view
      */
     private PageTemplate requestPageTemplate;
 
     /**
-     * requestPageTemplateCached - cached flag for request page template proxy
+     * requestPageTemplateCached - cached flag for request page template view
      */
     private boolean requestPageTemplateCached;
 
     /**
-     * requestFragmentDefinitions - cached request request fragment definition proxies map
+     * requestFragmentDefinitions - cached request request fragment definition views map
      */
     private Map requestFragmentDefinitions;
 
     /**
-     * requestFragmentDefinitionsCached - cached flag for request fragment definition proxies map
+     * requestFragmentDefinitionsCached - cached flag for request fragment definition views map
      */
     private boolean requestFragmentDefinitionsCached;
 
     /**
-     * siblingPages - cached node set of visible sibling page proxies
+     * siblingPages - cached node set of visible sibling page views
      */
     private NodeSet siblingPages;
 
     /**
-     * siblingPagesCached - cached flag for sibling page proxies
+     * siblingPagesCached - cached flag for sibling page views
      */
     private boolean siblingPagesCached;
 
     /**
-     * siblingFolders - cached node set of visible sibling folder proxies
+     * siblingFolders - cached node set of visible sibling folder views
      */
     private NodeSet siblingFolders;
 
     /**
-     * siblingFoldersCached - cached flag for sibling folder proxies
+     * siblingFoldersCached - cached flag for sibling folder views
      */
     private boolean siblingFoldersCached;
 
     /**
-     * rootFolder - cached request profiled root folder proxy
+     * rootFolder - cached request profiled root folder view
      */
     private Folder requestRootFolder;
 
     /**
-     * rootLinks - cached node set of visible link proxies
+     * rootLinks - cached node set of visible link views
      */
     private NodeSet rootLinks;
 
     /**
-     * rootLinksCached - cached flag for link proxies
+     * rootLinksCached - cached flag for link views
      */
     private boolean rootLinksCached;
 
@@ -164,8 +174,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      *                   history to select default page per site folder
      * @param forceReservedVisible force reserved/hidden folders visible in site view
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators,
-                                        boolean requestFallback, boolean useHistory, boolean forceReservedVisible)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, boolean requestFallback, boolean useHistory, boolean forceReservedVisible)
     {
         this.sessionContext = sessionContext;
         this.requestProfileLocators = requestProfileLocators;
@@ -184,8 +193,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators,
-                                        boolean requestFallback, boolean useHistory)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, boolean requestFallback, boolean useHistory)
     {
         this(sessionContext, requestProfileLocators, requestFallback, useHistory, false);
     }
@@ -198,8 +206,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators,
-                                        boolean requestFallback)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, boolean requestFallback)
     {
         this(sessionContext, requestProfileLocators, requestFallback, true, false);
     }
@@ -213,6 +220,52 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators)
     {
         this(sessionContext, requestProfileLocators, true, true, false);
+    }
+
+    /**
+     * PortalSiteRequestContextImpl - non-profiling constructor
+     *
+     * @param sessionContext session context
+     * @param requestPath request path
+     * @param requestServerName request server name
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     */
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName, boolean requestFallback, boolean useHistory)
+    {
+        this.sessionContext = sessionContext;
+        this.requestPath = requestPath;
+        this.requestServerName = requestServerName;
+        this.requestFallback = requestFallback;
+        this.useHistory = useHistory;
+    }
+
+    /**
+     * PortalSiteRequestContextImpl - non-profiling constructor
+     *
+     * @param sessionContext session context
+     * @param requestPath request path
+     * @param requestServerName request server name
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     */
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName, boolean requestFallback)
+    {
+        this(sessionContext, requestPath, requestServerName, requestFallback, true);
+    }
+
+    /**
+     * PortalSiteRequestContextImpl - non-profiling constructor
+     *
+     * @param sessionContext session context
+     * @param requestPath request path
+     * @param requestServerName request server name
+     */
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName)
+    {
+        this(sessionContext, requestPath, requestServerName, true, true);
     }
 
     /**
@@ -273,7 +326,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public Map getManagedFragmentDefinitions() throws NodeNotFoundException
     {
-        // convert map of proxies to map of managed fragment definitions
+        // convert map of views to map of managed fragment definitions
         Map fragmentDefinitions = getFragmentDefinitions();
         if (fragmentDefinitions != null)
         {
@@ -309,21 +362,29 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     }
 
     /**
-     * getPage - get request profiled page proxy
+     * getPage - get request profiled page view
      *  
-     * @return page proxy
+     * @return page view
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
     public BaseConcretePageElement getPage() throws NodeNotFoundException
     {
         // select request page and associated content path from
-        // session context using request profile locators if not
-        // previously cached in this context
+        // session context using request profile locators or
+        // request path and server name if not previously cached
+        // in this context
         if (requestPage == null)
         {
             String [] selectedRequestPageContentPath = new String[]{null};
-            requestPage = sessionContext.selectRequestPage(requestProfileLocators, requestFallback, useHistory, forceReservedVisible, selectedRequestPageContentPath);
+            if (requestProfileLocators != null)
+            {
+                requestPage = sessionContext.selectRequestPage(requestProfileLocators, requestFallback, useHistory, forceReservedVisible, selectedRequestPageContentPath);
+            }
+            else
+            {
+                requestPage = sessionContext.selectRequestPage(requestPath, requestServerName, requestFallback, useHistory, selectedRequestPageContentPath);                
+            }
             if (requestPage != null)
             {
                 requestPageContentPath = selectedRequestPageContentPath[0];
@@ -345,9 +406,9 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     }
 
     /**
-     * getPageTemplate - get page template proxy for request profiled page
+     * getPageTemplate - get page template view for request profiled page
      *  
-     * @return page template proxy if found or null
+     * @return page template view if found or null
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
@@ -389,10 +450,10 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     }
 
     /**
-     * getFragmentDefinitions - get fragment definition proxy map for request
+     * getFragmentDefinitions - get fragment definition view map for request
      *                          profiled page and page template
      *  
-     * @return map of fragment definition proxies by fragment id
+     * @return map of fragment definition views by fragment id
      * @throws NodeNotFoundException if page or fragment definition not found
      * @throws SecurityException if page view access not granted
      */
@@ -498,9 +559,9 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     }
 
     /**
-     * getFolder - get folder proxy relative to request profiled page
+     * getFolder - get folder view relative to request profiled page
      *  
-     * @return page folder proxy
+     * @return page folder view
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
@@ -516,11 +577,11 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     }
 
     /**
-     * getSiblingPages - get node set of sibling page proxies relative
+     * getSiblingPages - get node set of sibling page views relative
      *                   to request profiled page, (includes profiled
-     *                   page proxy)
+     *                   page view)
      *  
-     * @return sibling page proxies
+     * @return sibling page views
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
@@ -551,10 +612,10 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     }
 
     /**
-     * getParentFolder - get parent folder proxy relative to request
+     * getParentFolder - get parent folder view relative to request
      *                   profiled page
      *  
-     * @return parent folder proxy or null
+     * @return parent folder view or null
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
@@ -575,11 +636,11 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     }
 
     /**
-     * getSiblingFolders - get node set of sibling folder proxies relative
+     * getSiblingFolders - get node set of sibling folder views relative
      *                     to request profiled page, (includes profiled
-     *                     page folder proxy)
+     *                     page folder view)
      *  
-     * @return sibling folder proxies
+     * @return sibling folder views
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
@@ -610,29 +671,36 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     }
 
     /**
-     * getRootFolder - get root profiled folder proxy
+     * getRootFolder - get root profiled folder view
      *  
-     * @return parent folder proxy
+     * @return parent folder view
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
     public Folder getRootFolder() throws NodeNotFoundException
     {
         // get request root folder from session context
-        // using request profile locators if not previously
-        // cached in this context
+        // using request profile locators or default if not
+        // previously cached in this context
         if (requestRootFolder == null)
         {
-            requestRootFolder = sessionContext.getRequestRootFolder(requestProfileLocators, forceReservedVisible);
+            if (requestProfileLocators != null)
+            {
+                requestRootFolder = sessionContext.getRequestRootFolder(requestProfileLocators, forceReservedVisible);
+            }
+            else
+            {
+                requestRootFolder = sessionContext.getRequestRootFolder();                
+            }
         }
         return requestRootFolder;
     }
 
     /**
-     * getRootLinks - get node set of link proxies relative to
+     * getRootLinks - get node set of link views relative to
      *                profiled root folder
      *  
-     * @return root link proxies
+     * @return root link views
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
@@ -844,26 +912,26 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     }
 
     /**
-     * filterHiddenNodes - utility to filter hidden node proxies out of node sets
+     * filterHiddenNodes - utility to filter hidden node views out of node sets
      *
-     * @param nodes proxy node set to filter
-     * @return input or filtered proxy node set
+     * @param nodes view node set to filter
+     * @return input or filtered view node set
      */
     private static NodeSet filterHiddenNodes(NodeSet nodes)
     {
         if ((nodes != null) && !nodes.isEmpty())
         {
-            // filter node proxies in node set
+            // filter node views in node set
             List filteredNodes = null;
             Iterator nodesIter = nodes.iterator();
             while (nodesIter.hasNext())
             {
-                // test hidden status of individual node proxies
+                // test hidden status of individual node views
                 Node node = (Node)nodesIter.next();
                 if (node.isHidden())
                 {
                     // if not copying, create new node set
-                    // and copy preceding node proxies
+                    // and copy preceding node views
                     if (filteredNodes == null)
                     {
                         filteredNodes = new ArrayList(nodes.size());
@@ -884,13 +952,13 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                 }
                 else if (filteredNodes != null)
                 {
-                    // if copying, copy node proxy to filtered set
+                    // if copying, copy node view to filtered set
                     filteredNodes.add(node);
                 }
             }
 
-            // return filteredNodes node proxies if generated
-            // in new immutable proxy node set
+            // return filteredNodes node views if generated
+            // in new immutable view node set
             if (filteredNodes != null)
             {
                 return new NodeSetImpl(filteredNodes);

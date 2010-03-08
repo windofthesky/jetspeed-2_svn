@@ -25,7 +25,7 @@ import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.portalsite.MenuOption;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.AbstractSiteView;
 
 /**
  * This class implements the portal-site menu option
@@ -46,10 +46,10 @@ public class MenuOptionImpl extends MenuElementImpl implements MenuOption, Clone
      *
      * @param view site view used to construct menu option
      * @param parent containing menu implementation
-     * @param node menu option node proxy
+     * @param node menu option node view
      * @param definition menu option definition
      */
-    public MenuOptionImpl(SiteView view, MenuImpl parent, Node node, MenuOptionsDefinition definition)
+    public MenuOptionImpl(AbstractSiteView view, MenuImpl parent, Node node, MenuOptionsDefinition definition)
     {
         super(view, parent, node);
         this.definition = definition;
@@ -73,7 +73,7 @@ public class MenuOptionImpl extends MenuElementImpl implements MenuOption, Clone
      */
     public String getType()
     {
-        // return type of menu option node proxy
+        // return type of menu option node view
         Node node = getNode();
         if (node instanceof Page)
         {
@@ -98,7 +98,7 @@ public class MenuOptionImpl extends MenuElementImpl implements MenuOption, Clone
     public String getSkin()
     {
         // get skin from definition, from menu option
-        // node proxy, or inherit from parent menu
+        // node view, or inherit from parent menu
         String skin = definition.getSkin();
         if (skin == null)
         {
@@ -185,8 +185,8 @@ public class MenuOptionImpl extends MenuElementImpl implements MenuOption, Clone
     public boolean isSelected(PortalSiteRequestContext context)
     {
         // compare the site view url of the page or
-        // folder menu option proxy with the url of
-        // the context request profiled page proxy
+        // folder menu option view with the url of
+        // the context request profiled page view
         if (context != null)
         {
             // get request page

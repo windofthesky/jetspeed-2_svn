@@ -42,7 +42,7 @@ import org.apache.jetspeed.portalsite.MenuOption;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.portalsite.menu.DefaultMenuDefinition;
 import org.apache.jetspeed.portalsite.menu.DefaultMenuOptionsDefinition;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.AbstractSiteView;
 
 /**
  * This class implements the portal-site menu elements
@@ -60,7 +60,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
 
     /**
      * elements - ordered list of menu elements that
-     *            make up this instaniated menu
+     *            make up this instantiated menu
      */
     private List elements;
 
@@ -107,21 +107,21 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param context request context
      * @param menus related menu definition names set
      */
-    protected MenuImpl(SiteView view, MenuImpl parent, MenuDefinition definition, PortalSiteRequestContextImpl context, Set menus)
+    protected MenuImpl(AbstractSiteView view, MenuImpl parent, MenuDefinition definition, PortalSiteRequestContextImpl context, Set menus)
     {
         super(view, parent);
         this.definition = definition;
         if (view != null)
         {
             // define menu node for titles and metadata if options
-            // specifies a single visible page or folder proxy
+            // specifies a single visible page or folder view
             String options = definition.getOptions();
-            Node optionProxy = null;
+            Node optionView = null;
             if ((options != null) && (options.indexOf(',') == -1))
             {
                 try
                 {
-                    optionProxy = view.getNodeProxy(options, context.getPage(), true, true);
+                    optionView = view.getNodeView(options, context.getPage(), true, true);
                 }
                 catch (NodeNotFoundException nnfe)
                 {
@@ -129,9 +129,9 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                 catch (SecurityException se)
                 {
                 }
-                if (optionProxy != null)
+                if (optionView != null)
                 {
-                    setNode(optionProxy);
+                    setNode(optionView);
                 }
             }
 
@@ -140,14 +140,14 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
             // menu elements override menu options attribute
             if ((definition.getMenuElements() == null) || definition.getMenuElements().isEmpty())
             {
-                // if options optionProxy is a single folder, force
+                // if options optionView is a single folder, force
                 // options to include all folder children if not to
                 // be expanded with paths and depth inclusion is
                 // specified
-                List overrideOptionProxies = null;
-                if (optionProxy != null)
+                List overrideOptionViews = null;
+                if (optionView != null)
                 {
-                    if ((optionProxy instanceof Folder) && !definition.isPaths() && (definition.getDepth() != 0))
+                    if ((optionView instanceof Folder) && !definition.isPaths() && (definition.getDepth() != 0))
                     {
                         // assemble folder children path using wildcard
                         String folderChildrenPath = null;
@@ -165,7 +165,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         List folderChildren = null;
                         try
                         {
-                            folderChildren = view.getNodeProxies(folderChildrenPath, context.getPage(), true, true);
+                            folderChildren = view.getNodeViews(folderChildrenPath, context.getPage(), true, true);
                         }
                         catch (NodeNotFoundException nnfe)
                         {
@@ -175,7 +175,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         }
                         if ((folderChildren != null) && !folderChildren.isEmpty())
                         {
-                            overrideOptionProxies = folderChildren;
+                            overrideOptionViews = folderChildren;
                         }
                         else
                         {
@@ -185,16 +185,16 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                     else
                     {
                         // override menu options with single folder/page/link
-                        overrideOptionProxies = new ArrayList(1);
-                        overrideOptionProxies.add(optionProxy);
+                        overrideOptionViews = new ArrayList(1);
+                        overrideOptionViews.add(optionView);
                     }
                     
                     // set relative element flag if options path is relative
-                    this.elementRelative = (this.elementRelative || !options.startsWith(Folder.PATH_SEPARATOR) || options.contains(SiteView.ALT_CURRENT_PAGE_PATH));
+                    this.elementRelative = (this.elementRelative || !options.startsWith(Folder.PATH_SEPARATOR) || options.contains(AbstractSiteView.ALT_CURRENT_PAGE_PATH));
                 }
 
                 // menu defined only with menu definition options
-                this.elements = constructMenuElements(view, context, options, overrideOptionProxies, definition.getDepth(), definition.isPaths(), definition.isRegexp(), definition.getProfile(), definition.getOrder());
+                this.elements = constructMenuElements(view, context, options, overrideOptionViews, definition.getDepth(), definition.isPaths(), definition.isRegexp(), definition.getProfile(), definition.getOrder());
             }
             else
             {
@@ -555,42 +555,42 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param context request context
      * @param view context site view
      * @param options option paths specification
-     * @param overrideElementProxies override menu element node proxies
+     * @param overrideElementViews override menu element node views
      * @param depth inclusion depth
      * @param paths paths elements flag
      * @param regexp regexp flag
      * @param locatorName profile locator name
      * @param order ordering patterns list
      */
-    private List constructMenuElements(SiteView view, PortalSiteRequestContextImpl context, String options, List overrideElementProxies, int depth, boolean paths, boolean regexp, String locatorName, String order)
+    private List constructMenuElements(AbstractSiteView view, PortalSiteRequestContextImpl context, String options, List overrideElementViews, int depth, boolean paths, boolean regexp, String locatorName, String order)
     {
         if (options != null)
         {
-            // use override element proxies if specified; otherwise
-            // compute proxy list using specified menu options
-            List elementProxies = overrideElementProxies;
-            if (elementProxies == null)
+            // use override element views if specified; otherwise
+            // compute view list using specified menu options
+            List elementViews = overrideElementViews;
+            if (elementViews == null)
             {
                 // split multiple comma separated option paths from specified options 
                 String [] optionPaths = options.split(",");
                 
                 // use regexp processing if specified or simple
-                // path evaluation to retrieve list of proxies from
+                // path evaluation to retrieve list of views from
                 // the site view for the specified options
                 for (int i = 0; (i < optionPaths.length); i++)
                 {
                     String optionPath = optionPaths[i].trim();
                     if (optionPath.length() > 0)
                     {
-                        // get proxies/proxy for path
+                        // get views/view for path
                         if (regexp)
                         {
-                            // get list of visible proxies for path from view and append
+                            // get list of visible views for path from view and append
                             // to list if unique and pass profile locator name filter
-                            List pathProxies = null;
+                            List pathViews = null;
                             try
                             {
-                                pathProxies = view.getNodeProxies(optionPath, context.getPage(), true, true);
+                                pathViews = view.getNodeViews(optionPath, context.getPage(), true, true);
                             }
                             catch (NodeNotFoundException nnfe)
                             {
@@ -598,32 +598,32 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                             catch (SecurityException se)
                             {
                             }
-                            if (pathProxies != null)
+                            if (pathViews != null)
                             {
-                                Iterator pathProxiesIter = pathProxies.iterator();
-                                while (pathProxiesIter.hasNext())
+                                Iterator pathViewsIter = pathViews.iterator();
+                                while (pathViewsIter.hasNext())
                                 {
-                                    Node pathProxy = (Node)pathProxiesIter.next();
+                                    Node pathView = (Node)pathViewsIter.next();
                                     if ((locatorName == null) || locatorName.equals(MenuOptionsDefinition.ANY_PROFILE_LOCATOR) ||
-                                        locatorName.equals(view.getProfileLocatorName(pathProxy)))
+                                        locatorName.equals(view.getProfileLocatorName(pathView)))
                                     {
-                                        if (elementProxies == null)
+                                        if (elementViews == null)
                                         {
-                                            elementProxies = new ArrayList();
+                                            elementViews = new ArrayList();
                                         }
-                                        appendMenuElementProxies(pathProxy, elementProxies);
+                                        appendMenuElementViews(pathView, elementViews);
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            // get visible proxy for path from view and append to
+                            // get visible view for path from view and append to
                             // list if unique and pass profile locator name filter
-                            Node pathProxy = null;
+                            Node pathView = null;
                             try
                             {
-                                pathProxy = view.getNodeProxy(optionPath, context.getPage(), true, true);
+                                pathView = view.getNodeView(optionPath, context.getPage(), true, true);
                             }
                             catch (NodeNotFoundException nnfe)
                             {
@@ -631,43 +631,43 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                             catch (SecurityException se)
                             {
                             }
-                            if ((pathProxy != null) &&
+                            if ((pathView != null) &&
                                 ((locatorName == null) || locatorName.equals(MenuOptionsDefinition.ANY_PROFILE_LOCATOR) ||
-                                 locatorName.equals(view.getProfileLocatorName(pathProxy))))
+                                 locatorName.equals(view.getProfileLocatorName(pathView))))
                             {
-                                if (elementProxies == null)
+                                if (elementViews == null)
                                 {
-                                    elementProxies = new ArrayList();
+                                    elementViews = new ArrayList();
                                 }
-                                appendMenuElementProxies(pathProxy, elementProxies);
+                                appendMenuElementViews(pathView, elementViews);
                             }
                         }
 
                         // set relative element flag if path is relative
-                        elementRelative = (elementRelative || !optionPath.startsWith(Folder.PATH_SEPARATOR) || options.contains(SiteView.ALT_CURRENT_PAGE_PATH));
+                        elementRelative = (elementRelative || !optionPath.startsWith(Folder.PATH_SEPARATOR) || options.contains(AbstractSiteView.ALT_CURRENT_PAGE_PATH));
                     }
                 }
 
-                // return if no proxies available
-                if (elementProxies == null)
+                // return if no views available
+                if (elementViews == null)
                 {
                     return null;
                 }
             }
             
-            // sort elements proxies using url and/or names if order
-            // specified and more than one element proxy in list
-            if ((order != null) && (elementProxies.size() > 1))
+            // sort elements views using url and/or names if order
+            // specified and more than one element view in list
+            if ((order != null) && (elementViews.size() > 1))
             {
-                // create ordered element proxies
-                List orderedElementProxies = new ArrayList(elementProxies.size());
+                // create ordered element views
+                List orderedElementViews = new ArrayList(elementViews.size());
                 
                 // split multiple comma separated elements orderings
                 // after converted to regexp pattern
                 String [] orderings = orderRegexpPattern(order).split(",");
                 
-                // copy ordered proxies per ordering
-                for (int i=0; ((i < orderings.length) && (elementProxies.size() > 1)); i++)
+                // copy ordered views per ordering
+                for (int i=0; ((i < orderings.length) && (elementViews.size() > 1)); i++)
                 {
                     String ordering = orderings[i].trim();
                     if (ordering.length() > 0)
@@ -677,22 +677,22 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         Matcher matcher = null;
                         
                         // use regular expression to match urls or names of
-                        // element proxies; matched proxies are removed and
-                        // placed in the ordered elements proxies list
-                        Iterator elementProxiesIter = elementProxies.iterator();
-                        while (elementProxiesIter.hasNext())
+                        // element views; matched views are removed and
+                        // placed in the ordered elements views list
+                        Iterator elementViewsIter = elementViews.iterator();
+                        while (elementViewsIter.hasNext())
                         {
-                            Node elementProxy = (Node)elementProxiesIter.next(); 
+                            Node elementView = (Node)elementViewsIter.next(); 
                             
                             // get url or name to test ordering match against
                             String test = null;
                             if (ordering.charAt(0) == Folder.PATH_SEPARATOR_CHAR)
                             {
-                                test = elementProxy.getUrl();
+                                test = elementView.getUrl();
                             }
                             else
                             {
-                                test = elementProxy.getName();
+                                test = elementView.getName();
                             }
                             
                             // construct or reset ordering matcher
@@ -705,51 +705,51 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                                 matcher.reset(test);
                             }
                             
-                            // move proxy to ordered list if matched
+                            // move view to ordered list if matched
                             if (matcher.matches())
                             {
-                                orderedElementProxies.add(elementProxy);
-                                elementProxiesIter.remove();
+                                orderedElementViews.add(elementView);
+                                elementViewsIter.remove();
                             }
                         }
                     }
                 }
                 
-                // copy remaining unordered proxies
-                orderedElementProxies.addAll(elementProxies);
+                // copy remaining unordered views
+                orderedElementViews.addAll(elementViews);
                 
-                // replace element proxies with ordered list
-                elementProxies = orderedElementProxies;
+                // replace element views with ordered list
+                elementViews = orderedElementViews;
             }
             
-            // expand paths if single page or folder element proxy
+            // expand paths if single page or folder element view
             // has been specified in elements with no depth expansion
-            if (paths && (depth == 0) && (elementProxies.size() == 1) &&
-                ((elementProxies.get(0) instanceof Folder) || (elementProxies.get(0) instanceof Page)))
+            if (paths && (depth == 0) && (elementViews.size() == 1) &&
+                ((elementViews.get(0) instanceof Folder) || (elementViews.get(0) instanceof Page)))
             {
-                Node parentNode = ((Node)elementProxies.get(0)).getParent();
+                Node parentNode = ((Node)elementViews.get(0)).getParent();
                 while (parentNode != null)
                 {
-                    elementProxies.add(0, parentNode);
+                    elementViews.add(0, parentNode);
                     parentNode = parentNode.getParent();
                 }
             }
             
-            // convert elements proxies into menu elements
+            // convert elements views into menu elements
             DefaultMenuOptionsDefinition defaultMenuOptionsDefinition = null;
-            ListIterator elementProxiesIter = elementProxies.listIterator();
-            while (elementProxiesIter.hasNext())
+            ListIterator elementViewsIter = elementViews.listIterator();
+            while (elementViewsIter.hasNext())
             {
-                Node elementProxy = (Node)elementProxiesIter.next();
+                Node elementView = (Node)elementViewsIter.next();
                 MenuElement menuElement = null;
 
                 // convert folders into nested menus if depth specified
                 // with no paths expansion, (negative depth values are
                 // interpreted as complete menu expansion)
-                if ((elementProxy instanceof Folder) && ((depth < 0) || (depth > 1)) && !paths)
+                if ((elementView instanceof Folder) && ((depth < 0) || (depth > 1)) && !paths)
                 {
                     // construct menu definition and associated menu
-                    MenuDefinition nestedMenuDefinition = new DefaultMenuDefinition(elementProxy.getUrl(), depth - 1, locatorName);
+                    MenuDefinition nestedMenuDefinition = new DefaultMenuDefinition(elementView.getUrl(), depth - 1, locatorName);
                     menuElement = new MenuImpl(view, this, nestedMenuDefinition, context, null);
                 }
                 else
@@ -759,15 +759,15 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                     {
                         defaultMenuOptionsDefinition = new DefaultMenuOptionsDefinition(options, depth, paths, regexp, locatorName, order);
                     }
-                    menuElement = new MenuOptionImpl(view, this, elementProxy, defaultMenuOptionsDefinition);
+                    menuElement = new MenuOptionImpl(view, this, elementView, defaultMenuOptionsDefinition);
                 }
 
-                // replace element proxy with menu element
-                elementProxiesIter.set(menuElement);
+                // replace element view with menu element
+                elementViewsIter.set(menuElement);
             }
-            List menuElements = elementProxies;
+            List menuElements = elementViews;
 
-            // return list of menu elements constructed from element proxies
+            // return list of menu elements constructed from element views
             return menuElements;
         }
 
@@ -776,19 +776,19 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
     }
 
     /**
-     * appendMenuElementProxies - append to ordered list of unique menu
-     *                            element proxies
+     * appendMenuElementViews - append to ordered list of unique menu
+     *                          element views
      * 
-     * @param pathProxy menu element page, folder, or link proxy at path
-     * @param elementProxies element proxies list
+     * @param pathView menu element page, folder, or link view at path
+     * @param elementViews element views list
      */
-    private void appendMenuElementProxies(Node pathProxy, List elementProxies)
+    private void appendMenuElementViews(Node pathView, List elementViews)
     {
-        // make sure new proxy is unique and add
-        // to element proxies list
-        if (!elementProxies.contains(pathProxy))
+        // make sure new view is unique and add
+        // to element views list
+        if (!elementViews.contains(pathView))
         {
-            elementProxies.add(pathProxy);
+            elementViews.add(pathView);
         }
     }
     

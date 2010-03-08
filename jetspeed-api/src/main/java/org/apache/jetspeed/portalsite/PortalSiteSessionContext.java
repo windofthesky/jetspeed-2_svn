@@ -73,6 +73,42 @@ public interface PortalSiteSessionContext extends Serializable
     PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback, boolean useHistory, boolean forceReservedVisible);
 
     /**
+     * newRequestContext - create a new request context instance without profiling
+     *                     support with fallback and history
+     *
+     * @param requestPath request path
+     * @param requestServerName request server name
+     * @return new request context instance
+     */
+    PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName);
+
+    /**
+     * newRequestContext - create a new request context instance without profiling
+     *                     support with history
+     *
+     * @param requestPath request path
+     * @param requestServerName request server name
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @return new request context instance
+     */
+    PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, boolean requestFallback);
+
+    /**
+     * newRequestContext - create a new request context instance without profiling
+     *                     support
+     *
+     * @param requestPath request path
+     * @param requestServerName request server name
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     * @return new request context instance
+     */
+    PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, boolean requestFallback, boolean useHistory);
+
+    /**
      * getPageManager - return PageManager component instance
      *
      * @return PageManager instance

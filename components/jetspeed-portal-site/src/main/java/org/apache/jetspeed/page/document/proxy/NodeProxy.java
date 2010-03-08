@@ -28,9 +28,10 @@ import java.util.List;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.page.document.Node;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 import org.apache.jetspeed.portalsite.view.SiteViewMenuDefinitionLocator;
-import org.apache.jetspeed.portalsite.view.SiteViewProxy;
+import org.apache.jetspeed.portalsite.view.SearchPathsSiteViewProxy;
+import org.apache.jetspeed.portalsite.view.SiteViewUtils;
 
 /**
  * This class proxies Node instances to create a logical
@@ -39,7 +40,7 @@ import org.apache.jetspeed.portalsite.view.SiteViewProxy;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public abstract class NodeProxy extends SiteViewProxy
+public abstract class NodeProxy extends SearchPathsSiteViewProxy
 {
     /**
      * URL_ENCODING - the name of a character encoding to be used in encoding path component name.
@@ -111,7 +112,7 @@ public abstract class NodeProxy extends SiteViewProxy
      * @param name name of node to proxy
      * @param hidden hidden status of node to proxy
      */
-    protected NodeProxy(SiteView view, String locatorName, Folder parent, String name, boolean hidden)
+    protected NodeProxy(SearchPathsSiteView view, String locatorName, Folder parent, String name, boolean hidden)
     {
         super(view, locatorName);
         this.parent = parent;
@@ -238,6 +239,36 @@ public abstract class NodeProxy extends SiteViewProxy
     }
 
     /**
+     * mergeMenuDefinitionLocators - utility to merge menu definition locator lists
+     *                               to be used by derived implementations to aggregate
+     *                               menu definition locators
+     *
+     * @param locators list of menu definition locators to merge
+     * @param node node view
+     * @param override override menu definition
+     */
+    public void mergeMenuDefinitionLocators(List definitions, Node node, boolean override)
+    {
+        // merge definitions into aggregated menu definition
+        // locators if defined
+        menuDefinitionLocators = SiteViewUtils.mergeMenuDefinitionLocators(definitions, node, override, menuDefinitionLocators);
+    }
+
+    /**
+     * mergeMenuDefinitionLocators - utility to merge menu definition locator lists
+     *                               to be used by derived implementations to aggregate
+     *                               menu definition locators
+     *
+     * @param locators list of menu definition locators to merge
+     */
+    public void mergeMenuDefinitionLocators(List locators)
+    {
+        // merge locators into aggregated menu definition
+        // locators if defined
+        menuDefinitionLocators = SiteViewUtils.mergeMenuDefinitionLocators(locators, menuDefinitionLocators);
+    }
+    
+    /**
      * getMenuDefinitionLocator - get menu definition locator by name
      *
      * @param name menu definition name
@@ -249,7 +280,7 @@ public abstract class NodeProxy extends SiteViewProxy
         List locators = getMenuDefinitionLocators();
         if (locators != null)
         {
-            return findMenuDefinitionLocator(name);
+            return SiteViewUtils.findMenuDefinitionLocator(locators, name);
         }
         return null;
     }
@@ -261,120 +292,6 @@ public abstract class NodeProxy extends SiteViewProxy
     protected void aggregateMenuDefinitionLocators()
     {
         // no menu definition locators by default
-    }
-
-    /**
-     * mergeMenuDefinitionLocators - utilty to merge menu definition locator lists
-     *                               to be used by derived implementations to aggregate
-     *                               menu definition locators
-     *
-     * @param definitions list of menu definitions to merge
-     * @param node page or folder node that defines menu definitions
-     * @param override menu definition flag
-     */
-    protected void mergeMenuDefinitionLocators(List definitions, Node node, boolean override)
-    {
-        // merge definitions into aggregated menu definition
-        // locators if defined
-        if (definitions != null)
-        {
-            Iterator definitionsIter = definitions.iterator();
-            while (definitionsIter.hasNext())
-            {
-                // aggregate menu definition by valid name
-                MenuDefinition definition = (MenuDefinition)definitionsIter.next();
-                String definitionName = definition.getName();
-                if (definitionName != null)
-                {
-                    // add unique menu definition to end of
-                    // ordered menu definition locators list
-                    if (!menuDefinitionLocatorsContains(definitionName))
-                    {
-                        if (menuDefinitionLocators == null)
-                        {
-                            menuDefinitionLocators = Collections.synchronizedList(new ArrayList(definitions.size() * 2));
-                        }
-                        menuDefinitionLocators.add(new SiteViewMenuDefinitionLocator(definition, node, override));
-                    }
-                    else if (override)
-                    {
-                        throw new RuntimeException("Override menu definitions must be merged/added before others!");
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * mergeMenuDefinitionLocators - utilty to merge menu definition locator lists
-     *                               to be used by derived implementations to aggregate
-     *                               menu definition locators
-     *
-     * @param locators list of menu definition locators to merge
-     */
-    protected void mergeMenuDefinitionLocators(List locators)
-    {
-        // merge locators into aggregated menu definition
-        // locators if defined
-        if (locators != null)
-        {
-            Iterator locatorsIter = locators.iterator();
-            while (locatorsIter.hasNext())
-            {
-                // aggregate menu definition by valid name
-                SiteViewMenuDefinitionLocator locator = (SiteViewMenuDefinitionLocator)locatorsIter.next();
-                String definitionName = locator.getName();
-
-                // add unique menu definition to end of
-                // ordered menu definition locators list
-                if (!menuDefinitionLocatorsContains(definitionName))
-                {
-                    if (menuDefinitionLocators == null)
-                    {
-                        menuDefinitionLocators = Collections.synchronizedList(new ArrayList(locators.size() * 2));
-                    }
-                    menuDefinitionLocators.add(locator);
-                }
-            }
-        }
-    }
-
-    /**
-     * menuDefinitionLocatorsContains - contains test for menu definition locators by name
-     *
-     * @param name menu definition name
-     * @return contains name result
-     */
-    private boolean menuDefinitionLocatorsContains(String name)
-    {
-        // test for matching name in menu definition locators
-        return (findMenuDefinitionLocator(name) != null);
-    }
-
-    /**
-     * findMenuDefinitionLocator - find menu definition locator by name
-     *
-     * @param name menu definition name
-     * @return menu definition locator
-     */
-    private SiteViewMenuDefinitionLocator findMenuDefinitionLocator(String name)
-    {
-        // find matching menu definition locator by name
-        if ((menuDefinitionLocators != null) && (name != null))
-        {
-            synchronized (menuDefinitionLocators) {
-                Iterator locatorsIter = menuDefinitionLocators.iterator();
-                while (locatorsIter.hasNext())
-                {
-                    SiteViewMenuDefinitionLocator locator = (SiteViewMenuDefinitionLocator)locatorsIter.next();
-                    if (name.equals(locator.getName()))
-                    {
-                        return locator;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     /**

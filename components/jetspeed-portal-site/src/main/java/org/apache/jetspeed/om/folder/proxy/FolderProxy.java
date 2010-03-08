@@ -49,7 +49,7 @@ import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
 import org.apache.jetspeed.page.document.proxy.NodeSetImpl;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 import org.apache.jetspeed.portalsite.view.SiteViewSearchPath;
 
 /**
@@ -210,7 +210,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      * @param folder proxy delegate
      * @param forceReservedVisible suppress reserved/hidden folder visibility checks
      */
-    public static Folder newInstance(SiteView view, String locatorName, Folder parentFolder, Folder folder, boolean forceReservedVisible)
+    public static Folder newInstance(SearchPathsSiteView view, String locatorName, Folder parentFolder, Folder folder, boolean forceReservedVisible)
     {
         return (Folder)Proxy.newProxyInstance(folder.getClass().getClassLoader(), new Class[]{Folder.class}, new FolderProxy(view, locatorName, parentFolder, folder, forceReservedVisible));
     }
@@ -225,7 +225,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      * @param folder proxy delegate
      * @param forceReservedVisible suppress reserved/hidden folder visibility checks
      */
-    private FolderProxy(SiteView view, String locatorName, Folder parentFolder, Folder folder, boolean forceReservedVisible)
+    private FolderProxy(SearchPathsSiteView view, String locatorName, Folder parentFolder, Folder folder, boolean forceReservedVisible)
     {
         super(view, locatorName, parentFolder, folder.getName(), folder.isHidden());
         this.defaultFolder = selectDefaultFromAggregateFolders(folder);
@@ -780,6 +780,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      *                               part of the view are by definition
      *                               accessible
      *
+     * @param folderName name of child folder to check
      * @throws SecurityException if view access to folder not granted
      */
     public void checkAccessToFolderNotFound(String folderName)

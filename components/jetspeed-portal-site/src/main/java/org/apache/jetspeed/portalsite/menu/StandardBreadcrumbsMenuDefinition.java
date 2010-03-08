@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.portalsite.menu;
 
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.AbstractSiteView;
 
 /**
  * This class provides a menu definition for the standard
@@ -42,7 +42,7 @@ public class StandardBreadcrumbsMenuDefinition extends StandardBackMenuDefinitio
      */
     public String getName()
     {
-        return SiteView.STANDARD_BREADCRUMBS_MENU_NAME;
+        return AbstractSiteView.STANDARD_BREADCRUMBS_MENU_NAME;
     }
 
     /**
@@ -53,7 +53,7 @@ public class StandardBreadcrumbsMenuDefinition extends StandardBackMenuDefinitio
     public String getOptions()
     {
         // current page
-        return SiteView.CURRENT_PAGE_PATH;
+        return AbstractSiteView.CURRENT_PAGE_PATH;
     }
 
     /**

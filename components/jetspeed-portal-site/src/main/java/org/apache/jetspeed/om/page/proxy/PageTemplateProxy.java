@@ -24,7 +24,7 @@ import java.lang.reflect.Proxy;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 
 /**
  * This class proxies PSML PageTemplate instances to create a logical
@@ -54,7 +54,7 @@ public class PageTemplateProxy extends NodeProxy implements InvocationHandler
      * @param parentFolder view parent proxy folder
      * @param pageTemplate proxy delegate
      */
-    public static PageTemplate newInstance(SiteView view, String locatorName, Folder parentFolder, PageTemplate pageTemplate)
+    public static PageTemplate newInstance(SearchPathsSiteView view, String locatorName, Folder parentFolder, PageTemplate pageTemplate)
     {
         return (PageTemplate)Proxy.newProxyInstance(pageTemplate.getClass().getClassLoader(), new Class[]{PageTemplate.class}, new PageTemplateProxy(view, locatorName, parentFolder, pageTemplate));
     }
@@ -68,7 +68,7 @@ public class PageTemplateProxy extends NodeProxy implements InvocationHandler
      * @param parentFolder view parent proxy folder
      * @param pageTemplate proxy delegate
      */
-    private PageTemplateProxy(SiteView view, String locatorName, Folder parentFolder, PageTemplate pageTemplate)
+    private PageTemplateProxy(SearchPathsSiteView view, String locatorName, Folder parentFolder, PageTemplate pageTemplate)
     {
         super(view, locatorName, parentFolder, pageTemplate.getName(), false);
         this.pageTemplate = pageTemplate;

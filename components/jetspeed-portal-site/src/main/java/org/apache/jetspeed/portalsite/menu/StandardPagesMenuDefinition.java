@@ -18,7 +18,7 @@ package org.apache.jetspeed.portalsite.menu;
 
 import org.apache.jetspeed.om.folder.impl.StandardMenuDefinitionImpl;
 import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.AbstractSiteView;
 
 /**
  * This class provides a menu definition for the standard
@@ -44,7 +44,7 @@ public class StandardPagesMenuDefinition extends StandardMenuDefinitionImpl
      */
     public String getName()
     {
-        return SiteView.STANDARD_PAGES_MENU_NAME;
+        return AbstractSiteView.STANDARD_PAGES_MENU_NAME;
     }
 
     /**

@@ -21,7 +21,7 @@ import java.util.Locale;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.portalsite.MenuSeparator;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.AbstractSiteView;
 
 /**
  * This class implements the portal-site menu separator
@@ -44,7 +44,7 @@ public class MenuSeparatorImpl extends MenuElementImpl implements MenuSeparator,
      * @param parent containing menu implementation
      * @param definition menu separator definition
      */
-    public MenuSeparatorImpl(SiteView view, MenuImpl parent, MenuSeparatorDefinition definition)
+    public MenuSeparatorImpl(AbstractSiteView view, MenuImpl parent, MenuSeparatorDefinition definition)
     {
         super(view, parent);
         this.definition = definition;

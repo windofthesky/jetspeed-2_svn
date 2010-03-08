@@ -90,9 +90,9 @@ public interface PortalSiteRequestContext
     boolean isContentPage() throws NodeNotFoundException;
 
     /**
-     * getPage - get request profiled page proxy
+     * getPage - get request profiled page view
      *  
-     * @return page proxy
+     * @return page view
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
@@ -108,79 +108,79 @@ public interface PortalSiteRequestContext
     String getPageContentPath() throws NodeNotFoundException;
 
     /**
-     * getPageTemplate - get page template proxy for request profiled page
+     * getPageTemplate - get page template view for request profiled page
      *  
-     * @return page template proxy if found or null
+     * @return page template view if found or null
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
     PageTemplate getPageTemplate() throws NodeNotFoundException;
 
     /**
-     * getFragmentDefinitions - get fragment definition proxy map for request
+     * getFragmentDefinitions - get fragment definition view map for request
      *                          profiled page and page template
      *  
-     * @return map of fragment definition proxies by fragment id
+     * @return map of fragment definition views by fragment id
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
     Map getFragmentDefinitions() throws NodeNotFoundException;
 
     /**
-     * getFolder - get folder proxy relative to request profiled page
+     * getFolder - get folder view relative to request profiled page
      *  
-     * @return page folder proxy
+     * @return page folder view
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
     Folder getFolder() throws NodeNotFoundException;
 
     /**
-     * getSiblingPages - get node set of sibling page proxies relative
+     * getSiblingPages - get node set of sibling page views relative
      *                   to request profiled page, (includes profiled
-     *                   page proxy)
+     *                   page view)
      *  
-     * @return sibling page proxies
+     * @return sibling page views
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
     NodeSet getSiblingPages() throws NodeNotFoundException;
 
     /**
-     * getParentFolder - get parent folder proxy relative to request
+     * getParentFolder - get parent folder view relative to request
      *                   profiled page
      *  
-     * @return parent folder proxy or null
+     * @return parent folder view or null
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
     Folder getParentFolder() throws NodeNotFoundException;
 
     /**
-     * getSiblingFolders - get node set of sibling folder proxies relative
+     * getSiblingFolders - get node set of sibling folder views relative
      *                     to request profiled page, (includes profiled
-     *                     page folder proxy)
+     *                     page folder view)
      *  
-     * @return sibling folder proxies
+     * @return sibling folder views
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
     NodeSet getSiblingFolders() throws NodeNotFoundException;
 
     /**
-     * getRootFolder - get root profiled folder proxy
+     * getRootFolder - get root profiled folder view
      *  
-     * @return parent folder proxy
+     * @return parent folder view
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
     Folder getRootFolder() throws NodeNotFoundException;
 
     /**
-     * getRootLinks - get node set of link proxies relative to
+     * getRootLinks - get node set of link views relative to
      *                profiled root folder
      *  
-     * @return root link proxies
+     * @return root link views
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */

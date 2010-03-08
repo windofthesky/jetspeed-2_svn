@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
 
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.impl.StandardMenuDefinitionImpl;
-import org.apache.jetspeed.portalsite.view.SiteView;
+import org.apache.jetspeed.portalsite.view.AbstractSiteView;
 
 /**
  * This class provides a menu definition for the standard
@@ -48,7 +48,7 @@ public class StandardBackMenuDefinition extends StandardMenuDefinitionImpl
      */
     public String getName()
     {
-        return SiteView.STANDARD_BACK_MENU_NAME;
+        return AbstractSiteView.STANDARD_BACK_MENU_NAME;
     }
 
     /**
