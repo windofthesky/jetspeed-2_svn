@@ -952,7 +952,6 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             // that matches request path; start with root folder in view
             Folder contentRequestFolder = (Folder)view.getNodeView(Folder.PATH_SEPARATOR, null, false, false);
             String contentRequestPath = contentRequestFolder.getPath();
-            String contentRequestFile = null;
             for (;;)
             {
                 // find next path name
@@ -975,6 +974,16 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 }
             }
             
+            // determine if content request folder matches request
+            // folder assuming request path may include a content
+            // document name, but no deeper folders
+            boolean matchingContentRequestFolder = true;
+            if (contentRequestPath.length() < requestPath.length())
+            {
+                String requestPathTail = requestPath.substring(contentRequestPath.length());
+                matchingContentRequestFolder = (requestPathTail.indexOf(Folder.PATH_SEPARATOR_CHAR, (requestPathTail.startsWith(Folder.PATH_SEPARATOR) ? 1 : 0)) == -1);
+            }
+            
             // select matching dynamic pages in folders from deepest
             // to root folders in content request path
             while (contentRequestFolder != null)
@@ -986,6 +995,8 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     if ((dynamicPages != null) && !dynamicPages.isEmpty())
                     {
                         // select matching page
+                        DynamicPage matchingPage = null;
+                        DynamicPage inheritableMatchingPage = null;
                         DynamicPage wildcardMatchingPage = null;
                         Iterator dynamicPagesIter = dynamicPages.iterator();
                         while (dynamicPagesIter.hasNext())
@@ -997,13 +1008,36 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                             }
                             else if (dynamicPage.getContentType().equals(contentType))
                             {
-                                // log selected dynamic page
-                                if (log.isDebugEnabled())
+                                boolean inheritableDynamicPage = dynamicPage.isInheritable();
+                                if (matchingContentRequestFolder && !inheritableDynamicPage)
                                 {
-                                    log.debug("Selected "+contentType+" content dynamic page, path=" + view.getManagedDynamicPage(dynamicPage).getPath());
+                                    matchingPage = dynamicPage;
                                 }
-                                return dynamicPage;
+                                else if (inheritableDynamicPage)
+                                {
+                                    inheritableMatchingPage = dynamicPage;
+                                }
                             }
+                        }
+                        // select matching page
+                        if (matchingPage != null)
+                        {
+                            // log selected dynamic page
+                            if (log.isDebugEnabled())
+                            {
+                                log.debug("Selected "+contentType+" content dynamic page, path=" + view.getManagedDynamicPage(matchingPage).getPath());
+                            }
+                            return matchingPage;
+                        }
+                        // select inheritable matching page
+                        if (inheritableMatchingPage != null)
+                        {
+                            // log selected dynamic page
+                            if (log.isDebugEnabled())
+                            {
+                                log.debug("Selected "+contentType+" inheritable content dynamic page, path=" + view.getManagedDynamicPage(inheritableMatchingPage).getPath());
+                            }
+                            return inheritableMatchingPage;
                         }
                         // select wildcard matching page
                         if (wildcardMatchingPage != null)
@@ -1011,7 +1045,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                             // log selected dynamic page
                             if (log.isDebugEnabled())
                             {
-                                log.debug("Selected "+contentType+" content dynamic page with wildcard, path=" + view.getManagedDynamicPage(wildcardMatchingPage).getPath());
+                                log.debug("Selected "+contentType+" wildcard content dynamic page, path=" + view.getManagedDynamicPage(wildcardMatchingPage).getPath());
                             }
                             return wildcardMatchingPage;
                         }
@@ -1028,6 +1062,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
 
                 // continue search with parent folder
                 contentRequestFolder = (Folder)contentRequestFolder.getParent();
+                matchingContentRequestFolder = false;
             }
         }
             

@@ -44,4 +44,20 @@ public interface DynamicPage extends BaseConcretePageElement, Serializable
      * @param contentType the name of the content type for the page
      */
     void setContentType(String contentType);
+    
+    /**
+     * Get inheritable flag that indicates whether this dynamic
+     * page can be inherited for child content pages.
+     *
+     * @return inheritable flag
+     */
+    boolean isInheritable();
+    
+    /**
+     * Set inheritable flag that indicates whether this dynamic
+     * page can be inherited for child content pages.
+     *
+     * @param inheritable inheritable flag
+     */
+    void setInheritable(boolean inheritable);   
 }

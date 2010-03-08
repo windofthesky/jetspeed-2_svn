@@ -513,7 +513,9 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         pageManager.updatePageTemplate(pageTemplate);
 
         DynamicPage dynamicPage = pageManager.newDynamicPage("/dynamic-page.dpsml");
-        dynamicPage.setContentType("default");        
+        dynamicPage.setContentType("default");
+        assertTrue(dynamicPage.isInheritable());
+        dynamicPage.setInheritable(false);        
         dynamicPage.setTitle("Created Dynamic Page");
         rootFragmentElement = dynamicPage.getRootFragment();
         assertTrue(rootFragmentElement instanceof Fragment);
@@ -754,6 +756,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             DynamicPage check = pageManager.getDynamicPage("/dynamic-page.dpsml");
             assertNotNull(check);
             assertEquals("default", check.getContentType());
+            assertFalse(check.isInheritable());
             assertEquals("Created Dynamic Page", check.getTitle());
             assertNotNull(check.getRootFragment());
             BaseFragmentElement rootFragmentElement = check.getRootFragment();
@@ -1191,6 +1194,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals("/dynamic-page.dpsml", dynamicPage.getPath());
         dynamicPage.setTitle("UPDATED");
         dynamicPage.setContentType("UPDATED");
+        dynamicPage.setInheritable(true);
         pageManager.updateDynamicPage(dynamicPage);
 
         FragmentDefinition fragmentDefinition = pageManager.getFragmentDefinition("/fragment-definition.fpsml");

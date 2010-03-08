@@ -29,6 +29,7 @@ public class DynamicPageImpl extends AbstractBaseConcretePageElement implements 
     private static final long serialVersionUID = 1L;
 
     private String contentType;
+    private boolean inheritable = true;
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.DynamicPage#getContentType()
@@ -44,6 +45,22 @@ public class DynamicPageImpl extends AbstractBaseConcretePageElement implements 
     public void setContentType(String contentType)
     {
         this.contentType = contentType;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.DynamicPage#isInheritable()
+     */
+    public boolean isInheritable()
+    {
+        return inheritable;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.DynamicPage#setInheritable(boolean)
+     */
+    public void setInheritable(boolean inheritable)
+    {
+        this.inheritable = inheritable;
     }
 
     /* (non-Javadoc)

@@ -1583,6 +1583,13 @@
          jdbc-type="VARCHAR"
       />
 
+      <field-descriptor
+         name="inheritable"
+         column="IS_INHERITABLE"
+         jdbc-type="INTEGER"
+         conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"
+      />
+
    </class-descriptor>
 
    <class-descriptor

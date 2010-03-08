@@ -1146,6 +1146,7 @@ public abstract class AbstractPageManager
         copyPageAttributes(source, copyIds, dynamicPage);
         dynamicPage.setHidden(source.isHidden());
         dynamicPage.setContentType(source.getContentType());
+        dynamicPage.setInheritable(source.isInheritable());
         return dynamicPage;
     }
 

@@ -1911,10 +1911,25 @@ public class TestPortalSite extends AbstractSpringTestCase
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof DynamicPage);
+        assertEquals("matchdocpage.dpsml", requestPageView.getName());
+        assertEquals("/contentfolder/matchdocpage.dpsml", extractFileSystemPathFromId(requestPageView.getId()));
+        assertNotNull(requestContext.getPageContentPath());
+        assertEquals("/contentfolder/document", requestContext.getPageContentPath());
+
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/contentfolder/folder/document.doc");
+        locator.add("user", true, false, "user");
+        locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        requestContext = sessionContext.newRequestContext(locators);
+        assertNotNull(requestContext);
+        requestPageView = requestContext.getPage();
+        assertNotNull(requestPageView);
+        assertTrue(requestPageView instanceof DynamicPage);
         assertEquals("docpage.dpsml", requestPageView.getName());
         assertEquals("/contentfolder/docpage.dpsml", extractFileSystemPathFromId(requestPageView.getId()));
         assertNotNull(requestContext.getPageContentPath());
-        assertEquals("/contentfolder/document", requestContext.getPageContentPath());
+        assertEquals("/contentfolder/folder/document", requestContext.getPageContentPath());
 
         locator = new JetspeedProfileLocator();
         locator.init(null, "/contentfolder/document.txt");
