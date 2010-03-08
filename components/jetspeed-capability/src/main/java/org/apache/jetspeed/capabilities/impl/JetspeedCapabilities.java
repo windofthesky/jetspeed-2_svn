@@ -19,6 +19,7 @@ package org.apache.jetspeed.capabilities.impl;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -55,9 +56,12 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
     public static final String DEFAULT_AGENT = "Mozilla/4.0";
 
     public static final String AGENT_XML = "agentxml/1.0";
+    
+    public static final int MAX_CACHE_SIZE = 500;
 
     // Cache for the capability maps
-    Hashtable capabilityMapCache = new Hashtable();
+    private Hashtable capabilityMapCache = new Hashtable();
+    private LinkedList capabilityMapCacheKeyList = new LinkedList();
 
     private Collection clients = null;
 
@@ -172,7 +176,15 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
 
         // Check the cache if we have already a capability map for
         // the given Agent
-        map = (CapabilityMap) capabilityMapCache.get(userAgent);
+        synchronized (capabilityMapCache)
+        {
+            map = (CapabilityMap) capabilityMapCache.get(userAgent);
+            if (map != null)
+            {
+                capabilityMapCacheKeyList.remove(userAgent);
+                capabilityMapCacheKeyList.addFirst(userAgent);
+            }
+        }
 
         if (map != null)
         {
@@ -246,9 +258,27 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
                 map.setPreferredMediaType(mtEntry);
 
                 // Add map to cache
-                capabilityMapCache.put(userAgent, map);
-                if (defaultAgent != null)
-                    capabilityMapCache.put(defaultAgent, map);
+                synchronized (capabilityMapCache)
+                {
+                    if (capabilityMapCache.put(userAgent, map) != null)
+                    {
+                        capabilityMapCacheKeyList.remove(userAgent);
+                    }
+                    capabilityMapCacheKeyList.addFirst(userAgent);
+                    if (defaultAgent != null)
+                    {
+                        if (capabilityMapCache.put(defaultAgent, map) != null)
+                        {
+                            capabilityMapCacheKeyList.remove(defaultAgent);
+                        }
+                        capabilityMapCacheKeyList.addFirst(defaultAgent);
+                    }
+                    while (capabilityMapCache.size() > MAX_CACHE_SIZE)
+                    {
+                        String reapAgent = (String)capabilityMapCacheKeyList.removeLast();
+                        capabilityMapCache.remove(reapAgent);
+                    }
+                }
                 return map;
             }
 
@@ -416,7 +446,11 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      */
     public void deleteCapabilityMapCache()
     {
-        capabilityMapCache.clear();
+        synchronized (capabilityMapCache)
+        {
+            capabilityMapCache.clear();
+            capabilityMapCacheKeyList.clear();
+        }
         clients = null;
     }
 
