@@ -128,6 +128,10 @@
           <meta key="j2:cat" value="default" />
           <constructor-arg ref="jaxrsPageLayoutService" />
         </bean>
+        <bean class="org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider">
+          <meta key="j2:cat" value="default" />
+          <constructor-arg ref="jaxrsPageManagementService" />
+        </bean>
       </list>
     </property>
   </bean>
@@ -140,12 +144,18 @@
     <constructor-arg ref="org.apache.jetspeed.search.SearchEngine" />
   </bean>
   
-  <!-- Portal Page Management JAX-RS Service -->
+  <!-- Portal Page Layout Management JAX-RS Service -->
   <bean id="jaxrsPageLayoutService" class="org.apache.jetspeed.services.rest.PageLayoutService">
     <meta key="j2:cat" value="default" />
     <constructor-arg ref="org.apache.jetspeed.layout.PageLayoutComponent" />
     <constructor-arg ref="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
     <constructor-arg ref="PortletActionSecurityBehavior" />
+  </bean>
+  
+  <!-- Portal Page Management JAX-RS Service -->
+  <bean id="jaxrsPageManagementService" class="org.apache.jetspeed.services.rest.PageManagementService">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg ref="org.apache.jetspeed.page.PageManager" />
   </bean>
   
 </beans>
