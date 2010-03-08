@@ -146,6 +146,7 @@ limitations under the License.
         <js:service name='AuditActivity'/>
         <js:service name='JetspeedSerializerFactory'/>
 		<js:service name='CacheMonitor'/>        
+        <js:service name="PAM" />                 
 	</js:services>
 
 </portlet-app>
