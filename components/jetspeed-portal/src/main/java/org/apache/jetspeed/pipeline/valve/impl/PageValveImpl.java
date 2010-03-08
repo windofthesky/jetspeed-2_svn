@@ -16,281 +16,105 @@
  */
 package org.apache.jetspeed.pipeline.valve.impl;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.security.auth.Subject;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.administration.AdminUtil;
-import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.layout.PageLayoutComponent;
-import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.BaseConcretePageElement;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.PageTemplate;
-import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
-import org.apache.jetspeed.page.document.NodeSet;
-import org.apache.jetspeed.pipeline.PipelineException;
-import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
-import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.portalsite.PortalSite;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.portalsite.PortalSiteSessionContext;
-import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.SubjectHelper;
-import org.apache.jetspeed.security.User;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Page Valve locates the page from the portal request without profiling operations using a 1:1 URL:path location algorithm
+ * Page Valve locates the page from the portal request without profiling
+ * operations using a 1:1 URL:path location algorithm
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class PageValveImpl extends AbstractValve implements PageProfilerValve
+public class PageValveImpl extends AbstractPageValveImpl implements PageProfilerValve
 {
-    protected Logger log = LoggerFactory.getLogger(PageValveImpl.class);   
-
-   
     /**
-     * pageLayoutComponent - component used to construct and maintain ContentPage from
-     *                       profiled PSML Pages and Fragments.
+     * PageValveImpl - constructor
+     *
+     * @param portalSite portal site component reference
+     * @param pageLayoutComponent page layout component reference
+     * @param requestFallback flag to enable root folder fallback
+     * @param useHistory flag to enable selection of last visited folder page
      */
-    private PageLayoutComponent pageLayoutComponent;
+    public PageValveImpl(PortalSite portalSite, PageLayoutComponent pageLayoutComponent, boolean requestFallback, boolean useHistory)
+    {
+        super(portalSite, pageLayoutComponent, requestFallback, useHistory);
+    }
 
     /**
+     * PageValveImpl - constructor
+     *
+     * @param portalSite portal site component reference
+     * @param pageLayoutComponent page layout component reference
+     * @param requestFallback flag to enable root folder fallback
+     */
+    public PageValveImpl(PortalSite portalSite, PageLayoutComponent pageLayoutComponent, boolean requestFallback)
+    {
+        this(portalSite, pageLayoutComponent, requestFallback, true);
+    }
+
+    /**
+     * PageValveImpl - constructor
+     *
+     * @param portalSite portal site component reference
+     * @param pageLayoutComponent page layout component reference
+     */
+    public PageValveImpl(PortalSite portalSite, PageLayoutComponent pageLayoutComponent)
+    {
+        this(portalSite, pageLayoutComponent, true, true);
+    }
+
+    /**
+     * Set request page and associated session and request attributes
+     * based on request and derived valve implementations.
      * 
+     * @param request invoked request
+     * @param requestPath invoked request path
      */
-    private PageManager pageManager;
-    
-    public PageValveImpl(PageManager pageManager, PageLayoutComponent pageLayoutComponent)                            
+    protected void setRequestPage(RequestContext request, String requestPath) throws NodeNotFoundException, ProfilerException
     {
-        this.pageManager = pageManager;
-    	this.pageLayoutComponent = pageLayoutComponent;
-    }
-
-    public void invoke( RequestContext request, ValveContext context ) throws PipelineException
-    {
-        try
-        { 
-            String requestPath = request.getPath();
-            if (log.isDebugEnabled())
-            {
-                log.debug("Request path: "+requestPath);
-            }
-            if (requestPath == null)
-            {
-            	requestPath = Folder.PATH_SEPARATOR;
-            }
-            if (!requestPath.endsWith(Page.DOCUMENT_TYPE)) // FIXME: handle dynamic pages, pages not ending with .psml
-            {
-            		Folder folder = pageManager.getFolder(requestPath);
-                	String defaultPage = folder.getDefaultPage();
-                	if (defaultPage == null)
-                	{
-                		List<String> docs = folder.getDocumentOrder();
-                		if (docs != null || docs.size() > 0)
-                		{
-                			for (String doc: docs)
-                			{
-                				if (doc.endsWith(Page.DOCUMENT_TYPE))
-                				{
-                					defaultPage = doc;
-                					break;
-                				}
-                			}
-                		}
-                		if (defaultPage == null)
-                			defaultPage = Folder.FALLBACK_DEFAULT_PAGE;
-                	}
-                	requestPath = AdminUtil.concatenatePaths(requestPath, defaultPage); 
-            }
-            Page page = pageManager.getPage(requestPath);
-            
-            // get profiler locators for request subject/principal using the profiler
-            Subject subject = request.getSubject();
-            if (subject == null)
-            {
-                throw new ProfilerException("Missing subject for request: " + requestPath);
-            }            
-            Principal principal = SubjectHelper.getBestPrincipal(subject, User.class);
-            if (principal == null)
-            {
-                throw new ProfilerException("Missing principal for request: " + requestPath);
-            }
-
-            BaseConcretePageElement managedPage = page; //requestContext.getManagedPage();
-            PageTemplate managedPageTemplate = this.getPageTemplate(page); //requestContext.getManagedPageTemplate();
-            Map managedFragmentDefinitions = null;  //requestContext.getManagedFragmentDefinitions();
-            ContentPage contentPage = pageLayoutComponent.newContentPage(managedPage, managedPageTemplate, managedFragmentDefinitions);
-            request.setPage(contentPage);
-
-            request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, requestPath);
-            request.setAttribute(PortalReservedParameters.CONTENT_PATH_ATTRIBUTE, requestPath); //requestContext.getPageContentPath());
-//            request.setAttribute(PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE,getPageActionAccess(request));
-
-                if (log.isDebugEnabled())
-                {
-                    log.debug("Page path: "+contentPage.getPath());
-                }
-            
-
-            // continue
-            if (context != null)
-            {
-                context.invokeNext(request);
-            }
-        }
-        catch (SecurityException se)
+        // get or create portal site session context; the session
+        // context maintains the user view of the site and is
+        // searched against to locate the requested page and
+        // used to build site menus from its extent; this is
+        // cached in the session because the session view does
+        // not frequently change; if the context is invalid,
+        // (perhaps because the session was persisted and is
+        // now being reloaded in a new server), it must be
+        // replaced with a newly created session context
+        PortalSiteSessionContext sessionContext = (PortalSiteSessionContext)request.getSessionAttribute(PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);
+        if ((sessionContext == null) || !sessionContext.isValid())
         {
-            // fallback to root folder/default page
-            if (true) //requestFallback)
-            {
-                // fallback to portal root folder/default page if
-                // no user is available and request path is not
-                // already attempting to access the root folder;
-                // this is rarely the case since the anonymous
-                // user is normally defined unless the default
-                // security system has been replaced/overridden
-                if (request.getRequest().getUserPrincipal() == null &&
-                    request.getPath() != null &&
-                    !request.getPath().equals("/"))
-                {
-                    try 
-                    {
-                        request.getResponse().sendRedirect(request.getRequest().getContextPath());
-                    }
-                    catch (IOException ioe){}
-                    return;
-                }
-            }
+            sessionContext = portalSite.newSessionContext();
+            request.setSessionAttribute(PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY, sessionContext);
+        }
 
-            // return standard HTTP 403 - FORBIDDEN status
-            log.error(se.getMessage(), se);
-            try
-            {                
-                request.getResponse().sendError(HttpServletResponse.SC_FORBIDDEN, se.getMessage());
-            }
-            catch (IOException ioe)
-            {
-                log.error("Failed to invoke HttpServletReponse.sendError: " + ioe.getMessage(), ioe);
-            }
-        }
-        catch (NodeNotFoundException nnfe)
-        {
-            // return standard HTTP 404 - NOT FOUND status
-            log.error(nnfe.getMessage(), nnfe);
-            try
-            {
-                request.getResponse().sendError(HttpServletResponse.SC_NOT_FOUND, nnfe.getMessage());
-            }
-            catch (IOException ioe)
-            {
-                log.error("Failed to invoke HttpServletReponse.sendError: " + ioe.getMessage(), ioe);
-            }
-        }
-        catch (Exception e)
-        {
-            log.error("Exception in request pipeline: " + e.getMessage(), e);
-            throw new PipelineException(e.toString(), e);
-        }
+        // construct and save a new portal site request context
+        // using session context, fallback, and folder page
+        // histories; the request context acts as a short term
+        // request cache for the selected page and built menus;
+        // however, creating the request context here does not
+        // select the page or build menus: that is done when the
+        // request context is accessed subsequently
+        String requestServerName = ((request.getRequest() != null) ? request.getRequest().getServerName() : null);
+        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(requestPath, requestServerName, requestFallback, useHistory);
+
+        // save request context and set request page from portal
+        // site request context
+        setRequestPage(request, requestPath, requestContext);
     }
     
-    /**
-     * Returns the <code>PageActionAccess</code> for the current user request.
-     * @see PageActionAccess
-     * @param requestContext RequestContext of the current portal request.
-     * @return PageActionAccess for the current user request.
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
-//    protected PageActionAccess getPageActionAccess(RequestContext requestContext)
-//    { 
-//        ContentPage page = requestContext.getPage();
-//        String key = page.getId();
-//        boolean loggedOn = requestContext.getRequest().getUserPrincipal() != null;
-//        boolean anonymous = !loggedOn;
-//        PageActionAccess pageActionAccess = null;
-//
-//        Map sessionActions = null;
-//        synchronized (this)
-//        {
-//            sessionActions = (Map) requestContext.getSessionAttribute(PAGE_ACTION_ACCESS_MAP_SESSION_ATTR_KEY);
-//            if (sessionActions == null)
-//            {
-//                sessionActions = new HashMap();
-//                requestContext.setSessionAttribute(PAGE_ACTION_ACCESS_MAP_SESSION_ATTR_KEY, sessionActions);
-//            }
-//            else
-//            {
-//                pageActionAccess = (PageActionAccess) sessionActions.get(key);
-//            }
-//        }
-//        synchronized (sessionActions)
-//        {
-//            if (pageActionAccess == null)
-//            {
-//                pageActionAccess = new PageActionAccess(anonymous, page);
-//                sessionActions.put(key, pageActionAccess);
-//            }
-//            else
-//            {
-//                pageActionAccess.checkReset(anonymous, page);
-//            }        
-//        }
-//        
-//        return pageActionAccess;
-//    }
-
     public String toString()
     {
         return "PageValve";
     }
-
-    public PageTemplate getPageTemplate(Page page2) throws NodeNotFoundException
-    {
-    	PageTemplate requestPageTemplate = null;
-        BaseConcretePageElement page = page2;
-        if (page != null)
-        {
-            // scan through site looking for first page template
-            // up the folder hierarchy from the requested page
-            try
-            {
-                Folder folder = (Folder)page.getParent();
-                while ((folder != null) && (requestPageTemplate == null))
-                {
-                    NodeSet pageTemplates = folder.getPageTemplates();
-                    if ((pageTemplates != null) && !pageTemplates.isEmpty())
-                    {
-                        // return first page template found
-                        requestPageTemplate = (PageTemplate)pageTemplates.iterator().next();
-                    }
-                    else
-                    {
-                        // continue scan
-                        folder = (Folder)folder.getParent();
-                    }
-                }
-            }
-            catch (NodeException ne)
-            {
-            }
-        }
-        return requestPageTemplate;
-    }
-    
-    
 }

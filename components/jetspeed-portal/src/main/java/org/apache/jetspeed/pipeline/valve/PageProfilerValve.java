@@ -30,7 +30,7 @@ package org.apache.jetspeed.pipeline.valve;
  * </ul>
  *
  * <br>
- * Note: The primary purpose of this interface is primary for documention.
+ * Note: The primary purpose of this interface is primary for documentation.
  * 
  * @author <a href="mailto:paul@apache.org">Paul Spencer</a>
  * @version $Id$
@@ -39,6 +39,28 @@ package org.apache.jetspeed.pipeline.valve;
  */
 public interface PageProfilerValve extends Valve
 {
-    String PROFILE_LOCATOR_REQUEST_ATTR_KEY = "org.apache.jetspeed.profiler.ProfileLocator";
-    String PROFILE_LOCATORS_PER_PRINCIPAL = "org.apache.jetspeed.profiler.ProfileLocatorsPrincipal";
+    /**
+     * PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY - session portal site context attribute key
+     */
+    static String PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY = "org.apache.jetspeed.portalsite.PortalSiteSessionContext";
+
+    /**
+     * PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY - request portal site context attribute key
+     */
+    static String PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY = "org.apache.jetspeed.portalsite.PortalSiteRequestContext";
+
+    /**
+     * PROFILED_PAGE_CONTEXT_ATTR_KEY - legacy request portal site context attribute key
+     */
+    static String PROFILED_PAGE_CONTEXT_ATTR_KEY = "org.apache.jetspeed.profiledPageContext";
+
+    /**
+     * PAGE_ACTION_ACCESS_MAP_SESSION_ATTR_KEY - PageActionAccess instances map attribute key
+     */
+    static String PAGE_ACTION_ACCESS_MAP_SESSION_ATTR_KEY = "org.apache.jetspeed.profiler.pageActionAccessMap";
+    
+    /**
+     * PROFILE_LOCATOR_REQUEST_ATTR_KEY - request override for profile locator attribute key
+     */
+    static String PROFILE_LOCATOR_REQUEST_ATTR_KEY = "org.apache.jetspeed.profiler.ProfileLocator";
 }
