@@ -497,14 +497,14 @@ public abstract class AbstractSiteView
                                         while (subfoldersIter.hasNext())
                                         {
                                             currentFolder = (Folder)subfoldersIter.next();
-                                            List subfolderProxies = getNodeViews(currentRegexpPath, currentFolder, onlyViewable, onlyVisible);
-                                            if ((subfolderProxies != null) && !subfolderProxies.isEmpty())
+                                            List subfolderViews = getNodeViews(currentRegexpPath, currentFolder, onlyViewable, onlyVisible);
+                                            if ((subfolderViews != null) && !subfolderViews.isEmpty())
                                             {
                                                 if (views == null)
                                                 {
                                                     views = new ArrayList();
                                                 }
-                                                views.addAll(subfolderProxies);
+                                                views.addAll(subfolderViews);
                                             }
                                         }
                                         return views;
