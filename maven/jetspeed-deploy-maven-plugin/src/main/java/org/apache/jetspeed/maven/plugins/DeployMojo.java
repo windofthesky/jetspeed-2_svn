@@ -113,6 +113,7 @@ public class DeployMojo extends AbstractMojo
         private String destination;
         private String targetName;
         private String editorClassName;
+        private boolean required = true;
     }
     
     /**
@@ -565,7 +566,16 @@ public class DeployMojo extends AbstractMojo
                 File editTargetFile = new File(targetDir, edit.targetName);
                 if (!editTargetFile.isFile() || !editTargetFile.canRead() || !editTargetFile.canWrite())
                 {
-                    throw new MojoExecutionException("Cannot find, read, or write target file to edit: "+editTargetFile);                    
+                    String msg = "Cannot find, read, or write target file to edit: "+editTargetFile;
+                    if (edit.required)
+                    {
+                        throw new MojoExecutionException(msg);
+                    }
+                    else
+                    {
+                        getLog().warn(msg);
+                        continue;
+                    }
                 }
                 
                 // instantiate editor and invoke editor to edit target file
