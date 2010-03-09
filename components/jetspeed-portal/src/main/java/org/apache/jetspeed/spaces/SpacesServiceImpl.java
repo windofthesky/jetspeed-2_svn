@@ -155,7 +155,11 @@ public class SpacesServiceImpl implements Spaces
                 if (folder.isHidden() || folder.isReserved())
                     continue;
                 Space space = loadSpace(folder);
-                result.add(space);
+                // Exclude ordinary folders
+                if (space.getOwner() != null)
+                {
+                    result.add(space);
+                }
             }
         }
         catch (Exception e)
@@ -191,7 +195,12 @@ public class SpacesServiceImpl implements Spaces
 	        	Folder folder = pageManager.getFolder(spacePath);
                 if (folder.isHidden() || folder.isReserved())
                 	continue;
-	        	result.add(loadSpace(folder));
+                Space space = loadSpace(folder);
+                // Exclude ordinary folders which is neither the root folder nor the user home root folder.
+                if (space.getOwner() != null)
+                {
+                    result.add(space);
+                }
 	        }
         }
     	catch (FolderNotFoundException e) 
@@ -282,7 +291,11 @@ public class SpacesServiceImpl implements Spaces
     	try 
     	{
 			Space space = loadSpace(pageManager.getFolder(makeSpacePath(spaceName)));
-			return space;
+            // Exclude ordinary folders which is neither the root folder nor the user home root folder.
+			if (space.getOwner() != null)
+			{
+			    return space;
+			}
 		} 
     	catch (FolderNotFoundException e) 
     	{
