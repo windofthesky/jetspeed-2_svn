@@ -36,14 +36,25 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.FolderNotFoundException;
+import org.apache.jetspeed.om.folder.InvalidFolderException;
+import org.apache.jetspeed.om.page.BasePageElement;
+import org.apache.jetspeed.om.page.Document;
+import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.services.beans.FolderBean;
+import org.apache.jetspeed.services.beans.LinkBean;
+import org.apache.jetspeed.services.beans.NodeBean;
 import org.apache.jetspeed.services.beans.PageBean;
 import org.apache.jetspeed.services.rest.util.PathSegmentUtils;
 import org.slf4j.Logger;
@@ -75,20 +86,44 @@ public class PageManagementService
     }
     
     @GET
-    @Path("/page/{path:.*}")
-    public PageBean getPage(@Context HttpServletRequest servletRequest,
+    @Path("/{type}/{path:.*}")
+    public NodeBean getNode(@Context HttpServletRequest servletRequest,
                             @Context UriInfo uriInfo,
+                            @PathParam("type") String type,
                             @PathParam("path") List<PathSegment> pathSegments)
     {
         String path = PathSegmentUtils.joinWithPrefix(pathSegments, "/", "/");
         
         try
         {
-            Page page = pageManager.getPage(path);
-            page.checkAccess(JetspeedActions.EDIT);
-            return new PageBean(page);
+            if (Page.DOCUMENT_TYPE.equals(type))
+            {
+                Page page = pageManager.getPage(path);
+                page.checkAccess(JetspeedActions.EDIT);
+                return new PageBean(page);
+            }
+            else if (Link.DOCUMENT_TYPE.equals(type))
+            {
+                Link link = getLink(path);
+                link.checkAccess(JetspeedActions.EDIT);
+                return new LinkBean(link);
+            }
+            else if (Folder.FOLDER_TYPE.equals(type))
+            {
+                Folder folder = pageManager.getFolder(path);
+                folder.checkAccess(JetspeedActions.EDIT);
+                return new FolderBean(folder);
+            }
+            else
+            {
+                throw new WebApplicationException(Status.NOT_FOUND);
+            }
         }
-        catch (PageNotFoundException e)
+        catch (DocumentNotFoundException e)
+        {
+            throw new WebApplicationException(e, Status.NOT_FOUND);
+        }
+        catch (FolderNotFoundException e)
         {
             throw new WebApplicationException(e, Status.NOT_FOUND);
         }
@@ -103,20 +138,44 @@ public class PageManagementService
     }
     
     @DELETE
-    @Path("/page/{path:.*}")
-    public PageBean deletePage(@Context HttpServletRequest servletRequest,
+    @Path("/{type}/{path:.*}")
+    public NodeBean deleteNode(@Context HttpServletRequest servletRequest,
                                @Context UriInfo uriInfo,
+                               @PathParam("type") String type,
                                @PathParam("path") List<PathSegment> pathSegments)
     {
         String path = PathSegmentUtils.joinWithPrefix(pathSegments, "/", "/");
         
         try
         {
-            Page page = pageManager.getPage(path);
-            pageManager.removePage(page);
-            return new PageBean(page);
+            if (Page.DOCUMENT_TYPE.equals(type))
+            {
+                Page page = pageManager.getPage(path);
+                pageManager.removePage(page);
+                return new PageBean(page);
+            }
+            else if (Link.DOCUMENT_TYPE.equals(type))
+            {
+                Link link = getLink(path);
+                pageManager.removeLink(link);
+                return new LinkBean(link);
+            }
+            else if (Folder.FOLDER_TYPE.equals(type))
+            {
+                Folder folder = pageManager.getFolder(path);
+                pageManager.removeFolder(folder);
+                return new FolderBean(folder);
+            }
+            else
+            {
+                throw new WebApplicationException(Status.NOT_FOUND);
+            }
         }
-        catch (PageNotFoundException e)
+        catch (DocumentNotFoundException e)
+        {
+            throw new WebApplicationException(e, Status.NOT_FOUND);
+        }
+        catch (FolderNotFoundException e)
         {
             throw new WebApplicationException(e, Status.NOT_FOUND);
         }
@@ -131,22 +190,68 @@ public class PageManagementService
     }
     
     @POST
-    @Path("/page/copy/{path:.*}")
-    public PageBean copyPage(@Context HttpServletRequest servletRequest,
+    @Path("/copy/{type}/{path:.*}")
+    public NodeBean copyNode(@Context HttpServletRequest servletRequest,
                              @Context UriInfo uriInfo,
-                             @PathParam("path") List<PathSegment> targetPathSegments,
-                             @FormParam("source") String sourcePagePath)
+                             @PathParam("type") String type,
+                             @PathParam("source") List<PathSegment> sourcePathSegments,
+                             @FormParam("target") String targetPath,
+                             @FormParam("deep") boolean deepCopy,
+                             @FormParam("merge") boolean merging,
+                             @FormParam("owner") String owner,
+                             @FormParam("copyids") boolean copyIds)
     {
-        String targetPath = PathSegmentUtils.joinWithPrefix(targetPathSegments, "/", "/");
+        String sourcePath = PathSegmentUtils.joinWithPrefix(sourcePathSegments, "/", "/");
         
         try
         {
-            Page source = pageManager.getPage(sourcePagePath);
-            pageManager.copyPage(source, targetPath);
-            Page target = pageManager.getPage(targetPath);
-            return new PageBean(target);
+            if (Page.DOCUMENT_TYPE.equals(type))
+            {
+                Page source = pageManager.getPage(sourcePath);
+                pageManager.copyPage(source, targetPath);
+                Page target = pageManager.getPage(targetPath);
+                return new PageBean(target);
+            }
+            else if (Link.DOCUMENT_TYPE.equals(type))
+            {
+                Link source = getLink(sourcePath);
+                pageManager.copyLink(source, targetPath);
+                Link target = getLink(targetPath);
+                return new LinkBean(target);
+            }
+            else if (Folder.FOLDER_TYPE.equals(type))
+            {
+                Folder source = pageManager.getFolder(sourcePath);
+                
+                if (deepCopy)
+                {
+                    if (merging)
+                    {
+                        pageManager.deepMergeFolder(source, targetPath, owner, copyIds);
+                    }
+                    else
+                    {
+                        pageManager.deepCopyFolder(source, targetPath, owner, copyIds);
+                    }
+                }
+                else
+                {
+                    pageManager.copyFolder(source, targetPath);
+                }
+                
+                Folder target = pageManager.getFolder(targetPath);
+                return new FolderBean(target);
+            }
+            else 
+            {
+                throw new WebApplicationException(Status.NOT_FOUND);
+            }
         }
-        catch (PageNotFoundException e)
+        catch (DocumentNotFoundException e)
+        {
+            throw new WebApplicationException(e, Status.NOT_FOUND);
+        }
+        catch (FolderNotFoundException e)
         {
             throw new WebApplicationException(e, Status.NOT_FOUND);
         }
@@ -161,69 +266,57 @@ public class PageManagementService
     }
     
     @POST
-    @Path("/page/move/{path:.*}")
-    public PageBean movePage(@Context HttpServletRequest servletRequest,
-                             @Context UriInfo uriInfo,
-                             @PathParam("path") List<PathSegment> targetPathSegments,
-                             @FormParam("source") String sourcePagePath)
-    {
-        String targetPath = PathSegmentUtils.joinWithPrefix(targetPathSegments, "/", "/");
-        
-        try
-        {
-            Page source = pageManager.getPage(sourcePagePath);
-            pageManager.copyPage(source, targetPath);
-            pageManager.removePage(source);
-            Page copied = pageManager.getPage(targetPath);
-            return new PageBean(copied);
-        }
-        catch (PageNotFoundException e)
-        {
-            throw new WebApplicationException(e, Status.NOT_FOUND);
-        }
-        catch (NodeException e)
-        {
-            throw new WebApplicationException(e);
-        }
-        catch (SecurityException e)
-        {
-            throw new WebApplicationException(e, Status.FORBIDDEN);
-        }
-    }
-
-    @POST
-    @Path("/page/info/{path:.*}")
-    public PageBean updatePage(@Context HttpServletRequest servletRequest,
-                               @Context UriInfo uriInfo,
-                               @PathParam("path") List<PathSegment> pathSegments,
-                               @FormParam("title") String title,
-                               @FormParam("shorttitle") String shortTitle,
-                               @FormParam("hidden") String hidden,
-                               @FormParam("skin") String skin,
-                               @FormParam("version") String version)
+    @Path("/info/{type}/{path:.*}")
+    public NodeBean updateNodeInfo(@Context HttpServletRequest servletRequest,
+                                   @Context UriInfo uriInfo,
+                                   @PathParam("type") String type,
+                                   @PathParam("path") List<PathSegment> pathSegments,
+                                   @FormParam("title") String title,
+                                   @FormParam("shorttitle") String shortTitle,
+                                   @FormParam("hidden") String hidden,
+                                   @FormParam("skin") String skin,
+                                   @FormParam("version") String version)
     {
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
         String path = PathSegmentUtils.joinWithPrefix(pathSegments, "/", "/");
         
         try
         {
-            Page page = pageManager.getPage(path);
-            page.checkAccess(JetspeedActions.EDIT);
+            Node node = null;
+            
+            if (Page.DOCUMENT_TYPE.equals(type))
+            {
+                node = pageManager.getPage(path);
+            }
+            else if (Link.DOCUMENT_TYPE.equals(type))
+            {
+                node = getLink(path);
+            }
+            else if (Folder.FOLDER_TYPE.equals(type))
+            {
+                node = pageManager.getFolder(path);
+            }
+            else
+            {
+                throw new WebApplicationException(Status.NOT_FOUND);
+            }
+            
+            node.checkAccess(JetspeedActions.EDIT);
             
             boolean changed = false;
             Locale locale = requestContext.getLocale();
-            GenericMetadata metadata = page.getMetadata();
+            GenericMetadata metadata = node.getMetadata();
             
-            if (title != null && !title.equals(page.getTitle()))
+            if (title != null && !title.equals(node.getTitle()))
             {
-                page.setTitle(title);
+                node.setTitle(title);
                 setLocalizedField(metadata, locale, "title", title);
                 changed = true;
             }
             
-            if (shortTitle != null && !shortTitle.equals(page.getShortTitle()))
+            if (shortTitle != null && !shortTitle.equals(node.getShortTitle()))
             {
-                page.setShortTitle(shortTitle);
+                node.setShortTitle(shortTitle);
                 setLocalizedField(metadata, locale, "short-title", title);
                 changed = true;
             }
@@ -232,33 +325,89 @@ public class PageManagementService
             {
                 boolean hiddenFlag = BooleanUtils.toBoolean(hidden);
                 
-                if (hiddenFlag != page.isHidden())
+                if (hiddenFlag != node.isHidden())
                 {
-                    page.setHidden(hiddenFlag);
+                    node.setHidden(hiddenFlag);
                     changed = true;
                 }
             }
             
-            if (skin != null && !skin.equals(page.getSkin()))
+            if (skin != null)
             {
-                page.setSkin(skin);
-                changed = true;
+                if (node instanceof BasePageElement)
+                {
+                    if (!skin.equals(((BasePageElement) node).getSkin()))
+                    {
+                        ((BasePageElement) node).setSkin(skin);
+                        changed = true;
+                    }
+                }
+                else if (node instanceof Link)
+                {
+                    if (!skin.equals(((Link) node).getSkin()))
+                    {
+                        ((Link) node).setSkin(skin);
+                        changed = true;
+                    }
+                }
+                else if (node instanceof Folder)
+                {
+                    if (!skin.equals(((Folder) node).getSkin()))
+                    {
+                        ((Folder) node).setSkin(skin);
+                        changed = true;
+                    }
+                }
             }
             
-            if (version != null && !version.equals(page.getVersion()))
+            if (version != null)
             {
-                page.setVersion(version);
-                changed = true;
+                if (node instanceof Document)
+                {
+                    if (!version.equals(((Document) node).getVersion()))
+                    {
+                        ((Document) node).setVersion(version);
+                        changed = true;
+                    }
+                }
             }
             
             if (changed)
             {
-                pageManager.updatePage(page);
+                if (node instanceof Page)
+                {
+                    pageManager.updatePage((Page) node);
+                }
+                else if (node instanceof Link)
+                {
+                    pageManager.updateLink((Link) node);
+                }
+                else if (node instanceof Folder)
+                {
+                    pageManager.updateFolder((Folder) node);
+                }
             }
             
-            return new PageBean(page);
+            if (Page.DOCUMENT_TYPE.equals(type))
+            {
+                return new PageBean((Page) node);
+            }
+            else if (Link.DOCUMENT_TYPE.equals(type))
+            {
+                return new LinkBean((Link) node);
+            }
+            else if (Folder.FOLDER_TYPE.equals(type))
+            {
+                return new FolderBean((Folder) node);
+            }
+            
+            return null;
         }
-        catch (PageNotFoundException e)
+        catch (DocumentNotFoundException e)
+        {
+            throw new WebApplicationException(e, Status.NOT_FOUND);
+        }
+        catch (FolderNotFoundException e)
         {
             throw new WebApplicationException(e, Status.NOT_FOUND);
         }
@@ -303,4 +452,33 @@ public class PageManagementService
             metadata.addField(locale, name, value);
         }
     }
+    
+    private Link getLink(String path) throws FolderNotFoundException, InvalidFolderException, NodeException, DocumentNotFoundException
+    {
+        String folderPath = null;
+        String name = null;
+        int offset = path.lastIndexOf('/');
+        
+        if (offset != -1)
+        {
+            folderPath = path.substring(0, offset);
+            name = path.substring(offset + 1);
+        }
+        
+        if (StringUtils.isBlank(name))
+        {
+            throw new IllegalArgumentException("Invalid link path: " + path);
+        }
+        
+        if (StringUtils.isEmpty(folderPath))
+        {
+            folderPath = "/";
+        }
+        
+        Folder folder = pageManager.getFolder(folderPath);
+        Link link = pageManager.getLink(folder, name);
+        
+        return link;
+    }
+    
 }

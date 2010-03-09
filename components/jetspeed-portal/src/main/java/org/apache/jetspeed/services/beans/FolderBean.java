@@ -54,7 +54,7 @@ public class FolderBean extends NodeBean
         
     }
     
-    public FolderBean(Folder folder) throws NodeException, DocumentNotFoundException
+    public FolderBean(Folder folder) throws NodeException
     {
         super(folder);
         skin = folder.getSkin();
@@ -73,8 +73,20 @@ public class FolderBean extends NodeBean
         reserved = folder.isReserved();
         reservedType = folder.getReservedType();
         
-        PageSecurity pageSecurity = folder.getPageSecurity();
-        pageSecurityBean = new PageSecurityBean(pageSecurity);
+        PageSecurity pageSecurity = null;
+        
+        try
+        {
+            pageSecurity = folder.getPageSecurity();
+        }
+        catch (DocumentNotFoundException ignore)
+        {
+        }
+        
+        if (pageSecurity != null)
+        {
+            pageSecurityBean = new PageSecurityBean(pageSecurity);
+        }
     }
 
     public String getSkin()
