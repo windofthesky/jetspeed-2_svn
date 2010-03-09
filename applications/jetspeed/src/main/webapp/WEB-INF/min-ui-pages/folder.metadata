@@ -19,6 +19,11 @@ limitations under the License.
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd">
   <title>Public Space</title>  
 
+ <defaults
+     layout-decorator="jetspeed"
+     portlet-decorator="jetspeed"
+  />
+  
   <security-constraints>
     <security-constraints-ref>public-view</security-constraints-ref>
   </security-constraints>

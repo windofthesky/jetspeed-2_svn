@@ -26,6 +26,10 @@ limitations under the License.
   <metadata name="title" xml:lang="zh-TW">根文件夾</metadata>
   <metadata name="title" xml:lang="ko">루트 폴더</metadata>
 
+ <defaults
+     layout-decorator="jetspeed"
+     portlet-decorator="jetspeed"
+  />
   <security-constraints>
     <security-constraints-ref>public-view</security-constraints-ref>
   </security-constraints>
