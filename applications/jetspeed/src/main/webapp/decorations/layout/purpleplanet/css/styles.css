@@ -463,8 +463,9 @@ text-decoration: underline;
 
 .layout-purpleplanet .navmenu ul { margin: 0 0 0 3px; padding: 2px; }
 .layout-purpleplanet .navmenu li { margin: 0 0 0 3px; padding: 2px; }
-.layout-purpleplanet .navmenu li.closed { cursor: pointer; background: url(../../images/icon-closed.png) no-repeat; }
-.layout-purpleplanet .navmenu li.expanded { cursor: default; background: url(../../images/icon-expanded.png) no-repeat; }
+.layout-purpleplanet .navmenu li.leaf { margin: 0 0 0 3px; padding: 2px; list-style-type: none; list-style-image: none; }
+.layout-purpleplanet .navmenu li.closed { cursor: pointer; list-style-image: url(../../images/bullet-closed.png); }
+.layout-purpleplanet .navmenu li.expanded { cursor: default; list-style-image: url(../../images/bullet-expanded.png); }
 .layout-purpleplanet .navmenu li li { }
 .layout-purpleplanet .navmenu li.closed ul { display: none; }
 

@@ -429,8 +429,9 @@ text-decoration: underline;
 
 .layout-oldstyle .navmenu ul { margin: 0 0 0 3px; padding: 2px; }
 .layout-oldstyle .navmenu li { margin: 0 0 0 3px; padding: 2px; }
-.layout-oldstyle .navmenu li.closed { cursor: pointer; background: url(../../images/icon-closed.png) no-repeat; }
-.layout-oldstyle .navmenu li.expanded { cursor: default; background: url(../../images/icon-expanded.png) no-repeat; }
+.layout-oldstyle .navmenu li.leaf { margin: 0 0 0 3px; padding: 2px; list-style-type: none; list-style-image: none; }
+.layout-oldstyle .navmenu li.closed { cursor: pointer; list-style-image: url(../../images/bullet-closed.png); }
+.layout-oldstyle .navmenu li.expanded { cursor: default; list-style-image: url(../../images/bullet-expanded.png); }
 .layout-oldstyle .navmenu li li { }
 .layout-oldstyle .navmenu li.closed ul { display: none; }
 
