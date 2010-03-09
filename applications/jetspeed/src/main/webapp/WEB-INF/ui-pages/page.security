@@ -83,20 +83,24 @@ limitations under the License.
     </security-constraint>
   </security-constraints-def>
 
- <security-constraints-def name="devmgr">
+ <security-constraints-def name="finance">
     <security-constraint>
-      <roles>devmgr</roles>
-      <permissions>view</permissions>
+      <roles>executive</roles>
+      <permissions>view, edit</permissions>
     </security-constraint>
     <security-constraint>
       <roles>admin</roles>
       <permissions>view, edit, config, edit_defaults</permissions>
     </security-constraint>
   </security-constraints-def>
- 
- <security-constraints-def name="delegated">
+
+ <security-constraints-def name="marketing">
     <security-constraint>
-      <roles>devmgr</roles>
+      <groups>marketing</groups>
+      <permissions>view, edit</permissions>
+    </security-constraint>
+    <security-constraint>
+      <roles>admin</roles>
       <permissions>view, edit, config, edit_defaults</permissions>
     </security-constraint>
   </security-constraints-def>

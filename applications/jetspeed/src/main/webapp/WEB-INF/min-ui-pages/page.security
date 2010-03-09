@@ -71,34 +71,6 @@ limitations under the License.
       <permissions>view</permissions>
     </security-constraint>
   </security-constraints-def>
- 
- <security-constraints-def name="dev">
-    <security-constraint>
-      <roles>dev</roles>
-      <permissions>view</permissions>
-    </security-constraint>
-    <security-constraint>
-      <roles>devmgr,admin</roles>
-      <permissions>view, edit, config, edit_defaults</permissions>
-    </security-constraint>
-  </security-constraints-def>
 
- <security-constraints-def name="devmgr">
-    <security-constraint>
-      <roles>devmgr</roles>
-      <permissions>view</permissions>
-    </security-constraint>
-    <security-constraint>
-      <roles>admin</roles>
-      <permissions>view, edit, config, edit_defaults</permissions>
-    </security-constraint>
-  </security-constraints-def>
- 
- <security-constraints-def name="delegated">
-    <security-constraint>
-      <roles>devmgr</roles>
-      <permissions>view, edit, config, edit_defaults</permissions>
-    </security-constraint>
-  </security-constraints-def>
   
 </page-security>
