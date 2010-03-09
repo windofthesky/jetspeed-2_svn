@@ -162,13 +162,14 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/", rootFolderView.getName());
         assertEquals("root", rootFolderView.getTitle());
         assertEquals("/", extractFileSystemPathFromId(rootFolderView.getId()));
-        assertEquals(5, rootFolderView.getFolders().size());
+        assertEquals(6, rootFolderView.getFolders().size());
         Iterator foldersIter = rootFolderView.getFolders().iterator();
         assertEquals("contentfolder", ((Folder)foldersIter.next()).getName());
         assertEquals("folder0", ((Folder)foldersIter.next()).getName());
         assertEquals("folder1", ((Folder)foldersIter.next()).getName());
         assertEquals("folder2", ((Folder)foldersIter.next()).getName());
         assertEquals("folder3", ((Folder)foldersIter.next()).getName());
+        assertEquals("folder4", ((Folder)foldersIter.next()).getName());
         assertEquals(4, rootFolderView.getPages().size());
         Iterator pagesIter = rootFolderView.getPages().iterator();
         assertEquals("page2.psml", ((Page)pagesIter.next()).getName());
@@ -250,7 +251,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertTrue(rootPageViewsByPath.contains(rootPage0View));
         List rootFolderViewsByPath = baseView.getNodeViews("/*/", null, false, false);
         assertNotNull(rootFolderViewsByPath);
-        assertEquals(5,rootFolderViewsByPath.size());
+        assertEquals(6,rootFolderViewsByPath.size());
         assertTrue(rootFolderViewsByPath.contains(rootFolder0View));
         List folderPageViewsByPath = baseView.getNodeViews("*/p*[0-9].psml", rootFolderView, false, false);
         assertNotNull(folderPageViewsByPath);
@@ -265,7 +266,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/", rootFolderView.getName());
         assertEquals("user root", rootFolderView.getTitle());
         assertEquals("/_user/user", extractFileSystemPathFromId(rootFolderView.getId()));
-        assertEquals(5, rootFolderView.getFolders().size());
+        assertEquals(6, rootFolderView.getFolders().size());
         assertEquals(4, rootFolderView.getPages().size());
         assertEquals(2, rootFolderView.getLinks().size());
         assertEquals(2, rootFolderView.getDynamicPages().size());
@@ -276,7 +277,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/page0.psml", extractFileSystemPathFromId(rootPage0View.getId()));
         List rootPage0ViewMenus = rootPage0View.getMenuDefinitions();
         assertNotNull(rootPage0ViewMenus);
-        assertEquals(5 + aggregateView.getStandardMenuNames().size(), rootPage0ViewMenus.size());
+        assertEquals(6 + aggregateView.getStandardMenuNames().size(), rootPage0ViewMenus.size());
         Iterator menusIter = rootPage0ViewMenus.iterator();
         MenuDefinition rootPage0ViewTemplateTestMenu = (MenuDefinition)menusIter.next();
         assertEquals("template-test", rootPage0ViewTemplateTestMenu.getName());
@@ -294,6 +295,11 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("current-page-test", rootPage0ViewCurrentPageTestMenu.getName());
         MenuDefinition rootPage0ViewCurrentPathTestMenu = (MenuDefinition)menusIter.next();
         assertEquals("current-path-test", rootPage0ViewCurrentPathTestMenu.getName());        
+        MenuDefinition rootPage0SiteNavigationsMenu = (MenuDefinition)menusIter.next();
+        assertEquals("site-navigations", rootPage0SiteNavigationsMenu.getName());        
+        assertTrue(rootPage0SiteNavigationsMenu.isRegexp());        
+        assertEquals("/*/,/*.psml", rootPage0SiteNavigationsMenu.getOptions());        
+        assertEquals(-1, rootPage0SiteNavigationsMenu.getDepth());        
         for (int i = 0; (i < aggregateView.getStandardMenuNames().size()); i++)
         {
             assertTrue(aggregateView.getStandardMenuNames().contains(((MenuDefinition)menusIter.next()).getName()));
@@ -305,7 +311,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/_user/user/page2.psml", extractFileSystemPathFromId(rootPage2View.getId()));
         List rootPage2ViewMenus = rootPage2View.getMenuDefinitions();
         assertNotNull(rootPage2ViewMenus);
-        assertEquals(5 + aggregateView.getStandardMenuNames().size(), rootPage2ViewMenus.size());
+        assertEquals(6 + aggregateView.getStandardMenuNames().size(), rootPage2ViewMenus.size());
         menusIter = rootPage2ViewMenus.iterator();
         MenuDefinition rootPage2ViewTopMenu = (MenuDefinition)menusIter.next();
         assertEquals("top", rootPage2ViewTopMenu.getName());
@@ -320,6 +326,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("current-page-test", rootPage0ViewCurrentPageTestMenu.getName());
         MenuDefinition rootPage2ViewCurrentPathTestMenu = (MenuDefinition)menusIter.next();
         assertEquals("current-path-test", rootPage0ViewCurrentPathTestMenu.getName());        
+        MenuDefinition rootPage2SiteNavigationsMenu = (MenuDefinition)menusIter.next();
+        assertEquals("site-navigations", rootPage2SiteNavigationsMenu.getName());        
         for (int i = 0; (i < aggregateView.getStandardMenuNames().size()); i++)
         {
             assertTrue(aggregateView.getStandardMenuNames().contains(((MenuDefinition)menusIter.next()).getName()));
@@ -460,7 +468,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/", rootFolderView.getName());
         assertEquals("root", rootFolderView.getTitle());
         assertEquals("/", extractFileSystemPathFromId(rootFolderView.getId()));
-        assertEquals(10, rootFolderView.getFolders().size());
+        assertEquals(11, rootFolderView.getFolders().size());
         foldersIter = rootFolderView.getFolders().iterator();
         assertEquals("__subsite-root", ((Folder)foldersIter.next()).getName());
         assertEquals("_group", ((Folder)foldersIter.next()).getName());
@@ -472,6 +480,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("folder1", ((Folder)foldersIter.next()).getName());
         assertEquals("folder2", ((Folder)foldersIter.next()).getName());
         assertEquals("folder3", ((Folder)foldersIter.next()).getName());
+        assertEquals("folder4", ((Folder)foldersIter.next()).getName());
         assertEquals(4, rootFolderView.getPages().size());
         pagesIter = rootFolderView.getPages().iterator();
         assertEquals("page2.psml", ((Page)pagesIter.next()).getName());
@@ -634,13 +643,15 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNull(requestParentFolderView);
         NodeSet requestSiblingFolderViews = requestContext.getSiblingFolders();
         assertNotNull(requestSiblingFolderViews);
-        assertEquals(3, requestSiblingFolderViews.size());
+        assertEquals(4, requestSiblingFolderViews.size());
         assertNotNull(requestSiblingFolderViews.get("folder0"));
         assertEquals("/folder0", extractFileSystemPathFromId(requestSiblingFolderViews.get("folder0").getId()));
         assertNotNull(requestSiblingFolderViews.get("folder1"));
         assertEquals("/_user/user/folder1", extractFileSystemPathFromId(requestSiblingFolderViews.get("folder1").getId()));
         assertNotNull(requestSiblingFolderViews.get("folder2"));
         assertEquals("/folder2", extractFileSystemPathFromId(requestSiblingFolderViews.get("folder2").getId()));
+        assertNotNull(requestSiblingFolderViews.get("folder4"));
+        assertEquals("/folder4", extractFileSystemPathFromId(requestSiblingFolderViews.get("folder4").getId()));
         Folder requestRootFolderView = requestContext.getRootFolder();
         assertNotNull(requestRootFolderView);
         assertEquals("/", requestRootFolderView.getName());
@@ -691,7 +702,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNull(requestParentFolderView);
         requestSiblingFolderViews = requestContext.getSiblingFolders();
         assertNotNull(requestSiblingFolderViews);
-        assertEquals(8, requestSiblingFolderViews.size());
+        assertEquals(9, requestSiblingFolderViews.size());
         assertNotNull(requestSiblingFolderViews.get("__subsite-root"));
         assertEquals("/__subsite-root", extractFileSystemPathFromId(requestSiblingFolderViews.get("__subsite-root").getId()));
         assertNotNull(requestSiblingFolderViews.get("_group"));
@@ -708,6 +719,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/folder1", extractFileSystemPathFromId(requestSiblingFolderViews.get("folder1").getId()));
         assertNotNull(requestSiblingFolderViews.get("folder2"));
         assertEquals("/folder2", extractFileSystemPathFromId(requestSiblingFolderViews.get("folder2").getId()));
+        assertNotNull(requestSiblingFolderViews.get("folder4"));
+        assertEquals("/folder4", extractFileSystemPathFromId(requestSiblingFolderViews.get("folder4").getId()));
         requestRootFolderView = requestContext.getRootFolder();
         assertNotNull(requestRootFolderView);
         assertEquals("/", requestRootFolderView.getName());
@@ -883,12 +896,13 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(requestContext);
         Set customMenuNames = requestContext.getCustomMenuNames();
         assertNotNull(customMenuNames);
-        assertEquals(5, customMenuNames.size());
+        assertEquals(6, customMenuNames.size());
         assertTrue(customMenuNames.contains("top"));
         assertTrue(customMenuNames.contains("bread-crumbs"));
         assertTrue(customMenuNames.contains("template-test"));
         assertTrue(customMenuNames.contains("current-page-test"));
         assertTrue(customMenuNames.contains("current-path-test"));
+        assertTrue(customMenuNames.contains("site-navigations"));
         Menu topMenu = requestContext.getMenu("top");
         assertNotNull(topMenu);
         assertEquals(MenuElement.MENU_ELEMENT_TYPE, topMenu.getElementType());
@@ -901,7 +915,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(topMenu.isEmpty());
         List topMenuElements = topMenu.getElements();
         assertNotNull(topMenuElements);
-        assertEquals(7, topMenuElements.size());
+        assertEquals(8, topMenuElements.size());
         Iterator menuElementsIter = topMenuElements.iterator();
         while (menuElementsIter.hasNext())
         {
@@ -940,6 +954,22 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertEquals("/folder1/page0.psml", ((MenuOption)elements.get(0)).getTitle());
                 assertTrue(elements.get(1) instanceof MenuOption);
                 assertEquals("/folder1/page1.psml", ((MenuOption)elements.get(1)).getTitle());
+            }
+            else if (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("Folder4"))
+            {
+                assertTrue(element instanceof Menu);
+                assertEquals("/folder4", ((Menu)element).getUrl());
+                assertTrue(((Menu)element).getParentMenu() == topMenu);
+                assertTrue(element.getNode() instanceof Folder);
+                assertEquals("/folder4", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Folder);
+                assertEquals("/folder4", element.getManagedNode().getPath());
+                assertFalse(((Menu)element).isEmpty());
+                List elements = ((Menu)element).getElements();
+                assertNotNull(elements);
+                assertEquals(1, elements.size());
+                assertTrue(elements.get(0) instanceof MenuOption);
+                assertEquals("Folder", ((MenuOption)elements.get(0)).getTitle());
             }
             else if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/page2.psml"))
             {
@@ -1041,7 +1071,113 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertTrue(currentPathTestMenu.isEmpty());
         List currentPathTestElements = currentPathTestMenu.getElements();
         assertNull(currentPathTestElements);
-
+        Menu siteNavigationsMenu = requestContext.getMenu("site-navigations");
+        assertEquals("site-navigations", siteNavigationsMenu.getName());
+        assertFalse(siteNavigationsMenu.isEmpty());
+        List siteNavigationsElements = siteNavigationsMenu.getElements();
+        assertNotNull(siteNavigationsElements);
+        assertEquals(6, siteNavigationsElements.size());
+        menuElementsIter = siteNavigationsElements.iterator();
+        while (menuElementsIter.hasNext())
+        {
+            MenuElement element = (MenuElement)menuElementsIter.next();
+            if (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("folder0"))
+            {
+                assertTrue(element instanceof Menu);
+                assertEquals("/folder0", ((Menu)element).getUrl());
+                assertTrue(((Menu)element).getParentMenu() == siteNavigationsMenu);
+                assertTrue(element.getNode() instanceof Folder);
+                assertEquals("/folder0", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Folder);
+                assertEquals("/folder0", element.getManagedNode().getPath());
+                assertFalse(((Menu)element).isEmpty());
+                List elements = ((Menu)element).getElements();
+                assertNotNull(elements);
+                assertEquals(1, elements.size());
+                assertTrue(elements.get(0) instanceof MenuOption);
+                assertEquals("/folder0/page0.psml", ((MenuOption)elements.get(0)).getUrl());
+            }
+            else if (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("group folder1"))
+            {
+                assertTrue(element instanceof Menu);
+                assertEquals("/folder1", ((Menu)element).getUrl());
+                assertTrue(((Menu)element).getParentMenu() == siteNavigationsMenu);
+                assertTrue(element.getNode() instanceof Folder);
+                assertEquals("/folder1", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Folder);
+                assertEquals("/_user/user/folder1", element.getManagedNode().getPath());
+                assertFalse(((Menu)element).isEmpty());
+                List elements = ((Menu)element).getElements();
+                assertNotNull(elements);
+                assertEquals(2, elements.size());
+                assertTrue(elements.get(0) instanceof MenuOption);
+                assertEquals("/folder1/page0.psml", ((MenuOption)elements.get(0)).getTitle());
+                assertTrue(elements.get(1) instanceof MenuOption);
+                assertEquals("/folder1/page1.psml", ((MenuOption)elements.get(1)).getTitle());
+            }
+            else if (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("Folder4"))
+            {
+                assertTrue(element instanceof Menu);
+                assertEquals("/folder4", ((Menu)element).getUrl());
+                assertTrue(((Menu)element).getParentMenu() == siteNavigationsMenu);
+                assertTrue(element.getNode() instanceof Folder);
+                assertEquals("/folder4", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Folder);
+                assertEquals("/folder4", element.getManagedNode().getPath());
+                Menu menuElement = (Menu)element;
+                assertFalse(menuElement.isEmpty());
+                List elements = menuElement.getElements();
+                assertNotNull(elements);
+                assertEquals(1, elements.size());
+                assertTrue(elements.get(0) instanceof Menu);
+                Menu subFolderMenuElement = (Menu)elements.get(0);
+                assertEquals("Folder", subFolderMenuElement.getTitle());
+                elements = subFolderMenuElement.getElements();
+                assertNotNull(elements);
+                assertEquals(1, elements.size());
+                assertTrue(elements.get(0) instanceof MenuOption);
+                MenuOption subFolderMenuOptionElement = (MenuOption)elements.get(0);
+                assertEquals("/folder4/folder/page0.psml", subFolderMenuOptionElement.getUrl());
+                assertEquals(MenuOption.PAGE_OPTION_TYPE, subFolderMenuOptionElement.getType());
+                assertTrue(subFolderMenuOptionElement.getNode() instanceof Page);
+                assertEquals("/folder4/folder/page0.psml", subFolderMenuOptionElement.getNode().getPath());
+                assertTrue(subFolderMenuOptionElement.getManagedNode() instanceof Page);
+                assertEquals("/folder4/folder/page0.psml", subFolderMenuOptionElement.getManagedNode().getPath());
+            }
+            else if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/page2.psml"))
+            {
+                assertTrue(element instanceof MenuOption);
+                assertEquals("/page2.psml", ((MenuOption)element).getUrl());
+                assertEquals(MenuOption.PAGE_OPTION_TYPE, ((MenuOption)element).getType());
+                assertTrue(element.getNode() instanceof Page);
+                assertEquals("/page2.psml", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Page);
+                assertEquals("/_user/user/_mediatype/html/page2.psml", element.getManagedNode().getPath());
+            }
+            else if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/page1.psml"))
+            {
+                assertTrue(element instanceof MenuOption);
+                assertEquals("/page1.psml", ((MenuOption)element).getUrl());
+                assertTrue(element.getNode() instanceof Page);
+                assertEquals("/page1.psml", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Page);
+                assertEquals("/page1.psml", element.getManagedNode().getPath());
+            }
+            else if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/page0.psml"))
+            {
+                assertTrue(element instanceof MenuOption);
+                assertEquals("/page0.psml", ((MenuOption)element).getUrl());
+                assertTrue(element.getNode() instanceof Page);
+                assertEquals("/page0.psml", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Page);
+                assertEquals("/page0.psml", element.getManagedNode().getPath());
+            }
+            else
+            {
+                fail("Unexpected menu element type/title: "+element.getElementType()+"/"+element.getTitle());
+            }
+        }
+        
         // second request at /folder0
         locator = new JetspeedProfileLocator();
         locator.init(null, "/folder0");
@@ -1103,6 +1239,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/folder0/page0.psml", ((MenuOption)currentPathTestElements.get(0)).getUrl());
         assertTrue(currentPathTestMenu.isSelected(requestContext));
         assertTrue(((MenuOption)currentPathTestElements.get(0)).isSelected(requestContext));
+        siteNavigationsMenu = requestContext.getMenu("site-navigations");
+        assertEquals("site-navigations", siteNavigationsMenu.getName());
         
         // third request at /page1.psml
         locator = new JetspeedProfileLocator();
@@ -1147,7 +1285,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(navigationsMenu.isEmpty());
         List navigationsElements = navigationsMenu.getElements();
         assertNotNull(navigationsElements);
-        assertEquals(6, navigationsElements.size());
+        assertEquals(7, navigationsElements.size());
         menuElementsIter = navigationsElements.iterator();
         while (menuElementsIter.hasNext())
         {
@@ -1174,6 +1312,15 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertEquals("/folder1", element.getNode().getPath());
                 assertTrue(element.getManagedNode() instanceof Folder);
                 assertEquals("/_user/user/folder1", element.getManagedNode().getPath());
+            }
+            else if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("Folder4"))
+            {
+                assertTrue(element instanceof MenuOption);
+                assertEquals(MenuOption.FOLDER_OPTION_TYPE, ((MenuOption)element).getType());
+                assertTrue(element.getNode() instanceof Folder);
+                assertEquals("/folder4", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Folder);
+                assertEquals("/folder4", element.getManagedNode().getPath());
             }
             else if (element.getElementType().equals(MenuElement.SEPARATOR_ELEMENT_TYPE) &&
                      (element instanceof MenuSeparator) &&
@@ -1240,7 +1387,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         }
         assertEquals("tabs", pagesMenu.getSkin());
         assertTrue(((MenuImpl)pagesMenu).isElementRelative());
-
+        
         // fourth request at /page0.psml
         locator = new JetspeedProfileLocator();
         locator.init(null, "/page0.psml");
@@ -1509,11 +1656,12 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(requestContext);
         customMenuNames = requestContext.getCustomMenuNames();
         assertNotNull(customMenuNames);
-        assertEquals(4, customMenuNames.size());
+        assertEquals(5, customMenuNames.size());
         assertTrue(customMenuNames.contains("bread-crumbs"));
         assertTrue(customMenuNames.contains("template-test"));
         assertTrue(customMenuNames.contains("current-page-test"));
         assertTrue(customMenuNames.contains("current-path-test"));
+        assertTrue(customMenuNames.contains("site-navigations"));
         breadCrumbsMenu = requestContext.getMenu("bread-crumbs");
         assertNotNull(breadCrumbsMenu);
         assertEquals("bread-crumbs", breadCrumbsMenu.getName());
@@ -1555,7 +1703,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(navigationsMenu.isEmpty());
         navigationsElements = navigationsMenu.getElements();
         assertNotNull(navigationsElements);
-        assertEquals(11, navigationsElements.size());
+        assertEquals(12, navigationsElements.size());
         menuElementsIter = navigationsElements.iterator();
         while (menuElementsIter.hasNext())
         {
@@ -1627,6 +1775,15 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertEquals("/folder1", element.getNode().getPath());
                 assertTrue(element.getManagedNode() instanceof Folder);
                 assertEquals("/folder1", element.getManagedNode().getPath());
+            }
+            else if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("Folder4"))
+            {
+                assertTrue(element instanceof MenuOption);
+                assertEquals(MenuOption.FOLDER_OPTION_TYPE, ((MenuOption)element).getType());
+                assertTrue(element.getNode() instanceof Folder);
+                assertEquals("/folder4", element.getNode().getPath());
+                assertTrue(element.getManagedNode() instanceof Folder);
+                assertEquals("/folder4", element.getManagedNode().getPath());
             }
             else if (element.getElementType().equals(MenuElement.SEPARATOR_ELEMENT_TYPE) &&
                      (element instanceof MenuSeparator) &&
