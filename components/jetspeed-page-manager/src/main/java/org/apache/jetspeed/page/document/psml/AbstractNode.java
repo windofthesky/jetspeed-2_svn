@@ -249,7 +249,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
         if (titleName != null)
         {
             // transform file system name to title
-            if (titleName.endsWith(getType()))
+            if (titleName.endsWith(getType()) && (titleName.length() > getType().length()))
             {
                 titleName = titleName.substring(0, titleName.length()-getType().length());
             }
