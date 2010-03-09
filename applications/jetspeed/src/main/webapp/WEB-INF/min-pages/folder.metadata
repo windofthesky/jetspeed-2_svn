@@ -24,12 +24,16 @@ limitations under the License.
   <metadata name="title" xml:lang="zh">根文件夹</metadata>
   <metadata name="title" xml:lang="zh-TW">根文件夾</metadata>
   <metadata name="title" xml:lang="ko">루트 폴더</metadata>
-
+  <metadata name='space-owner' xml:lang='en'>admin</metadata>  
+  
   <defaults
      layout-decorator="jetspeed"
      portlet-decorator="jetspeed"
   />
 
+  <document-order>default-page.psml</document-order>
+  <document-order>about.psml</document-order>
+  <document-order>registration.psml</document-order>
   <document-order>Jetspeed2.link</document-order>
   <document-order>Jetspeed2Wiki.link</document-order>
   <document-order>apache_portals.link</document-order>

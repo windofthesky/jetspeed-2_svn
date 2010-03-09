@@ -143,7 +143,7 @@ var JETUI_YUI = {
 &nbsp;<% if (ltb != null) { %><span style='position: absolute; left: 0px; top: 42px;' id='jstbLeftToggle' class='<%=leftToggleClass%>'></span><% } if (rtb != null) { %><span id='jstbRightToggle' class='<%=rightToggleClass%>' style='position: absolute; right: 0px; top: 42px;'></span><% } %>
 </div>
 <%if (request.getUserPrincipal() != null) {%>
-<span class="layout-statusarea"><b><%=userNameGiven%> <%=userNameFamily%></b> | Profile | Tasks (5) | Notifications (2) | <a href="<%=request.getContextPath()%>/login/logout?org.apache.jetspeed.login.destination=<%=request.getContextPath()%>/ui">Log out</a></span>
+<span class="layout-statusarea"><b><%=userNameGiven%> <%=userNameFamily%></b> | <a href="<%=request.getContextPath()%>/login/logout?org.apache.jetspeed.login.destination=<%=request.getContextPath()%>/ui">Log out</a></span>
 <% } %>
 <!-- <span class="layout-search"><input type='text' size='14'/></span><span class="layout-search2"><img height='18' src="<%=request.getContextPath()%>/images/search.png"/></span>  -->
 </div> <!-- end header -->

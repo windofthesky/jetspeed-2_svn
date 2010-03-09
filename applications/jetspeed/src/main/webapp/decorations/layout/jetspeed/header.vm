@@ -76,7 +76,7 @@ var JETUI_YUI = {
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
 <!-- Page Action Bar -->
 #if ($request.getUserPrincipal())
-<span class="layout-statusarea"><b>$jetspeed.getUserAttribute("user.name.given","") $jetspeed.getUserAttribute("user.name.family", ${request.userPrincipal.name})</b> | Profile | Tasks (5) | Notifications (2) | <a href="#BaseHref()login/logout">Log out</a></span>
+<span class="layout-statusarea"><b>$jetspeed.getUserAttribute("user.name.given","") $jetspeed.getUserAttribute("user.name.family", ${request.userPrincipal.name})</b> | <a href="#BaseHref()login/logout">Log out</a></span>
 #end
 #if (!$jetspeed.isAjaxCustomizationEnabled())
 #PageActionBar()
