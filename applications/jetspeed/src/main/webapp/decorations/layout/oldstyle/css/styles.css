@@ -427,39 +427,14 @@ text-decoration:none;
 text-decoration: underline;
 }
 
-.layout-oldstyle .navmenu ul { margin: 0 0 0 3px; padding: 2px; }
-.layout-oldstyle .navmenu li { margin: 0 0 0 3px; padding: 2px; }
-.layout-oldstyle .navmenu li.leaf { margin: 0 0 0 3px; padding: 2px; list-style-type: none; list-style-image: none; }
-.layout-oldstyle .navmenu li.closed { cursor: pointer; list-style-image: url(../../images/bullet-closed.png); }
-.layout-oldstyle .navmenu li.expanded { cursor: default; list-style-image: url(../../images/bullet-expanded.png); }
-.layout-oldstyle .navmenu li li { }
-.layout-oldstyle .navmenu li.closed ul { display: none; }
-
-.layout-oldstyle .default-tabs{margin: 1px; padding: 0px;}
-.layout-oldstyle .default-tabs ul{display: block; float: left;}
-.layout-oldstyle .default-tabs li{display: block; float: left; margin: 0px; padding: 0px;}
-.layout-oldstyle .default-tabs a{
-font-weight: normal; 
-white-space: nowrap; 
-display: block; 
-float: left; 
-width: auto;
-background: url("../images/documenttabs.png") repeat-x; 
-margin: 0px;
-color: #dddddd;
-padding: 4px 2px;
-text-decoration: none;
-font-size: 11px;
-}
-
-.layout-oldstyle .default-tabs .selected a{background-position: 0px -30px; color: white}
-.layout-oldstyle .default-tabs .selected a:hover{background-position: 0px -30px;}
-.layout-oldstyle .default-tabs .selected a:active{background-position: 0px -30px}
-
-.layout-oldstyle .default-tabs .not-selected a{background-position: 0px -1px; color: #f2f2f2}
-.layout-oldstyle .default-tabs .not-selected a:hover{background-position: 0px -90px; color: white}
-.layout-oldstyle .default-tabs .not-selected a:active{background-position: 0px -90px}
-
+.layout-jetspeed .default-tabs{margin: 1px; padding: 0px; }
+.layout-jetspeed .default-tabs ul{display: block; float: left;}
+.layout-jetspeed .default-tabs li{display: block; float: left; margin: 2px; padding: 0px; color: #05549c; border: none; }
+.layout-jetspeed .default-tabs a{ font-weight: normal;  white-space: nowrap;  display: block;  float: left;  width: auto; margin: 0px; padding: 4px 2px; text-decoration: none; font-size: 10px; }
+.layout-jetspeed .default-tabs .selected a{ color: #05549c; text-decoration: none; font-weight: bold; }
+.layout-jetspeed .default-tabs .selected a:hover{ color: #05549c; text-decoration: underline }
+.layout-jetspeed .default-tabs .not-selected a{ color: #05549c; text-decoration: none }
+.layout-jetspeed .default-tabs .not-selected a:hover{color: #05549c; text-decoration: underline }
 .layout-oldstyle-logout{float: right; display: block;}
 
 .layout-oldstyle .portal-page-actions{ 

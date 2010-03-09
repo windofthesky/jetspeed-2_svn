@@ -470,30 +470,14 @@ text-decoration: underline;
 .layout-turbo .navmenu li li { }
 .layout-turbo .navmenu li.closed ul { display: none; }
 
-.layout-turbo .default-tabs{margin: 1px; padding: 0px;}
+.layout-turbo .default-tabs{margin: 1px; padding: 0px; }
 .layout-turbo .default-tabs ul{display: block; float: left;}
-.layout-turbo .default-tabs li{display: block; float: left; margin: 0px; padding: 0px;}
-.layout-turbo .default-tabs a{
-font-weight: normal; 
-white-space: nowrap; 
-display: block; 
-float: left; 
-width: auto;
-background: url("../images/documenttabs.png") repeat-x; 
-margin: 0px;
-color: #dddddd;
-padding: 4px 2px;
-text-decoration: none;
-font-size: 11px;
-}
-
-.layout-turbo .default-tabs .selected a{background-position: 0px -30px; color: white}
-.layout-turbo .default-tabs .selected a:hover{background-position: 0px -30px;}
-.layout-turbo .default-tabs .selected a:active{background-position: 0px -30px}
-
-.layout-turbo .default-tabs .not-selected a{background-position: 0px -1px; color: #f2f2f2}
-.layout-turbo .default-tabs .not-selected a:hover{background-position: 0px -90px; color: white}
-.layout-turbo .default-tabs .not-selected a:active{background-position: 0px -90px}
+.layout-turbo .default-tabs li{display: block; float: left; margin: 2px; padding: 0px; color: #05549c; border: none; }
+.layout-turbo .default-tabs a{ font-weight: normal;  white-space: nowrap;  display: block;  float: left;  width: auto; margin: 0px; padding: 4px 2px; text-decoration: none; font-size: 10px; }
+.layout-turbo .default-tabs .selected a{ color: #05549c; text-decoration: none; font-weight: bold; }
+.layout-turbo .default-tabs .selected a:hover{ color: #05549c; text-decoration: underline }
+.layout-turbo .default-tabs .not-selected a{ color: #05549c; text-decoration: none }
+.layout-turbo .default-tabs .not-selected a:hover{color: #05549c; text-decoration: underline }
 
 .layout-turbo-logout{float: right; display: block;}
 
