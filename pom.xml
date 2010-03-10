@@ -1696,7 +1696,7 @@
               </target>
               <target>
                 <id>min-seed-dbpsml</id>
-                <depends>demo-db</depends>
+                <depends>min-db</depends>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
                 <profiles>minseed-dbpsml</profiles>
@@ -1708,16 +1708,16 @@
               </target>
               <target>
                 <id>min</id>
-                <depends>demo-install,demo-db,demo-deploy-min</depends>
+                <depends>demo-install,min-db,demo-deploy-min</depends>
               </target>               
-              <target>
-                <id>min-dbpsml</id>
-                <depends>demo-install,demo-db,demo-deploy-min,demo-deploy-dbpsml,min-seed-dbpsml</depends>
-              </target>           
               <target>
                 <id>demo-dbpsml</id>
                 <depends>demo-install,demo-db,demo-deploy,demo-deploy-dbpsml,demo-seed-dbpsml</depends>
               </target>
+              <target>
+                <id>min-dbpsml</id>
+                <depends>demo-install,min-db,demo-deploy-min,demo-deploy-dbpsml,min-seed-dbpsml</depends>
+              </target>           
             </targets>
           </configuration>
         </plugin>
