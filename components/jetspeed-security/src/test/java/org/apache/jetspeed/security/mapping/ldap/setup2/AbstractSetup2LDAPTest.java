@@ -36,7 +36,6 @@ import org.apache.jetspeed.security.mapping.ldap.dao.impl.AttributeBasedRelation
 import org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO;
 import org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
-import org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>

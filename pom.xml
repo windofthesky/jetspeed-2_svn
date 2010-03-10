@@ -257,7 +257,7 @@
     <commons-pool.version>1.3</commons-pool.version>
     <!-- ddlutils svn r551445 with patch applied from http://issues.apache.org/jira/browse/DDLUTILS-75#action_12521579 -->
     <ddlutils.version>r551445-patched-75</ddlutils.version>
-    <directory.version>0.9.3</directory.version>
+    <directory.version>1.5.5</directory.version>
     <dom4j.version>1.6.1</dom4j.version>
     <ehcache.version>1.7.2</ehcache.version>
     <hsqldb.version>1.8.0.2</hsqldb.version>
@@ -1168,47 +1168,6 @@
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <!-- LDAP -->
-      <dependency>
-        <groupId>directory</groupId>
-        <artifactId>apacheds-main</artifactId>
-        <version>${directory.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>directory-shared</groupId>
-            <artifactId>protocol-common</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>asn1-ber</groupId>
-            <artifactId>asn1-codec</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>directory-shared</groupId>
-            <artifactId>ldap-common</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>directory-shared</groupId>
-            <artifactId>kerberos-common</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>directory-protocols</groupId>
-            <artifactId>ntp-protocol</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>directory-protocols</groupId>
-            <artifactId>changepw-protocol</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>directory-protocols</groupId>
-            <artifactId>kerberos-protocol</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>directory-protocols</groupId>
-            <artifactId>ldap-protocol</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

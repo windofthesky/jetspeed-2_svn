@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import junit.framework.Test;
+
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
 
@@ -28,8 +30,22 @@ import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public class UserTests extends AbstractSetup1LDAPTest
+public class TestLDAP extends AbstractSetup1LDAPTest
 {
+    public static Test suite()
+    {
+        return createFixturedTestSuite(TestLDAP.class, "ldapTestSetup", "ldapTestTeardown");
+    }
+    
+    public void ldapTestSetup() throws Exception
+    {
+        super.ldapTestSetup();
+    }
+    
+    public void ldapTestTeardown() throws Exception
+    {
+        super.ldapTestTeardown();
+    }
 
     public void testSingleUser() throws Exception
     {

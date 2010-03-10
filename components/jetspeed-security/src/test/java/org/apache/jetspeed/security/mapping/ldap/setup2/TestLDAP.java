@@ -19,18 +19,22 @@ package org.apache.jetspeed.security.mapping.ldap.setup2;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import junit.framework.Test;
+
 import org.apache.jetspeed.security.mapping.ldap.util.DnUtils;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
-import org.springframework.ldap.core.DistinguishedName;
-
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public class UserTests extends AbstractSetup2LDAPTest
+public class TestLDAP extends AbstractSetup2LDAPTest
 {
+    public static Test suite()
+    {
+        return createFixturedTestSuite(TestLDAP.class, "ldapTestSetup", "ldapTestTeardown");
+    }
 
     public void testSingleUser() throws Exception
     {

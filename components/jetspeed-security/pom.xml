@@ -121,17 +121,16 @@
     </dependency>
 
     <dependency>
-      <artifactId>apacheds-server-unit</artifactId>
+      <artifactId>apacheds-all</artifactId>
       <groupId>org.apache.directory.server</groupId>
-      <version>1.5.3</version>
+      <version>${directory.version}</version>
       <scope>test</scope>
     </dependency>
 
     <!-- used by Apache DS -->
     <dependency>
-      <artifactId>slf4j-jdk14</artifactId>
+      <artifactId>slf4j-log4j12</artifactId>
       <groupId>org.slf4j</groupId>
-      <version>1.4.3</version>
       <scope>test</scope>
     </dependency>
 
@@ -145,7 +144,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>**/spi/ldap/**.java</exclude>
             <exclude>**/spi/TestDefaultJetspeedSynchronizer.java</exclude>
             <exclude>**/spi/TestPasswordHistoryInterceptor.java</exclude>
             <exclude>**/spi/TestPasswordExpirationAndMaxAuthenticationFailuresInterceptor.java</exclude>

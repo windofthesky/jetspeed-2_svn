@@ -17,19 +17,20 @@
 package org.apache.jetspeed.security.mapping.ldap;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
-import javax.naming.directory.DirContext;
-
-import junit.framework.TestCase;
-
-import org.apache.commons.io.IOUtils;
+import org.apache.directory.server.core.DefaultDirectoryService;
+import org.apache.directory.server.core.DirectoryService;
+import org.apache.directory.server.core.entry.ServerEntry;
+import org.apache.directory.server.core.partition.Partition;
+import org.apache.directory.server.core.partition.impl.btree.jdbm.JdbmPartition;
+import org.apache.directory.server.ldap.LdapServer;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
+import org.apache.directory.server.protocol.shared.transport.TcpTransport;
+import org.apache.directory.shared.ldap.name.LdapDN;
 import org.apache.jetspeed.security.mapping.ldap.dao.DefaultLDAPEntityManager;
 import org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration;
 import org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl;
+import org.apache.jetspeed.test.JetspeedTestCase;
 import org.springframework.core.io.Resource;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
@@ -39,7 +40,7 @@ import org.springframework.ldap.core.support.LdapContextSource;
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public abstract class AbstractLDAPTest extends TestCase
+public abstract class AbstractLDAPTest extends JetspeedTestCase
 {
     
     public static final AttributeDefImpl CN_DEF = new AttributeDefImpl("cn",false,false).cfgRequired(true).cfgIdAttribute(true);
@@ -73,20 +74,98 @@ public abstract class AbstractLDAPTest extends TestCase
     protected boolean debugMode = false;
 
     protected BasicTestCases basicTestCases;
+    
+    /** The directory service */
+    private static DirectoryService service;
+    private static LdapServer server;
+    private static boolean running;
+        
+    private static boolean deleteDir(File dir)
+    {        
+        if (dir.isDirectory())
+        {
+            String[] children = dir.list();
+            for (int i=0; i < children.length; i++)
+            {
+                if (!deleteDir(new File(dir, children[i])))
+                {
+                    return false;
+                }
+            }
+        }
+        return dir.delete();
+    }
+    
+    public void ldapTestSetup() throws Exception
+    {
+        File workingDir = new File(getBaseDir()+"target/_apacheds");
+        if (workingDir.exists() && !deleteDir(workingDir))
+        {
+            throw new Exception("Cannot delete apacheds working Directory: "+workingDir.getAbsolutePath());
+        }
+        
+        // Initialize the LDAP service
+        service = new DefaultDirectoryService();
+        
+        // Disable the ChangeLog system
+        service.getChangeLog().setEnabled( false );
+        service.setDenormalizeOpAttrsEnabled( true );
+        
+        // Create a new partition named 'foo'.
+        Partition partition = new JdbmPartition();
+        partition.setId( "sevenSeas" );
+        partition.setSuffix( "o=sevenSeas" );
+        service.addPartition( partition );
+        
+        service.setWorkingDirectory(workingDir);
+        server = new LdapServer();
+        server.setDirectoryService(service);
+        server.setTransports(new  TcpTransport(10389));
+        service.startup();
+        server.start();
+        
+        // Inject the sevenSeas root entry if it does not already exist
+        if (!service.getAdminSession().exists(partition.getSuffixDn()))
+        {
+            LdapDN dn = new LdapDN( "o=sevenSeas" );
+            ServerEntry entry = service.newEntry( dn );
+            entry.add( "objectClass", "top", "domain", "extensibleObject" );
+            entry.add( "dc", "sevenSeas" );
+            service.getAdminSession().add( entry );
+        }
+        running = true;
+    }
+    
+    public void ldapTestTeardown() throws Exception
+    {
+        server.stop();
+        service.shutdown();
+        server = null;
+        service = null;
+        File workingDir = new File(getBaseDir()+"target/_apacheds");
+        if (workingDir.exists())
+        {
+            deleteDir(workingDir);
+        }
+        running = false;
+    }
 
     public void setUp() throws Exception
     {
-        baseDN = "o=sevenSeas";
+        super.setUp();
         // TODO : move config to build environment
+        baseDN = "o=sevenSeas";
         LdapContextSource contextSource = new LdapContextSource();
-        contextSource.setUrl("ldap://localhost:389");
+        contextSource.setUrl("ldap://localhost:10389");
         contextSource.setBase(baseDN);
-        contextSource.setUserDn("cn=admin,o=sevenSeas");
+        contextSource.setUserDn("uid=admin,ou=system");
         contextSource.setPassword("secret");
         contextSource.afterPropertiesSet();
         ldapTemplate = new LdapTemplate();
         ldapTemplate.setContextSource(contextSource);
 
+        if (!running) return;
+        
         try
         {
             emptyLDAP();
@@ -97,41 +176,16 @@ public abstract class AbstractLDAPTest extends TestCase
                 e.printStackTrace();
             }
         }
-
-        DirContext dirContext = ldapTemplate.getContextSource()
-                .getReadWriteContext();
-        loadLdifs(ldapTemplate.getContextSource().getReadWriteContext(),
-                initializationData());
+        Resource[] ldifs = initializationData();
+        for (int i = 0; i < ldifs.length; i++)
+        {
+            LdifFileLoader loader = new  LdifFileLoader(service.getAdminSession(), ldifs[i].getFile().getAbsolutePath());
+            loader.execute();
+        }
+        
         internalSetUp();
 
         basicTestCases = new BasicTestCases(entityManager, debugMode);
-    }
-
-    public static void loadLdifs(DirContext context, Resource[] ldifFiles)
-            throws IOException
-    {
-
-        for (int i = 0; i < ldifFiles.length; i++)
-        {
-            File tempFile = File.createTempFile("spring_ldap_test", ".ldif");
-            try
-            {
-                InputStream inputStream = ldifFiles[i].getInputStream();
-                IOUtils.copy(inputStream, new FileOutputStream(tempFile));
-                LdifFileLoader fileLoader = new LdifFileLoader(context,
-                        tempFile.getAbsolutePath());
-                fileLoader.execute();
-            } finally
-            {
-                try
-                {
-                    tempFile.delete();
-                } catch (Exception e)
-                {
-                    // Ignore this
-                }
-            }
-        }
     }
 
     private void emptyLDAP() throws Exception
@@ -143,6 +197,7 @@ public abstract class AbstractLDAPTest extends TestCase
     protected void tearDown() throws Exception
     {
         super.tearDown();
+        if (!running) return;
         internaltearDown();
         emptyLDAP();
     }
