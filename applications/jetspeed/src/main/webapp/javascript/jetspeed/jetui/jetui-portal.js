@@ -161,6 +161,11 @@ YUI.add('jetui-portal', function(Y) {
         screenMaskZIndex : 16777271 - 1,
         
         /**
+         * The modal panel overlay
+         */
+        modalPanelOverlay : null,
+        
+        /**
          * Construction logic executed during instantiation.
          *
          * @method initializer
@@ -952,7 +957,89 @@ YUI.add('jetui-portal', function(Y) {
                 }
                 maskNode.setStyle("display", "");
             }
+        },
+        
+        /**
+         * @method showModalPanel
+         */
+        showModalPanel : function(headerSelector, bodySelector, footerSelector, features) {
+            var portal = JETUI_YUI.getPortalInstance();
+            var windowWidth = window.innerWidth;
+            var windowHeight = window.innerHeight;
+            var width = (features["width"] ? features["width"] : parseInt(windowWidth / 2));
+            var height = (features["height"] ? features["height"] : parseInt(windowHeight / 2));
+            var left = (features["left"] ? features["left"] : parseInt((windowWidth - width) / 2));
+            var top = (features["top"] ? features["top"] : parseInt((windowHeight - height) / 2));
+            var zIndex = (features["zIndex"] ? features["zIndex"] : 16777271);
+            var classes = features["addClasses"];
+            var modalPanelOverlay = portal.modalPanelOverlay;
+            if (!modalPanelOverlay) {
+                var modalOverlayNode = Y.Node.one("#_jetspeedModalPanelOverlay");
+                if (!modalOverlayNode) {
+                    modalOverlayNode = Y.Node.create("<div id='_jetspeedModalPanelOverlay'><div class='yui-widget-hd'></div><div class='yui-widget-bd'></div><div class='yui-widget-ft'></div></div>");
+                    var domNode = Y.Node.getDOMNode(modalOverlayNode);
+                    document.body.appendChild(domNode);
+                    if (classes && Y.Lang.isArray(classes)) {
+                        for (var i = 0; i < classes.length; i++) {
+                            modalOverlayNode.addClass(classes[i]);
+                        }
+                    }
+                    modalOverlayNode.setStyle("backgroundColor", "#eee");
+                    modalOverlayNode.setStyle("borderLeft", "#fff solid 2px");
+                    modalOverlayNode.setStyle("borderTop", "#fff solid 2px");
+                    modalOverlayNode.setStyle("borderRight", "#aaa solid 2px");
+                    modalOverlayNode.setStyle("borderBottom", "#aaa solid 2px");
+                    modalOverlayNode.setStyle("padding", "10px");
+                }
+                modalPanelOverlay = new Y.Overlay({
+                    contentBox: "#_jetspeedModalPanelOverlay",
+                    xy: [windowWidth, windowHeight],
+                    visible: false
+                });
+                portal.modalPanelOverlay = modalPanelOverlay;
+            }
+            if (headerSelector) {
+                if (Y.Lang.isString(headerSelector) && headerSelector.match(/^#/)) {
+                    modalPanelOverlay.set("headerContent", Y.Node.one(headerSelector));
+                } else {
+                    modalPanelOverlay.set("headerContent", headerSelector);
+                }
+            }
+            if (bodySelector) {
+                if (Y.Lang.isString(bodySelector) && bodySelector.match(/^#/)) {
+                    modalPanelOverlay.set("bodyContent", Y.Node.one(bodySelector));
+                } else {
+                    modalPanelOverlay.set("bodyContent", bodySelector);
+                }
+            }
+            if (footerSelector) {
+                if (Y.Lang.isString(footerSelector) && footerSelector.match(/^#/)) {
+                    modalPanelOverlay.set("footerContent", Y.Node.one(footerSelector));
+                } else {
+                    modalPanelOverlay.set("footerContent", footerSelector);
+                }
+            }
+            modalPanelOverlay.set("zIndex", zIndex);
+            modalPanelOverlay.set("width", width);
+            modalPanelOverlay.set("height", height);
+            portal.setScreenMask(true);
+            modalPanelOverlay.render();
+            modalPanelOverlay.move([left, top]);
+            modalPanelOverlay.show();
+        },
+        
+        /**
+         * @method hideModalPanel
+         */
+        hideModalPanel : function() {
+            var portal = JETUI_YUI.getPortalInstance();
+            var modalPanelOverlay = portal.modalPanelOverlay;
+            if (modalPanelOverlay) {
+                modalPanelOverlay.hide();
+            }
+            portal.setScreenMask(false);
         }
+        
     });
 
     /**
@@ -1159,4 +1246,4 @@ YUI.add('jetui-portal', function(Y) {
         return layout;
     };
     
-}, '3.0.0', {requires:['dd', 'io', 'dataschema-json', 'node', 'node-menunav']});
+}, '3.0.0', {requires:['dd', 'io', 'json', 'node', 'node-menunav', 'overlay']});
