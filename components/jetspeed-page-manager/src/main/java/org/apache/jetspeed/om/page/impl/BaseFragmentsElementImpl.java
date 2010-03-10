@@ -24,6 +24,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
+import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.page.document.impl.DocumentImpl;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
@@ -46,6 +47,16 @@ public abstract class BaseFragmentsElementImpl extends DocumentImpl implements B
         super(new PageSecurityConstraintsImpl());
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.page.document.impl.NodeImpl#newPageMetadata(java.util.Collection)
+     */
+    public PageMetadataImpl newPageMetadata(Collection fields)
+    {
+        PageMetadataImpl pageMetadata = new PageMetadataImpl(PageMetadataLocalizedFieldImpl.class);
+        pageMetadata.setFields(fields);
+        return pageMetadata;
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Page#getRootFragment()
      */

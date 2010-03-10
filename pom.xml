@@ -1604,6 +1604,7 @@
           <inherited>false</inherited>
           <configuration>
             <targets combine.children="append">
+              <!-- test targets -->
               <target>
                 <id>testdb</id>
                 <name>db-init</name>
@@ -1624,6 +1625,12 @@
                 <goals>install</goals>
                 <profiles>test</profiles>
               </target>
+              <!-- demo portal build intermediate target -->
+              <target>
+                <id>demo-install</id>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+              </target>
+              <!-- db initialize intermediate target -->
               <target>
                 <id>proddb</id>
                 <name>db-init</name>
@@ -1631,10 +1638,7 @@
                   <database.type>production</database.type>
                 </properties>
               </target>
-              <target>
-                <id>demo-install</id>
-                <dir>@rootdir@/applications/jetspeed-demo</dir>
-              </target>
+              <!-- db seed intermediate targets -->
               <target>
                 <id>demo-seed</id>
                 <name>demo</name>
@@ -1653,20 +1657,16 @@
                   <seed.file>min/j2-seed.xml</seed.file>
                 </properties>
               </target>
+              <!-- initialize and seed db intermediate targets -->
               <target>
-                <id>demo-seed-dbpsml</id>
-                <depends>demo-db</depends>
-                <name>demo</name>
-                <dir>@rootdir@/applications/jetspeed-demo</dir>
-                <profiles>seed-dbpsml</profiles>
+                <id>demo-db</id>
+                <depends>proddb,demo-seed</depends>
               </target>
-			 <target>
-                <id>min-seed-dbpsml</id>
-                <depends>demo-db</depends>
-                <name>demo</name>
-                <dir>@rootdir@/applications/jetspeed-demo</dir>
-                <profiles>minseed-dbpsml</profiles>
-              </target>			  
+              <target>
+                <id>min-db</id>
+                <depends>proddb,min-seed</depends>
+              </target>
+              <!-- portal and portal app deployment intermediate targets -->
               <target>
                 <id>demo-deploy</id>
                 <name>demo</name>
@@ -1679,24 +1679,29 @@
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
                 <profiles>deploy-min</profiles>
               </target>              
+              <!-- portal dbpsml config deployment intermediate targets -->
               <target>
                 <id>demo-deploy-dbpsml</id>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
                 <profiles>deploy-dbpsml</profiles>
               </target>
+              <!-- dbpsml seed db intermediate targets -->
               <target>
-                <id>demo-db</id>
-                <depends>proddb,demo-seed</depends>
+                <id>demo-seed-dbpsml</id>
+                <depends>demo-db</depends>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>seed-dbpsml</profiles>
               </target>
               <target>
-                <id>min-db</id>
-                <depends>proddb,min-seed</depends>
-              </target>
-              <target>
-                <id>demo-db-psml</id>
-                <depends>demo-db,demo-seed-dbpsml</depends>
-              </target>
+                <id>min-seed-dbpsml</id>
+                <depends>demo-db</depends>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>minseed-dbpsml</profiles>
+              </target>           
+              <!-- demo top level targets -->
               <target>
                 <id>demo</id>
                 <depends>demo-install,demo-db,demo-deploy</depends>
@@ -1704,14 +1709,14 @@
               <target>
                 <id>min</id>
                 <depends>demo-install,demo-db,demo-deploy-min</depends>
-              </target>	              
+              </target>               
               <target>
                 <id>min-dbpsml</id>
                 <depends>demo-install,demo-db,demo-deploy-min,demo-deploy-dbpsml,min-seed-dbpsml</depends>
-              </target>	          
+              </target>           
               <target>
                 <id>demo-dbpsml</id>
-                <depends>demo-db-psml,demo-deploy,demo-deploy-dbpsml</depends>
+                <depends>demo-install,demo-db,demo-deploy,demo-deploy-dbpsml,demo-seed-dbpsml</depends>
               </target>
             </targets>
           </configuration>

@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.jetspeed.om.folder.MenuDefinition;
@@ -26,7 +25,6 @@ import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.page.BasePageElement;
 import org.apache.jetspeed.om.page.Fragment;
-import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
@@ -73,16 +71,6 @@ public abstract class BasePageElementImpl extends BaseFragmentsElementImpl imple
         {
             rootFragment.resetCachedSecurityConstraints();
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.page.document.impl.NodeImpl#newPageMetadata(java.util.Collection)
-     */
-    public PageMetadataImpl newPageMetadata(Collection fields)
-    {
-        PageMetadataImpl pageMetadata = new PageMetadataImpl(PageMetadataLocalizedFieldImpl.class);
-        pageMetadata.setFields(fields);
-        return pageMetadata;
     }
 
     /* (non-Javadoc)
