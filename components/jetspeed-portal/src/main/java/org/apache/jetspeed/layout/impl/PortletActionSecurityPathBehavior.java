@@ -22,6 +22,7 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
+import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.request.RequestContext;
 
 import org.slf4j.Logger;
@@ -37,17 +38,17 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
 {
     protected Logger log = LoggerFactory.getLogger(PortletActionSecurityPathBehavior.class);    
     protected PageManager pageManager;
-    protected PageProfilerValve profilerValve;
+    protected Valve pageLocatingValve;
     private boolean enableCreateUserPagesFromRolesOnEdit;
     
-    public PortletActionSecurityPathBehavior(PageManager pageManager, PageProfilerValve profilerValve)
+    public PortletActionSecurityPathBehavior(PageManager pageManager, Valve pageLocatingValve)
     {
-    	this( pageManager, profilerValve, Boolean.FALSE ) ;
+    	this( pageManager, pageLocatingValve, Boolean.FALSE ) ;
     }
-    public PortletActionSecurityPathBehavior(PageManager pageManager, PageProfilerValve profilerValve, Boolean enableCreateUserPagesFromRolesOnEdit )
+    public PortletActionSecurityPathBehavior(PageManager pageManager, Valve pageLocatingValve, Boolean enableCreateUserPagesFromRolesOnEdit )
     {
         this.pageManager = pageManager;
-        this.profilerValve = profilerValve;
+        this.pageLocatingValve = pageLocatingValve;
         this.enableCreateUserPagesFromRolesOnEdit = ( enableCreateUserPagesFromRolesOnEdit == null ? false : enableCreateUserPagesFromRolesOnEdit.booleanValue() );
     }
 
@@ -100,7 +101,7 @@ public class PortletActionSecurityPathBehavior implements PortletActionSecurityB
         		String pageName = contentPage.getName();        		
                 pageManager.createUserHomePagesFromRoles(context.getSubject());
                 // update request context with new profiler valve invocation
-                profilerValve.invoke(context, null);
+                pageLocatingValve.invoke(context, null);
             }
         }
         catch (Exception e)

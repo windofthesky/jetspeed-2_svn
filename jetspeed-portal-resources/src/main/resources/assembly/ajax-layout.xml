@@ -42,7 +42,7 @@
       <ref bean="org.apache.jetspeed.page.PageManager" />
     </constructor-arg>
     <constructor-arg index='1'>
-      <ref bean="profilerValve" />
+      <ref bean="pageProfilerValve" />
     </constructor-arg>
     <constructor-arg index='2'>
       <ref bean="EnableCreateUserPagesFromRolesOnEdit" />
