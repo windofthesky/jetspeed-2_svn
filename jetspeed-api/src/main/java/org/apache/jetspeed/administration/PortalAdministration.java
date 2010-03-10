@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+
 import org.apache.jetspeed.security.User;
 
 /**
@@ -162,6 +163,20 @@ public interface PortalAdministration
      * @param guid    the ID which will be removed from the storage when the info is no longer valid
      */
     public void removeNewLoginInfo(String guid);
-        
+    
+    /**
+     * Returns true if the current request user principal's name is the name of the portal admin user.
+     * @param request
+     * @return
+     */
+    public boolean isAdminUser(PortletRequest request);
+    
+    /**
+     * Returns true if the current request user principal is in the portal admin role.
+     * @param request
+     * @return
+     */
+    public boolean isUserInAdminRole(PortletRequest request);
+    
 }
 

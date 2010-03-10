@@ -18,6 +18,7 @@ package org.apache.jetspeed.administration;
 
 import java.io.FileReader;
 import java.io.StringWriter;
+import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,8 +31,6 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
 import org.apache.commons.configuration.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -53,6 +52,8 @@ import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -67,9 +68,8 @@ import org.springframework.mail.javamail.JavaMailSender;
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer</a>
- * @version $Id: $
+ * @version $Id$
  */
-
 public class PortalAdministrationImpl implements PortalAdministration
 {
     private final static Logger log = LoggerFactory.getLogger(PortalAdministrationImpl.class);
@@ -95,6 +95,8 @@ public class PortalAdministrationImpl implements PortalAdministration
     protected String folderTemplate;
     /** default administrative user */
     protected String adminUser;
+    /** default administrative role */
+    protected String adminRole;
         
     public PortalAdministrationImpl( UserManager userManager,
                                      RoleManager roleManager,
@@ -136,7 +138,7 @@ public class PortalAdministrationImpl implements PortalAdministration
         this.folderTemplate = 
             config.getString(PortalConfigurationConstants.PSML_TEMPLATE_FOLDER);
         this.adminUser = config.getString(PortalConfigurationConstants.USERS_DEFAULT_ADMIN);
-        
+        this.adminRole = config.getString(PortalConfigurationConstants.ROLES_DEFAULT_ADMIN);
     }
     
     public void registerUser(String userName, String password)
@@ -485,7 +487,7 @@ public class PortalAdministrationImpl implements PortalAdministration
             forgottenPasswordData.put(guid,info);
         }
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.administration.PortalAdministration#removeNewLoginInfo(java.lang.String)
      */
@@ -496,8 +498,31 @@ public class PortalAdministrationImpl implements PortalAdministration
         }
     }
     
+    public boolean isAdminUser(PortletRequest request)
+    {
+        if (adminUser == null)
+        {
+            throw new IllegalStateException("PortalAdministration component is not started or misconfigured for the default admin user.");
+        }
+        
+        Principal principal = request.getUserPrincipal();
+        
+        if (principal != null)
+        {
+            return adminUser.equals(principal.getName());
+        }
+        
+        return false;
+    }
     
-    
-    
+    public boolean isUserInAdminRole(PortletRequest request)
+    {
+        if (adminRole == null)
+        {
+            throw new IllegalStateException("PortalAdministration component is not started or misconfigured for the default admin role.");
+        }
+        
+        return request.isUserInRole(adminRole);
+    }
     
 }
