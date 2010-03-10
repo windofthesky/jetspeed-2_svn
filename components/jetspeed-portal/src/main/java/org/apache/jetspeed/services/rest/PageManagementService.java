@@ -266,6 +266,23 @@ public class PageManagementService
     }
     
     @POST
+    @Path("/move/{type}/{path:.*}")
+    public NodeBean moveNode(@Context HttpServletRequest servletRequest,
+                             @Context UriInfo uriInfo,
+                             @PathParam("type") String type,
+                             @PathParam("source") List<PathSegment> sourcePathSegments,
+                             @FormParam("target") String targetPath,
+                             @FormParam("deep") boolean deepCopy,
+                             @FormParam("merge") boolean merging,
+                             @FormParam("owner") String owner,
+                             @FormParam("copyids") boolean copyIds)
+    {
+        NodeBean nodeBean = copyNode(servletRequest, uriInfo, type, sourcePathSegments, targetPath, deepCopy, merging, owner, copyIds);
+        deleteNode(servletRequest, uriInfo, type, sourcePathSegments);
+        return nodeBean;
+    }
+    
+    @POST
     @Path("/info/{type}/{path:.*}")
     public NodeBean updateNodeInfo(@Context HttpServletRequest servletRequest,
                                    @Context UriInfo uriInfo,
