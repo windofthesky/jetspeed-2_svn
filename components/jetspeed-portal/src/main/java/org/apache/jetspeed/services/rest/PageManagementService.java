@@ -190,11 +190,11 @@ public class PageManagementService
     }
     
     @POST
-    @Path("/copy/{type}/{path:.*}")
+    @Path("/copy/{type}/{sourcePath:.*}")
     public NodeBean copyNode(@Context HttpServletRequest servletRequest,
                              @Context UriInfo uriInfo,
                              @PathParam("type") String type,
-                             @PathParam("source") List<PathSegment> sourcePathSegments,
+                             @PathParam("sourcePath") List<PathSegment> sourcePathSegments,
                              @FormParam("target") String targetPath,
                              @FormParam("deep") boolean deepCopy,
                              @FormParam("merge") boolean merging,
@@ -208,15 +208,15 @@ public class PageManagementService
             if (Page.DOCUMENT_TYPE.equals(type))
             {
                 Page source = pageManager.getPage(sourcePath);
-                pageManager.copyPage(source, targetPath);
-                Page target = pageManager.getPage(targetPath);
+                Page target = pageManager.copyPage(source, targetPath);
+                pageManager.updatePage(target);
                 return new PageBean(target);
             }
             else if (Link.DOCUMENT_TYPE.equals(type))
             {
                 Link source = getLink(sourcePath);
-                pageManager.copyLink(source, targetPath);
-                Link target = getLink(targetPath);
+                Link target = pageManager.copyLink(source, targetPath);
+                pageManager.updateLink(target);
                 return new LinkBean(target);
             }
             else if (Folder.FOLDER_TYPE.equals(type))
@@ -233,14 +233,16 @@ public class PageManagementService
                     {
                         pageManager.deepCopyFolder(source, targetPath, owner, copyIds);
                     }
+                    
+                    Folder target = pageManager.getFolder(targetPath);
+                    return new FolderBean(target);
                 }
                 else
                 {
-                    pageManager.copyFolder(source, targetPath);
+                    Folder target = pageManager.copyFolder(source, targetPath);
+                    pageManager.updateFolder(target, true);
+                    return new FolderBean(target);
                 }
-                
-                Folder target = pageManager.getFolder(targetPath);
-                return new FolderBean(target);
             }
             else 
             {
@@ -266,11 +268,11 @@ public class PageManagementService
     }
     
     @POST
-    @Path("/move/{type}/{path:.*}")
+    @Path("/move/{type}/{sourcePath:.*}")
     public NodeBean moveNode(@Context HttpServletRequest servletRequest,
                              @Context UriInfo uriInfo,
                              @PathParam("type") String type,
-                             @PathParam("source") List<PathSegment> sourcePathSegments,
+                             @PathParam("sourcePath") List<PathSegment> sourcePathSegments,
                              @FormParam("target") String targetPath,
                              @FormParam("deep") boolean deepCopy,
                              @FormParam("merge") boolean merging,
