@@ -1608,6 +1608,15 @@
                 </properties>
               </target>
               <target>
+                <id>ui-seed</id>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>seed</profiles>
+                <properties>
+                  <seed.file>j2-ui-seed.xml</seed.file>
+                </properties>
+              </target>
+              <target>
                 <id>min-seed</id>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
@@ -1616,16 +1625,33 @@
                   <seed.file>min/j2-seed.xml</seed.file>
                 </properties>
               </target>
+              <target>
+                <id>min-ui-seed</id>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>seed</profiles>
+                <properties>
+                  <seed.file>min/j2-ui-seed.xml</seed.file>
+                </properties>
+              </target>
               <!-- initialize and seed db intermediate targets -->
               <target>
                 <id>demo-db</id>
                 <depends>proddb,demo-seed</depends>
               </target>
               <target>
+                <id>ui-db</id>
+                <depends>proddb,ui-seed</depends>
+              </target>
+              <target>
                 <id>min-db</id>
                 <depends>proddb,min-seed</depends>
               </target>
-              <!-- portal and portal app deployment intermediate targets -->
+              <target>
+                <id>min-ui-db</id>
+                <depends>proddb,min-ui-seed</depends>
+              </target>
+              <!-- portal and portal applications deployment intermediate targets -->
               <target>
                 <id>demo-deploy</id>
                 <name>demo</name>
@@ -1633,18 +1659,100 @@
                 <profiles>deploy</profiles>
               </target>
               <target>
-                <id>demo-deploy-min</id>
+                <id>min-deploy</id>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
                 <profiles>deploy-min</profiles>
-              </target>              
-              <!-- portal dbpsml config deployment intermediate targets -->
+              </target>
               <target>
-                <id>demo-deploy-dbpsml</id>
+                <id>deploy-ui</id>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>configure</profiles>
+                <properties>
+                  <config.file>conf/jetspeed.properties</config.file>
+                  <config.pattern>^jetui.customization.method%5Cs*=.*%24</config.pattern><!-- use %24 for '$' and %5C for '\' -->
+                  <config.replacement>jetui.customization.method%20=%20ajax</config.replacement><!-- use %20 for space -->
+                </properties>
+              </target>
+              <target>
+                <id>deploy-dbpsml</id>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
                 <profiles>deploy-dbpsml</profiles>
               </target>
+              <!-- pages deployment intermediate targets -->
+              <target>
+                <id>undeploy-ui-pages</id>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>delete-pages</profiles>
+                <properties>
+                  <delete.pages>ui-pages</delete.pages>
+                </properties>
+              </target>              
+              <target>
+                <id>undeploy-min-pages</id>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>delete-pages</profiles>
+                <properties>
+                  <delete.pages>min-pages</delete.pages>
+                </properties>
+              </target>              
+              <target>
+                <id>undeploy-min-ui-pages</id>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>delete-pages</profiles>
+                <properties>
+                  <delete.pages>min-ui-pages</delete.pages>
+                </properties>
+              </target>
+              <target>
+                <id>demo-deploy-pages</id>
+                <depends>undeploy-ui-pages,undeploy-min-pages,undeploy-min-ui-pages</depends>
+              </target>              
+              <target>
+                <id>ui-deploy-pages</id>
+                <depends>undeploy-min-pages,undeploy-min-ui-pages</depends>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>deploy-pages</profiles>
+                <properties>
+                  <deploy.pages>ui-pages</deploy.pages>
+                </properties>
+              </target>
+              <target>
+                <id>min-deploy-pages</id>
+                <depends>undeploy-ui-pages,undeploy-min-ui-pages</depends>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>deploy-pages</profiles>
+                <properties>
+                  <deploy.pages>min-pages</deploy.pages>
+                </properties>
+              </target>
+              <target>
+                <id>min-ui-deploy-pages</id>
+                <depends>undeploy-ui-pages,undeploy-min-pages</depends>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>deploy-pages</profiles>
+                <properties>
+                  <deploy.pages>min-ui-pages</deploy.pages>
+                </properties>
+              </target>
+              <target>
+                <id>undeploy-pages</id>
+                <depends>undeploy-ui-pages,undeploy-min-pages,undeploy-min-ui-pages</depends>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>delete-pages</profiles>
+                <properties>
+                  <delete.pages>pages</delete.pages>
+                </properties>
+              </target>              
               <!-- dbpsml seed db intermediate targets -->
               <target>
                 <id>demo-seed-dbpsml</id>
@@ -1652,30 +1760,72 @@
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
                 <profiles>seed-dbpsml</profiles>
+                <properties>
+                  <seed.pages>pages</seed.pages>
+                </properties>
+              </target>
+              <target>
+                <id>ui-seed-dbpsml</id>
+                <depends>ui-db</depends>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>seed-dbpsml</profiles>
+                <properties>
+                  <seed.pages>ui-pages</seed.pages>
+                </properties>
               </target>
               <target>
                 <id>min-seed-dbpsml</id>
                 <depends>min-db</depends>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
-                <profiles>minseed-dbpsml</profiles>
+                <profiles>seed-dbpsml</profiles>
+                <properties>
+                  <seed.pages>min-pages</seed.pages>
+                </properties>
+              </target>           
+              <target>
+                <id>min-ui-seed-dbpsml</id>
+                <depends>min-ui-db</depends>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>seed-dbpsml</profiles>
+                <properties>
+                  <seed.pages>min-ui-pages</seed.pages>
+                </properties>
               </target>           
               <!-- demo top level targets -->
               <target>
                 <id>demo</id>
-                <depends>demo-install,demo-db,demo-deploy</depends>
+                <depends>demo-install,demo-db,demo-deploy,demo-deploy-pages</depends>
               </target>
               <target>
                 <id>min</id>
-                <depends>demo-install,min-db,demo-deploy-min</depends>
+                <depends>demo-install,min-db,min-deploy,min-deploy-pages</depends>
               </target>               
               <target>
                 <id>demo-dbpsml</id>
-                <depends>demo-install,demo-db,demo-deploy,demo-deploy-dbpsml,demo-seed-dbpsml</depends>
+                <depends>demo-install,demo-db,demo-deploy,deploy-dbpsml,demo-seed-dbpsml,undeploy-pages</depends>
               </target>
               <target>
                 <id>min-dbpsml</id>
-                <depends>demo-install,min-db,demo-deploy-min,demo-deploy-dbpsml,min-seed-dbpsml</depends>
+                <depends>demo-install,min-db,min-deploy,deploy-dbpsml,min-seed-dbpsml,undeploy-pages</depends>
+              </target>           
+              <target>
+                <id>ui</id>
+                <depends>demo-install,ui-db,demo-deploy,ui-deploy-pages,deploy-ui</depends>
+              </target>
+              <target>
+                <id>min-ui</id>
+                <depends>demo-install,min-ui-db,min-deploy,min-ui-deploy-pages,deploy-ui</depends>
+              </target>               
+              <target>
+                <id>ui-dbpsml</id>
+                <depends>demo-install,ui-db,demo-deploy,deploy-dbpsml,ui-seed-dbpsml,undeploy-pages,deploy-ui</depends>
+              </target>
+              <target>
+                <id>min-ui-dbpsml</id>
+                <depends>demo-install,min-ui-db,min-deploy,deploy-dbpsml,min-ui-seed-dbpsml,undeploy-pages,deploy-ui</depends>
               </target>           
             </targets>
           </configuration>

@@ -16,9 +16,12 @@
  */
 package org.apache.jetspeed.maven.fileutils;
 
-
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -36,15 +39,37 @@ public class FileUtilsMojo extends AbstractMojo
      * The Source directory on which event need to happen
      * 
      * @parameter expression="${srcDirectoryPath}"
-     * @required
      */
     private String srcDirectoryPath;
+
     /**
      * The destination directory on which event need to happen
      * 
      * @parameter expression="${destDirectoryPath}"
      */
     private String destDirectoryPath;
+
+    /**
+     * The target file
+     * 
+     * @parameter expression="${srcFilePath}"
+     */
+    private String srcFilePath;
+
+    /**
+     * The edit pattern, (accepts url encoded string)
+     * 
+     * @parameter expression="${editPattern}"
+     */
+    private String editPattern;
+
+    /**
+     * The edit replace pattern, (accepts url encoded string)
+     * 
+     * @parameter expression="${replacePattern}"
+     */
+    private String replacePattern;
+
     /**
      * The Event need to occur
      * 
@@ -57,15 +82,49 @@ public class FileUtilsMojo extends AbstractMojo
     {
         if (event.equals("copy"))
         {
-            copy(srcDirectoryPath, destDirectoryPath);
+            if (srcDirectoryPath != null)
+            {
+                copy(srcDirectoryPath, destDirectoryPath);
+            }
+            else if (srcFilePath != null)
+            {
+                copyFile(srcFilePath, destDirectoryPath);                
+            }
         }
         if (event.equals("move"))
         {
-            move(srcDirectoryPath, destDirectoryPath);
+            if (srcDirectoryPath != null)
+            {
+                move(srcDirectoryPath, destDirectoryPath);
+            }
+            else if (srcFilePath != null)
+            {
+                moveFile(srcFilePath, destDirectoryPath);                
+            }
         }
         else if (event.equals("delete"))
         {
-            delete(srcDirectoryPath);
+            if (srcDirectoryPath != null)
+            {
+                delete(srcDirectoryPath);
+            }
+            else if (srcFilePath != null)
+            {
+                deleteFile(srcFilePath);
+            }
+        }
+        else if (event.equals("edit"))
+        {
+            if ((srcFilePath != null) && (editPattern != null))
+            {
+                try
+                {
+                    editFile(srcFilePath, URLDecoder.decode(editPattern, "UTF-8"), URLDecoder.decode(((replacePattern != null) ? replacePattern : ""), "UTF-8"));
+                }
+                catch (UnsupportedEncodingException uee)
+                {
+                }
+            }
         }
     }
     
@@ -77,8 +136,13 @@ public class FileUtilsMojo extends AbstractMojo
         }
         catch (IOException IOex)
         {
-            throw new MojoExecutionException("Error in deleting the directory", IOex);
+            throw new MojoExecutionException("Error in deleting directory", IOex);
         }
+    }
+
+    private static void deleteFile(String srcFilePath) throws MojoExecutionException
+    {
+        FileUtils.deleteQuietly(new File(srcFilePath));
     }
 
     private static void copy(String srcDirectoryPath, String destDir) throws MojoExecutionException
@@ -89,7 +153,19 @@ public class FileUtilsMojo extends AbstractMojo
         }
         catch (IOException IOex)
         {
-            throw new MojoExecutionException("Error in copying the directory", IOex);
+            throw new MojoExecutionException("Error in copying directory", IOex);
+        }
+    }
+
+    private static void copyFile(String srcFilePath, String destDir) throws MojoExecutionException
+    {
+        try
+        {
+            FileUtils.copyFileToDirectory(new File(srcFilePath), new File(destDir));
+        }
+        catch (IOException IOex)
+        {
+            throw new MojoExecutionException("Error in copying file to directory", IOex);
         }
     }
 
@@ -101,7 +177,37 @@ public class FileUtilsMojo extends AbstractMojo
         }
         catch (IOException IOex)
         {
-            throw new MojoExecutionException("Error in moving the directory", IOex);
+            throw new MojoExecutionException("Error in moving directory", IOex);
+        }
+    }
+
+    private static void moveFile(String srcFilePath, String destDir) throws MojoExecutionException
+    {
+        try
+        {
+            FileUtils.moveFileToDirectory(new File(srcFilePath), new File(destDir), true);
+        }
+        catch (IOException IOex)
+        {
+            throw new MojoExecutionException("Error in moving file to directory", IOex);
+        }
+    }
+
+    private static void editFile(String srcFilePath, String editPattern, String replacePattern) throws MojoExecutionException
+    {
+        try
+        {
+            File srcFile = new File(srcFilePath);
+            List lines = FileUtils.readLines(srcFile);
+            for (ListIterator i = lines.listIterator(); i.hasNext();)
+            {
+                i.set(((String)i.next()).replaceAll(editPattern, replacePattern));
+            }
+            FileUtils.writeLines(srcFile, lines);
+        }
+        catch (IOException IOex)
+        {
+            throw new MojoExecutionException("Error in editing file", IOex);
         }
     }
 }

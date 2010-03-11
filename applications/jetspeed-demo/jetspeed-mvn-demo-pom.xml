@@ -47,6 +47,12 @@
   </build>
 
   <profiles>
+
+    <!--
+        seed profile:
+
+        - invoke the serializer on /seed/${seed.file} resource from jetspeed-portal-resources
+    -->
     <profile>
       <id>seed</id>
       <build>
@@ -123,6 +129,11 @@
       </build>
     </profile>
 
+    <!--
+        seed-dbpsml profile:
+
+        - invoke the page serializer on /WEB-INF/${seed.pages} in demo portal
+    -->
     <profile>
       <id>seed-dbpsml</id>
       <build>
@@ -147,6 +158,7 @@
                     <applicationRootPath>
                       ${project.build.directory}/jetspeed-demo-${pom.version}
                     </applicationRootPath>
+					<psmlPagesPath>${project.build.directory}/jetspeed-demo-${pom.version}/WEB-INF/${seed.pages}</psmlPagesPath>
                     <initProperties>
                       <org.apache.jetspeed.database.user>${org.apache.jetspeed.production.database.user}</org.apache.jetspeed.database.user>
                       <org.apache.jetspeed.database.password>${org.apache.jetspeed.production.database.password}</org.apache.jetspeed.database.password>
@@ -179,63 +191,16 @@
       </build>
     </profile>
 
-    <profile>
-      <id>minseed-dbpsml</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.portals.jetspeed-2</groupId>
-            <artifactId>jetspeed-db-maven-plugin</artifactId>
-            <version>${org.apache.portals.jetspeed.version}</version>
-            <executions>
-              <execution>
-                <id>minseed-dbpsml</id>
-                <goals>
-                  <goal>init</goal>
-                </goals>
-                <phase>process-resources</phase>
-                <configuration>
-                  <psml>
-					<psmlPagesPath>${project.build.directory}/jetspeed-demo-${pom.version}/WEB-INF/min-pages</psmlPagesPath>
-                    <categories>pageSerializer</categories>
-                    <filterPropertiesFileName>
-                      ${project.build.directory}/jetspeed-demo-${pom.version}/WEB-INF/conf/spring-filter.properties
-                    </filterPropertiesFileName>
-                    <applicationRootPath>
-                      ${project.build.directory}/jetspeed-demo-${pom.version}
-                    </applicationRootPath>
-                    <initProperties>
-                      <org.apache.jetspeed.database.user>${org.apache.jetspeed.production.database.user}</org.apache.jetspeed.database.user>
-                      <org.apache.jetspeed.database.password>${org.apache.jetspeed.production.database.password}</org.apache.jetspeed.database.password>
-                      <org.apache.jetspeed.database.url>${org.apache.jetspeed.production.database.url}</org.apache.jetspeed.database.url>
-                      <org.apache.jetspeed.database.driver>${org.apache.jetspeed.production.database.driver}</org.apache.jetspeed.database.driver>
-                    </initProperties>
-                  </psml>
-                </configuration>
-              </execution>
-            </executions>
-            <dependencies>
-              <dependency>
-                <groupId>org.apache.portals.jetspeed-2</groupId>
-                <artifactId>jetspeed-portal-resources</artifactId>
-                <version>${org.apache.portals.jetspeed.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>org.apache.portals.jetspeed-2</groupId>
-                <artifactId>jetspeed-db-tools</artifactId>
-                <version>${org.apache.portals.jetspeed.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>${org.apache.jetspeed.production.jdbc.driver.groupId}</groupId>
-                <artifactId>${org.apache.jetspeed.production.jdbc.driver.artifactId}</artifactId>
-                <version>${org.apache.jetspeed.production.jdbc.driver.version}</version>
-              </dependency>
-            </dependencies>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
+    <!--
+        deploy-min profile:
 
+        - deploy minimal portal configuration to tomcat application server:
+          + jetspeed portal context /conf/tomcat/context.xml from jetspeed-portal-resources
+          + shared and system logging jetspeed jars
+          + expanded jetspeed portal
+          + j2-admin portlet application
+          + configure logging in server.xml
+    -->
     <profile>
       <id>deploy-min</id>
       <build>
@@ -437,43 +402,6 @@
               </dependency>
             </dependencies>
           </plugin>
-	        <plugin>
-	        <groupId>org.apache.portals.jetspeed-2</groupId>
-	        <artifactId>jetspeed-fileutils-maven-plugin</artifactId>
-	        <version>${org.apache.portals.jetspeed.version}</version>
-	        <executions>
-	          <execution>
-	            <id>min-pages2</id>
-	            <goals>
-	              <goal>event</goal>
-	            </goals>
-	            <phase>process-resources</phase>
-	            <configuration>
-	              <srcDirectoryPath>${org.apache.jetspeed.server.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/min-pages</srcDirectoryPath>
-	              <destDirectoryPath>${org.apache.jetspeed.server.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/pages</destDirectoryPath>
-	              <event>move</event>
-	            </configuration>
-	           </execution>
-	         </executions>
-	        </plugin>           
-            <plugin>
-            <groupId>org.apache.portals.jetspeed-2</groupId>
-            <artifactId>jetspeed-fileutils-maven-plugin</artifactId>
-            <version>${org.apache.portals.jetspeed.version}</version>
-            <executions>
-              <execution>
-                <id>min-pages1</id>
-                <goals>
-                  <goal>event</goal>
-                </goals>
-                <phase>process-resources</phase>
-                <configuration>
-                  <srcDirectoryPath>${org.apache.jetspeed.server.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/pages</srcDirectoryPath>
-                  <event>delete</event>
-                </configuration>
-               </execution>
-             </executions>
-            </plugin>           
         </plugins>
         <resources>
           <resource>
@@ -485,6 +413,16 @@
       </build>
     </profile>    
     
+    <!--
+        deploy profile:
+
+        - deploy demo portal configuration to tomcat application server:
+          + jetspeed portal context /conf/tomcat/context.xml from jetspeed-portal-resources
+          + shared and system logging jetspeed jars
+          + expanded jetspeed portal
+          + j2-admin and demo portlet applications
+          + configure logging in server.xml
+    -->
     <profile>
       <id>deploy</id>
       <build>
@@ -748,6 +686,11 @@
       </build>
     </profile>
 
+    <!--
+        deploy-dbpsml profile:
+
+        - install dbpsml version of spring-filter-key.properties into deployed jetspeed portal at /WEB-INF/conf
+    -->
     <profile>
       <id>deploy-dbpsml</id>
       <build>
@@ -792,6 +735,151 @@
       </build>
     </profile>
     
+    <!--
+        deploy-pages profile:
+
+        - replace /WEB-INF/pages with /WEB-INF/${deploy.pages} in deployed jetspeed portal
+    -->
+    <profile>
+      <id>deploy-pages</id>
+      <build>
+        <plugins>
+	      <plugin>
+	        <groupId>org.apache.portals.jetspeed-2</groupId>
+	        <artifactId>jetspeed-fileutils-maven-plugin</artifactId>
+	        <version>${org.apache.portals.jetspeed.version}</version>
+	        <executions>
+	          <execution>
+	            <id>deploy-pages</id>
+	            <goals>
+	              <goal>event</goal>
+	            </goals>
+	            <phase>process-resources</phase>
+	            <configuration>
+	              <srcDirectoryPath>${org.apache.jetspeed.server.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/${deploy.pages}</srcDirectoryPath>
+	              <destDirectoryPath>${org.apache.jetspeed.server.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/pages</destDirectoryPath>
+	              <event>move</event>
+	            </configuration>
+	          </execution>
+	        </executions>
+	      </plugin>           
+          <plugin>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-fileutils-maven-plugin</artifactId>
+            <version>${org.apache.portals.jetspeed.version}</version>
+            <executions>
+              <execution>
+                <id>deploy-pages1</id>
+                <goals>
+                  <goal>event</goal>
+                </goals>
+                <phase>process-resources</phase>
+                <configuration>
+                  <srcDirectoryPath>${org.apache.jetspeed.server.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/pages</srcDirectoryPath>
+                  <event>delete</event>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>           
+        </plugins>
+      </build>
+    </profile>
+
+    <!--
+        delete-pages profile:
+
+        - remove /WEB-INF/${delete.pages} from deployed jetspeed portal
+    -->
+    <profile>
+      <id>delete-pages</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-fileutils-maven-plugin</artifactId>
+            <version>${org.apache.portals.jetspeed.version}</version>
+            <executions>
+              <execution>
+                <id>delete-pages</id>
+                <goals>
+                  <goal>event</goal>
+                </goals>
+                <phase>process-resources</phase>
+                <configuration>
+                  <srcDirectoryPath>${org.apache.jetspeed.server.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/${delete.pages}</srcDirectoryPath>
+                  <event>delete</event>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>           
+        </plugins>
+      </build>
+    </profile>
+
+    <!--
+        configure profile:
+
+        - configure portal deployed /WEB-INF/${config.file} by replacing all ${config.pattern} occurences with ${config.replacement}
+    -->
+    <profile>
+      <id>configure</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-fileutils-maven-plugin</artifactId>
+            <version>${org.apache.portals.jetspeed.version}</version>
+            <executions>
+              <execution>
+                <id>configure</id>
+                <goals>
+                  <goal>event</goal>
+                </goals>
+                <phase>process-resources</phase>
+                <configuration>
+                  <srcFilePath>${org.apache.jetspeed.server.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/${config.file}</srcFilePath>
+                  <editPattern>${config.pattern}</editPattern>
+                  <replacePattern>${config.replacement}</replacePattern>
+                  <event>edit</event>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>           
+        </plugins>
+      </build>
+    </profile>
+
+    <!--
+        delete-file profile:
+
+        - remove /WEB-INF/${delete.file} from deployed jetspeed portal
+    -->
+    <profile>
+      <id>delete-file</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-fileutils-maven-plugin</artifactId>
+            <version>${org.apache.portals.jetspeed.version}</version>
+            <executions>
+              <execution>
+                <id>delete-file</id>
+                <goals>
+                  <goal>event</goal>
+                </goals>
+                <phase>process-resources</phase>
+                <configuration>
+                  <srcFilePath>${org.apache.jetspeed.server.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/${delete.file}</srcFilePath>
+                  <event>delete</event>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>           
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 
 </project>
