@@ -340,7 +340,7 @@
 			</userinfo>
 		</User>
 		<User name="manny">
-			<credentials password="local" enabled="TRUE" requiresUpdate="FALSE"/>
+			<credentials password="manny" enabled="TRUE" requiresUpdate="FALSE"/>
 			<roles>user,devmgr</roles>
 			<groups>engineering</groups>
 			<preferences/>
