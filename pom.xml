@@ -1796,36 +1796,68 @@
               </target>           
               <!-- demo top level targets -->
               <target>
-                <id>demo</id>
-                <depends>demo-install,demo-db,demo-deploy,demo-deploy-pages</depends>
+                <id>demo-nodb</id>
+                <depends>demo-install,demo-deploy,demo-deploy-pages</depends>
               </target>
+              <target>
+                <id>demo</id>
+                <depends>demo-nodb,demo-db</depends>
+              </target>
+              <target>
+                <id>min-nodb</id>
+                <depends>demo-install,min-deploy,min-deploy-pages</depends>
+              </target>               
               <target>
                 <id>min</id>
-                <depends>demo-install,min-db,min-deploy,min-deploy-pages</depends>
+                <depends>min-nodb,min-db</depends>
               </target>               
+              <target>
+                <id>demo-dbpsml-nodb</id>
+                <depends>demo-install,demo-deploy,deploy-dbpsml,undeploy-pages</depends>
+              </target>
               <target>
                 <id>demo-dbpsml</id>
-                <depends>demo-install,demo-db,demo-deploy,deploy-dbpsml,demo-seed-dbpsml,undeploy-pages</depends>
+                <depends>demo-dbpsml-nodb,demo-db,demo-seed-dbpsml</depends>
               </target>
               <target>
-                <id>min-dbpsml</id>
-                <depends>demo-install,min-db,min-deploy,deploy-dbpsml,min-seed-dbpsml,undeploy-pages</depends>
+                <id>min-dbpsml-nodb</id>
+                <depends>demo-install,min-deploy,deploy-dbpsml,undeploy-pages</depends>
               </target>           
               <target>
-                <id>ui</id>
-                <depends>demo-install,ui-db,demo-deploy,ui-deploy-pages,deploy-ui</depends>
+                <id>min-dbpsml</id>
+                <depends>min-dbpsml-nodb,min-db,min-seed-dbpsml</depends>
+              </target>           
+              <target>
+                <id>ui-nodb</id>
+                <depends>demo-install,demo-deploy,ui-deploy-pages,deploy-ui</depends>
               </target>
               <target>
-                <id>min-ui</id>
-                <depends>demo-install,min-ui-db,min-deploy,min-ui-deploy-pages,deploy-ui</depends>
+                <id>ui</id>
+                <depends>ui-nodb,ui-db</depends>
+              </target>
+              <target>
+                <id>min-ui-nodb</id>
+                <depends>demo-install,min-deploy,min-ui-deploy-pages,deploy-ui</depends>
               </target>               
               <target>
-                <id>ui-dbpsml</id>
-                <depends>demo-install,ui-db,demo-deploy,deploy-dbpsml,ui-seed-dbpsml,undeploy-pages,deploy-ui</depends>
+                <id>min-ui</id>
+                <depends>min-ui-nodb,min-ui-db</depends>
+              </target>               
+              <target>
+                <id>ui-dbpsml-nodb</id>
+                <depends>demo-install,demo-deploy,deploy-dbpsml,undeploy-pages,deploy-ui</depends>
               </target>
               <target>
+                <id>ui-dbpsml</id>
+                <depends>ui-dbpsml-nodb,ui-db,ui-seed-dbpsml</depends>
+              </target>
+              <target>
+                <id>min-ui-dbpsml-nodb</id>
+                <depends>demo-install,min-deploy,deploy-dbpsml,undeploy-pages,deploy-ui</depends>
+              </target>           
+              <target>
                 <id>min-ui-dbpsml</id>
-                <depends>demo-install,min-ui-db,min-deploy,deploy-dbpsml,min-ui-seed-dbpsml,undeploy-pages,deploy-ui</depends>
+                <depends>min-ui-dbpsml-nodb,min-ui-db,min-ui-seed-dbpsml</depends>
               </target>           
             </targets>
           </configuration>
