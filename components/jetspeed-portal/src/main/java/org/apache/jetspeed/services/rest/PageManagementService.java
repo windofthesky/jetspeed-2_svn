@@ -294,7 +294,8 @@ public class PageManagementService
                                    @FormParam("shorttitle") String shortTitle,
                                    @FormParam("hidden") String hidden,
                                    @FormParam("skin") String skin,
-                                   @FormParam("version") String version)
+                                   @FormParam("version") String version,
+                                   @FormParam("url") String url)
     {
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
         String path = PathSegmentUtils.joinWithPrefix(pathSegments, "/", "/");
@@ -386,6 +387,18 @@ public class PageManagementService
                     if (!version.equals(((Document) node).getVersion()))
                     {
                         ((Document) node).setVersion(version);
+                        changed = true;
+                    }
+                }
+            }
+            
+            if (url != null)
+            {
+                if (node instanceof Link)
+                {
+                    if (!url.equals(((Link) node).getUrl()))
+                    {
+                        ((Link) node).setUrl(url);
                         changed = true;
                     }
                 }
