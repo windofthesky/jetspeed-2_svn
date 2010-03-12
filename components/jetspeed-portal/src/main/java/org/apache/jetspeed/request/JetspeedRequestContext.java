@@ -583,7 +583,8 @@ public class JetspeedRequestContext implements RequestContext
                 locators.put(ProfileLocator.PAGE_LOCATOR, locator);
             }               
             PortalSiteSessionContext sessionContext = (PortalSiteSessionContext)getSessionAttribute(ProfilerValveImpl.PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY);
-            PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, true, true);
+            String userPrincipal = ((getUserPrincipal() != null) ? getUserPrincipal().getName() : null);
+            PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, userPrincipal, true, true);
             BaseConcretePageElement managedPage = requestContext.getManagedPage();
             PageTemplate managedPageTemplate = requestContext.getManagedPageTemplate();
             Map managedFragmentDefinitions = requestContext.getManagedFragmentDefinitions();

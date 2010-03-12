@@ -837,4 +837,18 @@ public abstract class AbstractSiteView
      * @return managed dynamic page
      */
     public abstract FragmentDefinition getManagedFragmentDefinition(FragmentDefinition fragmentDefinition);
+
+    /**
+     * getUserFolderPath - return primary concrete root user folder path
+     *
+     * @return user folder path or null
+     */
+    public abstract String getUserFolderPath();
+
+    /**
+     * getBaseFolderPath - return primary concrete root base folder path
+     *
+     * @return base folder path or null
+     */
+    public abstract String getBaseFolderPath();
 }

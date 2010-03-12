@@ -71,6 +71,11 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     private String requestServerName;
         
     /**
+     * requestUserPrincipal - request user principal name
+     */
+    private String requestUserPrincipal;
+        
+    /**
      * requestFallback - flag indicating whether request should fallback to root folder
      *                   if locators do not select a page or access is forbidden
      */
@@ -168,16 +173,18 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      *
      * @param sessionContext session context
      * @param requestProfileLocators request profile locators
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      * @param forceReservedVisible force reserved/hidden folders visible in site view
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, boolean requestFallback, boolean useHistory, boolean forceReservedVisible)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible)
     {
         this.sessionContext = sessionContext;
         this.requestProfileLocators = requestProfileLocators;
+        this.requestUserPrincipal = requestUserPrincipal;
         this.requestFallback = requestFallback;
         this.useHistory = useHistory;
         this.forceReservedVisible = forceReservedVisible;
@@ -188,14 +195,15 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      *
      * @param sessionContext session context
      * @param requestProfileLocators request profile locators
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, boolean requestFallback, boolean useHistory)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory)
     {
-        this(sessionContext, requestProfileLocators, requestFallback, useHistory, false);
+        this(sessionContext, requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, false);
     }
 
     /**
@@ -203,12 +211,13 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      *
      * @param sessionContext session context
      * @param requestProfileLocators request profile locators
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, boolean requestFallback)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback)
     {
-        this(sessionContext, requestProfileLocators, requestFallback, true, false);
+        this(sessionContext, requestProfileLocators, requestUserPrincipal, requestFallback, true, false);
     }
 
     /**
@@ -216,10 +225,11 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      *
      * @param sessionContext session context
      * @param requestProfileLocators request profile locators
+     * @param requestUserPrincipal request user principal
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal)
     {
-        this(sessionContext, requestProfileLocators, true, true, false);
+        this(sessionContext, requestProfileLocators, requestUserPrincipal, true, true, false);
     }
 
     /**
@@ -228,16 +238,18 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param sessionContext session context
      * @param requestPath request path
      * @param requestServerName request server name
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName, boolean requestFallback, boolean useHistory)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory)
     {
         this.sessionContext = sessionContext;
         this.requestPath = requestPath;
         this.requestServerName = requestServerName;
+        this.requestUserPrincipal = requestUserPrincipal;
         this.requestFallback = requestFallback;
         this.useHistory = useHistory;
     }
@@ -248,12 +260,13 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param sessionContext session context
      * @param requestPath request path
      * @param requestServerName request server name
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName, boolean requestFallback)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback)
     {
-        this(sessionContext, requestPath, requestServerName, requestFallback, true);
+        this(sessionContext, requestPath, requestServerName, requestUserPrincipal, requestFallback, true);
     }
 
     /**
@@ -262,10 +275,11 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param sessionContext session context
      * @param requestPath request path
      * @param requestServerName request server name
+     * @param requestUserPrincipal request user principal
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName, String requestUserPrincipal)
     {
-        this(sessionContext, requestPath, requestServerName, true, true);
+        this(sessionContext, requestPath, requestServerName, requestUserPrincipal, true, true);
     }
 
     /**
@@ -379,11 +393,11 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
             String [] selectedRequestPageContentPath = new String[]{null};
             if (requestProfileLocators != null)
             {
-                requestPage = sessionContext.selectRequestPage(requestProfileLocators, requestFallback, useHistory, forceReservedVisible, selectedRequestPageContentPath);
+                requestPage = sessionContext.selectRequestPage(requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, forceReservedVisible, selectedRequestPageContentPath);
             }
             else
             {
-                requestPage = sessionContext.selectRequestPage(requestPath, requestServerName, requestFallback, useHistory, selectedRequestPageContentPath);                
+                requestPage = sessionContext.selectRequestPage(requestPath, requestServerName, requestUserPrincipal, requestFallback, useHistory, selectedRequestPageContentPath);                
             }
             if (requestPage != null)
             {
@@ -686,11 +700,11 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         {
             if (requestProfileLocators != null)
             {
-                requestRootFolder = sessionContext.getRequestRootFolder(requestProfileLocators, forceReservedVisible);
+                requestRootFolder = sessionContext.getRequestRootFolder(requestProfileLocators, requestUserPrincipal, forceReservedVisible);
             }
             else
             {
-                requestRootFolder = sessionContext.getRequestRootFolder();                
+                requestRootFolder = sessionContext.getRequestRootFolder(requestUserPrincipal);                
             }
         }
         return requestRootFolder;
@@ -909,6 +923,26 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
             }
         }
         return null;
+    }
+    
+    /**
+     * getUserFolderPath - return primary concrete root user folder path
+     *
+     * @return user folder path or null
+     */
+    public String getUserFolderPath()
+    {
+        return sessionContext.getUserFolderPath(requestProfileLocators, requestUserPrincipal, forceReservedVisible);
+    }
+
+    /**
+     * getBaseFolderPath - return primary concrete root base folder path
+     *
+     * @return base folder path or null
+     */
+    public String getBaseFolderPath()
+    {
+        return sessionContext.getBaseFolderPath(requestProfileLocators, requestUserPrincipal, forceReservedVisible);
     }
 
     /**

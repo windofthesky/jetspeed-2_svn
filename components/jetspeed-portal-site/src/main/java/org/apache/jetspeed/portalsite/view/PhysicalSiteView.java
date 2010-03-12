@@ -43,6 +43,11 @@ public class PhysicalSiteView extends AbstractSiteView
     private static final List NULL_LOCATORS = new ArrayList(0);
     
     /**
+     * userPrincipal - user principal for view
+     */
+    private String userPrincipal;
+    
+    /**
      * menuDefinitionLocatorsCache - cached menu definition locators
      */
     private ConcurrentHashMap menuDefinitionLocatorsCache = new ConcurrentHashMap();
@@ -52,9 +57,10 @@ public class PhysicalSiteView extends AbstractSiteView
      *
      * @param pageManager PageManager component instance
      */
-    public PhysicalSiteView(PageManager pageManager)
+    public PhysicalSiteView(PageManager pageManager, String userPrincipal)
     {
         super(pageManager);
+        this.userPrincipal = userPrincipal;
     }
 
     /**
@@ -267,5 +273,25 @@ public class PhysicalSiteView extends AbstractSiteView
     {
         // physical view is directly managed
         return fragmentDefinition;
+    }
+
+    /**
+     * getUserFolderPath - return primary concrete root user folder path
+     *
+     * @return user folder path or null
+     */
+    public String getUserFolderPath()
+    {
+        return ((userPrincipal != null) ? Folder.USER_FOLDER+userPrincipal : null);
+    }
+
+    /**
+     * getBaseFolderPath - return primary concrete root base folder path
+     *
+     * @return base folder path or null
+     */
+    public String getBaseFolderPath()
+    {
+        return Folder.PATH_SEPARATOR;        
     }
 }

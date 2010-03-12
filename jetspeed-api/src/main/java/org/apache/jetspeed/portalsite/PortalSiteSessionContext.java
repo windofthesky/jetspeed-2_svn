@@ -33,36 +33,40 @@ public interface PortalSiteSessionContext extends Serializable
      * newRequestContext - create a new request context instance with fallback and history
      *
      * @param requestProfileLocators request profile locators
+     * @param requestUserPrincipal request user principal
      * @return new request context instance
      */
-    PortalSiteRequestContext newRequestContext(Map requestProfileLocators);
+    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal);
 
     /**
      * newRequestContext - create a new request context instance with history
      *
      * @param requestProfileLocators request profile locators
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      * @return new request context instance
      */
-    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback);
+    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback);
 
     /**
      * newRequestContext - create a new request context instance
      *
      * @param requestProfileLocators request profile locators
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      * @return new request context instance
      */
-    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback, boolean useHistory);
+    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory);
 
     /**
      * newRequestContext - create a new request context instance
      *
      * @param requestProfileLocators request profile locators
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
@@ -70,7 +74,7 @@ public interface PortalSiteSessionContext extends Serializable
      * @param forceReservedVisible force reserved/hidden folders visible in site view
      * @return new request context instance
      */
-    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback, boolean useHistory, boolean forceReservedVisible);
+    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible);
 
     /**
      * newRequestContext - create a new request context instance without profiling
@@ -78,9 +82,10 @@ public interface PortalSiteSessionContext extends Serializable
      *
      * @param requestPath request path
      * @param requestServerName request server name
+     * @param requestUserPrincipal request user principal
      * @return new request context instance
      */
-    PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName);
+    PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, String requestUserPrincipal);
 
     /**
      * newRequestContext - create a new request context instance without profiling
@@ -88,11 +93,12 @@ public interface PortalSiteSessionContext extends Serializable
      *
      * @param requestPath request path
      * @param requestServerName request server name
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      * @return new request context instance
      */
-    PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, boolean requestFallback);
+    PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback);
 
     /**
      * newRequestContext - create a new request context instance without profiling
@@ -100,13 +106,14 @@ public interface PortalSiteSessionContext extends Serializable
      *
      * @param requestPath request path
      * @param requestServerName request server name
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      * @return new request context instance
      */
-    PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, boolean requestFallback, boolean useHistory);
+    PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory);
 
     /**
      * getPageManager - return PageManager component instance
@@ -129,6 +136,6 @@ public interface PortalSiteSessionContext extends Serializable
      *
      * @return valid context status
      */
-    boolean isValid();    
+    boolean isValid();
 }
 

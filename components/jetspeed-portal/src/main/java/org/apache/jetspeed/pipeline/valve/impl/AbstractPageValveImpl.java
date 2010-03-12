@@ -17,9 +17,11 @@
 package org.apache.jetspeed.pipeline.valve.impl;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jetspeed.PortalReservedParameters;
@@ -38,6 +40,8 @@ import org.apache.jetspeed.portalsite.PortalSite;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.SubjectHelper;
+import org.apache.jetspeed.security.User;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,8 +124,20 @@ public abstract class AbstractPageValveImpl extends AbstractValve implements Pag
                 log.debug("Request path: "+requestPath);
             }
 
+            // get request subject/principal
+            Subject requestSubject = request.getSubject();
+            if (requestSubject == null)
+            {
+                throw new ProfilerException("Missing subject for request: " + requestPath);
+            }            
+            Principal requestUserPrincipal = SubjectHelper.getBestPrincipal(requestSubject, User.class);
+            if (requestUserPrincipal == null)
+            {
+                throw new ProfilerException("Missing principal for request: " + requestPath);
+            }
+
             // get request page and set page action access
-            setRequestPage(request, requestPath);
+            setRequestPage(request, requestPath, requestUserPrincipal);
             ContentPage requestPage = request.getPage();
             if (requestPage != null)
             {
@@ -207,8 +223,9 @@ public abstract class AbstractPageValveImpl extends AbstractValve implements Pag
      * 
      * @param request invoked request
      * @param requestPath invoked request path
+     * @param requestUserPrincipal invoked request user principal
      */
-    protected abstract void setRequestPage(RequestContext request, String requestPath) throws NodeNotFoundException, ProfilerException;
+    protected abstract void setRequestPage(RequestContext request, String requestPath, Principal requestUserPrincipal) throws NodeNotFoundException, ProfilerException;
 
     /**
      * Set request page and associated session and request attributes

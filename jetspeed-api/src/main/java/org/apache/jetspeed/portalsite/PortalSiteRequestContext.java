@@ -213,4 +213,18 @@ public interface PortalSiteRequestContext
      * @throws SecurityException if page view access not granted
      */
     Menu getMenu(String name) throws NodeNotFoundException;
+    
+    /**
+     * getUserFolderPath - return primary concrete root user folder path
+     *
+     * @return user folder path or null
+     */
+    String getUserFolderPath();
+
+    /**
+     * getBaseFolderPath - return primary concrete root base folder path
+     *
+     * @return base folder path or null
+     */
+    String getBaseFolderPath();
 }

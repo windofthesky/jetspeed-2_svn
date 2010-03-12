@@ -20,8 +20,6 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.security.auth.Subject;
-
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
@@ -33,8 +31,6 @@ import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.SubjectHelper;
-import org.apache.jetspeed.security.User;
 
 /**
  * ProfilerValveImpl
@@ -95,21 +91,10 @@ public class ProfilerValveImpl extends AbstractPageValveImpl
      * 
      * @param request invoked request
      * @param requestPath invoked request path
+     * @param requestUserPrincipal invoked request user principal
      */
-    protected void setRequestPage(RequestContext request, String requestPath) throws NodeNotFoundException, ProfilerException
+    protected void setRequestPage(RequestContext request, String requestPath, Principal requestUserPrincipal) throws NodeNotFoundException, ProfilerException
     {
-        // get profiler locators for request subject/principal using the profiler
-        Subject subject = request.getSubject();
-        if (subject == null)
-        {
-            throw new ProfilerException("Missing subject for request: " + requestPath);
-        }            
-        Principal principal = SubjectHelper.getBestPrincipal(subject, User.class);
-        if (principal == null)
-        {
-            throw new ProfilerException("Missing principal for request: " + requestPath);
-        }
-        
         // get request specific profile locators if required
         Map locators = null;
         String locatorName = (String)request.getAttribute(PROFILE_LOCATOR_REQUEST_ATTR_KEY);
@@ -128,7 +113,7 @@ public class ProfilerValveImpl extends AbstractPageValveImpl
         // fallback to 'page' profile locators
         if ( locators == null )
         {
-            locators = profiler.getProfileLocators(request, principal);
+            locators = profiler.getProfileLocators(request, requestUserPrincipal);
         }
         if (locators.size() == 0)
         {
@@ -173,7 +158,7 @@ public class ProfilerValveImpl extends AbstractPageValveImpl
             String pipeline = request.getPipeline().getName();
             boolean forceReservedFoldersVisibleInView = (pipeline.equals(PortalReservedParameters.CONFIG_PIPELINE_NAME) ||
                                                          pipeline.equals(PortalReservedParameters.DESKTOP_CONFIG_PIPELINE_NAME));        
-            PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, requestFallback, useHistory, forceReservedFoldersVisibleInView);
+            PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, requestUserPrincipal.getName(), requestFallback, useHistory, forceReservedFoldersVisibleInView);
 
             // save request context and set request page from portal
             // site request context

@@ -360,6 +360,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("folder1", rootFolder1View.getName());
         assertEquals("group folder1", rootFolder1View.getTitle());
         assertEquals("/_user/user/folder1", extractFileSystemPathFromId(rootFolder1View.getId()));
+        assertEquals("/_user/user", aggregateView.getUserFolderPath());
+        assertEquals("/", aggregateView.getBaseFolderPath());
 
         // test degenerate aggregating SiteView
         aggregateView = new SearchPathsSiteView(pageManager, "/__subsite-root", false);
@@ -460,9 +462,11 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("page1.psml", folder1Page1View.getName());
         assertEquals("/_group/group/folder1/page1.psml", extractFileSystemPathFromId(folder1Page1View.getId()));
         assertEquals("alternate-locator-name", extractLocatorNameFromView(folder1Page1View));
+        assertEquals("/_user/user", profileView.getUserFolderPath());
+        assertEquals("/", profileView.getBaseFolderPath());
         
         // test physical SiteView
-        PhysicalSiteView basePhysicalView = new PhysicalSiteView(pageManager);
+        PhysicalSiteView basePhysicalView = new PhysicalSiteView(pageManager, "user");
         rootFolderView = basePhysicalView.getRootFolderView();
         assertNotNull(rootFolderView);
         assertEquals("/", rootFolderView.getName());
@@ -540,6 +544,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals(0, rootUserUserView.getLinks().size());
         assertEquals(1, rootUserUserView.getFragmentDefinitions().size());
         assertNotNull(rootUserUserView.getFragmentDefinition("definition1.fpsml"));
+        assertEquals("/_user/user", basePhysicalView.getUserFolderPath());
+        assertEquals("/", basePhysicalView.getBaseFolderPath());
     }
 
     /**
@@ -557,6 +563,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("page", false, false, "home");
         SearchPathsSiteView profileView = new SearchPathsSiteView(pageManager, locator, false);
         assertEquals("/_hostname/dash/_user/joe,/_hostname/dash,/", profileView.getSearchPathsString());
+        assertEquals("/_hostname/dash/_user/joe", profileView.getUserFolderPath());
+        assertEquals("/_hostname/dash", profileView.getBaseFolderPath());
         
         locator = new JetspeedProfileLocator();
         locator.init(null, "/");
@@ -568,6 +576,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("page", false, false, "home");
         profileView = new SearchPathsSiteView(pageManager, locator, false);
         assertEquals("/_hostname/dash/_user/joe,/_hostname/dash/_role/user,/_hostname/dash,/", profileView.getSearchPathsString());
+        assertEquals("/_hostname/dash/_user/joe", profileView.getUserFolderPath());
+        assertEquals("/_hostname/dash", profileView.getBaseFolderPath());
   
         locator = new JetspeedProfileLocator();
         locator.init(null, "/");        
@@ -580,6 +590,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("path", false, false, "home");
         profileView = new SearchPathsSiteView(pageManager, locator, false);
         assertEquals("/__subsite-root/_hostname/localhost/_user/sublocal,/__subsite-root/_hostname/localhost/_role/somerole,/__subsite-root/_hostname/localhost,/__subsite-root", profileView.getSearchPathsString());                       
+        assertEquals("/__subsite-root/_hostname/localhost/_user/sublocal", profileView.getUserFolderPath());
+        assertEquals("/__subsite-root/_hostname/localhost", profileView.getBaseFolderPath());
     }
     
     /**
@@ -604,7 +616,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("group", true, false, "group");
         Map locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators);
+        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         BaseConcretePageElement requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -663,11 +675,13 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/_group/group/link0.link", extractFileSystemPathFromId(requestRootLinkViews.get("link0.link").getId()));
         assertNotNull(requestRootLinkViews.get("link1.link"));
         assertEquals("/link1.link", extractFileSystemPathFromId(requestRootLinkViews.get("link1.link").getId()));
+        assertEquals("/_user/user", requestContext.getUserFolderPath());
+        assertEquals("/", requestContext.getBaseFolderPath());
 
         // physical site setup
         sessionContext = portalSite.newSessionContext();
         assertNotNull(sessionContext);
-        requestContext = sessionContext.newRequestContext("/", null);
+        requestContext = sessionContext.newRequestContext("/", null, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -732,6 +746,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/link0.link", extractFileSystemPathFromId(requestRootLinkViews.get("link0.link").getId()));
         assertNotNull(requestRootLinkViews.get("link1.link"));
         assertEquals("/link1.link", extractFileSystemPathFromId(requestRootLinkViews.get("link1.link").getId()));
+        assertEquals("/_user/user", requestContext.getUserFolderPath());
+        assertEquals("/", requestContext.getBaseFolderPath());        
     }
 
     /**
@@ -752,7 +768,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         Map locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators);
+        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         BaseConcretePageElement requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -766,7 +782,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -780,7 +796,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -794,7 +810,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -808,7 +824,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -821,7 +837,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("page", false, false, "/folder3/default-folder0/");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, null);
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -836,7 +852,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "admin");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators, true, true, true);
+        requestContext = sessionContext.newRequestContext(locators, "admin", true, true, true);
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -847,7 +863,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         // physical site requests
         sessionContext = portalSite.newSessionContext();
         assertNotNull(sessionContext);
-        requestContext = sessionContext.newRequestContext("/", null);
+        requestContext = sessionContext.newRequestContext("/", null, null);
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -857,7 +873,7 @@ public class TestPortalSite extends AbstractSpringTestCase
 
         sessionContext = portalSite.newSessionContext();
         assertNotNull(sessionContext);
-        requestContext = sessionContext.newRequestContext("/_user/user/page2.psml", null);
+        requestContext = sessionContext.newRequestContext("/_user/user/page2.psml", null, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -892,7 +908,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.init(null, "/");
         locator.add("group", true, false, "group");
         locators.put("group", locator);
-        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators);
+        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         Set customMenuNames = requestContext.getCustomMenuNames();
         assertNotNull(customMenuNames);
@@ -1193,7 +1209,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.init(null, "/folder0");
         locator.add("group", true, false, "group");
         locators.put("group", locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         Menu topMenu2 = requestContext.getMenu("top");
         assertNotNull(topMenu2);
@@ -1257,7 +1273,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.init(null, "/page1.psml");
         locator.add("group", true, false, "group");
         locators.put("group", locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         assertNull(requestContext.getMenu("no-such-menu"));
         Menu topMenu3 = requestContext.getMenu("top");
@@ -1403,7 +1419,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.init(null, "/page0.psml");
         locator.add("group", true, false, "group");
         locators.put("group", locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         Menu templateTestMenu2 = requestContext.getMenu("template-test");
         assertNotNull(templateTestMenu2);
@@ -1426,7 +1442,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.init(null, "/folder1");
         locator.add("group", true, false, "group");
         locators.put("group", locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         Menu backMenu2 = requestContext.getMenu("back");
         assertNotNull(backMenu2);
@@ -1652,7 +1668,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         // physical site menus
         sessionContext = portalSite.newSessionContext();
         assertNotNull(sessionContext);
-        requestContext = sessionContext.newRequestContext("/", null);
+        requestContext = sessionContext.newRequestContext("/", null, "user");
         assertNotNull(requestContext);
         customMenuNames = requestContext.getCustomMenuNames();
         assertNotNull(customMenuNames);
@@ -1868,7 +1884,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         Map locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators);
+        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         Menu topMenu = requestContext.getMenu("top");
         assertNotNull(topMenu);
@@ -1909,7 +1925,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         topMenu = requestContext.getMenu("top");
         assertNotNull(topMenu);
@@ -1950,7 +1966,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         topMenu = requestContext.getMenu("top");
         assertNotNull(topMenu);
@@ -1990,7 +2006,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(sessionContext);
 
         // first request at /: hidden page suppressed
-        requestContext = sessionContext.newRequestContext("/", null);
+        requestContext = sessionContext.newRequestContext("/", null, null);
         assertNotNull(requestContext);
         pagesMenu = requestContext.getMenu("pages");
         assertNotNull(pagesMenu);
@@ -2010,7 +2026,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(hiddenElement);
     
         // second request at /hidden.psml: hidden page visible
-        requestContext = sessionContext.newRequestContext("/hidden.psml", null);
+        requestContext = sessionContext.newRequestContext("/hidden.psml", null, null);
         assertNotNull(requestContext);
         pagesMenu = requestContext.getMenu("pages");
         assertNotNull(pagesMenu);
@@ -2048,7 +2064,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         Map locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators);
+        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         BaseConcretePageElement requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -2063,7 +2079,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -2078,7 +2094,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -2093,7 +2109,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -2108,7 +2124,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -2123,7 +2139,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -2138,7 +2154,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -2153,7 +2169,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -2168,7 +2184,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "user");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators);
+        requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -2181,7 +2197,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         // physical site view
         sessionContext = portalSite.newSessionContext();
         assertNotNull(sessionContext);
-        requestContext = sessionContext.newRequestContext("/document.doc", null);
+        requestContext = sessionContext.newRequestContext("/document.doc", null, null);
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -2191,7 +2207,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(requestContext.getPageContentPath());
         assertEquals("/document", requestContext.getPageContentPath());
 
-        requestContext = sessionContext.newRequestContext("/preview/contentfolder/draft/document.doc", "test.domain.com");
+        requestContext = sessionContext.newRequestContext("/preview/contentfolder/draft/document.doc", "test.domain.com", null);
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);
@@ -2201,7 +2217,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(requestContext.getPageContentPath());
         assertEquals("/preview/contentfolder/draft/document", requestContext.getPageContentPath());
 
-        requestContext = sessionContext.newRequestContext("/document.psml", null);
+        requestContext = sessionContext.newRequestContext("/document.psml", null, null);
         assertNotNull(requestContext);
         requestPageView = requestContext.getPage();
         assertNotNull(requestPageView);

@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.pipeline.valve.impl;
 
+import java.security.Principal;
+
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
@@ -76,8 +78,9 @@ public class PageValveImpl extends AbstractPageValveImpl implements PageProfiler
      * 
      * @param request invoked request
      * @param requestPath invoked request path
+     * @param requestUserPrincipal invoked request user principal
      */
-    protected void setRequestPage(RequestContext request, String requestPath) throws NodeNotFoundException, ProfilerException
+    protected void setRequestPage(RequestContext request, String requestPath, Principal requestUserPrincipal) throws NodeNotFoundException, ProfilerException
     {
         // get or create portal site session context; the session
         // context maintains the user view of the site and is
@@ -103,7 +106,7 @@ public class PageValveImpl extends AbstractPageValveImpl implements PageProfiler
         // select the page or build menus: that is done when the
         // request context is accessed subsequently
         String requestServerName = ((request.getRequest() != null) ? request.getRequest().getServerName() : null);
-        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(requestPath, requestServerName, requestFallback, useHistory);
+        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(requestPath, requestServerName, requestUserPrincipal.getName(), requestFallback, useHistory);
 
         // save request context and set request page from portal
         // site request context
