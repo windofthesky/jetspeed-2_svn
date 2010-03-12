@@ -336,7 +336,15 @@
     </property>
     <property name="dirContextValidator">
       <bean class="org.springframework.ldap.pool.validation.DefaultDirContextValidator">
-        <property name="base" value="${ldap.user.searchBase}"/>
+        <!-- Fix/workaround for Spring LDAP-189 bug, see: http://jira.springframework.org/browse/LDAP-189 -->
+        <property name="searchControls">
+          <bean class="javax.naming.directory.SearchControls">
+             <property name="searchScope" value="0"/> <!-- enforce searchScope OBJECT_SCOPE -->
+             <property name="countLimit" value="1"/>
+             <property name="timeLimit" value="500"/>
+             <property name="returningAttributes" value="objectClass"/>
+          </bean>
+        </property>
       </bean>
     </property>
     <property name="maxActive" value="${ldap.context.pool.maxActive}"/>
