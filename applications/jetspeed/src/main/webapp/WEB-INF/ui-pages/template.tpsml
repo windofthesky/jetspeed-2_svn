@@ -46,12 +46,9 @@
 	            <property name="state" value="normal"></property>                        
 	            <property name="tool" value="true"></property>	                                    
 	    </fragment>
-   </fragment>
-    
-<!--    
-    <fragment-reference id="page-template-wp-reference" refid="wp-definition">
+   </fragment>    
+    <fragment-reference id="wp-reference" refid="wp-definition">
       <property name="row" value="1"/>
     </fragment-reference>
-  -->   
   </fragment>  
 </page-template>
