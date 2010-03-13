@@ -147,7 +147,7 @@
                     <include>jetspeed.properties</include>
                   </resource>
                   <resource>
-                    <path>seed/min</path>
+                    <path>seed</path>
                     <include>j2-seed.xml</include>
                   </resource>
                 </resources>

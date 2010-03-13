@@ -35,6 +35,17 @@ import javax.servlet.http.HttpSession;
  */
 public class MockHttpServletRequest implements HttpServletRequest
 {
+    private String serverName;
+
+    /**
+     * Set server name for request.
+     * 
+     * @param serverName server name
+     */
+    public void setServerName(String serverName)
+    {
+        this.serverName = serverName;
+    }
 
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpServletRequest#getAuthType()
@@ -384,8 +395,7 @@ public class MockHttpServletRequest implements HttpServletRequest
      */
     public String getServerName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return serverName;
     }
 
     /* (non-Javadoc)

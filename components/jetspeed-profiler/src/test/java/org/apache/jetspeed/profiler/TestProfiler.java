@@ -28,10 +28,12 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpServletRequest;
 
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.profiler.impl.JetspeedProfilerImpl;
 import org.apache.jetspeed.profiler.rules.ProfileResolvers;
@@ -780,5 +782,36 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         }
         assertTrue("didnt find expected number of standard rules, expected = " + EXPECTED_STANDARD, standardCount == 1);
         assertTrue("didnt find expected number of fallback rules, expected = " + EXPECTED_FALLBACK, fallbackCount == 1);
+    }
+    
+    public void testSubsiteRules()
+    {
+        RequestContext request = new MockRequestContext("/");
+        Set principals = new PrincipalsSet();
+        principals.add(new RoleImpl("role"));
+        request.setSubject(JetspeedSubjectFactory.createSubject(new UserImpl("user"), null, null, principals));
+        request.setLocale(new Locale("en", "US"));
+        MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+        servletRequest.setServerName("www.domain.com");
+        request.setRequest(servletRequest);
+        try
+        {
+            ProfilingRule rule = profiler.getRule("subsite-by-hostname");
+            assertNotNull(rule);
+            ProfileLocator locator = profiler.getProfile(request, rule);
+            assertNotNull(locator);
+            assertEquals("/", locator.getRequestPath());
+            assertEquals("www.domain.com", locator.getRequestServerName());
+            // default configuration, (see profiler.xml)
+            assertEquals("navigation:subsite-root:hostname:www.domain.com:user:user:navigation-2:subsite-root:hostname:www.domain.com:role:role:path:home", locator.getLocatorPath());
+            // 'dot prefix' configuration result, (see profiler.xml)
+            //assertEquals("navigation:subsite-root:hostname:www:user:user:navigation-2:subsite-root:hostname:www:role:role:path:home", locator.getLocatorPath());
+            // 'hostname to domain mapping' configuration result, (see profiler.xml)
+            //assertEquals("navigation:subsite-root:hostname:domain.com:user:user:navigation-2:subsite-root:hostname:domain.com:role:role:path:home", locator.getLocatorPath());
+        }
+        catch (ProfilerException pe)
+        {
+            fail("Unexpected ProfilerException: "+pe.getMessage());
+        }
     }
 }
