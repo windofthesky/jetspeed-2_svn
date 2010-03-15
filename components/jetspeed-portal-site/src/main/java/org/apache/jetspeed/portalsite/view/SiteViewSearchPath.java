@@ -58,7 +58,6 @@ public class SiteViewSearchPath
 
     /**
      * SiteViewSearchPath - root path constructor
-     *                      folder separator from search path
      *
      * @param locatorName profile locator name
      */

@@ -1136,30 +1136,6 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         // valid request profile locators are required
         if ((requestProfileLocators == null) || !requestProfileLocators.isEmpty())
         {
-            // get current user principal; ignore derivative
-            // changes in role and group principals
-            //String currentUserPrincipal = null;
-            //Subject subject = JSSubject.getSubject(AccessController.getContext());
-            //if (subject != null)
-            //{
-            //    Iterator principals = subject.getPrincipals().iterator();
-            //    while (principals.hasNext())
-            //    {
-            //        Principal principal = (Principal) principals.next();
-            //        if (principal instanceof User)
-            //        {
-            //            if (currentUserPrincipal == null)
-            //            {
-            //                currentUserPrincipal = principal.getName();
-            //            }
-            //            else
-            //            {
-            //                currentUserPrincipal += "|" + principal.getName();
-            //            }
-            //        }
-            //    }
-            //}
-
             // detect stale session, modification of user
             // principal, or changed profile locators for
             // this session context
