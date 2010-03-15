@@ -49,8 +49,6 @@ import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 import org.apache.jetspeed.portalsite.view.SiteViewMenuDefinitionLocator;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfileLocatorProperty;
-import org.apache.jetspeed.security.JSSubject;
-import org.apache.jetspeed.security.User;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
