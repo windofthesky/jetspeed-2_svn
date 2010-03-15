@@ -240,8 +240,6 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 	        var dragWindow = srcNode.data.window; // DST: drag.get('node').get('parentNode');
 	        var box = srcNode.data.parent.get('parentNode');
 	        var content = srcNode.data.parent;
-//	        var box = portal.findChildByClass(dragParent, ['portlet ', 'PContentBorder'], 0);
-//	        var content = portal.findChildByClass(box, ['PContent'], 0);	        
 	    	var left = parseInt(dragWindow.getStyle('left'));
 	    	var top =  parseInt(dragWindow.getStyle('top'));
 	    	var width = (drag.mouseXY[0] - left) + "px";

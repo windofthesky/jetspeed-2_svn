@@ -402,7 +402,7 @@ YUI.add('jetui-portal', function(Y) {
 	            	Y.Event.purgeElement("[id='" + actionId + "']", false, "click"); 
 		            action.on('click', portal.attachPortlet);
 		        	action.setAttribute("title", "attach");
-		        	action.setAttribute("class", "portlet-action-attach");
+		        	action.replaceClass("portlet-action-detach", "portlet-action-attach");
 		            var imgid = actionId.replace(/^jetspeed-detach-/, "jetspeed-detach-img-");
 		        	var img = Y.one("[id='" + imgid + "']");
 		        	if (!Y.Lang.isNull(img))
@@ -465,7 +465,7 @@ YUI.add('jetui-portal', function(Y) {
 	            	Y.Event.purgeElement("[id='" + actionId + "']", false, "click"); 
 		            action.on('click', portal.detachPortlet);
 		        	action.setAttribute("title", "detach");
-		        	action.setAttribute("class", "portlet-action-detach");
+		        	action.replaceClass("portlet-action-attach", "portlet-action-detach");
 		            var imgid = actionId.replace(/^jetspeed-detach-/, "jetspeed-detach-img-");
 		        	var img = Y.one("[id='" + imgid + "']");;
 		            if (!Y.Lang.isNull(img))
@@ -492,7 +492,7 @@ YUI.add('jetui-portal', function(Y) {
 	                i++;
 	            }
 	            layout.appendChild(window);
-	            var pcontent =  portal.findChildByClass(window, ['portlet', 'PContentBorder', 'PContent'], 0);
+	            var pcontent = window.one(".portlet .PContentBorder .PContent");
 	            portal.removeResizeHandle(pcontent);
 	            portal.removeWidthHeight(pcontent);
 	            var uri = portal.portalContextPath + "/services/pagelayout/fragment/" + windowId + "/pos/?_type=json";
@@ -796,9 +796,9 @@ YUI.add('jetui-portal', function(Y) {
          */        
         addResizeHandle : function(v, alwaysAdd) {
             var portal = JETUI_YUI.getPortalInstance();        	
-        	var pcontent = portal.findChildByClass(v, ['portlet', 'PContentBorder', 'PContent'], 0);
+        	var pcontent = v.one(".portlet .PContentBorder .PContent");
         	var region = pcontent.get('region');
-        	var rh = portal.findChildByClass(pcontent, ['resizeHandle'], 0);
+        	var rh = pcontent.one(".resizeHandle");
 	    	if (Y.Lang.isNull(rh)) {
 	    		if (alwaysAdd == false) {
 	    			return;
@@ -826,13 +826,10 @@ YUI.add('jetui-portal', function(Y) {
          * @method removeResizeHandle
          */        
         removeResizeHandle : function(v) {
-	 		v.get('children').each(function(v2,k2) {
-	 			var cl = v2.getAttribute('class');
-			    if (cl.indexOf('resizeHandle') == 0) {
-			    	v2.remove();
-			    	return;
-			    }
-	 		});        	
+            var resizeHandleNode = v.one(".resizeHandle");
+            if (resizeHandleNode) {
+                resizeHandleNode.remove();
+            }
         },
 
         removeWidthHeight : function(v) {
@@ -842,49 +839,23 @@ YUI.add('jetui-portal', function(Y) {
         
         /**
          * @method calculateResizeMargin
-         */                	
+         */
+        /*
         calculateResizeMargin : function(v) {
 	        var mtt = null;
-	 		v.get('children').each(function(v2,k2) {
-	 			var cl = v2.getAttribute('class');
-			    if (cl.indexOf('portlet') == 0) {				    	
-			    	mtt = v2.getComputedStyle('marginTop'); // TODO: margin-top could be different from other 3 margins
-			    	if (!Y.Lang.isNull(mtt)) {
-			    		mtt = parseInt(mtt);
-			    	}
-			    	return;
-			    }
-	 		});
+	        var portletNode = v.one(".portlet");
+	        if (portletNode) {
+                mtt = portletNode.getComputedStyle('marginTop'); // TODO: margin-top could be different from other 3 margins
+                if (!Y.Lang.isNull(mtt)) {
+                    mtt = parseInt(mtt);
+                }
+                return;
+	        }
         	var portal = JETUI_YUI.getPortalInstance();
 	 		var mt = (mtt*2) + portal.margins[0]; // TODO: use array index constants
 	    	return mt;
         },
-        
-        /**
-         * @method find Child By Class
-         */
-        findChildByClass : function(node, styles, index) {
-        	var portal = JETUI_YUI.getPortalInstance();
-        	var result = null;
-			node.get('children').each(function(v,k) {
-				 var cl = v.getAttribute('class');
-			     if (cl.indexOf(styles[index]) == 0) {
-			    	 if (index + 1 < styles.length) {
-			    		 index = index + 1;
-			    		 var res = portal.findChildByClass(v, styles, index);
-          	             if (!Y.Lang.isNull(res)) {
-          	            	 result =  res;
-          	            	 return result;
-          	             }
-			    	 }
-			    	 else {
-      	            	 result =  v;
-			    		 return result;
-			    	 }
-			     }
-			});        	
-			return result;
-        },
+        */
         
         activateWindow : function(active) {
             var portal = JETUI_YUI.getPortalInstance();        	
@@ -893,20 +864,20 @@ YUI.add('jetui-portal', function(Y) {
             }
         	active.setStyle('zIndex', portal.calculateNextZIndex());
         	Y.log("current target = " + active);
-            var title = portal.findChildByClass(active, ['portlet ', 'PTitle'], 0);
+            var title = active.one(".portlet .PTitle");
             if (!Y.Lang.isNull(title)) {
             	//var unselect = title.getComputedStyle('background'); // this deadended for me, was not working
-            	title.setAttribute('class', 'PTitleActive');
+            	title.replaceClass('PTitle', 'PTitleActive');
             	var drag = Y.DD.DDM.getDrag(active);
             	drag.removeHandle(".PTitle");        	
             	drag.addHandle(".PTitleActive");
                 if (!Y.Lang.isNull(portal.activeWindow)) {
-                	var title = portal.findChildByClass(portal.activeWindow, ['portlet ', 'PTitleActive'], 0);
+                	var title = portal.activeWindow.one(".portlet .PTitleActive");
                     if (!Y.Lang.isNull(title)) {                            
                     	var drag = Y.DD.DDM.getDrag(portal.activeWindow);
                     	drag.removeHandle(".PTitleActive");        	
                     	drag.addHandle(".PTitle");
-                    	title.setAttribute('class', 'PTitle');
+                    	title.replaceClass('PTitleActive', 'PTitle');
                      }
                  }
             }
