@@ -556,7 +556,6 @@ public class TestPortalSite extends AbstractSpringTestCase
     public void testRelativeNavigations() throws Exception
     {
         JetspeedProfileLocator locator = new JetspeedProfileLocator();
-
         locator.init(null, "/");
         locator.add("hostname", true, false, "dash");
         locator.add("user", true, false, "joe");
@@ -565,6 +564,16 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/_hostname/dash/_user/joe,/_hostname/dash,/", profileView.getSearchPathsString());
         assertEquals("/_hostname/dash/_user/joe", profileView.getUserFolderPath());
         assertEquals("/_hostname/dash", profileView.getBaseFolderPath());
+        
+        locator = new JetspeedProfileLocator();
+        locator.init(null, "/");
+        locator.add("hostname", true, false, "new-host");
+        locator.add("user", true, false, "new-user");
+        locator.add("page", false, false, "home");
+        profileView = new SearchPathsSiteView(pageManager, locator, false);
+        assertEquals("/", profileView.getSearchPathsString());
+        assertEquals("/_hostname/new-host/_user/new-user", profileView.getUserFolderPath());
+        assertEquals("/_hostname/new-host", profileView.getBaseFolderPath());
         
         locator = new JetspeedProfileLocator();
         locator.init(null, "/");

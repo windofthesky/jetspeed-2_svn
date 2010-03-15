@@ -93,10 +93,12 @@ public class SearchPathsSiteView extends AbstractSiteView
         {
             // validate search path format and existence
             this.searchPaths = new ArrayList(searchPaths.size());
+            List allSearchPaths = new ArrayList(searchPaths.size());
             StringBuilder searchPathsStringBuilder = new StringBuilder();
             Iterator pathsIter = searchPaths.iterator();
             while (pathsIter.hasNext())
             {
+                // construct search paths if necessary
                 Object pathObject = pathsIter.next();
                 if (!(pathObject instanceof SiteViewSearchPath))
                 {
@@ -107,6 +109,9 @@ public class SearchPathsSiteView extends AbstractSiteView
                     }
                 }
                 SiteViewSearchPath searchPath = (SiteViewSearchPath)pathObject;
+                allSearchPaths.add(searchPath);
+
+                // validate and filter final search paths
                 if (this.searchPaths.indexOf(searchPath) == -1)
                 {
                     try
@@ -150,26 +155,26 @@ public class SearchPathsSiteView extends AbstractSiteView
             else
             {
                 this.searchPathsString = searchPathsStringBuilder.toString();
-                
-                // find primary user search path
-                Iterator searchPathsIter = this.searchPaths.iterator();
-                while (searchPathsIter.hasNext())
+            }
+            
+            // find primary user search path, (may not exist: search against all paths) 
+            Iterator searchPathsIter = allSearchPaths.iterator();
+            while (searchPathsIter.hasNext())
+            {
+                SiteViewSearchPath searchPath = (SiteViewSearchPath)searchPathsIter.next();
+                if (searchPath.isUserPath())
                 {
-                    SiteViewSearchPath searchPath = (SiteViewSearchPath)searchPathsIter.next();
-                    if (searchPath.isUserPath())
-                    {
-                        this.userSearchPath = searchPath;
-                        break;
-                    }
+                    this.userSearchPath = searchPath;
+                    break;
                 }
             }
             
-            // find base search path
-            if (this.searchPaths.size() == 1)
+            // find base search path, (may not exist: search against all paths)
+            if (allSearchPaths.size() == 1)
             {
                 // single non-principal search path is the base
                 // search path
-                SiteViewSearchPath searchPath = (SiteViewSearchPath)this.searchPaths.get(0);
+                SiteViewSearchPath searchPath = (SiteViewSearchPath)allSearchPaths.get(0);
                 if (!searchPath.isPrincipalPath())
                 {
                     this.baseSearchPath = searchPath;
@@ -180,11 +185,11 @@ public class SearchPathsSiteView extends AbstractSiteView
                 // scan for the search path that are common to all
                 // more specific search paths starting at the least
                 // specific search path
-                ListIterator searchPathsIter = this.searchPaths.listIterator(this.searchPaths.size());
-                while (searchPathsIter.hasPrevious())
+                ListIterator baseSearchPathsIter = allSearchPaths.listIterator(allSearchPaths.size());
+                while (baseSearchPathsIter.hasPrevious())
                 {
-                    SiteViewSearchPath searchPath = (SiteViewSearchPath)searchPathsIter.previous();
-                    int scanSearchPathsIndex = searchPathsIter.previousIndex();
+                    SiteViewSearchPath searchPath = (SiteViewSearchPath)baseSearchPathsIter.previous();
+                    int scanSearchPathsIndex = baseSearchPathsIter.previousIndex();
                     if (scanSearchPathsIndex == -1)
                     {
                         // most specific non-principal search path is the
@@ -201,10 +206,10 @@ public class SearchPathsSiteView extends AbstractSiteView
                         // scan more specific search paths to test whether the
                         // current search path is common to all
                         boolean isCommonSearchPath = true;
-                        ListIterator scanSearchPathsIter = this.searchPaths.listIterator(scanSearchPathsIndex+1);
-                        while (scanSearchPathsIter.hasPrevious())
+                        ListIterator scanBaseSearchPathsIter = allSearchPaths.listIterator(scanSearchPathsIndex+1);
+                        while (scanBaseSearchPathsIter.hasPrevious())
                         {
-                            SiteViewSearchPath scanSearchPath = (SiteViewSearchPath)scanSearchPathsIter.previous();
+                            SiteViewSearchPath scanSearchPath = (SiteViewSearchPath)scanBaseSearchPathsIter.previous();
                             if (!scanSearchPath.toString().startsWith(searchPath.toString()))
                             {
                                 isCommonSearchPath = false;
