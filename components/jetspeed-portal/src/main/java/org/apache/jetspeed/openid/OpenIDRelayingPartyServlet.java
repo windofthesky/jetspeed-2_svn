@@ -674,11 +674,11 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                                 {
                                     if (portalUser != null)
                                     {
-                                        log.debug("OpenID login registered portal user: "+portalUser.getName()+", configuration: "+logConfiguration);
+                                        log.debug("OpenID login registered portal user: "+portalUser.getName()+", configuration: "+logConfiguration+", locale: "+loginLocale+", server: "+loginServerName);
                                     }
                                     else
                                     {
-                                        log.debug("OpenID login unregistered portal user, (registration failed): "+email+", configuration: "+logConfiguration);
+                                        log.debug("OpenID login unregistered portal user, (registration failed): "+email+", configuration: "+logConfiguration+", locale: "+loginLocale+", server: "+loginServerName);
                                     }
                                 }
                             }

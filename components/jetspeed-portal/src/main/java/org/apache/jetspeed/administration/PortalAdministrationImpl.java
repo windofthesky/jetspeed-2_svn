@@ -298,8 +298,6 @@ public class PortalAdministrationImpl implements PortalAdministration
                 request.setLocale((locale != null) ? locale : Locale.getDefault());
                 MockHttpServletRequest servletRequest = new MockHttpServletRequest();
                 servletRequest.setServerName(serverName);
-System.out.println(">>>>>>>>>>>>>>>>>>>>>>> user locale: "+locale);
-System.out.println(">>>>>>>>>>>>>>>>>>>>>>> user server name: "+serverName);
                 
                 // get profile locators map for new user request
                 Map locators = profiler.getProfileLocators(request , user);
@@ -311,14 +309,12 @@ System.out.println(">>>>>>>>>>>>>>>>>>>>>>> user server name: "+serverName);
                 {
                     locators.put(ProfileLocator.PAGE_LOCATOR, profiler.getProfile(request, ProfileLocator.PAGE_LOCATOR));
                 }
-System.out.println(">>>>>>>>>>>>>>>>>>>>>>> user locators: "+locators.entrySet());
                 
                 // get user folder path from profiler site component
                 // using the profile locators for new user request
                 PortalSiteSessionContext sessionContext = portalSite.newSessionContext();
                 PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, userName);
                 userFolderPath = requestContext.getUserFolderPath();
-System.out.println(">>>>>>>>>>>>>>>>>>>>>>> user path: "+userFolderPath);
             }
             else if (subsite != null)
             {
