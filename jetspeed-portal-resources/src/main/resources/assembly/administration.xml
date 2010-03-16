@@ -76,9 +76,12 @@
       <ref bean="org.apache.jetspeed.profiler.Profiler" />
     </constructor-arg>
     <constructor-arg index='5'>
-      <ref bean="mailSender" />
+      <ref bean="org.apache.jetspeed.portalsite.PortalSite" />
     </constructor-arg>
     <constructor-arg index='6'>
+      <ref bean="mailSender" />
+    </constructor-arg>
+    <constructor-arg index='7'>
       <ref bean="adminVelocityEngine" />
     </constructor-arg>
   </bean>

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -30,6 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.openid4java.OpenIDException;
 import org.openid4java.consumer.ConsumerManager;
@@ -113,6 +115,9 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
     private static final String USER_ATTRIBUTE_GIVEN_NAME = "user.name.given";
     private static final String USER_ATTRIBUTE_FAMILY_NAME = "user.name.family";
     private static final String USER_ATTRIBUTE_NICKNAME = "user.name.nickName";
+    
+    private static final String OPEN_ID_LOGIN_LOCALE_ATTR_NAME = "org.apache.jetspeed.openid.locale";
+    private static final String OPEN_ID_LOGIN_SERVER_NAME_ATTR_NAME = "org.apache.jetspeed.openid.server.name";
     
     private ConsumerManager openIDConsumerManager;
     private ConsumerManager openIDStep2ConsumerManager;
@@ -243,7 +248,10 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
         else 
         {
             // clear error state
-            request.getSession().removeAttribute(OpenIDConstants.OPEN_ID_ERROR);
+            HttpSession httpSession = request.getSession();
+            httpSession.removeAttribute(OpenIDConstants.OPEN_ID_ERROR);
+            httpSession.setAttribute(OPEN_ID_LOGIN_LOCALE_ATTR_NAME, request.getLocale());
+            httpSession.setAttribute(OPEN_ID_LOGIN_SERVER_NAME_ATTR_NAME, request.getServerName());
            
             // parse request from request path
             String servletPathPrefix = servletPath+"/";
@@ -389,9 +397,13 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                         log.debug("Discovered OpenID provider endpoint: "+discovered.getOPEndpoint()+", ["+discovered.getClass().getSimpleName()+"]");
                     }
 
+                    // save login state
+                    httpSession.setAttribute(OPEN_ID_LOGIN_LOCALE_ATTR_NAME, request.getLocale());
+                    httpSession.setAttribute(OPEN_ID_LOGIN_SERVER_NAME_ATTR_NAME, request.getServerName());
+
                     // save OpenID provider in session
-                    request.getSession().setAttribute(OPEN_ID_PROVIDER_ATTR_NAME, provider);
-                    request.getSession().setAttribute(OPEN_ID_DISCOVERY_INFO_ATTR_NAME, discovered);
+                    httpSession.setAttribute(OPEN_ID_PROVIDER_ATTR_NAME, provider);
+                    httpSession.setAttribute(OPEN_ID_DISCOVERY_INFO_ATTR_NAME, discovered);
 
                     // create OpenID authentication request and redirect
                     String authReturnToURL = openIDRealmURL+"/"+OpenIDConstants.OPEN_ID_AUTHENTICATED_REQUEST+"?"+OpenIDConstants.OPEN_ID_RETURN+"="+returnPath;
@@ -434,7 +446,7 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                     // log error and redirect back to portal with error
                     // set as session attribute
                     log.error("OpenID login error: "+e, e);
-                    request.getSession().setAttribute(OpenIDConstants.OPEN_ID_ERROR, (!discoveredProvider ? OpenIDConstants.OPEN_ID_ERROR_NO_PROVIDER : OpenIDConstants.OPEN_ID_ERROR_CANNOT_AUTH));
+                    httpSession.setAttribute(OpenIDConstants.OPEN_ID_ERROR, (!discoveredProvider ? OpenIDConstants.OPEN_ID_ERROR_NO_PROVIDER : OpenIDConstants.OPEN_ID_ERROR_CANNOT_AUTH));
                     response.sendRedirect(returnPath);
                 }
             }
@@ -448,10 +460,20 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                 }
                 
                 // session parameters
-                OpenIDRegistrationConfiguration portalRegistrationConfiguration = (OpenIDRegistrationConfiguration)request.getSession().getAttribute(OpenIDConstants.OPEN_ID_REGISTRATION_CONFIGURATION);
+                Locale loginLocale = (Locale)httpSession.getAttribute(OPEN_ID_LOGIN_LOCALE_ATTR_NAME);
+                if (loginLocale != null)
+                {
+                    httpSession.removeAttribute(OPEN_ID_LOGIN_LOCALE_ATTR_NAME);
+                }
+                String loginServerName = (String)httpSession.getAttribute(OPEN_ID_LOGIN_SERVER_NAME_ATTR_NAME);
+                if (loginServerName != null)
+                {
+                    httpSession.removeAttribute(OPEN_ID_LOGIN_SERVER_NAME_ATTR_NAME);
+                }
+                OpenIDRegistrationConfiguration portalRegistrationConfiguration = (OpenIDRegistrationConfiguration)httpSession.getAttribute(OpenIDConstants.OPEN_ID_REGISTRATION_CONFIGURATION);
                 if (portalRegistrationConfiguration != null)
                 {
-                    request.getSession().removeAttribute(OpenIDConstants.OPEN_ID_REGISTRATION_CONFIGURATION);
+                    httpSession.removeAttribute(OpenIDConstants.OPEN_ID_REGISTRATION_CONFIGURATION);
                 }
 
                 boolean authenticatedByProvider = false;
@@ -462,8 +484,8 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                     ParameterList authParams = new ParameterList(request.getParameterMap());
 
                     // retrieve OpenID provider from session
-                    String provider = (String)request.getSession().getAttribute(OPEN_ID_PROVIDER_ATTR_NAME);
-                    DiscoveryInformation discovered = (DiscoveryInformation)request.getSession().getAttribute(OPEN_ID_DISCOVERY_INFO_ATTR_NAME);
+                    String provider = (String)httpSession.getAttribute(OPEN_ID_PROVIDER_ATTR_NAME);
+                    DiscoveryInformation discovered = (DiscoveryInformation)httpSession.getAttribute(OPEN_ID_DISCOVERY_INFO_ATTR_NAME);
 
                     // reconstruct the authenticated request URL
                     StringBuffer authRequestURLBuffer = request.getRequestURL();
@@ -637,11 +659,13 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                                                                       userAttributes,
                                                                       portalRegistrationConfiguration.getProfilerRules(),
                                                                       portalRegistrationConfiguration.getUserTemplateDirectory(),
-                                                                      portalRegistrationConfiguration.getSubsiteRootFolder());
+                                                                      portalRegistrationConfiguration.getSubsiteRootFolder(),
+                                                                      loginLocale, loginServerName);
                                 }
                                 else
                                 {
-                                    portalAdministration.registerUser(email, null, null, null, userAttributes, null, null, null);
+                                    portalAdministration.registerUser(email, null, null, null, userAttributes, null, null, null,
+                                                                      loginLocale, loginServerName);
                                 }
                                 portalUser = portalUserManager.getUser(email);
 
@@ -719,16 +743,16 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                     // create/reset portal session
                     if (portalAuthenticationConfiguration.isCreateNewSessionOnLogin())
                     {
-                        request.getSession().invalidate();
-                        request.getSession(true);
+                        httpSession.invalidate();
+                        httpSession = request.getSession(true);
                     }
                     else
                     {
-                        portalUserContentCacheManager.evictUserContentCache(portalUser.getName(), request.getSession().getId());
+                        portalUserContentCacheManager.evictUserContentCache(portalUser.getName(), httpSession.getId());
                     }                         
                     // configure portal session with logged in session
-                    request.getSession().setAttribute(PortalReservedParameters.SESSION_OPEN_ID_PROVIDER, provider);
-                    request.getSession().setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
+                    httpSession.setAttribute(PortalReservedParameters.SESSION_OPEN_ID_PROVIDER, provider);
+                    httpSession.setAttribute(PortalReservedParameters.SESSION_KEY_SUBJECT, subject);
 
                     // log/audit portal user login
                     portalAudit.logUserActivity(portalUser.getName(), request.getRemoteAddr(), AuditActivity.AUTHENTICATION_SUCCESS, "OpenIDRelayingPartyServlet");
@@ -740,7 +764,7 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                 {
                     // log error and redirect back to portal
                     log.error("OpenID login error: "+e, e);
-                    request.getSession().setAttribute(OpenIDConstants.OPEN_ID_ERROR, (!authenticatedByProvider ? OpenIDConstants.OPEN_ID_ERROR_NOT_AUTH : (!portalUserExists ? OpenIDConstants.OPEN_ID_ERROR_NO_PORTAL_USER : OpenIDConstants.OPEN_ID_ERROR_CANNOT_LOGIN)));
+                    httpSession.setAttribute(OpenIDConstants.OPEN_ID_ERROR, (!authenticatedByProvider ? OpenIDConstants.OPEN_ID_ERROR_NOT_AUTH : (!portalUserExists ? OpenIDConstants.OPEN_ID_ERROR_NO_PORTAL_USER : OpenIDConstants.OPEN_ID_ERROR_CANNOT_LOGIN)));
                     response.sendRedirect(returnPath);
                 }
             }
@@ -754,7 +778,7 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
                 }
 
                 // clear portal session
-                request.getSession().invalidate();
+                httpSession.invalidate();
                 
                 // redirect back to portal
                 response.sendRedirect(returnPath);
