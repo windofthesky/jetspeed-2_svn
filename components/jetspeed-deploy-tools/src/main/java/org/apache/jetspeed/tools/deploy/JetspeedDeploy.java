@@ -107,7 +107,7 @@ public class JetspeedDeploy implements Deploy
         try
         {
             String portletApplicationName = contextName;
-            tempFile = File.createTempFile(portletApplicationName, "");
+            tempFile = File.createTempFile(portletApplicationName+"tmp", "");
             tempFile.deleteOnExit();
 
             jin = new JarFile(inputName);
