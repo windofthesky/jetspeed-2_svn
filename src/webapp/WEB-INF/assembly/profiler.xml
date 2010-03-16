@@ -158,8 +158,23 @@
     <bean id='HostnameCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.HostnameCriterionResolver'>
       <!--  use the dot prefix, for ex: "accounting.xyz.com" returns "accounting" -->
       <constructor-arg type="boolean" index="0">
-            <value>false</value> 
-        </constructor-arg>    	
+        <value>false</value> 
+      </constructor-arg>    	
+      <!--
+          use hostname mapping rules, for ex: ^.*[.]([^.]+[.][^.]+)$ -> $1
+          maps hostnames like 'www.domain.com' and 'www.secure.domain.com' to
+          domain 'domain.com'; note: patterns and replacements use '&#36;' for '$'
+      -->
+      <!--
+      <constructor-arg index="0">
+        <list>
+          <bean class="org.apache.jetspeed.profiler.rules.impl.HostnameCriterionResolver$Rule">
+            <constructor-arg index="0" value="^(.*[.])?([^.]+[.][^.]+)&#36;" />
+            <constructor-arg index="1" value="&#36;2" />
+          </bean>
+        </list>
+      </constructor-arg>
+      -->
     </bean>    
     <bean id='DomainCriterionResolver' class='org.apache.jetspeed.profiler.rules.impl.DomainCriterionResolver'></bean>      
 

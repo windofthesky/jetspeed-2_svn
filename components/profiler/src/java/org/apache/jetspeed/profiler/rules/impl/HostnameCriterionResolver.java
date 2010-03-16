@@ -16,6 +16,11 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
@@ -24,17 +29,24 @@ import org.apache.jetspeed.request.RequestContext;
  * Hostname Resolver
  * 
  * @author <a href="mailto:stalherm@goodgulf.net">Frank Stalherm</a>
- * @version $Id:$
+ * @version $Id$
  */
 public class HostnameCriterionResolver extends StandardResolver implements
         RuleCriterionResolver
 {
-    boolean useDotPrefix = false;
+    private boolean useDotPrefix;
+    private List hostnameMappingRules;
     
     public HostnameCriterionResolver(boolean usePrefix)
     {
         super();
         this.useDotPrefix = usePrefix;
+    }
+
+    public HostnameCriterionResolver(List hostnameMappingRules)
+    {
+        super();
+        this.hostnameMappingRules = hostnameMappingRules;
     }
 
     /*
@@ -69,7 +81,39 @@ public class HostnameCriterionResolver extends StandardResolver implements
                 serverName = serverName.substring(0, idx);
             }
         }
+        else if (hostnameMappingRules != null)
+        {
+            Iterator rulesIter = hostnameMappingRules.iterator();
+            while (rulesIter.hasNext())
+            {
+                Rule rule = (Rule)rulesIter.next();
+                serverName = rule.map(serverName);
+            }
+        }
         return serverName;
     }
 
+    public static class Rule
+    {
+        private String pattern;
+        private String replacement;
+        private Pattern compiledPattern;        
+        
+        public Rule(String pattern, String replacement)
+        {
+            this.pattern = pattern;
+            this.replacement = replacement;
+            this.compiledPattern = Pattern.compile(pattern);
+        }
+        
+        public String map(String hostname)
+        {
+            Matcher patternMatcher = compiledPattern.matcher(hostname);
+            if (patternMatcher.find())
+            {
+                return patternMatcher.replaceAll(replacement);
+            }
+            return hostname;
+        }
+    }
 }
