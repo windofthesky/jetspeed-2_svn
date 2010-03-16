@@ -222,7 +222,7 @@ public class ProfilerValveImpl extends AbstractValve implements PageProfilerValv
                 // request context here does not select the page or build
                 // menus: that is done when the request context is
                 // accessed subsequently
-                PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, requestFallback, useHistory);
+                PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, principal.getName(), requestFallback, useHistory);
                 request.setAttribute(PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY, requestContext);
 
                 // additionally save request context under legacy key

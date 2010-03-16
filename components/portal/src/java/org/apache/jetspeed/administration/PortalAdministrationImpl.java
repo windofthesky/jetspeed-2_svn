@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
@@ -37,11 +38,17 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
+import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.NodeException;
+import org.apache.jetspeed.portalsite.PortalSite;
+import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
+import org.apache.jetspeed.portalsite.PortalSiteSessionContext;
+import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.prefs.PreferencesProvider;
 import org.apache.jetspeed.prefs.om.Node;
 import org.apache.jetspeed.profiler.Profiler;
@@ -85,6 +92,7 @@ public class PortalAdministrationImpl implements PortalAdministration
     protected PageManager pageManager;
     private PreferencesProvider preferences;    
     protected Profiler profiler;
+    protected PortalSite portalSite;
     protected JavaMailSender mailSender;
     protected VelocityEngine velocityEngine;
     protected AdminUtil adminUtil;
@@ -106,6 +114,7 @@ public class PortalAdministrationImpl implements PortalAdministration
                                      PageManager pageManager,
                                      PreferencesProvider preferences,
                                      Profiler profiler,
+                                     PortalSite portalSite,
                                      JavaMailSender mailSender,
                                      VelocityEngine velocityEngine)
     {
@@ -115,6 +124,7 @@ public class PortalAdministrationImpl implements PortalAdministration
         this.pageManager = pageManager;
         this.preferences = preferences;
         this.profiler = profiler;
+        this.portalSite = portalSite;
         this.mailSender = mailSender;
         this.velocityEngine = velocityEngine;
         this.adminUtil = new AdminUtil();
@@ -145,12 +155,18 @@ public class PortalAdministrationImpl implements PortalAdministration
         
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.administration.PortalAdministration#registerUser(java.lang.String, java.lang.String)
+     */
     public void registerUser(String userName, String password)
-    throws RegistrationException
+        throws RegistrationException
     {
         registerUser(userName, password, (List)null, null, null, null, null);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.administration.PortalAdministration#registerUser(java.lang.String, java.lang.String, java.util.List, java.util.List, java.util.Map, java.util.Map, java.lang.String)
+     */
     public void registerUser(
             String userName, 
             String password, 
@@ -159,14 +175,14 @@ public class PortalAdministrationImpl implements PortalAdministration
             Map userInfo, 
             Map rules, 
             String folderTemplate)
-    throws RegistrationException    
+        throws RegistrationException    
     {
         registerUser(userName, password, roles, groups, userInfo, rules, folderTemplate, null);
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.administration.PortalAdministration#registerUser(java.lang.String, java.lang.String, java.util.Map, java.awt.List, java.awt.List, java.lang.String)
-     */    
+     * @see org.apache.jetspeed.administration.PortalAdministration#registerUser(java.lang.String, java.lang.String, java.util.List, java.util.List, java.util.Map, java.util.Map, java.lang.String, java.lang.String)
+     */
     public void registerUser(
             String userName, 
             String password, 
@@ -176,7 +192,26 @@ public class PortalAdministrationImpl implements PortalAdministration
             Map rules, 
             String folderTemplate,
             String subsite)
-    throws RegistrationException    
+        throws RegistrationException    
+    {
+        registerUser(userName, password, roles, groups, userInfo, rules, folderTemplate, subsite, null, null);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.administration.PortalAdministration#registerUser(java.lang.String, java.lang.String, java.util.List, java.util.List, java.util.Map, java.util.Map, java.lang.String, java.lang.String, java.util.Locale, java.lang.String)
+     */
+    public void registerUser(
+            String userName, 
+            String password, 
+            List roles, 
+            List groups, 
+            Map userInfo, 
+            Map rules, 
+            String folderTemplate,
+            String subsite,
+            Locale locale,
+            String serverName)
+        throws RegistrationException    
     {
         try 
         {
@@ -248,27 +283,55 @@ public class PortalAdministrationImpl implements PortalAdministration
                     }
                 }
             }
-            
+
+            // get template folders
             if (folderTemplate == null)
             {
                 folderTemplate = this.folderTemplate; 
             }
-            
-            if (subsite == null)
+            String userFolderPath = null;
+            if ((subsite == null) && (serverName != null))
             {
-                subsite = Folder.USER_FOLDER + userName;
+                // setup profiler and portal site to determine template
+                // folders paths generate mock request for new user to profile
+                RequestContext request = new MockRequestContext("/");
+                request.setSubject(user.getSubject());
+                request.setLocale((locale != null) ? locale : Locale.getDefault());
+                MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+                servletRequest.setServerName(serverName);
+                
+                // get profile locators map for new user request
+                Principal principal = SecurityHelper.getBestPrincipal(user.getSubject(), UserPrincipal.class);
+                Map locators = profiler.getProfileLocators(request, principal);
+                if (locators.size() == 0)
+                {
+                    locators = profiler.getDefaultProfileLocators(request);                
+                }
+                if (locators.size() == 0)
+                {
+                    locators.put(ProfileLocator.PAGE_LOCATOR, profiler.getProfile(request, ProfileLocator.PAGE_LOCATOR));
+                }
+                
+                // get user folder path from profiler site component
+                // using the profile locators for new user request
+                PortalSiteSessionContext sessionContext = portalSite.newSessionContext();
+                PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, userName);
+                userFolderPath = requestContext.getUserFolderPath();
+            }
+            else if (subsite != null)
+            {
+                userFolderPath = subsite + Folder.USER_FOLDER + userName;
             }
             else
             {
-                subsite  = subsite + Folder.USER_FOLDER +  userName;
-            }            
-            
+                userFolderPath = Folder.USER_FOLDER + userName;
+            }
             
             // This next chunk of code is the fancy way to force the creation of the user
             // template pages to be created with subject equal to the new user
             // otherwise it would be created as guest, and guest does not have enough privs.
             final String innerFolderTemplate = folderTemplate;
-            final String innerSubsite = subsite;
+            final String innerUserFolderPath = userFolderPath;
             final PageManager innerPageManager = pageManager;
             final String innerUserName = userName;
             final User innerUser = user;
@@ -279,10 +342,10 @@ public class PortalAdministrationImpl implements PortalAdministration
                     {
                          try
                         {
-                             if (innerSubsite != null)
+                             if (innerUserFolderPath != null)
                              {
                                  Preferences attributes = innerUser.getUserAttributes();
-                                 attributes.put(User.USER_INFO_SUBSITE, innerSubsite);                                    
+                                 attributes.put(User.USER_INFO_SUBSITE, innerUserFolderPath);                                    
                              }                                         
                              // create user's home folder                        
                              // deep copy from the default folder template tree, creating a deep-copy of the template
@@ -290,8 +353,8 @@ public class PortalAdministrationImpl implements PortalAdministration
                             Folder source = innerPageManager.getFolder(innerFolderTemplate);
                             
                             
-                            innerPageManager.deepCopyFolder(source, innerSubsite, innerUserName);
-                            Folder newFolder = pageManager.getFolder(innerSubsite);                            
+                            innerPageManager.deepCopyFolder(source, innerUserFolderPath, innerUserName);
+                            Folder newFolder = pageManager.getFolder(innerUserFolderPath);                            
                             newFolder.setTitle("Home Folder");
                             newFolder.setShortTitle("Home");
                              

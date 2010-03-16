@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -118,6 +119,16 @@ public class SiteView
     private Folder rootFolderProxy;
 
     /**
+     * userSearchPath - primary user search path
+     */
+    private SiteViewSearchPath userSearchPath;
+
+    /**
+     * baseSearchPath - base search path
+     */
+    private SiteViewSearchPath baseSearchPath;
+
+    /**
      * SiteView - validating constructor
      *
      * @param pageManager PageManager component instance
@@ -131,10 +142,12 @@ public class SiteView
         {
             // validate search path format and existence
             this.searchPaths = new ArrayList(searchPaths.size());
+            List allSearchPaths = new ArrayList(searchPaths.size());
             StringBuffer searchPathsStringBuffer = new StringBuffer();
             Iterator pathsIter = searchPaths.iterator();
             while (pathsIter.hasNext())
             {
+                // construct search paths if necessary
                 Object pathObject = pathsIter.next();
                 if (!(pathObject instanceof SiteViewSearchPath))
                 {
@@ -145,6 +158,9 @@ public class SiteView
                     }
                 }
                 SiteViewSearchPath searchPath = (SiteViewSearchPath)pathObject;
+                allSearchPaths.add(searchPath);
+
+                // validate and filter final search paths
                 if (this.searchPaths.indexOf(searchPath) == -1)
                 {
                     try
@@ -182,20 +198,103 @@ public class SiteView
             // save search paths as string
             if (this.searchPaths.isEmpty())
             {
-                this.searchPaths.add(new SiteViewSearchPath(ProfileLocator.PAGE_LOCATOR, Folder.PATH_SEPARATOR));
+                this.searchPaths.add(new SiteViewSearchPath(ProfileLocator.PAGE_LOCATOR));
                 this.searchPathsString = Folder.PATH_SEPARATOR;
             }
             else
             {
                 this.searchPathsString = searchPathsStringBuffer.toString();
             }
+
+            // find primary user search path, (may not exist: search against all paths) 
+            Iterator searchPathsIter = allSearchPaths.iterator();
+            while (searchPathsIter.hasNext())
+            {
+                SiteViewSearchPath searchPath = (SiteViewSearchPath)searchPathsIter.next();
+                if (searchPath.isUserPath())
+                {
+                    this.userSearchPath = searchPath;
+                    break;
+                }
+            }
+
+            // find base search path, (may not exist: search against all paths)
+            if (allSearchPaths.size() == 1)
+            {
+                // single non-principal search path is the base
+                // search path
+                SiteViewSearchPath searchPath = (SiteViewSearchPath)allSearchPaths.get(0);
+                if (!searchPath.isPrincipalPath())
+                {
+                    this.baseSearchPath = searchPath;
+                }
+            }
+            else
+            {
+                // scan for the search path that are common to all
+                // more specific search paths starting at the least
+                // specific search path
+                ListIterator baseSearchPathsIter = allSearchPaths.listIterator(allSearchPaths.size());
+                while (baseSearchPathsIter.hasPrevious())
+                {
+                    SiteViewSearchPath searchPath = (SiteViewSearchPath)baseSearchPathsIter.previous();
+                    int scanSearchPathsIndex = baseSearchPathsIter.previousIndex();
+                    if (scanSearchPathsIndex == -1)
+                    {
+                        // most specific non-principal search path is the
+                        // base path since all less specific search paths are
+                        // part of the current search path
+                        if (!searchPath.isPrincipalPath())
+                        {
+                            this.baseSearchPath = searchPath;
+                        }
+                        break;
+                    }
+                    else if (!searchPath.isPrincipalPath() && ((this.baseSearchPath == null) || (searchPath.getPathDepth() > this.baseSearchPath.getPathDepth())))
+                    {
+                        // scan more specific search paths to test whether the
+                        // current search path is common to all
+                        boolean isCommonSearchPath = true;
+                        ListIterator scanBaseSearchPathsIter = allSearchPaths.listIterator(scanSearchPathsIndex+1);
+                        while (scanBaseSearchPathsIter.hasPrevious())
+                        {
+                            SiteViewSearchPath scanSearchPath = (SiteViewSearchPath)scanBaseSearchPathsIter.previous();
+                            if (!scanSearchPath.toString().startsWith(searchPath.toString()))
+                            {
+                                isCommonSearchPath = false;
+                                break;
+                            }
+                        }
+                        // if all more specific search paths are start with
+                        // the current search path, the current search path is
+                        // a base search path candidate: continue scan for a
+                        // more specific common search path; otherwise, the
+                        // last base search path is the most common possible: done 
+                        if (isCommonSearchPath)
+                        {
+                            this.baseSearchPath = searchPath;
+                            continue;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        // longest non-principal common base search path found: done
+                        break;
+                    }
+                }
+            }
         }
         else
         {
             // root search path with no aggregation
             this.searchPaths = new ArrayList(1);
-            this.searchPaths.add(new SiteViewSearchPath(ProfileLocator.PAGE_LOCATOR, Folder.PATH_SEPARATOR));
+            this.searchPaths.add(new SiteViewSearchPath(ProfileLocator.PAGE_LOCATOR));
             this.searchPathsString = Folder.PATH_SEPARATOR;
+            this.baseSearchPath = (SiteViewSearchPath)this.searchPaths.get(0);
         }
     }
 
@@ -330,6 +429,84 @@ public class SiteView
     }
     
     /**
+     * StringBuffer implementation for constructing search paths.
+     */
+    private static class PathStringBuffer
+    {
+        private StringBuffer stringBuffer;
+        private boolean userPath;
+        private boolean principalPath;
+        private int pathDepth;
+        
+        public PathStringBuffer()
+        {
+            this.stringBuffer = new StringBuffer();            
+        }
+        
+        public PathStringBuffer(String s)
+        {
+            this.stringBuffer = new StringBuffer(s);
+        }
+
+        public PathStringBuffer append(String s)
+        {
+            stringBuffer.append(s);
+            return this;
+        }
+
+        public PathStringBuffer append(char c)
+        {
+            stringBuffer.append(c);
+            return this;
+        }
+
+        public int length()
+        {
+            return stringBuffer.length();
+        }
+
+        public void setLength(int length)
+        {
+            stringBuffer.setLength(length);
+        }
+
+        public String toString()
+        {
+            return stringBuffer.toString();
+        }
+
+        public boolean isUserPath()
+        {
+            return userPath;
+        }
+
+        public void setUserPath(boolean userPath)
+        {
+            this.userPath = userPath;
+        }
+
+        public boolean isPrincipalPath()
+        {
+            return principalPath;
+        }
+
+        public void setPrincipalPath(boolean principalPath)
+        {
+            this.principalPath = principalPath;
+        }
+
+        public int getPathDepth()
+        {
+            return pathDepth;
+        }
+
+        public void setPathDepth(int pathDepth)
+        {
+            this.pathDepth = pathDepth;
+        }
+    }
+
+    /**
      * mergeSearchPathList - append search paths from profile locator
      *
      * @param locatorName name of profile locator
@@ -357,7 +534,7 @@ public class SiteView
             // initialize path construction variables
             String pathRoot = Folder.PATH_SEPARATOR;
             List paths = new ArrayList(8);
-            paths.add(new StringBuffer(pathRoot));
+            paths.add(new PathStringBuffer(pathRoot));
             int pathDepth = 0;
             int lastPathsCount = 0;
             String lastPropertyName = null;
@@ -384,6 +561,7 @@ public class SiteView
                         // and contains proper path prefix for each subsite
                         // path folder name
                         pathRoot = properties[i].getValue();
+                        int pathRootDepth = 0;
                         if (!pathRoot.startsWith(Folder.PATH_SEPARATOR))
                         {
                             pathRoot = Folder.PATH_SEPARATOR + pathRoot; 
@@ -401,15 +579,20 @@ public class SiteView
                                 {
                                     pathRoot = pathRoot.substring(0, folderIndex) + Folder.RESERVED_SUBSITE_FOLDER_PREFIX + pathRoot.substring(folderIndex);
                                 }
+                                
                                 folderIndex = pathRoot.indexOf(Folder.PATH_SEPARATOR, folderIndex) + 1;
                             }
                             while ((folderIndex != -1) && (folderIndex != pathRoot.length()));
                         }
+
+                        // construct prefix path root
+                        PathStringBuffer path = new PathStringBuffer(pathRoot);
+                        path.setPathDepth(pathRootDepth);
                         
                         // reset locator paths using new prefix
                         pathDepth = 0;
                         paths.clear();
-                        paths.add(new StringBuffer(pathRoot));
+                        paths.add(path);
                         lastPathsCount = 0;
                         lastPropertyName = null;
                         lastPropertyValueLength = 0;
@@ -435,6 +618,12 @@ public class SiteView
                         // value case as provided by profiler
                         String propertyName = properties[i].getName().toLowerCase();
                         String propertyValue = properties[i].getValue();
+                        // classify principal paths
+                        String prefixedPropertyName = Folder.RESERVED_FOLDER_PREFIX+propertyName;
+                        boolean userPath = prefixedPropertyName.equals(Folder.RESERVED_USER_FOLDER_NAME);
+                        boolean rolePath = (!userPath && prefixedPropertyName.equals(Folder.RESERVED_ROLE_FOLDER_NAME));
+                        boolean groupPath = (!userPath && !rolePath && prefixedPropertyName.equals(Folder.RESERVED_GROUP_FOLDER_NAME));
+                        boolean principalPath = (userPath || rolePath || groupPath);
                         // detect duplicate control names which indicates multiple
                         // values: must duplicate locator paths for each value; different
                         // control values are simply appended to all locator paths
@@ -447,11 +636,14 @@ public class SiteView
                             Iterator pathsIter = paths.iterator();
                             for (int count = 0; (pathsIter.hasNext() && (count < lastPathsCount)); count++)
                             {
-                                StringBuffer path = (StringBuffer) pathsIter.next();
-                                StringBuffer multipleValuePath = new StringBuffer(path.toString());
+                                PathStringBuffer path = (PathStringBuffer) pathsIter.next();
+                                PathStringBuffer multipleValuePath = new PathStringBuffer(path.toString());
                                 multipleValuePath.setLength(multipleValuePath.length() - lastPropertyValueLength - 1);
                                 multipleValuePath.append(propertyValue);
                                 multipleValuePath.append(Folder.PATH_SEPARATOR_CHAR);
+                                multipleValuePath.setUserPath(userPath);
+                                multipleValuePath.setPrincipalPath(path.isPrincipalPath() || principalPath);
+                                multipleValuePath.setPathDepth(path.getPathDepth()+1);
                                 multipleValuePaths.add(multipleValuePath);
                             }
                             paths.addAll(multipleValuePaths);
@@ -467,12 +659,15 @@ public class SiteView
                             Iterator pathsIter = paths.iterator();
                             while (pathsIter.hasNext())
                             {
-                                StringBuffer path = (StringBuffer) pathsIter.next();
+                                PathStringBuffer path = (PathStringBuffer) pathsIter.next();
                                 path.append(Folder.RESERVED_FOLDER_PREFIX);
                                 path.append(propertyName);
                                 path.append(Folder.PATH_SEPARATOR_CHAR);
                                 path.append(propertyValue);
                                 path.append(Folder.PATH_SEPARATOR_CHAR);
+                                path.setUserPath(userPath);
+                                path.setPrincipalPath(path.isPrincipalPath() || principalPath);
+                                path.setPathDepth(path.getPathDepth()+1);
                             }
                             
                             // reset last locator property vars
@@ -520,7 +715,7 @@ public class SiteView
             }
             if ((pathDepth == 1) && !navigatedPathRoot)
             {
-                locatorSearchPaths.add(addLocatorSearchPathsAt++, new StringBuffer(pathRoot));
+                locatorSearchPaths.add(addLocatorSearchPathsAt++, new PathStringBuffer(pathRoot));
             }
 
             // reset locator search path ordering since navigated root
@@ -543,7 +738,8 @@ public class SiteView
                 Iterator locatorSearchPathsIter = locatorSearchPaths.iterator();
                 while (locatorSearchPathsIter.hasNext())
                 {
-                    SiteViewSearchPath searchPath = new SiteViewSearchPath(locatorName, locatorSearchPathsIter.next().toString());
+                    PathStringBuffer searchPathBuffer = (PathStringBuffer)locatorSearchPathsIter.next();
+                    SiteViewSearchPath searchPath = new SiteViewSearchPath(locatorName, searchPathBuffer.toString(), searchPathBuffer.isUserPath(), searchPathBuffer.isPrincipalPath(), searchPathBuffer.getPathDepth());
                     // test search path uniqueness
                     int existsAt = searchPaths.indexOf(searchPath);
                     if (existsAt != -1)
@@ -1240,5 +1436,25 @@ public class SiteView
             return pageProxy.getPage();
         }
         return null;
+    }
+
+    /**
+     * getUserFolderPath - return primary concrete root user folder path
+     *
+     * @return user folder path or null
+     */
+    public String getUserFolderPath()
+    {
+        return ((userSearchPath != null) ? userSearchPath.toString() : null);
+    }
+
+    /**
+     * getBaseFolderPath - return primary concrete root base folder path
+     *
+     * @return base folder path or null
+     */
+    public String getBaseFolderPath()
+    {
+        return ((baseSearchPath != null) ? baseSearchPath.toString() : null);        
     }
 }

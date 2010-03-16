@@ -17,6 +17,7 @@
 package org.apache.jetspeed.administration;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.PortletConfig;
@@ -52,8 +53,25 @@ public interface PortalAdministration
      * @param folderTemplate The full PSML path name of a folder to be deep
      *               copied as the new user's set of folders, pages, links
      * @param subsite The subsite folder to place the new user in
+     * @param locale Optional locale used to compute new user folder path
+     *               if subsite not specified
+     * @param serverName Server name used to compute new user folder path
+     *                   if subsite not specified
      * @since 2.1.2              
      */
+    public void registerUser(
+            String userName, 
+            String password, 
+            List roles, 
+            List groups, 
+            Map userInfo, 
+            Map rules, 
+            String folderTemplate,
+            String subsite,
+            Locale locale,
+            String serverName)
+        throws RegistrationException;
+
     void registerUser(String userName, 
                       String password, 
                       List roles, 
@@ -72,7 +90,7 @@ public interface PortalAdministration
             Map rules,
             String template)
         throws RegistrationException;
- 
+
     /**
      * Register a new user using all default values
      * 

@@ -148,45 +148,49 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * newRequestContext - create a new request context instance with fallback and history
      *
      * @param requestProfileLocators request profile locators
+     * @param requestUserPrincipal request user principal
      * @return new request context instance
      */
-    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators)
+    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal)
     {
-        return new PortalSiteRequestContextImpl(this, requestProfileLocators, true, true);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, true, true);
     }
 
     /**
      * newRequestContext - create a new request context instance with history
      *
      * @param requestProfileLocators request profile locators
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      * @return new request context instance
      */
-    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback)
+    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback)
     {
-        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestFallback, true);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, requestFallback, true);
     }
 
     /**
      * newRequestContext - create a new request context instance
      *
      * @param requestProfileLocators request profile locators
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      * @return new request context instance
      */
-    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, boolean requestFallback, boolean useHistory)
+    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory)
     {
-        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestFallback, useHistory);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, requestFallback, useHistory);
     }
 
     /**
      * selectRequestPage - select page proxy for request given profile locators
      *
      * @param requestProfileLocators map of profile locators for request
+     * @param requestUserPrincipal request user principal
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
@@ -195,10 +199,10 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public Page selectRequestPage(Map requestProfileLocators, boolean requestFallback, boolean useHistory) throws NodeNotFoundException
+    public Page selectRequestPage(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory) throws NodeNotFoundException
     {
         // validate and update session profile locators if modified
-        if (updateSessionProfileLocators(requestProfileLocators))
+        if (updateSessionProfileLocators(requestProfileLocators, requestUserPrincipal))
         {
             // extract page request path from the locators
             String requestPath = Folder.PATH_SEPARATOR;
@@ -664,14 +668,15 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * getRequestRootFolder - select root folder proxy for given profile locators
      *
      * @param requestProfileLocators map of profile locators for request
+     * @param requestUserPrincipal request user principal
      * @return root folder proxy for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public Folder getRequestRootFolder(Map requestProfileLocators) throws NodeNotFoundException
+    public Folder getRequestRootFolder(Map requestProfileLocators, String requestUserPrincipal) throws NodeNotFoundException
     {
         // validate and update session profile locators if modified
-        if (updateSessionProfileLocators(requestProfileLocators))
+        if (updateSessionProfileLocators(requestProfileLocators, requestUserPrincipal))
         {
             // valid site view required from session profile locators
             SiteView view = getSiteView();
@@ -691,37 +696,14 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *                                session profile locators
      *
      * @param requestProfileLocators map of profile locators for request
+     * @param requestUserPrincipal request user principal
      * @return profile locators validation flag
      */
-    private boolean updateSessionProfileLocators(Map requestProfileLocators)
+    private boolean updateSessionProfileLocators(Map requestProfileLocators, String requestUserPrincipal)
     {
         // request profile locators are required
         if ((requestProfileLocators != null) && !requestProfileLocators.isEmpty())
         {
-            // get current user principal; ignore derivative
-            // changes in role and group principals
-            String currentUserPrincipal = null;
-            Subject subject = JSSubject.getSubject(AccessController.getContext());
-            if (subject != null)
-            {
-                Iterator principals = subject.getPrincipals().iterator();
-                while (principals.hasNext())
-                {
-                    Principal principal = (Principal) principals.next();
-                    if (principal instanceof UserPrincipal)
-                    {
-                        if (currentUserPrincipal == null)
-                        {
-                            currentUserPrincipal = principal.getName();
-                        }
-                        else
-                        {
-                            currentUserPrincipal += "|" + principal.getName();
-                        }
-                    }
-                }
-            }
-
             // detect stale session, modification of user
             // principal, or changed profile locators for
             // this session context
@@ -730,8 +712,8 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             boolean updated = false;
             synchronized (this)
             {
-                userUpdate = (((userPrincipal == null) && (currentUserPrincipal != null)) ||
-                              ((userPrincipal != null) && !userPrincipal.equals(currentUserPrincipal)));
+                userUpdate = (((userPrincipal == null) && (requestUserPrincipal != null)) ||
+                              ((userPrincipal != null) && !userPrincipal.equals(requestUserPrincipal)));
                 locatorsUpdate = ((profileLocators == null) ||
                                   !locatorsEquals(profileLocators, requestProfileLocators));
                 if (stale || userUpdate || locatorsUpdate)
@@ -741,7 +723,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     // and stale flag
                     clearSessionProfileLocators();
                     profileLocators = requestProfileLocators;
-                    userPrincipal = currentUserPrincipal;
+                    userPrincipal = requestUserPrincipal;
                     updated = true;
                 }
                 locatorsLastUpdateCheck = System.currentTimeMillis();
@@ -775,7 +757,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 {
                     debug.append("Updated stale");
                 }
-                debug.append(" context: user=" + currentUserPrincipal + ", profileLocators=(");
+                debug.append(" context: user=" + requestUserPrincipal + ", profileLocators=(");
                 if (requestProfileLocators != null)
                 {
                     boolean firstEntry = true;
@@ -985,6 +967,44 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         if (view != null)
         {
             return view.getManagedPage(page);            
+        }
+        return null;
+    }
+
+    /**
+     * getUserFolderPath - return primary concrete root user folder path
+     *
+     * @param requestProfileLocators map of profile locators for request
+     * @param requestUserPrincipal request user principal
+     * @return user folder path or null
+     */
+    public String getUserFolderPath(Map requestProfileLocators, String requestUserPrincipal)
+    {
+        // validate and update session profile locators if modified
+        if (updateSessionProfileLocators(requestProfileLocators, requestUserPrincipal))
+        {
+            // return user folder path in site view
+            SiteView view = getSiteView();
+            return ((view != null) ? view.getUserFolderPath() : null);
+        }
+        return null;
+    }
+
+    /**
+     * getBaseFolderPath - return primary concrete root base folder path
+     *
+     * @param requestProfileLocators map of profile locators for request
+     * @param requestUserPrincipal request user principal
+     * @return base folder path or null
+     */
+    public String getBaseFolderPath(Map requestProfileLocators, String requestUserPrincipal)
+    {
+        // validate and update session profile locators if modified
+        if (updateSessionProfileLocators(requestProfileLocators, requestUserPrincipal))
+        {
+            // return base folder path in site view
+            SiteView view = getSiteView();
+            return ((view != null) ? view.getBaseFolderPath() : null);
         }
         return null;
     }

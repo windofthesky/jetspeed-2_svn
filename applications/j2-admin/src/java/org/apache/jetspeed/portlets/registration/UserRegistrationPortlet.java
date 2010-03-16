@@ -721,7 +721,8 @@ public class UserRegistrationPortlet extends AbstractVelocityMessagingPortlet
                         (String) userInfo.get("password"), prefRoles,
                         prefGroups, userAttributes, // note use of only
                                                         // PLT.D values here.
-                        profileRules, template, subsiteRootFolder); 
+                        profileRules, template, subsiteRootFolder,
+                        actionRequest.getLocale(), actionRequest.getServerName());
                 
                 String urlGUID = ForgottenPasswordPortlet.makeGUID(
                         (String) userInfo.get("user.name"), (String) userInfo
