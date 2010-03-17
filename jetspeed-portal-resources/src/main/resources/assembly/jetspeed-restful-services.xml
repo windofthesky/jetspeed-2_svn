@@ -109,6 +109,10 @@
     <constructor-arg ref="cxfJaxrsBus" />
   </bean>
   
+  <!-- 
+    The internal server factory. 
+    Each JAX-RS service component is registered by "resourceProvider" property. 
+  -->
   <bean id="cxfJaxrsServerFactoryBean" class="org.apache.cxf.jaxrs.JAXRSServerFactoryBean">
     <meta key="j2:cat" value="default" />
     <property name="address" value="/" />
