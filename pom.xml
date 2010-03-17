@@ -1683,6 +1683,15 @@
               </target>
               <!-- pages deployment intermediate targets -->
               <target>
+                <id>undeploy-pages</id>
+                <name>demo</name>
+                <dir>@rootdir@/applications/jetspeed-demo</dir>
+                <profiles>delete-pages</profiles>
+                <properties>
+                  <delete.pages>pages</delete.pages>
+                </properties>
+              </target>              
+              <target>
                 <id>undeploy-ui-pages</id>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
@@ -1715,7 +1724,7 @@
               </target>              
               <target>
                 <id>ui-deploy-pages</id>
-                <depends>undeploy-min-pages,undeploy-min-ui-pages</depends>
+                <depends>undeploy-pages,undeploy-min-pages,undeploy-min-ui-pages</depends>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
                 <profiles>deploy-pages</profiles>
@@ -1725,7 +1734,7 @@
               </target>
               <target>
                 <id>min-deploy-pages</id>
-                <depends>undeploy-ui-pages,undeploy-min-ui-pages</depends>
+                <depends>undeploy-pages,undeploy-ui-pages,undeploy-min-ui-pages</depends>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
                 <profiles>deploy-pages</profiles>
@@ -1735,7 +1744,7 @@
               </target>
               <target>
                 <id>min-ui-deploy-pages</id>
-                <depends>undeploy-ui-pages,undeploy-min-pages</depends>
+                <depends>undeploy-pages,undeploy-ui-pages,undeploy-min-pages</depends>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
                 <profiles>deploy-pages</profiles>
@@ -1744,8 +1753,8 @@
                 </properties>
               </target>
               <target>
-                <id>undeploy-pages</id>
-                <depends>undeploy-ui-pages,undeploy-min-pages,undeploy-min-ui-pages</depends>
+                <id>undeploy-all-pages</id>
+                <depends>undeploy-pages,undeploy-ui-pages,undeploy-min-pages,undeploy-min-ui-pages</depends>
                 <name>demo</name>
                 <dir>@rootdir@/applications/jetspeed-demo</dir>
                 <profiles>delete-pages</profiles>
@@ -1813,7 +1822,7 @@
               </target>               
               <target>
                 <id>demo-dbpsml-nodb</id>
-                <depends>demo-install,demo-deploy,deploy-dbpsml,undeploy-pages</depends>
+                <depends>demo-install,demo-deploy,deploy-dbpsml,undeploy-all-pages</depends>
               </target>
               <target>
                 <id>demo-dbpsml</id>
@@ -1821,7 +1830,7 @@
               </target>
               <target>
                 <id>min-dbpsml-nodb</id>
-                <depends>demo-install,min-deploy,deploy-dbpsml,undeploy-pages</depends>
+                <depends>demo-install,min-deploy,deploy-dbpsml,undeploy-all-pages</depends>
               </target>           
               <target>
                 <id>min-dbpsml</id>
@@ -1845,7 +1854,7 @@
               </target>               
               <target>
                 <id>ui-dbpsml-nodb</id>
-                <depends>demo-install,demo-deploy,deploy-dbpsml,undeploy-pages,deploy-ui</depends>
+                <depends>demo-install,demo-deploy,deploy-dbpsml,undeploy-all-pages,deploy-ui</depends>
               </target>
               <target>
                 <id>ui-dbpsml</id>
@@ -1853,7 +1862,7 @@
               </target>
               <target>
                 <id>min-ui-dbpsml-nodb</id>
-                <depends>demo-install,min-deploy,deploy-dbpsml,undeploy-pages,deploy-ui</depends>
+                <depends>demo-install,min-deploy,deploy-dbpsml,undeploy-all-pages,deploy-ui</depends>
               </target>           
               <target>
                 <id>min-ui-dbpsml</id>
