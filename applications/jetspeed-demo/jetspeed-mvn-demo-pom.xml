@@ -763,24 +763,6 @@
 	          </execution>
 	        </executions>
 	      </plugin>           
-          <plugin>
-            <groupId>org.apache.portals.jetspeed-2</groupId>
-            <artifactId>jetspeed-fileutils-maven-plugin</artifactId>
-            <version>${org.apache.portals.jetspeed.version}</version>
-            <executions>
-              <execution>
-                <id>deploy-pages1</id>
-                <goals>
-                  <goal>event</goal>
-                </goals>
-                <phase>process-resources</phase>
-                <configuration>
-                  <srcDirectoryPath>${org.apache.jetspeed.server.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/pages</srcDirectoryPath>
-                  <event>delete</event>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>           
         </plugins>
       </build>
     </profile>
