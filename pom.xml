@@ -1576,6 +1576,9 @@
                 <dir>.</dir>
                 <goals>test</goals>
                 <profiles>test</profiles>
+                <properties>
+                  <test>${test}</test>
+                </properties>
               </target>
               <target>
                 <id>test-install</id>
