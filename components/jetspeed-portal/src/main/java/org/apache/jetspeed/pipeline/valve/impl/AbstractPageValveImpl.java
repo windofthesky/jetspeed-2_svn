@@ -106,8 +106,12 @@ public abstract class AbstractPageValveImpl extends AbstractValve implements Pag
     {
         try
         {
-            // get request path
-            String requestPath = request.getPath();
+            // get request path: first check "override" or custom "mapped" path through PATH_ATTRIBUTE request attribute
+            String requestPath = (String)request.getAttribute(PortalReservedParameters.PATH_ATTRIBUTE);
+            if (requestPath == null)
+            {
+                requestPath = request.getPath();
+            }
             if ((requestPath != null) && (requestPath.length() > 0))
             {
                 if (!requestPath.startsWith(Folder.PATH_SEPARATOR))
