@@ -329,7 +329,7 @@ public class JetspeedLoggerUtil
             }
             catch (Exception e)
             {
-                throw new RuntimeException("Failed to invoke logger method. " + e);
+                throw new RuntimeException("Failed to invoke logger method, " + methodName + ", on " + targetLogger + ". " + e);
             }
         }
         

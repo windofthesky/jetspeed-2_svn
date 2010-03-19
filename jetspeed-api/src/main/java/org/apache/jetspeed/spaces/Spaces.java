@@ -141,6 +141,13 @@ public interface Spaces
     Space lookupUserSpace(String username);
     
     /**
+     * Returns true if the space is from a user space folder.
+     * @param space
+     * @return
+     */
+    boolean isUserSpace(Space space);
+    
+    /**
      * Adds a space to the list of spaces for the given environment
      * A space can exist in zero or more environments
      * 

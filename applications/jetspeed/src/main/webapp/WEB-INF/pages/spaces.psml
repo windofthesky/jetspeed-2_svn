@@ -24,9 +24,13 @@ limitations under the License.
   <fragment id="spaces-layout" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="new-spaces-app" type="portlet" name="j2-admin::SpacesManager"/>
   </fragment>
-
-
+  
   <security-constraints>
     <security-constraints-ref>admin</security-constraints-ref>
+    <security-constraint>
+      <roles>user</roles>
+      <permissions>view</permissions>
+    </security-constraint>
   </security-constraints>
+  
 </page>

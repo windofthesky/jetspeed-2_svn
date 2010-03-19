@@ -326,7 +326,11 @@ public class SpacesServiceImpl implements Spaces
 		}
     	return null;
     }
-
+    
+    public boolean isUserSpace(Space space)
+    {
+        return space.getPath().startsWith(Folder.USER_FOLDER);
+    }
     
     public void addSpaceToEnvironment(Space space, Environment env) throws SpacesException
     {
