@@ -26,6 +26,7 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
 
@@ -36,11 +37,11 @@ import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
  * 
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  */
-public class TestUserManager extends AbstractLDAPSecurityTestCase
+public class TestUserManager extends AbstractSecurityTestcase
 {
     public static Test suite()
     {
-        return createFixturedTestSuite(TestUserManager.class, "ldapTestSetup", "ldapTestTeardown");
+        return new TestSuite(TestUserManager.class);
     }
 
     /**
