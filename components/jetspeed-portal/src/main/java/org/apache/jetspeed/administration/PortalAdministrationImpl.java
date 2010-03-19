@@ -298,6 +298,7 @@ public class PortalAdministrationImpl implements PortalAdministration
                 request.setLocale((locale != null) ? locale : Locale.getDefault());
                 MockHttpServletRequest servletRequest = new MockHttpServletRequest();
                 servletRequest.setServerName(serverName);
+                request.setRequest(servletRequest);
                 
                 // get profile locators map for new user request
                 Map locators = profiler.getProfileLocators(request , user);
