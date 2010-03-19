@@ -261,6 +261,17 @@ public class MvnMojo extends AbstractMojo
                 {
                     t.settingsFile = interpolateRootDir(t.settingsFile);
                 }
+                // make sure target properties are valid
+                if (t.properties != null)
+                {
+                    for (Iterator<String> iter = t.properties.keySet().iterator(); iter.hasNext(); )
+                    {
+                        if (t.properties.get(iter.next()) == null)
+                        {
+                            iter.remove();
+                        }
+                    }
+                }
                 targetsMap.put(t.id, t);
                 i++;
             }
