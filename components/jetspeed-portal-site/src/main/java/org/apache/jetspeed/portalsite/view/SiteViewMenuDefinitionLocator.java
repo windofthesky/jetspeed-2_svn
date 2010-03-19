@@ -31,15 +31,20 @@ import org.apache.jetspeed.page.document.Node;
 public class SiteViewMenuDefinitionLocator
 {
     /**
+     * menuDefinition - menu definition
+     */
+    private MenuDefinition menuDefinition;
+
+    /**
      * locator - locator string defined for menu containing
      *           menu name and concrete path of defining node
      */
     private String locator;
-
+    
     /**
-     * menuDefinition - menu definition
+     * node - menu definition view path
      */
-    private MenuDefinition menuDefinition;
+    private String path;
 
     /**
      * override - override menu definition flag
@@ -50,13 +55,15 @@ public class SiteViewMenuDefinitionLocator
      * SiteViewMenuDefinitionLocator - custom menu definition constructor
      *
      * @param menuDefinition custom menu definition
-     * @param definingNode defining page or folder
-     * @param 
+     * @param definitionNode defining page or folder
+     * @param path menu definition path
+     * @param override menu definition override flag
      */
-    public SiteViewMenuDefinitionLocator(MenuDefinition menuDefinition, Node definingNode, boolean override)
+    public SiteViewMenuDefinitionLocator(MenuDefinition menuDefinition, Node definitionNode, String path, boolean override)
     {
         this.menuDefinition = menuDefinition;
-        this.locator = definingNode.getPath() + "|" + menuDefinition.getName();
+        this.locator = definitionNode.getPath() + "|" + menuDefinition.getName();
+        this.path = path;
         this.override = override;
     }
 
@@ -125,6 +132,16 @@ public class SiteViewMenuDefinitionLocator
         return menuDefinition.getName();
     }
 
+    /**
+     * getPath - return menu definition view path
+     *
+     * @return menu definition view path
+     */
+    public String getPath()
+    {
+        return path;
+    }
+    
     /**
      * isOverride - return override menu definition flag
      *

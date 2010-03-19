@@ -61,6 +61,12 @@ public abstract class AbstractSiteView
     public final static String ALT_CURRENT_PAGE_PATH_0 = "@0";
 
     /**
+     * APPEND_PATH - expression used to match the menu definition path
+     */
+    public final static String MENU_DEFINITION_PATH = "+";
+    public final static char MENU_DEFINITION_PATH_CHAR = '+';
+
+    /**
      * STANDARD_*_MENU_NAME - standard menu names
      */
     public final static String STANDARD_BACK_MENU_NAME = "back";
@@ -159,13 +165,14 @@ public abstract class AbstractSiteView
      *
      * @param path single node path
      * @param currentNode current folder or page for relative paths or null
+     * @param menuPath menu definition path or null
      * @param onlyViewable node required to be viewable
      * @param onlyVisible node required to be visible, (or current)
      * @return folder, page, or link node view
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public Node getNodeView(String path, Node currentNode, boolean onlyViewable, boolean onlyVisible) throws NodeNotFoundException
+    public Node getNodeView(String path, Node currentNode, String menuPath, boolean onlyViewable, boolean onlyVisible) throws NodeNotFoundException
     {
         // determine current folder and page
         String currentPath = path;
@@ -193,6 +200,18 @@ public abstract class AbstractSiteView
         {
             // return current node, (assume viewable)
             return currentNode;
+        }
+
+        // convert path with indexed current node path expressions
+        if (currentNode != null)
+        {
+            currentPath = substituteCurrentPathExpressions(currentNode, currentPath);
+        }
+
+        // convert path with menu path prefix or expressions
+        if (menuPath != null)
+        {
+            currentPath = substituteMenuPathExpressions(menuPath, currentPath);
         }
 
         // convert absolute path to a root relative search
@@ -267,7 +286,7 @@ public abstract class AbstractSiteView
                     {
                         Node node = children.get(currentPath);
                         if (((node instanceof Folder) || (node instanceof Page) || (node instanceof Link)) &&
-                            (!onlyVisible || !node.isHidden() || (node == currentPage)) &&
+                            (!onlyVisible || isVisible(node, currentPage)) &&
                             (!onlyViewable || isViewable(node, onlyVisible)))
                         {
                             return node;
@@ -289,7 +308,7 @@ public abstract class AbstractSiteView
 
         // path maps to current folder; return if viewable/visible
         // or visibility not required
-        if ((!onlyVisible || !currentFolder.isHidden()) &&
+        if ((!onlyVisible || isVisible(currentFolder, null)) &&
             (!onlyViewable || isViewable(currentFolder, onlyVisible)))
         {
             return currentFolder;
@@ -315,11 +334,12 @@ public abstract class AbstractSiteView
      *
      * @param regexpPath regular expression node path
      * @param currentNode current folder or page for relative paths or null
+     * @param menuPath menu definition path or null
      * @param onlyViewable nodes required to be viewable flag
      * @param onlyVisible node required to be visible, (or current)
      * @return list of folder, page, or link node views
      */
-    public List getNodeViews(String regexpPath, Node currentNode, boolean onlyViewable, boolean onlyVisible)
+    public List getNodeViews(String regexpPath, Node currentNode, String menuPath, boolean onlyViewable, boolean onlyVisible)
     {
         // determine current folder and page
         String currentRegexpPath = regexpPath;
@@ -364,65 +384,14 @@ public abstract class AbstractSiteView
                 return views;
             }
 
-            // match current node path expression
-            int currentNodePathIndex = currentRegexpPath.indexOf(ALT_CURRENT_PAGE_PATH_CHAR);
-            String [] currentNodePathElements = null;
-            while (currentNodePathIndex != -1)
-            {
-                if (currentNodePathIndex+1 < currentRegexpPath.length())
-                {
-                    String currentNodePathElement = null;
-                    char currentNodePathElementIndexChar = currentRegexpPath.charAt(currentNodePathIndex+1);
-                    if ((currentNodePathElementIndexChar >= '0') && (currentNodePathElementIndexChar <= '9'))
-                    {
-                        // valid current node path pattern
-                        int currentNodePathElementIndex = (int)(currentNodePathElementIndexChar-'0');
-                        if (currentNodePathElementIndex > 0)
-                        {
-                            // use indexed current node path element
-                            if (currentNodePathElements == null)
-                            {
-                                // note: leading '/' in path makes index one based
-                                currentNodePathElements = currentNode.getPath().split(Folder.PATH_SEPARATOR);
-                            }
-                            if (currentNodePathElementIndex < currentNodePathElements.length)
-                            {
-                                currentNodePathElement = currentNodePathElements[currentNodePathElementIndex];
-                            }
-                        }
-                        else
-                        {
-                            // use full current node path trimmed of separators
-                            currentNodePathElement = currentNode.getPath();
-                            if (currentNodePathElement.endsWith(Folder.PATH_SEPARATOR))
-                            {
-                                currentNodePathElement = currentNodePathElement.substring(0, currentNodePathElement.length()-1);
-                            }
-                            if (currentNodePathElement.startsWith(Folder.PATH_SEPARATOR))
-                            {
-                                currentNodePathElement = currentNodePathElement.substring(1);
-                            }
-                        }
-                    }
-                    else if (currentNodePathElementIndexChar == '$')
-                    {
-                        // use last current node path element
-                        if (currentNodePathElements == null)
-                        {
-                            // note: leading '/' in path makes index one based
-                            currentNodePathElements = currentNode.getPath().split(Folder.PATH_SEPARATOR);
-                        }
-                        currentNodePathElement = currentNodePathElements[currentNodePathElements.length-1];
-                    }
-                    // replace current node path expression
-                    if (currentNodePathElement != null)
-                    {
-                        currentRegexpPath = currentRegexpPath.substring(0, currentNodePathIndex)+currentNodePathElement+currentRegexpPath.substring(currentNodePathIndex+2);
-                        currentNodePathIndex += currentNodePathElement.length()-1;
-                    }
-                }
-                currentNodePathIndex = currentRegexpPath.indexOf(ALT_CURRENT_PAGE_PATH_CHAR, currentNodePathIndex+1);
-            }
+            // substitute current node path expression
+            currentRegexpPath = substituteCurrentPathExpressions(currentNode, currentRegexpPath);
+        }
+
+        // convert pattern with menu path prefix or expressions
+        if (menuPath != null)
+        {
+            currentRegexpPath = substituteMenuPathExpressions(menuPath, currentRegexpPath);
         }
 
         // convert absolute path to a root relative search
@@ -497,7 +466,7 @@ public abstract class AbstractSiteView
                                         while (subfoldersIter.hasNext())
                                         {
                                             currentFolder = (Folder)subfoldersIter.next();
-                                            List subfolderViews = getNodeViews(currentRegexpPath, currentFolder, onlyViewable, onlyVisible);
+                                            List subfolderViews = getNodeViews(currentRegexpPath, currentFolder, menuPath, onlyViewable, onlyVisible);
                                             if ((subfolderViews != null) && !subfolderViews.isEmpty())
                                             {
                                                 if (views == null)
@@ -580,7 +549,7 @@ public abstract class AbstractSiteView
                                 {
                                     Node child = (Node)childrenIter.next(); 
                                     if (((child instanceof Folder) || (child instanceof Page) || (child instanceof Link)) &&
-                                        (!onlyVisible || !child.isHidden() || (child == currentPage)) &&
+                                        (!onlyVisible || isVisible(child, currentPage)) &&
                                         (!onlyViewable || isViewable(child, onlyVisible)))
                                     {
                                         if (views == null)
@@ -600,7 +569,7 @@ public abstract class AbstractSiteView
                             // viewable and visibility is required
                             Node child = children.get(currentRegexpPath);
                             if (((child instanceof Folder) || (child instanceof Page) || (child instanceof Link)) &&
-                                (!onlyVisible || !child.isHidden() || (child == currentPage)) &&
+                                (!onlyVisible || isVisible(child, currentPage)) &&
                                 (!onlyViewable || isViewable(child, onlyVisible)))
                             {
                                 List views = new ArrayList(1);
@@ -625,7 +594,7 @@ public abstract class AbstractSiteView
 
         // path maps to current folder; return if viewable/visible
         // or visibility not required
-        if ((!onlyVisible || !currentFolder.isHidden()) &&
+        if ((!onlyVisible || isVisible(currentFolder, null)) &&
             (!onlyViewable || isViewable(currentFolder, onlyVisible)))
         {
             List views = new ArrayList(1);
@@ -633,6 +602,128 @@ public abstract class AbstractSiteView
             return views;
         }
         return null;
+    }
+    
+    /**
+     * substituteCurrentPathExpressions - Substitute current path expressions in specified path.
+     * 
+     * @param currentNode current node
+     * @param path path
+     * @return substituted path
+     */
+    private static String substituteCurrentPathExpressions(Node currentNode, String path)
+    {
+        // match current node path expression
+        String [] currentNodePathElements = null;
+        int pathIndex = path.indexOf(ALT_CURRENT_PAGE_PATH_CHAR);
+        while (pathIndex != -1)
+        {
+            if (pathIndex+1 < path.length())
+            {
+                String currentNodePathElement = null;
+                char pathElementIndexChar = path.charAt(pathIndex+1);
+                if ((pathElementIndexChar >= '0') && (pathElementIndexChar <= '9'))
+                {
+                    // valid current node path pattern
+                    int pathElementIndex = (int)(pathElementIndexChar-'0');
+                    if (pathElementIndex > 0)
+                    {
+                        // use indexed current node path element
+                        if (currentNodePathElements == null)
+                        {
+                            // note: leading '/' in path makes index one based
+                            currentNodePathElements = currentNode.getPath().split(Folder.PATH_SEPARATOR);
+                        }
+                        if (pathElementIndex < currentNodePathElements.length)
+                        {
+                            currentNodePathElement = currentNodePathElements[pathElementIndex];
+                        }
+                    }
+                    else
+                    {
+                        // use full current node path trimmed of separators
+                        currentNodePathElement = currentNode.getPath();
+                        if (currentNodePathElement.endsWith(Folder.PATH_SEPARATOR))
+                        {
+                            currentNodePathElement = currentNodePathElement.substring(0, currentNodePathElement.length()-1);
+                        }
+                        if (currentNodePathElement.startsWith(Folder.PATH_SEPARATOR))
+                        {
+                            currentNodePathElement = currentNodePathElement.substring(1);
+                        }
+                    }
+                }
+                else if (pathElementIndexChar == '$')
+                {
+                    // use last current node path element
+                    if (currentNodePathElements == null)
+                    {
+                        // note: leading '/' in path makes index one based
+                        currentNodePathElements = currentNode.getPath().split(Folder.PATH_SEPARATOR);
+                    }
+                    currentNodePathElement = currentNodePathElements[currentNodePathElements.length-1];
+                }
+                // replace current node path expression
+                if (currentNodePathElement != null)
+                {
+                    path = path.substring(0, pathIndex)+currentNodePathElement+path.substring(pathIndex+2);
+                    pathIndex += currentNodePathElement.length()-1;
+                }
+            }
+            pathIndex = path.indexOf(ALT_CURRENT_PAGE_PATH_CHAR, pathIndex+1);
+        }
+        return path;
+    }
+
+    /**
+     * substituteMenuPathExpressions - Substitute menu path expressions in specified path.
+     * 
+     * @param menuPath menu definition path
+     * @param path path
+     * @return substituted path
+     */
+    private static String substituteMenuPathExpressions(String menuPath, String path)
+    {
+        // match menu path expression
+        String strippedMenuPath = null;
+        int pathIndex = path.indexOf(MENU_DEFINITION_PATH_CHAR);
+        while (pathIndex != -1)
+        {
+            if (strippedMenuPath == null)
+            {
+                strippedMenuPath = menuPath.substring(1);
+                if (strippedMenuPath.endsWith(Folder.PATH_SEPARATOR))
+                {
+                    strippedMenuPath = menuPath.substring(0, strippedMenuPath.length()-1);
+                }
+            }
+            if (strippedMenuPath.length() > 0)
+            {
+                if (pathIndex == 0)
+                {
+                    path = Folder.PATH_SEPARATOR+strippedMenuPath+path.substring(1);
+                    pathIndex = path.indexOf(MENU_DEFINITION_PATH_CHAR, strippedMenuPath.length()+1);                    
+                }
+                else
+                {
+                    path = path.substring(0, pathIndex)+strippedMenuPath+path.substring(pathIndex+1);
+                    pathIndex = path.indexOf(MENU_DEFINITION_PATH_CHAR, pathIndex+strippedMenuPath.length());                    
+                }
+            }
+            else
+            {
+                if ((pathIndex > 0) && (pathIndex+1 < path.length()) && (path.charAt(pathIndex-1) == Folder.PATH_SEPARATOR_CHAR) && (path.charAt(pathIndex+1) == Folder.PATH_SEPARATOR_CHAR))
+                {
+                    path = path.substring(0, pathIndex)+path.substring(pathIndex+2);
+                }
+                else
+                {
+                    path = path.substring(0, pathIndex)+path.substring(pathIndex+1);
+                }
+                pathIndex = path.indexOf(MENU_DEFINITION_PATH_CHAR, pathIndex);
+            }
+        }
+        return path;
     }
 
     /**
@@ -693,11 +784,39 @@ public abstract class AbstractSiteView
     }
 
     /**
-     * isViewable - tests for node visibility in view
+     * isVisible - tests for node visibility in view
+     *
+     * @param node test node view
+     * @param currentPage current page view
+     * @return visible flag
+     */
+    private static boolean isVisible(Node node, Page currentPage)
+    {
+        // pages are considered visible if not hidden or match current page
+        if (node instanceof Page)
+        {
+            return (!node.isHidden() || (node == currentPage));
+        }
+        // folders are considered visible if not hidden and not reserved
+        if (node instanceof Folder)
+        {
+            return !node.isHidden() && !((Folder)node).isReserved();            
+        }
+        // links are considered visible if not hidden
+        if (node instanceof Link)
+        {
+            return !node.isHidden();
+        }
+        // templates, fragments, and dynamic page are not visible
+        return false;
+    }
+
+    /**
+     * isViewable - tests for node belonging to view
      *
      * @param node test node view
      * @param onlyVisible nodes required to be visible
-     * @return - viewable flag
+     * @return viewable flag
      */
     private static boolean isViewable(Node node, boolean onlyVisible)
     {
@@ -719,7 +838,7 @@ public abstract class AbstractSiteView
                     while (childrenIter.hasNext())
                     {
                         Node child = (Node)childrenIter.next();
-                        if ((!onlyVisible || !child.isHidden()) && isViewable(child, onlyVisible))
+                        if ((!onlyVisible || isVisible(child, null)) && isViewable(child, onlyVisible))
                         {
                             return true;
                         }

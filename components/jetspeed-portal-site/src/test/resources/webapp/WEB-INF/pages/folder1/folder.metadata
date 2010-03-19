@@ -27,4 +27,5 @@ limitations under the License.
 
   <default-page>page0.psml</default-page>
 
+  <menu name="rooted-navigations" regexp="true" options="+/*/,+/*.psml,+/*.link" depth="-1"/>
 </folder>

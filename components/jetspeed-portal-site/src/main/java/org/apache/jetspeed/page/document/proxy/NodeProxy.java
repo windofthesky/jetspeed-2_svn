@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 import org.apache.jetspeed.portalsite.view.SiteViewMenuDefinitionLocator;
@@ -244,14 +243,15 @@ public abstract class NodeProxy extends SearchPathsSiteViewProxy
      *                               menu definition locators
      *
      * @param locators list of menu definition locators to merge
-     * @param node node view
+     * @param definitionNode menu definition node
+     * @param path menu definition path
      * @param override override menu definition
      */
-    public void mergeMenuDefinitionLocators(List definitions, Node node, boolean override)
+    public void mergeMenuDefinitionLocators(List definitions, Node definitionNode, String path, boolean override)
     {
         // merge definitions into aggregated menu definition
         // locators if defined
-        menuDefinitionLocators = SiteViewUtils.mergeMenuDefinitionLocators(definitions, node, override, menuDefinitionLocators);
+        menuDefinitionLocators = SiteViewUtils.mergeMenuDefinitionLocators(definitions, definitionNode, path, override, menuDefinitionLocators);
     }
 
     /**

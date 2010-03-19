@@ -127,7 +127,7 @@ public class PhysicalSiteView extends AbstractSiteView
                 {
                     // get menu definitions from inheritance folders and
                     // merge into menu definition locators
-                    locators = SiteViewUtils.mergeMenuDefinitionLocators(folder.getMenuDefinitions(), folder, false, locators);
+                    locators = SiteViewUtils.mergeMenuDefinitionLocators(folder.getMenuDefinitions(), folder, path, false, locators);
                     folder = (Folder)folder.getParent();
                 }
                 // merge standard menu definition locator defaults
@@ -141,8 +141,8 @@ public class PhysicalSiteView extends AbstractSiteView
                 // folder menu definitions include standard menu definition
                 // locator defaults
                 Page page = (Page)node;
-                locators = SiteViewUtils.mergeMenuDefinitionLocators(page.getMenuDefinitions(), page, true, locators);
                 Folder folder = (Folder)node.getParent();
+                locators = SiteViewUtils.mergeMenuDefinitionLocators(page.getMenuDefinitions(), page, folder.getPath(), true, locators);
                 locators = SiteViewUtils.mergeMenuDefinitionLocators(getMenuDefinitionLocators(folder), locators);
             }
             else if (node instanceof DynamicPage)
@@ -153,15 +153,16 @@ public class PhysicalSiteView extends AbstractSiteView
                 // folder menu definitions include standard menu definition
                 // locator defaults
                 DynamicPage dynamicPage = (DynamicPage)node;
-                locators = SiteViewUtils.mergeMenuDefinitionLocators(dynamicPage.getMenuDefinitions(), dynamicPage, true, locators);
-                Folder parentFolder = (Folder)node.getParent();
-                locators = SiteViewUtils.mergeMenuDefinitionLocators(getMenuDefinitionLocators(parentFolder), locators);
+                Folder folder = (Folder)node.getParent();
+                locators = SiteViewUtils.mergeMenuDefinitionLocators(dynamicPage.getMenuDefinitions(), dynamicPage, folder.getPath(), true, locators);
+                locators = SiteViewUtils.mergeMenuDefinitionLocators(getMenuDefinitionLocators(folder), locators);
             }
             else if (node instanceof PageTemplate)
             {
                 // merge only page template menu definition locators by name
                 PageTemplate pageTemplate = (PageTemplate)node;
-                locators = SiteViewUtils.mergeMenuDefinitionLocators(pageTemplate.getMenuDefinitions(), pageTemplate, false, locators);
+                Folder folder = (Folder)node.getParent();
+                locators = SiteViewUtils.mergeMenuDefinitionLocators(pageTemplate.getMenuDefinitions(), pageTemplate, folder.getPath(), false, locators);
             }
             locators = ((locators != null) ? locators : NULL_LOCATORS);
             List cachedLocators = (List)menuDefinitionLocatorsCache.putIfAbsent(path, locators);

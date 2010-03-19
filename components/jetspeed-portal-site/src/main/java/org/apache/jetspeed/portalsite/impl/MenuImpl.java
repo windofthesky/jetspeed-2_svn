@@ -77,12 +77,13 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      *
      * @param view site view used to construct menu
      * @param definition menu definition
+     * @param path menu definition path
      * @param context request context
      * @param menus related menu definition names set
      */
-    public MenuImpl(MenuDefinition definition, PortalSiteRequestContextImpl context, Set menus)
+    public MenuImpl(MenuDefinition definition, String path, PortalSiteRequestContextImpl context, Set menus)
     {
-        this((MenuImpl)null, definition, context, menus);
+        this((MenuImpl)null, definition, path, context, menus);
     }
 
     /**
@@ -90,12 +91,13 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      *
      * @param parent containing menu implementation
      * @param definition menu definition
+     * @param path menu definition path
      * @param context request context
      * @param menus related menu definition names set
      */
-    public MenuImpl(MenuImpl parent, MenuDefinition definition, PortalSiteRequestContextImpl context, Set menus)
+    public MenuImpl(MenuImpl parent, MenuDefinition definition, String path, PortalSiteRequestContextImpl context, Set menus)
     {
-        this(((PortalSiteSessionContextImpl)context.getSessionContext()).getSiteView(), parent, definition, context, menus);
+        this(((PortalSiteSessionContextImpl)context.getSessionContext()).getSiteView(), parent, definition, path, context, menus);
     }
 
     /**
@@ -104,10 +106,11 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param view site view used to construct menu
      * @param parent containing menu implementation
      * @param definition menu definition
+     * @param path menu definition path
      * @param context request context
      * @param menus related menu definition names set
      */
-    protected MenuImpl(AbstractSiteView view, MenuImpl parent, MenuDefinition definition, PortalSiteRequestContextImpl context, Set menus)
+    protected MenuImpl(AbstractSiteView view, MenuImpl parent, MenuDefinition definition, String path, PortalSiteRequestContextImpl context, Set menus)
     {
         super(view, parent);
         this.definition = definition;
@@ -121,7 +124,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
             {
                 try
                 {
-                    optionView = view.getNodeView(options, context.getPage(), true, true);
+                    optionView = view.getNodeView(options, context.getPage(), path, true, true);
                 }
                 catch (NodeNotFoundException nnfe)
                 {
@@ -165,7 +168,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         List folderChildren = null;
                         try
                         {
-                            folderChildren = view.getNodeViews(folderChildrenPath, context.getPage(), true, true);
+                            folderChildren = view.getNodeViews(folderChildrenPath, context.getPage(), path, true, true);
                         }
                         catch (NodeNotFoundException nnfe)
                         {
@@ -194,7 +197,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                 }
 
                 // menu defined only with menu definition options
-                this.elements = constructMenuElements(view, context, options, overrideOptionViews, definition.getDepth(), definition.isPaths(), definition.isRegexp(), definition.getProfile(), definition.getOrder());
+                this.elements = constructMenuElements(view, context, path, options, overrideOptionViews, definition.getDepth(), definition.isPaths(), definition.isRegexp(), definition.getProfile(), definition.getOrder());
             }
             else
             {
@@ -238,7 +241,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         {
                             order = definition.getOrder();
                         }
-                        List optionsAndMenus = constructMenuElements(view, context, optionDefinition.getOptions(), null, optionDefinition.getDepth(), optionDefinition.isPaths(), optionDefinition.isRegexp(), locatorName, order);
+                        List optionsAndMenus = constructMenuElements(view, context, path, optionDefinition.getOptions(), null, optionDefinition.getDepth(), optionDefinition.isPaths(), optionDefinition.isRegexp(), locatorName, order);
 
                         // append option and menu elements to current separator
                         // elements list
@@ -290,7 +293,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                     {
                         // construct nested menu element from definition
                         MenuDefinition menuDefinition = (MenuDefinition)menuElement;
-                        MenuImpl nestedMenu = new MenuImpl(view, this, menuDefinition, context, menus);
+                        MenuImpl nestedMenu = new MenuImpl(view, this, menuDefinition, path, context, menus);
 
                         // append menu element to current separated elements list
                         if (separatedElements == null)
@@ -554,6 +557,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * 
      * @param context request context
      * @param view context site view
+     * @param path menu definition path
      * @param options option paths specification
      * @param overrideElementViews override menu element node views
      * @param depth inclusion depth
@@ -562,7 +566,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param locatorName profile locator name
      * @param order ordering patterns list
      */
-    private List constructMenuElements(AbstractSiteView view, PortalSiteRequestContextImpl context, String options, List overrideElementViews, int depth, boolean paths, boolean regexp, String locatorName, String order)
+    private List constructMenuElements(AbstractSiteView view, PortalSiteRequestContextImpl context, String path, String options, List overrideElementViews, int depth, boolean paths, boolean regexp, String locatorName, String order)
     {
         if (options != null)
         {
@@ -590,7 +594,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                             List pathViews = null;
                             try
                             {
-                                pathViews = view.getNodeViews(optionPath, context.getPage(), true, true);
+                                pathViews = view.getNodeViews(optionPath, context.getPage(), path, true, true);
                             }
                             catch (NodeNotFoundException nnfe)
                             {
@@ -623,7 +627,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                             Node pathView = null;
                             try
                             {
-                                pathView = view.getNodeView(optionPath, context.getPage(), true, true);
+                                pathView = view.getNodeView(optionPath, context.getPage(), path, true, true);
                             }
                             catch (NodeNotFoundException nnfe)
                             {
@@ -750,7 +754,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                 {
                     // construct menu definition and associated menu
                     MenuDefinition nestedMenuDefinition = new DefaultMenuDefinition(elementView.getUrl(), depth - 1, locatorName);
-                    menuElement = new MenuImpl(view, this, nestedMenuDefinition, context, null);
+                    menuElement = new MenuImpl(view, this, nestedMenuDefinition, null, context, null);
                 }
                 else
                 {

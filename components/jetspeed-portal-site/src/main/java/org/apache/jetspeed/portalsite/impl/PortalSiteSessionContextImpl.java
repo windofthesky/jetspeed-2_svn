@@ -368,7 +368,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     {
                         try
                         {
-                            view.getNodeView(requestPath, null, false, false);
+                            view.getNodeView(requestPath, null, null, false, false);
                         }
                         catch (NodeNotFoundException nnfe)
                         {
@@ -421,7 +421,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                             {
                                 try
                                 {
-                                    if (view.getNodeView(systemPageRequestPath, null, false, false) instanceof Page)
+                                    if (view.getNodeView(systemPageRequestPath, null, null, false, false) instanceof Page)
                                     {
                                         systemType = PortalSiteContentTypeMapper.PAGE_SYSTEM_TYPE;
                                     }
@@ -699,7 +699,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             try
             {
                 // try page or folder request url
-                requestNode = view.getNodeView(requestPath, null, false, false);
+                requestNode = view.getNodeView(requestPath, null, null, false, false);
             }
             catch (NodeNotFoundException nnfe)
             {
@@ -709,7 +709,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 {
                     // retry folder request url
                     requestPath = requestPath.substring(0, requestPath.length() - Folder.FALLBACK_DEFAULT_PAGE.length());
-                    requestNode = view.getNodeView(requestPath, null, true, false);
+                    requestNode = view.getNodeView(requestPath, null, null, true, false);
                 }
                 else
                 {
@@ -955,7 +955,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             
             // search for deepest matching content request path
             // that matches request path; start with root folder in view
-            Folder contentRequestFolder = (Folder)view.getNodeView(Folder.PATH_SEPARATOR, null, false, false);
+            Folder contentRequestFolder = (Folder)view.getNodeView(Folder.PATH_SEPARATOR, null, null, false, false);
             String contentRequestPath = contentRequestFolder.getPath();
             for (;;)
             {

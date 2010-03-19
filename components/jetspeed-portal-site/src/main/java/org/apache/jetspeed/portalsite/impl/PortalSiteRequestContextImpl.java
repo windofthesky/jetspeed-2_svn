@@ -894,7 +894,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                 // construct new menu from menu definition in locator
                 // using current request context and propagating related
                 // names set to detect cyclic menu definitions
-                MenuImpl menu = new MenuImpl(locator.getMenuDefinition(), this, names);
+                MenuImpl menu = new MenuImpl(locator.getMenuDefinition(), locator.getPath(), this, names);
  
                 // determine whether menu definition locator is
                 // relative/request, based on hidden page, or

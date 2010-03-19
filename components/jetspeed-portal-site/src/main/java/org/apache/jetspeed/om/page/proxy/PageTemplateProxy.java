@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.proxy.FolderProxy;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
 import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
@@ -154,6 +155,7 @@ public class PageTemplateProxy extends NodeProxy implements InvocationHandler
     protected void aggregateMenuDefinitionLocators()
     {
         // merge only page template menu definition locators by name
-        mergeMenuDefinitionLocators(pageTemplate.getMenuDefinitions(), pageTemplate, false);
+        FolderProxy parentFolderProxy = FolderProxy.getFolderProxy(getParent());
+        mergeMenuDefinitionLocators(pageTemplate.getMenuDefinitions(), pageTemplate, parentFolderProxy.getPath(), false);
     }
 }

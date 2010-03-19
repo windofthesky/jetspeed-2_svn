@@ -888,7 +888,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                 // get menu definitions from inheritance folders and
                 // merge into aggregate menu definition locators
                 Folder folder = (Folder)foldersIter.next();
-                mergeMenuDefinitionLocators(folder.getMenuDefinitions(), folder, false);
+                mergeMenuDefinitionLocators(folder.getMenuDefinitions(), folder, getPath(), false);
             }
         }
         catch (FolderNotFoundException fnfe)
@@ -1275,7 +1275,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         {
             // inheritance folders are aggregated from super/parent
             // folder search paths for each proxy folder in the view
-            // path; concatinate all search paths from this proxy
+            // path; concatenate all search paths from this proxy
             // folder to the proxy root to create the inheritance
             // graph folder list
             FolderProxy folder = this;

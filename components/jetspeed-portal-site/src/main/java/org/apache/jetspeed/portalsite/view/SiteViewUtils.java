@@ -38,12 +38,13 @@ public class SiteViewUtils
      *                               menu definition locators
      *
      * @param locators list of menu definition locators to merge
-     * @param node node view
+     * @param node menu definition node
+     * @param path node view path
      * @param override override menu definition
      * @param menuDefinitionLocators merged menu definition locators
      * @return merged menu definition locators
      */
-    public static List mergeMenuDefinitionLocators(List definitions, Node node, boolean override, List menuDefinitionLocators)
+    public static List mergeMenuDefinitionLocators(List definitions, Node definitionNode, String path, boolean override, List menuDefinitionLocators)
     {
         // merge definitions into aggregated menu definition
         // locators if defined
@@ -65,7 +66,7 @@ public class SiteViewUtils
                         {
                             menuDefinitionLocators = Collections.synchronizedList(new ArrayList(definitions.size() * 2));
                         }
-                        menuDefinitionLocators.add(new SiteViewMenuDefinitionLocator(definition, node, override));
+                        menuDefinitionLocators.add(new SiteViewMenuDefinitionLocator(definition, definitionNode, path, override));
                     }
                     else if (override)
                     {

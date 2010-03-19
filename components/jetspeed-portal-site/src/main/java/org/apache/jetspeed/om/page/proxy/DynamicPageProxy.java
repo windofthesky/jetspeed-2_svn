@@ -159,8 +159,8 @@ public class DynamicPageProxy extends NodeProxy implements InvocationHandler
         // since they override any folder definitions); note parent
         // folder menu definitions include standard menu definition
         // locator defaults
-        mergeMenuDefinitionLocators(dynamicPage.getMenuDefinitions(), dynamicPage, true);
         FolderProxy parentFolderProxy = FolderProxy.getFolderProxy(getParent());
+        mergeMenuDefinitionLocators(dynamicPage.getMenuDefinitions(), dynamicPage, parentFolderProxy.getPath(), true);
         mergeMenuDefinitionLocators(parentFolderProxy.getMenuDefinitionLocators());
     }
 }
