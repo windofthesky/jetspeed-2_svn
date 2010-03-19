@@ -183,6 +183,7 @@
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
           <property name="required" value="true" />
+          <!-- use 'magic' value #dn to have the entity own dn be used -->
           <property name="requiredDefaultValue" value="#dn" />
         </bean>
       </set>
@@ -221,6 +222,7 @@
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
           <property name="required" value="true" />
+          <!-- use 'magic' value #dn to have the entity own dn be used -->
           <property name="requiredDefaultValue" value="#dn" />
         </bean>
       </set>
