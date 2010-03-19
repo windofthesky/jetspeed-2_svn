@@ -195,6 +195,22 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     private List searchFolders;
 
     /**
+     * InheritanceFolder - data object used hold aggregated concrete search
+     *                     folders and view path to folder 
+     */
+    private class InheritanceFolder
+    {
+        public Folder folder;
+        public String path;
+
+        public InheritanceFolder(Folder folder, String path)
+        {
+            this.folder = folder;
+            this.path = path;
+        }
+    }
+
+    /**
      * inheritanceFolders - inheritance graph folder list in most to
      *                      least specific order
      */
@@ -882,13 +898,15 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         // specific along inheritance folder graph by name
         try
         {
-            Iterator foldersIter = getInheritanceFolders().iterator();
-            while (foldersIter.hasNext())
+            Iterator inheritanceFoldersIter = getInheritanceFolders().iterator();
+            while (inheritanceFoldersIter.hasNext())
             {
                 // get menu definitions from inheritance folders and
                 // merge into aggregate menu definition locators
-                Folder folder = (Folder)foldersIter.next();
-                mergeMenuDefinitionLocators(folder.getMenuDefinitions(), folder, getPath(), false);
+                InheritanceFolder inheritanceFolder = (InheritanceFolder)inheritanceFoldersIter.next();
+                Folder folder = inheritanceFolder.folder;
+                String path = inheritanceFolder.path;
+                mergeMenuDefinitionLocators(folder.getMenuDefinitions(), folder, path, false);
             }
         }
         catch (FolderNotFoundException fnfe)
@@ -1295,7 +1313,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                 Iterator foldersIter = searchFolders.iterator();
                 while (foldersIter.hasNext())
                 {
-                    inheritanceFolders.add(((SearchFolder)foldersIter.next()).folder);
+                    inheritanceFolders.add(new InheritanceFolder(((SearchFolder)foldersIter.next()).folder, folder.getPath()));
                 }
 
                 // get super/parent search paths

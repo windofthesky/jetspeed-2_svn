@@ -17,12 +17,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<page id="folder1-page0"
+<folder
     xmlns="http://portals.apache.org/jetspeed"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd">
 
-  <title>/folder1/page0.psml</title>
-  <fragment id="fake" name="fake" type="fake"/>
+  <title>folder1/folder</title>  
+  <short-title>folder1/folder</short-title>  
 
-</page>
+  <default-page>page0.psml</default-page>
+</folder>

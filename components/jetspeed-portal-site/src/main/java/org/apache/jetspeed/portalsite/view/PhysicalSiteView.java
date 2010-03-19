@@ -127,7 +127,7 @@ public class PhysicalSiteView extends AbstractSiteView
                 {
                     // get menu definitions from inheritance folders and
                     // merge into menu definition locators
-                    locators = SiteViewUtils.mergeMenuDefinitionLocators(folder.getMenuDefinitions(), folder, path, false, locators);
+                    locators = SiteViewUtils.mergeMenuDefinitionLocators(folder.getMenuDefinitions(), folder, folder.getPath(), false, locators);
                     folder = (Folder)folder.getParent();
                 }
                 // merge standard menu definition locator defaults
