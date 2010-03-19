@@ -24,9 +24,7 @@ import java.util.Collection;
  */
 public interface EntityRelationDAO
 {
-
     Collection<Entity> getRelatedEntities(Entity entity);
 
     Entity getRelatedEntity(Entity entity);
-
 }

@@ -29,7 +29,6 @@ import org.springframework.ldap.filter.Filter;
  */
 public interface EntityDAO
 {
-
     /**
      * Fetch entities by providing a list of specific entity IDs.
      * 
@@ -42,11 +41,11 @@ public interface EntityDAO
     /**
      * Fetch entity by providing an *internal* entity ID.
      * 
-     * @param internalId 
+     * @param internalId
      * @return found entity
      */
     Entity getEntityByInternalId(String internalId);
-    
+
     /**
      * Fetch entities by providing a list of specific *internal* entity IDs.
      * 
@@ -56,11 +55,9 @@ public interface EntityDAO
      */
     Collection<Entity> getEntitiesByInternalId(Collection<String> entityIds);
 
-    
     /**
-     * Method for applying a specific filter on the complete entity set returned
-     * by the DAO. The result would be the same as applying the specific filter
-     * to the result of getAllEntities().
+     * Method for applying a specific filter on the complete entity set returned by the DAO. The result would be the same as applying the specific filter to the
+     * result of getAllEntities().
      * 
      * @param filter
      *            a specific filter to narrow the returned entity set
@@ -69,14 +66,14 @@ public interface EntityDAO
     Collection<Entity> getEntities(Filter filter);
 
     /**
-     * Same as getEntities(Filter filter), except that this method only returns entities which are children of 
-     * the given parent entity.
+     * Same as getEntities(Filter filter), except that this method only returns entities which are children of the given parent entity.
+     * 
      * @param parentEntity
      * @param filter
      * @return
      */
     Collection<Entity> getEntities(Entity parentEntity, Filter filter);
-    
+
     /**
      * Fetch a single entity by ID.
      * 
@@ -88,12 +85,12 @@ public interface EntityDAO
     /**
      * Returns the parent entity of the given entity, if there is any.
      * 
-     * @param filter a specific filter to narrow the returned entity set
+     * @param filter
+     *            a specific filter to narrow the returned entity set
      * @return found entities
      */
     Entity getParentEntity(Entity childEntity);
 
-    
     /**
      * Fetch all entities
      * 
@@ -103,7 +100,7 @@ public interface EntityDAO
 
     void update(Entity entity) throws SecurityException;
 
-    void updateInternalAttributes(Entity entity) throws SecurityException ;
+    void updateInternalAttributes(Entity entity) throws SecurityException;
 
     void add(Entity entity) throws SecurityException;
 
@@ -112,5 +109,4 @@ public interface EntityDAO
     void add(Entity entity, Entity parentEntity) throws SecurityException;
 
     EntityFactory getEntityFactory();
-
 }

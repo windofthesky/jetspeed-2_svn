@@ -27,7 +27,6 @@ import org.apache.jetspeed.security.mapping.model.Entity;
  */
 public interface SecurityEntityManager
 {
-
     Collection<String> getSupportedEntityTypes();
 
     Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes();
@@ -43,17 +42,16 @@ public interface SecurityEntityManager
     void addEntity(Entity entity, Entity parentEntity) throws SecurityException;
 
     void removeEntity(Entity entity) throws SecurityException;
-    
+
     void updateEntity(Entity entity) throws SecurityException;
-    
+
     void addRelation(Entity fromEntity, Entity toEntity, SecurityEntityRelationType relationType) throws SecurityException;
-    
+
     void removeRelation(Entity fromEntity, Entity toEntity, SecurityEntityRelationType relationType) throws SecurityException;
 
     Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType);
 
-    Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType);    
+    Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType);
 
     EntityFactory getEntityFactory(String entityType);
-    
 }

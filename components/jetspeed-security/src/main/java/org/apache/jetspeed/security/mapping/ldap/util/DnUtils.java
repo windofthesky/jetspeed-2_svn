@@ -18,17 +18,16 @@ package org.apache.jetspeed.security.mapping.ldap.util;
 
 import org.springframework.ldap.core.DistinguishedName;
 
-
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-
 public class DnUtils
 {
-    public static final String DEFAULT_SEPARATOR =  ",";
-    
-    public static final String encodeDnUsingSeparator(String separator, String... dnParts){
+    public static final String DEFAULT_SEPARATOR = ",";
+
+    public static final String encodeDnUsingSeparator(String separator, String... dnParts)
+    {
         DistinguishedName dn = new DistinguishedName();
         for (String dnPart : dnParts)
         {
@@ -38,7 +37,8 @@ public class DnUtils
         return encodedDn.replace(", ", separator);
     }
 
-    public static final String encodeDn(String... dnParts){
-        return encodeDnUsingSeparator(DEFAULT_SEPARATOR, dnParts);
+    public static final String encodeDn(String... dnParts)
+    {
+        return DnUtils.encodeDnUsingSeparator(DnUtils.DEFAULT_SEPARATOR, dnParts);
     }
 }

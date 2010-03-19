@@ -24,7 +24,6 @@ import java.util.Collection;
  */
 public interface EntityDAO
 {
-
     Entity getEntity(String entityId);
 
     Collection<Entity> getEntities();
@@ -33,10 +32,7 @@ public interface EntityDAO
 
     void update(String entityId, Entity entity);
 
-    Collection<Entity> getRelatedEntities(Entity entity, String entityType,
-            String relationType);
+    Collection<Entity> getRelatedEntities(Entity entity, String entityType, String relationType);
 
-    void setRelatedEntities(String relationType, Entity entity,
-            Collection<Entity> entities);
-
+    void setRelatedEntities(String relationType, Entity entity, Collection<Entity> entities);
 }

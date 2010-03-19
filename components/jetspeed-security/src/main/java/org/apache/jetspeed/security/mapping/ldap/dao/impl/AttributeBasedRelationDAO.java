@@ -41,7 +41,7 @@ import org.springframework.ldap.filter.Filter;
  */
 public class AttributeBasedRelationDAO extends AbstractRelationDAO
 {
-    private String relationAttribute;
+    private String  relationAttribute;
     private boolean useFromEntityAttribute;
     private boolean attributeContainsInternalId; // if internal ID ( = DN) is
 
@@ -122,26 +122,27 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         this.attributeContainsInternalId = attributeContainsInternalId;
     }
 
-    private Entity getLiveEntity(EntityDAO dao, Entity transientEntity) throws SecurityException {
+    private Entity getLiveEntity(EntityDAO dao, Entity transientEntity) throws SecurityException
+    {
         Entity liveEntity = dao.getEntity(transientEntity.getId());
-        if (liveEntity == null){
+        if (liveEntity == null)
+        {
             throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(transientEntity.getType(), transientEntity.getId()));
         }
-        if (liveEntity.getInternalId() == null){
-            throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(),"getLiveEntity","Internal ID not found"));
+        if (liveEntity.getInternalId() == null)
+        {
+            throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(), "getLiveEntity", "Internal ID not found"));
         }
         return liveEntity;
     }
-    
+
     private void internalAddRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity) throws SecurityException
     {
         fromEntity = getLiveEntity(fromEntityDAO, fromEntity);
-        
         toEntity = getLiveEntity(toEntityDAO, toEntity);
-        
         String attrValue = null;
         if (attributeContainsInternalId)
-        {            
+        {
             attrValue = toEntity.getInternalId();
         }
         else
@@ -149,19 +150,18 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
             attrValue = toEntity.getId();
         }
         Attribute relationAttribute = fromEntity.getAttribute(this.relationAttribute);
-        
-        if(relationAttribute == null)
+        if (relationAttribute == null)
         {
-            fromEntity.setAttribute(this.relationAttribute,new ArrayList<String>());    
+            fromEntity.setAttribute(this.relationAttribute, new ArrayList<String>());
         }
         else
         {
-            if(relationAttribute.getValues().contains(attrValue))
+            if (relationAttribute.getValues().contains(attrValue))
             {
-                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_ALREADY_EXISTS.createScoped(fromEntity.getType(), fromEntity.getId(), relationAttribute, toEntity.getId()));
+                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_ALREADY_EXISTS.createScoped(fromEntity.getType(), fromEntity.getId(),
+                                                                                                                relationAttribute, toEntity.getId()));
             }
         }
-        
         if (relationAttribute.getDefinition().isMultiValue())
         {
             relationAttribute.getValues().add(attrValue);
@@ -200,14 +200,14 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
                 boolean found = false;
                 String attribValue = null;
                 Iterator<String> iterator = relationAttribute.getValues().iterator();
-                while(iterator.hasNext() && !found)
+                while (iterator.hasNext() && !found)
                 {
                     attribValue = iterator.next();
                     DistinguishedName ldapAttr = new DistinguishedName(attribValue);
                     if (ldapAttr.equals(attrib))
                     {
                         relationAttribute.getValues().remove(attribValue);
-                        found = true; 
+                        found = true;
                     }
                 }
             }

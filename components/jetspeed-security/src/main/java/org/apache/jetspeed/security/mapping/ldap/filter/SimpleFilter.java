@@ -26,7 +26,6 @@ import org.springframework.ldap.filter.Filter;
  */
 public class SimpleFilter implements Filter
 {
-
     private String ldapFilter;
 
     public SimpleFilter(String ldapFilter)
@@ -44,8 +43,9 @@ public class SimpleFilter implements Filter
         return sb.append(ldapFilter);
     }
 
-	public String toString() {
-		return ldapFilter;
-	}
-
+    @Override
+    public String toString()
+    {
+        return ldapFilter;
+    }
 }

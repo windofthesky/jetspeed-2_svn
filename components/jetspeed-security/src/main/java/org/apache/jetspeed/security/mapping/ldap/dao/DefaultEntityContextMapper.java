@@ -26,7 +26,6 @@ import org.springframework.ldap.core.support.AbstractContextMapper;
  */
 public class DefaultEntityContextMapper extends AbstractContextMapper
 {
-
     EntityFactory entityFactory;
 
     public DefaultEntityContextMapper(EntityFactory entityFactory)
@@ -34,9 +33,9 @@ public class DefaultEntityContextMapper extends AbstractContextMapper
         this.entityFactory = entityFactory;
     }
 
+    @Override
     public Object doMapFromContext(DirContextOperations ctx)
     {
         return entityFactory.createEntity(ctx);
     }
-
 }

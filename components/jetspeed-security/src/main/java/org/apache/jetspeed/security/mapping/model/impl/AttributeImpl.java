@@ -17,6 +17,7 @@
 package org.apache.jetspeed.security.mapping.model.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -24,20 +25,15 @@ import java.util.Iterator;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
 
-import java.util.Arrays;
-
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
 public class AttributeImpl implements Attribute
 {
-
     private Collection<String> values = new ArrayList<String>();
-
-    private String value;
-
-    private AttributeDef definition;
+    private String             value;
+    private AttributeDef       definition;
 
     public AttributeImpl(AttributeDef definition)
     {
@@ -65,20 +61,24 @@ public class AttributeImpl implements Attribute
     {
         return definition.getMappedName();
     }
-    
+
     public Collection<String> getValues()
     {
-        if(getDefinition().isMultiValue())
+        if (getDefinition().isMultiValue())
         {
-         return values;         
-        }else{
-            if(value==null)
+            return values;
+        }
+        else
+        {
+            if (value == null)
             {
                 return Collections.emptyList();
-            }else{
-                return Arrays.asList(new String[]{value});
             }
-        }        
+            else
+            {
+                return Arrays.asList(new String[] { value });
+            }
+        }
     }
 
     public void setValues(Collection<String> values)
@@ -94,8 +94,7 @@ public class AttributeImpl implements Attribute
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((definition == null) ? 0 : definition.hashCode());
+        result = prime * result + ((definition == null) ? 0 : definition.hashCode());
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         result = prime * result + ((values == null) ? 0 : values.hashCode());
         return result;
@@ -104,22 +103,52 @@ public class AttributeImpl implements Attribute
     @Override
     public boolean equals(Object obj)
     {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj)
+        {
+            return true;
+        }
+        if (obj == null)
+        {
+            return false;
+        }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
         AttributeImpl other = (AttributeImpl) obj;
         if (definition == null)
         {
-            if (other.definition != null) return false;
-        } else if (!definition.equals(other.definition)) return false;
+            if (other.definition != null)
+            {
+                return false;
+            }
+        }
+        else if (!definition.equals(other.definition))
+        {
+            return false;
+        }
         if (value == null)
         {
-            if (other.value != null) return false;
-        } else if (!value.equals(other.value)) return false;
+            if (other.value != null)
+            {
+                return false;
+            }
+        }
+        else if (!value.equals(other.value))
+        {
+            return false;
+        }
         if (values == null)
         {
-            if (other.values != null) return false;
-        } else if (!values.equals(other.values)) return false;
+            if (other.values != null)
+            {
+                return false;
+            }
+        }
+        else if (!values.equals(other.values))
+        {
+            return false;
+        }
         return true;
     }
 
@@ -128,22 +157,30 @@ public class AttributeImpl implements Attribute
         return definition;
     }
 
-    public String toString(){
+    @Override
+    public String toString()
+    {
         StringBuffer sb = new StringBuffer();
         sb.append(getName());
         sb.append("=");
-        if (getDefinition().isMultiValue()){
+        if (getDefinition().isMultiValue())
+        {
             Collection<String> values = getValues();
-            if (values != null){
+            if (values != null)
+            {
                 Iterator<String> valIter = values.iterator();
-                while (valIter.hasNext()){
+                while (valIter.hasNext())
+                {
                     sb.append(valIter.next());
-                    if (valIter.hasNext()){
+                    if (valIter.hasNext())
+                    {
                         sb.append(",");
                     }
                 }
             }
-        } else {
+        }
+        else
+        {
             sb.append(getValue());
         }
         return sb.toString();

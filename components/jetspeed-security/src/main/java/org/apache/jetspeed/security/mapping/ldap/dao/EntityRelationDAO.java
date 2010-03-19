@@ -28,18 +28,13 @@ import org.apache.jetspeed.security.mapping.model.Entity;
  */
 public interface EntityRelationDAO
 {
-
     SecurityEntityRelationType getRelationType();
 
-    Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDao,
-            EntityDAO toDao, Entity fromEntity);
+    Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDao, EntityDAO toDao, Entity fromEntity);
 
-    Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDao,
-            EntityDAO toDao, Entity toEntity);
+    Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDao, EntityDAO toDao, Entity toEntity);
 
-    void addRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity,
-            Entity targetEntity) throws SecurityException;
+    void addRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity) throws SecurityException;
 
-    void removeRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity,
-                Entity targetEntity) throws SecurityException;
+    void removeRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity) throws SecurityException;
 }

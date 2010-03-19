@@ -21,17 +21,13 @@ import javax.naming.directory.DirContext;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.mapping.model.Entity;
 
-
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-
 public interface EntityFactory
 {
-
     Entity createEntity(JetspeedPrincipal principal);
 
     Entity createEntity(DirContext ctx);
-    
 }

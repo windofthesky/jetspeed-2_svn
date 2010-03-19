@@ -22,19 +22,17 @@ package org.apache.jetspeed.security.mapping.model;
  */
 public interface AttributeDef
 {
-
     String getName();
 
     boolean isMultiValue();
-    
-    boolean isMapped();
-    
-    String getMappedName();
-    
-    boolean isRequired();
-    
-    String getRequiredDefaultValue();
-    
-    boolean isIdAttribute();
 
+    boolean isMapped();
+
+    String getMappedName();
+
+    boolean isRequired();
+
+    String getRequiredDefaultValue();
+
+    boolean isIdAttribute();
 }

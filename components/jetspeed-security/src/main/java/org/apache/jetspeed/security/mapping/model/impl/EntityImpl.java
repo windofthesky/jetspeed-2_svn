@@ -33,19 +33,13 @@ import org.apache.jetspeed.security.mapping.model.Entity;
  */
 public class EntityImpl implements Entity
 {
-
-    private Map<String, Attribute> nameToAttributeMap = new HashMap<String, Attribute>();
-
+    private Map<String, Attribute>  nameToAttributeMap = new HashMap<String, Attribute>();
     private final Set<AttributeDef> allowedAttributes;
+    private String                  id;
+    private String                  internalId;
+    private String                  type;
 
-    private String id;
-
-    private String internalId;
-
-    private String type;
-    
-    public EntityImpl(String type, String id,
-            Set<AttributeDef> allowedAttributes)
+    public EntityImpl(String type, String id, Set<AttributeDef> allowedAttributes)
     {
         this.type = type;
         this.id = id;
@@ -67,18 +61,20 @@ public class EntityImpl implements Entity
         return nameToAttributeMap.get(name);
     }
 
-    public Map<String,Attribute> getAttributes()
+    public Map<String, Attribute> getAttributes()
     {
         return Collections.unmodifiableMap(nameToAttributeMap);
     }
 
-    public Map<String,Attribute> getMappedAttributes()
+    public Map<String, Attribute> getMappedAttributes()
     {
-        Map<String,Attribute> mappedAttrs = new HashMap<String,Attribute>();
-        for (Map.Entry<String,Attribute> mappedAttrEntry : nameToAttributeMap.entrySet()){
-            if (mappedAttrEntry.getValue().getDefinition().isMapped()){
+        Map<String, Attribute> mappedAttrs = new HashMap<String, Attribute>();
+        for (Map.Entry<String, Attribute> mappedAttrEntry : nameToAttributeMap.entrySet())
+        {
+            if (mappedAttrEntry.getValue().getDefinition().isMapped())
+            {
                 // it is assumed that mapped names are unique
-                mappedAttrs.put(mappedAttrEntry.getValue().getMappedName(),mappedAttrEntry.getValue());
+                mappedAttrs.put(mappedAttrEntry.getValue().getMappedName(), mappedAttrEntry.getValue());
             }
         }
         return Collections.unmodifiableMap(mappedAttrs);
@@ -103,7 +99,10 @@ public class EntityImpl implements Entity
     {
         for (AttributeDef def : allowedAttributes)
         {
-            if (def.getName().equals(name)) { return def; }
+            if (def.getName().equals(name))
+            {
+                return def;
+            }
         }
         return null;
     }
@@ -114,9 +113,13 @@ public class EntityImpl implements Entity
         if (attr == null)
         {
             AttributeDef def = getAttributeDefinition(name);
-            if (def == null) { return; // TODO: throw proper exception
+            if (def == null)
+            {
+                return; // TODO: throw proper exception
             }
-            if (def.isMultiValue()) { return; // TODO: throw proper exception
+            if (def.isMultiValue())
+            {
+                return; // TODO: throw proper exception
             }
             attr = new AttributeImpl(def);
             nameToAttributeMap.put(name, attr);
@@ -130,9 +133,13 @@ public class EntityImpl implements Entity
         if (attr == null)
         {
             AttributeDef def = getAttributeDefinition(name);
-            if (def == null) { return; // TODO: throw proper exception
+            if (def == null)
+            {
+                return; // TODO: throw proper exception
             }
-            if (!def.isMultiValue()) { return; // TODO: throw proper exception
+            if (!def.isMultiValue())
+            {
+                return; // TODO: throw proper exception
             }
             attr = new AttributeImpl(def);
             nameToAttributeMap.put(name, attr);
@@ -155,7 +162,8 @@ public class EntityImpl implements Entity
 
     public void setInternalId(String internalId)
     {
-        if (internalId != null){
+        if (internalId != null)
+        {
             internalId = DnUtils.encodeDn(internalId);
         }
         this.internalId = internalId;
@@ -167,12 +175,8 @@ public class EntityImpl implements Entity
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result
-                + ((internalId == null) ? 0 : internalId.hashCode());
-        result = prime
-                * result
-                + ((nameToAttributeMap == null) ? 0 : nameToAttributeMap
-                        .hashCode());
+        result = prime * result + ((internalId == null) ? 0 : internalId.hashCode());
+        result = prime * result + ((nameToAttributeMap == null) ? 0 : nameToAttributeMap.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
@@ -180,31 +184,69 @@ public class EntityImpl implements Entity
     @Override
     public boolean equals(Object obj)
     {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj)
+        {
+            return true;
+        }
+        if (obj == null)
+        {
+            return false;
+        }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
         EntityImpl other = (EntityImpl) obj;
         if (id == null)
         {
-            if (other.id != null) return false;
-        } else if (!id.equals(other.id)) return false;
+            if (other.id != null)
+            {
+                return false;
+            }
+        }
+        else if (!id.equals(other.id))
+        {
+            return false;
+        }
         if (internalId == null)
         {
-            if (other.internalId != null) return false;
-        } else if (!internalId.equals(other.internalId)) return false;
+            if (other.internalId != null)
+            {
+                return false;
+            }
+        }
+        else if (!internalId.equals(other.internalId))
+        {
+            return false;
+        }
         if (nameToAttributeMap == null)
         {
-            if (other.nameToAttributeMap != null) return false;
-        } else if (!nameToAttributeMap.equals(other.nameToAttributeMap))
+            if (other.nameToAttributeMap != null)
+            {
+                return false;
+            }
+        }
+        else if (!nameToAttributeMap.equals(other.nameToAttributeMap))
+        {
             return false;
+        }
         if (type == null)
         {
-            if (other.type != null) return false;
-        } else if (!type.equals(other.type)) return false;
+            if (other.type != null)
+            {
+                return false;
+            }
+        }
+        else if (!type.equals(other.type))
+        {
+            return false;
+        }
         return true;
     }
-    
-    public String toString(){
+
+    @Override
+    public String toString()
+    {
         StringBuffer sb = new StringBuffer();
         sb.append("Entity of type '");
         sb.append(getType());
@@ -218,10 +260,9 @@ public class EntityImpl implements Entity
         for (Attribute attr : nameToAttributeMap.values())
         {
             sb.append("attribute: ");
-            sb.append(attr.toString());            
+            sb.append(attr.toString());
             sb.append("\n");
         }
         return sb.toString();
     }
-
 }

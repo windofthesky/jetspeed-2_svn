@@ -28,34 +28,36 @@ import org.springframework.ldap.filter.Filter;
  */
 public class LDAPEntityDAOConfiguration
 {
-
-    private String baseDN;
-    
-    private String searchDN;
-
-    private Filter baseFilter;
-
-    private String ldapIdAttribute;
-
+    private String            baseDN;
+    private String            searchDN;
+    private Filter            baseFilter;
+    private String            ldapIdAttribute;
     private Set<AttributeDef> attributeDefinitions;
+    private String            entityType;
+    private String[]          objectClassesArr;
 
-    private String entityType;
-    
-    private String[] objectClassesArr;
-
-    public void initialize() throws JetspeedException {
+    public void initialize() throws JetspeedException
+    {
         checkNotEmpty("entityType", entityType);
         checkNotNull("baseDN", baseDN);
         checkNotEmpty("ldapIdAttribute", ldapIdAttribute);
         checkNotNull("attributeDefinitions", attributeDefinitions);
     }
-    
-    private void checkNotNull(String fieldName, Object fieldValue ) throws JetspeedException {
-        if (fieldValue == null) throw new JetspeedException(getClass().getName()+": property '"+fieldName+"' cannot be null.");
+
+    private void checkNotNull(String fieldName, Object fieldValue) throws JetspeedException
+    {
+        if (fieldValue == null)
+        {
+            throw new JetspeedException(getClass().getName() + ": property '" + fieldName + "' cannot be null.");
+        }
     }
 
-    private void checkNotEmpty(String fieldName, String fieldValue ) throws JetspeedException {
-        if (fieldValue == null) throw new JetspeedException(getClass().getName()+": property '"+fieldName+"' cannot be null or empty.");
+    private void checkNotEmpty(String fieldName, String fieldValue) throws JetspeedException
+    {
+        if (fieldValue == null)
+        {
+            throw new JetspeedException(getClass().getName() + ": property '" + fieldName + "' cannot be null or empty.");
+        }
     }
 
     public String getBaseDN()
@@ -67,12 +69,12 @@ public class LDAPEntityDAOConfiguration
     {
         this.baseDN = baseDN;
     }
-    
+
     public String getSearchDN()
     {
         return searchDN;
     }
-    
+
     public void setSearchDN(String searchDN)
     {
         this.searchDN = searchDN;
@@ -122,12 +124,12 @@ public class LDAPEntityDAOConfiguration
     {
         return objectClassesArr;
     }
-    
+
     public void setObjectClasses(String objectClasses)
     {
-        if (objectClasses != null){
-            this.objectClassesArr=objectClasses.split(",");
+        if (objectClasses != null)
+        {
+            this.objectClassesArr = objectClasses.split(",");
         }
     }
-    
 }

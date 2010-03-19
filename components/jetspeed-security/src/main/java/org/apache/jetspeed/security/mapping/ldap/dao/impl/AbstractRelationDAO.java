@@ -25,9 +25,8 @@ import org.apache.jetspeed.security.mapping.ldap.dao.EntityRelationDAO;
  */
 public abstract class AbstractRelationDAO implements EntityRelationDAO
 {
+    private SecurityEntityRelationType relationType;
 
-    private SecurityEntityRelationType relationType;    
-    
     public SecurityEntityRelationType getRelationType()
     {
         return relationType;
@@ -37,5 +36,4 @@ public abstract class AbstractRelationDAO implements EntityRelationDAO
     {
         this.relationType = relationType;
     }
-
 }

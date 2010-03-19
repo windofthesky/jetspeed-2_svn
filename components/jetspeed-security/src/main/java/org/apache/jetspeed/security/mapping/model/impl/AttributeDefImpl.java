@@ -24,57 +24,49 @@ import org.apache.jetspeed.security.mapping.model.AttributeDef;
  */
 public class AttributeDefImpl implements AttributeDef
 {
-
-    private String name;
-
-    private String mappedName;
-
-    private boolean multiValue; // default is single-valued
-
-    private boolean mapped=true;
-    
-    private boolean required=false;
-
-    private String requiredDefaultValue;
-    
+    private String  name;
+    private String  mappedName;
+    private boolean multiValue;          // default is single-valued
+    private boolean mapped   = true;
+    private boolean required = false;
+    private String  requiredDefaultValue;
     private boolean idAttribute;
-    
+
     public AttributeDefImpl(String name)
     {
         super();
         this.name = name;
-        this.mappedName=name; // default mapping
+        this.mappedName = name; // default mapping
     }
 
     public AttributeDefImpl(String name, boolean multiValue)
     {
         this(name);
-        this.multiValue=multiValue;
+        this.multiValue = multiValue;
     }
 
     public AttributeDefImpl(String name, boolean multiValue, boolean isMapped)
     {
-        this(name,multiValue);
-        this.mapped=isMapped;
+        this(name, multiValue);
+        this.mapped = isMapped;
     }
 
-    public AttributeDefImpl(String name, boolean multiValue, boolean isMapped,String mappedName)
+    public AttributeDefImpl(String name, boolean multiValue, boolean isMapped, String mappedName)
     {
         this(name, multiValue, isMapped);
         this.mappedName = mappedName;
     }
 
-    
     public String getName()
     {
         return name;
     }
-    
+
     public String getMappedName()
     {
         return mappedName;
     }
-    
+
     public void setMappedName(String mappedName)
     {
         this.mappedName = mappedName;
@@ -84,12 +76,12 @@ public class AttributeDefImpl implements AttributeDef
     {
         return multiValue;
     }
-    
+
     public boolean isMapped()
     {
         return mapped;
     }
-    
+
     public void setMapped(boolean mapped)
     {
         this.mapped = mapped;
@@ -99,35 +91,33 @@ public class AttributeDefImpl implements AttributeDef
     {
         this.multiValue = multiValue;
     }
-    
+
     public boolean isRequired()
     {
         return required;
     }
-    
+
     public void setRequired(boolean required)
     {
         this.required = required;
     }
-    
+
     public String getRequiredDefaultValue()
     {
         return requiredDefaultValue;
     }
 
-    
     public void setRequiredDefaultValue(String requiredDefaultValue)
     {
         this.requiredDefaultValue = requiredDefaultValue;
     }
 
-    
-    public AttributeDefImpl cfgRequired(boolean required){
+    public AttributeDefImpl cfgRequired(boolean required)
+    {
         setRequired(required);
         return this;
     }
 
-    
     public boolean isIdAttribute()
     {
         return idAttribute;
@@ -138,16 +128,18 @@ public class AttributeDefImpl implements AttributeDef
         this.idAttribute = idAttribute;
     }
 
-    public AttributeDefImpl cfgRequiredDefaultValue(String requiredDefaultValue){
+    public AttributeDefImpl cfgRequiredDefaultValue(String requiredDefaultValue)
+    {
         setRequiredDefaultValue(requiredDefaultValue);
         return this;
     }
 
-    public AttributeDefImpl cfgIdAttribute(boolean isIdAttribute){
+    public AttributeDefImpl cfgIdAttribute(boolean isIdAttribute)
+    {
         setIdAttribute(isIdAttribute);
         return this;
     }
-    
+
     @Override
     public int hashCode()
     {
@@ -161,16 +153,34 @@ public class AttributeDefImpl implements AttributeDef
     @Override
     public boolean equals(Object obj)
     {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj)
+        {
+            return true;
+        }
+        if (obj == null)
+        {
+            return false;
+        }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
         AttributeDefImpl other = (AttributeDefImpl) obj;
-        if (multiValue != other.multiValue) return false;
+        if (multiValue != other.multiValue)
+        {
+            return false;
+        }
         if (name == null)
         {
-            if (other.name != null) return false;
-        } else if (!name.equals(other.name)) return false;
+            if (other.name != null)
+            {
+                return false;
+            }
+        }
+        else if (!name.equals(other.name))
+        {
+            return false;
+        }
         return true;
     }
-
 }

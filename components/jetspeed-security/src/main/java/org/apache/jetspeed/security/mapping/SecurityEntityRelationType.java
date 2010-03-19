@@ -27,5 +27,4 @@ public interface SecurityEntityRelationType
     String getToEntityType();
 
     String getRelationType();
-    
 }

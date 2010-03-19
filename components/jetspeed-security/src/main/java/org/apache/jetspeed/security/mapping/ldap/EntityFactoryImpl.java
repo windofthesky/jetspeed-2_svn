@@ -25,21 +25,17 @@ import java.util.Set;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
-import javax.naming.ldap.LdapContext;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration;
-import org.apache.jetspeed.security.mapping.ldap.util.DnUtils;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.mapping.model.impl.AttributeImpl;
 import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
-import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.support.LdapUtils;
 
 /**
@@ -121,7 +117,6 @@ public class EntityFactoryImpl implements EntityFactory
             String[] values = null;
             try
             {
-                
                 values = getStringAttributes(ctx.getAttributes(""), attrDef.getName());
             }
             catch (NamingException e)
@@ -145,7 +140,9 @@ public class EntityFactoryImpl implements EntityFactory
                     {
                         a.setValues(attrValues);
                         attributes.add(a);
-                    }else{
+                    }
+                    else
+                    {
                         attributes.add(a);
                     }
                 }

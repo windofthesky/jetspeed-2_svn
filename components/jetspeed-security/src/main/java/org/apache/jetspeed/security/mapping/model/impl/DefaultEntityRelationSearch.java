@@ -21,11 +21,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.Entity;
-import org.apache.jetspeed.security.mapping.model.EntityRelationDAO;
 import org.apache.jetspeed.security.mapping.model.EntityDAO;
+import org.apache.jetspeed.security.mapping.model.EntityRelationDAO;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -33,10 +32,8 @@ import org.apache.jetspeed.security.mapping.model.EntityDAO;
  */
 public class DefaultEntityRelationSearch implements EntityRelationDAO
 {
-
     private EntityDAO toEntitySearch;
-
-    private String relationAttribute;
+    private String    relationAttribute;
 
     @SuppressWarnings("unchecked")
     public Collection<Entity> getRelatedEntities(Entity entity)
@@ -45,7 +42,8 @@ public class DefaultEntityRelationSearch implements EntityRelationDAO
         if (relatedEntityIds.size() > 0)
         {
             return toEntitySearch.getEntities(relatedEntityIds);
-        } else
+        }
+        else
         {
             return CollectionUtils.EMPTY_COLLECTION;
         }
@@ -57,7 +55,8 @@ public class DefaultEntityRelationSearch implements EntityRelationDAO
         if (entities != null && entities.size() == 1)
         {
             return entities.iterator().next();
-        } else
+        }
+        else
         {
             return null;
         }
@@ -67,13 +66,13 @@ public class DefaultEntityRelationSearch implements EntityRelationDAO
     {
         Attribute relatedAttr = entity.getAttribute(relationAttribute);
         Set<String> foundIds = new HashSet();
-
         if (relatedAttr != null)
         {
             if (relatedAttr.getDefinition().isMultiValue())
             {
                 foundIds.addAll(relatedAttr.getValues());
-            } else
+            }
+            else
             {
                 // TODO: if single value, parse value as CSV string
             }
@@ -100,5 +99,4 @@ public class DefaultEntityRelationSearch implements EntityRelationDAO
     {
         this.relationAttribute = relationAttribute;
     }
-
 }

@@ -16,12 +16,11 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
+import org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.Filter;
 import org.springframework.ldap.filter.OrFilter;
-
-import org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -29,7 +28,6 @@ import org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter;
  */
 public class SearchUtil
 {
-
     public static Filter andFilters(Filter... filters)
     {
         AndFilter andFilter = new AndFilter();
@@ -40,8 +38,7 @@ public class SearchUtil
         return andFilter;
     }
 
-    public static Filter constructMatchingFieldsFilter(Filter baseFilter,
-            String[]... fieldNamesAndValues)
+    public static Filter constructMatchingFieldsFilter(Filter baseFilter, String[]... fieldNamesAndValues)
     {
         AndFilter filter = new AndFilter();
         for (String[] nameAndValues : fieldNamesAndValues)
@@ -57,14 +54,11 @@ public class SearchUtil
                 filter.and(fieldFilter);
             }
         }
-        return baseFilter != null ? andFilters(baseFilter, filter) : filter;
+        return baseFilter != null ? SearchUtil.andFilters(baseFilter, filter) : filter;
     }
 
-    public static Filter constructMatchingFieldsFilter(String baseFilter,
-            String[]... fieldNamesAndValues)
+    public static Filter constructMatchingFieldsFilter(String baseFilter, String[]... fieldNamesAndValues)
     {
-        return constructMatchingFieldsFilter(new SimpleFilter(baseFilter),
-                fieldNamesAndValues);
+        return SearchUtil.constructMatchingFieldsFilter(new SimpleFilter(baseFilter), fieldNamesAndValues);
     }
-
 }

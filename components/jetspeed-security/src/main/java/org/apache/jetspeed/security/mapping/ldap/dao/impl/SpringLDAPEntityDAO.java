@@ -54,21 +54,17 @@ import org.springframework.ldap.filter.OrFilter;
  */
 public class SpringLDAPEntityDAO implements EntityDAO
 {
-
-    protected enum UpdateMode {
+    protected enum UpdateMode
+    {
         MAPPED, INTERNAL, ALL
     };
 
-    protected LdapTemplate ldapTemplate;
-
+    protected LdapTemplate                     ldapTemplate;
     protected final LDAPEntityDAOConfiguration configuration;
-    protected final DistinguishedName searchDN;
+    protected final DistinguishedName          searchDN;
+    protected ContextMapper                    contextMapper;
+    protected EntityFactory                    entityFactory;
 
-    protected ContextMapper contextMapper;
-
-    protected EntityFactory entityFactory;
-    
-    
     public SpringLDAPEntityDAO(LDAPEntityDAOConfiguration configuration)
     {
         super();
@@ -115,7 +111,8 @@ public class SpringLDAPEntityDAO implements EntityDAO
         if (entities != null && entities.size() == 1)
         {
             return entities.iterator().next();
-        } else
+        }
+        else
         {
             return null;
         }
@@ -133,7 +130,8 @@ public class SpringLDAPEntityDAO implements EntityDAO
         if (configuration.getSearchFilter() != null)
         {
             combinedFilter = SearchUtil.andFilters(idFilter, configuration.getSearchFilter());
-        } else
+        }
+        else
         {
             combinedFilter = idFilter;
         }
@@ -153,33 +151,32 @@ public class SpringLDAPEntityDAO implements EntityDAO
         }
         return resultSet;
     }
-    
-    public Entity getEntityByInternalId(String internalId){
+
+    public Entity getEntityByInternalId(String internalId)
+    {
         Entity resultEntity = null;
         DistinguishedName principalDN = getRelativeDN(internalId);
         String relativeDN = principalDN.toCompactString();
         String searchDNStr = searchDN.toCompactString();
-        if (relativeDN.equals(searchDNStr) || relativeDN.endsWith(searchDNStr)){
+        if (relativeDN.equals(searchDNStr) || relativeDN.endsWith(searchDNStr))
+        {
             internalId = principalDN.toCompactString();
-            
             ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
             try
             {
                 Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-                
                 resultEntity = (Entity) ldapTemplate.lookup(internalId, getContextMapper());
-            } finally
+            }
+            finally
             {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
             }
-            
         }
         return resultEntity;
     }
 
     public Entity getParentEntity(Entity childEntity)
     {
-        
         DistinguishedName parentDN = new DistinguishedName(childEntity.getInternalId());
         parentDN.removeLast();
         return getEntityByInternalId(parentDN.encode());
@@ -202,7 +199,8 @@ public class SpringLDAPEntityDAO implements EntityDAO
             if (filter == null)
             {
                 filter = configuration.getSearchFilter();
-            } else
+            }
+            else
             {
                 filter = SearchUtil.andFilters(configuration.getSearchFilter(), filter);
             }
@@ -224,14 +222,15 @@ public class SpringLDAPEntityDAO implements EntityDAO
         try
         {
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-            results = (Collection<Entity>) ldapTemplate.search(configuration.getSearchDN(), filterStr, SearchControls.SUBTREE_SCOPE, getContextMapper());
-        } finally{
+            results = ldapTemplate.search(configuration.getSearchDN(), filterStr, SearchControls.SUBTREE_SCOPE, getContextMapper());
+        }
+        finally
+        {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
-
         return results;
     }
-    
+
     @SuppressWarnings("unchecked")
     public Collection<Entity> getEntities(Entity parent, Filter filter)
     {
@@ -243,11 +242,12 @@ public class SpringLDAPEntityDAO implements EntityDAO
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
             String parentId = parent.getInternalId();
             DistinguishedName parentDN = getRelativeDN(parentId);
-            results = (Collection<Entity>) ldapTemplate.search(parentDN.encode(), filterStr, SearchControls.ONELEVEL_SCOPE, getContextMapper());
-        } finally{
+            results = ldapTemplate.search(parentDN.encode(), filterStr, SearchControls.ONELEVEL_SCOPE, getContextMapper());
+        }
+        finally
+        {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
-
         return results;
     }
 
@@ -260,44 +260,53 @@ public class SpringLDAPEntityDAO implements EntityDAO
     private void internalUpdate(Entity entity, UpdateMode umode) throws SecurityException
     {
         String internalId = entity.getInternalId();
-        if (internalId == null){
+        if (internalId == null)
+        {
             Entity ldapEntity = getEntity(entity.getId());
-            if (ldapEntity == null || ldapEntity.getInternalId() == null) { throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(entity.getType(), entity.getId())); }
-            internalId=ldapEntity.getInternalId();
+            if (ldapEntity == null || ldapEntity.getInternalId() == null)
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(entity.getType(), entity.getId()));
+            }
+            internalId = ldapEntity.getInternalId();
         }
-        
         Name dn = getRelativeDN(internalId);
         DirContextOperations dirCtxOps = null;
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try
         {
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-
             dirCtxOps = ldapTemplate.lookupContext(dn);
-        } finally{
+        }
+        finally
+        {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
-        if (dirCtxOps == null) { throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(entity.getType(), entity.getId())); }
-
+        if (dirCtxOps == null)
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(entity.getType(), entity.getId()));
+        }
         Collection<ModificationItem> modItems = getModItems(entity, dirCtxOps, umode);
         try
         {
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-
-            ldapTemplate.modifyAttributes(dn, modItems.toArray(new ModificationItem[]{}));
-        } finally{
+            ldapTemplate.modifyAttributes(dn, modItems.toArray(new ModificationItem[] {}));
+        }
+        finally
+        {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
     }
 
     public void add(Entity entity, Entity parentEntity) throws SecurityException
     {
-        if (parentEntity == null || parentEntity.getInternalId() == null){
-            throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(),"add(Entity entity, Entity parentEntity)","Provided parent entity is null or has no internal ID."));
-        }        
+        if (parentEntity == null || parentEntity.getInternalId() == null)
+        {
+            throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(), "add(Entity entity, Entity parentEntity)",
+                                                                            "Provided parent entity is null or has no internal ID."));
+        }
         DistinguishedName parentDn = new DistinguishedName(parentEntity.getInternalId());
         parentDn.removeFirst(new DistinguishedName(configuration.getBaseDN()));
-        internalAdd(entity,parentDn);        
+        internalAdd(entity, parentDn);
     }
 
     public void add(Entity entity) throws SecurityException
@@ -308,17 +317,21 @@ public class SpringLDAPEntityDAO implements EntityDAO
             try
             {
                 dn.addAll(new DistinguishedName(configuration.getSearchDN()));
-            } catch (InvalidNameException inex)
+            }
+            catch (InvalidNameException inex)
             {
-                throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(),"add(Entity entity)",inex));
+                throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(), "add(Entity entity)", inex));
             }
         }
         internalAdd(entity, dn);
     }
-    
+
     public void internalAdd(Entity entity, DistinguishedName dn) throws SecurityException
     {
-        if (entityExists(entity)) { throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(entity.getType(), entity.getId())); }
+        if (entityExists(entity))
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_ALREADY_EXISTS.createScoped(entity.getType(), entity.getId()));
+        }
         DirContextAdapter context = new DirContextAdapter();
         if (dn != null)
         {
@@ -340,18 +353,21 @@ public class SpringLDAPEntityDAO implements EntityDAO
                                 basicAttr.add(val);
                             }
                         }
-                    } else
+                    }
+                    else
                     {
                         basicAttr = new BasicAttribute(attrDef.getName());
                         basicAttr.add(entityAttr.getValue());
                     }
-                } else
+                }
+                else
                 {
                     if (attrDef.isIdAttribute())
                     {
                         basicAttr = new BasicAttribute(attrDef.getName());
                         basicAttr.add(entity.getId());
-                    } else if (attrDef.isRequired())
+                    }
+                    else if (attrDef.isRequired())
                     {
                         String requiredValue = attrDef.getRequiredDefaultValue();
                         if (requiredValue != null && requiredValue.length() > 0)
@@ -359,7 +375,8 @@ public class SpringLDAPEntityDAO implements EntityDAO
                             basicAttr = new BasicAttribute(attrDef.getName());
                             basicAttr.add(attrDef.getRequiredDefaultValue());
                         }
-                    } else
+                    }
+                    else
                     {
                         // TODO missing required attribute value, throw
                         // exception
@@ -381,9 +398,10 @@ public class SpringLDAPEntityDAO implements EntityDAO
             try
             {
                 Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-
                 ldapTemplate.bind(dn, context, null);
-            } finally{
+            }
+            finally
+            {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
             }
         }
@@ -391,7 +409,10 @@ public class SpringLDAPEntityDAO implements EntityDAO
 
     public void remove(Entity entity) throws SecurityException
     {
-        if (!entityExists(entity)) { throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(entity.getType(), entity.getId())); }
+        if (!entityExists(entity))
+        {
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(entity.getType(), entity.getId()));
+        }
         String internalIdStr = entity.getInternalId();
         if (internalIdStr == null)
         {
@@ -400,7 +421,8 @@ public class SpringLDAPEntityDAO implements EntityDAO
             {
                 // TODO throw exception
                 return;
-            } else
+            }
+            else
             {
                 internalIdStr = ldapEntity.getInternalId();
             }
@@ -409,13 +431,12 @@ public class SpringLDAPEntityDAO implements EntityDAO
         try
         {
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-
             ldapTemplate.unbind(getRelativeDN(internalIdStr));
-        } finally{
+        }
+        finally
+        {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
-
-        
     }
 
     public void update(Entity entity) throws SecurityException
@@ -447,7 +468,8 @@ public class SpringLDAPEntityDAO implements EntityDAO
                     dirCtxOps.setAttributeValues(attrDef.getName(), values.toArray());
                     attrAdded = true;
                 }
-            } else
+            }
+            else
             {
                 String value = entityAttr.getValue();
                 if (value != null)
@@ -489,7 +511,8 @@ public class SpringLDAPEntityDAO implements EntityDAO
                                     attrAdded = true;
                                 }
                             }
-                        } else
+                        }
+                        else
                         {
                             String value = entityAttr.getValue();
                             if (value != null)
@@ -514,12 +537,14 @@ public class SpringLDAPEntityDAO implements EntityDAO
                                 {
                                     basicAttr.add(attrDef.getRequiredDefaultValue());
                                     modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, basicAttr));
-                                } else
+                                }
+                                else
                                 {
                                     // TODO throw exception
                                     break;
                                 }
-                            } else
+                            }
+                            else
                             {
                                 modItems.add(new ModificationItem(DirContext.REMOVE_ATTRIBUTE, basicAttr));
                             }
@@ -533,8 +558,6 @@ public class SpringLDAPEntityDAO implements EntityDAO
 
     protected Filter createFilterForIdSearch(String entityId)
     {
-        return SearchUtil.constructMatchingFieldsFilter(configuration.getSearchFilter(), new String[]
-        { configuration.getLdapIdAttribute(), entityId});
+        return SearchUtil.constructMatchingFieldsFilter(configuration.getSearchFilter(), new String[] { configuration.getLdapIdAttribute(), entityId });
     }
-    
 }

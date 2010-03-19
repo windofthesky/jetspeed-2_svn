@@ -26,7 +26,6 @@ import java.util.Set;
  */
 public interface Entity
 {
-
     String getType();
 
     String getId();
@@ -36,18 +35,19 @@ public interface Entity
     Attribute getAttribute(String name);
 
     /**
-     * Returns a read-only map of attributes (name to attribute). 
-     * To add attributes, call one of the setAttribute() methods
+     * Returns a read-only map of attributes (name to attribute). To add attributes, call one of the setAttribute() methods
+     * 
      * @return collection of all attributes of the entity
      */
-    Map<String,Attribute> getAttributes();
+    Map<String, Attribute> getAttributes();
 
     /**
-     * Returns a read-only map of attributes (mapped name to attribute). 
-     * Each attribute is mapped, i.e. is synchronized with a related Jetspeed principal attribute. 
+     * Returns a read-only map of attributes (mapped name to attribute). Each attribute is mapped, i.e. is synchronized with a related Jetspeed principal
+     * attribute.
+     * 
      * @return collection of all attributes of the entity
      */
-    Map<String,Attribute> getMappedAttributes();
+    Map<String, Attribute> getMappedAttributes();
 
     void setAttribute(String name, String value);
 
@@ -56,5 +56,4 @@ public interface Entity
     void setAttributes(Set<Attribute> attributes);
 
     Set<AttributeDef> getAllowedAttributes();
-
 }

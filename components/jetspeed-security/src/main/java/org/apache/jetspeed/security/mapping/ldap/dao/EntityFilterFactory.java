@@ -16,9 +16,8 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
-import org.springframework.ldap.filter.Filter;
-
 import org.apache.jetspeed.security.mapping.model.Entity;
+import org.springframework.ldap.filter.Filter;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -26,7 +25,5 @@ import org.apache.jetspeed.security.mapping.model.Entity;
  */
 public interface EntityFilterFactory
 {
-
     Filter createFilter(Entity entity);
-
 }
