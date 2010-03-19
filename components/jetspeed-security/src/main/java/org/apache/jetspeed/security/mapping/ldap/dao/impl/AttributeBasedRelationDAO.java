@@ -65,6 +65,18 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
             if (relationAttrValue != null)
             {
                 Collection<String> values = relationAttrValue.getValues();
+                if (relationAttrValue.getDefinition().isRequired())
+                {
+                    String defaultValue = relationAttrValue.getDefinition().getRequiredDefaultValue();
+                    if (defaultValue != null)
+                    {
+                        if (SpringLDAPEntityDAO.DN_REFERENCE_MARKER.equals(defaultValue))
+                        {
+                            defaultValue = entity.getInternalId();
+                        }
+                        values.remove(defaultValue);
+                    }
+                }
                 if (attributeContainsInternalId)
                 {
                     return toDAO.getEntitiesByInternalId(values);
@@ -85,8 +97,8 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
             {
                 // fetch entities using target Entity DAO with a specific filter
                 // on the member attribute
-                Filter roleMemberAttrFilter = new EqualsFilter(relationAttribute, fromEntityUsedIdValue);
-                return toDAO.getEntities(roleMemberAttrFilter);
+                Filter memberAttrFilter = new EqualsFilter(relationAttribute, fromEntityUsedIdValue);
+                return toDAO.getEntities(memberAttrFilter);
             }
         }
         return null;

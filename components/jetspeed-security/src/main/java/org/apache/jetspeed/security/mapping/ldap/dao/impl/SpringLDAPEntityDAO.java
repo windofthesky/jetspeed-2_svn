@@ -54,6 +54,8 @@ import org.springframework.ldap.filter.OrFilter;
  */
 public class SpringLDAPEntityDAO implements EntityDAO
 {
+    public static final String DN_REFERENCE_MARKER = "#dn";
+    
     protected enum UpdateMode
     {
         MAPPED, INTERNAL, ALL
@@ -190,6 +192,16 @@ public class SpringLDAPEntityDAO implements EntityDAO
             principalDN.removeFirst(new DistinguishedName(configuration.getBaseDN()));
         }
         return principalDN;
+    }
+
+    protected String getFullDN(DistinguishedName relativeDN)
+    {        
+        String fullDN = relativeDN.toCompactString();
+        if (configuration.getBaseDN() != null && configuration.getBaseDN().length() > 0 && !fullDN.endsWith(configuration.getBaseDN()))
+        {
+            return fullDN + "," + configuration.getBaseDN();
+        }
+        return fullDN;
     }
 
     protected String createSearchFilter(Filter filter)
@@ -373,7 +385,14 @@ public class SpringLDAPEntityDAO implements EntityDAO
                         if (requiredValue != null && requiredValue.length() > 0)
                         {
                             basicAttr = new BasicAttribute(attrDef.getName());
-                            basicAttr.add(attrDef.getRequiredDefaultValue());
+                            if (SpringLDAPEntityDAO.DN_REFERENCE_MARKER.equals(requiredValue))
+                            {
+                                basicAttr.add(getFullDN(dn));
+                            }
+                            else
+                            {
+                                basicAttr.add(requiredValue);
+                            }
                         }
                     }
                     else
@@ -538,7 +557,12 @@ public class SpringLDAPEntityDAO implements EntityDAO
                             {
                                 if (attrDef.getRequiredDefaultValue() != null)
                                 {
-                                    basicAttr.add(attrDef.getRequiredDefaultValue());
+                                    String defaultValue = attrDef.getRequiredDefaultValue();
+                                    if (SpringLDAPEntityDAO.DN_REFERENCE_MARKER.equals(defaultValue))
+                                    {
+                                        defaultValue = entity.getInternalId();
+                                    }
+                                    basicAttr.add(defaultValue);
                                     modItems.add(new ModificationItem(DirContext.REPLACE_ATTRIBUTE, basicAttr));
                                 }
                                 else

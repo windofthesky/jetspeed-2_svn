@@ -183,7 +183,7 @@
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
           <property name="required" value="true" />
-          <property name="requiredDefaultValue" value="uid=foobar" />
+          <property name="requiredDefaultValue" value="#dn" />
         </bean>
       </set>
     </property>
@@ -221,7 +221,7 @@
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
           <property name="required" value="true" />
-          <property name="requiredDefaultValue" value="uid=foobar" />
+          <property name="requiredDefaultValue" value="#dn" />
         </bean>
       </set>
     </property>
