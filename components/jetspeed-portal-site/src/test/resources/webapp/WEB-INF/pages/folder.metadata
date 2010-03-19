@@ -38,4 +38,5 @@ limitations under the License.
   <menu name="current-page-test" options="~"/>
   <menu name="current-path-test" regexp="true" options="/@1/*.psml"/>
   <menu name="site-navigations" regexp="true" options="/*/,/*.psml" depth="-1"/>
+  <menu name="rooted-navigations" regexp="true" options="+/*/,+/*.psml,+/*.link" depth="-1"/>
 </folder>
