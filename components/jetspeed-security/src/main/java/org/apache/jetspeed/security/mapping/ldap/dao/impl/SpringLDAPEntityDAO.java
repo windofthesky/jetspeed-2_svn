@@ -411,7 +411,10 @@ public class SpringLDAPEntityDAO implements EntityDAO
     {
         if (!entityExists(entity))
         {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(entity.getType(), entity.getId()));
+            // cannot assume external security systems like LDAP which are not solely under the control of the Portal to be 100% in sync.
+            // removal of no longer existing entity therefore should not be considered an error.
+            return;
+            //throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(entity.getType(), entity.getId()));
         }
         String internalIdStr = entity.getInternalId();
         if (internalIdStr == null)
