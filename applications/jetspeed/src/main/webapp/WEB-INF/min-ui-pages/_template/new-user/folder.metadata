@@ -21,5 +21,8 @@ limitations under the License.
 
   <document-order>default-page.psml</document-order>
   <document-order>account.psml</document-order>
-
+  
+  <menu name="space-navigations" regexp="true" options="+/*/,+/*.psml" depth="-1"/>
+  <menu name="space-links" regexp="true" options="+/*.link"/>
+  
 </folder>

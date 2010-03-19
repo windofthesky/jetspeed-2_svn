@@ -27,4 +27,8 @@ limitations under the License.
   <security-constraints>
     <security-constraints-ref>public-view</security-constraints-ref>
   </security-constraints>
+  
+  <menu name="space-navigations" regexp="true" options="+/*/,+/*.psml" depth="-1"/>
+  <menu name="space-links" regexp="true" options="+/*.link"/>
+  
 </folder>

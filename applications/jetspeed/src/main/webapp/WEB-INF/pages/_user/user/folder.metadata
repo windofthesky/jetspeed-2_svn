@@ -88,7 +88,10 @@ limitations under the License.
     </separator>
     <options>/non-java</options>
   </menu>
-
+  
+  <menu name="space-navigations" regexp="true" options="+/*/,+/*.psml" depth="-1"/>
+  <menu name="space-links" regexp="true" options="+/*.link"/>
+  
   <security-constraints>
     <owner>user</owner>
     <security-constraints-ref>manager</security-constraints-ref>

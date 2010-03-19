@@ -25,5 +25,8 @@ limitations under the License.
   <security-constraints>
     <owner>devmgr</owner>
   </security-constraints>
-    
+  
+  <menu name="space-navigations" regexp="true" options="+/*/,+/*.psml" depth="-1"/>
+  <menu name="space-links" regexp="true" options="+/*.link"/>
+  
 </folder>

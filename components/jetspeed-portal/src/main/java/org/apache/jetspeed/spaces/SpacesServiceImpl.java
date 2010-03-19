@@ -152,8 +152,9 @@ public class SpacesServiceImpl implements Spaces
             for (int ix = 0; spaces.hasNext(); ix++)
             {
                 Folder folder = spaces.next();
-                if (folder.isHidden() || folder.isReserved())
+                if (folder.isReserved())
                     continue;
+                
                 Space space = loadSpace(folder);
                 // Exclude ordinary folders
                 if (space.getOwner() != null)
