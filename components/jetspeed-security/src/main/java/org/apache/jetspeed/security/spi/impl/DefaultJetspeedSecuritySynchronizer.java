@@ -38,9 +38,9 @@ import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributeType;
 import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
-import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.Entity;
+import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
 import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
 
 /**

@@ -25,8 +25,8 @@ import java.util.Map;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
-import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
 import org.apache.jetspeed.security.mapping.model.Entity;
+import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>

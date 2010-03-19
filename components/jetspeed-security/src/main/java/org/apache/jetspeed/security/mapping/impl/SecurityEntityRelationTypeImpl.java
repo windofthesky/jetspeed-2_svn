@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.security.mapping.impl;
 
-import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
+import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>

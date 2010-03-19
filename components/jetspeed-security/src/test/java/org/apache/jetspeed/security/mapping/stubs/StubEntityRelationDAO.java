@@ -21,10 +21,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityRelationDAO;
 import org.apache.jetspeed.security.mapping.model.Entity;
+import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
 
 
 /**

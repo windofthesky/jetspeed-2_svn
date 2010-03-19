@@ -20,9 +20,9 @@ import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
-import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
 import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
 import org.apache.jetspeed.security.mapping.model.Entity;
+import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
 
 /**

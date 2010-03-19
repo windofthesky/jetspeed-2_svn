@@ -19,8 +19,8 @@ package org.apache.jetspeed.security.mapping.ldap.dao;
 import java.util.Collection;
 
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.mapping.SecurityEntityRelationType;
 import org.apache.jetspeed.security.mapping.model.Entity;
+import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
