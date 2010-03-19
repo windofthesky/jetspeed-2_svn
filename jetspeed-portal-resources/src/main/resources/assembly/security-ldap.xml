@@ -162,7 +162,7 @@
       </bean>
     </property>
     <property name="ldapIdAttribute" value="cn" />
-    <property name="objectClasses" value="groupOfUniqueNames,extensibleObject"/>
+    <property name="objectClasses" value="groupOfNames,extensibleObject"/>
     <property name="attributeDefinitions">
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
@@ -177,12 +177,6 @@
           <constructor-arg index="1" value="false" />
           <constructor-arg index="2" value="true" />
           <constructor-arg type="java.lang.String" index="3" value="role.display.name" />
-        </bean>
-        <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
-          <constructor-arg type="java.lang.String" index="0" value="uniqueMember" />
-          <constructor-arg index="1" value="true" />
-          <constructor-arg index="2" value="false" />
-          <property name="required" value="true" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="member" />
@@ -206,7 +200,7 @@
       </bean>
     </property>
     <property name="ldapIdAttribute" value="cn" />
-    <property name="objectClasses" value="groupOfUniqueNames,extensibleObject"/>
+    <property name="objectClasses" value="groupOfNames,extensibleObject"/>
     <property name="attributeDefinitions">
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
@@ -221,12 +215,6 @@
           <constructor-arg index="1" value="false" />
           <constructor-arg index="2" value="true" />
           <constructor-arg type="java.lang.String" index="3" value="group.display.name" />
-        </bean>
-        <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
-          <constructor-arg type="java.lang.String" index="0" value="uniqueMember" />
-          <constructor-arg index="1" value="true" />
-          <constructor-arg index="2" value="false" />
-          <property name="required" value="true" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
           <constructor-arg type="java.lang.String" index="0" value="member" />
@@ -251,7 +239,7 @@
 
   <bean id="UserRoleRelationDAO" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.AttributeBasedRelationDAO">
     <meta key="j2:cat" value="ldapSecurity" />
-    <property name="relationAttribute" value="uniqueMember" />
+    <property name="relationAttribute" value="member" />
     <property name="attributeContainsInternalId" value="true" />
     <property name="useFromEntityAttribute" value="false" />
     <property name="relationType">
@@ -265,7 +253,7 @@
 
   <bean id="UserGroupRelationDAO" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.AttributeBasedRelationDAO">
     <meta key="j2:cat" value="ldapSecurity" />
-    <property name="relationAttribute" value="uniqueMember" />
+    <property name="relationAttribute" value="member" />
     <property name="attributeContainsInternalId" value="true" />
     <property name="useFromEntityAttribute" value="false" />
     <property name="relationType">

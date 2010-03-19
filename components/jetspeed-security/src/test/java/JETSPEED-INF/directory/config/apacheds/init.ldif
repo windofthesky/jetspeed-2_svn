@@ -1,0 +1,17 @@
+version: 1
+
+dn: ou=Groups,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Groups
+
+dn: ou=Roles,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Roles
+
+dn: ou=Users,o=sevenSeas
+objectClass: organizationalUnit
+objectClass: top
+ou: Users
+

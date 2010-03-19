@@ -37,16 +37,6 @@ public class TestLDAP extends AbstractSetup1LDAPTest
         return createFixturedTestSuite(TestLDAP.class, "ldapTestSetup", "ldapTestTeardown");
     }
     
-    public void ldapTestSetup() throws Exception
-    {
-        super.ldapTestSetup();
-    }
-    
-    public void ldapTestTeardown() throws Exception
-    {
-        super.ldapTestTeardown();
-    }
-
     public void testSingleUser() throws Exception
     {
         EntityImpl sampleUser = new EntityImpl("user", "jsmith", userAttrDefs);

@@ -19,7 +19,6 @@ package org.apache.jetspeed.security;
 import javax.security.auth.Subject;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 
 /**
@@ -30,12 +29,12 @@ import junit.framework.TestSuite;
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat </a>
  * @version $Id$
  */
-public class TestRoleManager extends AbstractSecurityTestcase
+public class TestRoleManager extends AbstractLDAPSecurityTestCase
 {
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestRoleManager.class);
+        return createFixturedTestSuite(TestRoleManager.class, "ldapTestSetup", "ldapTestTeardown");
     }
 
     /**

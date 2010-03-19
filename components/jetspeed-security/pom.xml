@@ -171,6 +171,10 @@
                     <include>transaction.xml,security-*.xml,static-bean-references.xml,boot/datasource.xml</include>
                   </resource>
                   <resource>
+                    <path>conf/jetspeed</path>
+                    <include>jetspeed.properties</include>
+                  </resource>
+                  <resource>
                     <path>db-ojb</path>
                   </resource>
                 </resources>
