@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.mapping.model.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,7 +59,31 @@ public class EntityImpl implements Entity
 
     public Attribute getAttribute(String name)
     {
-        return nameToAttributeMap.get(name);
+        return getAttribute(name,false);
+    }
+    
+    public Attribute getAttribute(String name, boolean create)
+    {
+        Attribute attr = nameToAttributeMap.get(name);
+        
+        if (attr == null && create)
+        {
+            AttributeDef def = getAttributeDefinition(name);
+            if (def == null)
+            {
+                // TODO: throw proper exception
+            }
+            else
+            {
+                attr = new AttributeImpl(def);
+                nameToAttributeMap.put(name, attr);
+                if (def.isMultiValue())
+                {
+                    attr.setValues(new ArrayList<String>());
+                }
+            }
+        }
+        return attr;
     }
 
     public Map<String, Attribute> getAttributes()

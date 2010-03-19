@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -161,18 +160,11 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         {
             attrValue = toEntity.getId();
         }
-        Attribute relationAttribute = fromEntity.getAttribute(this.relationAttribute);
-        if (relationAttribute == null)
+        Attribute relationAttribute = fromEntity.getAttribute(this.relationAttribute, true);
+        if (relationAttribute.getValues().contains(attrValue))
         {
-            fromEntity.setAttribute(this.relationAttribute, new ArrayList<String>());
-        }
-        else
-        {
-            if (relationAttribute.getValues().contains(attrValue))
-            {
-                throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_ALREADY_EXISTS.createScoped(fromEntity.getType(), fromEntity.getId(),
-                                                                                                                relationAttribute, toEntity.getId()));
-            }
+            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_ALREADY_EXISTS.createScoped(fromEntity.getType(), fromEntity.getId(),
+                                                                                                            relationAttribute, toEntity.getId()));
         }
         if (relationAttribute.getDefinition().isMultiValue())
         {
@@ -188,51 +180,54 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
     private void internalRemoveRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity) throws SecurityException
     {
         fromEntity = fromEntityDAO.getEntity(fromEntity.getId());
-        toEntity = toEntityDAO.getEntity(toEntity.getId());
-        String attrValue = null;
-        if (attributeContainsInternalId)
-        {
-            if (toEntity.getInternalId() == null)
-            {
-                // internal ID (ldap DN) is not present, refetch the entity from LDAP to get the DN
-                toEntity = toEntityDAO.getEntity(toEntity.getId());
-            }
-            attrValue = toEntity.getInternalId();
-        }
-        else
-        {
-            attrValue = toEntity.getId();
-        }
         Attribute relationAttribute = fromEntity.getAttribute(this.relationAttribute);
-        if (relationAttribute.getDefinition().isMultiValue())
+        if (relationAttribute != null)
         {
-            DistinguishedName attrib = new DistinguishedName(attrValue);
+            toEntity = toEntityDAO.getEntity(toEntity.getId());
+            String attrValue = null;
             if (attributeContainsInternalId)
             {
-                boolean found = false;
-                String attribValue = null;
-                Iterator<String> iterator = relationAttribute.getValues().iterator();
-                while (iterator.hasNext() && !found)
+                if (toEntity.getInternalId() == null)
                 {
-                    attribValue = iterator.next();
-                    DistinguishedName ldapAttr = new DistinguishedName(attribValue);
-                    if (ldapAttr.equals(attrib))
+                    // internal ID (ldap DN) is not present, refetch the entity from LDAP to get the DN
+                    toEntity = toEntityDAO.getEntity(toEntity.getId());
+                }
+                attrValue = toEntity.getInternalId();
+            }
+            else
+            {
+                attrValue = toEntity.getId();
+            }
+            if (relationAttribute.getDefinition().isMultiValue())
+            {
+                DistinguishedName attrib = new DistinguishedName(attrValue);
+                if (attributeContainsInternalId)
+                {
+                    boolean found = false;
+                    String attribValue = null;
+                    Iterator<String> iterator = relationAttribute.getValues().iterator();
+                    while (iterator.hasNext() && !found)
                     {
-                        relationAttribute.getValues().remove(attribValue);
-                        found = true;
+                        attribValue = iterator.next();
+                        DistinguishedName ldapAttr = new DistinguishedName(attribValue);
+                        if (ldapAttr.equals(attrib))
+                        {
+                            relationAttribute.getValues().remove(attribValue);
+                            found = true;
+                        }
                     }
+                }
+                else
+                {
+                    relationAttribute.getValues().remove(attrValue);
                 }
             }
             else
             {
-                relationAttribute.getValues().remove(attrValue);
+                relationAttribute.setValue(null);
             }
+            fromEntityDAO.updateInternalAttributes(fromEntity);
         }
-        else
-        {
-            relationAttribute.setValue(null);
-        }
-        fromEntityDAO.updateInternalAttributes(fromEntity);
     }
 
     public void addRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity) throws SecurityException

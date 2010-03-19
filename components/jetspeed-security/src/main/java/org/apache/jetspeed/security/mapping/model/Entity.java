@@ -34,6 +34,8 @@ public interface Entity
 
     Attribute getAttribute(String name);
 
+    Attribute getAttribute(String name, boolean create);
+
     /**
      * Returns a read-only map of attributes (name to attribute). To add attributes, call one of the setAttribute() methods
      * 
