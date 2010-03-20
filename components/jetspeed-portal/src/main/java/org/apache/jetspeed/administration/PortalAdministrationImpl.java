@@ -291,30 +291,7 @@ public class PortalAdministrationImpl implements PortalAdministration
             String userFolderPath = null;
             if ((subsite == null) && (serverName != null))
             {
-                // setup profiler and portal site to determine template
-                // folders paths generate mock request for new user to profile
-                RequestContext request = new MockRequestContext("/");
-                request.setSubject(userManager.getSubject(user));
-                request.setLocale((locale != null) ? locale : Locale.getDefault());
-                MockHttpServletRequest servletRequest = new MockHttpServletRequest();
-                servletRequest.setServerName(serverName);
-                request.setRequest(servletRequest);
-                
-                // get profile locators map for new user request
-                Map locators = profiler.getProfileLocators(request , user);
-                if (locators.size() == 0)
-                {
-                    locators = profiler.getDefaultProfileLocators(request);                
-                }
-                if (locators.size() == 0)
-                {
-                    locators.put(ProfileLocator.PAGE_LOCATOR, profiler.getProfile(request, ProfileLocator.PAGE_LOCATOR));
-                }
-                
-                // get user folder path from profiler site component
-                // using the profile locators for new user request
-                PortalSiteSessionContext sessionContext = portalSite.newSessionContext();
-                PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, userName);
+                PortalSiteRequestContext requestContext = getMockPortalSiteRequestContext(user, locale, serverName);
                 userFolderPath = requestContext.getUserFolderPath();
             }
             else if (subsite != null)
@@ -587,5 +564,84 @@ public class PortalAdministrationImpl implements PortalAdministration
         
         return request.isUserInRole(adminRole);
     }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.administration.PortalAdministration#getUserFolderPath(java.lang.String, java.util.Locale, java.lang.String)
+     */
+    public String getUserFolderPath(String userName, Locale locale, String serverName)
+    {
+        try
+        {
+            User user = userManager.getUser(userName);
+            PortalSiteRequestContext requestContext = getMockPortalSiteRequestContext(user, locale, serverName);
+            return requestContext.getUserFolderPath();
+        }
+        catch (Exception e)
+        {
+            log.error("Unexpected exception getting user folder path for "+userName+": "+e, e);
+            return null;
+        }        
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.administration.PortalAdministration#getBaseFolderPath(java.lang.String, java.util.Locale, java.lang.String)
+     */
+    public String getBaseFolderPath(String userName, Locale locale, String serverName)
+    {
+        try
+        {
+            User user = userManager.getUser(userName);
+            PortalSiteRequestContext requestContext = getMockPortalSiteRequestContext(user, locale, serverName);
+            return requestContext.getBaseFolderPath();
+        }
+        catch (Exception e)
+        {
+            log.error("Unexpected exception getting base folder path for "+userName+": "+e, e);
+            return null;
+        }
+    }
     
+    /**
+     * Returns temporary mock portal site request context for
+     * specified user for use in constructing user or base PSML
+     * folder paths or accessing other profiled site data.
+     * 
+     * @param user portal user
+     * @param locale optional locale, (defaults to system locale, for language
+     *               profiling rules)
+     * @param serverName server name, (required for subsite profiling rules)
+     * @return portal site request context
+     * @throws Exception
+     */
+    private PortalSiteRequestContext getMockPortalSiteRequestContext(User user, Locale locale, String serverName) throws Exception
+    {
+        // setup profiler and portal site to determine template
+        // folders paths generate mock request for new user to profile
+        RequestContext request = new MockRequestContext("/");
+        request.setSubject(userManager.getSubject(user));
+        request.setLocale((locale != null) ? locale : Locale.getDefault());
+        MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+        if (serverName != null)
+        {
+            servletRequest.setServerName(serverName);
+        }
+        request.setRequest(servletRequest);
+
+        // get profile locators map for new user request, (taken from
+        // ProfilerValveImpl)
+        Map locators = profiler.getProfileLocators(request , user);
+        if (locators.size() == 0)
+        {
+            locators = profiler.getDefaultProfileLocators(request);                
+        }
+        if (locators.size() == 0)
+        {
+            locators.put(ProfileLocator.PAGE_LOCATOR, profiler.getProfile(request, ProfileLocator.PAGE_LOCATOR));
+        }
+
+        // get new portal site request context from portal site
+        // component using the profile locators for new user request
+        PortalSiteSessionContext sessionContext = portalSite.newSessionContext();
+        return sessionContext.newRequestContext(locators, user.getName());
+    }
 }
