@@ -15,7 +15,7 @@
 
 ; Jetspeed Enterprise Portal 2.2.1-SNAPSHOT Database setup configuration
 
-; db.type supported values: db2, derby, mssql, mysql, oracle, postgres, sapdb
+; db.type supported values: db2, derby, mssql, mysql, oracle, postgresql, sapdb
 db.type=@db.type@
 
 : for db.type other than derby, the properties below need to be specified

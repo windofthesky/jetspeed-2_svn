@@ -102,7 +102,7 @@
       <option text="Derby" value="derby" />
       <option text="MSSQL" value="mssql" />
       <option text="MySql" value="mysql" />
-      <option text="PostgreSQL" value="postgres" />
+      <option text="PostgreSQL" value="postgresql" />
       <option text="Oracle 9" value="oracle9" />
       <option text="Oracle 10 or higher" value="oracle10" />
       <option text="SapDB" value="sapdb" />
@@ -121,7 +121,7 @@
       <option text="DB2" value="db2" />
       <option text="MSSQL" value="mssql" />
       <option text="MySql" value="mysql" />
-      <option text="PostgreSQL" value="postgres" />
+      <option text="PostgreSQL" value="postgresql" />
       <option text="Oracle 9" value="oracle9" />
       <option text="Oracle 10 or higher" value="oracle10" />
       <option text="SapDB" value="sapdb" />
@@ -146,8 +146,8 @@
       displayText="JDBC driver" checkExists="true" />
   </page>
 
-  <page type="input" name="postgres" displayText="PostgreSQL Database connection parameters"
-    ifProperty="${dbName}=postgres">
+  <page type="input" name="postgresql" displayText="PostgreSQL Database connection parameters"
+    ifProperty="${dbName}=postgresql">
     <hidden property="checkdb" value="true" />
     <hidden property="dbvalid" value="false" />
     <hidden property="dbDisplayName" value="PostgreSQL"/>
