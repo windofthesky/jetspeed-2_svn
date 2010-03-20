@@ -181,5 +181,28 @@ public interface PortalAdministration
      */
     public void removeNewLoginInfo(String guid);
         
+    /**
+     * Returns PSML user folder path for specified user by
+     * running full profiler and portal site rules.
+     * 
+     * @param userName existing portal user name
+     * @param locale optional locale, (defaults to system locale, for language
+     *               profiling rules)
+     * @param serverName server name, (required for subsite profiling rules)
+     * @return PSML user folder path
+     */
+    public String getUserFolderPath(String userName, Locale locale, String serverName);
+
+    /**
+     * Returns PSML base folder path for specified user by
+     * running full profiler and portal site rules.
+     * 
+     * @param userName existing portal user name
+     * @param locale optional locale, (defaults to system locale, for language
+     *               profiling rules)
+     * @param serverName server name, (required for subsite profiling rules)
+     * @return PSML base folder path
+     */
+    public String getBaseFolderPath(String userName, Locale locale, String serverName);
 }
 
