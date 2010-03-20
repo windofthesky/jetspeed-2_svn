@@ -18,7 +18,7 @@ limitations under the License.
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd">
 
-  <defaults layout-decorator="tigris" portlet-decorator="gray-gradient"/>
+  <defaults layout-decorator="greenearth" portlet-decorator="gray-gradient"/>
 
   <title>Subsite Root Folder</title>  
   <default-page>subsite-default-page.psml</default-page>

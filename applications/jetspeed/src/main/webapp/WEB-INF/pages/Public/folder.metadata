@@ -13,17 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<folder hidden="true"
+<folder
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd">
     
-<!--    
   <defaults
-     layout-decorator="jscookmenu"
+     layout-decorator="turbo"
      portlet-decorator="blue-gradient"
   />
-  -->
 
   <title>Public Space</title>  
   <metadata name='space-owner' xml:lang='en'>admin</metadata>  

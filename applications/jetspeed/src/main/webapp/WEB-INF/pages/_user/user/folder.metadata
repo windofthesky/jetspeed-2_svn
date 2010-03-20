@@ -34,21 +34,17 @@ limitations under the License.
 
   <document-order>Google.link</document-order>
   <document-order>Jetspeed2.link</document-order>
-
-<!--   <document-order>default-page.psml</document-order>  
-  <document-order>p001.psml</document-order>
-  <document-order>p002.psml</document-order> -->
   <document-order>p003.psml</document-order>
-  <!-- 
+  <document-order>default-page.psml</document-order>  
+  <document-order>p001.psml</document-order>
+  <document-order>p002.psml</document-order>
   <document-order>p004.psml</document-order>
   <document-order>localeselector.psml</document-order>
   <document-order>jsf-demo.psml</document-order>
   <document-order>struts-demo.psml</document-order>
- 
   <document-order>third-party</document-order>
   <document-order>non-java</document-order>
   <document-order>Administrative</document-order>
- -->
  
   <menu name="page-navigations">
     <separator>
