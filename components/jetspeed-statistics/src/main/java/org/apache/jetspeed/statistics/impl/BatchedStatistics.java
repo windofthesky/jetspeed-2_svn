@@ -19,11 +19,14 @@ package org.apache.jetspeed.statistics.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.sql.DataSource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * <p>
@@ -84,18 +87,19 @@ public abstract class BatchedStatistics implements Runnable
         if ((logRecords.size() >= batchSize)
                 || (msCurrentTime - msLastFlushTime > msElapsedTimeThreshold))
         {
-            flush();
+      	   do {
+      	   	flush();
+      	   } 
+      	   while (logRecords.size() >= batchSize);
+      	   
             msLastFlushTime = msCurrentTime;
         }
     }
 
     public void addStatistic(LogRecord logRecord)
     {
-        synchronized (logRecords)
-        {
             logRecords.add(logRecord);
-            checkAndDoFlush();
-        }
+            //checkAndDoFlush();
     }
 
     public boolean isDone()
@@ -128,17 +132,11 @@ public abstract class BatchedStatistics implements Runnable
             {
                 keepRunning = false;
             }
-            synchronized (logRecords)
-            {
-                checkAndDoFlush();
-            }
+            checkAndDoFlush();
         }
         // force a flush on the way out even if the constraints have not been
         // met
-        synchronized (logRecords)
-        {
-            flush();
-        }
+        flush();
         done = true;
     }
 
@@ -154,32 +152,32 @@ public abstract class BatchedStatistics implements Runnable
 
         Connection con = null;
         PreparedStatement stm = null;
+        boolean autoCommit = true;
 
         try
         {
             con = getConnection();
-            boolean autoCommit = con.getAutoCommit();
+            autoCommit = con.getAutoCommit();
             con.setAutoCommit(false);
 
             stm = getPreparedStatement(con);
-            Iterator recordIterator = logRecords.iterator();
+            Iterator<LogRecord> recordIterator = logRecords.iterator();
             while (recordIterator.hasNext())
             {
-                LogRecord record = (LogRecord) recordIterator.next();
+                LogRecord record = recordIterator.next();
 
                 loadOneRecordToStatement(stm, record);
 
                 stm.addBatch();
+                
+                recordIterator.remove();
             }
             stm.executeBatch();
             con.commit();
-            // only clear the records if we actually store them...
-            logRecords.clear();
-            con.setAutoCommit(autoCommit);
+            log.debug(stm.getUpdateCount()+" "+name+" stratistics flushed.");
         } catch (SQLException e)
         {
-            // todo log to standard Jetspeed logger
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             try
             {
                 con.rollback();
@@ -193,7 +191,7 @@ public abstract class BatchedStatistics implements Runnable
             } catch (SQLException se)
             {
             }
-            releaseConnection(con);
+            releaseConnection(con, autoCommit);
         }
     }
 
@@ -203,11 +201,14 @@ public abstract class BatchedStatistics implements Runnable
     abstract protected void loadOneRecordToStatement(PreparedStatement stm,
             LogRecord rec) throws SQLException;
 
-    void releaseConnection(Connection con)
+    void releaseConnection(Connection con, boolean autoCommit)
     {
         try
         {
-            if (con != null) con.close();
+            if (con != null) {
+            	con.setAutoCommit(autoCommit);
+            	con.close();
+            }
         } catch (SQLException e)
         {
         }
@@ -221,7 +222,7 @@ public abstract class BatchedStatistics implements Runnable
 
     protected long msElapsedTimeThreshold = 5000;
 
-    protected List logRecords = new LinkedList();
+    protected Collection<LogRecord> logRecords = new ConcurrentLinkedQueue<LogRecord>();
 
     protected DataSource ds = null;
 
@@ -229,4 +230,5 @@ public abstract class BatchedStatistics implements Runnable
 
     public abstract boolean canDoRecordType(LogRecord rec);
 
+    private static final Log log = LogFactory.getLog(BatchedStatistics.class);
 }
