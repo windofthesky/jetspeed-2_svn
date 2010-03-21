@@ -82,6 +82,9 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
     private static String ENCODING_STRING = "JETSPEED-SERIALIZER-ENCODING";
     private static String JETSPEED = "JETSPEED";
 
+    // legacy user info keys
+    private static final String USER_INFO_SUBSITE = "subsite";
+
     private static class ImportRefs
     {
         private HashMap<String, HashMap<String, Principal>> principalMapByType = new HashMap<String, HashMap<String, Principal>>();
@@ -487,7 +490,17 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                         
                         for (JSNVPElement element : attributes.getValues())
                         {
-                            userSecAttrs.getAttribute(element.getKey(), true).setStringValue(element.getValue());
+                            // assume old-style user info comes from 2.1.X exports: convert
+                            // user info keys into equivalent 2.2.X security attribute keys
+                            String userInfoKey = element.getKey();
+                            String securityAttributeKey = userInfoKey;
+                            if (userInfoKey.equals(USER_INFO_SUBSITE))
+                            {
+                                securityAttributeKey = User.JETSPEED_USER_SUBSITE_ATTRIBUTE;
+                            }
+                            String securityAttributeValue = element.getValue();
+                            // set security attribute
+                            userSecAttrs.getAttribute(securityAttributeKey, true).setStringValue(securityAttributeValue);
                         }
                     }
                     JSNVPElements jsNVP = jsuser.getSecurityAttributes();
