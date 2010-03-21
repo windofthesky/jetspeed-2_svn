@@ -19,6 +19,8 @@ package org.apache.jetspeed.security.spi;
 import java.util.List;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.JetspeedPrincipalQueryContext;
+import org.apache.jetspeed.security.JetspeedPrincipalResultList;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 
 /**
@@ -53,4 +55,31 @@ public interface JetspeedPrincipalAccessManager
     List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName);
 
     List<String> getAssociatedNamesTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName);
+    
+    /**
+     * Retrieve all principals that match the queryContext.
+     * It returns a {@link JetspeedPrincipalResultList}, containing
+     * the actual result list an the total number of results from the query.
+     * 
+     * The returned principals are detached.
+     * 
+     * @param queryContext The (@see JetspeedPrincipalQueryContext) for this query.
+     * @param type The principals type (@see JetspeedPrincipalType).
+     * @return
+     */
+    public JetspeedPrincipalResultList getPrincipals(JetspeedPrincipalQueryContext queryContext, JetspeedPrincipalType type);
+	
+    /**
+     * Retrieve all principals that match the queryContext.
+     * It returns a {@link JetspeedPrincipalResultList}, containing
+     * the actual result list an the total number of results from the query.
+     * 
+     * The returned principals are detached.
+     * 
+     * @param queryContext The (@see JetspeedPrincipalQueryContext) for this query.
+     * @param type The principals type (@see JetspeedPrincipalType).
+	 * @param securityDomain The principals security domain.
+     * @return
+     */
+	public JetspeedPrincipalResultList getPrincipals(JetspeedPrincipalQueryContext queryContext, JetspeedPrincipalType type, Long securityDomain);    
 }

@@ -17,6 +17,8 @@
 package org.apache.jetspeed.security.stubs;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.JetspeedPrincipalQueryContext;
+import org.apache.jetspeed.security.JetspeedPrincipalResultList;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.impl.UserImpl;
 
@@ -38,5 +40,9 @@ public class StubUserManager extends StubJetspeedPrincipalManager
     {
         return newUser(name, mapped);
     }
-    
+
+	public JetspeedPrincipalResultList getPrincipals(JetspeedPrincipalQueryContext queryContext) {
+		throw new RuntimeException("Not implemented here.");
+	}
+
 }

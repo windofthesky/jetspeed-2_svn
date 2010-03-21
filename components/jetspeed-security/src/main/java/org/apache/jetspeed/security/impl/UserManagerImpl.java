@@ -32,6 +32,7 @@ import org.apache.jetspeed.security.AuthenticatedUserImpl;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
+import org.apache.jetspeed.security.JetspeedPrincipalQueryContext;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
 import org.apache.jetspeed.security.PasswordCredential;
@@ -41,6 +42,7 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserCredential;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.security.UserResultList;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialManager;
@@ -58,6 +60,8 @@ import org.apache.jetspeed.security.spi.UserSubjectPrincipalsResolver;
  */
 public class UserManagerImpl extends BaseJetspeedPrincipalManager implements UserManager, UserSubjectPrincipalsProvider
 {
+	private static final long serialVersionUID = 2811398259474293885L;
+
 	private static final Logger log = LoggerFactory.getLogger(UserManagerImpl.class);
 
 	private String anonymousUser = "guest";
@@ -194,6 +198,10 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		return (List<User>) getPrincipals(nameFilter);
 	}
 
+	public UserResultList getUsersExtended(JetspeedPrincipalQueryContext queryContext) throws SecurityException {
+		return new UserResultList(getPrincipals(queryContext));
+	}
+	
 	public List<User> getUsersInGroup(String groupFullPathName) throws SecurityException
 	{
 		return (List<User>) super.getAssociatedTo(groupFullPathName, groupType, JetspeedPrincipalAssociationType.IS_MEMBER_OF);

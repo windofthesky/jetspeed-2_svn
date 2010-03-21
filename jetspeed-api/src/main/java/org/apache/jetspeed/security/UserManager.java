@@ -17,6 +17,7 @@
 package org.apache.jetspeed.security;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.security.auth.Subject;
 
@@ -143,6 +144,21 @@ public interface UserManager extends PrincipalTypeManager
      */
     List<User> getUsers(String nameFilter) throws SecurityException;
 
+    
+    /**
+     * <p>
+     * Retrieves a detached and modifiable {@link User} list matching the corresponding
+     * query context. It returns a {@link UserResultList}, containing
+     * the actual result list an the total number of results from the query.
+     * 
+     * </p>
+     * 
+     * @param queryContext The (@see JetspeedPrincipalQueryContext) for this query.
+     * @return
+     * @throws SecurityException
+     */
+    UserResultList getUsersExtended(JetspeedPrincipalQueryContext queryContext) throws SecurityException;
+    
     /**
      * <p>
      * Retrieves a a detached and modifiable List user names, finding users matching the corresponding

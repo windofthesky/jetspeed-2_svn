@@ -31,6 +31,8 @@ import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalManager;
 import org.apache.jetspeed.security.JetspeedPrincipalManagerProvider;
+import org.apache.jetspeed.security.JetspeedPrincipalQueryContext;
+import org.apache.jetspeed.security.JetspeedPrincipalResultList;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PrincipalManagerEventListener;
 import org.apache.jetspeed.security.SecurityException;
@@ -166,6 +168,11 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
         return jpam.getPrincipals(nameFilter, principalType);
     }
 
+    public JetspeedPrincipalResultList getPrincipals(JetspeedPrincipalQueryContext queryContext)
+    {
+        return jpam.getPrincipals(queryContext, principalType);
+    }
+    
     public List<? extends JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue)
     {
         return jpam.getPrincipalsByAttribute(attributeName, attributeValue, principalType);

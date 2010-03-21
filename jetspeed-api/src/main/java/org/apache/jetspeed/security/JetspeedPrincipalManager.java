@@ -55,6 +55,18 @@ public interface JetspeedPrincipalManager extends Serializable
      */
     List<? extends JetspeedPrincipal> getPrincipals(String nameFilter);
     
+    /**
+     * Retrieve all principals that match the queryContext.
+     * It returns a {@link JetspeedPrincipalResultList}, containing
+     * the actual result list an the total number of results from the query.
+     * 
+     * The returned principals are detached.
+     * 
+     * @param queryContext The (@see JetspeedPrincipalQueryContext) for this query.
+     * @return
+     */
+    public JetspeedPrincipalResultList getPrincipals(JetspeedPrincipalQueryContext queryContext);    
+    
     List<? extends JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue);
     
     JetspeedPrincipal newPrincipal(String name, boolean mapped);

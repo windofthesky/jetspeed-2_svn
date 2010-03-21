@@ -30,6 +30,8 @@ import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationReference;
+import org.apache.jetspeed.security.JetspeedPrincipalQueryContext;
+import org.apache.jetspeed.security.JetspeedPrincipalResultList;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityDomain;
@@ -43,6 +45,7 @@ import org.apache.jetspeed.security.spi.JetspeedPermissionAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
+import org.apache.jetspeed.security.spi.JetspeedPrincipalLookupManager;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 import org.apache.jetspeed.security.spi.PersistentJetspeedPermission;
 import org.apache.jetspeed.security.spi.SecurityDomainAccessManager;
@@ -58,6 +61,8 @@ import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.apache.ojb.broker.util.collections.ManageableArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.orm.ojb.PersistenceBrokerCallback;
@@ -74,7 +79,11 @@ public class JetspeedSecurityPersistenceManager
 {
     private static final long serialVersionUID = -2689340557699526023L;
 	
+    static final Logger log = LoggerFactory.getLogger(JetspeedSecurityPersistenceManager.class);
+    
     private Long defaultSecurityDomainId;
+    
+    private JetspeedPrincipalLookupManagerFactory jpplf = null;
     
     private static class ManagedListByQueryCallback implements PersistenceBrokerCallback
     {
@@ -91,9 +100,11 @@ public class JetspeedSecurityPersistenceManager
         }
     }
     
-    public JetspeedSecurityPersistenceManager(String repositoryPath)
+	public JetspeedSecurityPersistenceManager(String repositoryPath, JetspeedPrincipalLookupManagerFactory lookupManagerFactory)
     {
         super(repositoryPath);
+        this.jpplf = lookupManagerFactory;
+        
     }
     
     @SuppressWarnings("unchecked")
@@ -1130,5 +1141,19 @@ public class JetspeedSecurityPersistenceManager
         query.addOrderByAscending("name");
         return (List<SecurityDomain>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
     }
+    
+	public JetspeedPrincipalResultList getPrincipals(JetspeedPrincipalQueryContext queryContext, JetspeedPrincipalType type) {
+		return getPrincipals(queryContext, type, getDefaultSecurityDomainId());
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager#getPrincipals(org.apache.jetspeed.security.JetspeedPrincipalQueryContext, org.apache.jetspeed.security.JetspeedPrincipalType, java.lang.Long)
+	 */
+	public JetspeedPrincipalResultList getPrincipals(JetspeedPrincipalQueryContext queryContext, JetspeedPrincipalType type, Long securityDomain) {
+		JetspeedPrincipalLookupManager jppm = jpplf.getJetspeedPrincipalLookupManager();
+		queryContext.put(JetspeedPrincipalQueryContext.JETSPEED_PRINCIPAL_TYPE, type.getName());
+		queryContext.put(JetspeedPrincipalQueryContext.SECURITY_DOMAIN, securityDomain);
+		return jppm.getPrincipals(queryContext);
+	}
     
 }

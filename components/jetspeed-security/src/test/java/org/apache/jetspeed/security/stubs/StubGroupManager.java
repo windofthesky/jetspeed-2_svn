@@ -17,6 +17,8 @@
 package org.apache.jetspeed.security.stubs;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.JetspeedPrincipalQueryContext;
+import org.apache.jetspeed.security.JetspeedPrincipalResultList;
 
 
 /**
@@ -33,5 +35,8 @@ public class StubGroupManager extends StubJetspeedPrincipalManager
         return null;
     }
 
-    
+	public JetspeedPrincipalResultList getPrincipals(JetspeedPrincipalQueryContext queryContext) {
+		throw new RuntimeException("Not implemented here.");
+	}
+
 }

@@ -21,11 +21,27 @@
   <!-- ************** Security SPI Handlers ************** -->
   <!-- Security SPI: CommonQueries -->
 
+  <bean id="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLookupManagerFactory" class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLookupManagerFactory">
+    <meta key="j2:cat" value="default or security" />
+    <property name="mappings">
+     <map>
+       <entry key="default"><ref bean="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLookupManagerDefault"/></entry>
+       <entry key="mysql"><ref bean="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLookupManagerMySql"/></entry>
+     </map>
+   </property>
+  </bean>
+  
+  <bean id="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLookupManagerDefault" class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLookupManagerDefault" />
+  <bean id="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLookupManagerMySql" class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLookupManagerMySql" />
+
   <bean id="org.apache.jetspeed.security.spi.impl.JetspeedSecurityPersistenceManager"
     class="org.apache.jetspeed.security.spi.impl.JetspeedSecurityPersistenceManager" init-method="init">
     <meta key="j2:cat" value="default or security" />
     <constructor-arg index="0">
       <value>JETSPEED-INF/ojb/security_repository.xml</value>
+    </constructor-arg>
+    <constructor-arg index="1">
+      <ref bean="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLookupManagerFactory"/>
     </constructor-arg>
   </bean>
   
