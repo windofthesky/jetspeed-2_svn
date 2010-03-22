@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.services.rest;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -295,6 +296,7 @@ public class PageManagementService
                                    @FormParam("hidden") String hidden,
                                    @FormParam("skin") String skin,
                                    @FormParam("version") String version,
+                                   @FormParam("docorder") String documentOrder,
                                    @FormParam("url") String url)
     {
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
@@ -389,6 +391,20 @@ public class PageManagementService
                         ((Document) node).setVersion(version);
                         changed = true;
                     }
+                }
+            }
+            
+            if (documentOrder != null)
+            {
+                if (node instanceof Folder)
+                {
+                    String [] docIndexArray = StringUtils.split(documentOrder, ",\r\n");
+                    for (int i = 0; i < docIndexArray.length; i++)
+                    {
+                        docIndexArray[i] = docIndexArray[i].trim();
+                    }
+                    ((Folder) node).setDocumentOrder(Arrays.asList(docIndexArray));
+                    changed = true;
                 }
             }
             
