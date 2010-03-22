@@ -18,10 +18,13 @@ package org.apache.jetspeed.login;
 
 import java.io.IOException;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.jetspeed.security.impl.cas.CASPortalFilter;
 
 /**
  * LogoutServlet
@@ -31,11 +34,27 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class LogoutServlet extends HttpServlet
 {
+	private String casLogoutUrl = null; 
 
+	public void init(ServletConfig config) throws ServletException  
+	{
+	    super.init(config);
+	    casLogoutUrl = config.getInitParameter("casLogoutUrl"); // will return null if not existing
+	  }
+	
     public void doGet(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException
     {
         String destination = request.getParameter(LoginConstants.DESTINATION);
+        
+        if (casLogoutUrl != null)
+        {
+	        String casUserName = (String) request.getSession().getAttribute(CASPortalFilter.CAS_FILTER_USER);
+	        if (casUserName != null)
+	        {
+	        	destination = this.casLogoutUrl;
+	        }
+        }
         request.getSession(true).invalidate();
         if (destination == null)
         {
