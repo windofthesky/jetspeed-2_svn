@@ -21,7 +21,6 @@ import java.util.List;
 import javax.security.auth.Subject;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * Test construction and application of hierarchical groups.
@@ -29,7 +28,7 @@ import junit.framework.TestSuite;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class TestHierarchicalGroups extends AbstractSecurityTestcase
+public class TestHierarchicalGroups extends AbstractLDAPSecurityTestCase
 {
     /**
      * Test runs all test*() methods by default.
@@ -38,7 +37,7 @@ public class TestHierarchicalGroups extends AbstractSecurityTestcase
      */
     public static Test suite()
     {
-        return new TestSuite(TestHierarchicalGroups.class);
+        return createFixturedTestSuite(TestHierarchicalGroups.class, "ldapTestSetup", "ldapTestTeardown");
     }
 
     /**

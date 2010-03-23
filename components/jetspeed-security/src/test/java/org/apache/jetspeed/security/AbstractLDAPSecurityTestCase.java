@@ -39,7 +39,7 @@ public abstract class AbstractLDAPSecurityTestCase extends AbstractSecurityTestc
     {
         ldapService = new EmbeddedApacheDSTestService(getLdapBaseDN(), getLdapPort(), getLdapWorkingDir());
     }
-
+    
     public void ldapTestSetup() throws Exception
     {
         if (ldapService != null)
@@ -77,7 +77,7 @@ public abstract class AbstractLDAPSecurityTestCase extends AbstractSecurityTestc
     }
 
     @Override
-    protected void tearDown() throws Exception
+    public void tearDown() throws Exception
     {
         if (ldapService != null && !ldapTestSetupRun)
         {

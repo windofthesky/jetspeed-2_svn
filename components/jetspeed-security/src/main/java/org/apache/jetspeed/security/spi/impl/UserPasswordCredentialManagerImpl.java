@@ -51,7 +51,10 @@ public class UserPasswordCredentialManagerImpl implements UserPasswordCredential
         PasswordCredential credential = upcsm.getPasswordCredential(user);
         if (!credential.isNew() && upcpm != null)
         {
-            upcpm.onLoad(credential, user.getName());
+            if (upcpm.onLoad(credential, user.getName()))
+            {
+                upcsm.storePasswordCredential(credential);
+            }
         }
         return credential;
     }

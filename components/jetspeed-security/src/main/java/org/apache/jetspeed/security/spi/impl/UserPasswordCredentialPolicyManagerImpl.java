@@ -84,19 +84,26 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
 
     public boolean authenticate(PasswordCredential credential, String userName, String password) throws SecurityException
     {
-        String encodedPassword = password;
-        boolean authenticated = false;
-        if (encoder != null && credential.isEncoded())
+        return authenticate(credential, userName, password, false);
+    }
+    
+    public boolean authenticate(PasswordCredential credential, String userName, String password, boolean authenticated) throws SecurityException
+    {
+        if (!authenticated)
         {
-            if (encoder instanceof AlgorithmUpgradeCredentialPasswordEncoder)
+            String encodedPassword = password;
+            if (encoder != null && credential.isEncoded())
             {
-                encodedPassword = ((AlgorithmUpgradeCredentialPasswordEncoder)encoder).encode(credential, password);
+                if (encoder instanceof AlgorithmUpgradeCredentialPasswordEncoder)
+                {
+                    encodedPassword = ((AlgorithmUpgradeCredentialPasswordEncoder)encoder).encode(credential, password);
+                }
+                else
+                {
+                    encodedPassword = encoder.encode(userName, password);
+                }
+                authenticated = credential.getPassword().equals(encodedPassword);            
             }
-            else
-            {
-                encodedPassword = encoder.encode(userName, password);
-            }
-            authenticated = credential.getPassword().equals(encodedPassword);            
         }
         boolean update = false;
 
@@ -123,7 +130,9 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
             credential.setPreviousAuthenticationDate(credential.getLastAuthenticationDate());
             credential.setLastAuthenticationDate(new Timestamp(new Date().getTime()));
             update = true;
-        }else{
+        }
+        else
+        {
             credential.setAuthenticationFailures(credential.getAuthenticationFailures()+1);
         }
         
@@ -132,15 +141,18 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
 
     public void onStore(PasswordCredential credential) throws SecurityException
     {
+        onStore(credential, false);
+    }
+    
+    public void onStore(PasswordCredential credential, boolean authenticated) throws SecurityException
+    {
         if (credential.isNewPasswordSet())
         {
             String newPassword = null;
-            boolean authenticated = false;
             if (credential.getNewPassword() != null)
             {
-                if (credential.getOldPassword() != null)
+                if (credential.getOldPassword() != null && !authenticated)
                 {
-                    authenticated = true;
                     String validatingOldPassword = credential.getOldPassword();
                     if (credential.isEncoded() && encoder != null)
                     {
@@ -157,6 +169,7 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
                     {
                         throw new InvalidPasswordException();
                     }
+                    authenticated = true;
                 }
                 if (validator != null)
                 {
@@ -180,7 +193,6 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
             
             if (!credential.isNew())
             {
-                credential.revertNewPasswordSet();
                 for (PasswordCredentialInterceptor pci : interceptors)
                 {
                     pci.beforeSetPassword(credential, newPassword, authenticated);

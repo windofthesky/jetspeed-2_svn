@@ -34,5 +34,7 @@ public interface UserPasswordCredentialPolicyManager extends Serializable
     CredentialPasswordValidator getCredentialPasswordValidator();
     boolean onLoad(PasswordCredential credential, String userName) throws SecurityException;
     boolean authenticate(PasswordCredential credential, String userName, String password) throws SecurityException;
+    boolean authenticate(PasswordCredential credential, String userName, String password, boolean authenticated) throws SecurityException;
     void onStore(PasswordCredential credential) throws SecurityException;
+    void onStore(PasswordCredential credential, boolean authenticated) throws SecurityException;
 }

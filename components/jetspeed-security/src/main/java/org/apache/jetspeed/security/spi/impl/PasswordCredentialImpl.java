@@ -69,9 +69,14 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
     private boolean newPasswordSet;
     
     /**
-     * flag indicating if the current password is encoded
+     * flag indicating if the password is encoded
      */
     private boolean encoded;
+    
+    /**
+     * flag indicating if the current password is encoded
+     */
+    private boolean currentEncoded;
     
     /**
      * flag (default true) indicating if the credential password is updatable (e.g. by the user itself).
@@ -113,7 +118,6 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
     /**
      * The type mapping field
      */
-    @SuppressWarnings("unused")
     private Short type = TYPE_CURRENT;
 
     public PasswordCredentialImpl()
@@ -189,7 +193,7 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
      */
     public String getPassword()
     {
-        return currentPassword != null ? currentPassword : password;
+        return password;
     }
     
     public void setPassword(String password, boolean encoded)
@@ -199,7 +203,8 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
         {
             if (!newPasswordSet && currentPassword == null)
             {
-                currentPassword = password;
+                this.currentPassword = this.password;
+                this.currentEncoded = this.encoded;
             }
             this.password = password;
             this.encoded = encoded;
@@ -216,7 +221,8 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
         {
             if (!newPasswordSet && currentPassword == null)
             {
-                currentPassword = password;
+                currentPassword = this.password;
+                this.currentEncoded = this.encoded;
             }
             this.newPassword = newPassword;
             this.oldPassword = oldPassword;
@@ -236,7 +242,8 @@ public class PasswordCredentialImpl implements PasswordCredential, PersistenceBr
     {
         if (newPasswordSet)
         {
-            newPassword = currentPassword;
+            password = currentPassword;
+            encoded = currentEncoded;
             currentPassword = null;
             oldPassword = null;
             newPassword = null;

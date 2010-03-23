@@ -26,6 +26,7 @@ import javax.naming.directory.SearchResult;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.AuthenticatedUserImpl;
+import org.apache.jetspeed.security.InvalidPasswordException;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
@@ -58,7 +59,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
 
     public LdapAuthenticationProvider(String providerName, String providerDescription, String loginConfig, 
                                        UserPasswordCredentialManager upcm, UserManager manager, JetspeedSecuritySynchronizer synchronizer,  PoolingContextSource poolingContextSource, 
-                                       String ldapBase, String userSearchBase, String userFilter, String userEntryPrefix, String searchScope)
+                                       String userSearchBase, String userFilter, String userEntryPrefix, String searchScope)
     {
         super(providerName, providerDescription, loginConfig);
         this.upcm = upcm;
@@ -66,8 +67,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         this.synchronizer = synchronizer;
         this.poolingContextsource = poolingContextSource;
         this.userEntryPrefix = userEntryPrefix;        
-        this.userSearchPath = new DistinguishedName(ldapBase);
-        this.userSearchPath.append(new DistinguishedName(userSearchBase));
+        this.userSearchPath = new DistinguishedName(userSearchBase);
         if (!StringUtils.isEmpty(userFilter))
         {
             this.userFilter = new HardcodedFilter(userFilter);
@@ -81,35 +81,21 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
     public AuthenticatedUser authenticate(String userName, String password) throws SecurityException
     {
         AuthenticatedUser authUser = null;
-        try
+        if (StringUtils.isEmpty(userName))
         {
-            if (StringUtils.isEmpty(userName))
-            {
-                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
-            }
-            if (password == null)
-            {
-                throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
-            }
-            authenticateUser(userName, password);
-            if (synchronizer != null)
-            {
-                synchronizer.synchronizeUserPrincipal(userName,false);
-            }
-            User user = manager.getUser(userName);
-            authUser = new AuthenticatedUserImpl(user, new UserCredentialImpl(upcm.getPasswordCredential(user)));
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
         }
-        catch (SecurityException authEx)
+        if (password == null)
         {
-            if (authEx.getCause() != null && authEx.getCause().getMessage().equalsIgnoreCase("[LDAP: error code 49 - Invalid Credentials]"))
-            {
-                throw new SecurityException(SecurityException.INCORRECT_PASSWORD);
-            }
-            else
-            {
-                throw authEx;
-            }
+            throw new SecurityException(SecurityException.PASSWORD_REQUIRED);
         }
+        authenticateUser(userName, password);
+        if (synchronizer != null)
+        {
+            synchronizer.synchronizeUserPrincipal(userName,false);
+        }
+        User user = manager.getUser(userName);
+        authUser = new AuthenticatedUserImpl(user, new UserCredentialImpl(upcm.getPasswordCredential(user)));
         return authUser;
     }
 
@@ -125,35 +111,36 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
             }
             ctx = poolingContextsource.getReadOnlyContext();
             NamingEnumeration<SearchResult> results = ctx.search(userSearchPath, filter.encode(), searchControls);
-            LdapUtils.closeContext(ctx);
-            ctx = null;
             
-            String dn = null;            
+            String dn = null;         
             if (null != results && results.hasMore())
             {
                 SearchResult result = results.next();
-                dn = result.getName();
-                if (result.isRelative())
-                {
-                    DistinguishedName name = (DistinguishedName)userSearchPath.clone();
-                    name.append(new DistinguishedName(dn));
-                    dn = name.encode();
-                }
+                dn = result.getNameInNamespace();
             }
             if (dn == null)
             {
                 throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
             }
+            LdapUtils.closeContext(ctx);
+            
             // Note: this "authenticating" context is (logically) not pooled
             ctx = poolingContextsource.getContextSource().getContext(dn, password);
         }
         catch (AuthenticationException aex)
         {
-            throw new SecurityException(aex);
+            if (aex.getMessage() != null && aex.getMessage().equalsIgnoreCase("[LDAP: error code 49 - Invalid Credentials]"))
+            {
+                throw new InvalidPasswordException();
+            }
+            else
+            {
+                throw new SecurityException(aex);
+            }
         }
         catch (NamingException nex)
         {
-            throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(), "authenticateUser", nex.getMessage()));
+            throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(), "authenticateUser", nex.getMessage()), nex);
         }
         finally
         {

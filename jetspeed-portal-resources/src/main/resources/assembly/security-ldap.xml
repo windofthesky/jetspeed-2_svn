@@ -72,7 +72,7 @@
     <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider" />
     <constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />
   </bean>
-
+<!-- 
   <bean id="org.apache.jetspeed.security.AuthenticationProvider" class="org.apache.jetspeed.security.impl.LdapAuthenticationProvider">
     <meta key="j2:cat" value="ldapSecurity" />
     <constructor-arg index="0"  value="ldapAuthenticationProvider" />
@@ -82,13 +82,62 @@
     <constructor-arg index="4"  ref="org.apache.jetspeed.security.UserManager" />
     <constructor-arg index="5"  ref="org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer" />
     <constructor-arg index="6"  ref="LdapSpringContext" />
-    <constructor-arg index="7"  value="${ldap.base}" />
-    <constructor-arg index="8"  value="${ldap.user.searchBase}" />
-    <constructor-arg index="9"  value="${ldap.user.filter}" />
-    <constructor-arg index="10"  value="${ldap.user.entryPrefix}" />
-    <constructor-arg index="11" value="${ldap.search.scope}" />
+    <constructor-arg index="7"  value="${ldap.user.searchBase}" />
+    <constructor-arg index="8"  value="${ldap.user.filter}" />
+    <constructor-arg index="9"  value="${ldap.user.entryPrefix}" />
+    <constructor-arg index="10" value="${ldap.search.scope}" />
+  </bean>
+ -->
+  <bean id="org.apache.jetspeed.security.spi.impl.LdapUserPasswordCredentialManagerImpl"
+    class="org.apache.jetspeed.security.spi.impl.LdapUserPasswordCredentialManagerImpl">
+    <meta key="j2:cat" value="ldapSecurity" />
+    <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="1" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+    <constructor-arg index="2" ref="org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager" />
+    <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.impl.LdapCredentialPasswordEncoder" />
+    <constructor-arg index="4"  ref="LdapSpringContext" />
+    <constructor-arg index="5"  value="${ldap.user.searchBase}" />
+    <constructor-arg index="6"  value="${ldap.user.filter}" />
+    <constructor-arg index="7"  value="${ldap.user.entryPrefix}" />
+    <constructor-arg index="8" value="${ldap.search.scope}" />
+    <property name="persistCredentials" value="true"/>
+    <property name="changePasswordByUser" value="false"/>
+  </bean>
+  
+  <bean id="_LdapUserPasswordCredentialManagerImplInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <meta key="j2:cat" value="ldapSecurity" />
+    <property name="targetObject"><ref bean="org.apache.jetspeed.security.spi.impl.LdapUserPasswordCredentialManagerImpl"/></property>
+    <property name="targetMethod"><value>setJetspeedSecuritySynchronizer</value></property>
+    <property name="arguments">
+      <list>
+        <ref bean="org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer"/>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="org.apache.jetspeed.security.spi.impl.LdapCredentialPasswordEncoder"
+    class="org.apache.jetspeed.security.spi.impl.LdapCredentialPasswordEncoder">
+    <meta key="j2:cat" value="default or security" />
+    <constructor-arg index="0">
+      <value>CRYPT</value>
+    </constructor-arg>
   </bean>
 
+  <bean id="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" parent="baseTransactionProxy">
+    <meta key="j2:cat" value="ldapSecurity" />
+    <property name="proxyInterfaces">
+      <value>org.apache.jetspeed.security.spi.UserPasswordCredentialManager</value>
+    </property>
+    <property name="target">
+      <ref bean="org.apache.jetspeed.security.spi.impl.LdapUserPasswordCredentialManagerImpl" />
+    </property>
+    <property name="transactionAttributes">
+      <props>
+        <prop key="*">PROPAGATION_REQUIRED</prop>
+      </props>
+    </property>
+  </bean>
+  
   <bean id="org.apache.jetspeed.security.mapping.SecurityEntityManager"
     class="org.apache.jetspeed.security.mapping.ldap.dao.DefaultLDAPEntityManager">
     <meta key="j2:cat" value="ldapSecurity" />

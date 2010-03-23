@@ -23,24 +23,24 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
 
 /**
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
  */
-public class TestLoginModule extends AbstractSecurityTestcase
+public class TestLoginModule extends AbstractLDAPSecurityTestCase
 {
     /** <p>The JAAS login context.</p> */
     private LoginContext loginContext = null;
 
-    /**
-     * @see junit.framework.TestCase#setUp()
-     */
-    public void setUp() throws Exception
+    public static Test suite()
     {
-        super.setUp();
+        return createFixturedTestSuite(TestLoginModule.class, "ldapTestSetup", "ldapTestTeardown");
+    }
+
+    private void setupTest() throws Exception
+    {
         initUserObject();
 
         // Set up login context.
@@ -55,14 +55,9 @@ public class TestLoginModule extends AbstractSecurityTestcase
         }
     }
 
-    public static Test suite()
-    {
-        // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestLoginModule.class);
-    }
-
     public void testLogin() throws Exception
-    {
+    { 
+        setupTest();
         loginContext.login();        
         Subject subject = loginContext.getSubject();
         Principal found = SubjectHelper.getPrincipal(loginContext.getSubject(), User.class);
@@ -70,8 +65,9 @@ public class TestLoginModule extends AbstractSecurityTestcase
         assertTrue("found principal should be anonlogin, " + found.getName(), found.getName().equals("anonlogin"));      
     }
     
-    public void testLogout() throws LoginException
+    public void testLogout() throws Exception
     {
+        setupTest();
         loginContext.login();
         loginContext.logout();
         Principal found = SubjectHelper.getBestPrincipal(loginContext.getSubject(), User.class);
