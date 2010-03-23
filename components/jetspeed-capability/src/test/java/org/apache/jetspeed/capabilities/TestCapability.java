@@ -24,7 +24,6 @@ import java.util.Set;
 
 import junit.framework.Test;
 
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
 
