@@ -53,6 +53,20 @@ public interface Space
     String getTitle();
     
     /**
+     * Retrieve the localized short title of the space for the requested locale
+     * 
+     * @return the localized title
+     */
+    String getShortTitle(Locale locale);
+
+    /**
+     * Retrieve the unlocalized short title of the space 
+     * 
+     * @return the unlocalized title
+     */
+    String getShortTitle();
+    
+    /**
      * Set the title of space for the given locale
      * 
      * @param locale
@@ -66,6 +80,21 @@ public interface Space
      * @param title
      */
     void setTitle(String title);
+    
+    /**
+     * Set the short title of space for the given locale
+     * 
+     * @param locale
+     * @param title
+     */
+    void setShortTitle(String shortTitle, Locale locale);
+
+    /**
+     * Set the short title of space 
+     * 
+     * @param title
+     */
+    void setShortTitle(String shortTitle);
     
 	/**
 	 * Retrieve the path of the space, which can be implementation specific

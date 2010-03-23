@@ -23,8 +23,11 @@ import org.apache.jetspeed.om.folder.Folder;
 
 abstract public class BaseSpaceImpl implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+    
     public static final String META_DESCRIPTION = "description";
     public static final String META_TITLE       = "title";
+    public static final String META_SHORT_TITLE       = "short-title";
 
     protected transient Folder backingFolder = null;
 
@@ -59,6 +62,16 @@ abstract public class BaseSpaceImpl implements Serializable
 	{
 	    backingFolder.setTitle(title);
 	}
+	
+    public String getShortTitle() 
+    {
+        return backingFolder.getShortTitle();
+    }
+    
+    public void setShortTitle(String shortTitle) 
+    {
+        backingFolder.setShortTitle(shortTitle);
+    }
 
     public String getTitle(Locale locale) 
     {
@@ -68,6 +81,16 @@ abstract public class BaseSpaceImpl implements Serializable
     public void setTitle(String title, Locale locale)
     {
         SpacesServiceImpl.updateField(backingFolder, locale, META_TITLE, title);
+    }
+    
+    public String getShortTitle(Locale locale) 
+    {
+        return SpacesServiceImpl.retrieveField(backingFolder, locale, META_SHORT_TITLE);
+    }
+    
+    public void setShortTitle(String shortTitle, Locale locale)
+    {
+        SpacesServiceImpl.updateField(backingFolder, locale, META_SHORT_TITLE, shortTitle);
     }
 	
     public String getDescription() 

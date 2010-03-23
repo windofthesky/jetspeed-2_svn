@@ -213,56 +213,63 @@ public class SpacesServiceImpl implements Spaces
 		}        
         return result;
     }
-
-    public Space storeSpaceFromTemplate(Space space, Folder templateFolder) throws SpacesException
+    
+    public Space createSpace(String spaceName, String owner, Folder templateFolder, String title, String shortTitle, String description, String theme, String constraint) throws SpacesException
     {
+        Space space = null;
+        String spacePath = makeSpacePath(spaceName);
         Folder spaceFolder = null;
-        boolean found = false;        
-        try
+        
+        if (pageManager.folderExists(spacePath))
         {
-            spaceFolder = this.pageManager.getFolder(space.getPath());
-            found = (spaceFolder != null);
+            throw new SpacesException("Space " + spaceName + " already exists");
         }
-        catch (Exception ignore)
-        {}        
+        
         try
         {
-            if (!found)
+            if (templateFolder != null)
             {
-                pageManager.deepCopyFolder(templateFolder, space.getPath(), space.getOwner());
+                pageManager.deepCopyFolder(templateFolder, spacePath, owner, false);
+                spaceFolder = pageManager.getFolder(spacePath);
             }
             else
             {
-                pageManager.deepMergeFolder(templateFolder, space.getPath(), space.getOwner());
-            }            
-            spaceFolder = pageManager.getFolder(space.getPath());
+                spaceFolder = pageManager.newFolder(spacePath);
+            }
+            
+            space = new SpaceImpl(spaceFolder);
+            space.setOwner(owner);
+            space.setTitle(title);
+            space.setShortTitle(shortTitle);
+            space.setDescription(description);
+            space.setTheme(theme);
+            
+            if (constraint != null && !"".equals(constraint.trim()))
+            {
+                space.setSecurityConstraint(constraint);
+            }
+            
             storeSpace(space);
-            return space;    	
+        }
+        catch (SpacesException e)
+        {
+            throw e;
         }
         catch (Exception e)
         {
-        	throw new SpacesException(e);
-        }        
+            throw new SpacesException(e);
+        }
+        
+        return space;
     }
     
-    public Space newSpace(String spaceName, String owner) throws SpacesException
-    {
-    	String spacePath = makeSpacePath(spaceName);
-    	if (pageManager.folderExists(spacePath))
-    		throw new SpacesException("Space " + spaceName + " already exists");
-    	Folder folder = pageManager.newFolder(spacePath);
-    	Space space = new SpaceImpl(folder);
-    	space.setOwner(owner);
-    	return space;
-    }
-
     public void storeSpace(Space space) throws SpacesException
     {
     	try
     	{
 	    	if (space instanceof SpaceImpl)
 	    	{
-	    		pageManager.updateFolder(((SpaceImpl)space).getBackingFolder());
+	    		pageManager.updateFolder(((SpaceImpl)space).getBackingFolder(), true);
 	    	}
     	}
     	catch (Exception e)
