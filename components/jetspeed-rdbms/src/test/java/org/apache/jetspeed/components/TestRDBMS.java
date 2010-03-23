@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 package org.apache.jetspeed.components;
+
 import java.sql.Connection;
 
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -58,9 +58,6 @@ public class TestRDBMS extends DatasourceTestCase
     {
         assertTrue(DatasourceComponent.class.isAssignableFrom(DBCPDatasourceComponent.class));
 
-        InitialContext context = new InitialContext();
-        //look up from jndi
-        assertNotNull(context.lookup("java:/jdbc/jetspeed"));
         assertNotNull(datasourceComponent);
         DataSource ds = datasourceComponent.getDatasource();
         assertNotNull(ds);
@@ -68,12 +65,11 @@ public class TestRDBMS extends DatasourceTestCase
         assertNotNull(conn);
         assertFalse(conn.isClosed());
         conn.close();
-        (datasourceComponent).stop();
-        
+        jndiDS.tearDown();
         
         try
         {
-            context.lookup("java:/jdbc/jetspeed");
+        	jndiDS.getJNDI().getRootContext().lookup("java:/jdbc/jetspeed");
             assertNotNull("java:/jdbc/jetspeed was not unbound", null);
         }
         catch (NamingException e)
@@ -81,8 +77,6 @@ public class TestRDBMS extends DatasourceTestCase
        
         }
         
- 
-     
     }
     
    

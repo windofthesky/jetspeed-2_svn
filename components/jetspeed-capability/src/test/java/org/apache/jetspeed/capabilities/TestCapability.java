@@ -25,6 +25,7 @@ import java.util.Set;
 import junit.framework.Test;
 
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
 
 
@@ -34,21 +35,9 @@ import org.apache.jetspeed.serializer.JetspeedSerializer;
  * @author <a href="roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class TestCapability extends AbstractSpringTestCase
+public class TestCapability extends DatasourceEnabledSpringTestCase
 {
     private Capabilities capabilities = null;
-
-    /**
-     * Start the tests.
-     * 
-     * @param args
-     *            the arguments. Not used
-     */
-    public static void main(String args[])
-    {
-        junit.awtui.TestRunner.main(new String[]
-        { TestCapability.class.getName() });
-    }
 
     protected void setUp() throws Exception
     {
@@ -63,7 +52,6 @@ public class TestCapability extends AbstractSpringTestCase
 
     public void firstTestSetup() throws Exception
     {
-        System.out.println("firstTestSetup");
         JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("serializer");
         serializer.deleteData();
         serializer.importData(getBaseDir()+"target/test-classes/j2-seed.xml");
@@ -71,7 +59,6 @@ public class TestCapability extends AbstractSpringTestCase
 
     public void lastTestTeardown() throws Exception
     {
-        System.out.println("lastTestTeardown");
         JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("serializer");
         serializer.deleteData();
     }
@@ -423,14 +410,7 @@ public class TestCapability extends AbstractSpringTestCase
         capabilities.deleteMediaType(mediaType);
     	existingObject = capabilities.getMediaType(name);
         assertNull("creating new mediaType delete from storage didn't work",existingObject);
- 
-        
-        
-        
-        
     }
-
-    
     
     public void testNewClient() throws Exception
     {
@@ -456,16 +436,13 @@ public class TestCapability extends AbstractSpringTestCase
     	String existingKey = (String)_it.next();
     	Client existingObject = (Client)_hash.get(existingKey);
         assertNotNull("Couldn't identify existing object to run test",existingObject);
-
     	
     	// "create" existing one
     	client = capabilities.createClient(existingKey);
         assertNotNull("creating 'existing' client returns null", client);
         assertTrue("creating 'existing' client didn't return existing object", (client.equals(existingObject)));
-
         
-        // setting fields
-        
+        // setting fields        
         String name  = "TEST CLIENT";
         int numCapabilities = 3;
         int numMimeTypes = 4;
@@ -488,7 +465,7 @@ public class TestCapability extends AbstractSpringTestCase
         String manufacturer = "Test Manufacturer";
         String model = "XYZ";
         
-// set object fields               
+        // set object fields               
         client.setUserAgentPattern(userAgentPattern);
         client.setManufacturer(manufacturer);
         client.setModel(model);
@@ -500,12 +477,8 @@ public class TestCapability extends AbstractSpringTestCase
         set = new ArrayList(someMimeTypes.values());
         client.setCapabilities(set);
         assertTrue("number of MimeTypes added (" + set.size() + ") not the same as expected ("+numCapabilities+")",(set.size()==numMimeTypes));
-
         
         // setting links:
-        
-        
-        
         capabilities.storeClient(client);
     	existingObject = capabilities.getClient(name);
         assertNotNull("creating and saving new client didn't store object",existingObject);
@@ -513,14 +486,7 @@ public class TestCapability extends AbstractSpringTestCase
         capabilities.deleteClient(client);
     	existingObject = capabilities.getClient(name);
         assertNull("creating new client delete from storage didn't work",existingObject);
- 
-        
-        
-        
-        
     }
-
-    
     
     public void testCapabilityRepeat() throws Exception
     {
@@ -533,12 +499,6 @@ public class TestCapability extends AbstractSpringTestCase
     {
         return new String[] 
         { "capabilities.xml", "transaction.xml", "serializer.xml" };
-    }
-
-    protected String[] getBootConfigurations()
-    {
-        return new String[]
-        { "boot/datasource.xml"};
     }
 
     protected String getBeanDefinitionFilterCategories()

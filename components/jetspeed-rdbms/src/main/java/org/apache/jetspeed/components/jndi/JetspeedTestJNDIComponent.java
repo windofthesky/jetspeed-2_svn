@@ -52,4 +52,13 @@ public class JetspeedTestJNDIComponent
         datasourceComponent.stop();
         jndi.unbindFromCurrentThread();
     }
+    
+    public BoundDBCPDatasourceComponent getDatasourceComponent() {
+    	return datasourceComponent;
+    }
+
+    public JNDIComponent getJNDI() {
+    	return jndi;
+    }
+
 }

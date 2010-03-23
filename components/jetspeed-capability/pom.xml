@@ -81,6 +81,21 @@
       <version>${org.apache.jetspeed.test.jdbc.driver.version}</version>
       <scope>test</scope>
     </dependency>
+    <!--
+      Note: tyrex and junit is normally required only for test, but in this case, abstract test cases are included in
+      the component build... this should probably be fixed... for now, assume that junit will be provided if these test
+      classes are used.
+    -->
+    <dependency>
+      <groupId>tyrex</groupId>
+      <artifactId>tyrex</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

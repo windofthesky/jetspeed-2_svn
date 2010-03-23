@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -29,10 +30,10 @@ import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -180,13 +181,18 @@ public class DBCPDatasourceComponent implements DatasourceComponent
     {
         try
         {
-            log.info("Stopping DBCPCDatasourceComponent");
+        	if (log.isInfoEnabled()) {
+	        	log.info("Stopping DBCPCDatasourceComponent");
+        	}
             dsConnectionFactory.getPool().close();
 
             // Support for using an embedded Derby database multiple times from one JVM
             // by properly shutting it down after each (test) run
             if (driverName.equals("org.apache.derby.jdbc.EmbeddedDriver"))
             {
+                if (log.isInfoEnabled()) {
+                	log.info("Shutting down derby ...");
+                }
                 String shutDownURI = null;
                 int parIndex = connectURI.indexOf(";");
                 if (parIndex > -1)
@@ -207,14 +213,33 @@ public class DBCPDatasourceComponent implements DatasourceComponent
             }
 
         }
+		 catch (SQLException e)  {
+		    if ( driverName.equals("org.apache.derby.jdbc.EmbeddedDriver") && (e.getSQLState().equals("XJ015") ||  e.getSQLState().equals("08006"))) {
+		    	if (log.isDebugEnabled()) {
+		    		log.debug("Database shut down normally with sql state '" + e.getSQLState() + "'.");
+		    	}
+		    } else {
+	        	IllegalStateException ise =
+	                new IllegalStateException("Unable to safely shutdown the DBCPConnection pool: " + e.toString());
+	            ise.initCause(e);
+	            try
+	            {
+	                log.error("Unable to safely shutdown the DBCPConnection pool", ise);
+	            }
+	            catch (Exception e1)
+	            {
+	                // ignore if logger itself is gone too
+	            }
+		    }
+		 }
         catch (Exception e)
         {
-            IllegalStateException ise =
-                new IllegalStateException("Unable to sfaely shutdown the DBCPConnection pool: " + e.toString());
+        	IllegalStateException ise =
+                new IllegalStateException("Unable to safely shutdown the DBCPConnection pool: " + e.toString());
             ise.initCause(e);
             try
             {
-                log.error("Unable to sfaely shutdown the DBCPConnection pool", ise);
+                log.error("Unable to safely shutdown the DBCPConnection pool", ise);
             }
             catch (Exception e1)
             {

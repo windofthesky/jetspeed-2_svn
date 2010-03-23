@@ -88,7 +88,9 @@ public class DatabasePlatformConfigurator
         {
             platform = jcd.getDbms();
         }
-        System.out.println("##### platform = " + platform);
+        if (log.isInfoEnabled()) {
+        	log.info("Detected database platform: " + platform);
+        }
     }
  
     /**
