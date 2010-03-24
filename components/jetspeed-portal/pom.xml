@@ -148,8 +148,8 @@
       <artifactId>asm-attrs</artifactId>
     </dependency>
     <dependency>
-      <groupId>commonj</groupId>
-      <artifactId>commonj-twm</artifactId>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-commonj_1.1_spec</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
