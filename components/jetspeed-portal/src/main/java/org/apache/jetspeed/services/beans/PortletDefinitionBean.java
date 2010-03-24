@@ -25,11 +25,15 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.om.portlet.ContainerRuntimeOption;
 import org.apache.jetspeed.om.portlet.Description;
 import org.apache.jetspeed.om.portlet.DisplayName;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.Language;
+import org.apache.jetspeed.om.portlet.LocalizedField;
+import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Supports;
 
@@ -44,9 +48,12 @@ public class PortletDefinitionBean implements Serializable
     private static final long serialVersionUID = 1L;
     
     private String applicationName;
+    private String applicationContextPath;
     private String portletName;
     private String uniqueName;
     private String portletIcon;
+    private String portletIconHolder;
+    private String portletIconBasePath;
     private PortletInfoBean portletInfoBean;
     private Collection<DisplayNameBean> displayNameBeans;
     private Collection<DescriptionBean> descriptionBeans;
@@ -63,7 +70,9 @@ public class PortletDefinitionBean implements Serializable
     
     public PortletDefinitionBean(final PortletDefinition portletDefinition)
     {
-        applicationName = portletDefinition.getApplication().getName();
+        PortletApplication portletApplication = portletDefinition.getApplication();
+        applicationName = portletApplication.getName();
+        applicationContextPath = portletApplication.getContextPath();
         portletName = portletDefinition.getPortletName();
         uniqueName = portletDefinition.getUniqueName();
         portletInfoBean = new PortletInfoBean(portletDefinition.getPortletInfo());
@@ -115,6 +124,26 @@ public class PortletDefinitionBean implements Serializable
                 portletIcon = initParam.getParamValue();
             }
         }
+        
+        if (portletIcon != null)
+        {
+            GenericMetadata appMetadata = portletApplication.getMetadata();
+            
+            Collection<LocalizedField> fields = appMetadata.getFields(PortalReservedParameters.PORTLET_ICON_HOLDER);
+            
+            if (fields != null && !fields.isEmpty())
+            {
+                portletIconHolder = fields.iterator().next().getValue();
+            }
+            
+            fields = appMetadata.getFields(PortalReservedParameters.PORTLET_ICON_BASE_PATH);
+            
+            if (fields != null && !fields.isEmpty())
+            {
+                portletIconBasePath = fields.iterator().next().getValue();
+            }
+        }
+        
         initParamBeans = initParamBeanList;
     }
 
@@ -126,6 +155,16 @@ public class PortletDefinitionBean implements Serializable
     public void setApplicationName(String applicationName)
     {
         this.applicationName = applicationName;
+    }
+
+    public String getApplicationContextPath()
+    {
+        return applicationContextPath;
+    }
+
+    public void setApplicationContextPath(String applicationContextPath)
+    {
+        this.applicationContextPath = applicationContextPath;
     }
 
     public String getPortletName()
@@ -146,6 +185,26 @@ public class PortletDefinitionBean implements Serializable
     public void setPortletIcon(String portletIcon)
     {
         this.portletIcon = portletIcon;
+    }
+
+    public String getPortletIconHolder()
+    {
+        return portletIconHolder;
+    }
+
+    public void setPortletIconHolder(String portletIconHolder)
+    {
+        this.portletIconHolder = portletIconHolder;
+    }
+
+    public String getPortletIconBasePath()
+    {
+        return portletIconBasePath;
+    }
+
+    public void setPortletIconBasePath(String portletIconBasePath)
+    {
+        this.portletIconBasePath = portletIconBasePath;
     }
 
     public String getUniqueName()

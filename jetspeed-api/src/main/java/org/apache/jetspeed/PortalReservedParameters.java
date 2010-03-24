@@ -116,6 +116,20 @@ public interface PortalReservedParameters
     public static final String PORTLET_EXTENDED_DESCRIPTOR_OUT_OF_SERVICE = "service.out";
     
     /**
+     * A portlet application can have a specific setting for the portlet icon holder, either 'portlet' or 'portal'.
+     * If it is set to 'portlet', then the portlet icon images are located in the portlet application resources.
+     * If it is set to 'portal', then the portlet icon images are located in the portal application resources.
+     * The portlet icon holder application type, either 'portlet' or 'portal'.
+     */
+    public static final String PORTLET_ICON_HOLDER = "portlet.icon.holder";
+    
+    /**
+     * A portlet can have a specific setting for the context relative base path of portlet icon image resources.
+     * The portlet icon resource context relative base path. 
+     */
+    public static final String PORTLET_ICON_BASE_PATH = "portlet.icon.base.path";
+    
+    /**
      * A portlet can have a specific setting for the preview image.
      * The portlet preview image url 
      */
