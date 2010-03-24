@@ -154,7 +154,11 @@ public class PortletWindowSessionNavigationalStates implements Serializable
                     {
                         pageState.maximizedWindowId = null;
                         // syncState will reset the sessionState.WindowState
-                    }                         
+                    }
+                    else
+                    {
+                        requestStates.setMaximizedWindow(context.getPortletWindow(requestState.getWindowId()));
+                    }
                 }
                 else
                 {
