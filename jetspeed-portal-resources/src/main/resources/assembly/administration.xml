@@ -56,6 +56,16 @@
       <value>false</value>
     </property>
   </bean>
+  
+  <bean id="org.apache.jetspeed.administration.PasswordGenerator" class="org.apache.jetspeed.administration.SimplePasswordGeneratorImpl">
+    <meta key="j2:cat" value="default" />
+    <property name="validator">
+      <!-- The default CredentialPasswordValidator configuration only checks against empty/null passwords.
+           If a more complex validation is enforced, make sure the PasswordGenerator matches the rules.
+           If a generated password fails validation, the SimplePasswordGeneratorImpl will simply regenerate a new one to test. --> 
+      <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordValidator"/>
+    </property>
+  </bean>
 
   <bean id='PortalAdministrationImpl' init-method="start"
     class='org.apache.jetspeed.administration.PortalAdministrationImpl'>
@@ -84,6 +94,9 @@
     <constructor-arg index='7'>
       <ref bean="adminVelocityEngine" />
     </constructor-arg>
+    <property name="passwordGenerator">
+      <ref bean="org.apache.jetspeed.administration.PasswordGenerator"/>
+    </property>
   </bean>
 
   <bean id="PortalAdministration" parent="baseTransactionProxy">

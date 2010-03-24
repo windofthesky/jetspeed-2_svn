@@ -91,7 +91,7 @@ public class PortalAdministrationImpl implements PortalAdministration
     protected PortalSite portalSite;
     protected JavaMailSender mailSender;
     protected VelocityEngine velocityEngine;
-    protected AdminUtil adminUtil;
+    protected PasswordGenerator passwordGenerator;
     
     /** list of default roles for a registered user */
     protected List defaultRoles;
@@ -123,7 +123,15 @@ public class PortalAdministrationImpl implements PortalAdministration
         this.portalSite = portalSite;
         this.mailSender = mailSender;
         this.velocityEngine = velocityEngine;
-        this.adminUtil = new AdminUtil();
+        this.passwordGenerator = new SimplePasswordGeneratorImpl();
+    }
+    
+    public void setPasswordGenerator(PasswordGenerator passwordGenerator)
+    {
+        if (passwordGenerator != null)
+        {
+            this.passwordGenerator = passwordGenerator;
+        }
     }
 
     public void start()
@@ -384,7 +392,7 @@ public class PortalAdministrationImpl implements PortalAdministration
      */
     public String generatePassword()
     {
-        return adminUtil.generatePassword();
+        return passwordGenerator.generatePassword();
     }
 
     /* (non-Javadoc)
@@ -499,10 +507,10 @@ public class PortalAdministrationImpl implements PortalAdministration
         {
             basePath = basePath.replace("/action", "/desktop");
         }
-        String jetspeedPath = adminUtil.concatenatePaths(baseUrl, basePath);
+        String jetspeedPath = AdminUtil.concatenatePaths(baseUrl, basePath);
         if (path == null)
             return jetspeedPath;
-        return adminUtil.concatenatePaths(jetspeedPath, response.encodeURL(path));
+        return AdminUtil.concatenatePaths(jetspeedPath, response.encodeURL(path));
     }
         
     
