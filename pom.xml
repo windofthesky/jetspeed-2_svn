@@ -1023,6 +1023,18 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.apache.abdera</groupId>
+            <artifactId>abdera-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.abdera</groupId>
+            <artifactId>abdera-parser</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.abdera</groupId>
+            <artifactId>abdera-extensions-json</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       
