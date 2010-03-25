@@ -299,8 +299,7 @@ public class PortalAdministrationImpl implements PortalAdministration
             String userFolderPath = null;
             if ((subsite == null) && (serverName != null))
             {
-                PortalSiteRequestContext requestContext = getMockPortalSiteRequestContext(user, locale, serverName);
-                userFolderPath = requestContext.getUserFolderPath();
+                userFolderPath = invokeGetUserFolderPath(user, locale, serverName);
             }
             else if (subsite != null)
             {
@@ -581,8 +580,7 @@ public class PortalAdministrationImpl implements PortalAdministration
         try
         {
             User user = userManager.getUser(userName);
-            PortalSiteRequestContext requestContext = getMockPortalSiteRequestContext(user, locale, serverName);
-            return requestContext.getUserFolderPath();
+            return invokeGetUserFolderPath(user, locale, serverName);
         }
         catch (Exception e)
         {
@@ -599,8 +597,7 @@ public class PortalAdministrationImpl implements PortalAdministration
         try
         {
             User user = userManager.getUser(userName);
-            PortalSiteRequestContext requestContext = getMockPortalSiteRequestContext(user, locale, serverName);
-            return requestContext.getBaseFolderPath();
+            return invokeGetBaseFolderPath(user, locale, serverName);
         }
         catch (Exception e)
         {
@@ -608,11 +605,88 @@ public class PortalAdministrationImpl implements PortalAdministration
             return null;
         }
     }
+
+    /**
+     * Returns PSML user folder path for specified user by
+     * running full profiler and portal site rules within a
+     * JSSubject.doAsPrivileged() block with a subject matching
+     * the specified user.
+     * 
+     * @param user existing portal user
+     * @param locale optional locale, (defaults to system locale, for language
+     *               profiling rules)
+     * @param serverName server name, (required for subsite profiling rules)
+     * @return PSML user folder path
+     * @throws Exception
+     */
+    private String invokeGetUserFolderPath(final User user, final Locale locale, final String serverName) throws Exception
+    {
+        Object doneAs = JSSubject.doAsPrivileged(userManager.getSubject(user), new PrivilegedAction()
+        {
+            public Object run() 
+            {
+                try
+                {
+                    PortalSiteRequestContext requestContext = getMockPortalSiteRequestContext(user, locale, serverName);
+                    return requestContext.getUserFolderPath();
+                }
+                catch (Exception e)
+                {
+                    return e;
+                }
+            }
+        }, null);
+        if (doneAs instanceof Exception)
+        {
+            throw (Exception)doneAs;
+        }
+        return (String)doneAs;
+    }
+    
+    /**
+     * Returns PSML base folder path for specified user by
+     * running full profiler and portal site rules within a
+     * JSSubject.doAsPrivileged() block with a subject matching
+     * the specified user.
+     * 
+     * @param user existing portal user
+     * @param locale optional locale, (defaults to system locale, for language
+     *               profiling rules)
+     * @param serverName server name, (required for subsite profiling rules)
+     * @return PSML base folder path
+     * @throws Exception
+     */
+    private String invokeGetBaseFolderPath(final User user, final Locale locale, final String serverName) throws Exception
+    {
+        Object doneAs = JSSubject.doAsPrivileged(userManager.getSubject(user), new PrivilegedAction()
+        {
+            public Object run() 
+            {
+                try
+                {
+                    PortalSiteRequestContext requestContext = getMockPortalSiteRequestContext(user, locale, serverName);
+                    return requestContext.getBaseFolderPath();
+                }
+                catch (Exception e)
+                {
+                    return e;
+                }
+            }
+        }, null);
+        if (doneAs instanceof Exception)
+        {
+            throw (Exception)doneAs;
+        }
+        return (String)doneAs;
+    }
     
     /**
      * Returns temporary mock portal site request context for
      * specified user for use in constructing user or base PSML
-     * folder paths or accessing other profiled site data.
+     * folder paths or accessing other profiled site data. This
+     * method invocation should be wrapped in a
+     * JSSubject.doAsPrivileged() block with a subject matching
+     * the specified user.
      * 
      * @param user portal user
      * @param locale optional locale, (defaults to system locale, for language
@@ -651,5 +725,5 @@ public class PortalAdministrationImpl implements PortalAdministration
         // component using the profile locators for new user request
         PortalSiteSessionContext sessionContext = portalSite.newSessionContext();
         return sessionContext.newRequestContext(locators, user.getName());
-    }
+    }    
 }
