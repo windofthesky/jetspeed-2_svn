@@ -28,6 +28,14 @@ limitations under the License.
   </security-constraints-def>
   <global-security-constraints-ref>admin</global-security-constraints-ref>
 
+  <!-- define user constraints -->
+  <security-constraints-def name="users">
+    <security-constraint>
+      <roles>user, manager</roles>
+      <permissions>view</permissions>
+    </security-constraint>
+  </security-constraints-def>
+
   <security-constraints-def name="user-edit">
     <security-constraint>
       <roles>user</roles>
