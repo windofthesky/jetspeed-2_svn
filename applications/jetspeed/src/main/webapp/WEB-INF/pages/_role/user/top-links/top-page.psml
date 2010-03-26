@@ -18,7 +18,7 @@ limitations under the License.
 <page id="_role-user-top-links-top-page"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/psml.xsd">
   <title>[USER] Top Page</title>
   <metadata name="title" xml:lang="ja">[ユーザー] トップページ</metadata>
   <metadata name="title" xml:lang="es">Página Raiz [USUARIO]</metadata>

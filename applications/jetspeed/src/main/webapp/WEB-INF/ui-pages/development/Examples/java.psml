@@ -16,7 +16,7 @@ limitations under the License.
 <page id="groovy"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/psml.xsd">
  
   <title>Java</title>
   <fragment id="java-1" type="layout" name="jetspeed-layouts::VelocityThreeColumns">

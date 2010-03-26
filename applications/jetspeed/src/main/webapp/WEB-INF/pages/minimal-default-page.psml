@@ -18,7 +18,7 @@ limitations under the License.
 <page id="minimal-default-page" hidden="true"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd">
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/psml.xsd">
   
   <title>Welcome to Jetspeed 2</title>
   <metadata name="title" xml:lang="fr">Ma Premiere Page de PSML</metadata>

@@ -16,7 +16,7 @@ limitations under the License.
 <page id="desktop.psml" hidden="false"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/psml.xsd"> 
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/psml.xsd"> 
     <title>Desktop</title>
     <fragment id="jsdesktop-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
         <fragment id="jsdesktop-12" type="portlet" name="j2-admin::LoginPortlet">
