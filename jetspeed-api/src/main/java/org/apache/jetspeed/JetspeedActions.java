@@ -78,8 +78,8 @@ public class JetspeedActions
         list.add(PortletMode.HELP);
         standardPortletModes = Collections.unmodifiableList(list);
         ArrayList<WindowState> list2 = new ArrayList<WindowState>(3);
-        list2.add(WindowState.NORMAL);
         list2.add(WindowState.MINIMIZED);
+        list2.add(WindowState.NORMAL);
         list2.add(WindowState.MAXIMIZED);
         standardWindowStates = Collections.unmodifiableList(list2);
     }
