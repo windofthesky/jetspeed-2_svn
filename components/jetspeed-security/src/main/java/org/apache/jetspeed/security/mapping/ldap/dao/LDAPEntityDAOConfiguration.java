@@ -35,6 +35,7 @@ public class LDAPEntityDAOConfiguration
     private Set<AttributeDef> attributeDefinitions;
     private String            entityType;
     private String[]          objectClassesArr;
+    private String[]          attributeNames;
 
     public void initialize() throws JetspeedException
     {
@@ -98,6 +99,17 @@ public class LDAPEntityDAOConfiguration
     public void setAttributeDefinitions(Set<AttributeDef> attributeDefinitions)
     {
         this.attributeDefinitions = attributeDefinitions;
+        attributeNames = new String[attributeDefinitions.size()];
+        int i = 0;
+        for (AttributeDef def : attributeDefinitions)
+        {
+            attributeNames[i++] = def.getName();
+        }
+    }
+    
+    public String[] getAttributeNames()
+    {
+        return attributeNames;
     }
 
     public String getLdapIdAttribute()

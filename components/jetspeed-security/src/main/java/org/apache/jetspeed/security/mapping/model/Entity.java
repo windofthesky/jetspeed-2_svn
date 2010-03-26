@@ -29,8 +29,10 @@ public interface Entity
     String getType();
 
     String getId();
+    void setId(String id);
 
     String getInternalId();
+    void setInternalId(String internalId);
 
     Attribute getAttribute(String name);
 

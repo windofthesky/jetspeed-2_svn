@@ -90,6 +90,11 @@ public class SpringLDAPEntityDAO implements EntityDAO
     {
         return contextMapper;
     }
+    
+    public String getEntityType()
+    {
+        return entityFactory.getEntityType();
+    }
 
     public EntityFactory getEntityFactory()
     {
@@ -114,10 +119,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
         {
             return entities.iterator().next();
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
     public Collection<Entity> getEntitiesById(Collection<String> entityIds)
@@ -128,16 +130,12 @@ public class SpringLDAPEntityDAO implements EntityDAO
         {
             idFilter.or(new EqualsFilter(idAttr, id));
         }
-        Filter combinedFilter = null;
+        Filter filter = idFilter;
         if (configuration.getSearchFilter() != null)
         {
-            combinedFilter = SearchUtil.andFilters(idFilter, configuration.getSearchFilter());
+            filter = SearchUtil.andFilters(idFilter, configuration.getSearchFilter());
         }
-        else
-        {
-            combinedFilter = idFilter;
-        }
-        return getEntities(combinedFilter);
+        return getEntities(filter);
     }
 
     public Collection<Entity> getEntitiesByInternalId(Collection<String> internalIds)
@@ -162,7 +160,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
         String searchDNStr = searchDN.toCompactString();
         if (relativeDN.equals(searchDNStr) || relativeDN.endsWith(searchDNStr))
         {
-            internalId = principalDN.toCompactString();
+            internalId = relativeDN;
             ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
             try
             {
@@ -252,9 +250,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
         try
         {
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-            String parentId = parent.getInternalId();
-            DistinguishedName parentDN = getRelativeDN(parentId);
-            results = ldapTemplate.search(parentDN.encode(), filterStr, SearchControls.ONELEVEL_SCOPE, getContextMapper());
+            results = ldapTemplate.search(getRelativeDN(parent.getInternalId()), filterStr, SearchControls.ONELEVEL_SCOPE, getContextMapper());
         }
         finally
         {
@@ -280,6 +276,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
                 throw new SecurityException(SecurityException.PRINCIPAL_UPDATE_FAILURE.createScoped(entity.getType(), entity.getId()));
             }
             internalId = ldapEntity.getInternalId();
+            entity.setInternalId(internalId);
         }
         Name dn = getRelativeDN(internalId);
         DirContextOperations dirCtxOps = null;
@@ -394,12 +391,10 @@ public class SpringLDAPEntityDAO implements EntityDAO
                                 basicAttr.add(requiredValue);
                             }
                         }
-                    }
-                    else
-                    {
-                        // TODO missing required attribute value, throw
-                        // exception
-                        // return;
+                        else
+                        {
+                            // missing required attribute value, LDAP will/should throw exception
+                        }
                     }
                 }
                 if (basicAttr != null)
@@ -433,7 +428,6 @@ public class SpringLDAPEntityDAO implements EntityDAO
             // cannot assume external security systems like LDAP which are not solely under the control of the Portal to be 100% in sync.
             // removal of no longer existing entity therefore should not be considered an error.
             return;
-            //throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(entity.getType(), entity.getId()));
         }
         String internalIdStr = entity.getInternalId();
         if (internalIdStr == null)

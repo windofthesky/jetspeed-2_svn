@@ -30,6 +30,11 @@ import org.springframework.ldap.filter.Filter;
 public interface EntityDAO
 {
     /**
+     * @return the Entity type
+     */
+    String getEntityType();
+    
+    /**
      * Fetch entities by providing a list of specific entity IDs.
      * 
      * @param entity

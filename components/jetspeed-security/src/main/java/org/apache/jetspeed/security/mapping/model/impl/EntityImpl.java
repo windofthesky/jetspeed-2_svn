@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.jetspeed.security.mapping.ldap.util.DnUtils;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
 import org.apache.jetspeed.security.mapping.model.Entity;
+import org.springframework.ldap.core.DistinguishedName;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -189,7 +189,7 @@ public class EntityImpl implements Entity
     {
         if (internalId != null)
         {
-            internalId = DnUtils.encodeDn(internalId);
+            internalId = new DistinguishedName(internalId).toCompactString();
         }
         this.internalId = internalId;
     }

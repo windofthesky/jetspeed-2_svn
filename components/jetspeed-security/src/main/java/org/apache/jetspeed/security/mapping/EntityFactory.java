@@ -27,6 +27,11 @@ import org.apache.jetspeed.security.mapping.model.Entity;
  */
 public interface EntityFactory
 {
+    /**
+     * @return the Entity type
+     */
+    String getEntityType();
+    
     Entity createEntity(JetspeedPrincipal principal);
 
     Entity createEntity(DirContext ctx);

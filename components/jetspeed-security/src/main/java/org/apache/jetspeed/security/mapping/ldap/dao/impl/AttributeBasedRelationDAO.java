@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security.mapping.ldap.dao.impl;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.SecurityException;
@@ -110,12 +109,8 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
             // apparently internalId is not stored in the DB => fetch it from
             // LDAP store
             entity = entityDao.getEntity(entity.getId());
-            return entity.getInternalId();
         }
-        else
-        {
-            return entity.getInternalId();
-        }
+        return entity.getInternalId();
     }
 
     public void setRelationAttribute(String relationAttribute)
@@ -161,72 +156,70 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
             attrValue = toEntity.getId();
         }
         Attribute relationAttribute = fromEntity.getAttribute(this.relationAttribute, true);
-        if (relationAttribute.getValues().contains(attrValue))
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_ASSOCIATION_ALREADY_EXISTS.createScoped(fromEntity.getType(), fromEntity.getId(),
-                                                                                                            relationAttribute, toEntity.getId()));
-        }
         if (relationAttribute.getDefinition().isMultiValue())
         {
-            relationAttribute.getValues().add(attrValue);
+            if (!relationAttribute.getValues().contains(attrValue))
+            {
+                relationAttribute.getValues().add(attrValue);
+                fromEntityDAO.updateInternalAttributes(fromEntity);
+            }
         }
-        else
+        else if (!attrValue.equals(relationAttribute.getValue()))
         {
             relationAttribute.setValue(attrValue);
+            fromEntityDAO.updateInternalAttributes(fromEntity);
         }
-        fromEntityDAO.updateInternalAttributes(fromEntity);
     }
 
     private void internalRemoveRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity) throws SecurityException
     {
         fromEntity = fromEntityDAO.getEntity(fromEntity.getId());
-        Attribute relationAttribute = fromEntity.getAttribute(this.relationAttribute);
-        if (relationAttribute != null)
+        if (fromEntity != null)
         {
-            toEntity = toEntityDAO.getEntity(toEntity.getId());
-            String attrValue = null;
-            if (attributeContainsInternalId)
+            Attribute relationAttribute = fromEntity.getAttribute(this.relationAttribute);
+            if (relationAttribute != null)
             {
-                if (toEntity.getInternalId() == null)
+                toEntity = toEntityDAO.getEntity(toEntity.getId());
+                if (toEntity != null)
                 {
-                    // internal ID (ldap DN) is not present, refetch the entity from LDAP to get the DN
-                    toEntity = toEntityDAO.getEntity(toEntity.getId());
-                }
-                attrValue = toEntity.getInternalId();
-            }
-            else
-            {
-                attrValue = toEntity.getId();
-            }
-            if (relationAttribute.getDefinition().isMultiValue())
-            {
-                DistinguishedName attrib = new DistinguishedName(attrValue);
-                if (attributeContainsInternalId)
-                {
-                    boolean found = false;
-                    String attribValue = null;
-                    Iterator<String> iterator = relationAttribute.getValues().iterator();
-                    while (iterator.hasNext() && !found)
+                    String attrValue = null;
+                    if (attributeContainsInternalId)
                     {
-                        attribValue = iterator.next();
-                        DistinguishedName ldapAttr = new DistinguishedName(attribValue);
-                        if (ldapAttr.equals(attrib))
+                        attrValue = toEntity.getInternalId();
+                    }
+                    else
+                    {
+                        attrValue = toEntity.getId();
+                    }
+                    if (relationAttribute.getDefinition().isMultiValue())
+                    {
+                        // TODO: should all membership attributes in all operations use DistinguishedName comparisions or is doing "plain text" comparisions good enough?
+                        DistinguishedName attrib = new DistinguishedName(attrValue);
+                        if (attributeContainsInternalId)
                         {
-                            relationAttribute.getValues().remove(attribValue);
-                            found = true;
+                            String attribValue = null;
+                            for (String name : relationAttribute.getValues())
+                            {
+                                DistinguishedName ldapAttr = new DistinguishedName(attribValue);
+                                if (ldapAttr.equals(attrib))
+                                {
+                                    relationAttribute.getValues().remove(name);
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            relationAttribute.getValues().remove(attrValue);
                         }
                     }
-                }
-                else
-                {
-                    relationAttribute.getValues().remove(attrValue);
+                    else
+                    {
+                        relationAttribute.setValue(null);
+                    }
+                    fromEntityDAO.updateInternalAttributes(fromEntity);
                 }
             }
-            else
-            {
-                relationAttribute.setValue(null);
-            }
-            fromEntityDAO.updateInternalAttributes(fromEntity);
         }
     }
 

@@ -21,7 +21,6 @@ import java.util.Collection;
 
 import junit.framework.Test;
 
-import org.apache.jetspeed.security.mapping.ldap.util.DnUtils;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
 
@@ -52,7 +51,7 @@ public class TestLDAP extends AbstractSetup2LDAPTest
         financeRole.setInternalId("cn=Finance, ou=Roles, o=Jetspeed, o=sevenSeas");
         financeRole.setAttribute(CN_DEF.getName(), "Finance");
         Collection<String> members = new ArrayList<String>();
-        members.add(DnUtils.encodeDn("cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas"));
+        members.add("cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas");
         financeRole.setAttribute(UNIQUEMEMBER_ATTR_DEF.getName(), members);
         return financeRole;
     }
@@ -62,9 +61,9 @@ public class TestLDAP extends AbstractSetup2LDAPTest
         usersRole.setInternalId("cn=Users, ou=Roles, o=Jetspeed, o=sevenSeas");
         usersRole.setAttribute(CN_DEF.getName(), "Users");
         Collection<String> members = new ArrayList<String>();
-        members.add(DnUtils.encodeDn("cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas"));
-        members.add(DnUtils.encodeDn("cn=Paul,o=People,o=Amsterdam,o=Jetspeed,o=sevenSeas"));
-        members.add(DnUtils.encodeDn("cn=Thomas,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas"));
+        members.add("cn=David,o=Peoples,o=SanFrancisco,o=Jetspeed,o=sevenSeas");
+        members.add("cn=Paul,o=People,o=Amsterdam,o=Jetspeed,o=sevenSeas");
+        members.add("cn=Thomas,o=Peoples,o=Amsterdam,o=Jetspeed,o=sevenSeas");
         usersRole.setAttribute(UNIQUEMEMBER_ATTR_DEF.getName(), members);
         return usersRole;
     }
@@ -103,8 +102,7 @@ public class TestLDAP extends AbstractSetup2LDAPTest
         
         Entity liveNestedGroup = entityManager.getEntity("group", nestedGroup.getId());
         assertNotNull(liveNestedGroup);
-        String newDn = DnUtils.encodeDnUsingSeparator(",", marketingGroup.getInternalId(), "cn="+liveNestedGroup.getId());
-        assertEquals("cn=nestedGroup1,cn=Marketing,ou=Groups,o=Jetspeed,o=sevenSeas", newDn);
+        assertEquals("cn=nestedGroup1,cn=Marketing,ou=Groups,o=Jetspeed,o=sevenSeas", liveNestedGroup.getInternalId());
     }
     
     private Entity createUser(String id, String internalId, String givenName, String cn, String uid, String[] roles){

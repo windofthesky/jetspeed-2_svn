@@ -17,9 +17,8 @@
 package org.apache.jetspeed.security.mapping.ldap;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.naming.NamingException;
@@ -31,6 +30,7 @@ import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration;
+import org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
 import org.apache.jetspeed.security.mapping.model.Entity;
@@ -50,6 +50,11 @@ public class EntityFactoryImpl implements EntityFactory
     {
         this.searchConfiguration = searchConfiguration;
     }
+    
+    public String getEntityType()
+    {
+        return searchConfiguration.getEntityType();
+    }
 
     protected EntityImpl internalCreateEntity(String entityId, String internalId, Set<Attribute> attributes)
     {
@@ -59,7 +64,6 @@ public class EntityFactoryImpl implements EntityFactory
         {
             entity.setInternalId(internalId);
         }
-        entity.setType(searchConfiguration.getEntityType());
         return entity;
     }
 
@@ -81,99 +85,91 @@ public class EntityFactoryImpl implements EntityFactory
         return internalCreateEntity(principal.getName(), null, ldapAttrValues);
     }
 
-    public String[] getStringAttributes(Attributes originalAttrs, String name)
+    protected List<String> getStringAttributes(Attributes originalAttrs, String name)
     {
-        String[] attributes;
+        ArrayList<String> attributes = null;
         javax.naming.directory.Attribute attribute = originalAttrs.get(name);
-        if (attribute != null && attribute.size() > 0)
+        if (attribute != null)
         {
-            attributes = new String[attribute.size()];
-            for (int i = 0; i < attribute.size(); i++)
+            int size = attribute.size();
+            if (size > 0)
             {
-                try
+                attributes = new ArrayList<String>(size);
+                for (int i = 0; i < size; i++)
                 {
-                    attributes[i] = (String) attribute.get(i);
-                }
-                catch (NamingException e)
-                {
-                    throw LdapUtils.convertLdapException(e);
+                    try
+                    {
+                        attributes.add((String) attribute.get(i));
+                    }
+                    catch (NamingException e)
+                    {
+                        throw LdapUtils.convertLdapException(e);
+                    }
                 }
             }
-        }
-        else
-        {
-            return null;
         }
         return attributes;
     }
-
+    
     public Entity createEntity(DirContext ctx)
     {
-        String entityId = null;
-        Entity entity = null;
-        Set<Attribute> attributes = new HashSet<Attribute>();
-        for (AttributeDef attrDef : searchConfiguration.getAttributeDefinitions())
+        try
         {
-            String[] values = null;
-            try
+            String entityId = null;
+            Entity entity = null;
+            String dn = ctx.getNameInNamespace();
+            Set<Attribute> attributes = new HashSet<Attribute>();
+            Attributes attrs = ctx.getAttributes("", searchConfiguration.getAttributeNames());
+            for (AttributeDef attrDef : searchConfiguration.getAttributeDefinitions())
             {
-                values = getStringAttributes(ctx.getAttributes(""), attrDef.getName());
-            }
-            catch (NamingException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            if (values != null && values.length > 0)
-            {
-                Attribute a = new AttributeImpl(attrDef);
-                if (attrDef.isMultiValue())
+                List<String> values = null;
+                values = getStringAttributes(attrs, attrDef.getName());
+                if (values != null)
                 {
-                    Collection<String> attrValues = new ArrayList<String>();
-                    attrValues.addAll(Arrays.asList(values));
-                    // remove the dummy value for required fields when present.
-                    if (attrDef.isRequired() && attrDef.getRequiredDefaultValue() != null && attrValues.contains(attrDef.getRequiredDefaultValue()))
+                    Attribute a = new AttributeImpl(attrDef);
+                    if (attrDef.isMultiValue())
                     {
-                        attrValues.remove(attrDef.getRequiredDefaultValue());
-                    }
-                    if (attrValues.size() != 0)
-                    {
-                        a.setValues(attrValues);
-                        attributes.add(a);
-                    }
-                    else
-                    {
-                        attributes.add(a);
-                    }
-                }
-                else
-                {
-                    if (attrDef.getName().equals(searchConfiguration.getLdapIdAttribute()))
-                    {
-                        entityId = values[0];
-                    }
-                    if (values[0] != null)
-                    {
-                        // check if the value is not the required default value (a dummy value) If it is, ignore the attribute.
-                        if (!(attrDef.isRequired() && attrDef.getRequiredDefaultValue() != null && values[0].equals(attrDef.getRequiredDefaultValue())))
+                        // remove the dummy value for required fields when present.
+                        if (attrDef.isRequired() && attrDef.getRequiredDefaultValue() != null)
                         {
-                            a.setValue(values[0]);
+                            String defaultValue = attrDef.getRequiredDefaultValue();
+                            if (SpringLDAPEntityDAO.DN_REFERENCE_MARKER.equals(defaultValue))
+                            {
+                                defaultValue = dn;
+                            }
+                            if (values.contains(defaultValue))
+                            {
+                                values.remove(attrDef.getRequiredDefaultValue());
+                            }
+                        }
+                        if (values.size() != 0)
+                        {
+                            a.setValues(values);
+                        }
+                        else
+                        {
                             attributes.add(a);
                         }
                     }
+                    else
+                    {
+                        String value = values.get(0);
+                        // TODO: make this a boolean flag check
+                        if (attrDef.getName().equals(searchConfiguration.getLdapIdAttribute()))
+                        {
+                            entityId = value;
+                        }
+                        a.setValue(value);
+                    }
+                    attributes.add(a);
                 }
             }
-        }
-        try
-        {
-            entity = internalCreateEntity(entityId, ctx.getNameInNamespace(), attributes);
+            entity = internalCreateEntity(entityId, dn, attributes);
+            return entity;
         }
         catch (NamingException e)
         {
-            entity = null;
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw LdapUtils.convertLdapException(e);
         }
-        return entity;
     }
 }

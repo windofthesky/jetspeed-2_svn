@@ -35,7 +35,7 @@ import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
 public class DefaultLDAPEntityManager implements SecurityEntityManager
 {
     // entity type DAOs
-    protected Map<String, EntityDAO>                             entityDAOs;
+    protected Map<String, EntityDAO>                             entityDAOs = new HashMap<String, EntityDAO>();
     protected Map<SecurityEntityRelationType, EntityRelationDAO> entityRelationDAOs = new HashMap<SecurityEntityRelationType, EntityRelationDAO>();
 
     public Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes()
@@ -63,7 +63,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
 
     private EntityDAO getDAOForEntity(Entity entity)
     {
-        return entity.getType() != null ? entityDAOs.get(entity.getType()) : null;
+        return entityDAOs.get(entity.getType());
     }
 
     public void addRelation(Entity sourceEntity, Entity targetEntity, SecurityEntityRelationType relationType) throws SecurityException
@@ -76,14 +76,14 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
             if (relationType.getFromEntityType().equals(sourceEntity.getType()))
             {
                 sourceDAO = entityDAOs.get(sourceEntity.getType());
-                targetDAO = entityDAOs.get(relationType.getToEntityType());
+                targetDAO = entityDAOs.get(relationType.getToEntityType());                
             }
             else
             {
                 targetDAO = entityDAOs.get(sourceEntity.getType());
                 sourceDAO = entityDAOs.get(relationType.getToEntityType());
             }
-            if (relationDAO != null)
+            if (sourceDAO != null && targetDAO != null && sourceDAO.getEntityType().equals(sourceEntity) && targetDAO.getEntityType().equals(targetEntity.getType()))
             {
                 relationDAO.addRelation(sourceDAO, targetDAO, sourceEntity, targetEntity);
             }
@@ -107,7 +107,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
                 targetDAO = entityDAOs.get(entity.getType());
                 sourceDAO = entityDAOs.get(relationType.getToEntityType());
             }
-            if (relationDAO != null)
+            if (sourceDAO != null && targetDAO != null && sourceDAO.getEntityType().equals(entity) && targetDAO.getEntityType().equals(relatedEntity.getType()))
             {
                 relationDAO.removeRelation(sourceDAO, targetDAO, entity, relatedEntity);
             }
@@ -128,12 +128,15 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
 
     public Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType)
     {
-        EntityDAO fromDAO = entityDAOs.get(relationType.getFromEntityType());
-        EntityDAO toDAO = entityDAOs.get(relationType.getToEntityType());
         EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType);
-        if (fromDAO != null && toDAO != null && relationDAO != null)
+        if (relationDAO != null)
         {
-            return relationDAO.getRelatedEntitiesTo(fromDAO, toDAO, toEntity);
+            EntityDAO fromDAO = entityDAOs.get(relationType.getFromEntityType());
+            EntityDAO toDAO = entityDAOs.get(relationType.getToEntityType());
+            if (fromDAO != null && toDAO != null && toDAO.getEntityType().equals(toEntity.getType()))
+            {
+                return relationDAO.getRelatedEntitiesTo(fromDAO, toDAO, toEntity);
+            }
         }
         return null; // todo : throw exception, since combination of entity
         // types and relation type is not configured.
@@ -141,12 +144,15 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
 
     public Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType)
     {
-        EntityDAO fromDAO = entityDAOs.get(relationType.getFromEntityType());
-        EntityDAO toDAO = entityDAOs.get(relationType.getToEntityType());
         EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType);
-        if (fromDAO != null && toDAO != null && relationDAO != null)
+        if (relationDAO != null)
         {
-            return relationDAO.getRelatedEntitiesFrom(fromDAO, toDAO, fromEntity);
+            EntityDAO fromDAO = entityDAOs.get(relationType.getFromEntityType());
+            EntityDAO toDAO = entityDAOs.get(relationType.getToEntityType());
+            if (fromDAO != null && toDAO != null && fromDAO.getEntityType().equals(fromEntity.getType()))
+            {
+                return relationDAO.getRelatedEntitiesFrom(fromDAO, toDAO, fromEntity);
+            }
         }
         return null; // todo : throw exception, since combination of entity
         // types and relation type is not configured.
@@ -182,8 +188,9 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
     public void addEntity(Entity entity, Entity parentEntity) throws SecurityException
     {
         EntityDAO parentEntityDao = getDAOForEntity(parentEntity);
+        EntityDAO dao = getDAOForEntity(entity);
         Entity liveParentEntity = null;
-        if (parentEntityDao != null)
+        if (parentEntityDao != null && dao != null)
         {
             // fetch "live" entity from LDAP to
             // 1) check whether entity exists and
@@ -193,17 +200,14 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
             {
                 throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(parentEntity.getType(), parentEntity.getId()));
             }
-            EntityDAO dao = getDAOForEntity(entity);
-            if (dao != null)
-            {
-                dao.add(entity, liveParentEntity);
-            }
+            dao.add(entity, liveParentEntity);
         }
     }
 
     public void setEntityDAOs(Map<String, EntityDAO> entityDAOs)
     {
-        this.entityDAOs = entityDAOs;
+        this.entityDAOs.clear();
+        this.entityDAOs.putAll(entityDAOs);
     }
 
     public void setEntityRelationDAOs(Collection<EntityRelationDAO> entityRelationDAOs)
