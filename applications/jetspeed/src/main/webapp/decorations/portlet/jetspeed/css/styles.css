@@ -34,7 +34,7 @@ limitations under the License.
 {
     font-family: Verdana, Helvetica, Arial, sans-serif;
     voice-family: inherit;
-    font-size: 7pt;
+    font-size: 8pt;
 }
 
 .jetspeed .PTitleLeft
@@ -75,7 +75,7 @@ limitations under the License.
     clear:left;
     white-space: normal;
     padding: 4px;
-    font-size: 7pt;
+    font-size: 8pt;
 }
 
 .jetspeed .PActionBar
@@ -153,7 +153,7 @@ limitations under the License.
     font-family: Verdana, Helvetica, Arial, sans-serif;
     voice-family: "\"}\"";
     voice-family: inherit;
-    font-size: x-small;
+    font-size: small;
 }
 
 
@@ -200,7 +200,7 @@ limitations under the License.
     font-family: Verdana, Helvetica, Arial, sans-serif;
     voice-family: "\"}\"";
     voice-family: inherit;
-    font-size: x-small;
+    font-size: small;
 }
 
 
@@ -296,7 +296,7 @@ limitations under the License.
     font-family: Verdana, Helvetica, Arial, sans-serif;
     voice-family: "\"}\"";
     voice-family: inherit;
-    font-size: x-small;
+    font-size: 8pt;
 }
 
 
@@ -322,21 +322,6 @@ limitations under the License.
 }
 
 .jetspeed .portlet-form-field {
-}
-
-/* font */
-.jetspeed .portlet-section-header,
-.jetspeed .portlet-section-body,
-.jetspeed .portlet-section-alternate,
-.jetspeed .portlet-section-selected,
-.jetspeed .portlet-section-subheader,
-.jetspeed .portlet-section-footer,
-.jetspeed .portlet-section-text,
-{
-    font-family: Verdana, Helvetica, Arial, sans-serif;
-    voice-family: "\"}\"";
-    voice-family: inherit;
-    font-size: 7pt;
 }
 
 
@@ -410,7 +395,7 @@ limitations under the License.
     font-family: Verdana, Helvetica, Arial, sans-serif;
     voice-family: "\"}\"";
     voice-family: inherit;
-    font-size: x-small;
+    font-size: small;
 }
 
 

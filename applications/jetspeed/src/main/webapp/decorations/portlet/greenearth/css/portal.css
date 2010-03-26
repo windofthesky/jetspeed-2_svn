@@ -26,11 +26,12 @@ limitations under the License.
 
 .greenearth .PContent 
 {
-    padding-left:2px;
-    padding-right:2px;
     white-space:normal;
-    font-size:1em;
     background-color: white;
+	overflow: auto; 
+	width: 96%;    
+	padding-left: 2px;
+	padding-right: 2px;
 }
 
 .greenearth .PTitleContent
@@ -40,7 +41,7 @@ limitations under the License.
 
 
 .portlet th, .portlet td, .portlet input {
-    font-size:7pt;
+    font-size: 8pt;
 }
 
 /*  end portlet decorator tigris additions  */

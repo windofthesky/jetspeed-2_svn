@@ -21,7 +21,7 @@ limitations under the License.
     font-family: Verdana, Helvetica, Arial, sans-serif;
     voice-family: "\"}\"";
     voice-family: inherit;
-    font-size: x-small;
+    font-size: small;
 }
 
 .gray-gradient-noborder .PTitle
@@ -168,7 +168,7 @@ limitations under the License.
     .gray-gradient-noborder A:HOVER.tab
     {
       color: #02385E;
-      font-size: x-small;
+      font-size: small;
       text-decoration: none;
       padding-left: 4px;
       padding-right: 4px;

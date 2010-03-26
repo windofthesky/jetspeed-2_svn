@@ -27,7 +27,7 @@ body, div, span, a, form, li, ul, ol, input, select, textarea, button, pre, bloc
  font-family: Tahoma, Verdana, Helvetica, Arial, sans-serif;
  voice-family: "\"}\"";
  voice-family: inherit;
- font-size:7pt;
+ font-size:8pt;
 }
 
 body {
@@ -220,7 +220,7 @@ background-position: 0px -30px
 .layout-turbo #login {
     voice-family: "\"}\"";
     voice-family: inherit;
-    font-size: x-small;
+    font-size: small;
     font-weight: bold;
 }
 
@@ -231,7 +231,7 @@ background-position: 0px -30px
 }
 
 .layout-turbo #navcolumn {
-    font-size: x-small;
+    font-size: small;
     margin-top: 15px;
 }
 
@@ -259,7 +259,7 @@ color: #012d46;
     width: 17%;
     voice-family: "\"}\"";
     voice-family: inherit;
-    font-size: x-small;
+    font-size: small;
 }
 
 .layout-turbo #leftcol a {
@@ -283,7 +283,7 @@ color: #012d46;
     font-weight: bold;
     voice-family: "\"}\"";
     voice-family: inherit;
-    font-size: 7pt;
+    font-size: 8pt;
 }
 
 .layout-turbo .toolgroup .body {
@@ -297,7 +297,7 @@ color: #012d46;
     padding-left: 0;
     voice-family: "\"}\"";
     voice-family: inherit;
-    font-size: 7pt;
+    font-size: 8pt;
 }
 
 .layout-turbo .toolgroup .body div div {
@@ -309,7 +309,7 @@ color: #012d46;
     padding-left: .5em;
     voice-family: "\"}\"";
     voice-family: inherit;
-    font-size: x-small;
+    font-size: small;
 }
 
 .layout-turbo .toolgroup .body div p {
@@ -360,7 +360,7 @@ color: #012d46;
 
 .layout-turbo .layout-edit-bar input
 {
-  font-size: 7pt;
+  font-size: 8pt;
 }
 
 .layout-turbo .layout-edit-bar-left
@@ -388,11 +388,11 @@ color: #012d46;
 .layout-turbo
 {
   font-family: Verdana,sans-serif;
-  font-size: 7pt; 
+  font-size: 8pt; 
 }
 
 .layout-turbo td{
- font-size:7pt;
+ font-size:8pt;
  font-family: Verdana,sans-serif;
  vertical-align: top;
 }
@@ -462,6 +462,7 @@ font-size:8pt;
 text-decoration: underline;
 }
 
+.layout-jetspeed .tooltext { font-size: 8pt; }
 .layout-turbo .navmenu ul { margin: 0 0 0 3px; padding: 2px; }
 .layout-turbo .navmenu li { margin: 0 0 0 3px; padding: 2px; }
 .layout-turbo .navmenu li.leaf { margin: 0 0 0 3px; padding: 2px; list-style-type: none; list-style-image: none; }
