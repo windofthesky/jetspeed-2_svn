@@ -17,7 +17,7 @@ limitations under the License.
 -->
 <page-security xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/page-security.xsd">
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/page-security.xsd">
 
   <!-- define global admin constraints -->
   <security-constraints-def name="admin">

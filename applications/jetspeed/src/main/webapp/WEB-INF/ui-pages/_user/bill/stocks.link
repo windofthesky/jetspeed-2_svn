@@ -18,7 +18,7 @@ limitations under the License.
 <link target="top"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/link.xsd">
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/link.xsd">
  <title>Stocks</title>
  <url>http://finance.yahoo.com/</url>
 </link>

@@ -18,7 +18,7 @@ limitations under the License.
 <link target="parent"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/link.xsd">
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/link.xsd">
  <title>Apache Software Foundation</title>
  <url>http://www.apache.org</url>
  <metadata name="title" xml:lang="fr">

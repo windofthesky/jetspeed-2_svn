@@ -20,7 +20,7 @@ limitations under the License.
 <folder
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.1/schemas/folder-metadata.xsd">
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/folder-metadata.xsd">
 
   <title>folder1</title>  
   <short-title>folder1</short-title>  
