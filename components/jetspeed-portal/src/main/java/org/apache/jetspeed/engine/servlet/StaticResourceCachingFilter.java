@@ -66,7 +66,7 @@ public class StaticResourceCachingFilter implements Filter
         {
             expires_in_hours = 0;
         }
-        max_age = (int)(expires_in_hours * 60);
+        max_age = (int)(expires_in_hours * 3600);
     }
     
     public void doFilter( ServletRequest aRequest, ServletResponse aResponse, FilterChain chain )
