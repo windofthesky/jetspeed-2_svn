@@ -19,9 +19,9 @@ package org.apache.jetspeed.layout;
 import java.util.Map;
 
 import org.apache.jetspeed.om.common.SecurityConstraints;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.PageTemplate;
 
 /**
@@ -72,6 +72,38 @@ public interface PageLayoutComponent
      */
     ContentFragment addFragmentAtRowColumn(ContentPage contentPage, ContentFragment contentFragment, int row, int column);                        
     
+    /**
+     * Add fragment reference to fragment with specified row and
+     * column returning associated content fragment.
+     * 
+     * @param contentFragment content fragment context
+     * @param id fragment definition id
+     * @param row fragment row position
+     * @param column fragment column position
+     * @return new content fragment added to fragment
+     */
+    ContentFragment addFragmentReference(ContentFragment contentFragment, String id, int row, int column);
+
+    /**
+     * Add fragment reference to fragment returning associated
+     * content fragment.
+     * 
+     * @param contentFragment content fragment context
+     * @param id fragment definition id
+     * @return new content fragment added to fragment
+     */
+    ContentFragment addFragmentReference(ContentFragment contentFragment, String id);
+    
+    /**
+     * Add fragment reference to page returning associated content
+     * fragment.
+     * 
+     * @param contentPage content page context
+     * @param id fragment definition id
+     * @return new content fragment added to page
+     */
+    ContentFragment addFragmentReference(ContentPage contentPage, String id);
+
     /**
      * Add portlet to fragment with specified row and column returning
      * associated content fragment.
@@ -155,16 +187,16 @@ public interface PageLayoutComponent
     void moveFragment(ContentPage contentPage, String fragmentId, String fromFragmentId, String toFragmentId);
 
     /**
-     * Construct a new content page hierarchy from PSML page, page
-     * templates, and fragment definitions.
+     * Construct a new content page hierarchy from PSML page or template,
+     * page templates, and fragment definitions.
      * 
-     * @param page PSML page to construct content page from
+     * @param pageOrTemplate PSML page or template to construct content page from
      * @param pageTemplate PSML page template to merge into content page
      * @param fragmentDefinitions PSML fragment definitions referenced
      *                            by page and/or page template
      * @return new content page
      */
-    ContentPage newContentPage(BaseConcretePageElement page, PageTemplate pageTemplate, Map fragmentDefinitions);
+    ContentPage newContentPage(BaseFragmentsElement pageOrTemplate, PageTemplate pageTemplate, Map fragmentDefinitions);
     
     /**
      * Create a new sibling folder with specified configuration and
@@ -203,6 +235,49 @@ public interface PageLayoutComponent
     void newSiblingPage(ContentPage contentPage, String pageName, String layoutName, String pageTitle, String pageShortTitle);
     
     /**
+     * Create new sibling dynamic page with specified configuration. 
+     * Both title and short title parameters default to page name if
+     * not specified. The layout fragment name is cloned from this
+     * content page if not specified. Default decorators are cloned
+     * from this content page.
+     * 
+     * @param contentPage content page context
+     * @param pageName unique new dynamic page name
+     * @param contentType dynamic page content type
+     * @param layoutName root level layout fragment name or null 
+     * @param pageTitle new page title or null
+     * @param pageShortTitle new page short title or null
+     */
+    void newSiblingDynamicPage(ContentPage contentPage, String pageName, String contentType, String layoutName, String pageTitle, String pageShortTitle);
+    
+    /**
+     * Create new sibling page template with specified configuration.
+     * The layout fragment name is cloned from this content page if
+     * not specified. Default decorators are cloned from this content
+     * page.
+     * 
+     * @param contentPage content page context
+     * @param templateName unique new page template name
+     * @param layoutName root level layout fragment name or null 
+     * @param templateTitle new page title or null
+     * @param templateShortTitle new page short title or null
+     */
+    void newSiblingPageTemplate(ContentPage contentPage, String templateName, String layoutName, String templateTitle, String templateShortTitle);
+    
+    /**
+     * Create new sibling fragment definition with specified
+     * configuration.
+     * 
+     * @param contentPage content page context
+     * @param definitionName unique new fragment definition name
+     * @param defId unique new fragment definition id or null
+     * @param portletName root level portlet fragment name or null 
+     * @param definitionTitle new page title or null
+     * @param definitionShortTitle new page short title or null
+     */
+    void newSiblingFragmentDefinition(ContentPage contentPage, String definitionName, String defId, String portletName, String definitionTitle, String definitionShortTitle);
+    
+    /**
      * Remove fragment from page by id.
      * 
      * @param contentPage content page context
@@ -225,6 +300,15 @@ public interface PageLayoutComponent
      */
     void removeFolder(ContentPage contentPage);
     
+    /**
+     * Update dynamic page content type and inheritable flag.
+     *  
+     * @param contentPage content page context
+     * @param contentType dynamic page content type
+     * @param contentType dynamic page content type
+     */
+    void updateContent(ContentPage contentPage, String contentType, Boolean inheritable);
+
     /**
      * Update global fragment portlet decorator.
      *  
@@ -327,6 +411,14 @@ public interface PageLayoutComponent
     void updateProperty(ContentFragment contentFragment, String propName, String propValue, String scope, String scopeValue);
     
     /**
+     * Update fragment reference reference id.
+     * 
+     * @param contentFragment content fragment context
+     * @param refId referenced fragment definition id
+     */
+    void updateRefId(ContentFragment contentFragment, String refId);
+    
+    /**
      * Update global fragment row and column layout position.
      * 
      * @param contentFragment content fragment context
@@ -382,12 +474,4 @@ public interface PageLayoutComponent
      * @param shortTitle page short title
      */
     void updateTitles(ContentPage contentPage, String title, String shortTitle);
-    
-    /**
-     * Returns the root fragment which is not locked and not merged from a page template
-     * 
-     * @param contentPage content page context
-     * @return content fragment context
-     */
-    ContentFragment getUnlockedRootFragment(ContentPage contentPage);    
 }

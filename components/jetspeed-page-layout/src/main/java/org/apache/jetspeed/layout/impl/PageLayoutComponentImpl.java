@@ -74,15 +74,19 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
     private static final Logger log = LoggerFactory.getLogger(PageLayoutComponentImpl.class);
     
     private PageManager pageManager;
+    private String defaultLayoutPortletName;
     
     /**
      * Construct new PageLayoutComponent implementation.
      * 
      * @param pageManager page manager used to access PSML objects
+     * @param defaultLayoutPortletName default layout portlet name used to construct content
+     *                                 pages for PSML objects w/o a root layout fragment
      */
-    public PageLayoutComponentImpl(PageManager pageManager)
+    public PageLayoutComponentImpl(PageManager pageManager, String defaultLayoutPortletName)
     {
         this.pageManager = pageManager;
+        this.defaultLayoutPortletName = defaultLayoutPortletName;
     }
 
     /* (non-Javadoc)
@@ -102,22 +106,26 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // get page root content fragment
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
             ContentFragmentImpl pageRootContentFragmentImpl = contentPageImpl.getPageRootContentFragment();
+            if ((pageRootContentFragmentImpl != null) && pageRootContentFragmentImpl.isLocked())
+            {
+                pageRootContentFragmentImpl = (ContentFragmentImpl)pageRootContentFragmentImpl.getNonTemplateLayoutFragment();
+            }
             if ((pageRootContentFragmentImpl == null) || pageRootContentFragmentImpl.isLocked())
             {
                 throw new IllegalArgumentException("Page root content fragment not found or is locked");                
             }
 
-            // retrieve current page and root fragment from page manager
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-            BaseFragmentElement rootFragment = page.getRootFragment();
+            // retrieve current page or template and root fragment from page manager
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            BaseFragmentElement rootFragment = pageOrTemplate.getRootFragment();
             if (!(rootFragment instanceof Fragment))
             {
-                throw new IllegalArgumentException("New Fragment cannot be added to page root fragment");                
+                throw new IllegalArgumentException("New fragment cannot be added to page root fragment");                
             }
             Fragment fragment = (Fragment)rootFragment;
             if (!Fragment.LAYOUT.equals(fragment.getType()))
             {
-                throw new IllegalArgumentException("New Fragment cannot be added to non-layout page root fragment");                
+                throw new IllegalArgumentException("New fragment cannot be added to non-layout page root fragment");                
             }
             
             // check for edit permission
@@ -138,11 +146,11 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             fragment.getFragments().add(newFragment);
 
             // update page in page manager
-            updatePage(page);
+            updatePage(pageOrTemplate);
             
             // update content page context
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            contentFragmentImpl.initialize(this, page, page, newFragment, null, null, false);
+            contentFragmentImpl.initialize(this, pageOrTemplate, pageOrTemplate, newFragment, null, null, false, false);
             if (!Utils.isNull(row))
             {
                 contentFragmentImpl.setLayoutRow(null, null, row);
@@ -161,13 +169,147 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             throw new PageLayoutComponentException("Unexpected exception: "+e, e);
         }
     }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#addFragmentReference(org.apache.jetspeed.om.page.ContentFragment, java.lang.String, int, int)
+     */
+    public ContentFragment addFragmentReference(ContentFragment contentFragment, String id, int row, int column)
+    {
+        log.debug("PageLayoutComponentImpl.addFragmentReference() invoked");
+        try
+        {
+            // validate fragment definition parameters
+            if (Utils.isNull(id))
+            {
+                throw new IllegalArgumentException("Fragment definition id not specified");
+            }
+            
+            // validate content fragment
+            ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
+            if (contentFragmentImpl.getDefinition() == null)
+            {
+                throw new IllegalArgumentException("Transient content fragments are not mutable");
+            }            
+            if (contentFragmentImpl.isLocked())
+            {
+                throw new IllegalArgumentException("Locked content fragment is not mutable");
+            }
+            if (!contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPageOrTemplate().getPath()))
+            {
+                throw new IllegalArgumentException("Only page fragments can be modified");
+            }
+
+            // retrieve current page or template and fragment from page manager
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentFragmentImpl.getPageOrTemplate().getPath());
+            BaseFragmentElement parentFragment = pageOrTemplate.getFragmentById(contentFragmentImpl.getFragment().getId());
+            if (!(parentFragment instanceof Fragment))
+            {
+                throw new IllegalArgumentException("New fragment cannot be added to parent fragment");
+            }
+            Fragment fragment = (Fragment)parentFragment;
+            if (!Fragment.LAYOUT.equals(fragment.getType()))
+            {
+                throw new IllegalArgumentException("New fragment cannot be added to non-layout parent fragment");                
+            }
+            
+            // check for edit permission
+            fragment.checkAccess(JetspeedActions.EDIT);
+
+            // create fragment reference and add to layout fragment
+            FragmentReference newFragmentReference = pageManager.newFragmentReference();
+            newFragmentReference.setRefId(id);
+            if (!Utils.isNull(row))
+            {
+                newFragmentReference.setLayoutRow(row);
+            }
+            if (!Utils.isNull(column))
+            {
+                newFragmentReference.setLayoutColumn(column);
+            }
+            fragment.getFragments().add(newFragmentReference);
+
+            // update page in page manager
+            updatePage(pageOrTemplate);
+
+            // update content context
+            ContentFragmentImpl newContentFragmentImpl = newContentFragment(contentFragmentImpl.getId(), pageOrTemplate, pageOrTemplate, newFragmentReference);
+            contentFragmentImpl.getFragments().add(newContentFragmentImpl);
+            return newContentFragmentImpl;
+        }
+        catch (Exception e)
+        {
+            throw new PageLayoutComponentException("Unexpected exception: "+e, e);
+        }
+    }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.layout.PageLayoutComponent#addPortlet(org.apache.jetspeed.om.page.ContentFragment, java.lang.String, java.lang.String)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#addFragmentReference(org.apache.jetspeed.om.page.ContentFragment, java.lang.String)
      */
-    public ContentFragment addPortlet(ContentFragment contentFragment, String type, String name)
+    public ContentFragment addFragmentReference(ContentFragment contentFragment, String id)
     {
-        return addPortlet(contentFragment, type, name, -1, -1);
+        return addFragmentReference(contentFragment, id, -1, -1);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#addFragmentReference(org.apache.jetspeed.om.page.ContentPage, java.lang.String)
+     */
+    public ContentFragment addFragmentReference(ContentPage contentPage, String id)
+    {
+        log.debug("PageLayoutComponentImpl.addFragmentReference() invoked");
+        try
+        {
+            // validate fragment definition parameters
+            if (Utils.isNull(id))
+            {
+                throw new IllegalArgumentException("Fragment definition id not specified");
+            }
+            
+            // get page root content fragment
+            ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
+            ContentFragmentImpl pageRootContentFragmentImpl = contentPageImpl.getPageRootContentFragment();
+            if ((pageRootContentFragmentImpl != null) && pageRootContentFragmentImpl.isLocked())
+            {
+                pageRootContentFragmentImpl = (ContentFragmentImpl)pageRootContentFragmentImpl.getNonTemplateLayoutFragment();
+            }
+            if ((pageRootContentFragmentImpl == null) || pageRootContentFragmentImpl.isLocked())
+            {
+                throw new IllegalArgumentException("Page root content fragment not found or is locked");                
+            }
+
+            // retrieve current page or template and root fragment from page manager
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPage.getPageOrTemplate().getPath());
+            BaseFragmentElement rootFragment = pageOrTemplate.getRootFragment();
+            if (!(rootFragment instanceof Fragment))
+            {
+                throw new IllegalArgumentException("New Fragment cannot be added to page root fragment");                
+            }
+            Fragment fragment = (Fragment)rootFragment;
+            if (!Fragment.LAYOUT.equals(fragment.getType()))
+            {
+                throw new IllegalArgumentException("New Fragment cannot be added to non-layout page root fragment");                
+            }
+
+            // check for edit permission
+            fragment.checkAccess(JetspeedActions.EDIT);
+            
+            // create fragment reference and add to layout root fragment
+            FragmentReference newFragmentReference = pageManager.newFragmentReference();
+            newFragmentReference.setRefId(id);
+            fragment.getFragments().add(newFragmentReference);
+
+            // update page in page manager
+            updatePage(pageOrTemplate);
+
+            // update content page context
+            ContentFragmentImpl newContentFragmentImpl = newContentFragment(pageRootContentFragmentImpl.getId(), pageOrTemplate, pageOrTemplate, newFragmentReference);
+            pageRootContentFragmentImpl.getFragments().add(newContentFragmentImpl);
+            return newContentFragmentImpl;
+        }
+        catch (Exception e)
+        {
+            throw new PageLayoutComponentException("Unexpected exception: "+e, e);
+        }
+        
     }
 
     /* (non-Javadoc)
@@ -186,27 +328,30 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
+            if (contentFragmentImpl.getDefinition() == null)
+            {
+                throw new IllegalArgumentException("Transient content fragments are not mutable");
+            }            
             if (contentFragmentImpl.isLocked())
             {
                 throw new IllegalArgumentException("Locked content fragment is not mutable");
             }
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
-            if (!contentFragmentDefinitionIsPage)
+            if (!contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPageOrTemplate().getPath()))
             {
-                throw new IllegalArgumentException("Only page fragments can be modified");                
+                throw new IllegalArgumentException("Only page fragments can be modified");
             }
 
-            // retrieve current page and fragment from page manager
-            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
-            BaseFragmentElement parentFragment = page.getFragmentById(contentFragmentImpl.getFragment().getId());
+            // retrieve current page or template and fragment from page manager
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentFragmentImpl.getPageOrTemplate().getPath());
+            BaseFragmentElement parentFragment = pageOrTemplate.getFragmentById(contentFragmentImpl.getFragment().getId());
             if (!(parentFragment instanceof Fragment))
             {
-                throw new IllegalArgumentException("New Fragment cannot be added to parent fragment");                
+                throw new IllegalArgumentException("New fragment cannot be added to parent fragment");                
             }
             Fragment fragment = (Fragment)parentFragment;
             if (!Fragment.LAYOUT.equals(fragment.getType()))
             {
-                throw new IllegalArgumentException("New Fragment cannot be added to non-layout parent fragment");                
+                throw new IllegalArgumentException("New fragment cannot be added to non-layout parent fragment");                
             }
             
             // check for edit permission
@@ -227,10 +372,10 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             fragment.getFragments().add(newFragment);
 
             // update page in page manager
-            updatePage(page);
+            updatePage(pageOrTemplate);
 
             // update content context
-            ContentFragmentImpl newContentFragmentImpl = newContentFragment(contentFragmentImpl.getId(), page, null, page, newFragment, false);
+            ContentFragmentImpl newContentFragmentImpl = newContentFragment(contentFragmentImpl.getId(), pageOrTemplate, null, pageOrTemplate, newFragment, false);
             contentFragmentImpl.getFragments().add(newContentFragmentImpl);
             return newContentFragmentImpl;
         }
@@ -238,6 +383,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             throw new PageLayoutComponentException("Unexpected exception: "+e, e);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#addPortlet(org.apache.jetspeed.om.page.ContentFragment, java.lang.String, java.lang.String)
+     */
+    public ContentFragment addPortlet(ContentFragment contentFragment, String type, String name)
+    {
+        return addPortlet(contentFragment, type, name, -1, -1);
     }
 
     /* (non-Javadoc)
@@ -257,14 +410,18 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // get page root content fragment
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
             ContentFragmentImpl pageRootContentFragmentImpl = contentPageImpl.getPageRootContentFragment();
+            if ((pageRootContentFragmentImpl != null) && pageRootContentFragmentImpl.isLocked())
+            {
+                pageRootContentFragmentImpl = (ContentFragmentImpl)pageRootContentFragmentImpl.getNonTemplateLayoutFragment();
+            }
             if ((pageRootContentFragmentImpl == null) || pageRootContentFragmentImpl.isLocked())
             {
                 throw new IllegalArgumentException("Page root content fragment not found or is locked");                
             }
 
-            // retrieve current page and root fragment from page manager
-            BaseConcretePageElement page = getPage(contentPage.getPage().getPath());
-            BaseFragmentElement rootFragment = page.getRootFragment();
+            // retrieve current page or template and root fragment from page manager
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPage.getPageOrTemplate().getPath());
+            BaseFragmentElement rootFragment = pageOrTemplate.getRootFragment();
             if (!(rootFragment instanceof Fragment))
             {
                 throw new IllegalArgumentException("New Fragment cannot be added to page root fragment");                
@@ -285,10 +442,10 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             fragment.getFragments().add(newFragment);
 
             // update page in page manager
-            updatePage(page);
+            updatePage(pageOrTemplate);
 
             // update content page context
-            ContentFragmentImpl newContentFragmentImpl = newContentFragment(pageRootContentFragmentImpl.getId(), page, null, page, newFragment, false);
+            ContentFragmentImpl newContentFragmentImpl = newContentFragment(pageRootContentFragmentImpl.getId(), pageOrTemplate, null, pageOrTemplate, newFragment, false);
             pageRootContentFragmentImpl.getFragments().add(newContentFragmentImpl);
             return newContentFragmentImpl;
         }
@@ -306,10 +463,10 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         log.debug("PageLayoutComponentImpl.decrementFolderInDocumentOrder() invoked");
         try
         {
-            // retrieve current page and parent folders from page manager
+            // retrieve current page or template and parent folders from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-            Folder pageFolder = (Folder)page.getParent();
+            BaseFragmentsElement pageOrTemplates = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            Folder pageFolder = (Folder)pageOrTemplates.getParent();
             Folder documentOrderingFolder = (Folder)pageFolder.getParent();
             if (documentOrderingFolder != null)
             {
@@ -338,16 +495,16 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         log.debug("PageLayoutComponentImpl.decrementInDocumentOrder() invoked");
         try
         {
-            // retrieve current page and parent folder from page manager
+            // retrieve current page or template and parent folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-            Folder documentOrderingFolder = (Folder)page.getParent();
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            Folder documentOrderingFolder = (Folder)pageOrTemplate.getParent();
 
             // check for edit permission
             documentOrderingFolder.checkAccess(JetspeedActions.EDIT);
 
             // shift document order and update document ordering in page manager
-            boolean update = shiftDocumentOrder(documentOrderingFolder, page.getName(), page.getType(), true);
+            boolean update = shiftDocumentOrder(documentOrderingFolder, pageOrTemplate.getName(), pageOrTemplate.getType(), true);
             if (update)
             {
                 pageManager.updateFolder(documentOrderingFolder);
@@ -367,10 +524,10 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         log.debug("PageLayoutComponentImpl.incrementFolderInDocumentOrder() invoked");
         try
         {
-            // retrieve current page and parent folders from page manager
+            // retrieve current page or template and parent folders from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-            Folder pageFolder = (Folder)page.getParent();
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            Folder pageFolder = (Folder)pageOrTemplate.getParent();
             Folder documentOrderingFolder = (Folder)pageFolder.getParent();
             if (documentOrderingFolder != null)
             {
@@ -399,16 +556,16 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         log.debug("PageLayoutComponentImpl.incrementInDocumentOrder() invoked");
         try
         {
-            // retrieve current page and parent folder from page manager
+            // retrieve current page or template and parent folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-            Folder documentOrderingFolder = (Folder)page.getParent();
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            Folder documentOrderingFolder = (Folder)pageOrTemplate.getParent();
 
             // check for edit permission
             documentOrderingFolder.checkAccess(JetspeedActions.EDIT);
 
             // shift document order and update document ordering in page manager
-            boolean update = shiftDocumentOrder(documentOrderingFolder, page.getName(), page.getType(), false);
+            boolean update = shiftDocumentOrder(documentOrderingFolder, pageOrTemplate.getName(), pageOrTemplate.getType(), false);
             if (update)
             {
                 pageManager.updateFolder(documentOrderingFolder);
@@ -446,32 +603,33 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 throw new IllegalArgumentException("Fragment ids involved in move and page not consistent or locked");
             }
+            if ((fromContentFragmentImpl.getDefinition() == null) || (contentFragmentImpl.getDefinition() == null) || (toContentFragmentImpl.getDefinition() == null))
+            {
+                throw new IllegalArgumentException("Transient content fragments are not mutable");
+            }            
             if (!fromContentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()) ||
+                !contentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()) ||
                 !toContentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()))
             {
                 throw new IllegalArgumentException("Cannot use move fragment operation between pages");                
             }
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()));
-            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
-            {
-                throw new IllegalArgumentException("Fragment reference and page not consistent or mutable");
-            }
+            boolean contentFragmentIsReference = (contentFragmentImpl.getReference() != null);
             
-            // retrieve current page and fragments from page manager
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-            BaseFragmentElement fromFragmentElement = page.getFragmentById(fromContentFragmentImpl.getFragment().getId());
+            // retrieve current page or template and fragments from page manager
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            BaseFragmentElement fromFragmentElement = pageOrTemplate.getFragmentById(fromContentFragmentImpl.getFragment().getId());
             if (!(fromFragmentElement instanceof Fragment))
             {
                 throw new IllegalArgumentException("Move from fragmentId and page not consistent");
             }
             Fragment fromFragment = (Fragment)fromFragmentElement;
-            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
+            String pageFragmentId = (contentFragmentIsReference ? contentFragmentImpl.getReference().getId() : contentFragmentImpl.getFragment().getId());
             BaseFragmentElement fragment = fromFragment.getFragmentById(pageFragmentId);
             if (fragment == null)
             {
                 throw new IllegalArgumentException("Move fragmentId and page not consistent");                
             }
-            BaseFragmentElement toFragmentElement = page.getFragmentById(toContentFragmentImpl.getFragment().getId());
+            BaseFragmentElement toFragmentElement = pageOrTemplate.getFragmentById(toContentFragmentImpl.getFragment().getId());
             if (!(toFragmentElement instanceof Fragment))
             {
                 throw new IllegalArgumentException("Move to fragmentId and page not consistent");
@@ -479,12 +637,12 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             Fragment toFragment = (Fragment)toFragmentElement;
 
             // check for edit permission
-            page.checkAccess(JetspeedActions.EDIT);
+            pageOrTemplate.checkAccess(JetspeedActions.EDIT);
 
             // move page fragment and update page in page manager
             fragment = fromFragment.removeFragmentById(fragment.getId());
             toFragment.getFragments().add(fragment);
-            updatePage(page);
+            updatePage(pageOrTemplate);
 
             // update content context
             fromContentFragmentImpl.removeFragmentById(fragmentId);
@@ -499,19 +657,22 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.layout.PageLayoutComponent#newContentPage(org.apache.jetspeed.om.page.Page, org.apache.jetspeed.om.page.PageTemplate, java.util.Map)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#newContentPage(org.apache.jetspeed.om.page.BaseFragmentsElement, org.apache.jetspeed.om.page.PageTemplate, java.util.Map)
      */
-    public ContentPage newContentPage(BaseConcretePageElement page, PageTemplate pageTemplate, Map fragmentDefinitions)
+    public ContentPage newContentPage(BaseFragmentsElement pageOrTemplate, PageTemplate pageTemplate, Map fragmentDefinitions)
     {
         // generate content page
-        String contentPageId = page.getId();
-        ContentPageImpl contentPageImpl = new ContentPageImpl(this, contentPageId, page, pageTemplate, fragmentDefinitions);
+        BaseConcretePageElement concretePage = ((pageOrTemplate instanceof BaseConcretePageElement) ? (BaseConcretePageElement)pageOrTemplate : null);
+        DynamicPage dynamicPage = ((pageOrTemplate instanceof DynamicPage) ? (DynamicPage)pageOrTemplate : null);
+        FragmentDefinition fragmentDefinition = (((concretePage == null) && (pageOrTemplate instanceof FragmentDefinition)) ? (FragmentDefinition)pageOrTemplate : null);
+        String contentPageId = pageOrTemplate.getId();
+        ContentPageImpl contentPageImpl = new ContentPageImpl(this, contentPageId, pageOrTemplate, pageTemplate, fragmentDefinitions);
         // set/merge page attributes
-        mergeContentPageAttributes(contentPageImpl, page);
-        contentPageImpl.setName(page.getName());
-        contentPageImpl.setPath(page.getPath());
-        contentPageImpl.setUrl(page.getUrl());
-        contentPageImpl.setHidden(page.isHidden());        
+        mergeContentPageAttributes(contentPageImpl, pageOrTemplate);
+        contentPageImpl.setName(pageOrTemplate.getName());
+        contentPageImpl.setPath(pageOrTemplate.getPath());
+        contentPageImpl.setUrl(pageOrTemplate.getUrl());
+        contentPageImpl.setHidden(pageOrTemplate.isHidden());        
         // merge template attributes
         mergeContentPageAttributes(contentPageImpl, pageTemplate);            
         // set effective default detectors from merged default
@@ -520,7 +681,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         String effectiveLayoutDefaultDecorator = contentPageImpl.getDefaultDecorator(Fragment.LAYOUT);
         if (effectiveLayoutDefaultDecorator == null)
         {
-            effectiveLayoutDefaultDecorator = page.getEffectiveDefaultDecorator(Fragment.LAYOUT);
+            if (concretePage != null)
+            {
+                effectiveLayoutDefaultDecorator = concretePage.getEffectiveDefaultDecorator(Fragment.LAYOUT);
+            }
+            else if (pageOrTemplate.getParent() != null)
+            {
+                effectiveLayoutDefaultDecorator = ((Folder)pageOrTemplate.getParent()).getEffectiveDefaultDecorator(Fragment.LAYOUT);
+            }
         }
         if (effectiveLayoutDefaultDecorator != null)
         {
@@ -533,7 +701,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         String effectivePortletDefaultDecorator = contentPageImpl.getDefaultDecorator(Fragment.PORTLET);
         if (effectivePortletDefaultDecorator == null)
         {
-            effectivePortletDefaultDecorator = page.getEffectiveDefaultDecorator(Fragment.PORTLET);
+            if (concretePage != null)
+            {
+                effectivePortletDefaultDecorator = concretePage.getEffectiveDefaultDecorator(Fragment.PORTLET);
+            }
+            else if (pageOrTemplate.getParent() != null)
+            {
+                effectiveLayoutDefaultDecorator = ((Folder)pageOrTemplate.getParent()).getEffectiveDefaultDecorator(Fragment.PORTLET);
+            }
         }
         if (effectivePortletDefaultDecorator != null)
         {
@@ -544,31 +719,50 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             effectiveDefaultDecorators.put(Fragment.PORTLET, effectivePortletDefaultDecorator);
         }
         contentPageImpl.setEffectiveDefaultDecorators(effectiveDefaultDecorators);
+        if (dynamicPage != null)
+        {
+            contentPageImpl.setContentType(dynamicPage.getContentType());
+            contentPageImpl.setInheritable(dynamicPage.isInheritable());
+        }
+        if (fragmentDefinition != null)
+        {
+            contentPageImpl.setDefId(fragmentDefinition.getDefId());
+        }
         
         log.debug("PageLayoutComponentImpl.newContentPage(): construct ContentPage: id="+contentPageImpl.getId()+", path="+contentPageImpl.getPath());
         
         // generate root and nested content fragments
         BaseFragmentsElement definition = null;
         BaseFragmentElement rootFragment = null;
-        boolean rootLocked = false;
+        boolean rootTemplate = false;
         if (pageTemplate != null)
         {
             definition = pageTemplate;
             rootFragment = definition.getRootFragment();
-            rootLocked = true;
+            rootTemplate = true;
         }
         if (rootFragment == null)
         {
-            definition = page;
+            definition = pageOrTemplate;
             rootFragment = definition.getRootFragment();
         }
         if (rootFragment != null)
         {
-            ContentFragmentImpl rootContentFragmentImpl = newContentFragment(null, page, fragmentDefinitions, definition, rootFragment, rootLocked);
-            if (rootContentFragmentImpl != null)
+            // generate content page/fragment hierarchy for page            
+            ContentFragmentImpl rootContentFragmentImpl = newContentFragment(null, pageOrTemplate, fragmentDefinitions, definition, rootFragment, rootTemplate);
+            // ensure that page/fragment hierarchy root is a layout
+            // portlet by generating a transient locked parent
+            // layout fragment if necessary
+            if (!rootContentFragmentImpl.getType().equals(ContentFragment.LAYOUT))
             {
-                contentPageImpl.setRootFragment(rootContentFragmentImpl);
+                ContentFragmentImpl layoutContentFragmentImpl = newContentFragment("", pageOrTemplate, null, null, null, null, rootTemplate, true);
+                layoutContentFragmentImpl.setType(ContentFragment.LAYOUT);
+                layoutContentFragmentImpl.setName(defaultLayoutPortletName);
+                layoutContentFragmentImpl.getFragments().add(rootContentFragmentImpl);
+                rootContentFragmentImpl = layoutContentFragmentImpl;                
             }
+            // save content page/fragment hierarchy
+            contentPageImpl.setRootFragment(rootContentFragmentImpl);
         }
 
         log.debug("PageLayoutComponentImpl.newContentPage(): constructed ContentPage: id="+contentPageImpl.getId());
@@ -583,10 +777,11 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         log.debug("PageLayoutComponentImpl.newSiblingFolder() invoked");
         try
         {
-            // retrieve current page and parent folder from page manager
+            // retrieve current page or template and parent folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-            Folder folder = (Folder)page.getParent();
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            BasePageElement page = ((pageOrTemplate instanceof BasePageElement) ? (BasePageElement)pageOrTemplate : null);
+            Folder folder = (Folder)pageOrTemplate.getParent();
             
             // check for edit permission
             folder.checkAccess(JetspeedActions.EDIT);
@@ -606,15 +801,20 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 newFolder.setShortTitle(folderShortTitle);
             }
-            String defaultLayoutDecorator = page.getDefaultDecorator(Fragment.LAYOUT);
-            if (defaultLayoutDecorator != null)
+            String defaultLayoutDecorator = null;
+            String defaultPortletDecorator = null;
+            if (page != null)
             {
-                newFolder.setDefaultDecorator(defaultLayoutDecorator, Fragment.LAYOUT);
-            }
-            String defaultPortletDecorator = page.getDefaultDecorator(Fragment.PORTLET);
-            if (defaultPortletDecorator != null)
-            {
-                newFolder.setDefaultDecorator(defaultPortletDecorator, Fragment.PORTLET);
+                defaultLayoutDecorator = page.getDefaultDecorator(Fragment.LAYOUT);
+                if (defaultLayoutDecorator != null)
+                {
+                    newFolder.setDefaultDecorator(defaultLayoutDecorator, Fragment.LAYOUT);
+                }
+                defaultPortletDecorator = page.getDefaultDecorator(Fragment.PORTLET);
+                if (defaultPortletDecorator != null)
+                {
+                    newFolder.setDefaultDecorator(defaultPortletDecorator, Fragment.PORTLET);
+                }
             }
             
             // update new folder in page manager
@@ -688,13 +888,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
      */
     public void newSiblingPage(ContentPage contentPage, String pageName, String layoutName, String pageTitle, String pageShortTitle)
     {
-        log.debug("PageLayoutComponentImpl.newSiblingFolder() invoked");
+        log.debug("PageLayoutComponentImpl.newSiblingPage() invoked");
         try
         {
-            // retrieve current page and parent folder from page manager
+            // retrieve current page or template and parent folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-            Folder folder = (Folder)page.getParent();
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            BasePageElement page = ((pageOrTemplate instanceof BasePageElement) ? (BasePageElement)pageOrTemplate : null);
+            Folder folder = (Folder)pageOrTemplate.getParent();
 
             // check for edit permission
             folder.checkAccess(JetspeedActions.EDIT);
@@ -718,15 +919,20 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 newPage.setShortTitle(pageShortTitle);
             }
-            String defaultLayoutDecorator = page.getDefaultDecorator(Fragment.LAYOUT);
-            if (defaultLayoutDecorator != null)
+            String defaultLayoutDecorator = null;
+            String defaultPortletDecorator = null;
+            if (page != null)
             {
-                newPage.setDefaultDecorator(defaultLayoutDecorator, Fragment.LAYOUT);
-            }
-            String defaultPortletDecorator = page.getDefaultDecorator(Fragment.PORTLET);
-            if (defaultPortletDecorator != null)
-            {
-                newPage.setDefaultDecorator(defaultPortletDecorator, Fragment.PORTLET);
+                defaultLayoutDecorator = page.getDefaultDecorator(Fragment.LAYOUT);
+                if (defaultLayoutDecorator != null)
+                {
+                    newPage.setDefaultDecorator(defaultLayoutDecorator, Fragment.LAYOUT);
+                }
+                defaultPortletDecorator = page.getDefaultDecorator(Fragment.PORTLET);
+                if (defaultPortletDecorator != null)
+                {
+                    newPage.setDefaultDecorator(defaultPortletDecorator, Fragment.PORTLET);
+                }
             }
 
             // update new page in page manager
@@ -754,6 +960,188 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#newSiblingDynamicPage(org.apache.jetspeed.om.page.ContentPage, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void newSiblingDynamicPage(ContentPage contentPage, String pageName, String contentType, String layoutName, String pageTitle, String pageShortTitle)
+    {
+        log.debug("PageLayoutComponentImpl.newSiblingDynamicPage() invoked");
+        try
+        {
+            // retrieve current page or template and parent folder from page manager
+            ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            BasePageElement page = ((pageOrTemplate instanceof BasePageElement) ? (BasePageElement)pageOrTemplate : null);
+            Folder folder = (Folder)pageOrTemplate.getParent();
+
+            // check for edit permission
+            folder.checkAccess(JetspeedActions.EDIT);
+
+            // construct new sibling dynamic page
+            String newDynamicPagePath = folder.getPath()+(folder.getPath().endsWith(Folder.PATH_SEPARATOR) ? "" : Folder.PATH_SEPARATOR)+pageName+DynamicPage.DOCUMENT_TYPE;
+            if (pageManager.dynamicPageExists(newDynamicPagePath))
+            {
+                throw new IllegalArgumentException("Dynamic page "+newDynamicPagePath+" exists");
+            }
+            DynamicPage newDynamicPage = pageManager.newDynamicPage(newDynamicPagePath);
+            newDynamicPage.setContentType(!Utils.isNull(contentType) ? contentType : "*");
+            if (!Utils.isNull(layoutName) && (newDynamicPage.getRootFragment() instanceof Fragment))
+            {
+                ((Fragment)newDynamicPage.getRootFragment()).setName(layoutName);
+            }
+            if (!Utils.isNull(pageTitle))
+            {
+                newDynamicPage.setTitle(pageTitle);
+            }
+            if (!Utils.isNull(pageShortTitle))
+            {
+                newDynamicPage.setShortTitle(pageShortTitle);
+            }
+            String defaultLayoutDecorator = null;
+            String defaultPortletDecorator = null;
+            if (page != null)
+            {
+                defaultLayoutDecorator = page.getDefaultDecorator(Fragment.LAYOUT);
+                if (defaultLayoutDecorator != null)
+                {
+                    newDynamicPage.setDefaultDecorator(defaultLayoutDecorator, Fragment.LAYOUT);
+                }
+                defaultPortletDecorator = page.getDefaultDecorator(Fragment.PORTLET);
+                if (defaultPortletDecorator != null)
+                {
+                    newDynamicPage.setDefaultDecorator(defaultPortletDecorator, Fragment.PORTLET);
+                }
+            }
+
+            // update new dynamic page in page manager
+            pageManager.updateDynamicPage(newDynamicPage);
+        }
+        catch (Exception e)
+        {
+            throw new PageLayoutComponentException("Unexpected exception: "+e, e);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#newSiblingPageTemplate(org.apache.jetspeed.om.page.ContentPage, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void newSiblingPageTemplate(ContentPage contentPage, String templateName, String layoutName, String templateTitle, String templateShortTitle)
+    {
+        log.debug("PageLayoutComponentImpl.newSiblingPageTemplate() invoked");
+        try
+        {
+            // retrieve current page or template and parent folder from page manager
+            ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            BasePageElement page = ((pageOrTemplate instanceof BasePageElement) ? (BasePageElement)pageOrTemplate : null);
+            Folder folder = (Folder)pageOrTemplate.getParent();
+
+            // check for edit permission
+            folder.checkAccess(JetspeedActions.EDIT);
+
+            // construct new sibling page template
+            String newPageTemplatePath = folder.getPath()+(folder.getPath().endsWith(Folder.PATH_SEPARATOR) ? "" : Folder.PATH_SEPARATOR)+templateName+PageTemplate.DOCUMENT_TYPE;
+            if (pageManager.pageTemplateExists(newPageTemplatePath))
+            {
+                throw new IllegalArgumentException("Page template "+newPageTemplatePath+" exists");
+            }
+            PageTemplate newPageTemplate = pageManager.newPageTemplate(newPageTemplatePath);
+            if (newPageTemplate.getRootFragment() instanceof Fragment)
+            {
+                Fragment rootFragment = (Fragment)newPageTemplate.getRootFragment();
+                if (!Utils.isNull(layoutName))
+                {
+                    rootFragment.setName(layoutName);
+                }
+                rootFragment.getFragments().add(pageManager.newPageFragment());
+            }
+            if (!Utils.isNull(templateTitle))
+            {
+                newPageTemplate.setTitle(templateTitle);
+            }
+            if (!Utils.isNull(templateShortTitle))
+            {
+                newPageTemplate.setShortTitle(templateShortTitle);
+            }
+            String defaultLayoutDecorator = null;
+            String defaultPortletDecorator = null;
+            if (page != null)
+            {
+                defaultLayoutDecorator = page.getDefaultDecorator(Fragment.LAYOUT);
+                if (defaultLayoutDecorator != null)
+                {
+                    newPageTemplate.setDefaultDecorator(defaultLayoutDecorator, Fragment.LAYOUT);
+                }
+                defaultPortletDecorator = page.getDefaultDecorator(Fragment.PORTLET);
+                if (defaultPortletDecorator != null)
+                {
+                    newPageTemplate.setDefaultDecorator(defaultPortletDecorator, Fragment.PORTLET);
+                }
+            }
+
+            // update new page template in page manager
+            pageManager.updatePageTemplate(newPageTemplate);
+        }
+        catch (Exception e)
+        {
+            throw new PageLayoutComponentException("Unexpected exception: "+e, e);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#newSiblingFragmentDefinition(org.apache.jetspeed.om.page.ContentPage, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void newSiblingFragmentDefinition(ContentPage contentPage, String definitionName, String defId, String portletName, String definitionTitle, String definitionShortTitle)
+    {
+        log.debug("PageLayoutComponentImpl.newSiblingFragmentDefinition() invoked");
+        try
+        {
+            // retrieve current page or template and parent folder from page manager
+            ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            Folder folder = (Folder)pageOrTemplate.getParent();
+
+            // check for edit permission
+            folder.checkAccess(JetspeedActions.EDIT);
+
+            // construct new sibling fragment definition
+            String newFragmentDefinitionPath = folder.getPath()+(folder.getPath().endsWith(Folder.PATH_SEPARATOR) ? "" : Folder.PATH_SEPARATOR)+definitionName+FragmentDefinition.DOCUMENT_TYPE;
+            if (pageManager.fragmentDefinitionExists(newFragmentDefinitionPath))
+            {
+                throw new IllegalArgumentException("PageTemplate "+newFragmentDefinitionPath+" exists");
+            }
+            FragmentDefinition newFragmentDefinition = pageManager.newFragmentDefinition(newFragmentDefinitionPath);
+            if (newFragmentDefinition.getRootFragment() instanceof Fragment)
+            {
+                Fragment rootFragment = (Fragment)newFragmentDefinition.getRootFragment();                
+                if (!Utils.isNull(defId))
+                {
+                    rootFragment.setId(defId);
+                }
+                if (!Utils.isNull(portletName))
+                {
+                    rootFragment.setType(Fragment.PORTLET);
+                    rootFragment.setName(portletName);
+                }
+            }
+            if (!Utils.isNull(definitionTitle))
+            {
+                newFragmentDefinition.setTitle(definitionTitle);
+            }
+            if (!Utils.isNull(definitionShortTitle))
+            {
+                newFragmentDefinition.setShortTitle(definitionShortTitle);
+            }
+
+            // update new fragment definition in page manager
+            pageManager.updateFragmentDefinition(newFragmentDefinition);
+        }
+        catch (Exception e)
+        {
+            throw new PageLayoutComponentException("Unexpected exception: "+e, e);
+        }
+    }
+    
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.layout.PageLayoutComponent#remove(org.apache.jetspeed.om.page.ContentPage)
      */
     public void remove(ContentPage contentPage)
@@ -761,17 +1149,17 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         log.debug("PageLayoutComponentImpl.remove() invoked");
         try
         {
-            // retrieve current page and document ordering folder from page manager
+            // retrieve current page or template and document ordering folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-            String documentName = page.getName();
-            Folder documentOrderingFolder = (Folder)page.getParent();
+            BaseFragmentsElement pageOrTemplates = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            String documentName = pageOrTemplates.getName();
+            Folder documentOrderingFolder = (Folder)pageOrTemplates.getParent();
 
             // check for edit permission
-            page.checkAccess(JetspeedActions.EDIT);
+            pageOrTemplates.checkAccess(JetspeedActions.EDIT);
 
             // remove in page manager
-            removePage(page);
+            removePage(pageOrTemplates);
 
             // check for ordering folder edit permission
             documentOrderingFolder.checkAccess(JetspeedActions.EDIT);
@@ -798,10 +1186,10 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         log.debug("PageLayoutComponentImpl.removeFolder() invoked");
         try
         {
-            // retrieve current page and parent folder from page manager
+            // retrieve current page or template and parent folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-            Folder folder = (Folder)page.getParent();
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            Folder folder = (Folder)pageOrTemplate.getParent();
             String documentName = folder.getName();
             Folder documentOrderingFolder = (Folder)folder.getParent();
 
@@ -840,25 +1228,25 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
             ContentFragmentImpl [] parentContentFragmentImpl = new ContentFragmentImpl[]{null};
             ContentFragmentImpl contentFragmentImpl = contentPageImpl.getFragmentById(fragmentId, parentContentFragmentImpl);
-            if (contentFragmentImpl == null)
+            if (contentFragmentImpl.getDefinition() == null)
+            {
+                throw new IllegalArgumentException("Transient content fragments are not mutable");
+            }            
+            if ((contentFragmentImpl == null) || !contentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()))
             {
                 throw new IllegalArgumentException("FragmentId and page not consistent");                
             }
-            if ((parentContentFragmentImpl[0] != null) && (!parentContentFragmentImpl[0].getDefinition().getPath().equals(contentPageImpl.getPage().getPath()) ||
+            if ((parentContentFragmentImpl[0] != null) && (!parentContentFragmentImpl[0].getDefinition().getPath().equals(contentPageImpl.getPageOrTemplate().getPath()) ||
                                                            parentContentFragmentImpl[0].isLocked()))
             {
                 throw new IllegalArgumentException("Parent content fragment and page not consistent or locked");                
             }
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentPageImpl.getPath()));
-            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
-            {
-                throw new IllegalArgumentException("Fragment reference and page not consistent or mutable");
-            }
+            boolean contentFragmentIsReference = (contentFragmentImpl.getReference() != null);
             
-            // retrieve current page and fragment from page manager
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
-            BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
+            // retrieve current page or template and fragment from page manager
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            String pageFragmentId = (contentFragmentIsReference ? contentFragmentImpl.getReference().getId() : contentFragmentImpl.getFragment().getId());
+            BaseFragmentElement fragment = pageOrTemplate.getFragmentById(pageFragmentId);
             if (fragment == null)
             {
                 throw new IllegalArgumentException("Remove fragmentId and page not consistent");                
@@ -868,14 +1256,67 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             fragment.checkAccess(JetspeedActions.EDIT);
             
             // remove fragment and update in page manager
-            boolean update = (page.removeFragmentById(pageFragmentId) != null);
+            boolean update = (pageOrTemplate.removeFragmentById(pageFragmentId) != null);
             if (update)
             {
-                updatePage(page);
+                updatePage(pageOrTemplate);
             }
             
             // update content context
             contentPageImpl.removeFragmentById(fragmentId);
+        }
+        catch (Exception e)
+        {
+            throw new PageLayoutComponentException("Unexpected exception: "+e, e);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#updateContent(org.apache.jetspeed.om.page.ContentPage, java.lang.String, java.lang.Boolean)
+     */
+    public void updateContent(ContentPage contentPage, String contentType, Boolean inheritable)
+    {
+        log.debug("PageLayoutComponentImpl.updateContent() invoked");
+        try
+        {
+            // retrieve current dynamic page from page manager
+            ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            if (!(pageOrTemplate instanceof DynamicPage))
+            {
+                throw new IllegalArgumentException("Content only supported on dynamic pages.");
+            }
+            DynamicPage dynamicPage = (DynamicPage)pageOrTemplate;
+            
+            // check for edit permission
+            dynamicPage.checkAccess(JetspeedActions.EDIT);            
+
+            // update default decorator and page in page manager
+            boolean update = false;
+            if (!Utils.isNull(contentType) && !contentType.equals(dynamicPage.getContentType()))
+            {
+                dynamicPage.setContentType(contentType);
+                update = true;
+            }
+            if ((inheritable != null) && (inheritable.booleanValue() != dynamicPage.isInheritable()))
+            {
+                dynamicPage.setInheritable(inheritable.booleanValue());
+                update = true;
+            }
+            if (update)
+            {
+                updatePage(dynamicPage);
+            }
+
+            // update content context
+            if (!Utils.isNull(contentType))
+            {
+                contentPageImpl.setContentType(contentType);
+            }
+            if (inheritable != null)
+            {
+                contentPageImpl.setInheritable(inheritable.booleanValue());
+            }
         }
         catch (Exception e)
         {
@@ -903,7 +1344,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // of page or page template from page manager and check
             // edit or view access requirements
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            BaseFragmentElement fragment = lookupPageOrPageTemplateFragment(contentFragmentImpl, scope);
+            BaseFragmentElement fragment = lookupPageOrTemplateFragment(contentFragmentImpl, scope);
             
             // update fragment decorator and page or page template in
             // page manager
@@ -945,8 +1386,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             
             // retrieve current page from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            if (!(pageOrTemplate instanceof BasePageElement))
+            {
+                throw new IllegalArgumentException("Decorators only supported on pages.");
+            }
+            BasePageElement page = (BasePageElement)pageOrTemplate;
+            BaseConcretePageElement concretePage = ((page instanceof BaseConcretePageElement) ? (BaseConcretePageElement)page : null);
+            
             // check for edit permission
             page.checkAccess(JetspeedActions.EDIT);            
 
@@ -966,8 +1413,24 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
 
             // update content context
             Map effectiveDefaultDecorators = new HashMap();
-            effectiveDefaultDecorators.put(Fragment.LAYOUT, page.getEffectiveDefaultDecorator(Fragment.LAYOUT));
-            effectiveDefaultDecorators.put(Fragment.PORTLET, page.getEffectiveDefaultDecorator(Fragment.PORTLET));
+            if (concretePage != null)
+            {
+                effectiveDefaultDecorators.put(Fragment.LAYOUT, concretePage.getEffectiveDefaultDecorator(Fragment.LAYOUT));
+                effectiveDefaultDecorators.put(Fragment.PORTLET, concretePage.getEffectiveDefaultDecorator(Fragment.PORTLET));
+            }
+            else
+            {
+                String layoutDefaultDecorator = page.getDefaultDecorator(Fragment.LAYOUT);
+                if (layoutDefaultDecorator != null)
+                {
+                    effectiveDefaultDecorators.put(Fragment.LAYOUT, layoutDefaultDecorator);
+                }
+                String portletDefaultDecorator = page.getDefaultDecorator(Fragment.PORTLET);
+                if (portletDefaultDecorator != null)
+                {
+                    effectiveDefaultDecorators.put(Fragment.PORTLET, portletDefaultDecorator);
+                }
+            }
             contentPageImpl.setEffectiveDefaultDecorators(effectiveDefaultDecorators);
         }
         catch (Exception e)
@@ -984,10 +1447,10 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         log.debug("PageLayoutComponentImpl.updateFolderTitles() invoked");
         try
         {
-            // retrieve current page and parent folder from page manager
+            // retrieve current page or template and parent folder from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
-            Folder folder = (Folder)page.getParent();
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
+            Folder folder = (Folder)pageOrTemplate.getParent();
 
             // check for edit permission
             folder.checkAccess(JetspeedActions.EDIT);            
@@ -1041,15 +1504,18 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             {
                 throw new IllegalArgumentException("Locked content fragment is not mutable");                
             }
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
-            if (!contentFragmentDefinitionIsPage)
+            if (contentFragmentImpl.getDefinition() == null)
             {
-                throw new IllegalArgumentException("Only page fragments can be modified");                
+                throw new IllegalArgumentException("Transient content fragments are not mutable");
+            }            
+            if (!contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPageOrTemplate().getPath()))
+            {
+                throw new IllegalArgumentException("Only page fragments can be modified");
             }
             
-            // retrieve current fragment and page from page manager
-            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
-            BaseFragmentElement foundFragment = page.getFragmentById(contentFragmentImpl.getFragment().getId());
+            // retrieve current fragment and page or template from page manager
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentFragmentImpl.getPageOrTemplate().getPath());
+            BaseFragmentElement foundFragment = pageOrTemplate.getFragmentById(contentFragmentImpl.getFragment().getId());
             if (!(foundFragment instanceof Fragment))
             {
                 throw new IllegalArgumentException("Fragment and page not consistent");                
@@ -1068,7 +1534,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             }
             if (update)
             {
-                updatePage(page);
+                updatePage(pageOrTemplate);
             }
 
             // update content context
@@ -1100,7 +1566,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // of page or page template from page manager and check
             // edit or view access requirements
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            BaseFragmentElement fragment = lookupPageOrPageTemplateFragment(contentFragmentImpl, scope);
+            BaseFragmentElement fragment = lookupPageOrTemplateFragment(contentFragmentImpl, scope);
             
             // update fragment position and page or page template
             // in page manager
@@ -1188,16 +1654,20 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
-            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
+            if (contentFragmentImpl.getDefinition() == null)
             {
-                throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
+                throw new IllegalArgumentException("Transient content fragments are not mutable");
+            }            
+            if (!contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPageOrTemplate().getPath()))
+            {
+                throw new IllegalArgumentException("Only page fragments can be modified");
             }
+            boolean contentFragmentIsReference = (contentFragmentImpl.getReference() != null);
             
-            // retrieve current fragment and page from page manager
-            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
-            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
-            BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
+            // retrieve current fragment and page or template from page manager
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentFragmentImpl.getPageOrTemplate().getPath());
+            String pageFragmentId = (contentFragmentIsReference ? contentFragmentImpl.getReference().getId() : contentFragmentImpl.getFragment().getId());
+            BaseFragmentElement fragment = pageOrTemplate.getFragmentById(pageFragmentId);
             if (fragment == null)
             {
                 throw new IllegalArgumentException("Fragment and page not consistent");                
@@ -1244,7 +1714,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
                     fragment.getPreferences().add(preference);
                 }
             }
-            updatePage(page);
+            updatePage(pageOrTemplate);
 
             // update content context
             contentFragmentImpl.setPreferences(preferences);
@@ -1275,7 +1745,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // of page or page template from page manager and check
             // edit or view access requirements
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            BaseFragmentElement fragment = lookupPageOrPageTemplateFragment(contentFragmentImpl, scope);
+            BaseFragmentElement fragment = lookupPageOrTemplateFragment(contentFragmentImpl, scope);
             
             // update fragment property and page or page template
             // in page manager
@@ -1289,6 +1759,65 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
 
             // update content context
             contentFragmentImpl.setProperty(propName, scope, scopeValue, propValue);
+        }
+        catch (Exception e)
+        {
+            throw new PageLayoutComponentException("Unexpected exception: "+e, e);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.layout.PageLayoutComponent#updateRefId(org.apache.jetspeed.om.page.ContentFragment, java.lang.String)
+     */
+    public void updateRefId(ContentFragment contentFragment, String refId)
+    {
+        log.debug("PageLayoutComponentImpl.updateRefId() invoked");
+        try
+        {
+            // validate content fragment
+            ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
+            if (contentFragmentImpl.getDefinition() == null)
+            {
+                throw new IllegalArgumentException("Transient content fragments are not mutable");
+            }            
+            boolean contentFragmentIsReference = (contentFragmentImpl.getReference() != null);
+            if ((contentFragmentIsReference && !contentFragmentImpl.getReferenceDefinition().getPath().equals(contentFragmentImpl.getPageOrTemplate().getPath())) ||
+                (!contentFragmentIsReference && !contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPageOrTemplate().getPath())))
+            {
+                throw new IllegalArgumentException("Only page fragment references can be modified");
+            }
+            
+            // retrieve current fragment reference and page or template from page manager
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentFragmentImpl.getPageOrTemplate().getPath());
+            String pageFragmentId = (contentFragmentIsReference ? contentFragmentImpl.getReference().getId() : contentFragmentImpl.getFragment().getId());
+            BaseFragmentElement fragment = pageOrTemplate.getFragmentById(pageFragmentId);
+            if (fragment == null)
+            {
+                throw new IllegalArgumentException("Fragment and page not consistent");                
+            }
+            if (!(fragment instanceof FragmentReference))
+            {
+                throw new IllegalArgumentException("Fragment reference required");                
+            }
+            FragmentReference fragmentReference = (FragmentReference)fragment;
+
+            // check for edit permission
+            fragmentReference.checkAccess(JetspeedActions.EDIT);            
+
+            // update fragment reference in page manager
+            boolean update = false;
+            if (!refId.equals(fragmentReference.getRefId()))
+            {
+                fragmentReference.setRefId(refId);
+                update = true;
+            }
+            if (update)
+            {
+                updatePage(pageOrTemplate);
+            }
+
+            // update content context
+            contentFragmentImpl.setRefId(refId);
         }
         catch (Exception e)
         {
@@ -1316,7 +1845,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // of page or page template from page manager and check
             // edit or view access requirements
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            BaseFragmentElement fragment = lookupPageOrPageTemplateFragment(contentFragmentImpl, scope);
+            BaseFragmentElement fragment = lookupPageOrTemplateFragment(contentFragmentImpl, scope);
             
             // update fragment row and column and page or page
             // template in page manager
@@ -1368,16 +1897,20 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         {
             // validate content fragment
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
-            if (!contentFragmentDefinitionIsPage && (contentFragmentImpl.getReference() == null))
+            if (contentFragmentImpl.getDefinition() == null)
             {
-                throw new IllegalArgumentException("Only page fragments and fragment references are mutable");
+                throw new IllegalArgumentException("Transient content fragments are not mutable");
+            }            
+            if (!contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPageOrTemplate().getPath()))
+            {
+                throw new IllegalArgumentException("Only page fragments can be modified");
             }
+            boolean contentFragmentIsReference = (contentFragmentImpl.getReference() != null);
             
-            // retrieve current fragment and page from page manager
-            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
-            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
-            BaseFragmentElement fragment = page.getFragmentById(pageFragmentId);
+            // retrieve current fragment and page or template from page manager
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentFragmentImpl.getPageOrTemplate().getPath());
+            String pageFragmentId = (contentFragmentIsReference ? contentFragmentImpl.getReference().getId() : contentFragmentImpl.getFragment().getId());
+            BaseFragmentElement fragment = pageOrTemplate.getFragmentById(pageFragmentId);
             if (fragment == null)
             {
                 throw new IllegalArgumentException("Fragment and page not consistent");                
@@ -1426,7 +1959,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
                 }
                 fragment.setSecurityConstraints(fragmentConstraints);
             }
-            updatePage(page);
+            updatePage(pageOrTemplate);
 
             // update content context
             contentFragmentImpl.setSecurityConstraints(constraints);
@@ -1458,7 +1991,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // of page or page template from page manager and check
             // edit or view access requirements
             ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl)contentFragment;
-            BaseFragmentElement fragment = lookupPageOrPageTemplateFragment(contentFragmentImpl, scope);
+            BaseFragmentElement fragment = lookupPageOrTemplateFragment(contentFragmentImpl, scope);
 
             // update fragment portlet state and mode and page or page
             // template in page manager
@@ -1508,34 +2041,34 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         log.debug("PageLayoutComponentImpl.updateTitles() invoked");
         try
         {
-            // retrieve current page from page manager
+            // retrieve current page or template from page manager
             ContentPageImpl contentPageImpl = (ContentPageImpl)contentPage;
-            BaseConcretePageElement page = getPage(contentPageImpl.getPage().getPath());
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentPageImpl.getPageOrTemplate().getPath());
 
             // check for edit permission
-            page.checkAccess(JetspeedActions.EDIT);            
+            pageOrTemplate.checkAccess(JetspeedActions.EDIT);            
 
             // update titles and page in page manager
             boolean update = false;
             if (!Utils.isNull(title))
             {
-                if (!title.equals(page.getTitle()))
+                if (!title.equals(pageOrTemplate.getTitle()))
                 {
-                    page.setTitle(title);
+                    pageOrTemplate.setTitle(title);
                     update = true;
                 }
             }
             if (!Utils.isNull(shortTitle))
             {
-                if (!shortTitle.equals(page.getShortTitle()))
+                if (!shortTitle.equals(pageOrTemplate.getShortTitle()))
                 {
-                    page.setShortTitle(shortTitle);
+                    pageOrTemplate.setShortTitle(shortTitle);
                     update = true;
                 }
             }
             if (update)
             {
-                updatePage(page);
+                updatePage(pageOrTemplate);
             }
             
             // update content context
@@ -1554,41 +2087,21 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         }
     }
     
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.layout.PageLayoutComponent#getUnlockedRootFragment(org.apache.jetspeed.om.page.ContentPage)
-     */
-    public ContentFragment getUnlockedRootFragment(ContentPage contentPage)
-    {
-        ContentFragment rootFragment = contentPage.getRootFragment();
-        
-        if (rootFragment.isLocked())
-        {
-            for (ContentFragment f : (List<ContentFragment>) rootFragment.getFragments())
-            {
-                if (!f.isLocked() && f.getType().equals(ContentFragment.LAYOUT))
-                {
-                    return f;
-                }
-            }
-        }
-        
-        return rootFragment;
-    }
-    
     /**
-     * Merge content page attributes from source PSML page.
+     * Merge content page attributes from source PSML page or template.
      * 
      * @param contentPageImpl target content page
-     * @param page source PSML page
+     * @param pageOrTemplate source PSML page or template
      */
-    private void mergeContentPageAttributes(ContentPageImpl contentPageImpl, BasePageElement page)
+    private void mergeContentPageAttributes(ContentPageImpl contentPageImpl, BaseFragmentsElement pageOrTemplate)
     {
         // merge content page attributes
-        if ((contentPageImpl != null) && (page != null))
+        if ((contentPageImpl != null) && (pageOrTemplate != null))
         {
-            if ((page.getMetadata() != null) && (page.getMetadata().getFields() != null))
+            BasePageElement page = ((pageOrTemplate instanceof BasePageElement) ? (BasePageElement)pageOrTemplate : null);
+            if ((pageOrTemplate.getMetadata() != null) && (pageOrTemplate.getMetadata().getFields() != null))
             {
-                Iterator fieldIter = page.getMetadata().getFields().iterator();
+                Iterator fieldIter = pageOrTemplate.getMetadata().getFields().iterator();
                 while (fieldIter.hasNext())
                 {
                     LocalizedField field = (LocalizedField)fieldIter.next();
@@ -1614,56 +2127,59 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
                     }
                 }
             }
-            String layoutDefaultDecorator = contentPageImpl.getDefaultDecorator(Fragment.LAYOUT);
-            String portletDefaultDecorator = contentPageImpl.getDefaultDecorator(Fragment.PORTLET);
-            Map defaultDecorators = null;
-            if (layoutDefaultDecorator == null)
+            if (page != null)
             {
-                layoutDefaultDecorator = page.getDefaultDecorator(Fragment.LAYOUT);
-                if (layoutDefaultDecorator != null)
+                String layoutDefaultDecorator = contentPageImpl.getDefaultDecorator(Fragment.LAYOUT);
+                String portletDefaultDecorator = contentPageImpl.getDefaultDecorator(Fragment.PORTLET);
+                Map defaultDecorators = null;
+                if (layoutDefaultDecorator == null)
                 {
-                    if (defaultDecorators == null)
-                    {
-                        defaultDecorators = new HashMap();
-                    }
-                    defaultDecorators.put(Fragment.LAYOUT, layoutDefaultDecorator);
-                    if (portletDefaultDecorator != null)
-                    {
-                        defaultDecorators.put(Fragment.PORTLET, portletDefaultDecorator);
-                    }
-                }
-            }
-            if (portletDefaultDecorator == null)
-            {
-                portletDefaultDecorator = page.getDefaultDecorator(Fragment.PORTLET);
-                if (portletDefaultDecorator != null)
-                {
-                    if (defaultDecorators == null)
-                    {
-                        defaultDecorators = new HashMap();
-                    }
-                    defaultDecorators.put(Fragment.PORTLET, portletDefaultDecorator);
+                    layoutDefaultDecorator = page.getDefaultDecorator(Fragment.LAYOUT);
                     if (layoutDefaultDecorator != null)
                     {
+                        if (defaultDecorators == null)
+                        {
+                            defaultDecorators = new HashMap();
+                        }
                         defaultDecorators.put(Fragment.LAYOUT, layoutDefaultDecorator);
+                        if (portletDefaultDecorator != null)
+                        {
+                            defaultDecorators.put(Fragment.PORTLET, portletDefaultDecorator);
+                        }
                     }
                 }
-            }
-            if (defaultDecorators != null)
-            {
-                contentPageImpl.setDefaultDecorators(defaultDecorators);
+                if (portletDefaultDecorator == null)
+                {
+                    portletDefaultDecorator = page.getDefaultDecorator(Fragment.PORTLET);
+                    if (portletDefaultDecorator != null)
+                    {
+                        if (defaultDecorators == null)
+                        {
+                            defaultDecorators = new HashMap();
+                        }
+                        defaultDecorators.put(Fragment.PORTLET, portletDefaultDecorator);
+                        if (layoutDefaultDecorator != null)
+                        {
+                            defaultDecorators.put(Fragment.LAYOUT, layoutDefaultDecorator);
+                        }
+                    }
+                }
+                if (defaultDecorators != null)
+                {
+                    contentPageImpl.setDefaultDecorators(defaultDecorators);
+                }
             }
             if (contentPageImpl.getShortTitle() == null)
             {
-                contentPageImpl.setShortTitle(page.getShortTitle());
+                contentPageImpl.setShortTitle(pageOrTemplate.getShortTitle());
             }
-            if (contentPageImpl.getSkin() == null)
+            if ((contentPageImpl.getSkin() == null) && (page != null))
             {
                 contentPageImpl.setSkin(page.getSkin());
             }
             if (contentPageImpl.getTitle() == null)
             {
-                contentPageImpl.setTitle(page.getTitle());
+                contentPageImpl.setTitle(pageOrTemplate.getTitle());
             }
         }
     }
@@ -1674,14 +2190,14 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
      * unique ids are generated per fragment path.
      * 
      * @param parentId content fragment parent id or null 
-     * @param page PSML page
+     * @param pageOrTemplate PSML page or template
      * @param fragmentDefinitions PSML fragment definitions
      * @param definition PSML fragment page, page template, or fragments definition
      * @param fragment PSML fragment
-     * @param locked locked fragment flag
+     * @param template template fragment flag
      * @return content fragment hierarchy or null if undefined
      */
-    private ContentFragmentImpl newContentFragment(String parentId, BaseConcretePageElement page, Map fragmentDefinitions, BaseFragmentsElement definition, BaseFragmentElement fragment, boolean locked)
+    private ContentFragmentImpl newContentFragment(String parentId, BaseFragmentsElement pageOrTemplate, Map fragmentDefinitions, BaseFragmentsElement definition, BaseFragmentElement fragment, boolean template)
     {
         // generate content fragment hierarchy for specific fragment;
         // merges fragment hierarchy and attributes from fragments,
@@ -1694,7 +2210,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // construct content fragment to reflect fragment hierarchy
             Fragment fragmentFragment = (Fragment)fragment;
             contentFragmentId = ((parentId != null) ? parentId+CONTENT_FRAGMENT_ID_SEPARATOR+fragmentFragment.getId() : fragmentFragment.getId());
-            contentFragmentImpl = newContentFragment(contentFragmentId, page, fragmentDefinitions, definition, fragmentFragment, null, null, locked);
+            contentFragmentImpl = newContentFragment(contentFragmentId, pageOrTemplate, fragmentDefinitions, definition, fragmentFragment, null, null, template, template);
             // set content fragment attributes
             mergeContentFragmentAttributes(contentFragmentImpl, fragmentFragment);
             // set content fragment security constraints
@@ -1702,39 +2218,75 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         }
         else if (fragment instanceof PageFragment)
         {
-            // consume page fragment and build fragment hierarchy from page
             PageFragment pageFragmentFragment = (PageFragment)fragment;
             contentFragmentId = ((parentId != null) ? parentId+CONTENT_FRAGMENT_ID_SEPARATOR+pageFragmentFragment.getId() : pageFragmentFragment.getId());
-            BaseFragmentElement pageRootFragment = page.getRootFragment();
-            if (pageRootFragment instanceof FragmentReference)
+            // check if page fragment definition in page template
+            // or if in primary page or template
+            if ((definition != pageOrTemplate) || template)
             {
-                // consume top level page fragment reference and build fragment
-                // hierarchy from referenced fragment
-                FragmentReference fragmentReferenceFragment = (FragmentReference)pageRootFragment;
-                contentFragmentId += CONTENT_FRAGMENT_ID_SEPARATOR+fragmentReferenceFragment.getId();
-                Fragment [] fragmentFragment = new Fragment[]{null};
-                contentFragmentImpl = newContentFragment(contentFragmentId, page, fragmentDefinitions, page, fragmentReferenceFragment, fragmentFragment);
-                // inherit page fragment attributes
-                mergeContentFragmentAttributes(contentFragmentImpl, pageFragmentFragment);
-                // inherit fragment reference attributes
-                mergeContentFragmentAttributes(contentFragmentImpl, fragmentReferenceFragment);
-                // set content fragment security constraints
-                setContentFragmentSecurityConstraints(contentFragmentImpl, fragmentReferenceFragment);
-                // merge content fragment attributes
-                mergeContentFragmentAttributes(contentFragmentImpl, fragmentFragment[0]);
+                // consume page fragment and build fragment hierarchy from page
+                BaseFragmentElement pageRootFragment = pageOrTemplate.getRootFragment();
+                if (pageRootFragment instanceof FragmentReference)
+                {
+                    // consume top level page fragment reference and build fragment
+                    // hierarchy from referenced fragment
+                    FragmentReference fragmentReferenceFragment = (FragmentReference)pageRootFragment;
+                    contentFragmentId += CONTENT_FRAGMENT_ID_SEPARATOR+fragmentReferenceFragment.getId();
+                    Fragment [] fragmentFragment = new Fragment[]{null};
+                    contentFragmentImpl = newContentFragment(contentFragmentId, pageOrTemplate, fragmentDefinitions, pageOrTemplate, fragmentReferenceFragment, template, fragmentFragment);
+                    // inherit page fragment attributes
+                    mergeContentFragmentAttributes(contentFragmentImpl, pageFragmentFragment);
+                    // inherit fragment reference attributes
+                    mergeContentFragmentAttributes(contentFragmentImpl, fragmentReferenceFragment);
+                    // set content fragment security constraints
+                    setContentFragmentSecurityConstraints(contentFragmentImpl, fragmentReferenceFragment);
+                    // test resolved reference id
+                    if (fragmentFragment[0] != null)
+                    {
+                        // merge content fragment attributes
+                        mergeContentFragmentAttributes(contentFragmentImpl, fragmentFragment[0]);
+                    }
+                    else
+                    {
+                        // constructed content fragment for fragment reference
+                        // since reference id was not resolved
+                        contentFragmentImpl.setType(ContentFragment.REFERENCE);                        
+                    }
+                }
+                else if (pageRootFragment instanceof Fragment)
+                {
+                    // construct content fragment to reflect page fragment hierarchy
+                    Fragment fragmentFragment = (Fragment)pageRootFragment;
+                    contentFragmentId += CONTENT_FRAGMENT_ID_SEPARATOR+fragmentFragment.getId();
+                    contentFragmentImpl = newContentFragment(contentFragmentId, pageOrTemplate, fragmentDefinitions, pageOrTemplate, fragmentFragment, null, null, false, false);
+                    // inherit page fragment attributes
+                    mergeContentFragmentAttributes(contentFragmentImpl, pageFragmentFragment);
+                    // merge content fragment attributes
+                    mergeContentFragmentAttributes(contentFragmentImpl, fragmentFragment);
+                    // set content fragment security constraints
+                    setContentFragmentSecurityConstraints(contentFragmentImpl, fragmentFragment);
+                }
+                // ensure that page/fragment hierarchy page root is a
+                // layout portlet by generating a transient locked
+                // parent layout fragment if necessary
+                if (!contentFragmentImpl.getType().equals(ContentFragment.LAYOUT))
+                {
+                    ContentFragmentImpl layoutContentFragmentImpl = newContentFragment("", pageOrTemplate, null, null, null, null, false, true);
+                    layoutContentFragmentImpl.setType(ContentFragment.LAYOUT);
+                    layoutContentFragmentImpl.setName(defaultLayoutPortletName);
+                    layoutContentFragmentImpl.getFragments().add(contentFragmentImpl);
+                    contentFragmentImpl = layoutContentFragmentImpl;                
+                }
             }
-            else if (pageRootFragment instanceof Fragment)
+            else
             {
-                // construct content fragment to reflect page fragment hierarchy
-                Fragment fragmentFragment = (Fragment)pageRootFragment;
-                contentFragmentId += CONTENT_FRAGMENT_ID_SEPARATOR+fragmentFragment.getId();
-                contentFragmentImpl = newContentFragment(contentFragmentId, page, fragmentDefinitions, page, fragmentFragment, null, null, false);
-                // inherit page fragment attributes
+                // construct content fragment for page fragment
+                contentFragmentImpl = newContentFragment(contentFragmentId, pageOrTemplate, definition, pageFragmentFragment, null, null, template, true);
+                contentFragmentImpl.setType(ContentFragment.PAGE);
+                // set content fragment attributes
                 mergeContentFragmentAttributes(contentFragmentImpl, pageFragmentFragment);
-                // merge content fragment attributes
-                mergeContentFragmentAttributes(contentFragmentImpl, fragmentFragment);
                 // set content fragment security constraints
-                setContentFragmentSecurityConstraints(contentFragmentImpl, fragmentFragment);
+                setContentFragmentSecurityConstraints(contentFragmentImpl, pageFragmentFragment);
             }
         }
         else if (fragment instanceof FragmentReference)
@@ -1744,13 +2296,23 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             FragmentReference fragmentReferenceFragment = (FragmentReference)fragment;
             contentFragmentId = ((parentId != null) ? parentId+CONTENT_FRAGMENT_ID_SEPARATOR+fragmentReferenceFragment.getId() : fragmentReferenceFragment.getId());
             Fragment [] fragmentFragment = new Fragment[]{null};
-            contentFragmentImpl = newContentFragment(contentFragmentId, page, fragmentDefinitions, definition, fragmentReferenceFragment, fragmentFragment);
+            contentFragmentImpl = newContentFragment(contentFragmentId, pageOrTemplate, fragmentDefinitions, definition, fragmentReferenceFragment, template, fragmentFragment);
             // inherit fragment reference attributes
             mergeContentFragmentAttributes(contentFragmentImpl, fragmentReferenceFragment);
             // set content fragment security constraints
             setContentFragmentSecurityConstraints(contentFragmentImpl, fragmentReferenceFragment);
-            // merge content fragment attributes
-            mergeContentFragmentAttributes(contentFragmentImpl, fragmentFragment[0]);
+            // test resolved reference id
+            if (fragmentFragment[0] != null)
+            {
+                // merge content fragment attributes
+                mergeContentFragmentAttributes(contentFragmentImpl, fragmentFragment[0]);
+            }
+            else
+            {
+                // constructed content fragment for fragment reference
+                // since reference id was not resolved
+                contentFragmentImpl.setType(ContentFragment.REFERENCE);                
+            }
         }
         return contentFragmentImpl;
     }
@@ -1759,44 +2321,76 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
      * Generate content fragment hierarchy from a PSML fragment reference.
      * 
      * @param parentId content fragment parent id 
-     * @param page PSML page
+     * @param pageOrTemplate PSML page or template
      * @param fragmentDefinitions PSML fragment definitions
      * @param definition PSML fragment page, page template, or fragments definition
      * @param fragmentReference PSML fragment
+     * @param template template fragment flag
      * @param fragmentFragment referenced root PSML fragment from fragment definition
      * @return content fragment hierarchy or null if undefined
      */
-    private ContentFragmentImpl newContentFragment(String parentId, BaseConcretePageElement page, Map fragmentDefinitions, BaseFragmentsElement definition, FragmentReference fragmentReference, Fragment [] fragmentFragment)
+    private ContentFragmentImpl newContentFragment(String parentId, BaseFragmentsElement pageOrTemplate, Map fragmentDefinitions, BaseFragmentsElement definition, FragmentReference fragmentReference, boolean template, Fragment [] fragmentFragment)
     {
         // generate content fragment hierarchy for reference fragment from
         // fragment definition root fragment if located
+        ContentFragmentImpl contentFragmentImpl = null;
         FragmentDefinition fragmentDefinition = (FragmentDefinition)((fragmentDefinitions != null) ? fragmentDefinitions.get(fragmentReference.getRefId()) : null);
         if ((fragmentDefinition != null) && (fragmentDefinition.getRootFragment() instanceof Fragment))
         {
             fragmentFragment[0] = (Fragment)fragmentDefinition.getRootFragment();
             String contentFragmentId = parentId+CONTENT_FRAGMENT_ID_SEPARATOR+fragmentFragment[0].getId();                
-            return newContentFragment(contentFragmentId, page, fragmentDefinitions, fragmentDefinition, fragmentFragment[0], definition, fragmentReference, true);
+            contentFragmentImpl = newContentFragment(contentFragmentId, pageOrTemplate, fragmentDefinitions, fragmentDefinition, fragmentFragment[0], definition, fragmentReference, template, true);
         }
-        return null;
+        else
+        {
+            contentFragmentImpl = newContentFragment(parentId, pageOrTemplate, definition, fragmentReference, null, null, template, true);
+        }
+        contentFragmentImpl.setRefId(fragmentReference.getRefId());
+        return contentFragmentImpl;
+    }
+
+    /**
+     * Generate content fragment reference for a PSML fragment reference.
+     * 
+     * @param parentId content fragment parent id 
+     * @param pageOrTemplate PSML page or template
+     * @param definition PSML fragment page, page template, or fragments definition
+     * @param fragmentReference PSML fragment
+     * @param fragmentFragment referenced root PSML fragment from fragment definition
+     * @return content fragment hierarchy or null if undefined
+     */
+    private ContentFragmentImpl newContentFragment(String parentId, BaseFragmentsElement pageOrTemplate, BaseFragmentsElement definition, FragmentReference fragmentReference)
+    {
+        // generate content fragment reference for fragment reference
+        String contentFragmentId = parentId+CONTENT_FRAGMENT_ID_SEPARATOR+fragmentReference.getId();                
+        ContentFragmentImpl contentFragmentImpl = newContentFragment(contentFragmentId, pageOrTemplate, pageOrTemplate, fragmentReference, null, null, false, true);
+        contentFragmentImpl.setType(ContentFragment.REFERENCE);
+        contentFragmentImpl.setRefId(fragmentReference.getRefId());
+        // inherit fragment reference attributes
+        mergeContentFragmentAttributes(contentFragmentImpl, fragmentReference);
+        // set content fragment security constraints
+        setContentFragmentSecurityConstraints(contentFragmentImpl, fragmentReference);
+        return contentFragmentImpl;
     }
 
     /**
      * Generate content fragment hierarchy from a PSML fragment.
      * 
      * @param id content fragment id 
-     * @param page PSML page
+     * @param pageOrTemplate PSML page or template
      * @param fragmentDefinitions PSML fragment definitions
      * @param definition PSML fragment page, page template, or fragments definition
      * @param fragment PSML fragment
      * @param reference PSML fragment reference
      * @param pageReference page fragment reference flag
+     * @param template template fragment flag
      * @param locked locked fragment flag
      * @return content fragment hierarchy or null if undefined
      */
-    private ContentFragmentImpl newContentFragment(String id, BaseConcretePageElement page, Map fragmentDefinitions, BaseFragmentsElement definition, Fragment fragment, BaseFragmentsElement referenceDefinition, FragmentReference reference, boolean locked)
+    private ContentFragmentImpl newContentFragment(String id, BaseFragmentsElement pageOrTemplate, Map fragmentDefinitions, BaseFragmentsElement definition, Fragment fragment, BaseFragmentsElement referenceDefinition, FragmentReference reference, boolean template, boolean locked)
     {
         // generate content fragment hierarchy for fragment
-        ContentFragmentImpl contentFragmentImpl = new ContentFragmentImpl(this, id, page, definition, fragment, referenceDefinition, reference, locked);
+        ContentFragmentImpl contentFragmentImpl = newContentFragment(id, pageOrTemplate, definition, fragment, referenceDefinition, reference, template, locked);
         contentFragmentImpl.setName(fragment.getName());
         contentFragmentImpl.setType(fragment.getType());
 
@@ -1808,15 +2402,35 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             while (fragmentIter.hasNext())
             {
                 BaseFragmentElement childFragment = (BaseFragmentElement)fragmentIter.next();
-                ContentFragmentImpl newContentFragment = newContentFragment(id, page, fragmentDefinitions, definition, childFragment, locked);
+                ContentFragmentImpl newContentFragment = newContentFragment(id, pageOrTemplate, fragmentDefinitions, definition, childFragment, template);
                 if (newContentFragment != null)
                 {
                     contentFragmentImpl.getFragments().add(newContentFragment);
                 }
             }
         }
+        return contentFragmentImpl;
+    }
 
-        log.debug("PageLayoutComponentImpl.newContentFragment(): constructed ContentFragment: id="+contentFragmentImpl.getId()+", name="+contentFragmentImpl.getName()+", locked="+contentFragmentImpl.isLocked());
+    /**
+     * Generate content fragment from a PSML base fragment.
+     * 
+     * @param id content fragment id
+     * @param pageOrTemplate PSML page or template
+     * @param definition PSML page, page template, or fragment definition
+     * @param fragment PSML fragment
+     * @param referenceDefinition PSML page or page template
+     * @param reference PSML fragment reference
+     * @param template template fragment flag
+     * @param locked locked fragment flag
+     * @return content fragment hierarchy or null if undefined
+     */
+    private ContentFragmentImpl newContentFragment(String id, BaseFragmentsElement pageOrTemplate, BaseFragmentsElement definition, BaseFragmentElement fragment, BaseFragmentsElement referenceDefinition, FragmentReference reference, boolean template, boolean locked)
+    {
+        // generate content fragment for fragment
+        ContentFragmentImpl contentFragmentImpl = new ContentFragmentImpl(this, id, pageOrTemplate, definition, fragment, referenceDefinition, reference, template, locked);
+
+        log.debug("PageLayoutComponentImpl.newContentFragment(): constructed ContentFragment: id="+id+", template="+template+", locked="+locked);
         return contentFragmentImpl;
     }
 
@@ -2067,7 +2681,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
     }
         
     /**
-     * Lookup page or page template fragment to be updated via
+     * Lookup page or template fragment to be updated via
      * scoped fragment property based edits.
      * 
      * @param contentFragmentImpl target content fragment
@@ -2076,19 +2690,40 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
      * @throws PageNotFoundException
      * @throws NodeException
      */
-    private BaseFragmentElement lookupPageOrPageTemplateFragment(ContentFragmentImpl contentFragmentImpl, String scope) throws PageNotFoundException, NodeException
+    private BaseFragmentElement lookupPageOrTemplateFragment(ContentFragmentImpl contentFragmentImpl, String scope) throws PageNotFoundException, NodeException
     {
-        // validate content fragment
-        boolean contentFragmentDefinitionIsPage = ((contentFragmentImpl.getDefinition() instanceof BaseConcretePageElement) && contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPage().getPath()));
-        boolean contentFragmentDefinitionIsTemplate = (contentFragmentImpl.getDefinition() instanceof PageTemplate);
-        boolean contentFragmentDefinitionIsPageReference = ((contentFragmentImpl.getDefinition() instanceof FragmentDefinition) && (contentFragmentImpl.getReferenceDefinition() instanceof BaseConcretePageElement) && (contentFragmentImpl.getReference() != null));
-        boolean contentFragmentDefinitionIsTemplateReference = ((contentFragmentImpl.getDefinition() instanceof FragmentDefinition) && (contentFragmentImpl.getReferenceDefinition() instanceof PageTemplate) && (contentFragmentImpl.getReference() != null));
+        // classify and validate content fragment
+        if (contentFragmentImpl.getDefinition() == null)
+        {
+            throw new IllegalArgumentException("Transient content fragments are not mutable");
+        }
+        String contentPageOrTemplatePath = contentFragmentImpl.getPageOrTemplate().getPath();
+        String contentPageOrTemplateDefinitionPath = contentFragmentImpl.getDefinition().getPath();
+        boolean contentFragmentPageDefinition = false;
+        boolean contentFragmentPageReference = false;
+        boolean contentFragmentInPage = false;
+        if (!contentFragmentImpl.isTemplate())
+        {
+            contentFragmentPageDefinition = contentPageOrTemplateDefinitionPath.equals(contentPageOrTemplatePath);
+            contentFragmentPageReference = ((contentFragmentImpl.getDefinition() instanceof FragmentDefinition) && !contentPageOrTemplateDefinitionPath.equals(contentPageOrTemplatePath) &&
+                                                (contentFragmentImpl.getReferenceDefinition() != null) && contentFragmentImpl.getReferenceDefinition().getPath().equals(contentPageOrTemplatePath) && (contentFragmentImpl.getReference() != null));
+            contentFragmentInPage = (contentFragmentPageDefinition || contentFragmentPageReference);
+        }
+        boolean contentFragmentTemplateDefinition = false;
+        boolean contentFragmentTemplateReference = false;
+        boolean contentFragmentInTemplate = false;
+        if (!contentFragmentInPage)
+        {
+            contentFragmentTemplateDefinition = (contentFragmentImpl.getDefinition() instanceof PageTemplate);
+            contentFragmentTemplateReference = ((contentFragmentImpl.getDefinition() instanceof FragmentDefinition) && (contentFragmentImpl.getReferenceDefinition() instanceof PageTemplate) && (contentFragmentImpl.getReference() != null));
+            contentFragmentInTemplate = (contentFragmentTemplateDefinition || contentFragmentTemplateReference);
+        }
         boolean userScopedUpdate = ((scope != null) && scope.equals(FragmentProperty.USER_PROPERTY_SCOPE));
-        if (!contentFragmentDefinitionIsPage && !contentFragmentDefinitionIsPageReference && (!userScopedUpdate || (!contentFragmentDefinitionIsTemplate && !contentFragmentDefinitionIsTemplateReference)))
+        if (!contentFragmentInPage && (!userScopedUpdate || !contentFragmentInTemplate))
         {
             if (userScopedUpdate)
             {
-                throw new IllegalArgumentException("Only page fragments, fragment references, and template fragments are user scope mutable");
+                throw new IllegalArgumentException("Only page fragments, fragment references, template fragments, and template references are user scope mutable");
             }
             else
             {
@@ -2098,17 +2733,17 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         
         // retrieve current fragment using page or page template from page manager
         BaseFragmentElement fragment = null;
-        if (contentFragmentDefinitionIsPage || contentFragmentDefinitionIsPageReference)
+        if (contentFragmentInPage)
         {
-            BaseConcretePageElement page = getPage(contentFragmentImpl.getPage().getPath());
-            String pageFragmentId = (contentFragmentDefinitionIsPage ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
-            fragment = page.getFragmentById(pageFragmentId);
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentFragmentImpl.getPageOrTemplate().getPath());
+            String pageFragmentId = (contentFragmentPageDefinition ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
+            fragment = pageOrTemplate.getFragmentById(pageFragmentId);
         }
-        else if (contentFragmentDefinitionIsTemplate || contentFragmentDefinitionIsTemplateReference)
+        else if (contentFragmentInTemplate)
         {
-            String pageTemplatePath = (contentFragmentDefinitionIsTemplate ? contentFragmentImpl.getDefinition().getPath() : contentFragmentImpl.getReferenceDefinition().getPath());
+            String pageTemplatePath = (contentFragmentTemplateDefinition ? contentFragmentImpl.getDefinition().getPath() : contentFragmentImpl.getReferenceDefinition().getPath());
             PageTemplate pageTemplate = pageManager.getPageTemplate(pageTemplatePath);
-            String pageTemplateFragmentId = (contentFragmentDefinitionIsTemplate ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
+            String pageTemplateFragmentId = (contentFragmentTemplateDefinition ? contentFragmentImpl.getFragment().getId() : contentFragmentImpl.getReference().getId());
             fragment = pageTemplate.getFragmentById(pageTemplateFragmentId);
         }
         if (fragment == null)
@@ -2119,7 +2754,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         // check for edit or view permission
         boolean checkEditAccess = ((scope == null) || !scope.equals(FragmentProperty.USER_PROPERTY_SCOPE));
         fragment.checkAccess(checkEditAccess ? JetspeedActions.EDIT : JetspeedActions.VIEW);
-        
+
         return fragment;
     }
 
@@ -2139,67 +2774,95 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
     }
 
     /**
-     * Get page or dynamic page from page manager.
+     * Get page or template from page manager.
      * 
-     * @param pagePath path to page
+     * @param path path to page or template
      * @return page or dynamic page
      * @throws PageNotFoundException
      * @throws NodeException
      */
-    private BaseConcretePageElement getPage(String pagePath) throws PageNotFoundException, NodeException
+    private BaseFragmentsElement getPageOrTemplate(String path) throws PageNotFoundException, NodeException
     {
-        if (pagePath.endsWith(Page.DOCUMENT_TYPE))
+        if (path.endsWith(Page.DOCUMENT_TYPE))
         {
-            return pageManager.getPage(pagePath);
+            return pageManager.getPage(path);
         }
-        if (pagePath.endsWith(DynamicPage.DOCUMENT_TYPE))
+        if (path.endsWith(DynamicPage.DOCUMENT_TYPE))
         {
-            return pageManager.getDynamicPage(pagePath);            
+            return pageManager.getDynamicPage(path);            
         }
-        throw new PageNotFoundException("Unable to classify page path by type: "+pagePath);
+        if (path.endsWith(PageTemplate.DOCUMENT_TYPE))
+        {
+            return pageManager.getPageTemplate(path);            
+        }
+        if (path.endsWith(FragmentDefinition.DOCUMENT_TYPE))
+        {
+            return pageManager.getFragmentDefinition(path);            
+        }
+        throw new PageNotFoundException("Unable to classify page or template path by type: "+path);
     }
     
     /**
-     * Update page or dynamic page using page manager.
+     * Update page or template using page manager.
      * 
-     * @param page page or dynamic page to update
+     * @param pageOrTemplate page or template to update
      * @throws NodeException
      * @throws PageNotUpdatedException
      */
-    private void updatePage(BaseConcretePageElement page) throws NodeException, PageNotUpdatedException
+    private void updatePage(BaseFragmentsElement pageOrTemplate) throws NodeException, PageNotUpdatedException
     {
-        if (page instanceof Page)
+        if (pageOrTemplate instanceof Page)
         {
-            pageManager.updatePage((Page)page);
+            pageManager.updatePage((Page)pageOrTemplate);
             return;
         }
-        if (page instanceof DynamicPage)
+        if (pageOrTemplate instanceof DynamicPage)
         {
-            pageManager.updateDynamicPage((DynamicPage)page);
+            pageManager.updateDynamicPage((DynamicPage)pageOrTemplate);
             return;
         }
-        throw new PageNotUpdatedException("Unable to classify page by type: "+((page != null) ? page.getClass().getName() : "null"));
+        if (pageOrTemplate instanceof PageTemplate)
+        {
+            pageManager.updatePageTemplate((PageTemplate)pageOrTemplate);
+            return;
+        }
+        if (pageOrTemplate instanceof FragmentDefinition)
+        {
+            pageManager.updateFragmentDefinition((FragmentDefinition)pageOrTemplate);
+            return;
+        }
+        throw new PageNotUpdatedException("Unable to classify page by type: "+((pageOrTemplate != null) ? pageOrTemplate.getClass().getName() : "null"));
     }
 
     /**
-     * Remove page or dynamic page using page manager.
+     * Remove page or template using page manager.
      * 
-     * @param page page or dynamic page to update
+     * @param pageOrTemplate page or template to update
      * @throws NodeException
      * @throws PageNotRemovedException
      */
-    private void removePage(BaseConcretePageElement page) throws NodeException, PageNotRemovedException
+    private void removePage(BaseFragmentsElement pageOrTemplate) throws NodeException, PageNotRemovedException
     {
-        if (page instanceof Page)
+        if (pageOrTemplate instanceof Page)
         {
-            pageManager.removePage((Page)page);
+            pageManager.removePage((Page)pageOrTemplate);
             return;
         }
-        if (page instanceof DynamicPage)
+        if (pageOrTemplate instanceof DynamicPage)
         {
-            pageManager.removeDynamicPage((DynamicPage)page);
+            pageManager.removeDynamicPage((DynamicPage)pageOrTemplate);
             return;
         }
-        throw new PageNotRemovedException("Unable to classify page by type: "+((page != null) ? page.getClass().getName() : "null"));
+        if (pageOrTemplate instanceof PageTemplate)
+        {
+            pageManager.removePageTemplate((PageTemplate)pageOrTemplate);
+            return;
+        }
+        if (pageOrTemplate instanceof FragmentDefinition)
+        {
+            pageManager.removeFragmentDefinition((FragmentDefinition)pageOrTemplate);
+            return;
+        }
+        throw new PageNotRemovedException("Unable to classify page by type: "+((pageOrTemplate != null) ? pageOrTemplate.getClass().getName() : "null"));
     }
 }

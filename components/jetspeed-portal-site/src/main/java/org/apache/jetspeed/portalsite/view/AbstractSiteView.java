@@ -166,13 +166,14 @@ public abstract class AbstractSiteView
      * @param path single node path
      * @param currentNode current folder or page for relative paths or null
      * @param menuPath menu definition path or null
+     * @param onlyConcrete node required to be concrete folder, page, or link
      * @param onlyViewable node required to be viewable
      * @param onlyVisible node required to be visible, (or current)
      * @return folder, page, or link node view
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public Node getNodeView(String path, Node currentNode, String menuPath, boolean onlyViewable, boolean onlyVisible) throws NodeNotFoundException
+    public Node getNodeView(String path, Node currentNode, String menuPath, boolean onlyConcrete, boolean onlyViewable, boolean onlyVisible) throws NodeNotFoundException
     {
         // determine current folder and page
         String currentPath = path;
@@ -285,7 +286,7 @@ public abstract class AbstractSiteView
                     if (children != null)
                     {
                         Node node = children.get(currentPath);
-                        if (((node instanceof Folder) || (node instanceof Page) || (node instanceof Link)) &&
+                        if ((node != null) && (!onlyConcrete || isConcreteNode(node)) &&
                             (!onlyVisible || isVisible(node, currentPage)) &&
                             (!onlyViewable || isViewable(node, onlyVisible)))
                         {
@@ -335,11 +336,12 @@ public abstract class AbstractSiteView
      * @param regexpPath regular expression node path
      * @param currentNode current folder or page for relative paths or null
      * @param menuPath menu definition path or null
+     * @param onlyConcrete node required to be concrete folder, page, or link
      * @param onlyViewable nodes required to be viewable flag
      * @param onlyVisible node required to be visible, (or current)
      * @return list of folder, page, or link node views
      */
-    public List getNodeViews(String regexpPath, Node currentNode, String menuPath, boolean onlyViewable, boolean onlyVisible)
+    public List getNodeViews(String regexpPath, Node currentNode, String menuPath, boolean onlyConcrete, boolean onlyViewable, boolean onlyVisible)
     {
         // determine current folder and page
         String currentRegexpPath = regexpPath;
@@ -466,7 +468,7 @@ public abstract class AbstractSiteView
                                         while (subfoldersIter.hasNext())
                                         {
                                             currentFolder = (Folder)subfoldersIter.next();
-                                            List subfolderViews = getNodeViews(currentRegexpPath, currentFolder, menuPath, onlyViewable, onlyVisible);
+                                            List subfolderViews = getNodeViews(currentRegexpPath, currentFolder, menuPath, onlyConcrete, onlyViewable, onlyVisible);
                                             if ((subfolderViews != null) && !subfolderViews.isEmpty())
                                             {
                                                 if (views == null)
@@ -548,7 +550,7 @@ public abstract class AbstractSiteView
                                 while (childrenIter.hasNext())
                                 {
                                     Node child = (Node)childrenIter.next(); 
-                                    if (((child instanceof Folder) || (child instanceof Page) || (child instanceof Link)) &&
+                                    if ((!onlyConcrete || isConcreteNode(child)) &&
                                         (!onlyVisible || isVisible(child, currentPage)) &&
                                         (!onlyViewable || isViewable(child, onlyVisible)))
                                     {
@@ -568,7 +570,7 @@ public abstract class AbstractSiteView
                             // node view; return null if not found or not
                             // viewable and visibility is required
                             Node child = children.get(currentRegexpPath);
-                            if (((child instanceof Folder) || (child instanceof Page) || (child instanceof Link)) &&
+                            if ((child != null) && (!onlyConcrete || isConcreteNode(child)) &&
                                 (!onlyVisible || isVisible(child, currentPage)) &&
                                 (!onlyViewable || isViewable(child, onlyVisible)))
                             {
@@ -781,6 +783,18 @@ public abstract class AbstractSiteView
         if (pattern != null)
             return pattern.toString();
         return null;
+    }
+
+    /**
+     * isConcreteNode - tests for concrete view node type
+     *
+     * @param node test node view
+     * @return view node type flag
+     */
+    private static boolean isConcreteNode(Node node)
+    {
+        // concrete nodes include folder, pages, and links
+        return ((node instanceof Folder) || (node instanceof Page) || (node instanceof Link));
     }
 
     /**

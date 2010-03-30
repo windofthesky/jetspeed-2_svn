@@ -106,7 +106,7 @@ public class PageValveImpl extends AbstractPageValveImpl implements PageProfiler
         // select the page or build menus: that is done when the
         // request context is accessed subsequently
         String requestServerName = ((request.getRequest() != null) ? request.getRequest().getServerName() : null);
-        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(requestPath, requestServerName, requestUserPrincipal.getName(), requestFallback, useHistory);
+        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(requestPath, requestServerName, requestUserPrincipal.getName(), requestFallback, useHistory, true);
 
         // save request context and set request page from portal
         // site request context

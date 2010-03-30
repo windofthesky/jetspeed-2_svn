@@ -19,6 +19,7 @@ package org.apache.jetspeed.pipeline.valve.impl;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.security.auth.Subject;
@@ -29,6 +30,7 @@ import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.BaseConcretePageElement;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
@@ -41,6 +43,7 @@ import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SubjectHelper;
+import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.User;
 
 import org.slf4j.Logger;
@@ -256,10 +259,10 @@ public abstract class AbstractPageValveImpl extends AbstractValve implements Pag
         // here is the raw selected page as returned by the
         // page manager component; accessing the managed page here
         // selects the current page for the request
-        BaseConcretePageElement managedPage = requestContext.getManagedPage();
+        BaseFragmentsElement managedPageOrTemplate = requestContext.getManagedPageOrTemplate();
         PageTemplate managedPageTemplate = requestContext.getManagedPageTemplate();
         Map managedFragmentDefinitions = requestContext.getManagedFragmentDefinitions();
-        ContentPage contentPage = pageLayoutComponent.newContentPage(managedPage, managedPageTemplate, managedFragmentDefinitions);
+        ContentPage contentPage = pageLayoutComponent.newContentPage(managedPageOrTemplate, managedPageTemplate, managedFragmentDefinitions);
         request.setPage(contentPage);
         request.setProfileLocators(requestContext.getLocators());
         

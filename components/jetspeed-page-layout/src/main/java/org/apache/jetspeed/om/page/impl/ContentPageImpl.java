@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.impl.PageLayoutComponentUtils;
-import org.apache.jetspeed.om.page.BaseConcretePageElement;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.page.PageTemplate;
@@ -39,7 +39,7 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
 {
     private PageLayoutComponent pageLayoutComponent;
     private String id;
-    private BaseConcretePageElement page;
+    private BaseFragmentsElement pageOrTemplate;
     private PageTemplate pageTemplate;
     private Map fragmentDefinitions;
 
@@ -54,6 +54,9 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     private String title;
     private String url;
     private boolean hidden;
+    private String contentType;
+    private String defId;
+    private boolean inheritable;
     
     /**
      * Construct new dynamic content page with
@@ -79,15 +82,15 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
      * 
      * @param pageLayoutComponent PageLayoutComponent instance
      * @param id content page id
-     * @param page PSML page
+     * @param pageOrTemplate PSML page or template
      * @param pageTemplate PSML page template
      * @param fragmentDefinitions PSML fragment definitions
      */
-    public ContentPageImpl(PageLayoutComponent pageLayoutComponent, String id, BaseConcretePageElement page, PageTemplate pageTemplate, Map fragmentDefinitions)
+    public ContentPageImpl(PageLayoutComponent pageLayoutComponent, String id, BaseFragmentsElement pageOrTemplate, PageTemplate pageTemplate, Map fragmentDefinitions)
     {
         this.pageLayoutComponent = pageLayoutComponent;
         this.id = id;
-        this.page = page;
+        this.pageOrTemplate = pageOrTemplate;
         this.pageTemplate = pageTemplate;
         this.fragmentDefinitions = fragmentDefinitions;
     }
@@ -98,9 +101,9 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     public void checkAccess(String actions) throws SecurityException
     {
         // check security against underlying page
-        if (page != null)
+        if (pageOrTemplate != null)
         {
-            page.checkAccess(actions);
+            pageOrTemplate.checkAccess(actions);
         }
     }
 
@@ -115,6 +118,22 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
             return (((id == null) && (cpi.id == null)) || ((id != null) && id.equals(cpi.id)));
         }
         return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#getContentType()
+     */
+    public String getContentType()
+    {
+        return contentType;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#getDefId()
+     */
+    public String getDefId()
+    {
+        return defId;
     }
 
     /* (non-Javadoc)
@@ -160,7 +179,7 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     {
         if (rootContentFragment != null)
         {
-            return rootContentFragment.getFragmentByFragmentId(id);
+            return rootContentFragment.getFragmentByFragmentId(id, false);
         }
         return null;
     }
@@ -172,7 +191,7 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     {
         if (rootContentFragment != null)
         {
-            return rootContentFragment.getFragmentsByName(name);
+            return rootContentFragment.getFragmentsByName(name, false);
         }
         return null;
     }
@@ -206,11 +225,11 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.om.page.ContentPage#getPage()
+     * @see org.apache.jetspeed.om.page.ContentPage#getPageOrTemplate()
      */
-    public BaseConcretePageElement getPage()
+    public BaseFragmentsElement getPageOrTemplate()
     {
-        return page;
+        return pageOrTemplate;
     }
 
     /* (non-Javadoc)
@@ -314,6 +333,14 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     {
         return hidden;
     }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#isInheritable()
+     */
+    public boolean isInheritable()
+    {
+        return inheritable;
+    }
     
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#overrideDefaultDecorator(java.lang.String, java.lang.String)
@@ -334,6 +361,42 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#getFragmentByFragmentId(java.lang.String, boolean)
+     */
+    public ContentFragment getFragmentByFragmentId(String id, boolean nonTemplate)
+    {
+        if (rootContentFragment != null)
+        {
+            return rootContentFragment.getFragmentByFragmentId(id, nonTemplate);
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#getFragmentsByName(java.lang.String, boolean)
+     */
+    public List getFragmentsByName(String name, boolean nonTemplate)
+    {
+        if (rootContentFragment != null)
+        {
+            return rootContentFragment.getFragmentsByName(name, nonTemplate);
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#getNonTemplateRootFragment()
+     */
+    public ContentFragment getNonTemplateRootFragment()
+    {
+        if (rootContentFragment != null)
+        {
+            return rootContentFragment.getNonTemplateLayoutFragment();
+        }
+        return null;
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#addFragmentAtRowColumn(org.apache.jetspeed.om.page.ContentFragment, int, int)
      */
@@ -362,6 +425,28 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#addFragmentReference(java.lang.String)
+     */
+    public ContentFragment addFragmentReference(String id)
+    {
+        if (pageLayoutComponent != null)
+        {
+            // delegate to page layout component
+            return pageLayoutComponent.addFragmentReference(this, id);
+        }
+        else
+        {
+            // perform locally only
+            ContentFragmentImpl newContentFragmentImpl = new ContentFragmentImpl();
+            newContentFragmentImpl.setType(ContentFragment.REFERENCE);
+            newContentFragmentImpl.setRefId(id);
+            ContentFragmentImpl rootContentFragmentImpl = (ContentFragmentImpl)getRootFragment();
+            rootContentFragmentImpl.getFragments().add(newContentFragmentImpl);
+            return newContentFragmentImpl;            
+        }
+    }
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#addPortlet(java.lang.String, java.lang.String)
      */
@@ -494,6 +579,42 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#newSiblingDynamicPage(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void newSiblingDynamicPage(String pageName, String contentType, String layoutName, String pageTitle, String pageShortTitle)
+    {
+        if (pageLayoutComponent != null)
+        {
+            // delegate to page layout component
+            pageLayoutComponent.newSiblingDynamicPage(this, pageName, contentType, layoutName, pageTitle, pageShortTitle);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#newSiblingPageTemplate(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void newSiblingPageTemplate(String templateName, String layoutName, String templateTitle, String templateShortTitle)
+    {
+        if (pageLayoutComponent != null)
+        {
+            // delegate to page layout component
+            pageLayoutComponent.newSiblingPageTemplate(this, templateName, layoutName, templateTitle, templateShortTitle);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#newSiblingFragmentDefinition(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void newSiblingFragmentDefinition(String definitionName, String defId, String portletName, String definitionTitle, String definitionShortTitle)
+    {
+        if (pageLayoutComponent != null)
+        {
+            // delegate to page layout component
+            pageLayoutComponent.newSiblingFragmentDefinition(this, definitionName, defId, portletName, definitionTitle, definitionShortTitle);
+        }
+    }
+    
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#removeFragment(java.lang.String)
      */
     public void removeFragment(String fragmentId)
@@ -531,6 +652,30 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
         {
             // delegate to page layout component
             pageLayoutComponent.removeFolder(this);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentPage#updateContent(java.lang.String, java.lang.Boolean)
+     */
+    public void updateContent(String contentType, Boolean inheritable)
+    {
+        if (pageLayoutComponent != null)
+        {
+            // delegate to page layout component
+            pageLayoutComponent.updateContent(this, contentType, inheritable);
+        }
+        else
+        {
+            // perform locally only
+            if (!Utils.isNull(contentType))
+            {
+                setContentType(contentType);
+            }
+            if (inheritable != null)
+            {
+                setInheritable(inheritable.booleanValue());
+            }
         }
     }
 
@@ -608,10 +753,10 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     {
         if (rootContentFragment != null)
         {
-            if (page != null)
+            if (pageOrTemplate != null)
             {
                 // find first content fragment with page definition
-                return rootContentFragment.getFragmentByDefinition(page);
+                return rootContentFragment.getFragmentByDefinition(pageOrTemplate);
             }
             else
             {
@@ -761,5 +906,35 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     public void setHidden(boolean hidden)
     {
         this.hidden = hidden;
+    }
+
+    /**
+     * Set dynamic page content type.
+     * 
+     * @param contentType content type
+     */
+    public void setContentType(String contentType)
+    {
+        this.contentType = contentType;
+    }
+    
+    /**
+     * Set fragment definition definition id.
+     * 
+     * @param defId definition id
+     */
+    public void setDefId(String defId)
+    {
+        this.defId = defId;
+    }
+    
+    /**
+     * Set dynamic page inheritable flag.
+     * 
+     * @param inheritable inheritable flag
+     */
+    public void setInheritable(boolean inheritable)
+    {
+        this.inheritable = inheritable;
     }
 }

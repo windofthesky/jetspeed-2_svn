@@ -79,7 +79,7 @@ public class Jetui
         {
             RequestDispatcher dispatcher = request.getRequest().getRequestDispatcher(layoutTemplate);
             request.setAttribute("jetui", this);
-            ContentFragment rootFragment = pageLayoutComponent.getUnlockedRootFragment(request.getPage());
+            ContentFragment rootFragment = request.getPage().getNonTemplateRootFragment();
             if (maximized == null)
             {
                 String jetspeedLayout = rootFragment.getName();

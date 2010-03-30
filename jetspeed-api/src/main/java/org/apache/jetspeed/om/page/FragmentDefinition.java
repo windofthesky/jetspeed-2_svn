@@ -30,7 +30,7 @@ public interface FragmentDefinition extends BaseFragmentsElement
     /**
      * Returns the id of the defined root fragment element.
      *
-     * @return the defined root fragment id.
+     * @return the defined root fragment id
      */
     String getDefId();
 }

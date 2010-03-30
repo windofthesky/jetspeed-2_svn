@@ -31,10 +31,9 @@ import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.layout.impl.PageLayoutComponentUtils;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
-import org.apache.jetspeed.om.page.BaseConcretePageElement;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.preference.FragmentPreference;
@@ -55,12 +54,13 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
 
     private PageLayoutComponent pageLayoutComponent;
     private String id;
-    private BaseConcretePageElement page;
+    private BaseFragmentsElement pageOrTemplate;
     private BaseFragmentsElement definition;
-    private Fragment fragment;
+    private BaseFragmentElement fragment;
     private BaseFragmentsElement referenceDefinition;
     private FragmentReference reference;
     private boolean instantlyRendered;
+    private boolean template;
     private boolean locked;
     
     private StringBuffer overriddenContent;
@@ -75,6 +75,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     private String title;
     private String type;
     private SecurityConstraints constraints;
+    private String refId;
 
     /**
      * Construct new dynamic content fragment with
@@ -113,22 +114,24 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * 
      * @param pageLayoutComponent PageLayoutComponent instance
      * @param id content fragment id
-     * @param page PSML page
+     * @param pageOrTemplate PSML page or template
      * @param definition PSML page, page template, or fragment definition
      * @param fragment PSML fragment
-     * @param reference definition PSML page or page template
+     * @param referenceDefinition PSML page or page template
      * @param reference PSML fragment reference
+     * @param template template flag
      * @param locked locked flag
      */
-    public ContentFragmentImpl(PageLayoutComponent pageLayoutComponent, String id, BaseConcretePageElement page, BaseFragmentsElement definition, Fragment fragment, BaseFragmentsElement referenceDefinition, FragmentReference reference, boolean locked)
+    public ContentFragmentImpl(PageLayoutComponent pageLayoutComponent, String id, BaseFragmentsElement pageOrTemplate, BaseFragmentsElement definition, BaseFragmentElement fragment, BaseFragmentsElement referenceDefinition, FragmentReference reference, boolean template, boolean locked)
     {
         this.pageLayoutComponent = pageLayoutComponent;
         this.id = id;
-        this.page = page;
+        this.pageOrTemplate = pageOrTemplate;
         this.definition = definition;
         this.fragment = fragment;
         this.referenceDefinition = referenceDefinition;
         this.reference = reference;
+        this.template = template;
         this.locked = locked;
     }
 
@@ -537,6 +540,14 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#getRefId()
+     */
+    public String getRefId()
+    {
+        return refId;
+    }
+    
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#getRenderedContent()
      */
     public String getRenderedContent() throws IllegalStateException
@@ -635,6 +646,14 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
         return locked;
     }
     
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#isTemplate()
+     */
+    public boolean isTemplate()
+    {
+        return template;
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#overrideRenderedContent(java.lang.String)
      */
@@ -850,6 +869,23 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
 
     /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.ContentFragment#updateRefId(java.lang.String)
+     */
+    public void updateRefId(String refId)
+    {
+        if (pageLayoutComponent != null)
+        {
+            // delegate to page layout component
+            pageLayoutComponent.updateRefId(this, refId);
+        }
+        else
+        {
+            // perform locally only            
+            setRefId(refId);
+        }                
+    }
+    
+    /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#updateRowColumn(int, int)
      */
     public void updateRowColumn(int row, int column)
@@ -938,7 +974,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      */
     public ContentFragmentImpl getFragmentByDefinition(BaseFragmentsElement definition)
     {
-        if (getDefinition() == definition)
+        if (this.definition == definition)
         {
             return this;
         }
@@ -975,7 +1011,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      */
     public ContentFragmentImpl getFragmentById(String id, ContentFragmentImpl [] parentFragment)
     {
-        if (getId().equals(id))
+        if (this.id.equals(id))
         {
             return this;
         }
@@ -1000,11 +1036,12 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * Get content fragment by underlying PSML Fragment id.
      * 
      * @param id PSML fragment id
+     * @param nonTemplate return non-template nodes only
      * @return content fragment
      */
-    public ContentFragmentImpl getFragmentByFragmentId(String id)
+    public ContentFragmentImpl getFragmentByFragmentId(String id, boolean nonTemplate)
     {
-        if (fragment != null && fragment.getId().equals(id))
+        if ((fragment != null) && fragment.getId().equals(id) && (!nonTemplate || !template))
         {
             return this;
         }
@@ -1012,7 +1049,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
         while (fragmentIter.hasNext())
         {
             ContentFragmentImpl childFragment = (ContentFragmentImpl)fragmentIter.next();
-            ContentFragmentImpl fragment = childFragment.getFragmentByFragmentId(id);
+            ContentFragmentImpl fragment = childFragment.getFragmentByFragmentId(id, nonTemplate);
             if (fragment != null)
             {
                 return fragment;
@@ -1052,12 +1089,13 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * Get all content fragments with name.
      * 
      * @param name content fragment name
+     * @param nonTemplate return non-template nodes only
      * @return list of content fragments
      */
-    public List getFragmentsByName(String name)
+    public List getFragmentsByName(String name, boolean nonTemplate)
     {
         List fragments = null;
-        if (getName().equals(name))
+        if ((this.name != null) && this.name.equals(name) && (!nonTemplate || !template))
         {
             if (fragments == null)
             {
@@ -1069,7 +1107,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
         while (fragmentIter.hasNext())
         {
             ContentFragmentImpl childFragment = (ContentFragmentImpl)fragmentIter.next();
-            List childFragments = childFragment.getFragmentsByName(name);
+            List childFragments = childFragment.getFragmentsByName(name, nonTemplate);
             if (childFragments != null)
             {
                 if (fragments == null)
@@ -1086,13 +1124,36 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     }
     
     /**
+     * Get first non-template layout fragment.
+     * 
+     * @return non-template fragment
+     */
+    public ContentFragment getNonTemplateLayoutFragment()
+    {
+        if ((type != null) && type.equals(ContentFragment.LAYOUT) && !template)
+        {
+            return this;
+        }
+        Iterator fragmentIter = getFragments().iterator();
+        while (fragmentIter.hasNext())
+        {
+            ContentFragment nonTemplateLayoutFragment = ((ContentFragmentImpl)fragmentIter.next()).getNonTemplateLayoutFragment();
+            if (nonTemplateLayoutFragment != null)
+            {
+                return nonTemplateLayoutFragment;
+            }
+        }        
+        return null;
+    }
+
+    /**
      * Get content page PSML page.
      * 
      * @return the PSML page
      */
-    public BaseConcretePageElement getPage()
+    public BaseFragmentsElement getPageOrTemplate()
     {
-        return page;
+        return pageOrTemplate;
     }
 
     /**
@@ -1111,7 +1172,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * 
      * @return the fragment
      */
-    public Fragment getFragment()
+    public BaseFragmentElement getFragment()
     {
         return fragment;
     }
@@ -1140,21 +1201,23 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * Initialize content fragment.
      * 
      * @param pageLayoutComponent PageLayoutComponent instance
-     * @param page PSML page
+     * @param pageOrTemplate PSML page or template
      * @param definition PSML page, page template, or fragment definition
      * @param fragment PSML fragment
      * @param reference definition PSML page or page template
      * @param reference PSML fragment reference
+     * @param template template flag
      * @param locked locked flag
      */
-    public void initialize(PageLayoutComponent pageLayoutComponent, BaseConcretePageElement page, BaseFragmentsElement definition, Fragment fragment, BaseFragmentsElement referenceDefinition, FragmentReference reference, boolean locked)
+    public void initialize(PageLayoutComponent pageLayoutComponent, BaseFragmentsElement pageOrTemplate, BaseFragmentsElement definition, BaseFragmentElement fragment, BaseFragmentsElement referenceDefinition, FragmentReference reference, boolean template, boolean locked)
     {
         this.pageLayoutComponent = pageLayoutComponent;
-        this.page = page;
+        this.pageOrTemplate = pageOrTemplate;
         this.definition = definition;
         this.fragment = fragment;
         this.referenceDefinition = referenceDefinition;
         this.reference = reference;
+        this.template = template;
         this.locked = locked;
     }
 
@@ -1546,7 +1609,17 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
             }
         }        
     }
-
+    
+    /**
+     * Set reference fragment id.
+     * 
+     * @param refId reference id
+     */
+    public void setRefId(String refId)
+    {
+        this.refId = refId;
+    }
+    
     /**
      * Set content security constraints.
      * 

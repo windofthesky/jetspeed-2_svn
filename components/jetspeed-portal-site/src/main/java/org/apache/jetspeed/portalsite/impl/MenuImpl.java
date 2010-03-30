@@ -124,7 +124,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
             {
                 try
                 {
-                    optionView = view.getNodeView(options, context.getPage(), path, true, true);
+                    optionView = view.getNodeView(options, context.getPageOrTemplate(), path, true, true, true);
                 }
                 catch (NodeNotFoundException nnfe)
                 {
@@ -168,7 +168,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         List folderChildren = null;
                         try
                         {
-                            folderChildren = view.getNodeViews(folderChildrenPath, context.getPage(), path, true, true);
+                            folderChildren = view.getNodeViews(folderChildrenPath, context.getPageOrTemplate(), path, true, true, true);
                         }
                         catch (NodeNotFoundException nnfe)
                         {
@@ -594,7 +594,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                             List pathViews = null;
                             try
                             {
-                                pathViews = view.getNodeViews(optionPath, context.getPage(), path, true, true);
+                                pathViews = view.getNodeViews(optionPath, context.getPageOrTemplate(), path, true, true, true);
                             }
                             catch (NodeNotFoundException nnfe)
                             {
@@ -627,7 +627,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                             Node pathView = null;
                             try
                             {
-                                pathView = view.getNodeView(optionPath, context.getPage(), path, true, true);
+                                pathView = view.getNodeView(optionPath, context.getPageOrTemplate(), path, true, true, true);
                             }
                             catch (NodeNotFoundException nnfe)
                             {

@@ -30,6 +30,7 @@ import junit.framework.TestSuite;
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Link;
@@ -217,21 +218,21 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("/folder0/page0.psml", extractFileSystemPathFromId(folder0Page0View.getId()));
 
         // test SiteView access by path
-        Folder rootFolderViewByPath = (Folder)baseView.getNodeView("/", null, null, false, false);
+        Folder rootFolderViewByPath = (Folder)baseView.getNodeView("/", null, null, true, false, false);
         assertNotNull(rootFolderViewByPath);
         assertEquals(rootFolderView, rootFolderViewByPath);
-        Folder rootFolder0ViewByPath = (Folder)baseView.getNodeView("/folder0/", null, null, false, false);
+        Folder rootFolder0ViewByPath = (Folder)baseView.getNodeView("/folder0/", null, null, true, false, false);
         assertNotNull(rootFolder0ViewByPath);
         assertEquals(rootFolder0View, rootFolder0ViewByPath);
-        Page folder0Page0ViewByPath = (Page)baseView.getNodeView("/folder0/page0.psml", null, null, false, false);
+        Page folder0Page0ViewByPath = (Page)baseView.getNodeView("/folder0/page0.psml", null, null, true, false, false);
         assertNotNull(folder0Page0ViewByPath);
         assertEquals(folder0Page0View, folder0Page0ViewByPath);
-        folder0Page0ViewByPath = (Page)baseView.getNodeView("page0.psml", rootFolder0View, null, false, false);
+        folder0Page0ViewByPath = (Page)baseView.getNodeView("page0.psml", rootFolder0View, null, true, false, false);
         assertNotNull(folder0Page0ViewByPath);
         assertEquals(folder0Page0View, folder0Page0ViewByPath);
         try
         {
-            baseView.getNodeView("/folderX/page0.psml", null, null, false, false);
+            baseView.getNodeView("/folderX/page0.psml", null, null, true, false, false);
             fail("/folderX/page0.psml should not be found");
         }
         catch (NodeNotFoundException nnfe)
@@ -239,21 +240,21 @@ public class TestPortalSite extends AbstractSpringTestCase
         }
         try
         {
-            baseView.getNodeView("/folder0/pageX.psml", null, null, false, false);
+            baseView.getNodeView("/folder0/pageX.psml", null, null, true, false, false);
             fail("/folder0/pageX.psml should not be found");
         }
         catch (NodeNotFoundException nnfe)
         {
         }
-        List rootPageViewsByPath = baseView.getNodeViews("/page?.psml", null, null, false, false);
+        List rootPageViewsByPath = baseView.getNodeViews("/page?.psml", null, null, true, false, false);
         assertNotNull(rootPageViewsByPath);
         assertEquals(3,rootPageViewsByPath.size());
         assertTrue(rootPageViewsByPath.contains(rootPage0View));
-        List rootFolderViewsByPath = baseView.getNodeViews("/*/", null, null, false, false);
+        List rootFolderViewsByPath = baseView.getNodeViews("/*/", null, null, true, false, false);
         assertNotNull(rootFolderViewsByPath);
         assertEquals(6,rootFolderViewsByPath.size());
         assertTrue(rootFolderViewsByPath.contains(rootFolder0View));
-        List folderPageViewsByPath = baseView.getNodeViews("*/p*[0-9].psml", rootFolderView, null, false, false);
+        List folderPageViewsByPath = baseView.getNodeViews("*/p*[0-9].psml", rootFolderView, null, true, false, false);
         assertNotNull(folderPageViewsByPath);
         assertEquals(2,folderPageViewsByPath.size());
         assertTrue(folderPageViewsByPath.contains(folder0Page0View));
@@ -632,7 +633,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        BaseConcretePageElement requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertFalse(requestContext.isContentPage());
+        BaseConcretePageElement requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page2.psml", requestPageView.getName());
@@ -697,7 +700,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(sessionContext);
         requestContext = sessionContext.newRequestContext("/", null, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertFalse(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page0.psml", requestPageView.getName());
@@ -784,7 +789,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        BaseConcretePageElement requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertFalse(requestContext.isContentPage());
+        BaseConcretePageElement requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page2.psml", requestPageView.getName());
@@ -798,7 +805,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertFalse(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page2.psml", requestPageView.getName());
@@ -812,7 +821,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertFalse(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page1.psml", requestPageView.getName());
@@ -826,7 +837,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertFalse(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page0.psml", requestPageView.getName());
@@ -840,7 +853,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertFalse(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page0.psml", requestPageView.getName());
@@ -853,7 +868,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, null);
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertFalse(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page1.psml", requestPageView.getName());
@@ -866,9 +883,11 @@ public class TestPortalSite extends AbstractSpringTestCase
         locator.add("user", true, false, "admin");
         locators = new HashMap();
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
-        requestContext = sessionContext.newRequestContext(locators, "admin", true, true, true);
+        requestContext = sessionContext.newRequestContext(locators, "admin", true, true, true, false);
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertFalse(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page2.psml", requestPageView.getName());
@@ -879,7 +898,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(sessionContext);
         requestContext = sessionContext.newRequestContext("/", null, null);
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertFalse(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page0.psml", requestPageView.getName());
@@ -889,7 +910,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(sessionContext);
         requestContext = sessionContext.newRequestContext("/_user/user/page2.psml", null, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertFalse(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page2.psml", requestPageView.getName());
@@ -2208,7 +2231,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        BaseConcretePageElement requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertTrue(requestContext.isContentPage());
+        BaseConcretePageElement requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof DynamicPage);
         assertEquals("docpage.dpsml", requestPageView.getName());
@@ -2223,7 +2248,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertTrue(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof DynamicPage);
         assertEquals("matchdocpage.dpsml", requestPageView.getName());
@@ -2238,7 +2265,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertTrue(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof DynamicPage);
         assertEquals("docpage.dpsml", requestPageView.getName());
@@ -2253,7 +2282,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertTrue(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof DynamicPage);
         assertEquals("contentpage.dpsml", requestPageView.getName());
@@ -2268,7 +2299,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertTrue(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof DynamicPage);
         assertEquals("docpage.dpsml", requestPageView.getName());
@@ -2283,7 +2316,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertTrue(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof DynamicPage);
         assertEquals("docpage.dpsml", requestPageView.getName());
@@ -2298,7 +2333,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertTrue(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof DynamicPage);
         assertEquals("contentpage.dpsml", requestPageView.getName());
@@ -2313,7 +2350,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertTrue(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page0.psml", requestPageView.getName());
@@ -2328,7 +2367,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put(ProfileLocator.PAGE_LOCATOR, locator);
         requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertTrue(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof Page);
         assertEquals("page2.psml", requestPageView.getName());
@@ -2341,7 +2382,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(sessionContext);
         requestContext = sessionContext.newRequestContext("/document.doc", null, null);
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertTrue(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof DynamicPage);
         assertEquals("docpage.dpsml", requestPageView.getName());
@@ -2351,7 +2394,9 @@ public class TestPortalSite extends AbstractSpringTestCase
 
         requestContext = sessionContext.newRequestContext("/preview/contentfolder/draft/document.doc", "test.domain.com", null);
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertTrue(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof DynamicPage);
         assertEquals("docpage.dpsml", requestPageView.getName());
@@ -2361,13 +2406,44 @@ public class TestPortalSite extends AbstractSpringTestCase
 
         requestContext = sessionContext.newRequestContext("/document.psml", null, null);
         assertNotNull(requestContext);
-        requestPageView = requestContext.getPage();
+        assertTrue(requestContext.isConcretePage());
+        assertTrue(requestContext.isContentPage());
+        requestPageView = (BaseConcretePageElement)requestContext.getPageOrTemplate();
         assertNotNull(requestPageView);
         assertTrue(requestPageView instanceof DynamicPage);
         assertEquals("contentpage.dpsml", requestPageView.getName());
         assertEquals("/contentpage.dpsml", extractFileSystemPathFromId(requestPageView.getId()));
         assertNotNull(requestContext.getPageContentPath());
         assertEquals("/document", requestContext.getPageContentPath());
+    }
+
+    /**
+     * testPortalSiteTemplateRequests - Test PortalSite template request mappings
+     *
+     * @throws Exception
+     */
+    public void testPotalSiteTemplateRequests() throws Exception
+    {
+        assertNotNull(portalSite);
+
+        // search path site view
+        PortalSiteSessionContext sessionContext = portalSite.newSessionContext();
+        assertNotNull(sessionContext);
+        JetspeedProfileLocator locator = new JetspeedProfileLocator();
+        locator.init(null, "/contentpage.dpsml");
+        locator.add("admin", true, false, "admin");
+        Map locators = new HashMap();
+        locators.put(ProfileLocator.PAGE_LOCATOR, locator);
+        PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, "admin", true, true, true, true);
+        assertNotNull(requestContext);
+        assertFalse(requestContext.isConcretePage());
+        assertFalse(requestContext.isContentPage());
+        BaseFragmentsElement requestPageView = requestContext.getPageOrTemplate();
+        assertNotNull(requestPageView);
+        assertTrue(requestPageView instanceof DynamicPage);
+        assertEquals("contentpage.dpsml", requestPageView.getName());
+        assertEquals("/contentpage.dpsml", extractFileSystemPathFromId(requestPageView.getId()));
+        assertNull(requestContext.getPageContentPath());
     }
 
     /**

@@ -127,9 +127,9 @@ public class GetPageAction
                 return success;
             }
             
-            String profiledPath = siteRequestContext.getPage().getPath();
+            String profiledPath = siteRequestContext.getPageOrTemplate().getPath();
             resultMap.put( PROFILED_PATH, profiledPath );
-            putSecurityInformation( resultMap, page.getPage() ); //TODO: REVIEW: RANDY 
+            putSecurityInformation( resultMap, page.getPageOrTemplate() ); //TODO: REVIEW: RANDY 
      
             PageActionAccess pageActionAccess = (PageActionAccess)requestContext.getAttribute( PortalReservedParameters.PAGE_EDIT_ACCESS_ATTRIBUTE );
             Boolean userIsAnonymous = Boolean.TRUE;

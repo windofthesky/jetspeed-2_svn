@@ -18,6 +18,7 @@ package org.apache.jetspeed.portalsite.impl;
 
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.Page;
@@ -193,7 +194,11 @@ public class MenuOptionImpl extends MenuElementImpl implements MenuOption, Clone
             BaseConcretePageElement requestPage = null;
             try
             {
-                requestPage = context.getPage();
+                // menus only available for concrete page requests
+                if (context.isConcretePage())
+                {
+                    requestPage = (BaseConcretePageElement)context.getPageOrTemplate();
+                }
             }
             catch (NodeNotFoundException nnfe)
             {

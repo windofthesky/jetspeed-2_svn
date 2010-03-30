@@ -26,10 +26,12 @@ import java.util.Set;
 import java.util.Collections;
 
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.BaseConcretePageElement;
+import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
@@ -93,9 +95,15 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     private boolean forceReservedVisible;
 
     /**
-     * requestPage - cached request profiled page view
+     * forceTemplatesAccessible - force templates, (page templates, dynamic pages, and
+     *                            fragment definitions), accessible to requests in site view
      */
-    private BaseConcretePageElement requestPage;
+    private transient boolean forceTemplatesAccessible;
+
+    /**
+     * requestPage - cached request profiled page or template view
+     */
+    private BaseFragmentsElement requestPageOrTemplate;
     
     /**
      * requestPageContentPath - cached content path mapped for request page
@@ -179,8 +187,9 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      * @param forceReservedVisible force reserved/hidden folders visible in site view
+     * @param forceTemplatesAccessible force templates accessible to requests in site view
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible)
     {
         this.sessionContext = sessionContext;
         this.requestProfileLocators = requestProfileLocators;
@@ -188,6 +197,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         this.requestFallback = requestFallback;
         this.useHistory = useHistory;
         this.forceReservedVisible = forceReservedVisible;
+        this.forceTemplatesAccessible = forceTemplatesAccessible;
     }
 
     /**
@@ -203,7 +213,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory)
     {
-        this(sessionContext, requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, false);
+        this(sessionContext, requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, false, false);
     }
 
     /**
@@ -217,7 +227,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback)
     {
-        this(sessionContext, requestProfileLocators, requestUserPrincipal, requestFallback, true, false);
+        this(sessionContext, requestProfileLocators, requestUserPrincipal, requestFallback, true, false, false);
     }
 
     /**
@@ -229,7 +239,31 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal)
     {
-        this(sessionContext, requestProfileLocators, requestUserPrincipal, true, true, false);
+        this(sessionContext, requestProfileLocators, requestUserPrincipal, true, true, false, false);
+    }
+
+    /**
+     * PortalSiteRequestContextImpl - non-profiling constructor
+     *
+     * @param sessionContext session context
+     * @param requestPath request path
+     * @param requestServerName request server name
+     * @param requestUserPrincipal request user principal
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     * @param forceTemplatesAccessible force templates accessible to requests in site view
+     */
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceTemplatesAccessible)
+    {
+        this.sessionContext = sessionContext;
+        this.requestPath = requestPath;
+        this.requestServerName = requestServerName;
+        this.requestUserPrincipal = requestUserPrincipal;
+        this.requestFallback = requestFallback;
+        this.useHistory = useHistory;
+        this.forceTemplatesAccessible = forceTemplatesAccessible;
     }
 
     /**
@@ -246,12 +280,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory)
     {
-        this.sessionContext = sessionContext;
-        this.requestPath = requestPath;
-        this.requestServerName = requestServerName;
-        this.requestUserPrincipal = requestUserPrincipal;
-        this.requestFallback = requestFallback;
-        this.useHistory = useHistory;
+        this(sessionContext, requestPath, requestServerName, requestUserPrincipal, requestFallback, useHistory, false);
     }
 
     /**
@@ -266,7 +295,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback)
     {
-        this(sessionContext, requestPath, requestServerName, requestUserPrincipal, requestFallback, true);
+        this(sessionContext, requestPath, requestServerName, requestUserPrincipal, requestFallback, true, false);
     }
 
     /**
@@ -279,7 +308,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, String requestPath, String requestServerName, String requestUserPrincipal)
     {
-        this(sessionContext, requestPath, requestServerName, requestUserPrincipal, true, true);
+        this(sessionContext, requestPath, requestServerName, requestUserPrincipal, true, true, false);
     }
 
     /**
@@ -303,16 +332,16 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     }
 
     /**
-     * getManagedPage - get request profiled concrete page or dynamic page
-     *                  instance as managed by the page manager
+     * getManagedPageOrTemplate - get request profiled concrete page or template
+     *                            instance as managed by the page manager
      *  
      * @return managed page
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    public BaseConcretePageElement getManagedPage() throws NodeNotFoundException
+    public BaseFragmentsElement getManagedPageOrTemplate() throws NodeNotFoundException
     {
-        return sessionContext.getManagedPage(getPage());            
+        return sessionContext.getManagedPageOrTemplate(getPageOrTemplate());            
     }
 
     /**
@@ -366,45 +395,61 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * isContentPage - returns flag indicating request page is honoring
      *                 a content request
      *
-     * @return page template
+     * @return content page flag
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
     public boolean isContentPage() throws NodeNotFoundException
     {
-        return (getPage() instanceof DynamicPage);
+        return ((getPageOrTemplate() instanceof BaseConcretePageElement) && (getPageContentPath() != null));
     }
 
     /**
-     * getPage - get request profiled page view
-     *  
-     * @return page view
+     * isConcretePage - returns flag indicating request page is honoring
+     *                  a concrete page or content page request
+     *
+     * @return concrete page flag
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    public BaseConcretePageElement getPage() throws NodeNotFoundException
+    public boolean isConcretePage() throws NodeNotFoundException
+    {
+        // check current page type and content path
+        BaseFragmentsElement pageOrTemplate = getPageOrTemplate();
+        String pageContentPath = getPageContentPath();
+        return ((pageOrTemplate instanceof Page) || ((pageOrTemplate instanceof DynamicPage) && (pageContentPath != null)));
+    }
+
+    /**
+     * getPageOrTemplate - get request profiled page or template view
+     *  
+     * @return page or template view
+     * @throws NodeNotFoundException if page not found
+     * @throws SecurityException if page view access not granted
+     */
+    public BaseFragmentsElement getPageOrTemplate() throws NodeNotFoundException
     {
         // select request page and associated content path from
         // session context using request profile locators or
         // request path and server name if not previously cached
         // in this context
-        if (requestPage == null)
+        if (requestPageOrTemplate == null)
         {
             String [] selectedRequestPageContentPath = new String[]{null};
             if (requestProfileLocators != null)
             {
-                requestPage = sessionContext.selectRequestPage(requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, forceReservedVisible, selectedRequestPageContentPath);
+                requestPageOrTemplate = sessionContext.selectRequestPageOrTemplate(requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, forceReservedVisible, forceTemplatesAccessible, selectedRequestPageContentPath);
             }
             else
             {
-                requestPage = sessionContext.selectRequestPage(requestPath, requestServerName, requestUserPrincipal, requestFallback, useHistory, selectedRequestPageContentPath);                
+                requestPageOrTemplate = sessionContext.selectRequestPageOrTemplate(requestPath, requestServerName, requestUserPrincipal, requestFallback, useHistory, forceTemplatesAccessible, selectedRequestPageContentPath);
             }
-            if (requestPage != null)
+            if (requestPageOrTemplate != null)
             {
                 requestPageContentPath = selectedRequestPageContentPath[0];
             }
         }
-        return requestPage;
+        return requestPageOrTemplate;
     }
 
     /**
@@ -416,7 +461,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public String getPageContentPath() throws NodeNotFoundException
     {
-        return ((getPage() != null) ? requestPageContentPath : null);
+        return ((getPageOrTemplate() != null) ? requestPageContentPath : null);
     }
 
     /**
@@ -431,14 +476,14 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         if (!requestPageTemplateCached)
         {
             // get requested page
-            BaseConcretePageElement page = getPage();
-            if (page != null)
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate();
+            if (pageOrTemplate != null)
             {
                 // scan through site looking for first page template
                 // up the folder hierarchy from the requested page
                 try
                 {
-                    Folder folder = (Folder)page.getParent();
+                    Folder folder = (Folder)pageOrTemplate.getParent();
                     while ((folder != null) && (requestPageTemplate == null))
                     {
                         NodeSet pageTemplates = folder.getPageTemplates();
@@ -475,14 +520,14 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     {
         if (!requestFragmentDefinitionsCached)
         {
-            // get requested page and optional page template
-            BaseConcretePageElement page = getPage();
+            // get requested page or template and optional page template
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate();
             PageTemplate pageTemplate = getPageTemplate();
-            if (page != null)
+            if (pageOrTemplate != null)
             {
                 // merge fragment reference ids from requested page and page template
                 Set refIds = new HashSet(4);
-                List requestPageFragmentReferences = page.getFragmentsByInterface(FragmentReference.class);
+                List requestPageFragmentReferences = pageOrTemplate.getFragmentsByInterface(FragmentReference.class);
                 mergeFragmentDefinitionRefIds(requestPageFragmentReferences, refIds);
                 List requestPageTemplateFragmentReferences = ((pageTemplate != null) ? pageTemplate.getFragmentsByInterface(FragmentReference.class) : null);
                 mergeFragmentDefinitionRefIds(requestPageTemplateFragmentReferences, refIds);
@@ -498,7 +543,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                     try
                     {
                         // scan for fragment definition
-                        Folder folder = (Folder)page.getParent();
+                        Folder folder = (Folder)pageOrTemplate.getParent();
                         while ((folder != null) && (requestFragmentDefinition == null))
                         {
                             NodeSet fragmentDefinitions = folder.getFragmentDefinitions();
@@ -581,11 +626,11 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public Folder getFolder() throws NodeNotFoundException
     {
-        // return parent folder of request page
-        BaseConcretePageElement page = getPage();
-        if (page != null)
+        // return parent folder of request page or template
+        BaseFragmentsElement pageOrTemplate = getPageOrTemplate();
+        if (pageOrTemplate != null)
         {
-            return (Folder)page.getParent();
+            return (Folder)pageOrTemplate.getParent();
         }
         return null;
     }
@@ -766,32 +811,34 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public Set getCustomMenuNames() throws NodeNotFoundException
     {
-        // access page and page templates to force request
-        // page resolution
-        BaseConcretePageElement page = getPage();
-        PageTemplate pageTemplate = getPageTemplate();
-
-        // return available menu definition names from
-        // current request page and page template if not
-        // previously cached in this context
-        Set standardMenuNames = sessionContext.getStandardMenuNames();
-        if ((page != null) && (standardMenuNames != null) && (pageMenuDefinitionNames == null))
+        // menus only available for concrete page requests
+        if (isConcretePage())
         {
-            List pageLocators = sessionContext.getMenuDefinitionLocators(page);
-            List pageTemplateLocators = ((pageTemplate != null) ? sessionContext.getMenuDefinitionLocators(pageTemplate) : null);
-            if ((pageLocators != null) || (pageTemplateLocators != null))
+            BaseConcretePageElement page = (BaseConcretePageElement)getPageOrTemplate();            
+            PageTemplate pageTemplate = getPageTemplate();
+            // return available menu definition names from
+            // current request page and page template if not
+            // previously cached in this context
+            Set standardMenuNames = sessionContext.getStandardMenuNames();
+            if ((page != null) && (standardMenuNames != null) && (pageMenuDefinitionNames == null))
             {
-                // get custom definition names
-                pageMenuDefinitionNames = Collections.synchronizedSet(new HashSet(8));
-                mergeMenuDefinitionLocatorNames(pageLocators, standardMenuNames, pageMenuDefinitionNames);
-                mergeMenuDefinitionLocatorNames(pageTemplateLocators, standardMenuNames, pageMenuDefinitionNames);
+                List pageLocators = sessionContext.getMenuDefinitionLocators(page);
+                List pageTemplateLocators = ((pageTemplate != null) ? sessionContext.getMenuDefinitionLocators(pageTemplate) : null);
+                if ((pageLocators != null) || (pageTemplateLocators != null))
+                {
+                    // get custom definition names
+                    pageMenuDefinitionNames = Collections.synchronizedSet(new HashSet(8));
+                    mergeMenuDefinitionLocatorNames(pageLocators, standardMenuNames, pageMenuDefinitionNames);
+                    mergeMenuDefinitionLocatorNames(pageTemplateLocators, standardMenuNames, pageMenuDefinitionNames);
+                }
+                else
+                {
+                    pageMenuDefinitionNames = Collections.synchronizedSet(new HashSet(0));
+                }
             }
-            else
-            {
-                pageMenuDefinitionNames = Collections.synchronizedSet(new HashSet(0));
-            }
+            return pageMenuDefinitionNames;
         }
-        return pageMenuDefinitionNames;
+        return null;
     }
     
     /**
@@ -848,78 +895,80 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      */
     public Menu getMenu(String name, Set names) throws NodeNotFoundException
     {
-        // access page and page template to force request
-        // page resolution
-        BaseConcretePageElement page = getPage();
-        PageTemplate pageTemplate = getPageTemplate();
-        if ((page != null) && (name != null))
+        if (name != null)
         {
-            // get menu definition locator from page or page template
-            SiteViewMenuDefinitionLocator locator = sessionContext.getMenuDefinitionLocator(page, name);
-            if ((pageTemplate != null) && ((locator == null) || !locator.isOverride()))
+            // menus only available for concrete page requests
+            if (isConcretePage())
             {
-                SiteViewMenuDefinitionLocator pageTemplateLocator = sessionContext.getMenuDefinitionLocator(pageTemplate, name);
-                if (pageTemplateLocator != null)
+                BaseConcretePageElement page = (BaseConcretePageElement)getPageOrTemplate();            
+                PageTemplate pageTemplate = getPageTemplate();
+                // get menu definition locator from page or page template
+                SiteViewMenuDefinitionLocator locator = sessionContext.getMenuDefinitionLocator(page, name);
+                if ((pageTemplate != null) && ((locator == null) || !locator.isOverride()))
                 {
-                    locator = pageTemplateLocator;
-                }
-            }
-            // get menu implementation for menu definition locator
-            if (locator != null)
-            {
-                // lookup and return cached relative/request menus
-                if (menuDefinitionLocatorCache != null)
-                {
-                    MenuImpl menu = (MenuImpl)menuDefinitionLocatorCache.get(locator);
-                    if (menu != null)
+                    SiteViewMenuDefinitionLocator pageTemplateLocator = sessionContext.getMenuDefinitionLocator(pageTemplate, name);
+                    if (pageTemplateLocator != null)
                     {
-                        return menu;
+                        locator = pageTemplateLocator;
                     }
                 }
+                // get menu implementation for menu definition locator
+                if (locator != null)
+                {
+                    // lookup and return cached relative/request menus
+                    if (menuDefinitionLocatorCache != null)
+                    {
+                        MenuImpl menu = (MenuImpl)menuDefinitionLocatorCache.get(locator);
+                        if (menu != null)
+                        {
+                            return menu;
+                        }
+                    }
 
-                // lookup and return cached absolute/session menus
-                // if current page is not hidden; hidden pages generate
-                // menus that should be considered relative since
-                // explicitly addressed hidden pages are added to
-                // menus for display purposes
-                if (sessionContext.getMenuDefinitionLocatorCache() != null)
-                {
-                    MenuImpl menu = (MenuImpl)sessionContext.getMenuDefinitionLocatorCache().get(locator);
-                    if (menu != null)
+                    // lookup and return cached absolute/session menus
+                    // if current page is not hidden; hidden pages generate
+                    // menus that should be considered relative since
+                    // explicitly addressed hidden pages are added to
+                    // menus for display purposes
+                    if (sessionContext.getMenuDefinitionLocatorCache() != null)
                     {
-                        return menu;
+                        MenuImpl menu = (MenuImpl)sessionContext.getMenuDefinitionLocatorCache().get(locator);
+                        if (menu != null)
+                        {
+                            return menu;
+                        }
                     }
-                }
 
-                // construct new menu from menu definition in locator
-                // using current request context and propagating related
-                // names set to detect cyclic menu definitions
-                MenuImpl menu = new MenuImpl(locator.getMenuDefinition(), locator.getPath(), this, names);
- 
-                // determine whether menu definition locator is
-                // relative/request, based on hidden page, or
-                // absolute/session cachable and cache accordingly
-                if (page.isHidden() || menu.isElementRelative())
-                {
-                    // cache relative menu for request
-                    if (menuDefinitionLocatorCache == null)
-                    {
-                        menuDefinitionLocatorCache = Collections.synchronizedMap(new HashMap(8));
-                    }
-                    menuDefinitionLocatorCache.put(locator, menu);
-                }
-                else
-                {
-                    // cache absolute menu for session
-                    if (sessionContext.getMenuDefinitionLocatorCache() == null)
-                    {
-                        sessionContext.setMenuDefinitionLocatorCache(Collections.synchronizedMap(new HashMap(8)));
-                    }
-                    sessionContext.getMenuDefinitionLocatorCache().put(locator, menu);
-                }
+                    // construct new menu from menu definition in locator
+                    // using current request context and propagating related
+                    // names set to detect cyclic menu definitions
+                    MenuImpl menu = new MenuImpl(locator.getMenuDefinition(), locator.getPath(), this, names);
 
-                // return new cached menu
-                return menu;
+                    // determine whether menu definition locator is
+                    // relative/request, based on hidden page, or
+                    // absolute/session cachable and cache accordingly
+                    if (page.isHidden() || menu.isElementRelative())
+                    {
+                        // cache relative menu for request
+                        if (menuDefinitionLocatorCache == null)
+                        {
+                            menuDefinitionLocatorCache = Collections.synchronizedMap(new HashMap(8));
+                        }
+                        menuDefinitionLocatorCache.put(locator, menu);
+                    }
+                    else
+                    {
+                        // cache absolute menu for session
+                        if (sessionContext.getMenuDefinitionLocatorCache() == null)
+                        {
+                            sessionContext.setMenuDefinitionLocatorCache(Collections.synchronizedMap(new HashMap(8)));
+                        }
+                        sessionContext.getMenuDefinitionLocatorCache().put(locator, menu);
+                    }
+
+                    // return new cached menu
+                    return menu;
+                }
             }
         }
         return null;

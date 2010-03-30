@@ -156,9 +156,9 @@ public class ProfilerValveImpl extends AbstractPageValveImpl
             // menus: that is done when the request context is
             // accessed subsequently
             String pipeline = request.getPipeline().getName();
-            boolean forceReservedFoldersVisibleInView = (pipeline.equals(PortalReservedParameters.CONFIG_PIPELINE_NAME) ||
-                                                         pipeline.equals(PortalReservedParameters.DESKTOP_CONFIG_PIPELINE_NAME));        
-            PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, requestUserPrincipal.getName(), requestFallback, useHistory, forceReservedFoldersVisibleInView);
+            boolean forceReservedFoldersVisible = (pipeline.equals(PortalReservedParameters.CONFIG_PIPELINE_NAME) ||
+                                                   pipeline.equals(PortalReservedParameters.DESKTOP_CONFIG_PIPELINE_NAME));
+            PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, requestUserPrincipal.getName(), requestFallback, useHistory, forceReservedFoldersVisible, true);
 
             // save request context and set request page from portal
             // site request context

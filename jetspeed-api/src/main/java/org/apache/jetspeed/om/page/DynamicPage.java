@@ -34,7 +34,7 @@ public interface DynamicPage extends BaseConcretePageElement, Serializable
     /**
      * Get the content type name that applies to this page.
      *
-     * @return the page type name name
+     * @return the page type name
      */
     String getContentType();
 

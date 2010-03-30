@@ -26,6 +26,7 @@ package org.apache.jetspeed.portalsite;
 public interface PortalSiteContentTypeMapper
 {
     public static final String PAGE_SYSTEM_TYPE = "portal-page";
+    public static final String TEMPLATE_SYSTEM_TYPE = "portal-template";
     public static final String FOLDER_SYSTEM_TYPE = "portal-folder";
     
     /**

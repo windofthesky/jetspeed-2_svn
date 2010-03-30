@@ -190,7 +190,7 @@ public class PageLayoutService
             
             if (col == -1 && minRowsColumn)
             {
-                layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), addedContentFragmentId);
+                layoutFragment = getParentFragment(contentPage.getNonTemplateRootFragment(), addedContentFragmentId);
                 col = getMinRowsColumnIndex(layoutFragment);
             }
             
@@ -201,7 +201,7 @@ public class PageLayoutService
             
             if (layoutFragment == null)
             {
-                layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), addedContentFragmentId);
+                layoutFragment = getParentFragment(contentPage.getNonTemplateRootFragment(), addedContentFragmentId);
             }
             
             PortletPlacementContext ppc = new PortletPlacementContextImpl(contentPage, portletRegistry, layoutFragment);
@@ -244,7 +244,7 @@ public class PageLayoutService
             throw new WebApplicationException(new IllegalArgumentException("Fragment not found with the specified id: " + fragmentId));
         }
         
-        ContentFragment layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), fragmentId);
+        ContentFragment layoutFragment = getParentFragment(contentPage.getNonTemplateRootFragment(), fragmentId);
         
         if (layoutFragment == null)
         {
@@ -321,7 +321,7 @@ public class PageLayoutService
             }
             else
             {
-                layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), fragmentId );
+                layoutFragment = getParentFragment(contentPage.getNonTemplateRootFragment(), fragmentId );
                 
                 if (layoutFragment == null)
                 {
@@ -392,7 +392,7 @@ public class PageLayoutService
                     }
                     else
                     {
-                        layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), fragmentId);
+                        layoutFragment = getParentFragment(contentPage.getNonTemplateRootFragment(), fragmentId);
                         
                         if (layoutFragment == null)
                         {
@@ -439,7 +439,7 @@ public class PageLayoutService
                 if (layoutFragmentId != null && layoutFragmentId.equals("detach"))
                 {
                     // first time detach, reallocate column and move it to the back
-                    ContentFragment layoutFragment = getParentFragment(pageLayoutComponent.getUnlockedRootFragment(contentPage), fragmentId);                    
+                    ContentFragment layoutFragment = getParentFragment(contentPage.getNonTemplateRootFragment(), fragmentId);                    
                     if (layoutFragment == null)
                     {
                         throw new WebApplicationException(new IllegalArgumentException("Layout fragment not found for the fragment: " + fragmentId));

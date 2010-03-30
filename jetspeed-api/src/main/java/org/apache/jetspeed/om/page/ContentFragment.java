@@ -406,9 +406,28 @@ public interface ContentFragment
      * @return ContentFragment list
      */
     List getFragments();
+
+    /************** Fragment Reference **************/
     
+    /**
+     * Returns the id of the referenced fragment element.
+     *
+     * @return the referenced fragment id.
+     */
+    String getRefId();
+
     /************** ContentFragment **************/
 
+    /**
+     * A fragment of type PAGE is a place holder for a page fragment.
+     */
+    String PAGE = "page";
+
+    /**
+     * A fragment of type REFERENCE is a place holder for a fragment reference.
+     */
+    String REFERENCE = "reference";
+    
     /**
      * Returns the unique fragment id of this element. This id is guaranteed to be
      * unique per fragment within the portal and is suitable to be used as a key.
@@ -500,9 +519,17 @@ public interface ContentFragment
     PageLayoutComponent getPageLayoutComponent();
     
     /**
+     * Return template flag indicating whether this fragment
+     * was originally merged from a page template
+     * 
+     * @return template flag
+     */
+    boolean isTemplate();
+    
+    /**
      * Return is locked flag indicating whether this fragment
      * was originally merged from a page template or fragment
-     * definition.
+     * definition or is transient.
      * 
      * @return locked flag
      */
@@ -613,6 +640,13 @@ public interface ContentFragment
      */
     void updateProperty(String propName, String propValue, String scope, String scopeValue);
     
+    /**
+     * Update fragment reference reference id.
+     * 
+     * @param refId referenced fragment definition id
+     */
+    void updateRefId(String refId);
+
     /**
      * Update fragment row and column layout positions. The default, (Global),
      * scope values are updated.

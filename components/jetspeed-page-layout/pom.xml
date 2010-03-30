@@ -61,11 +61,73 @@
         
         <!-- Test Dependencies -->
         <dependency>
+          <groupId>${pom.groupId}</groupId>
+          <artifactId>jetspeed-cm</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>${pom.groupId}</groupId>
+          <artifactId>jetspeed-id-generator</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>${pom.groupId}</groupId>
+          <artifactId>jetspeed-file-cache</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>${pom.groupId}</groupId>
+          <artifactId>jetspeed-page-manager</artifactId>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-log4j12</artifactId>
           <scope>test</scope>
         </dependency>
 
     </dependencies>
+
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>${pom.groupId}</groupId>
+          <artifactId>jetspeed-unpack-maven-plugin</artifactId>
+          <version>${pom.version}</version>
+          <executions>
+            <execution>
+              <id>unpack-test-resources</id>
+              <goals>
+                <goal>unpack</goal>
+              </goals>
+              <phase>process-test-resources</phase>
+              <configuration>
+                <skip>${skipTests}</skip>
+                <unpack>
+                  <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
+                  <resources>
+                    <resource>
+                      <path>assembly</path>
+                      <include>boot/datasource.xml</include>
+                    </resource>
+                    <resource>
+                      <path>db-ojb</path>
+                      <include>ehcache.xml</include>
+                    </resource>
+                  </resources>
+                </unpack>
+              </configuration>
+            </execution>
+          </executions>
+          <dependencies>
+            <dependency>
+              <groupId>${pom.groupId}</groupId>
+              <artifactId>jetspeed-portal-resources</artifactId>
+              <version>${pom.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </build>
 
 </project>

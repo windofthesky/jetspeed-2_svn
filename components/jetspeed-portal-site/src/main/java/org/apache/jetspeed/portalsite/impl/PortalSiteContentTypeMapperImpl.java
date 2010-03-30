@@ -3,7 +3,10 @@ package org.apache.jetspeed.portalsite.impl;
 import java.util.List;
 
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.DynamicPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.portalsite.PortalSiteContentTypeMapper;
 
 /**
@@ -16,6 +19,7 @@ import org.apache.jetspeed.portalsite.PortalSiteContentTypeMapper;
 public class PortalSiteContentTypeMapperImpl implements PortalSiteContentTypeMapper
 {
     public static final String DEFAULT_PAGE_SYSTEM_TYPE_SUFFIX = Page.DOCUMENT_TYPE;
+    public static final String [] DEFAULT_TEMPLATE_SYSTEM_TYPE_SUFFIXES = new String[]{PageTemplate.DOCUMENT_TYPE, FragmentDefinition.DOCUMENT_TYPE, DynamicPage.DOCUMENT_TYPE};
 
     private List<ContentTypeMapping> contentTypeMappings;
     private List<RequestPathMapping> systemRequestPathMappings;
@@ -179,6 +183,16 @@ public class PortalSiteContentTypeMapperImpl implements PortalSiteContentTypeMap
         if (requestPath.endsWith(DEFAULT_PAGE_SYSTEM_TYPE_SUFFIX))
         {
             return PAGE_SYSTEM_TYPE;
+        }
+        else
+        {
+            for (int i = 0; (i < DEFAULT_TEMPLATE_SYSTEM_TYPE_SUFFIXES.length); i++)
+            {
+                if (requestPath.endsWith(DEFAULT_TEMPLATE_SYSTEM_TYPE_SUFFIXES[i]))
+                {
+                    return TEMPLATE_SYSTEM_TYPE;
+                }                
+            }
         }
         return null;
     }

@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.page.BaseConcretePageElement;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
@@ -48,14 +48,14 @@ public interface PortalSiteRequestContext
     Map getLocators();
 
     /**
-     * getManagedPage - get request profiled concrete page instance
-     *                  as managed by the page manager
+     * getManagedPageOrTemplate - get request profiled concrete page or template
+     *                            instance as managed by the page manager
      *  
-     * @return page
+     * @return page or template
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    BaseConcretePageElement getManagedPage() throws NodeNotFoundException;
+    BaseFragmentsElement getManagedPageOrTemplate() throws NodeNotFoundException;
 
     /**
      * getManagedPageTemplate - get request profiled concrete page 
@@ -83,20 +83,30 @@ public interface PortalSiteRequestContext
      * isContentPage - returns flag indicating request page is honoring
      *                 a content request
      *
-     * @return page template
+     * @return content page flag
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
     boolean isContentPage() throws NodeNotFoundException;
 
     /**
-     * getPage - get request profiled page view
+     * isConcretePage - returns flag indicating request page is honoring
+     *                  a concrete page or content page request
+     *
+     * @return concrete page flag
+     * @throws NodeNotFoundException if page not found
+     * @throws SecurityException if page view access not granted
+     */
+    boolean isConcretePage() throws NodeNotFoundException;
+
+    /**
+     * getPageOrTemplate - get request profiled page or template view
      *  
      * @return page view
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    BaseConcretePageElement getPage() throws NodeNotFoundException;
+    BaseFragmentsElement getPageOrTemplate() throws NodeNotFoundException;
 
     /**
      * getPageContentPath - get content path associated with request page

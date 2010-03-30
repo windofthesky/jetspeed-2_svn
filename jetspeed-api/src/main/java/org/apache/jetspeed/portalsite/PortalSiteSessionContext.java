@@ -72,9 +72,10 @@ public interface PortalSiteSessionContext extends Serializable
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      * @param forceReservedVisible force reserved/hidden folders visible in site view
+     * @param forceTemplatesAccessible force templates accessible to requests in site view
      * @return new request context instance
      */
-    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible);
+    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible);
 
     /**
      * newRequestContext - create a new request context instance without profiling
@@ -114,6 +115,22 @@ public interface PortalSiteSessionContext extends Serializable
      * @return new request context instance
      */
     PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory);
+
+    /**
+     * newRequestContext - create a new request context instance without profiling
+     *                     support
+     *
+     * @param requestPath request path
+     * @param requestServerName request server name
+     * @param requestUserPrincipal request user principal
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     * @param forceTemplatesAccessible force templates accessible to requests in site view
+     * @return new request context instance
+     */
+    PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceTemplatesAccessible);
 
     /**
      * getPageManager - return PageManager component instance

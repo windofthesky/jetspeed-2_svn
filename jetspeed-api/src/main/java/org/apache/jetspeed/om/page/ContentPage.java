@@ -153,13 +153,15 @@ public interface ContentPage
 
     /**
      * Returns a ContentFragment represented by the fragment id argument.
+     * 
      * @param id unique id of the ContentFragment we want to retrieve.
      * @return
      */
     ContentFragment getFragmentById(String id);
 
     /**
-     * Returns a ContentFragment represented by the underlying PSML Fragment fragment id argument.
+     * Returns a ContentFragment represented by the underlying PSML Fragment fragment.
+     * 
      * @param id unique id of the ContentFragment we want to retrieve.
      * @return
      */
@@ -167,6 +169,7 @@ public interface ContentPage
 
     /**
      * Returns a list of ContentFragment fragments represented by the name argument.
+     * 
      * @param name name of the ContentFragments we want to retrieve.
      * @return list of ContentFragment
      */
@@ -184,15 +187,42 @@ public interface ContentPage
      */
     String getEffectiveDefaultDecorator(String fragmentType);
 
+    /************** DynamicPage **************/
+    
+    /**
+     * Get the content type name that applies to this page.
+     *
+     * @return the page type name
+     */
+    String getContentType();    
+
+    /**
+     * Get inheritable flag that indicates whether this dynamic
+     * page can be inherited for child content pages.
+     *
+     * @return inheritable flag
+     */
+    boolean isInheritable();
+
+    /************** FragmentDefinition **************/
+    
+    /**
+     * Returns the id of the defined root fragment element.
+     *
+     * @return the defined root fragment id
+     */
+    String getDefId();    
+
     /************** ContentPage **************/
 
     /**
-     * Access underlying concrete persistent page or null
+     * Access underlying concrete persistent page, template,
+     * or null
      * if page is transient or constructed dynamically.
      * 
      * @return persistent page or null
      */
-    BaseConcretePageElement getPage();
+    BaseFragmentsElement getPageOrTemplate();
     
     /**
      * Access underlying concrete persistent page template or
@@ -225,6 +255,32 @@ public interface ContentPage
      */
     void overrideDefaultDecorator(String decoratorName, String fragmentType);
     
+    /**
+     * Returns a ContentFragment represented by the underlying PSML Fragment fragment.
+     * 
+     * @param id unique id of the content fragment we want to retrieve.
+     * @param nonTemplate return only non-template matching fragments
+     * @return first matching content fragment
+     */
+    ContentFragment getFragmentByFragmentId(String id, boolean nonTemplate);
+
+    /**
+     * Returns a list of ContentFragment fragments represented by the name argument.
+     * 
+     * @param name name of the content fragments we want to retrieve.
+     * @param nonTemplate return only non-template matching fragments
+     * @return list of matching content fragments
+     */
+    List getFragmentsByName(String name, boolean nonTemplate);
+    
+    /**
+     * Returns the root layout fragment which is not merged
+     * from a page template.
+     * 
+     * @return root non-template layout content fragment
+     */
+    ContentFragment getNonTemplateRootFragment();    
+
     /************** PageLayoutComponent Operations **************/
 
     /**
@@ -236,6 +292,15 @@ public interface ContentPage
      */
     ContentFragment addFragmentAtRowColumn(ContentFragment fragment, int row, int column);                        
     
+    /**
+     * Add fragment reference to page returning associated content
+     * fragment.
+     * 
+     * @param id fragment definition id
+     * @return new content fragment added to page
+     */
+    ContentFragment addFragmentReference(String id);
+
     /**
      * Add portlet to page returning associated content fragment.
      * 
@@ -318,6 +383,46 @@ public interface ContentPage
      * @param pageShortTitle new page short title or null
      */
     void newSiblingPage(String pageName, String layoutName, String pageTitle, String pageShortTitle);
+
+    /**
+     * Create new sibling dynamic page with specified configuration. 
+     * Both title and short title parameters default to page name if
+     * not specified. The layout fragment name is cloned from this
+     * content page if not specified. Default decorators are cloned
+     * from this content page.
+     * 
+     * @param pageName unique new dynamic page name
+     * @param contentType dynamic page content type
+     * @param layoutName root level layout fragment name or null 
+     * @param pageTitle new page title or null
+     * @param pageShortTitle new page short title or null
+     */
+    void newSiblingDynamicPage(String pageName, String contentType, String layoutName, String pageTitle, String pageShortTitle);
+    
+    /**
+     * Create new sibling page template with specified configuration.
+     * The layout fragment name is cloned from this content page if
+     * not specified. Default decorators are cloned from this content
+     * page.
+     * 
+     * @param templateName unique new page template name
+     * @param layoutName root level layout fragment name or null 
+     * @param templateTitle new page title or null
+     * @param templateShortTitle new page short title or null
+     */
+    void newSiblingPageTemplate(String templateName, String layoutName, String templateTitle, String templateShortTitle);
+    
+    /**
+     * Create new sibling fragment definition with specified
+     * configuration.
+     * 
+     * @param definitionName unique new fragment definition name
+     * @param defId unique new fragment definition id or null
+     * @param portletName root level portlet fragment name or null 
+     * @param definitionTitle new page title or null
+     * @param definitionShortTitle new page short title or null
+     */
+    void newSiblingFragmentDefinition(String definitionName, String defId, String portletName, String definitionTitle, String definitionShortTitle);
     
     /**
      * Remove fragment from page by id.
@@ -337,6 +442,14 @@ public interface ContentPage
      */
     void removeFolder();
     
+    /**
+     * Update dynamic page content type and inheritable flag.
+     *  
+     * @param contentType dynamic page content type
+     * @param contentType dynamic page content type
+     */
+    void updateContent(String contentType, Boolean inheritable);
+
     /**
      * Update page default decorator.
      *  

@@ -24,8 +24,8 @@ import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.Page;
@@ -94,11 +94,11 @@ public class UpdatePageAction
                 return success;
             }           
             int count = 0;
-            BaseConcretePageElement page = null;            
+            BaseFragmentsElement page = null;            
             String path = getActionParameter(requestContext, "path");
             if (path == null)
             {
-                page = requestContext.getPage().getPage();
+                page = requestContext.getPage().getPageOrTemplate();
             }
             else
             {
@@ -298,7 +298,7 @@ public class UpdatePageAction
         return success;
     }
     
-    protected int updatePortletDecorator(RequestContext requestContext, Map resultMap, BaseConcretePageElement page, String fragmentId, String portletDecorator)
+    protected int updatePortletDecorator(RequestContext requestContext, Map resultMap, BaseFragmentsElement page, String fragmentId, String portletDecorator)
     {
     	int count = 0;
     	BaseFragmentElement fragment = page.getFragmentById(fragmentId);
@@ -310,7 +310,7 @@ public class UpdatePageAction
     	return count;
     }
     
-    protected int updateFragment(RequestContext requestContext, Map resultMap, BaseConcretePageElement page, String fragmentId, String layout)
+    protected int updateFragment(RequestContext requestContext, Map resultMap, BaseFragmentsElement page, String fragmentId, String layout)
     {
         int count = 0;
         String sizes = getActionParameter(requestContext, SIZES);
@@ -344,7 +344,7 @@ public class UpdatePageAction
         return count;
     }
 
-    protected int addFragment(RequestContext requestContext, Map resultMap, BaseConcretePageElement page, String parentFragmentId, String layout)
+    protected int addFragment(RequestContext requestContext, Map resultMap, BaseFragmentsElement page, String parentFragmentId, String layout)
     {
         int count = 0;
         String sizes = getActionParameter(requestContext, SIZES);
@@ -367,7 +367,7 @@ public class UpdatePageAction
         return count;
     }
 
-    protected int removeFragment(RequestContext requestContext, Map resultMap, BaseConcretePageElement page, String fragmentId)
+    protected int removeFragment(RequestContext requestContext, Map resultMap, BaseFragmentsElement page, String fragmentId)
     {
         int count = 0;
         BaseFragmentElement fragment = page.getFragmentById(fragmentId);

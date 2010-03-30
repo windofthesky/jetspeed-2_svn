@@ -29,6 +29,7 @@ import javax.servlet.http.HttpSessionBindingListener;
 import javax.servlet.http.HttpSessionEvent;
 
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.BaseConcretePageElement;
@@ -161,7 +162,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal)
     {
-        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, true, true, false);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, true, true, false, false);
     }
 
     /**
@@ -175,7 +176,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback)
     {
-        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, requestFallback, true, false);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, requestFallback, true, false, false);
     }
 
     /**
@@ -191,7 +192,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory)
     {
-        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, false);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, false, false);
     }
 
     /**
@@ -204,11 +205,12 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      * @param forceReservedVisible force reserved/hidden folders visible in site view
+     * @param forceTemplatesAccessible force templates accessible to requests in site view
      * @return new request context instance
      */
-    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible)
+    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible)
     {
-        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, forceReservedVisible);
+        return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, forceReservedVisible, forceTemplatesAccessible);
     }
 
     /**
@@ -222,7 +224,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, String requestUserPrincipal)
     {
-        return new PortalSiteRequestContextImpl(this, requestPath, requestServerName, requestUserPrincipal, true, true);
+        return new PortalSiteRequestContextImpl(this, requestPath, requestServerName, requestUserPrincipal, true, true, false);
     }
 
     /**
@@ -238,7 +240,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback)
     {
-        return new PortalSiteRequestContextImpl(this, requestPath, requestServerName, requestUserPrincipal, requestFallback, true);
+        return new PortalSiteRequestContextImpl(this, requestPath, requestServerName, requestUserPrincipal, requestFallback, true, false);
     }
 
     /**
@@ -256,11 +258,12 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      */
     public PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory)
     {
-        return new PortalSiteRequestContextImpl(this, requestPath, requestServerName, requestUserPrincipal, requestFallback, useHistory);
+        return new PortalSiteRequestContextImpl(this, requestPath, requestServerName, requestUserPrincipal, requestFallback, useHistory, false);
     }
 
     /**
-     * selectRequestPage - select page view for request given profile locators
+     * newRequestContext - create a new request context instance without profiling
+     *                     support
      *
      * @param requestPath request path
      * @param requestServerName request server name
@@ -269,18 +272,39 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *                        if locators do not select a page or access is forbidden
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
+     * @param forceTemplatesAccessible force templates accessible to requests in site view
+     * @return new request context instance
+     */
+    public PortalSiteRequestContext newRequestContext(String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceTemplatesAccessible)
+    {
+        return new PortalSiteRequestContextImpl(this, requestPath, requestServerName, requestUserPrincipal, requestFallback, useHistory, forceTemplatesAccessible);
+    }
+
+    /**
+     * selectRequestPageOrTemplate - select page or template view for request for
+     *                               path and server
+     *
+     * @param requestPath request path
+     * @param requestServerName request server name
+     * @param requestUserPrincipal request user principal
+     * @param requestFallback flag specifying whether to fallback to root folder
+     *                        if locators do not select a page or access is forbidden
+     * @param useHistory flag indicating whether to use visited page
+     *                   history to select default page per site folder
+     * @param forceTemplatesAccessible force templates accessible to requests in site view
      * @param requestPageContentPath returned content path associated with selected page
      * @return selected page view for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public BaseConcretePageElement selectRequestPage(String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory, String [] requestPageContentPath) throws NodeNotFoundException
+    public BaseFragmentsElement selectRequestPageOrTemplate(String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceTemplatesAccessible, String [] requestPageContentPath) throws NodeNotFoundException
     {
-        return selectRequestPage(null, requestPath, requestServerName, requestUserPrincipal, requestFallback, useHistory, false, requestPageContentPath);
+        return selectRequestPageOrTemplate(null, requestPath, requestServerName, requestUserPrincipal, requestFallback, useHistory, false, forceTemplatesAccessible, requestPageContentPath);
     }
 
     /**
-     * selectRequestPage - select page view for request given profile locators
+     * selectRequestPageOrTemplate - select page or template view for request given
+     *                               profile locators
      *
      * @param requestProfileLocators map of profile locators for request
      * @param requestUserPrincipal request user principal
@@ -289,18 +313,19 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      * @param forceReservedVisible force reserved/hidden folders visible for request
+     * @param forceTemplatesAccessible force templates accessible to requests in site view
      * @param requestPageContentPath returned content path associated with selected page
      * @return selected page view for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public BaseConcretePageElement selectRequestPage(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, String [] requestPageContentPath) throws NodeNotFoundException
+    public BaseFragmentsElement selectRequestPageOrTemplate(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible, String [] requestPageContentPath) throws NodeNotFoundException
     {
-        return selectRequestPage(requestProfileLocators, null, null, requestUserPrincipal, requestFallback, useHistory, forceReservedVisible, requestPageContentPath);
+        return selectRequestPageOrTemplate(requestProfileLocators, null, null, requestUserPrincipal, requestFallback, useHistory, forceReservedVisible, forceTemplatesAccessible, requestPageContentPath);
     }
     
     /**
-     * selectRequestPage - select page view for request given profile locators
+     * selectRequestPageOrTemplate - select page or template view for request
      *
      * @param requestProfileLocators map of profile locators for request
      * @param requestPath request path if no locators specified
@@ -311,12 +336,13 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      * @param forceReservedVisible force reserved/hidden folders visible for request
+     * @param forceTemplatesAccessible force templates accessible to requests in site view
      * @param requestPageContentPath returned content path associated with selected page
      * @return selected page view for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    private BaseConcretePageElement selectRequestPage(Map requestProfileLocators, String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, String [] requestPageContentPath) throws NodeNotFoundException
+    private BaseFragmentsElement selectRequestPageOrTemplate(Map requestProfileLocators, String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible, String [] requestPageContentPath) throws NodeNotFoundException
     {
         // validate and update session profile locators if modified
         if (updateSessionProfileLocators(requestProfileLocators, requestUserPrincipal, forceReservedVisible))
@@ -368,7 +394,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                     {
                         try
                         {
-                            view.getNodeView(requestPath, null, null, false, false);
+                            view.getNodeView(requestPath, null, null, !forceTemplatesAccessible, false, false);
                         }
                         catch (NodeNotFoundException nnfe)
                         {
@@ -421,7 +447,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                             {
                                 try
                                 {
-                                    if (view.getNodeView(systemPageRequestPath, null, null, false, false) instanceof Page)
+                                    if (view.getNodeView(systemPageRequestPath, null, null, true, false, false) instanceof Page)
                                     {
                                         systemType = PortalSiteContentTypeMapper.PAGE_SYSTEM_TYPE;
                                     }
@@ -479,18 +505,17 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 }
             }
             
-            // attempt to select request page or folder using
-            // profile locators and site view; if fallback
-            // enabled, fallback on missing node or access
-            // exceptions to the parent folders until the root
-            // folder access has been attempted
+            // attempt to select request page, folder or template using
+            // profile locators and site view; if fallback enabled,
+            // fallback on missing node or access exceptions to the parent
+            // folders until the root folder access has been attempted
             do
             {
                 // attempt to access requested path
                 Exception fallbackException = null;
                 try
                 {
-                    return selectRequestPage(requestPath, useHistory);
+                    return selectRequestPageOrTemplate(requestPath, useHistory, forceTemplatesAccessible);
                 }
                 catch (NodeNotFoundException nnfe)
                 {
@@ -660,18 +685,19 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     }
 
     /**
-     * selectRequestPage - select page view for request for specified
-     *                     path given profile locators and site view
-     *                     associated with this context
+     * selectRequestPageOrTemplate - select page or template view for request for
+     *                               specified path against site view associated
+     *                               with this context
      *
      * @param requestPath request path
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
-     * @return selected page view for request
+     * @param forceTemplatesAccessible force templates accessible to requests in site view
+     * @return selected page or template view for request
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    private Page selectRequestPage(String requestPath, boolean useHistory) throws NodeNotFoundException
+    private BaseFragmentsElement selectRequestPageOrTemplate(String requestPath, boolean useHistory, boolean forceTemplatesAccessible) throws NodeNotFoundException
     {
         // save access exceptions
         SecurityException accessException = null;
@@ -699,7 +725,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             try
             {
                 // try page or folder request url
-                requestNode = view.getNodeView(requestPath, null, null, false, false);
+                requestNode = view.getNodeView(requestPath, null, null, !forceTemplatesAccessible, false, false);
             }
             catch (NodeNotFoundException nnfe)
             {
@@ -709,7 +735,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 {
                     // retry folder request url
                     requestPath = requestPath.substring(0, requestPath.length() - Folder.FALLBACK_DEFAULT_PAGE.length());
-                    requestNode = view.getNodeView(requestPath, null, null, true, false);
+                    requestNode = view.getNodeView(requestPath, null, null, !forceTemplatesAccessible, true, false);
                 }
                 else
                 {
@@ -910,6 +936,42 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 }
                 return requestPage;
             }
+            else if (forceTemplatesAccessible)
+            {
+                if (requestNode instanceof PageTemplate)
+                {
+                    PageTemplate requestPageTemplate = (PageTemplate)requestNode;
+                    
+                    // log selected request page template
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug("Selected page template, path=" + view.getManagedPageTemplate(requestPageTemplate).getPath());
+                    }
+                    return requestPageTemplate;
+                }
+                else if (requestNode instanceof DynamicPage)
+                {
+                    DynamicPage requestDynamicPage = (DynamicPage)requestNode;
+                    
+                    // log selected request dynamic page
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug("Selected dynamic page, path=" + view.getManagedDynamicPage(requestDynamicPage).getPath());
+                    }
+                    return requestDynamicPage;
+                }
+                else if (requestNode instanceof FragmentDefinition)
+                {
+                    FragmentDefinition requestFragmentDefinition = (FragmentDefinition)requestNode;
+                    
+                    // log selected request fragment definition
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug("Selected fragment definition, path=" + view.getManagedFragmentDefinition(requestFragmentDefinition).getPath());
+                    }
+                    return requestFragmentDefinition;
+                }
+            }
         }
             
         // no page matched or accessible
@@ -955,7 +1017,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             
             // search for deepest matching content request path
             // that matches request path; start with root folder in view
-            Folder contentRequestFolder = (Folder)view.getNodeView(Folder.PATH_SEPARATOR, null, null, false, false);
+            Folder contentRequestFolder = (Folder)view.getNodeView(Folder.PATH_SEPARATOR, null, null, true, false, false);
             String contentRequestPath = contentRequestFolder.getPath();
             for (;;)
             {
@@ -1419,23 +1481,31 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     }
 
     /**
-     * getManagedConcretePage - get concrete page or dynamic page instance
-     *                          from page view
+     * getManagedPageOrTemplate - get managed page, page template, dynamic page, or
+     *                            fragment definition instance from page view
      *  
      * @param page page view
      * @return managed page
      */
-    public BaseConcretePageElement getManagedPage(BaseConcretePageElement page)
+    public BaseFragmentsElement getManagedPageOrTemplate(BaseFragmentsElement pageOrTemplate)
     {
-        // return managed page or dynamic page in site view
+        // return managed page or template in site view
         AbstractSiteView view = getSiteView();
-        if (page instanceof Page)
+        if (pageOrTemplate instanceof Page)
         {
-            return ((view != null) ? view.getManagedPage((Page)page) : null);
+            return ((view != null) ? view.getManagedPage((Page)pageOrTemplate) : null);
         }
-        else if (page instanceof DynamicPage)
+        else if (pageOrTemplate instanceof PageTemplate)
         {
-            return ((view != null) ? view.getManagedDynamicPage((DynamicPage)page) : null);
+            return ((view != null) ? view.getManagedPageTemplate((PageTemplate)pageOrTemplate) : null);
+        }
+        else if (pageOrTemplate instanceof DynamicPage)
+        {
+            return ((view != null) ? view.getManagedDynamicPage((DynamicPage)pageOrTemplate) : null);
+        }
+        else if (pageOrTemplate instanceof FragmentDefinition)
+        {
+            return ((view != null) ? view.getManagedFragmentDefinition((FragmentDefinition)pageOrTemplate) : null);
         }
         return null;
     }
