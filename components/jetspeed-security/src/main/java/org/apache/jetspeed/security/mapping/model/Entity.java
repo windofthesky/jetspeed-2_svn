@@ -27,6 +27,9 @@ import java.util.Set;
 public interface Entity
 {
     String getType();
+    
+    boolean isLive();
+    void setLive(boolean live);
 
     String getId();
     void setId(String id);
@@ -59,5 +62,5 @@ public interface Entity
 
     void setAttributes(Set<Attribute> attributes);
 
-    Set<AttributeDef> getAllowedAttributes();
+    Map<String, AttributeDef> getAllowedAttributes();
 }

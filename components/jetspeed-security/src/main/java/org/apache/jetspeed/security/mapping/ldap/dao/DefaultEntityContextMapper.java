@@ -17,14 +17,16 @@
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
 import org.apache.jetspeed.security.mapping.EntityFactory;
+import org.apache.jetspeed.security.mapping.model.Entity;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.core.support.AbstractContextMapper;
+import org.springframework.ldap.core.simple.AbstractParameterizedContextMapper;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
+ * @param <T>
  */
-public class DefaultEntityContextMapper extends AbstractContextMapper
+public class DefaultEntityContextMapper extends AbstractParameterizedContextMapper<Entity> implements EntityContextMapper
 {
     EntityFactory entityFactory;
 
@@ -32,9 +34,14 @@ public class DefaultEntityContextMapper extends AbstractContextMapper
     {
         this.entityFactory = entityFactory;
     }
+    
+    public EntityFactory getEntityFactory()
+    {
+        return entityFactory;
+    }
 
     @Override
-    public Object doMapFromContext(DirContextOperations ctx)
+    protected Entity doMapFromContext(DirContextOperations ctx)
     {
         return entityFactory.createEntity(ctx);
     }

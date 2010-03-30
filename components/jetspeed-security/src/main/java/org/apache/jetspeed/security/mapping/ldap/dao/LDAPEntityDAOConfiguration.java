@@ -16,10 +16,13 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
+import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.filter.Filter;
 
 /**
@@ -28,21 +31,39 @@ import org.springframework.ldap.filter.Filter;
  */
 public class LDAPEntityDAOConfiguration
 {
-    private String            baseDN;
-    private String            searchDN;
-    private Filter            baseFilter;
-    private String            ldapIdAttribute;
-    private Set<AttributeDef> attributeDefinitions;
-    private String            entityType;
-    private String[]          objectClassesArr;
-    private String[]          attributeNames;
+    private DistinguishedName         baseDN = new DistinguishedName().immutableDistinguishedName();
+    private DistinguishedName         searchDN = new DistinguishedName().immutableDistinguishedName();
+    private Filter                    baseFilter;
+    private String                    ldapIdAttribute;
+    private Map<String, AttributeDef> attributeDefinitions;
+    private Map<String, AttributeDef> entityAttributeDefinitions;
+    private String                    entityType;
+    private String[]                  objectClassesArr;
+    private String[]                  entityAttributeNames;
 
     public void initialize() throws JetspeedException
     {
         checkNotEmpty("entityType", entityType);
-        checkNotNull("baseDN", baseDN);
         checkNotEmpty("ldapIdAttribute", ldapIdAttribute);
         checkNotNull("attributeDefinitions", attributeDefinitions);
+        boolean idAttributeNameFound = false;
+        for (AttributeDef def : attributeDefinitions.values())
+        {
+            if (ldapIdAttribute.equals(def.getName()))
+            {
+                if (def.isMultiValue() || !def.isRequired() || def.isRelationOnly())
+                {
+                    throw new RuntimeException("Unsupported ldapIdAttribute Attribute definition: multi-value, optional and/or relationOnly attribute");
+                }
+                def.setIdAttributeName(true);
+                idAttributeNameFound = true;
+                break;
+            }
+        }
+        if (!idAttributeNameFound)
+        {
+            throw new RuntimeException("No ldapIdAttribute Attribute definition provided");
+        }
     }
 
     private void checkNotNull(String fieldName, Object fieldValue) throws JetspeedException
@@ -61,24 +82,24 @@ public class LDAPEntityDAOConfiguration
         }
     }
 
-    public String getBaseDN()
+    public DistinguishedName getBaseDN()
     {
         return baseDN;
     }
 
-    public void setBaseDN(String baseDN)
+    public void setLdapBase(String ldapBase)
     {
-        this.baseDN = baseDN;
+        this.baseDN = new DistinguishedName(ldapBase).immutableDistinguishedName();
     }
 
-    public String getSearchDN()
+    public DistinguishedName getSearchDN()
     {
         return searchDN;
     }
 
-    public void setSearchDN(String searchDN)
+    public void setSearchBase(String searchBase)
     {
-        this.searchDN = searchDN;
+        this.searchDN = new DistinguishedName(searchBase).immutableDistinguishedName();
     }
 
     public Filter getSearchFilter()
@@ -91,25 +112,39 @@ public class LDAPEntityDAOConfiguration
         this.baseFilter = baseFilter;
     }
 
-    public Set<AttributeDef> getAttributeDefinitions()
+    public Map<String, AttributeDef> getAttributeDefinitionsMap()
     {
         return attributeDefinitions;
     }
 
-    public void setAttributeDefinitions(Set<AttributeDef> attributeDefinitions)
+    public Map<String, AttributeDef> getEntityAttributeDefinitionsMap()
     {
-        this.attributeDefinitions = attributeDefinitions;
-        attributeNames = new String[attributeDefinitions.size()];
-        int i = 0;
+        return attributeDefinitions;
+    }
+
+    public AttributeDef getAttributeDef(String name)
+    {
+        return attributeDefinitions.get(name);
+    }
+
+    public void setAttributeDefinitions(Collection<AttributeDef> attributeDefinitions)
+    {
+        this.attributeDefinitions = new HashMap<String, AttributeDef>();
+        this.entityAttributeDefinitions = new HashMap<String, AttributeDef>();
         for (AttributeDef def : attributeDefinitions)
         {
-            attributeNames[i++] = def.getName();
+            if (!def.isRelationOnly())
+            {
+                this.entityAttributeDefinitions.put(def.getName(), def);
+            }
+            this.attributeDefinitions.put(def.getName(), def);
         }
+        entityAttributeNames = entityAttributeDefinitions.keySet().toArray(new String[0]);
     }
-    
-    public String[] getAttributeNames()
+
+    public String[] getEntityAttributeNames()
     {
-        return attributeNames;
+        return entityAttributeNames;
     }
 
     public String getLdapIdAttribute()

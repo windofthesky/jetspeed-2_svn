@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security.mapping.stubs;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
@@ -41,7 +40,7 @@ public class StubEntityFactory
     
     public Entity createEntity(String id, String entityType, String[]... attrKeyValuePairs){
         
-        EntityImpl stubEntity = new EntityImpl("user", id, new HashSet<AttributeDef>(attributeDefs.values()));
+        EntityImpl stubEntity = new EntityImpl("user", id, attributeDefs);
         for (int i = 0; i < attrKeyValuePairs.length; i++)
         {
             AttributeDef def = attributeDefs.get(attrKeyValuePairs[i][0]);

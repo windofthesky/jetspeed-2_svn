@@ -35,4 +35,10 @@ public interface AttributeDef
     String getRequiredDefaultValue();
 
     boolean isIdAttribute();
+    
+    boolean isRelationOnly();
+    
+    boolean isIdAttributeName();
+    
+    void setIdAttributeName(boolean idAttributeName);
 }

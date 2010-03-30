@@ -196,7 +196,7 @@ public class TestLDAP extends AbstractSetup1LDAPTest
         jsmithCopy.setAttribute(UID_DEF.getName(), "jsmithCopy");
         jsmithCopy.setAttribute(CN_DEF.getName(), "jsmithCopy");
         jsmithCopy.setAttribute(SN_DEF.getName(), "jsmithCopy");
-        jsmithCopy.setInternalId("uid=jsmithCopy, o=sevenSeas");
+        jsmithCopy.setInternalId("cn=jsmithCopy, o=sevenSeas");
         basicTestCases.testFetchSingleEntity(entityManager, jsmithCopy);
     }
     

@@ -134,4 +134,15 @@ public class StubEntityDAO implements EntityDAO
         
     }
 
+    public void addRelation(String entityId, String relatedEntityId, String attributeName)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void removeRelation(String EntityId, String relatedEntityId, String attributeName)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }

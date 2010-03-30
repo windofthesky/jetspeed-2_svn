@@ -19,6 +19,7 @@ package org.apache.jetspeed.security.mapping.ldap;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -101,8 +102,8 @@ public class BasicTestCases
     {
         if (debugMode)
         {
-            Set<AttributeDef> defs = ent.getAllowedAttributes();
-            for (AttributeDef attributeDef : defs)
+            Map<String, AttributeDef> defs = ent.getAllowedAttributes();
+            for (AttributeDef attributeDef : defs.values())
             {
                 Attribute attr = ent.getAttribute(attributeDef.getName());
                 if (attr != null)

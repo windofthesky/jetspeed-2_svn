@@ -68,7 +68,7 @@ public class JetspeedPrincipalLdapAssociationStorageManager implements JetspeedP
             Entity toEntity = relatedFactory.createEntity(to);
             SecurityEntityRelationType relationType = new SecurityEntityRelationTypeImpl(associationName, fromEntity.getType(), toEntity.getType());
             ldapEntityManager.removeRelation(fromEntity, toEntity, relationType);
-            databaseStorageManager.removeAssociation(from, to, associationName);
         }
+        databaseStorageManager.removeAssociation(from, to, associationName);
     }
 }

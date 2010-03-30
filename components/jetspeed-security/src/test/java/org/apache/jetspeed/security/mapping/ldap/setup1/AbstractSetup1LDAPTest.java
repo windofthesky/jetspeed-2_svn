@@ -19,9 +19,7 @@ package org.apache.jetspeed.security.mapping.ldap.setup1;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
 import org.apache.jetspeed.security.mapping.ldap.AbstractLDAPTest;
@@ -43,9 +41,9 @@ import org.springframework.core.io.Resource;
 public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
 {
 
-    protected Set<AttributeDef> userAttrDefs;
+    protected Map<String, AttributeDef> userAttrDefs;
 
-    protected Set<AttributeDef> roleAttrDefs;
+    protected Map<String, AttributeDef> roleAttrDefs;
 
     protected AttributeBasedRelationDAO hasRoleDAO;
 
@@ -64,24 +62,23 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
     @Override
     public void internalSetUp() throws Exception
     {
-
-        Set<AttributeDef> basicAttrDefs = new HashSet<AttributeDef>();
-        basicAttrDefs.add(UID_DEF);
-        basicAttrDefs.add(CN_DEF);
+        Map<String, AttributeDef> basicAttrDefs = new HashMap<String, AttributeDef>();
+        basicAttrDefs.put(UID_DEF.getName(), UID_DEF);
+        basicAttrDefs.put(CN_DEF.getName(), CN_DEF);
 
         // setting up user DAO
-        userAttrDefs = new HashSet<AttributeDef>();
-        userAttrDefs.addAll(basicAttrDefs);
-        userAttrDefs.add(GIVEN_NAME_DEF);
-        userAttrDefs.add(SN_DEF);
-        
+        userAttrDefs = new HashMap<String, AttributeDef>();
+        userAttrDefs.putAll(basicAttrDefs);
+        userAttrDefs.put(GIVEN_NAME_DEF.getName(), GIVEN_NAME_DEF);
+        userAttrDefs.put(SN_DEF.getName(), SN_DEF);
+
         userSearchConfig = new LDAPEntityDAOConfiguration();
-        userSearchConfig.setBaseDN("o=sevenSeas");
-        userSearchConfig.setSearchDN("");
+        userSearchConfig.setLdapBase("o=sevenSeas");
+        userSearchConfig.setSearchBase("");
         userSearchConfig
                 .setSearchFilter(new SimpleFilter("(objectClass=person)"));
-        userSearchConfig.setLdapIdAttribute("uid");
-        userSearchConfig.setAttributeDefinitions(userAttrDefs);
+        userSearchConfig.setLdapIdAttribute("cn");
+        userSearchConfig.setAttributeDefinitions(userAttrDefs.values());
         userSearchConfig.setEntityType("user");
         userSearchConfig.setObjectClasses("inetOrgPerson,");
 
@@ -90,18 +87,18 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
 
         // setting up role DAO
 
-        roleAttrDefs = new HashSet<AttributeDef>();
-        roleAttrDefs.addAll(basicAttrDefs);
-        roleAttrDefs.add(DESCRIPTION_ATTR_DEF);
-        roleAttrDefs.add(UNIQUEMEMBER_ATTR_DEF);
+        roleAttrDefs = new HashMap<String, AttributeDef>();
+        roleAttrDefs.putAll(basicAttrDefs);
+        roleAttrDefs.put(DESCRIPTION_ATTR_DEF.getName(), DESCRIPTION_ATTR_DEF);
+        roleAttrDefs.put(UNIQUEMEMBER_ATTR_DEF.getName(), UNIQUEMEMBER_ATTR_DEF);
 
         LDAPEntityDAOConfiguration roleSearchConfig = new LDAPEntityDAOConfiguration();
-        roleSearchConfig.setBaseDN("o=sevenSeas");
-        roleSearchConfig.setSearchDN("");
+        roleSearchConfig.setLdapBase("o=sevenSeas");
+        roleSearchConfig.setSearchBase("");
         roleSearchConfig.setSearchFilter(new SimpleFilter(
                 "(objectClass=groupOfUniqueNames)"));
         roleSearchConfig.setLdapIdAttribute("cn");
-        roleSearchConfig.setAttributeDefinitions(roleAttrDefs);
+        roleSearchConfig.setAttributeDefinitions(roleAttrDefs.values());
         roleSearchConfig.setEntityType("role");
 
         roleDAO = new SpringLDAPEntityDAO(roleSearchConfig);

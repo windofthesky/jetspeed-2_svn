@@ -23,7 +23,6 @@ import java.util.Set;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.SecurityAttribute;
@@ -36,6 +35,9 @@ import org.apache.jetspeed.security.mapping.model.AttributeDef;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.mapping.model.impl.AttributeImpl;
 import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
+import org.springframework.ldap.core.DirContextOperations;
+import org.springframework.ldap.core.DistinguishedName;
+import org.springframework.ldap.core.LdapRdn;
 import org.springframework.ldap.support.LdapUtils;
 
 /**
@@ -58,7 +60,7 @@ public class EntityFactoryImpl implements EntityFactory
 
     protected EntityImpl internalCreateEntity(String entityId, String internalId, Set<Attribute> attributes)
     {
-        EntityImpl entity = new EntityImpl(searchConfiguration.getEntityType(), entityId, searchConfiguration.getAttributeDefinitions());
+        EntityImpl entity = new EntityImpl(searchConfiguration.getEntityType(), entityId, searchConfiguration.getAttributeDefinitionsMap());
         entity.setAttributes(attributes);
         if (internalId != null)
         {
@@ -71,7 +73,7 @@ public class EntityFactoryImpl implements EntityFactory
     {
         Set<Attribute> ldapAttrValues = new HashSet<Attribute>();
         SecurityAttributes sas = principal.getSecurityAttributes();
-        for (AttributeDef attrDef : searchConfiguration.getAttributeDefinitions())
+        for (AttributeDef attrDef : searchConfiguration.getEntityAttributeDefinitionsMap().values())
         {
             SecurityAttribute sa = sas.getAttribute(attrDef.getMappedName());
             if (sa != null)
@@ -111,65 +113,75 @@ public class EntityFactoryImpl implements EntityFactory
         return attributes;
     }
     
-    public Entity createEntity(DirContext ctx)
+    public Entity createEntity(DirContextOperations ctx)
     {
-        try
+        String entityId = null;
+        Entity entity = null;
+        String dn = ctx.getNameInNamespace();
+        Set<Attribute> attributes = new HashSet<Attribute>();
+        Attributes attrs = ctx.getAttributes();
+        for (AttributeDef attrDef : searchConfiguration.getEntityAttributeDefinitionsMap().values())
         {
-            String entityId = null;
-            Entity entity = null;
-            String dn = ctx.getNameInNamespace();
-            Set<Attribute> attributes = new HashSet<Attribute>();
-            Attributes attrs = ctx.getAttributes("", searchConfiguration.getAttributeNames());
-            for (AttributeDef attrDef : searchConfiguration.getAttributeDefinitions())
+            List<String> values = null;
+            values = getStringAttributes(attrs, attrDef.getName());
+            if (values != null)
             {
-                List<String> values = null;
-                values = getStringAttributes(attrs, attrDef.getName());
-                if (values != null)
+                Attribute a = new AttributeImpl(attrDef);
+                if (attrDef.isMultiValue())
                 {
-                    Attribute a = new AttributeImpl(attrDef);
-                    if (attrDef.isMultiValue())
+                        
+                    // remove the dummy value for required fields when present.
+                    if (attrDef.isRequired() && attrDef.getRequiredDefaultValue() != null)
                     {
-                        // remove the dummy value for required fields when present.
-                        if (attrDef.isRequired() && attrDef.getRequiredDefaultValue() != null)
+                        String defaultValue = attrDef.getRequiredDefaultValue();
+                        if (SpringLDAPEntityDAO.DN_REFERENCE_MARKER.equals(defaultValue))
                         {
-                            String defaultValue = attrDef.getRequiredDefaultValue();
-                            if (SpringLDAPEntityDAO.DN_REFERENCE_MARKER.equals(defaultValue))
-                            {
-                                defaultValue = dn;
-                            }
-                            if (values.contains(defaultValue))
-                            {
-                                values.remove(attrDef.getRequiredDefaultValue());
-                            }
+                            defaultValue = dn;
                         }
-                        if (values.size() != 0)
+                        if (values.contains(defaultValue))
                         {
-                            a.setValues(values);
-                        }
-                        else
-                        {
-                            attributes.add(a);
+                            values.remove(attrDef.getRequiredDefaultValue());
                         }
                     }
+                        
+                    if (values.size() != 0)
+                    {
+                        a.setValues(values);
+                    }
+                        
                     else
                     {
-                        String value = values.get(0);
-                        // TODO: make this a boolean flag check
-                        if (attrDef.getName().equals(searchConfiguration.getLdapIdAttribute()))
-                        {
-                            entityId = value;
-                        }
-                        a.setValue(value);
-                    }
-                    attributes.add(a);
+                        attributes.add(a);
+                    }                        
                 }
+                else
+                {
+                    String value = values.get(0);
+                    if (attrDef.isIdAttributeName())
+                    {
+                        entityId = value;
+                    }
+                    a.setValue(value);
+                }
+                attributes.add(a);
             }
-            entity = internalCreateEntity(entityId, dn, attributes);
-            return entity;
         }
-        catch (NamingException e)
+        if (entityId == null)
         {
-            throw LdapUtils.convertLdapException(e);
+            DistinguishedName name = new DistinguishedName(dn);            
+            LdapRdn rdn = name.getLdapRdn(name.size()-1);
+            if (rdn.getKey().equals(searchConfiguration.getLdapIdAttribute()))
+            {
+                entityId = rdn.getValue();
+            }
+            else
+            {
+                // TODO: throw exception???
+                return null;
+            }
         }
+        entity = internalCreateEntity(entityId, dn, attributes);
+        entity.setLive(true);
+        return entity;
     }
 }

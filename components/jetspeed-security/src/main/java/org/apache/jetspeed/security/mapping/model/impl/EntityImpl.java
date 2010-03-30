@@ -18,7 +18,6 @@ package org.apache.jetspeed.security.mapping.model.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -35,16 +34,17 @@ import org.springframework.ldap.core.DistinguishedName;
 public class EntityImpl implements Entity
 {
     private Map<String, Attribute>  nameToAttributeMap = new HashMap<String, Attribute>();
-    private final Set<AttributeDef> allowedAttributes;
+    private final Map<String, AttributeDef> allowedAttributes;
     private String                  id;
     private String                  internalId;
     private String                  type;
+    private boolean                 live;
 
-    public EntityImpl(String type, String id, Set<AttributeDef> allowedAttributes)
+    public EntityImpl(String type, String id, Map<String, AttributeDef> allowedAttributes)
     {
         this.type = type;
         this.id = id;
-        this.allowedAttributes = Collections.unmodifiableSet(allowedAttributes);
+        this.allowedAttributes = allowedAttributes;
     }
 
     public String getType()
@@ -55,6 +55,16 @@ public class EntityImpl implements Entity
     public void setType(String type)
     {
         this.type = type;
+    }
+    
+    public boolean isLive()
+    {
+        return live;
+    }
+    
+    public void setLive(boolean live)
+    {
+        this.live = live;
     }
 
     public Attribute getAttribute(String name)
@@ -68,7 +78,7 @@ public class EntityImpl implements Entity
         
         if (attr == null && create)
         {
-            AttributeDef def = getAttributeDefinition(name);
+            AttributeDef def = allowedAttributes.get(name);
             if (def == null)
             {
                 // TODO: throw proper exception
@@ -88,7 +98,7 @@ public class EntityImpl implements Entity
 
     public Map<String, Attribute> getAttributes()
     {
-        return Collections.unmodifiableMap(nameToAttributeMap);
+        return nameToAttributeMap;
     }
 
     public Map<String, Attribute> getMappedAttributes()
@@ -102,10 +112,10 @@ public class EntityImpl implements Entity
                 mappedAttrs.put(mappedAttrEntry.getValue().getMappedName(), mappedAttrEntry.getValue());
             }
         }
-        return Collections.unmodifiableMap(mappedAttrs);
+        return mappedAttrs;
     }
 
-    public Set<AttributeDef> getAllowedAttributes()
+    public Map<String, AttributeDef> getAllowedAttributes()
     {
         return allowedAttributes;
     }
@@ -120,24 +130,12 @@ public class EntityImpl implements Entity
         this.id = id;
     }
 
-    protected AttributeDef getAttributeDefinition(String name)
-    {
-        for (AttributeDef def : allowedAttributes)
-        {
-            if (def.getName().equals(name))
-            {
-                return def;
-            }
-        }
-        return null;
-    }
-
     public void setAttribute(String name, String value)
     {
         Attribute attr = nameToAttributeMap.get(name);
         if (attr == null)
         {
-            AttributeDef def = getAttributeDefinition(name);
+            AttributeDef def = allowedAttributes.get(name);
             if (def == null)
             {
                 return; // TODO: throw proper exception
@@ -157,7 +155,7 @@ public class EntityImpl implements Entity
         Attribute attr = nameToAttributeMap.get(name);
         if (attr == null)
         {
-            AttributeDef def = getAttributeDefinition(name);
+            AttributeDef def = allowedAttributes.get(name);
             if (def == null)
             {
                 return; // TODO: throw proper exception
@@ -229,7 +227,7 @@ public class EntityImpl implements Entity
                 return false;
             }
         }
-        else if (!id.equals(other.id))
+        else if (!id.equalsIgnoreCase(other.id))
         {
             return false;
         }
@@ -240,7 +238,7 @@ public class EntityImpl implements Entity
                 return false;
             }
         }
-        else if (!internalId.equals(other.internalId))
+        else if (!internalId.equalsIgnoreCase(other.internalId))
         {
             return false;
         }

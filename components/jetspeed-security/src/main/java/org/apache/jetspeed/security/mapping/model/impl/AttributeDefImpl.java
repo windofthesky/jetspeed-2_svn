@@ -31,6 +31,8 @@ public class AttributeDefImpl implements AttributeDef
     private boolean required = false;
     private String  requiredDefaultValue;
     private boolean idAttribute;
+    private boolean idAttributeName;
+    private boolean relationOnly;
 
     public AttributeDefImpl(String name)
     {
@@ -127,6 +129,26 @@ public class AttributeDefImpl implements AttributeDef
     {
         this.idAttribute = idAttribute;
     }
+    
+    public void setRelationOnly(boolean relationOnly)
+    {
+        this.relationOnly = relationOnly;
+    }
+    
+    public boolean isRelationOnly()
+    {
+        return relationOnly;
+    }
+    
+    public boolean isIdAttributeName()
+    {
+        return idAttributeName;
+    }
+    
+    public void setIdAttributeName(boolean idAttributeName)
+    {
+        this.idAttributeName = idAttributeName;
+    }
 
     public AttributeDefImpl cfgRequiredDefaultValue(String requiredDefaultValue)
     {
@@ -137,6 +159,12 @@ public class AttributeDefImpl implements AttributeDef
     public AttributeDefImpl cfgIdAttribute(boolean isIdAttribute)
     {
         setIdAttribute(isIdAttribute);
+        return this;
+    }
+    
+    public AttributeDefImpl cfgRelationOnly(boolean relationOnly)
+    {
+        setRelationOnly(relationOnly);
         return this;
     }
 

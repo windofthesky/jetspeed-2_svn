@@ -25,7 +25,7 @@ import org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.springframework.core.io.Resource;
 import org.springframework.ldap.core.ContextSource;
-import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.simple.SimpleLdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 
 /**
@@ -41,19 +41,15 @@ public abstract class AbstractLDAPTest extends JetspeedTestCase
 
     public static final AttributeDefImpl UID_DEF = new AttributeDefImpl("uid",false,false).cfgRequired(true).cfgIdAttribute(true);
 
-    public static final AttributeDefImpl GIVEN_NAME_DEF = new AttributeDefImpl(
-            "givenName");;
+    public static final AttributeDefImpl GIVEN_NAME_DEF = new AttributeDefImpl("givenName");
 
-    public static final AttributeDefImpl LAST_NAME_DEF = new AttributeDefImpl(
-            "lastname");;
+    public static final AttributeDefImpl LAST_NAME_DEF = new AttributeDefImpl("lastname");
 
-    public static final AttributeDefImpl DESCRIPTION_ATTR_DEF = new AttributeDefImpl(
-            "description");
+    public static final AttributeDefImpl DESCRIPTION_ATTR_DEF = new AttributeDefImpl("description");
 
-    public static final AttributeDefImpl UNIQUEMEMBER_ATTR_DEF = new AttributeDefImpl(
-    "uniqueMember",true).cfgRequired(true).cfgRequiredDefaultValue("uid=someDummyValue");
+    public static final AttributeDefImpl UNIQUEMEMBER_ATTR_DEF = new AttributeDefImpl("uniqueMember",true).cfgRequired(true).cfgRequiredDefaultValue("uid=someDummyValue");
 
-    protected LdapTemplate ldapTemplate;
+    protected SimpleLdapTemplate ldapTemplate;
 
     protected ContextSource contextSource;
 
@@ -95,8 +91,7 @@ public abstract class AbstractLDAPTest extends JetspeedTestCase
         contextSource.setUserDn("uid=admin,ou=system");
         contextSource.setPassword("secret");
         contextSource.afterPropertiesSet();
-        ldapTemplate = new LdapTemplate();
-        ldapTemplate.setContextSource(contextSource);
+        ldapTemplate = new SimpleLdapTemplate(contextSource);
 
         if (!ldapService.isRunning()) return;
         

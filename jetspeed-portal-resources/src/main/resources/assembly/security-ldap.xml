@@ -159,8 +159,8 @@
   
   <bean id="UserDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration" init-method="initialize">
     <meta key="j2:cat" value="ldapSecurity" />
-    <property name="baseDN" value="${ldap.base}" />
-    <property name="searchDN" value="${ldap.user.searchBase}" />
+    <property name="ldapBase" value="${ldap.base}" />
+    <property name="searchBase" value="${ldap.user.searchBase}" />
     <property name="searchFilter">
       <bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
         <constructor-arg index="0" value="${ldap.user.filter}" />
@@ -171,31 +171,31 @@
     <property name="attributeDefinitions">
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
-          <constructor-arg type="java.lang.String" index="0" value="uid" />
-          <constructor-arg  index="1" value="false" />
-          <constructor-arg  index="2" value="false" />
+          <constructor-arg index="0" value="uid" />
+          <constructor-arg index="1" value="false" />
+          <constructor-arg index="2" value="false" />
           <property name="required" value="true"/>
           <property name="idAttribute" value="true"/>
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
-          <constructor-arg type="java.lang.String" index="0" value="cn" />
-          <constructor-arg  index="1" value="false" />
-          <constructor-arg  index="2" value="false" />
+          <constructor-arg index="0" value="cn" />
+          <constructor-arg index="1" value="false" />
+          <constructor-arg index="2" value="false" />
           <property name="required" value="true"/>
           <property name="idAttribute" value="true"/>
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
-          <constructor-arg type="java.lang.String" index="0" value="sn" />
-          <constructor-arg  index="1" value="false" />
-          <constructor-arg  index="2" value="false" />
+          <constructor-arg index="0" value="sn" />
+          <constructor-arg index="1" value="false" />
+          <constructor-arg index="2" value="false" />
           <property name="required" value="true"/>
           <property name="idAttribute" value="true"/>
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
-          <constructor-arg type="java.lang.String" index="0" value="givenName" />
-          <constructor-arg  index="1" value="false" />
-          <constructor-arg  index="2" value="true" />
-          <constructor-arg type="java.lang.String" index="3" value="user.name.given" />
+          <constructor-arg index="0" value="givenName" />
+          <constructor-arg index="1" value="false" />
+          <constructor-arg index="2" value="true" />
+          <constructor-arg index="3" value="user.name.given" />
         </bean>
       </set>
     </property>
@@ -203,8 +203,8 @@
   </bean>
   <bean id="RoleDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration" init-method="initialize">
     <meta key="j2:cat" value="ldapSecurity" />
-    <property name="baseDN" value="${ldap.base}" />
-    <property name="searchDN" value="${ldap.role.searchBase}" />
+    <property name="ldapBase" value="${ldap.base}" />
+    <property name="searchBase" value="${ldap.role.searchBase}" />
     <property name="searchFilter">
       <bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
         <constructor-arg index="0" value="${ldap.role.filter}" />
@@ -222,13 +222,13 @@
           <property name="idAttribute" value="true"/>
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
-          <constructor-arg type="java.lang.String" index="0" value="description" />
+          <constructor-arg index="0" value="description" />
           <constructor-arg index="1" value="false" />
           <constructor-arg index="2" value="true" />
-          <constructor-arg type="java.lang.String" index="3" value="role.display.name" />
+          <constructor-arg index="3" value="role.display.name" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
-          <constructor-arg type="java.lang.String" index="0" value="member" />
+          <constructor-arg index="0" value="member" />
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
           <property name="required" value="true" />
@@ -242,8 +242,8 @@
   
   <bean id="GroupDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration" init-method="initialize">
     <meta key="j2:cat" value="ldapSecurity" />
-    <property name="baseDN" value="${ldap.base}" />
-    <property name="searchDN" value="${ldap.group.searchBase}" />
+    <property name="ldapBase" value="${ldap.base}" />
+    <property name="searchBase" value="${ldap.group.searchBase}" />
     <property name="searchFilter">
       <bean class="org.apache.jetspeed.security.mapping.ldap.filter.SimpleFilter">
         <constructor-arg index="0" value="${ldap.group.filter}" />
@@ -254,20 +254,20 @@
     <property name="attributeDefinitions">
       <set>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
-          <constructor-arg type="java.lang.String" index="0" value="cn" />
+          <constructor-arg index="0" value="cn" />
           <constructor-arg index="1" value="false" />
           <constructor-arg index="2" value="false" />
           <property name="required" value="true"/>
           <property name="idAttribute" value="true"/>
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
-          <constructor-arg type="java.lang.String" index="0" value="description" />
+          <constructor-arg index="0" value="description" />
           <constructor-arg index="1" value="false" />
           <constructor-arg index="2" value="true" />
-          <constructor-arg type="java.lang.String" index="3" value="group.display.name" />
+          <constructor-arg index="3" value="group.display.name" />
         </bean>
         <bean class="org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl">
-          <constructor-arg type="java.lang.String" index="0" value="member" />
+          <constructor-arg index="0" value="member" />
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
           <property name="required" value="true" />
@@ -282,8 +282,8 @@
     <meta key="j2:cat" value="ldapSecurity" />
     <constructor-arg ref="UserDaoConfiguration"/>
     <property name="ldapTemplate">
-      <bean class="org.springframework.ldap.core.LdapTemplate">
-        <property name="contextSource" ref="LdapSpringContext" />
+      <bean class="org.springframework.ldap.core.simple.SimpleLdapTemplate">
+        <constructor-arg ref="LdapSpringContext" />
       </bean>
     </property>
   </bean>
@@ -334,8 +334,8 @@
     <meta key="j2:cat" value="ldapSecurity" />
     <constructor-arg ref="RoleDaoConfiguration"/>
     <property name="ldapTemplate">
-      <bean class="org.springframework.ldap.core.LdapTemplate">
-        <property name="contextSource" ref="LdapSpringContext" />
+      <bean class="org.springframework.ldap.core.simple.SimpleLdapTemplate">
+        <constructor-arg ref="LdapSpringContext" />
       </bean>
     </property>
   </bean>
@@ -344,8 +344,8 @@
     <meta key="j2:cat" value="ldapSecurity" />
     <constructor-arg ref="GroupDaoConfiguration"/>
     <property name="ldapTemplate">
-      <bean class="org.springframework.ldap.core.LdapTemplate">
-        <property name="contextSource" ref="LdapSpringContext" />
+      <bean class="org.springframework.ldap.core.simple.SimpleLdapTemplate">
+        <constructor-arg ref="LdapSpringContext" />
       </bean>
     </property>
   </bean>
