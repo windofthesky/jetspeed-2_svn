@@ -295,7 +295,6 @@ YUI.add('jetui-portal', function(Y) {
             var i = 0;
             while (i < Y.DD.DDM.targets.length) {
                 if (Y.DD.DDM.targets[i] == e.drop) {
-                	Y.log("found it!");
                     Y.DD.DDM.targets.splice(i, 1);
                     break;
                 }
@@ -863,7 +862,6 @@ YUI.add('jetui-portal', function(Y) {
             	return; // clicking on active window, do nothing
             }
         	active.setStyle('zIndex', portal.calculateNextZIndex());
-        	Y.log("current target = " + active);
             var title = active.one(".portlet .PTitle");
             if (!Y.Lang.isNull(title)) {
             	//var unselect = title.getComputedStyle('background'); // this deadended for me, was not working

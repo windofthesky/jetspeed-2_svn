@@ -68,6 +68,7 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 	        groups: ['toolbars']        
 	    });
     }
+    var first = null, firstDetached = null;
 	var draggablePortlets = Y.Node.all(config.portletStyle);    
     draggablePortlets.each(function(v, k) {
     	if (v.getAttribute("id") != "jsPortletTemplate")
@@ -81,6 +82,9 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 		        dragMode = 'point';
 		        dropGroups = [];
 		        portal.addResizeHandle(v, false);
+		        if (firstDetached == null) {
+		        	first = firstDetached = v;
+		        }
 	        }
 	        if (portlet.get("tool") == false)
 	        {
@@ -96,11 +100,15 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 		            node: v,
 		            groups: dropGroups            
 		        });
+		    	if (first == null)
+		    		first = v;
 	        }	        
 	        v.on('click', onClickPortlet);		        
 	        // portlet.info();
     	}
     });
+    
+    portal.activateWindow(first);
     
     var dropLayouts = Y.Node.all(config.layoutStyle); 
     dropLayouts.each(function(v, k) {
@@ -228,7 +236,6 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
         	srcNode.get('children').setStyle('visibility', 'hidden');
             srcNode.addClass('moving');        	
         }
-        //  drag.get('node').setStyle('border', '1px dotted #black');        
         portal.lastX = drag.mouseXY[0];
         portal.lastY = drag.mouseXY[1];
     });
@@ -244,20 +251,10 @@ YUI(JETUI_YUI).use('jetui-portal', 'console', 'dd', 'io', 'datatype-xml', 'datas
 	    	var top =  parseInt(dragWindow.getStyle('top'));
 	    	var width = (drag.mouseXY[0] - left) + "px";
 	    	var height = (drag.mouseXY[1] - top) + "px";
-//	    	dragWindow.setStyle('width', width);
-//	    	dragWindow.setStyle('height', height);
-	    	
-//	    	if (!Y.Lang.isNull(box)) {
-//		    	box.setStyle('width', width);
-//		    	box.setStyle('height', height);
-//	    	}	    	
 	    	if (!Y.Lang.isNull(content)) {
-//		    	content.setStyle('width', (drag.mouseXY[0] - left - portal.margins[1]) + "px"); 
-//		    	content.setStyle('height', (drag.mouseXY[1] - top - portal.margins[2]) + "px");
 		    	content.setStyle('width', width);
 		    	content.setStyle('height', height);
 	    	}	    	
-//	    	var region = dragParent.get('region');
         }
     });
     

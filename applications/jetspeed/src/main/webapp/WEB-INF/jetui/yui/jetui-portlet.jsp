@@ -86,7 +86,7 @@ if (request.getUserPrincipal() != null && fragment.getDecoration().getActions().
                 </div>
               </div>
                <div class="PContentBorder">
-<% if (request.getUserPrincipal() != null && detached != null) 
+<% if (detached != null) 
 {
 	PortletWindow win = rc.getPortletWindow(fragment.getId());
 	if (win.getWindowState().equals(WindowState.MINIMIZED))
