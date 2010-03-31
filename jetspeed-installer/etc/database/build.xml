@@ -72,7 +72,6 @@
     <target name="setupDB">
 
         <echo>Setting up the Jetspeed database for ${db.type}</echo>
-
         <echo>All existing Jetspeed data is going to be deleted from the database.</echo>
         <echo>
         </echo>
@@ -117,7 +116,6 @@
     <target name="exportDB" depends="checkDerby" unless="_derby" if="exportDataDir">
 
         <echo>Export Jetspeed database to ${exportDataDir}/j2-data.xml</echo>
-
         <mkdir dir="${exportDataDir}"/>
         <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
             <classpath refid="installationClasspath"/>
@@ -129,7 +127,6 @@
         </java>
 
         <echo>Export Jetspeed database pages to ${exportDataDir}/pages directory</echo>
-
         <mkdir dir="${exportDataDir}/pages"/>
         <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
             <classpath refid="installationClasspath"/>
@@ -151,7 +148,6 @@
             </or>
         </condition>
         <antcall target="cleanupExportedPages"/>
-
         <echo>Export Jetspeed database complete!</echo>
 
     </target>
@@ -168,7 +164,6 @@
         <antcall target="importPrefs"/>
         <available file="${importDataDir}/pages" type="dir" property="_importPages"/>
         <antcall target="importPages"/>
-
         <echo>Import Jetspeed database complete!</echo>
 
     </target>
@@ -190,7 +185,6 @@
     <target name="importPrefs" if="_importPrefs">
 
         <echo>Import Jetspeed database from ${importDataDir}/j2-prefs-data.xml</echo>
-
         <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>
@@ -199,12 +193,12 @@
               -c &quot;serializer&quot;
               -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
         </java>
+
     </target>
 
     <target name="importPages" if="_importPages">
 
         <echo>Import Jetspeed database pages from ${importDataDir}/pages directory</echo>
-
         <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>
@@ -214,6 +208,7 @@
               -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;
               -psml &quot;${importDataDir}/pages&quot;" />
         </java>
+
     </target>
 
     <target name="checkInput" unless="failSetup">
@@ -312,11 +307,35 @@
     <target name="seedDB">
 
         <echo>Seeding the database</echo>
-
+        <condition property="_seedDataFile" value="j2-ui-seed.xml">
+          <and>
+            <equals arg1="${installationType}" arg2="demo" />
+            <equals arg1="${pipelineType}" arg2="jetui" />
+          </and>
+        </condition>
+        <condition property="_seedDataFile" value="j2-seed.xml">
+          <and>
+            <equals arg1="${installationType}" arg2="demo" />
+            <equals arg1="${pipelineType}" arg2="classic" />
+          </and>
+        </condition>
+        <condition property="_seedDataFile" value="min/j2-ui-seed.xml">
+          <and>
+            <equals arg1="${installationType}" arg2="minimal" />
+            <equals arg1="${pipelineType}" arg2="jetui" />
+          </and>
+        </condition>
+        <condition property="_seedDataFile" value="min/j2-seed.xml">
+          <and>
+            <equals arg1="${installationType}" arg2="minimal" />
+            <equals arg1="${pipelineType}" arg2="classic" />
+          </and>
+        </condition>
+        <echo>Importing: ${_seedDataFile}</echo>
         <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>
-            <arg line="-I &quot;${basedir}/resources/j2-seed.xml&quot; 
+            <arg line="-I &quot;${basedir}/resources/${_seedDataFile}&quot; 
               -a &quot;${basedir}/../webapps/${portalName}&quot;
               -c &quot;serializer&quot;
               -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
@@ -327,7 +346,6 @@
     <target name="dbPsml" if="_doImportPsml">
 
         <echo>Importing psml into the database</echo>
-
         <java classname="org.apache.jetspeed.tools.page.serializer.JetspeedPageSerializerApplicationImpl" fork="yes" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>

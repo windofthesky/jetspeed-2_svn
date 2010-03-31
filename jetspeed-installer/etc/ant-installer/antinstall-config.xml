@@ -80,16 +80,40 @@
     <validated property="jvmMaxMemory" defaultValue="512m" displayText="Enter JVM memory size" regex="^[0-9][0-9]*[mgk]$"/>
   </page>
 
-  <page type="input" name="requiredComponents" displayText="Components selection" ifProperty="${operation}=install">
+  <page type="input" name="installationSelection" displayText="Installation type" ifProperty="${operation}=install">
+    <comment displayText="Please select the type of portal installation to perform." />
+    <select property="installationType" displayText="Installation type" defaultValue="demo">
+      <option text="Demo" value="demo" />
+      <option text="Minimal" value="minimal" />
+    </select>
+    <comment displayText="And select the portal pipeline to install." />
+    <select property="pipelineType" displayText="Pipeline type" defaultValue="jetui">
+      <option text="JetUI" value="jetui" />
+      <option text="Classic" value="classic" />
+    </select>
+  </page>
+
+  <page type="input" name="requiredComponents" displayText="Components selection, (Demo)" ifProperty="(${operation}=install) AND (${installationType}=demo)">
     <hidden property="setupDBAntTarget" value="runSetupNoDB" />
-    <comment displayText="Jetspeed Enterprise Portal version 2.2.1-SNAPSHOT" bold="true" />
+    <comment displayText="Jetspeed Enterprise Portal version 2.2.1-SNAPSHOT, (Demo)" bold="true" />
     <target displayText="Tomcat 6.0.18 Webserver" target="install" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Portal" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Layout Portlets" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Administration Portlets" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Demo Portlets" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="RSS Portlets" property="dummy" defaultValue="true" force="true" />
-    <checkbox displayText="JPetstore Portlets" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="Web Content Portlets" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="DB Browser Portlets" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="Store PSML in the database?" property="dbImportPsml" defaultValue="false" />
+  </page>
+
+  <page type="input" name="requiredComponents" displayText="Components selection, (Minimal)" ifProperty="(${operation}=install) AND (${installationType}=minimal)">
+    <hidden property="setupDBAntTarget" value="runSetupNoDB" />
+    <comment displayText="Jetspeed Enterprise Portal version 2.2.1-SNAPSHOT" bold="true" />
+    <target displayText="Tomcat 6.0.18 Webserver" target="install" defaultValue="true" force="true" />
+    <checkbox displayText="Jetspeed Portal" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="Jetspeed Layout Portlets" property="dummy" defaultValue="true" force="true" />
+    <checkbox displayText="Jetspeed Administration Portlets" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Store PSML in the database?" property="dbImportPsml" defaultValue="false" />
   </page>
 
@@ -289,7 +313,7 @@
     <comment displayText="Continuing now will otherwise require manual setup of the database."/>
   </page>
 
-  <page type="input" name="beforeInstall" displayText="Before your install..."
+  <page type="input" name="beforeInstall" displayText="Before you install..."
     ifProperty="(${operation}=install) AND (${setupDBAntTarget}=runSetupNoDB)">
     <hidden property="db.username" value="" />
     <hidden property="db.password" value="" />

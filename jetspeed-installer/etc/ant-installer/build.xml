@@ -71,10 +71,39 @@
 
   </target>
 
-  <target name="install" depends="setupInstallation">
+  <target name="install" depends="setupInstallation,checkMinimalInstall,minimalInstall,installPortal" />
+
+  <target name="installPortal">
 
     <echo>Moving pages out of jetspeed webapp</echo>
-    <move file="${installDir}/webapps/jetspeed/WEB-INF/pages" todir="${installDir}" />
+    <condition property="_installPagesDirName" value="ui-pages">
+      <and>
+        <equals arg1="${installationType}" arg2="demo" />
+        <equals arg1="${pipelineType}" arg2="jetui" />
+      </and>
+    </condition>
+    <condition property="_installPagesDirName" value="pages">
+      <and>
+        <equals arg1="${installationType}" arg2="demo" />
+        <equals arg1="${pipelineType}" arg2="classic" />
+      </and>
+    </condition>
+    <condition property="_installPagesDirName" value="min-ui-pages">
+      <and>
+        <equals arg1="${installationType}" arg2="minimal" />
+        <equals arg1="${pipelineType}" arg2="jetui" />
+      </and>
+    </condition>
+    <condition property="_installPagesDirName" value="min-pages">
+      <and>
+        <equals arg1="${installationType}" arg2="minimal" />
+        <equals arg1="${pipelineType}" arg2="classic" />
+      </and>
+    </condition>
+    <echo>Installing: ${_installPagesDirName}</echo>
+    <move todir="${installDir}/pages">
+      <fileset dir="${installDir}/webapps/jetspeed/WEB-INF/${_installPagesDirName}" includes="**/*" />
+    </move>
     <move file="${installDir}/webapps/jetspeed/WEB-INF/conf/jetspeed.properties" 
         tofile="${installDir}/webapps/jetspeed/WEB-INF/conf/jetspeed.properties.unfiltered"/>
     <move file="${installDir}/webapps/jetspeed/WEB-INF/conf/jetspeed.properties.unfiltered" 
@@ -85,9 +114,57 @@
          <filter token=" = " value="psml.pages.path = $${applicationRoot}/../../pages" />
        </filterset>
     </move>
+    <delete includeEmptyDirs="true">
+      <fileset dir="${installDir}/webapps/jetspeed/WEB-INF/ui-pages" />
+      <fileset dir="${installDir}/webapps/jetspeed/WEB-INF/pages" />
+      <fileset dir="${installDir}/webapps/jetspeed/WEB-INF/min-ui-pages" />
+      <fileset dir="${installDir}/webapps/jetspeed/WEB-INF/min-pages" />
+    </delete>
+
+    <echo>Configure portal pipeline</echo>
+    <condition property="_jetuiCustomizationMethod" value="ajax">
+      <equals arg1="${pipelineType}" arg2="jetui" />
+    </condition>
+    <condition property="_jetuiCustomizationMethod" value="server">
+      <not>
+        <isset property="_jetuiCustomizationMethod" />
+      </not>
+    </condition>
+    <echo>Customization method: ${_jetuiCustomizationMethod}</echo>
+    <move file="${installDir}/webapps/jetspeed/WEB-INF/conf/jetspeed.properties" 
+        tofile="${installDir}/webapps/jetspeed/WEB-INF/conf/jetspeed.properties.unfiltered"/>
+    <move file="${installDir}/webapps/jetspeed/WEB-INF/conf/jetspeed.properties.unfiltered" 
+        tofile="${installDir}/webapps/jetspeed/WEB-INF/conf/jetspeed.properties"
+        overwrite="true">
+       <filterset begintoken="jetui.customization.method" endtoken="server" recurse="false">
+         <filter token=" = " value="jetui.customization.method = ${_jetuiCustomizationMethod}" />
+       </filterset>
+    </move>
 
     <echo>Setting up the Jetspeed database (if selected)</echo>
     <ant antfile="${installDir}/database/build.xml" target="${setupDBAntTarget}" dir="${installDir}/database" inheritAll="true" />
+
+  </target>
+
+  <target name="checkMinimalInstall">
+
+    <condition property="_minimalInstallationType" value="true">
+      <equals arg1="${installationType}" arg2="minimal" />
+    </condition>
+
+  </target>
+
+  <target name="minimalInstall" if="_minimalInstallationType">
+
+    <echo>Removing demo webapps</echo>
+    <delete>
+      <fileset dir="${installDir}/webapps">
+        <include name="demo.war" />      
+        <include name="rss.war" />
+        <include name="webcontent.war" />
+        <include name="dbbrowser.war" />
+      </fileset>
+    </delete>
 
   </target>
 

@@ -228,8 +228,7 @@
                     <destination>resources</destination>
                   </resource>
                   <resource>
-                    <path>@seed.path@</path>
-                    <include>j2-seed.xml</include>
+                    <path>seed</path>
                     <destination>database/resources</destination>
                   </resource>
                   <resource>

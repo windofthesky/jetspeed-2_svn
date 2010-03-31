@@ -18,8 +18,8 @@
   $Id$
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
@@ -62,17 +62,17 @@
             <configuration>
               <tasks>
                 <unjar src="etc/ant-installer/lib/ai-icons-eclipse.jar"
-                  dest="${project.build.directory}/ant-installer-classes" overwrite="false"/>
+                       dest="${project.build.directory}/ant-installer-classes" overwrite="false"/>
                 <unjar src="etc/ant-installer/lib/ant.jar"
-                  dest="${project.build.directory}/ant-installer-classes" overwrite="false"/>
+                       dest="${project.build.directory}/ant-installer-classes" overwrite="false"/>
                 <unjar src="etc/ant-installer/lib/ant-installer.jar"
-                  dest="${project.build.directory}/ant-installer-classes" overwrite="false"/>
+                       dest="${project.build.directory}/ant-installer-classes" overwrite="false"/>
                 <unjar src="etc/ant-installer/lib/ant-launcher.jar"
-                  dest="${project.build.directory}/ant-installer-classes" overwrite="false"/>
+                       dest="${project.build.directory}/ant-installer-classes" overwrite="false"/>
                 <unjar src="etc/ant-installer/lib/jgoodies-edited-1_2_2.jar"
-                  dest="${project.build.directory}/ant-installer-classes" overwrite="false"/>
+                       dest="${project.build.directory}/ant-installer-classes" overwrite="false"/>
                 <unjar src="etc/ant-installer/lib/xml-apis.jar"
-                  dest="${project.build.directory}/ant-installer-classes" overwrite="false"/>
+                       dest="${project.build.directory}/ant-installer-classes" overwrite="false"/>
                 <delete dir="${project.build.directory}/ant-installer-classes/META-INF"/>
               </tasks>
             </configuration>
@@ -83,30 +83,7 @@
         </executions>
       </plugin>
 
-     <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.2</version>
-        <executions>
-          
-          <!-- copy some ant-installer configuration file to target/resources/ant-installer -->
-          <execution>
-            <id>copy-configuration</id>
-            <phase>generate-resources</phase>
-            <configuration>
-              <tasks>
-                <copy file="etc/ant-installer/@antinstall.filename@" 
-                  tofile="${project.build.directory}/resources/ant-installer/antinstall-config.xml"/>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-     <!-- assembly: create self extracting jar -->
+      <!-- assembly: create self extracting jar -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -132,20 +109,5 @@
         </executions>
       </plugin>
     </plugins>
-   </build>
-  
-  <profiles>
-    <profile>
-      <id>demo</id>
-      <build>
-        <finalName>${artifactId}-demo-${pom.version}</finalName>
-      </build> 
-    </profile>
-    <profile>
-      <id>minimal</id>
-      <build>
-        <finalName>${artifactId}-minimal-${pom.version}</finalName>
-      </build> 
-    </profile>
-  </profiles>
+  </build>
 </project>

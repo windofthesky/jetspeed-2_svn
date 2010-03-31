@@ -51,6 +51,8 @@
   </build>
 
   <profiles>
+
+    <!-- unpack: unzip tomcat-portal and portal resources -->
     <profile>
       <id>unpack</id>
       <build>
@@ -131,12 +133,11 @@
     </profile>
 
     <profile>
-      <id>minimal</id>
+      <id>portal</id>
       <build>
         <defaultGoal>package</defaultGoal>
-
-        <!-- create a minimal jetspeed deployment into the expanded tomcat -->
         <plugins>
+          <!-- create a full demo jetspeed deployment into the expanded tomcat -->
           <plugin>
             <groupId>org.apache.portals.jetspeed-2</groupId>
             <artifactId>jetspeed-deploy-maven-plugin</artifactId>
@@ -156,196 +157,7 @@
                     <context>webapps/jetspeed/META-INF</context>
                   </destinations>
                   <deployments>
-                    <deployment>
-                      <artifact>org.apache.portals:portlet-api_2.0_spec:jar</artifact>
-                    </deployment>
-                    <deployment>
-                      <artifact>javax.ccpp:ccpp:jar</artifact>
-                    </deployment>
-                    <deployment>
-                      <artifact>org.apache.portals.jetspeed-2:jetspeed-api:jar</artifact>
-                    </deployment>
-                    <deployment>
-                      <artifact>org.apache.portals.jetspeed-2:jetspeed-commons:jar</artifact>
-                    </deployment>
-                    <deployment>
-                      <artifact>org.apache.portals.pluto:pluto-container-api:jar</artifact>
-                    </deployment>
-                    <deployment>
-                      <artifact>org.apache.portals.pluto:pluto-taglib:jar</artifact>
-                    </deployment>
-                    <deployment>
-                      <artifact>org.apache.portals.bridges:portals-bridges-common:jar</artifact>
-                    </deployment>
-                    <!-- jetspeed portal expanded -->
-                    <deployment>
-                      <artifact>org.apache.portals.jetspeed-2:jetspeed-demo:war</artifact>
-                      <expand>true</expand>
-                      <targetName>${org.apache.jetspeed.portal.context.name}</targetName>
-                      <delete>./${org.apache.jetspeed.portal.context.name}</delete>
-                    </deployment>
-                    <!-- demo portal tomcat context -->
-                    <deployment>
-                      <file>${project.build.directory}/resources/tomcat/context.xml</file>
-                      <destination>context</destination>
-                    </deployment>
-                    <!-- Tomcat server conf override -->
-                    <deployment>
-                      <file>${project.build.directory}/../etc/tomcat/conf/server.xml</file>
-                      <destination>server-conf</destination>
-                    </deployment>
-                    <!-- admin pa -->
-                    <deployment>
-                      <artifact>org.apache.portals.jetspeed-2:j2-admin:war</artifact>
-                      <expand>true</expand>
-                      <delete>./j2-admin</delete>
-                    </deployment>
-                    <!-- logging -->
-                    <deployment>
-                      <artifact>org.apache.portals.applications:apa-logging:jar</artifact>
-                      <destination>server-lib</destination>
-                    </deployment>
-                  </deployments>
-                  <edits>
-                    <!-- logging -->
-                    <edit>
-                      <targetName>server.xml</targetName>
-                      <destination>server-conf</destination>
-                      <editorClassName>org.apache.portals.applications.logging.tomcat.ServerXMLConfigurer</editorClassName>
-                    </edit>
-                  </edits>
-                </configuration>
-              </execution>
-            </executions>
-
-            <dependencies>
-
-              <dependency>
-                <groupId>org.apache.portals</groupId>
-                <artifactId>portlet-api_2.0_spec</artifactId>
-                <version>${portals.portlet2-api-spec.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>javax.ccpp</groupId>
-                <artifactId>ccpp</artifactId>
-                <version>${ccpp.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>org.apache.portals.jetspeed-2</groupId>
-                <artifactId>jetspeed-api</artifactId>
-                <version>${org.apache.portals.jetspeed.version}</version>
-                <scope>runtime</scope>
-              </dependency>
-              <dependency>
-                <groupId>org.apache.portals.jetspeed-2</groupId>
-                <artifactId>jetspeed-commons</artifactId>
-                <version>${org.apache.portals.jetspeed.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>org.apache.portals.pluto</groupId>
-                <artifactId>pluto-container-api</artifactId>
-                <version>${org.apache.pluto.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>org.apache.portals.pluto</groupId>
-                <artifactId>pluto-taglib</artifactId>
-                <version>${org.apache.pluto.version}</version>
-              </dependency>
-              <dependency>
-                <groupId>org.apache.portals.bridges</groupId>
-                <artifactId>portals-bridges-common</artifactId>
-                <version>${org.apache.portals.bridges.common.version}</version>
-              </dependency>
-              <!-- jetspeed-demo -->
-              <dependency>
-                <groupId>org.apache.portals.jetspeed-2</groupId>
-                <artifactId>jetspeed-demo</artifactId>
-                <version>${pom.version}</version>
-                <type>war</type>
-              </dependency>
-              <!-- j2-admin -->
-              <dependency>
-                <groupId>org.apache.portals.jetspeed-2</groupId>
-                <artifactId>j2-admin</artifactId>
-                <version>${org.apache.portals.jetspeed.version}</version>
-                <type>war</type>
-              </dependency>
-              <!-- logging -->
-              <dependency>
-                <groupId>org.apache.portals.applications</groupId>
-                <artifactId>apa-logging</artifactId>
-                <version>${org.apache.portals.applications.apa-logging.version}</version>
-              </dependency>
-
-              <!-- plugin own dependencies -->
-              <dependency>
-                <groupId>org.apache.portals.jetspeed-2</groupId>
-                <artifactId>jetspeed-deploy-tools</artifactId>
-                <version>${org.apache.portals.jetspeed.version}</version>
-              </dependency>
-            </dependencies>
-          </plugin>
-
-          <!-- remove pages and move min-pages to pages -->
-          <plugin>
-            <groupId>org.apache.portals.jetspeed-2</groupId>
-            <artifactId>jetspeed-fileutils-maven-plugin</artifactId>
-            <version>${org.apache.portals.jetspeed.version}</version>
-            <executions>
-              <execution>
-                <id>delete-pages</id>
-                <goals>
-                  <goal>event</goal>
-                </goals>
-                <phase>process-resources</phase>
-                <configuration>
-                  <srcDirectoryPath>${org.apache.jetspeed.portal.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/pages</srcDirectoryPath>
-                  <event>delete</event>
-                </configuration>
-              </execution>
-              <execution>
-                <id>move-min-pages</id>
-                <goals>
-                  <goal>event</goal>
-                </goals>
-                <phase>process-resources</phase>
-                <configuration>
-                  <srcDirectoryPath>${org.apache.jetspeed.portal.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/min-pages</srcDirectoryPath>
-                  <destDirectoryPath>${org.apache.jetspeed.portal.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/pages</destDirectoryPath>
-                  <event>move</event>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>demo</id>
-      <build>
-        <defaultGoal>package</defaultGoal>
-        <plugins>
-          <!-- create a demo jetspeed deployment into the expanded tomcat -->
-          <plugin>
-            <groupId>org.apache.portals.jetspeed-2</groupId>
-            <artifactId>jetspeed-deploy-maven-plugin</artifactId>
-            <version>${org.apache.portals.jetspeed.version}</version>
-            <executions>
-              <execution>
-                <id>deploy</id>
-                <goals>
-                  <goal>deploy</goal>
-                </goals>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <targetBaseDir>${org.apache.jetspeed.portal.home}</targetBaseDir>
-                  <portalName>${org.apache.jetspeed.portal.context.name}</portalName>
-                  <profile>tomcat${tomcat.version.major}</profile>
-                  <destinations>
-                    <context>webapps/jetspeed/META-INF</context>
-                  </destinations>
-                  <deployments>
+                    <!-- commons -->
                     <deployment>
                       <artifact>org.apache.portals:portlet-api_2.0_spec:jar</artifact>
                     </deployment>
@@ -384,13 +196,13 @@
                       <file>${project.build.directory}/../etc/tomcat/conf/server.xml</file>
                       <destination>server-conf</destination>
                     </deployment>                    
-                    <!-- admin pa -->
+                    <!-- admin portlet application -->
                     <deployment>
                       <artifact>org.apache.portals.jetspeed-2:j2-admin:war</artifact>
                       <expand>true</expand>
                       <delete>./j2-admin</delete>
                     </deployment>
-                    <!-- demo pa's, not for minimal! -->
+                    <!-- demo portlet applications -->
                     <deployment>
                       <artifact>org.apache.portals.applications:apa-demo:war</artifact>
                       <targetName>demo.war</targetName>
@@ -434,6 +246,7 @@
             </executions>
 
             <dependencies>
+              <!-- commons -->
               <dependency>
                 <groupId>org.apache.portals</groupId>
                 <artifactId>portlet-api_2.0_spec</artifactId>
@@ -470,22 +283,21 @@
                 <artifactId>portals-bridges-common</artifactId>
                 <version>${org.apache.portals.bridges.common.version}</version>
               </dependency>
-              <!-- jetspeed-demo -->
+              <!-- jetspeed demo portal -->
               <dependency>
                 <groupId>org.apache.portals.jetspeed-2</groupId>
                 <artifactId>jetspeed-demo</artifactId>
                 <version>${pom.version}</version>
                 <type>war</type>
               </dependency>
-              <!-- j2-admin -->
+              <!-- j2-admin portal applications -->
               <dependency>
                 <groupId>org.apache.portals.jetspeed-2</groupId>
                 <artifactId>j2-admin</artifactId>
                 <version>${org.apache.portals.jetspeed.version}</version>
                 <type>war</type>
               </dependency>
-
-              <!-- demo pa's, not for minimal! -->
+              <!-- demo portal applications -->
               <dependency>
                 <groupId>org.apache.portals.applications</groupId>
                 <artifactId>apa-rss-war</artifactId>
@@ -510,14 +322,12 @@
                 <version>${org.apache.portals.applications.apa-dbbrowser.version}</version>
                 <type>war</type>
               </dependency>
-
               <!-- logging -->
               <dependency>
                 <groupId>org.apache.portals.applications</groupId>
                 <artifactId>apa-logging</artifactId>
                 <version>${org.apache.portals.applications.apa-logging.version}</version>
               </dependency>
-              
               <!-- plugin own dependencies -->
               <dependency>
                 <groupId>org.apache.portals.jetspeed-2</groupId>
@@ -525,26 +335,6 @@
                 <version>${org.apache.portals.jetspeed.version}</version>
               </dependency>
             </dependencies>
-          </plugin>
-
-          <!-- remove min-pages from deployed jetspeed -->
-          <plugin>
-            <groupId>org.apache.portals.jetspeed-2</groupId>
-            <artifactId>jetspeed-fileutils-maven-plugin</artifactId>
-            <version>${org.apache.portals.jetspeed.version}</version>
-            <executions>
-              <execution>
-                <id>delete-min-pages</id>
-                <goals>
-                  <goal>event</goal>
-                </goals>
-                <phase>process-resources</phase>
-                <configuration>
-                  <srcDirectoryPath>${org.apache.jetspeed.portal.home}/webapps/${org.apache.jetspeed.portal.context.name}/WEB-INF/min-pages</srcDirectoryPath>
-                  <event>delete</event>
-                </configuration>
-              </execution>
-            </executions>
           </plugin>
         </plugins>
       </build>

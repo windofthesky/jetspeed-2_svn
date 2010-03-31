@@ -54,7 +54,7 @@
       <outputDirectory>/</outputDirectory>
     </file>
     <file>
-      <source>target/resources/ant-installer/antinstall-config.xml</source>
+      <source>etc/ant-installer/antinstall-config.xml</source>
       <outputDirectory>/</outputDirectory>
     </file>
     <file>
