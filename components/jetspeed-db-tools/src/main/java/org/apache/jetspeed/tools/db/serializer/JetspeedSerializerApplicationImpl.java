@@ -23,8 +23,9 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.configuration.Configuration;
+import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.administration.PortalConfigurationConstants;
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.util.Slf4JLoggerToolsLogger;
@@ -32,6 +33,8 @@ import org.apache.jetspeed.serializer.JetspeedSerializer;
 import org.apache.jetspeed.serializer.JetspeedSerializerApplication;
 import org.apache.jetspeed.serializer.SerializerException;
 import org.apache.jetspeed.tools.ToolsLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Jetspeed Serializer Application
@@ -179,6 +182,11 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
             
             scm = new SpringComponentManager(filter, bootConfig, appConfig, applicationRootPath, initProperties, true);
             scm.start();
+            Configuration config = (Configuration)scm.getComponent("portal_configuration");
+            if (config != null)
+            {
+            	new JetspeedActions(config.getStringArray(PortalConfigurationConstants.SUPPORTED_PORTLET_MODES), config.getStringArray(PortalConfigurationConstants.SUPPORTED_WINDOW_STATES));
+            }
             JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent(JetspeedSerializer.class.getName());
             HashMap settings = new HashMap();
             settings.put(JetspeedSerializer.KEY_LOGGER, logger);
@@ -246,6 +254,11 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
             
             scm = new SpringComponentManager(filter, bootConfig, appConfig, applicationRootPath, true);
             scm.start();
+            Configuration config = (Configuration)scm.getComponent("portal_configuration");
+            if (config != null)
+            {
+            	new JetspeedActions(config.getStringArray(PortalConfigurationConstants.SUPPORTED_PORTLET_MODES), config.getStringArray(PortalConfigurationConstants.SUPPORTED_WINDOW_STATES));
+            }            
             JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent(JetspeedSerializer.class.getName());
             HashMap settings = new HashMap();
             settings.put(JetspeedSerializer.KEY_LOGGER, logger);

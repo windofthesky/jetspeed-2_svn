@@ -133,10 +133,6 @@ public class JetspeedActions
                 actionsList.add(state);
                 list.add(state);
             }
-            else if (!standardWindowStates.contains(state))
-            {
-                throw new IllegalArgumentException("WindowState "+state+" already defined as extended PortletMode or WindowState");
-            }
         }
         extendedWindowStates = Collections.unmodifiableList(list);
         
@@ -150,10 +146,6 @@ public class JetspeedActions
                 actionsMap.put(mode.toString(), new Integer(index++));
                 actionsList.add(mode);
                 list2.add(mode);
-            }
-            else if (!standardPortletModes.contains(mode))
-            {
-                throw new IllegalArgumentException("PortletMode "+mode+" already defined as extended PortletMode or WindowState");
             }
         }
         extendedPortletModes = Collections.unmodifiableList(list2);

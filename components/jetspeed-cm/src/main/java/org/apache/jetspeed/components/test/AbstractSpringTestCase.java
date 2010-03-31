@@ -19,6 +19,7 @@ package org.apache.jetspeed.components.test;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.test.JetspeedTestCase;
@@ -39,6 +40,9 @@ public abstract class AbstractSpringTestCase extends JetspeedTestCase
 {
     protected SpringComponentManager scm;
 
+    protected final static String[] SUPPORTED_PORTLET_MODES = { "normal", "maximized", "minimized", "solo", "detach", "close" };
+    protected final static String[] SUPPORTED_WINDOW_STATES = { "view", "edit", "help", "about", "config", "edit_defaults", "preview", "print", "secure" };
+    
     /**
      * setup Spring context as part of test setup
      */
@@ -47,6 +51,7 @@ public abstract class AbstractSpringTestCase extends JetspeedTestCase
         super.setUp();
         scm = new SpringComponentManager(getBeanDefinitionFilter(), getBootConfigurations(), getConfigurations(), getBaseDir()+"target/test-classes/webapp", getInitProperties(), false);
         scm.start();
+	    new JetspeedActions(SUPPORTED_PORTLET_MODES, SUPPORTED_WINDOW_STATES);
     }
 
     /**

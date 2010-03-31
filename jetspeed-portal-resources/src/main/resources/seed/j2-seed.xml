@@ -601,7 +601,7 @@
 			<groups></groups>
 			<users></users>
 		</Permission>
-		<Permission type="portal" resource="rss::*" actions="view, edit">
+		<Permission type="portal" resource="rss::*" actions="view, edit, edit_defaults">
 			<roles>user</roles>
 			<groups></groups>
 			<users></users>
