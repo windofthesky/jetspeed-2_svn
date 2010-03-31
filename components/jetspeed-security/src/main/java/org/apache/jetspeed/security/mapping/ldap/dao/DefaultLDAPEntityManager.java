@@ -16,15 +16,17 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
+import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
 
@@ -35,30 +37,68 @@ import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
 public class DefaultLDAPEntityManager implements SecurityEntityManager
 {
     // entity type DAOs
-    protected Map<String, EntityDAO>                             entityDAOs = new HashMap<String, EntityDAO>();
-    protected Map<SecurityEntityRelationType, EntityRelationDAO> entityRelationDAOs = new HashMap<SecurityEntityRelationType, EntityRelationDAO>();
-
-    public Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes()
+    private Map<String, EntityDAO>                             entityDAOs = new HashMap<String, EntityDAO>();
+    private Map<SecurityEntityRelationType, EntityRelationDAO> entityRelationDAOs = new HashMap<SecurityEntityRelationType, EntityRelationDAO>();
+    private Map<String, Set<SecurityEntityRelationType>> entityRelationTypes = new HashMap<String, Set<SecurityEntityRelationType>>();
+    
+    public DefaultLDAPEntityManager(List<EntityDAO> entityDAOs, List<EntityRelationDAO> entityRelationDAOs)
     {
-        return Collections.unmodifiableCollection(entityRelationDAOs.keySet());
-    }
-
-    public Collection<String> getSupportedEntityTypes()
-    {
-        return Collections.unmodifiableCollection(entityDAOs.keySet());
-    }
-
-    public Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes(String entityType)
-    {
-        Collection<SecurityEntityRelationType> supportedRelationTypes = new ArrayList<SecurityEntityRelationType>();
-        for (SecurityEntityRelationType type : entityRelationDAOs.keySet())
+        for (EntityDAO entityDAO: entityDAOs)
         {
-            if (type.getFromEntityType().equals(entityType) || type.getToEntityType().equals(entityType))
+            this.entityDAOs.put(entityDAO.getEntityType(), entityDAO);
+        }
+        if (entityRelationDAOs != null)
+        {
+            for (EntityRelationDAO entityRelationDAO: entityRelationDAOs)
             {
-                supportedRelationTypes.add(type);
+                SecurityEntityRelationType relationType = entityRelationDAO.getRelationType();
+                if (this.entityDAOs.get(relationType.getFromEntityType()) == null || this.entityDAOs.get(relationType.getToEntityType()) == null)
+                {
+                    throw new IllegalArgumentException("Missing EntityDAO for EntityRelationDAO fromEntityType: "+relationType.getFromEntityType() +
+                                                       " and/or toEntityType: "+relationType.getToEntityType());
+                }
+                this.entityRelationDAOs.put(new SecurityEntityRelationTypeImpl(relationType.getRelationType(), relationType.getFromEntityType(), relationType.getToEntityType()), 
+                                            entityRelationDAO);
             }
         }
-        return Collections.unmodifiableCollection(supportedRelationTypes);
+        for (SecurityEntityRelationType relationType : this.entityRelationDAOs.keySet())
+        {
+            Set<SecurityEntityRelationType> relationTypes = entityRelationTypes.get(relationType.getFromEntityType());
+            if (relationTypes == null)
+            {
+                relationTypes = new HashSet<SecurityEntityRelationType>();
+                entityRelationTypes.put(relationType.getFromEntityType(), relationTypes);
+            }
+            relationTypes.add(relationType);
+            relationTypes = entityRelationTypes.get(relationType.getToEntityType());
+            if (relationTypes == null)
+            {
+                relationTypes = new HashSet<SecurityEntityRelationType>();
+                entityRelationTypes.put(relationType.getFromEntityType(), relationTypes);
+            }
+            relationTypes.add(relationType);
+        }
+    }
+    
+    public SecurityEntityRelationType getSupportedEntityRelationType(String relationType, String fromEntityType, String toEntityType)
+    {
+        SecurityEntityRelationType key = new SecurityEntityRelationTypeImpl(relationType, fromEntityType, toEntityType);
+        return entityRelationDAOs.containsKey(key) ? key : null;
+    }
+
+    public Set<SecurityEntityRelationType> getSupportedEntityRelationTypes()
+    {
+        return entityRelationDAOs.keySet();
+    }
+
+    public Set<String> getSupportedEntityTypes()
+    {
+        return entityRelationTypes.keySet();
+    }
+
+    public Set<SecurityEntityRelationType> getSupportedEntityRelationTypes(String entityType)
+    {
+        return entityRelationTypes.get(entityType);
     }
 
     private EntityDAO getDAOForEntity(Entity entity)
@@ -66,69 +106,39 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         return entityDAOs.get(entity.getType());
     }
 
-    public void addRelation(Entity sourceEntity, Entity targetEntity, SecurityEntityRelationType relationType) throws SecurityException
+    public void addRelation(String fromEntityId, String toEntityId, SecurityEntityRelationType relationType) throws SecurityException
     {
-        EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType);
-        if (relationDAO != null)
+        EntityRelationDAO dao = entityRelationDAOs.get(relationType instanceof SecurityEntityRelationTypeImpl ? relationType : new SecurityEntityRelationTypeImpl(relationType));
+        if (dao != null)
         {
-            EntityDAO sourceDAO;
-            EntityDAO targetDAO;
-            if (relationType.getFromEntityType().equals(sourceEntity.getType()))
-            {
-                sourceDAO = entityDAOs.get(sourceEntity.getType());
-                targetDAO = entityDAOs.get(relationType.getToEntityType());                
-            }
-            else
-            {
-                targetDAO = entityDAOs.get(sourceEntity.getType());
-                sourceDAO = entityDAOs.get(relationType.getToEntityType());
-            }
-            if (sourceDAO != null && targetDAO != null && sourceDAO.getEntityType().equals(sourceEntity) && targetDAO.getEntityType().equals(targetEntity.getType()))
-            {
-                relationDAO.addRelation(sourceDAO, targetDAO, sourceEntity, targetEntity);
-            }
+            dao.addRelation(entityDAOs.get(relationType.getFromEntityType()), entityDAOs.get(relationType.getToEntityType()), fromEntityId, toEntityId);
         }
     }
-
-    public void removeRelation(Entity entity, Entity relatedEntity, SecurityEntityRelationType relationType) throws SecurityException
+    
+    public void removeRelation(String fromEntityId, String toEntityId, SecurityEntityRelationType relationType) throws SecurityException
     {
-        EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType);
-        if (relationDAO != null)
+        EntityRelationDAO dao = entityRelationDAOs.get(relationType instanceof SecurityEntityRelationTypeImpl ? relationType : new SecurityEntityRelationTypeImpl(relationType));
+        if (dao != null)
         {
-            EntityDAO sourceDAO;
-            EntityDAO targetDAO;
-            if (relationType.getFromEntityType().equals(entity.getType()))
-            {
-                sourceDAO = entityDAOs.get(entity.getType());
-                targetDAO = entityDAOs.get(relationType.getToEntityType());
-            }
-            else
-            {
-                targetDAO = entityDAOs.get(entity.getType());
-                sourceDAO = entityDAOs.get(relationType.getToEntityType());
-            }
-            if (sourceDAO != null && targetDAO != null && sourceDAO.getEntityType().equals(entity) && targetDAO.getEntityType().equals(relatedEntity.getType()))
-            {
-                relationDAO.removeRelation(sourceDAO, targetDAO, entity, relatedEntity);
-            }
+            dao.removeRelation(entityDAOs.get(relationType.getFromEntityType()), entityDAOs.get(relationType.getToEntityType()), fromEntityId, toEntityId);
         }
     }
-
-    public Collection<Entity> getAllEntities(String entityType)
+    
+    public Collection<Entity> getAllEntities(String entityType) throws SecurityException
     {
         EntityDAO dao = entityDAOs.get(entityType);
         return dao != null ? dao.getAllEntities() : null;
     }
 
-    public Entity getEntity(String entityType, String entityId)
+    public Entity getEntity(String entityType, String entityId) throws SecurityException
     {
         EntityDAO dao = entityDAOs.get(entityType);
         return dao != null ? dao.getEntity(entityId) : null;
     }
 
-    public Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType)
+    public Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType) throws SecurityException
     {
-        EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType);
+        EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType instanceof SecurityEntityRelationTypeImpl ? relationType : new SecurityEntityRelationTypeImpl(relationType));
         if (relationDAO != null)
         {
             EntityDAO fromDAO = entityDAOs.get(relationType.getFromEntityType());
@@ -142,9 +152,9 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         // types and relation type is not configured.
     }
 
-    public Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType)
+    public Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType) throws SecurityException
     {
-        EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType);
+        EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType instanceof SecurityEntityRelationTypeImpl ? relationType : new SecurityEntityRelationTypeImpl(relationType));
         if (relationDAO != null)
         {
             EntityDAO fromDAO = entityDAOs.get(relationType.getFromEntityType());
@@ -201,21 +211,6 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
                 throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(parentEntity.getType(), parentEntity.getId()));
             }
             dao.add(entity, liveParentEntity);
-        }
-    }
-
-    public void setEntityDAOs(Map<String, EntityDAO> entityDAOs)
-    {
-        this.entityDAOs.clear();
-        this.entityDAOs.putAll(entityDAOs);
-    }
-
-    public void setEntityRelationDAOs(Collection<EntityRelationDAO> entityRelationDAOs)
-    {
-        this.entityRelationDAOs.clear();
-        for (EntityRelationDAO dao : entityRelationDAOs)
-        {
-            this.entityRelationDAOs.put(dao.getRelationType(), dao);
         }
     }
 

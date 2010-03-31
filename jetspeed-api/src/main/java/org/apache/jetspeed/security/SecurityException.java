@@ -162,6 +162,12 @@ public class SecurityException extends JetspeedException
 
     public static final KeyedMessage DEFAULT_SECURITY_DOMAIN_DOES_NOT_EXIST = new KeyedMessage("The default security domain does not exist.");
 
+    /** <p>Entity association attribute undefined</p> */
+    public static final KeyedMessage ENTITY_ATTRIBUTE_UNDEFINED = new KeyedMessage("The attribute {0} is undefined for entity {1}.");
+    
+    /** <p>Entity association attribute undefined</p> */
+    public static final KeyedMessage ENTITY_ATTRIBUTE_MULTIVALUE_UNSUPPORTED = new KeyedMessage("The attribute {0} for entity {1} doesn't support multivalues.");    
+    
     /**
      * <p>Default Constructor.</p>
      */

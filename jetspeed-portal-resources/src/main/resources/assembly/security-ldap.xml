@@ -141,20 +141,20 @@
   <bean id="org.apache.jetspeed.security.mapping.SecurityEntityManager"
     class="org.apache.jetspeed.security.mapping.ldap.dao.DefaultLDAPEntityManager">
     <meta key="j2:cat" value="ldapSecurity" />
-    <property name="entityDAOs">
-      <map>
-        <entry key="user" value-ref="UserDao" />
-        <entry key="role" value-ref="RoleDao" />
-		<entry key="group" value-ref="GroupDao" />
-      </map>
-    </property>
-    <property name="entityRelationDAOs">
+    <constructor-arg index="0"> 
+      <list>
+        <ref bean="UserDao" />
+        <ref bean="RoleDao" />
+            <ref bean="GroupDao" />
+      </list>
+    </constructor-arg>
+    <constructor-arg index="1">
       <list>
         <ref bean="UserRoleRelationDAO" />
-		<ref bean="RoleGroupRelationDAO" />
-		<ref bean="UserGroupRelationDAO" />
+            <ref bean="RoleGroupRelationDAO" />
+            <ref bean="UserGroupRelationDAO" />
       </list>
-    </property>
+    </constructor-arg>
   </bean>
   
   <bean id="UserDaoConfiguration" class="org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration" init-method="initialize">
@@ -232,8 +232,6 @@
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
           <property name="required" value="true" />
-          <!-- use 'magic' value #dn to have the entity own dn be used -->
-          <property name="requiredDefaultValue" value="#dn" />
         </bean>
       </set>
     </property>
@@ -271,8 +269,6 @@
           <constructor-arg index="1" value="true" />
           <constructor-arg index="2" value="false" />
           <property name="required" value="true" />
-          <!-- use 'magic' value #dn to have the entity own dn be used -->
-          <property name="requiredDefaultValue" value="#dn" />
         </bean>
       </set>
     </property>

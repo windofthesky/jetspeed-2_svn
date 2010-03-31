@@ -33,12 +33,14 @@ public interface AttributeDef
     boolean isRequired();
 
     String getRequiredDefaultValue();
+    
+    boolean requiresDnDefaultValue();
 
     boolean isIdAttribute();
     
     boolean isRelationOnly();
     
-    boolean isIdAttributeName();
+    boolean isEntityIdAttribute();
     
-    void setIdAttributeName(boolean idAttributeName);
+    void setEntityIdAttribute(boolean idAttributeName);
 }

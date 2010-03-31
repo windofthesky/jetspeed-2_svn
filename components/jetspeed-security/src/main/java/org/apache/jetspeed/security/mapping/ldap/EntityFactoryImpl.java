@@ -29,7 +29,6 @@ import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.ldap.dao.LDAPEntityDAOConfiguration;
-import org.apache.jetspeed.security.mapping.ldap.dao.impl.SpringLDAPEntityDAO;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
 import org.apache.jetspeed.security.mapping.model.Entity;
@@ -75,13 +74,16 @@ public class EntityFactoryImpl implements EntityFactory
         SecurityAttributes sas = principal.getSecurityAttributes();
         for (AttributeDef attrDef : searchConfiguration.getEntityAttributeDefinitionsMap().values())
         {
-            SecurityAttribute sa = sas.getAttribute(attrDef.getMappedName());
-            if (sa != null)
+            if (attrDef.isMapped())
             {
-                // currently only single-valued attributes are supported
-                AttributeImpl attr = new AttributeImpl(attrDef);
-                attr.setValue(sa.getStringValue());
-                ldapAttrValues.add(attr);
+                SecurityAttribute sa = sas.getAttribute(attrDef.getMappedName());
+                if (sa != null)
+                {
+                    // currently only single-valued attributes are supported
+                    AttributeImpl attr = new AttributeImpl(attrDef);
+                    attr.setValue(sa.getStringValue());
+                    ldapAttrValues.add(attr);
+                }
             }
         }
         return internalCreateEntity(principal.getName(), null, ldapAttrValues);
@@ -113,8 +115,9 @@ public class EntityFactoryImpl implements EntityFactory
         return attributes;
     }
     
-    public Entity createEntity(DirContextOperations ctx)
+    public Entity loadEntity(Object providerContext)
     {
+        DirContextOperations ctx = (DirContextOperations)providerContext;
         String entityId = null;
         Entity entity = null;
         String dn = ctx.getNameInNamespace();
@@ -129,19 +132,11 @@ public class EntityFactoryImpl implements EntityFactory
                 Attribute a = new AttributeImpl(attrDef);
                 if (attrDef.isMultiValue())
                 {
-                        
                     // remove the dummy value for required fields when present.
-                    if (attrDef.isRequired() && attrDef.getRequiredDefaultValue() != null)
+                    if (attrDef.isRequired())
                     {
-                        String defaultValue = attrDef.getRequiredDefaultValue();
-                        if (SpringLDAPEntityDAO.DN_REFERENCE_MARKER.equals(defaultValue))
-                        {
-                            defaultValue = dn;
-                        }
-                        if (values.contains(defaultValue))
-                        {
-                            values.remove(attrDef.getRequiredDefaultValue());
-                        }
+                        String defaultValue = attrDef.requiresDnDefaultValue() ? dn : attrDef.getRequiredDefaultValue();
+                        values.remove(defaultValue);
                     }
                         
                     if (values.size() != 0)
@@ -157,7 +152,7 @@ public class EntityFactoryImpl implements EntityFactory
                 else
                 {
                     String value = values.get(0);
-                    if (attrDef.isIdAttributeName())
+                    if (attrDef.isEntityIdAttribute())
                     {
                         entityId = value;
                     }

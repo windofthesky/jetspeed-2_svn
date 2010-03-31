@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.security.spi;
 
+import org.apache.jetspeed.security.SecurityException;
+
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
@@ -27,7 +29,7 @@ public interface JetspeedSecuritySynchronizer
 	 * Synchronizes the user principal with the specified name. 
 	 * @param name
 	 */
-    void synchronizeUserPrincipal(String name, boolean recursive);
+    void synchronizeUserPrincipal(String name, boolean recursive) throws SecurityException;
     
     /**
      * Synchronize all principals of a certain type.
@@ -35,11 +37,11 @@ public interface JetspeedSecuritySynchronizer
      * @param recursive if true, all nested principals associated to this principal will be synchronized. If false, only the direct (first level) associated
      *          principals will be synchronized.
      */
-    void synchronizePrincipalsByType(String principalTypeName, boolean recursive);
+    void synchronizePrincipalsByType(String principalTypeName, boolean recursive) throws SecurityException;
     
     /**
      *  Synchronizes all principals.
      */
-    void synchronizeAll();
+    void synchronizeAll() throws SecurityException;
     
 }

@@ -30,11 +30,11 @@ import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public class TestLDAP extends AbstractSetup1LDAPTest
+public class TestLDAP1 extends AbstractSetup1LDAPTest
 {
     public static Test suite()
     {
-        return createFixturedTestSuite(TestLDAP.class, "ldapTestSetup", "ldapTestTeardown");
+        return createFixturedTestSuite(TestLDAP1.class, "ldapTestSetup", "ldapTestTeardown");
     }
     
     public void testSingleUser() throws Exception
@@ -198,21 +198,6 @@ public class TestLDAP extends AbstractSetup1LDAPTest
         jsmithCopy.setAttribute(SN_DEF.getName(), "jsmithCopy");
         jsmithCopy.setInternalId("cn=jsmithCopy, o=sevenSeas");
         basicTestCases.testFetchSingleEntity(entityManager, jsmithCopy);
-    }
-    
-    public void testUpdateInternalAttrs() throws Exception {
-        EntityImpl jsmith = getDefaultJoeSmith();
-        jsmith.setAttribute(SN_DEF.getName(), "whatever");
-        jsmith.setAttribute(GIVEN_NAME_DEF.getName(), "foobar");
-        
-        // note: we call the user DAO directly, because updating internal
-        // attributes is only meant to be used internally, e.g. from within an EntityRelationDAO
-        userDAO.updateInternalAttributes(jsmith);
-
-        // reset given name to value in ldap, givenName should be unmodified
-        // the (internal) sn attribute is modified in LDAP
-        jsmith.setAttribute(GIVEN_NAME_DEF.getName(), "Joe Smith");
-        basicTestCases.testFetchSingleEntity(entityManager, jsmith);
     }
     
     @Override

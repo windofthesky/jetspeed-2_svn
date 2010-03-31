@@ -41,7 +41,7 @@ public interface EntityDAO
      *            IDs
      * @return found entities
      */
-    Collection<Entity> getEntitiesById(Collection<String> entityIds);
+    Collection<Entity> getEntitiesById(Collection<String> entityIds) throws SecurityException;
 
     /**
      * Fetch entity by providing an *internal* entity ID.
@@ -49,7 +49,7 @@ public interface EntityDAO
      * @param internalId
      * @return found entity
      */
-    Entity getEntityByInternalId(String internalId);
+    Entity getEntityByInternalId(String internalId) throws SecurityException;
 
     /**
      * Fetch entities by providing a list of specific *internal* entity IDs.
@@ -58,7 +58,7 @@ public interface EntityDAO
      *            entity IDs
      * @return found entities
      */
-    Collection<Entity> getEntitiesByInternalId(Collection<String> entityIds);
+    Collection<Entity> getEntitiesByInternalId(Collection<String> entityIds) throws SecurityException;
 
     /**
      * Method for applying a specific filter on the complete entity set returned by the DAO. The result would be the same as applying the specific filter to the
@@ -68,7 +68,7 @@ public interface EntityDAO
      *            a specific filter to narrow the returned entity set
      * @return found entities
      */
-    Collection<Entity> getEntities(Filter filter);
+    Collection<Entity> getEntities(Filter filter) throws SecurityException;
 
     /**
      * Same as getEntities(Filter filter), except that this method only returns entities which are children of the given parent entity.
@@ -77,7 +77,7 @@ public interface EntityDAO
      * @param filter
      * @return
      */
-    Collection<Entity> getEntities(Entity parentEntity, Filter filter);
+    Collection<Entity> getEntities(Entity parentEntity, Filter filter) throws SecurityException;
 
     /**
      * Fetch a single entity by ID.
@@ -85,8 +85,17 @@ public interface EntityDAO
      * @param entityId
      * @return the entity
      */
-    Entity getEntity(String entityId);
+    Entity getEntity(String entityId) throws SecurityException;
 
+    /**
+     * Fetch a entity internalId by ID
+     * 
+     * @param entityId
+     * @param required if true and entity not found SecurityException.PRINCIPAL_DOES_NOT_EXIST will be thrown
+     * @return the entity internalId
+     */
+    String getInternalId(String entityId, boolean required) throws SecurityException;
+    
     /**
      * Returns the parent entity of the given entity, if there is any.
      * 
@@ -94,18 +103,16 @@ public interface EntityDAO
      *            a specific filter to narrow the returned entity set
      * @return found entities
      */
-    Entity getParentEntity(Entity childEntity);
+    Entity getParentEntity(Entity childEntity) throws SecurityException;
 
     /**
      * Fetch all entities
      * 
      * @return found entities
      */
-    Collection<Entity> getAllEntities();
+    Collection<Entity> getAllEntities() throws SecurityException;
 
     void update(Entity entity) throws SecurityException;
-
-    void updateInternalAttributes(Entity entity) throws SecurityException;
 
     void add(Entity entity) throws SecurityException;
 
@@ -113,5 +120,9 @@ public interface EntityDAO
 
     void add(Entity entity, Entity parentEntity) throws SecurityException;
 
+    void addRelation(String entityId, String relatedEntityInternalId, String attributeName) throws SecurityException;
+
+    void removeRelation(String EntityId, String relatedEntityInternalId, String attributeName) throws SecurityException;
+    
     EntityFactory getEntityFactory();
 }

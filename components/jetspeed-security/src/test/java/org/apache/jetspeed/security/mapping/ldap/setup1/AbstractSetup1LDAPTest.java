@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security.mapping.ldap.setup1;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -104,15 +103,11 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
         roleDAO = new SpringLDAPEntityDAO(roleSearchConfig);
         roleDAO.setLdapTemplate(ldapTemplate);
 
-        Map<String, EntityDAO> daos = new HashMap<String, EntityDAO>();
-        daos.put("user", userDAO);
-        daos.put("role", roleDAO);
-
-        entityManager = new DefaultLDAPEntityManager();
-        entityManager.setEntityDAOs(daos);
-
+        ArrayList<EntityDAO> daos = new ArrayList<EntityDAO>();
+        daos.add(userDAO);
+        daos.add(roleDAO);
         // relation DAOs
-        Collection<EntityRelationDAO> relationDaos = new ArrayList<EntityRelationDAO>();
+        ArrayList<EntityRelationDAO> relationDaos = new ArrayList<EntityRelationDAO>();
 
         // hasRole relation DAO
         hasRoleDAO = new AttributeBasedRelationDAO();
@@ -124,8 +119,7 @@ public abstract class AbstractSetup1LDAPTest extends AbstractLDAPTest
         hasRoleDAO.setAttributeContainsInternalId(true);
         relationDaos.add(hasRoleDAO);
 
-        entityManager.setEntityRelationDAOs(relationDaos);
-
+        entityManager = new DefaultLDAPEntityManager(daos, relationDaos);
     }
 
     @Override

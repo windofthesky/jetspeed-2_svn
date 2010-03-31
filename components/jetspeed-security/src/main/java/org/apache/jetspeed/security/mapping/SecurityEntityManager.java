@@ -17,6 +17,7 @@
 package org.apache.jetspeed.security.mapping;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.model.Entity;
@@ -28,15 +29,17 @@ import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
  */
 public interface SecurityEntityManager
 {
-    Collection<String> getSupportedEntityTypes();
+    Set<String> getSupportedEntityTypes();
 
-    Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes();
+    Set<SecurityEntityRelationType> getSupportedEntityRelationTypes();
 
-    Collection<SecurityEntityRelationType> getSupportedEntityRelationTypes(String entityType);
+    Set<SecurityEntityRelationType> getSupportedEntityRelationTypes(String entityType);
 
-    Entity getEntity(String entityType, String entityId);
+    SecurityEntityRelationType getSupportedEntityRelationType(String relationType, String fromEntityType, String toEntityType);
+    
+    Entity getEntity(String entityType, String entityId) throws SecurityException;
 
-    Collection<Entity> getAllEntities(String entityType);
+    Collection<Entity> getAllEntities(String entityType) throws SecurityException;
 
     void addEntity(Entity entity) throws SecurityException;
 
@@ -46,13 +49,13 @@ public interface SecurityEntityManager
 
     void updateEntity(Entity entity) throws SecurityException;
 
-    void addRelation(Entity fromEntity, Entity toEntity, SecurityEntityRelationType relationType) throws SecurityException;
+    void addRelation(String fromEntityId, String toEntityId, SecurityEntityRelationType relationType) throws SecurityException;
+    
+    void removeRelation(String fromEntityId, String toEntityId, SecurityEntityRelationType relationType) throws SecurityException;
+    
+    Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType) throws SecurityException;
 
-    void removeRelation(Entity fromEntity, Entity toEntity, SecurityEntityRelationType relationType) throws SecurityException;
-
-    Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType);
-
-    Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType);
+    Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType) throws SecurityException;
 
     EntityFactory getEntityFactory(String entityType);
 }

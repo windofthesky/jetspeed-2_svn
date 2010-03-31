@@ -28,11 +28,11 @@ import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public class TestLDAP extends AbstractSetup2LDAPTest
+public class TestLDAP2 extends AbstractSetup2LDAPTest
 {
     public static Test suite()
     {
-        return createFixturedTestSuite(TestLDAP.class, "ldapTestSetup", "ldapTestTeardown");
+        return createFixturedTestSuite(TestLDAP2.class, "ldapTestSetup", "ldapTestTeardown");
     }
 
     public void testSingleUser() throws Exception

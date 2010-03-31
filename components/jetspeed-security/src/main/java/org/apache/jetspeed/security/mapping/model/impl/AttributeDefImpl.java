@@ -31,12 +31,12 @@ public class AttributeDefImpl implements AttributeDef
     private boolean required = false;
     private String  requiredDefaultValue;
     private boolean idAttribute;
-    private boolean idAttributeName;
+    private boolean entityIdAttribute;
     private boolean relationOnly;
+    private Boolean dnDefaultValue;
 
     public AttributeDefImpl(String name)
     {
-        super();
         this.name = name;
         this.mappedName = name; // default mapping
     }
@@ -111,9 +111,18 @@ public class AttributeDefImpl implements AttributeDef
 
     public void setRequiredDefaultValue(String requiredDefaultValue)
     {
-        this.requiredDefaultValue = requiredDefaultValue;
+        this.requiredDefaultValue = (requiredDefaultValue != null && requiredDefaultValue.length() == 0) ? null : requiredDefaultValue;
     }
-
+    
+    public boolean requiresDnDefaultValue()
+    {
+        if (dnDefaultValue == null)
+        {
+            dnDefaultValue = isMultiValue() && isRequired() && getRequiredDefaultValue() == null ? Boolean.TRUE : Boolean.FALSE;
+        }
+        return dnDefaultValue.booleanValue();
+    }
+    
     public AttributeDefImpl cfgRequired(boolean required)
     {
         setRequired(required);
@@ -140,14 +149,14 @@ public class AttributeDefImpl implements AttributeDef
         return relationOnly;
     }
     
-    public boolean isIdAttributeName()
+    public boolean isEntityIdAttribute()
     {
-        return idAttributeName;
+        return entityIdAttribute;
     }
     
-    public void setIdAttributeName(boolean idAttributeName)
+    public void setEntityIdAttribute(boolean entityIdAttribute)
     {
-        this.idAttributeName = idAttributeName;
+        this.entityIdAttribute = entityIdAttribute;
     }
 
     public AttributeDefImpl cfgRequiredDefaultValue(String requiredDefaultValue)

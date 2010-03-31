@@ -55,7 +55,7 @@ public class LDAPEntityDAOConfiguration
                 {
                     throw new RuntimeException("Unsupported ldapIdAttribute Attribute definition: multi-value, optional and/or relationOnly attribute");
                 }
-                def.setIdAttributeName(true);
+                def.setEntityIdAttribute(true);
                 idAttributeNameFound = true;
                 break;
             }

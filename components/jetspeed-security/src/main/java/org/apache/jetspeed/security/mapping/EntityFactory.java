@@ -18,7 +18,6 @@ package org.apache.jetspeed.security.mapping;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.mapping.model.Entity;
-import org.springframework.ldap.core.DirContextOperations;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -33,5 +32,5 @@ public interface EntityFactory
     
     Entity createEntity(JetspeedPrincipal principal);
 
-    Entity createEntity(DirContextOperations ctx);
+    Entity loadEntity(Object providerContext);
 }

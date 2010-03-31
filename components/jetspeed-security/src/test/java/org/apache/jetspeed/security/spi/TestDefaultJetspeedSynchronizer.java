@@ -18,8 +18,6 @@ package org.apache.jetspeed.security.spi;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -111,22 +109,17 @@ public class TestDefaultJetspeedSynchronizer extends TestCase
         groupToRole.relate(null, null, group_board, role_manager);
         groupToRole.relate(null, null, group_programmers, role_yetAnother);
         
-        Map<String,EntityDAO> entityDAOs = new HashMap<String,EntityDAO>();
-        entityDAOs.put(JetspeedPrincipalType.USER,userDao);
-        entityDAOs.put(JetspeedPrincipalType.ROLE,roleDao);
-        entityDAOs.put(JetspeedPrincipalType.USER,groupDao);
+        ArrayList<EntityDAO> entityDAOs = new ArrayList<EntityDAO>();
+        entityDAOs.add(userDao);
+        entityDAOs.add(roleDao);
+        entityDAOs.add(groupDao);
 
-        Collection<EntityRelationDAO> entityRelationDAOs = new ArrayList<EntityRelationDAO>();
+        ArrayList<EntityRelationDAO> entityRelationDAOs = new ArrayList<EntityRelationDAO>();
         entityRelationDAOs.add(userToRole);
         entityRelationDAOs.add(userToGroup);
         entityRelationDAOs.add(groupToRole);
 
-        DefaultLDAPEntityManager entityMan = new DefaultLDAPEntityManager();
-        entityMan.setEntityDAOs(entityDAOs);
-        entityMan.setEntityRelationDAOs(entityRelationDAOs);
-        
-        
-        
+        DefaultLDAPEntityManager entityMan = new DefaultLDAPEntityManager(entityDAOs, entityRelationDAOs);
     }
 
     @Override

@@ -30,11 +30,11 @@ public interface EntityRelationDAO
 {
     SecurityEntityRelationType getRelationType();
 
-    Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDao, EntityDAO toDao, Entity fromEntity);
+    Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDao, EntityDAO toDao, Entity fromEntity) throws SecurityException;
 
-    Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDao, EntityDAO toDao, Entity toEntity);
+    Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDao, EntityDAO toDao, Entity toEntity) throws SecurityException;
 
-    void addRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity) throws SecurityException;
+    void addRelation(EntityDAO sourceDao, EntityDAO targetDao, String sourceEntityId, String targetEntityId) throws SecurityException;
 
-    void removeRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity) throws SecurityException;
+    void removeRelation(EntityDAO sourceDao, EntityDAO targetDao, String sourceEntityId, String targetEntityId) throws SecurityException;
 }

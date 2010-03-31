@@ -43,6 +43,6 @@ public class DefaultEntityContextMapper extends AbstractParameterizedContextMapp
     @Override
     protected Entity doMapFromContext(DirContextOperations ctx)
     {
-        return entityFactory.createEntity(ctx);
+        return entityFactory.loadEntity(ctx);
     }
 }

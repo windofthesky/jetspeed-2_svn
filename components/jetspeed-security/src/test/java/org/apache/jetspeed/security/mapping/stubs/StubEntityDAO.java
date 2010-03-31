@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.model.Entity;
@@ -144,5 +145,11 @@ public class StubEntityDAO implements EntityDAO
     {
         // TODO Auto-generated method stub
         
+    }
+
+    public String getInternalId(String entityId, boolean required) throws SecurityException
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

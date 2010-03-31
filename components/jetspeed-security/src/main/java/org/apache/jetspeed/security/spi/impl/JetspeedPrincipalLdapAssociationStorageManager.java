@@ -18,10 +18,7 @@ package org.apache.jetspeed.security.spi.impl;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.mapping.EntityFactory;
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
-import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
-import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
 import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager;
 
@@ -48,12 +45,11 @@ public class JetspeedPrincipalLdapAssociationStorageManager implements JetspeedP
     {
         if (!SynchronizationStateAccess.isSynchronizing())
         {
-            EntityFactory entityFactory = ldapEntityManager.getEntityFactory(from.getType().getName());
-            EntityFactory relatedFactory = ldapEntityManager.getEntityFactory(to.getType().getName());
-            Entity fromEntity = entityFactory.createEntity(from);
-            Entity toEntity = relatedFactory.createEntity(to);
-            SecurityEntityRelationType relationType = new SecurityEntityRelationTypeImpl(associationName, fromEntity.getType(), toEntity.getType());
-            ldapEntityManager.addRelation(fromEntity, toEntity, relationType);
+            SecurityEntityRelationType relationType = ldapEntityManager.getSupportedEntityRelationType(associationName, from.getType().getName(), to.getType().getName());
+            if (relationType != null)
+            {
+                ldapEntityManager.addRelation(from.getName(), to.getName(), relationType);
+            }
         }
         databaseStorageManager.addAssociation(from, to, associationName);
     }
@@ -62,12 +58,11 @@ public class JetspeedPrincipalLdapAssociationStorageManager implements JetspeedP
     {
         if (!SynchronizationStateAccess.isSynchronizing())
         {
-            EntityFactory entityFactory = ldapEntityManager.getEntityFactory(from.getType().getName());
-            EntityFactory relatedFactory = ldapEntityManager.getEntityFactory(to.getType().getName());
-            Entity fromEntity = entityFactory.createEntity(from);
-            Entity toEntity = relatedFactory.createEntity(to);
-            SecurityEntityRelationType relationType = new SecurityEntityRelationTypeImpl(associationName, fromEntity.getType(), toEntity.getType());
-            ldapEntityManager.removeRelation(fromEntity, toEntity, relationType);
+            SecurityEntityRelationType relationType = ldapEntityManager.getSupportedEntityRelationType(associationName, from.getType().getName(), to.getType().getName());
+            if (relationType != null)
+            {
+                ldapEntityManager.removeRelation(from.getName(), to.getName(), relationType);
+            }
         }
         databaseStorageManager.removeAssociation(from, to, associationName);
     }

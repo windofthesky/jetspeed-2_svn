@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityRelationDAO;
 import org.apache.jetspeed.security.mapping.model.Entity;
@@ -96,4 +97,15 @@ public class StubEntityRelationDAO implements EntityRelationDAO
         
     }
 
+    public void addRelation(EntityDAO sourceDao, EntityDAO targetDao, String sourceEntityId, String targetEntityId) throws SecurityException
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void removeRelation(EntityDAO sourceDao, EntityDAO targetDao, String sourceEntityId, String targetEntityId) throws SecurityException
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }

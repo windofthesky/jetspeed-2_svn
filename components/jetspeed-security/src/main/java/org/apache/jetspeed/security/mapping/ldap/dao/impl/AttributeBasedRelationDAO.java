@@ -22,8 +22,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.model.Attribute;
+import org.apache.jetspeed.security.mapping.model.AttributeDef;
 import org.apache.jetspeed.security.mapping.model.Entity;
-import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.Filter;
 
@@ -45,17 +45,17 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
 
     // not used, then the attribute
     // contains the ID(s).
-    public Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDAO, EntityDAO toDAO, Entity fromEntity)
+    public Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDAO, EntityDAO toDAO, Entity fromEntity) throws SecurityException
     {
         return internalGetRelatedEntities(fromDAO, toDAO, useFromEntityAttribute, fromEntity);
     }
 
-    public Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDAO, EntityDAO toDAO, Entity toEntity)
+    public Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDAO, EntityDAO toDAO, Entity toEntity) throws SecurityException
     {
         return internalGetRelatedEntities(toDAO, fromDAO, !useFromEntityAttribute, toEntity);
     }
 
-    private Collection<Entity> internalGetRelatedEntities(EntityDAO fromDAO, EntityDAO toDAO, boolean useFromEntityAttribute, Entity entity)
+    private Collection<Entity> internalGetRelatedEntities(EntityDAO fromDAO, EntityDAO toDAO, boolean useFromEntityAttribute, Entity entity) throws SecurityException
     {
         if (useFromEntityAttribute)
         {
@@ -63,17 +63,11 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
             if (relationAttrValue != null)
             {
                 Collection<String> values = relationAttrValue.getValues();
-                if (relationAttrValue.getDefinition().isRequired())
+                AttributeDef attrDef = relationAttrValue.getDefinition();
+                if (attrDef.isMultiValue() && attrDef.isRequired())
                 {
-                    String defaultValue = relationAttrValue.getDefinition().getRequiredDefaultValue();
-                    if (defaultValue != null)
-                    {
-                        if (SpringLDAPEntityDAO.DN_REFERENCE_MARKER.equals(defaultValue))
-                        {
-                            defaultValue = entity.getInternalId();
-                        }
-                        values.remove(defaultValue);
-                    }
+                    String defaultValue = attrDef.requiresDnDefaultValue() ? entity.getInternalId() : attrDef.getRequiredDefaultValue();
+                    values.remove(defaultValue);
                 }
                 if (attributeContainsInternalId)
                 {
@@ -102,7 +96,7 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         return null;
     }
 
-    private String getInternalId(Entity entity, EntityDAO entityDao)
+    private String getInternalId(Entity entity, EntityDAO entityDao) throws SecurityException
     {
         if (StringUtils.isEmpty(entity.getInternalId()))
         {
@@ -128,122 +122,36 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
         this.attributeContainsInternalId = attributeContainsInternalId;
     }
 
-    private Entity getLiveEntity(EntityDAO dao, Entity transientEntity) throws SecurityException
+    public void addRelation(EntityDAO sourceDao, EntityDAO targetDao, String sourceEntityId, String targetEntityId) throws SecurityException
     {
-        Entity liveEntity = dao.getEntity(transientEntity.getId());
-        if (liveEntity == null)
-        {
-            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(transientEntity.getType(), transientEntity.getId()));
-        }
-        if (liveEntity.getInternalId() == null)
-        {
-            throw new SecurityException(SecurityException.UNEXPECTED.create(getClass().getName(), "getLiveEntity", "Internal ID not found"));
-        }
-        return liveEntity;
-    }
-
-    private void internalAddRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity) throws SecurityException
-    {
-        fromEntity = getLiveEntity(fromEntityDAO, fromEntity);
-        toEntity = getLiveEntity(toEntityDAO, toEntity);
-        String attrValue = null;
-        if (attributeContainsInternalId)
-        {
-            attrValue = toEntity.getInternalId();
+        if (useFromEntityAttribute)
+        {            
+            sourceDao.addRelation(sourceEntityId, targetDao.getInternalId(targetEntityId, true), relationAttribute);
         }
         else
         {
-            attrValue = toEntity.getId();
-        }
-        Attribute relationAttribute = fromEntity.getAttribute(this.relationAttribute, true);
-        if (relationAttribute.getDefinition().isMultiValue())
-        {
-            if (!relationAttribute.getValues().contains(attrValue))
-            {
-                relationAttribute.getValues().add(attrValue);
-                fromEntityDAO.updateInternalAttributes(fromEntity);
-            }
-        }
-        else if (!attrValue.equals(relationAttribute.getValue()))
-        {
-            relationAttribute.setValue(attrValue);
-            fromEntityDAO.updateInternalAttributes(fromEntity);
+            targetDao.addRelation(targetEntityId, sourceDao.getInternalId(sourceEntityId, true), relationAttribute);
         }
     }
 
-    private void internalRemoveRelation(EntityDAO fromEntityDAO, EntityDAO toEntityDAO, Entity fromEntity, Entity toEntity) throws SecurityException
+    public void removeRelation(EntityDAO sourceDao, EntityDAO targetDao, String sourceEntityId, String targetEntityId) throws SecurityException
     {
-        fromEntity = fromEntityDAO.getEntity(fromEntity.getId());
-        if (fromEntity != null)
+        if (useFromEntityAttribute)
         {
-            Attribute relationAttribute = fromEntity.getAttribute(this.relationAttribute);
-            if (relationAttribute != null)
+            String internalEntityId = targetDao.getInternalId(targetEntityId, false);
+            if (internalEntityId != null)
             {
-                toEntity = toEntityDAO.getEntity(toEntity.getId());
-                if (toEntity != null)
-                {
-                    String attrValue = null;
-                    if (attributeContainsInternalId)
-                    {
-                        attrValue = toEntity.getInternalId();
-                    }
-                    else
-                    {
-                        attrValue = toEntity.getId();
-                    }
-                    if (relationAttribute.getDefinition().isMultiValue())
-                    {
-                        // TODO: should all membership attributes in all operations use DistinguishedName comparisions or is doing "plain text" comparisions good enough?
-                        DistinguishedName attrib = new DistinguishedName(attrValue);
-                        if (attributeContainsInternalId)
-                        {
-                            String attribValue = null;
-                            for (String name : relationAttribute.getValues())
-                            {
-                                DistinguishedName ldapAttr = new DistinguishedName(attribValue);
-                                if (ldapAttr.equals(attrib))
-                                {
-                                    relationAttribute.getValues().remove(name);
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            relationAttribute.getValues().remove(attrValue);
-                        }
-                    }
-                    else
-                    {
-                        relationAttribute.setValue(null);
-                    }
-                    fromEntityDAO.updateInternalAttributes(fromEntity);
-                }
+                sourceDao.removeRelation(sourceEntityId, internalEntityId, relationAttribute);
+            }
+        }
+        else
+        {
+            String internalEntityId = sourceDao.getInternalId(sourceEntityId, false);
+            if (internalEntityId != null)
+            {
+                targetDao.removeRelation(targetEntityId, internalEntityId, relationAttribute);
             }
         }
     }
 
-    public void addRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity) throws SecurityException
-    {
-        if (useFromEntityAttribute)
-        {
-            internalAddRelation(sourceDao, targetDao, sourceEntity, targetEntity);
-        }
-        else
-        {
-            internalAddRelation(targetDao, sourceDao, targetEntity, sourceEntity);
-        }
-    }
-
-    public void removeRelation(EntityDAO sourceDao, EntityDAO targetDao, Entity sourceEntity, Entity targetEntity) throws SecurityException
-    {
-        if (useFromEntityAttribute)
-        {
-            internalRemoveRelation(sourceDao, targetDao, sourceEntity, targetEntity);
-        }
-        else
-        {
-            internalRemoveRelation(targetDao, sourceDao, targetEntity, sourceEntity);
-        }
-    }
 }

@@ -24,101 +24,51 @@ import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
  */
 public class SecurityEntityRelationTypeImpl implements SecurityEntityRelationType
 {
-    private String sourceEntityType, targetEntityType, relationType;
+    private final String fromEntityType;
+    private final String toEntityType;
+    private final String relationType;
+    private final int hashCode;
 
+    public SecurityEntityRelationTypeImpl(SecurityEntityRelationType src)
+    {
+        this(src.getFromEntityType(), src.getToEntityType(), src.getFromEntityType());
+    }
+    
     public SecurityEntityRelationTypeImpl(String relationType, String sourceEntityType, String targetEntityType)
     {
-        super();
         this.relationType = relationType;
-        this.sourceEntityType = sourceEntityType;
-        this.targetEntityType = targetEntityType;
+        this.fromEntityType = sourceEntityType;
+        this.toEntityType = targetEntityType;
+        this.hashCode = relationType.hashCode() + sourceEntityType.hashCode() + targetEntityType.hashCode();
     }
 
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((relationType == null) ? 0 : relationType.hashCode());
-        result = prime * result + ((sourceEntityType == null) ? 0 : sourceEntityType.hashCode());
-        result = prime * result + ((targetEntityType == null) ? 0 : targetEntityType.hashCode());
-        return result;
+        return hashCode;
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(Object o)
     {
-        if (this == obj)
+        if (o != null && o instanceof SecurityEntityRelationTypeImpl)
         {
-            return true;
+            SecurityEntityRelationTypeImpl other = (SecurityEntityRelationTypeImpl)o;
+            return other.relationType.equals(relationType) && other.fromEntityType.equals(fromEntityType) && other.toEntityType.equals(toEntityType);
         }
-        if (obj == null)
-        {
-            return false;
-        }
-        if (getClass() != obj.getClass())
-        {
-            return false;
-        }
-        SecurityEntityRelationType other = (SecurityEntityRelationType) obj;
-        if (relationType == null)
-        {
-            if (other.getRelationType() != null)
-            {
-                return false;
-            }
-        }
-        else if (!relationType.equals(other.getRelationType()))
-        {
-            return false;
-        }
-        if (sourceEntityType == null)
-        {
-            if (other.getFromEntityType() != null)
-            {
-                return false;
-            }
-        }
-        else if (!sourceEntityType.equals(other.getFromEntityType()))
-        {
-            return false;
-        }
-        if (targetEntityType == null)
-        {
-            if (other.getToEntityType() != null)
-            {
-                return false;
-            }
-        }
-        else if (!targetEntityType.equals(other.getToEntityType()))
-        {
-            return false;
-        }
-        return true;
+        return false;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.jetspeed.security.mapping.ldap.dao.Temp#getSourceEntityType()
-     */
     public String getFromEntityType()
     {
-        return sourceEntityType;
+        return fromEntityType;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.jetspeed.security.mapping.ldap.dao.Temp#getTargetEntityType()
-     */
     public String getToEntityType()
     {
-        return targetEntityType;
+        return toEntityType;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.jetspeed.security.mapping.ldap.dao.Temp#getRelationType()
-     */
     public String getRelationType()
     {
         return relationType;

@@ -67,7 +67,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         createRelations();
     }
 
-    public synchronized void synchronizeAll()
+    public synchronized void synchronizeAll() throws SecurityException
     {
         setSynchronizing(true);
         try
@@ -92,7 +92,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
     }
 
-    public synchronized void synchronizePrincipalsByType(String type, boolean recursive)
+    public synchronized void synchronizePrincipalsByType(String type, boolean recursive) throws SecurityException
     {
         setSynchronizing(true);
         try
@@ -116,7 +116,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
     }
 
-    public synchronized void synchronizeUserPrincipal(String name, boolean recursive)
+    public synchronized void synchronizeUserPrincipal(String name, boolean recursive) throws SecurityException
     {
         setSynchronizing(true);
         try
@@ -133,7 +133,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
     }
 
-    protected JetspeedPrincipal recursiveSynchronizeEntity(Entity entity, InternalSynchronizationState syncState, boolean recursive)
+    protected JetspeedPrincipal recursiveSynchronizeEntity(Entity entity, InternalSynchronizationState syncState, boolean recursive) throws SecurityException
     {
         JetspeedPrincipal updatedPrincipal = null;
         if (entity != null && !syncState.isProcessed(entity))
@@ -151,7 +151,8 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         return updatedPrincipal;
     }
 
-    protected JetspeedPrincipal synchronizeEntityRelations(JetspeedPrincipal principal, Entity entity, InternalSynchronizationState syncState, boolean recursive)
+    protected JetspeedPrincipal synchronizeEntityRelations(JetspeedPrincipal principal, Entity entity, InternalSynchronizationState syncState, boolean recursive) 
+       throws SecurityException
     {
         if (entityToRelationTypes.values().size() != 0)
             // loop through all relation types for this entity type
@@ -196,6 +197,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
      */
     protected Collection<Long> synchronizeAddedEntityRelations(SecurityEntityRelationType relationTypeForThisEntity, Entity entity, JetspeedPrincipal principal,
                                                               boolean entityIsFromEntity, InternalSynchronizationState syncState, boolean recursive)
+                                                              throws SecurityException
     {
         Collection<Entity> relatedEntities = entityIsFromEntity ? securityEntityManager.getRelatedEntitiesFrom(entity, relationTypeForThisEntity)
                                                                : securityEntityManager.getRelatedEntitiesTo(entity, relationTypeForThisEntity);

@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security.mapping.ldap.setup2;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -122,21 +121,12 @@ public abstract class AbstractSetup2LDAPTest extends AbstractLDAPTest
         SpringLDAPEntityDAO groupDAO = new SpringLDAPEntityDAO(groupSearchConfig);
         groupDAO.setLdapTemplate(ldapTemplate);
 
-        Map<String, EntityDAO> daos = new HashMap<String, EntityDAO>();
-        daos.put("user", userDAO);
-        daos.put("role", roleDAO);
-
-        entityManager = new DefaultLDAPEntityManager();
-        entityManager.setEntityDAOs(daos);
-        daos.put("user", userDAO);
-        daos.put("role", roleDAO);
-        daos.put("group", groupDAO);
-
-        entityManager = new DefaultLDAPEntityManager();
-        entityManager.setEntityDAOs(daos);
-
-        // relation DAOs
-        Collection<EntityRelationDAO> relationDaos = new ArrayList<EntityRelationDAO>();
+        ArrayList<EntityDAO> daos = new ArrayList<EntityDAO>();
+        daos.add(userDAO);
+        daos.add(roleDAO);
+        daos.add(groupDAO);
+        
+        ArrayList<EntityRelationDAO> relationDaos = new ArrayList<EntityRelationDAO>();
 
         // hasRole relation DAO
         // use attribute on from entity (of "user" type); user IDs are stored
@@ -148,8 +138,7 @@ public abstract class AbstractSetup2LDAPTest extends AbstractLDAPTest
         hasRoleDAO.setAttributeContainsInternalId(true);
         relationDaos.add(hasRoleDAO);
 
-        entityManager.setEntityRelationDAOs(relationDaos);
-
+        entityManager = new DefaultLDAPEntityManager(daos, relationDaos);
     }
 
     @Override
