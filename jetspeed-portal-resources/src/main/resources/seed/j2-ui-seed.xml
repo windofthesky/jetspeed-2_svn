@@ -341,7 +341,7 @@
 		</User>
 		<User name="manny">
 			<credentials password="manny" enabled="TRUE" requiresUpdate="FALSE"/>
-			<roles>user,devmgr</roles>
+			<roles>user,dev,devmgr</roles>
 			<groups>engineering</groups>
 			<preferences/>
 			<userinfo>
