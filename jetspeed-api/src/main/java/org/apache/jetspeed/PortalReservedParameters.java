@@ -177,4 +177,15 @@ public interface PortalReservedParameters
      *  </p>
      */
      public static final String PORTLET_EXTENDED_DESCRIPTOR_MERGE_PORTAL_PARAMETERS_BEFORE_PORTLET_PARAMETERS = "merge.portal.parameters.before.portlet.parameters";
+     
+     /**
+      * PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY - session portal site context attribute key
+      */
+     public static final String PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY = "org.apache.jetspeed.portalsite.PortalSiteSessionContext";
+
+     /**
+      * PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY - request portal site context attribute key
+      */
+     public static final String PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY = "org.apache.jetspeed.portalsite.PortalSiteRequestContext";
+     
 }

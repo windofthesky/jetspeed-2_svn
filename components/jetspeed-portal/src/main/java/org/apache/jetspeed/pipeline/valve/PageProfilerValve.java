@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.pipeline.valve;
 
+import org.apache.jetspeed.PortalReservedParameters;
+
 /**
  * Determine the page to display and add it to the RequestContext
  *
@@ -42,12 +44,12 @@ public interface PageProfilerValve extends Valve
     /**
      * PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY - session portal site context attribute key
      */
-    static String PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY = "org.apache.jetspeed.portalsite.PortalSiteSessionContext";
+    static String PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY = PortalReservedParameters.PORTAL_SITE_SESSION_CONTEXT_ATTR_KEY;
 
     /**
      * PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY - request portal site context attribute key
      */
-    static String PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY = "org.apache.jetspeed.portalsite.PortalSiteRequestContext";
+    static String PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY = PortalReservedParameters.PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY;
 
     /**
      * PROFILED_PAGE_CONTEXT_ATTR_KEY - legacy request portal site context attribute key
