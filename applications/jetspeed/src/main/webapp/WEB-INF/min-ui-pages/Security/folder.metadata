@@ -18,6 +18,7 @@ limitations under the License.
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/folder-metadata.xsd">
   <title >Security Administration</title>  
+  <metadata name='space-owner' xml:lang='en'>admin</metadata>    
 
   <document-order>user-mgt.psml</document-order>
   <document-order>role-mgt.psml</document-order>

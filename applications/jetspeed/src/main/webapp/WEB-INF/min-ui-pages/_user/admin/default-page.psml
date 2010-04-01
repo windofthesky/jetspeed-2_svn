@@ -21,21 +21,13 @@ limitations under the License.
   <title>Dashboard</title>
 
   <fragment id="admin-db-1000" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="admin-db-1001" type="portlet" name="demo::WeatherPortlet">
+    <fragment id="admin-db-1001" type="portlet" name="j2-admin::CacheMonitor">
       <property name="row" value="0" />
       <property name="column" value="0" />
     </fragment>
-    <fragment id="admin-db-1010" type="portlet" name="demo::PickANumberPortlet">
+    <fragment id="admin-db-1010" type="portlet" name="j2-admin::PortalDataSerializer">
       <property name="row" value="0" />
       <property name="column" value="1" />
     </fragment>
-    <fragment id="admin-db-1011" type="portlet" name="demo::BookmarkPortlet">
-      <property name="row" value="1" />
-      <property name="column" value="0" />
-    </fragment>
-    <fragment id="admin-db-1012" type="portlet" name="j2-admin::DateTimePortlet">
-      <property name="row" value="1" />
-      <property name="column" value="1" />
-    </fragment>    
    </fragment>
 </page>

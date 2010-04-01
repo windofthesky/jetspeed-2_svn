@@ -19,22 +19,14 @@ limitations under the License.
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/psml.xsd">
  
   <title>Dashboard</title>
-
+AboutJetspeed
   <fragment id="new-user-1000" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="new-user-1001" type="portlet" name="demo::WeatherPortlet">
+    <fragment id="new-user-1011" type="portlet" name="j2-admin::JetspeedDeveloper">
       <property name="row" value="0" />
       <property name="column" value="0" />
     </fragment>
-    <fragment id="new-user-1010" type="portlet" name="demo::PickANumberPortlet">
+    <fragment id="new-user-1012" type="portlet" name="j2-admin::AboutJetspeed">
       <property name="row" value="0" />
-      <property name="column" value="1" />
-    </fragment>
-    <fragment id="new-user-1011" type="portlet" name="demo::BookmarkPortlet">
-      <property name="row" value="1" />
-      <property name="column" value="0" />
-    </fragment>
-    <fragment id="new-user-1012" type="portlet" name="j2-admin::DateTimePortlet">
-      <property name="row" value="1" />
       <property name="column" value="1" />
     </fragment>    
    </fragment>
