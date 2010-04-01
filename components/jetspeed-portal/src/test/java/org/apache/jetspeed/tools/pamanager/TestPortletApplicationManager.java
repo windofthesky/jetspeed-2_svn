@@ -188,6 +188,15 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
      */
     public void testPortletApplicationManager()
     {
+        // check for distributed database support
+        String databaseName = System.getProperty("org.apache.jetspeed.database.default.name");
+        if ((databaseName != null) && databaseName.equals("derby"))
+        {
+            System.out.println("Database support not distributed: system limitation... test skipped");
+            log.warn("Database support not distributed: system limitation... test skipped");
+            return;
+        }
+        
         // start portlet application manager test servers
         final TestProgram server0 = new TestProgram("server-0", PortletApplicationManagerServer.class);
         final TestProgram server1 = new TestProgram("server-1", PortletApplicationManagerServer.class);
