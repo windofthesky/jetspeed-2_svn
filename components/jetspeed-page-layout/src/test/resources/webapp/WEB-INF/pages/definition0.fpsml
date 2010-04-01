@@ -19,7 +19,7 @@ limitations under the License.
 <fragment-definition id="definition0"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/psml.xsd">
+    xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/fpsml.xsd">
 
   <title>/definition0.fpsml</title>
   <fragment id="fake-fragment-definition-0" name="fake-fragment-definition-0" type="portlet"/>

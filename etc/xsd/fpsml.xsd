@@ -20,19 +20,16 @@
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace"
 		schemaLocation="http://www.w3.org/2001/xml.xsd" />
 	<xs:include schemaLocation="psml-core.xsd"/>
-	<xs:element name="page">
+	<xs:element name="fragment-definition">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" ref="tns:defaults" />
 				<xs:element minOccurs="0" ref="tns:title" />
 				<xs:element minOccurs="0" ref="tns:short-title" />
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:metadata" />
 				<xs:element ref="tns:fragment" />
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:menu" />
 				<xs:element minOccurs="0" ref="tns:security-constraints" />
 			</xs:sequence>
 			<xs:attribute name="id" use="required" type="xs:ID" />
-			<xs:attribute name="hidden" use="optional" type="xs:boolean" />
 			<xs:attribute name="version" use="optional" type="xs:double" />
 		</xs:complexType>
 	</xs:element>

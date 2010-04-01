@@ -20,7 +20,7 @@
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace"
 		schemaLocation="http://www.w3.org/2001/xml.xsd" />
 	<xs:include schemaLocation="psml-core.xsd"/>
-	<xs:element name="page">
+	<xs:element name="page-template">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element minOccurs="0" ref="tns:defaults" />
@@ -32,8 +32,39 @@
 				<xs:element minOccurs="0" ref="tns:security-constraints" />
 			</xs:sequence>
 			<xs:attribute name="id" use="required" type="xs:ID" />
-			<xs:attribute name="hidden" use="optional" type="xs:boolean" />
 			<xs:attribute name="version" use="optional" type="xs:double" />
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="fragment" >
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:property" />
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:preference" />
+				<xs:choice minOccurs="0" maxOccurs="unbounded">		        
+				  <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:fragment" />
+				  <xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:fragment-reference" />				
+				  <xs:element minOccurs="0" maxOccurs="1" ref="tns:page-fragment" />				
+				</xs:choice>
+				<xs:element minOccurs="0" maxOccurs="1" ref="tns:security-constraints" />
+			</xs:sequence>
+			<xs:attribute name="id" use="required" type="xs:ID" />
+			<xs:attribute name="name" use="required" type="xs:string" />
+			<xs:attribute name="type" use="required" type="xs:string" />
+			<xs:attribute name="decorator" use="optional" type="xs:string" />
+		</xs:complexType>	
+	</xs:element>
+	<xs:element name="page-fragment">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:property" />
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="tns:preference" />
+				<xs:element minOccurs="0" maxOccurs="1" ref="tns:security-constraints" />
+			</xs:sequence>
+			<xs:attribute name="id" use="required" type="xs:ID" />
+			<xs:attribute name="name" use="required" type="xs:string" />
+			<xs:attribute name="type" use="required" type="xs:string" />
+			<xs:attribute name="decorator" use="optional" type="xs:string" />
+		</xs:complexType>	
+	</xs:element>
+	
 </xs:schema>

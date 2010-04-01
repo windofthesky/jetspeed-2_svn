@@ -20,7 +20,7 @@
 	<xs:import namespace="http://www.w3.org/XML/1998/namespace"
 		schemaLocation="http://www.w3.org/2001/xml.xsd" />
 	<xs:include schemaLocation="psml-core.xsd"/>
-	<xs:element name="page">
+	<xs:element name="dynamic-page">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element minOccurs="0" ref="tns:defaults" />
