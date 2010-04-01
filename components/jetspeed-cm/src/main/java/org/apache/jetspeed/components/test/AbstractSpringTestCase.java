@@ -42,6 +42,17 @@ public abstract class AbstractSpringTestCase extends JetspeedTestCase
 
     protected final static String[] SUPPORTED_PORTLET_MODES = { "normal", "maximized", "minimized", "solo", "detach", "close" };
     protected final static String[] SUPPORTED_WINDOW_STATES = { "view", "edit", "help", "about", "config", "edit_defaults", "preview", "print", "secure" };
+
+    // override to provide own
+    protected String[] getSupportedPortletModes()
+    {
+    	return SUPPORTED_PORTLET_MODES;
+    }
+    
+    protected String[] getSupportedWindowStates()
+    {
+    	return SUPPORTED_WINDOW_STATES;
+    }
     
     /**
      * setup Spring context as part of test setup
@@ -51,7 +62,7 @@ public abstract class AbstractSpringTestCase extends JetspeedTestCase
         super.setUp();
         scm = new SpringComponentManager(getBeanDefinitionFilter(), getBootConfigurations(), getConfigurations(), getBaseDir()+"target/test-classes/webapp", getInitProperties(), false);
         scm.start();
-	    new JetspeedActions(SUPPORTED_PORTLET_MODES, SUPPORTED_WINDOW_STATES);
+	    new JetspeedActions(getSupportedPortletModes(), getSupportedWindowStates());
     }
 
     /**

@@ -96,6 +96,7 @@
   <bean id="passwordCredentialValve" class="org.apache.jetspeed.security.impl.PasswordCredentialValveImpl"
     init-method="initialize">
     <meta key="j2:cat" value="default" />
+    <constructor-arg><value>/my-account.psml</value></constructor-arg>
   </bean>
 
   <bean id="loginValidationValve" class="org.apache.jetspeed.security.impl.LoginValidationValveImpl"

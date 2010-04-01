@@ -23,6 +23,9 @@ import javax.security.auth.Subject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.administration.PortalConfigurationConstants;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.PageProfilerValve;
@@ -47,6 +50,7 @@ public class PasswordCredentialValveImpl extends AbstractValve implements org.ap
     //private PageManager pageManager;
     private int[] expirationWarningDays;
     
+    private String passwordResetPage = "/my-account.psml";
     /**
      * Create a PasswordCredentialValveImpl which only checks and handles PasswordCredential.isUpdateRequired().
      *
@@ -54,6 +58,18 @@ public class PasswordCredentialValveImpl extends AbstractValve implements org.ap
     public PasswordCredentialValveImpl()
     {     
         expirationWarningDays = new int[]{};
+    }
+
+    public PasswordCredentialValveImpl(String passwordResetPage)
+    {     
+    	this();
+        this.passwordResetPage = passwordResetPage;        
+    }
+
+    public PasswordCredentialValveImpl(List expirationWarningDays, String passwordResetPage)
+    {     
+    	this(expirationWarningDays);
+        this.passwordResetPage = passwordResetPage;        
     }
     
     /**
@@ -140,10 +156,17 @@ public class PasswordCredentialValveImpl extends AbstractValve implements org.ap
                         }
                     }
                 }
-                if ( passwordDaysValid != null )
+                if (passwordDaysValid != null)
                 {
-                    // enforce the SECURITY_LOCATOR to be used to redirect to a change password portlet page
-                    request.setAttribute(PageProfilerValve.PROFILE_LOCATOR_REQUEST_ATTR_KEY,ProfileLocator.SECURITY_LOCATOR);
+                	if (Jetspeed.getConfiguration().getString(PortalConfigurationConstants.JETUI_CUSTOMIZATION_METHOD).equals(PortalConfigurationConstants.JETUI_CUSTOMIZATION_SERVER))
+                	{                	
+	                    // enforce the SECURITY_LOCATOR to be used to redirect to a change password portlet page
+	                    request.setAttribute(PageProfilerValve.PROFILE_LOCATOR_REQUEST_ATTR_KEY,ProfileLocator.SECURITY_LOCATOR);
+                	}
+                	else
+                	{
+                		request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, passwordResetPage); 
+                	}
                     // inform the change password portlet why it is invoked
                     request.setAttribute(PasswordCredential.PASSWORD_CREDENTIAL_DAYS_VALID_REQUEST_ATTR_KEY, passwordDaysValid);
                 }
