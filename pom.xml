@@ -1970,6 +1970,7 @@
         <module>components</module>
         <module>jetspeed-ant-tasks</module>
         <module>applications</module>
+        <module>jetspeed-archetype</module>
       </modules>
     </profile>
     <profile>

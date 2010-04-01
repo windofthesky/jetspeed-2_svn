@@ -42,7 +42,6 @@
     <module>jetspeed-unpack-war-maven-plugin</module>
     <module>jetspeed-deploy-maven-plugin</module>
     <module>jetspeed-db-maven-plugin</module>
-    <module>jetspeed-archetype</module>
     <module>jetspeed-fileutils-maven-plugin</module>
     <module>jetspeed-maven-skin</module>
   </modules>
