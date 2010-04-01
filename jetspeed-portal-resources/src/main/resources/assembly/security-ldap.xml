@@ -278,7 +278,7 @@
     <meta key="j2:cat" value="ldapSecurity" />
     <constructor-arg ref="UserDaoConfiguration"/>
     <property name="ldapTemplate">
-      <bean class="org.springframework.ldap.core.simple.SimpleLdapTemplate">
+      <bean class="org.springframework.ldap.core.LdapTemplate">
         <constructor-arg ref="LdapSpringContext" />
       </bean>
     </property>
@@ -330,7 +330,7 @@
     <meta key="j2:cat" value="ldapSecurity" />
     <constructor-arg ref="RoleDaoConfiguration"/>
     <property name="ldapTemplate">
-      <bean class="org.springframework.ldap.core.simple.SimpleLdapTemplate">
+      <bean class="org.springframework.ldap.core.LdapTemplate">
         <constructor-arg ref="LdapSpringContext" />
       </bean>
     </property>
@@ -340,7 +340,7 @@
     <meta key="j2:cat" value="ldapSecurity" />
     <constructor-arg ref="GroupDaoConfiguration"/>
     <property name="ldapTemplate">
-      <bean class="org.springframework.ldap.core.simple.SimpleLdapTemplate">
+      <bean class="org.springframework.ldap.core.LdapTemplate">
         <constructor-arg ref="LdapSpringContext" />
       </bean>
     </property>
@@ -357,7 +357,7 @@
     </property>
   </bean>
 
-  <bean id="LdapSpringContext" class="org.springframework.ldap.pool.factory.PoolingContextSource">
+  <bean id="LdapSpringContext" class="org.springframework.ldap.pool.factory.MutablePoolingContextSource">
     <meta key="j2:cat" value="ldapSecurity" />
     <property name="contextSource">
       <bean class="org.springframework.ldap.core.support.LdapContextSource">

@@ -14,17 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security.mapping.ldap.dao;
-
-import org.apache.jetspeed.security.mapping.EntityFactory;
-import org.apache.jetspeed.security.mapping.model.Entity;
-import org.springframework.ldap.core.simple.ParameterizedContextMapper;
+package org.apache.jetspeed.security.mapping;
 
 /**
+ * @author <a href="mailto:ate@douma.nu>Ate Douma</a>
  * @version $Id$
- *
  */
-public interface EntityContextMapper extends ParameterizedContextMapper<Entity>
+public interface SearchResultCallbackHandler
 {
-    EntityFactory getEntityFactory();
+    boolean handleSearchResult(Object result, int pageSize, int pageIndex, int index);
 }

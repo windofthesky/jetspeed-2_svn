@@ -25,8 +25,10 @@ import org.apache.jetspeed.security.mapping.model.impl.AttributeDefImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.springframework.core.io.Resource;
 import org.springframework.ldap.core.ContextSource;
-import org.springframework.ldap.core.simple.SimpleLdapTemplate;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.pool.factory.MutablePoolingContextSource;
+import org.springframework.ldap.pool.factory.PoolingContextSource;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -49,7 +51,7 @@ public abstract class AbstractLDAPTest extends JetspeedTestCase
 
     public static final AttributeDefImpl UNIQUEMEMBER_ATTR_DEF = new AttributeDefImpl("uniqueMember",true).cfgRequired(true).cfgRequiredDefaultValue("uid=someDummyValue");
 
-    protected SimpleLdapTemplate ldapTemplate;
+    protected LdapTemplate ldapTemplate;
 
     protected ContextSource contextSource;
 
@@ -90,8 +92,12 @@ public abstract class AbstractLDAPTest extends JetspeedTestCase
         contextSource.setBase(baseDN);
         contextSource.setUserDn("uid=admin,ou=system");
         contextSource.setPassword("secret");
+        contextSource.setPooled(false);
         contextSource.afterPropertiesSet();
-        ldapTemplate = new SimpleLdapTemplate(contextSource);
+        PoolingContextSource pcs = new MutablePoolingContextSource();
+        pcs.setContextSource(contextSource);
+        
+        ldapTemplate = new LdapTemplate(pcs);
 
         if (!ldapService.isRunning()) return;
         

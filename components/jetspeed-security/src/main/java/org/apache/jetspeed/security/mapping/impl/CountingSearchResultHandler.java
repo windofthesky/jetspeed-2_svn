@@ -14,28 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security.mapping.ldap.dao;
+package org.apache.jetspeed.security.mapping.impl;
 
-import javax.naming.Binding;
-import javax.naming.NameClassPair;
-
-import org.springframework.ldap.core.CollectingNameClassPairCallbackHandler;
 
 /**
+ * @author <a href="mailto:ate@douma.nu>Ate Douma</a>
  * @version $Id$
- *
  */
-public class CollectingBindingsCallbackHandler extends CollectingNameClassPairCallbackHandler
+public class CountingSearchResultHandler extends AbstractSearchResultHandler
 {
-    /* (non-Javadoc)
-     * @see org.springframework.ldap.core.CollectingNameClassPairCallbackHandler#getObjectFromNameClassPair(javax.naming.NameClassPair)
-     */
-    @Override
-    public Object getObjectFromNameClassPair(NameClassPair nameClassPair)
+    public CountingSearchResultHandler()
     {
-        if (!(nameClassPair instanceof Binding)) {
-            throw new IllegalArgumentException("Parameter must be an instance of Binding");
-        }
-        return nameClassPair;
+        super();
+    }
+    
+    public CountingSearchResultHandler(int maxSize)
+    {
+        super(maxSize);
+    }
+
+    protected void processSearchResult(Object result, int pageSize, int pageIndex, int index)
+    {
+        // do nothing
     }
 }
