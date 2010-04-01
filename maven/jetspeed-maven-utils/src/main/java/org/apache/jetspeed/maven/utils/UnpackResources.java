@@ -44,6 +44,7 @@ public class UnpackResources
         private Boolean flat;
         private String include;
         private String exclude;
+        private String name;
     }
     
     private static class UnpackResource
@@ -169,6 +170,8 @@ public class UnpackResources
         private boolean flat;
 
         private boolean overwrite;
+        
+        private String name;
 
         public EntrySet entrySet;
         
@@ -185,6 +188,7 @@ public class UnpackResources
             dest = makeRelativePath(resource.destination);
             overwrite = getValue(resource.overwrite, defaultOverwrite).booleanValue();
             flat = getValue(resource.flat, Boolean.FALSE).booleanValue();
+            name = resource.name;
 
             if (resource.path != null || resource.include != null || resource.exclude != null )
             {
@@ -301,11 +305,11 @@ public class UnpackResources
                     }
                     if (dest.length() > 0 )
                     {
-                        destFileName = baseDirectory + File.separator + dest + File.separator + entryName;
+                        destFileName = baseDirectory + File.separator + dest + File.separator + ((name == null) ? entryName : name);
                     }
                     else
                     {
-                        destFileName = baseDirectory + entryName;
+                        destFileName = baseDirectory + ((name == null) ? entryName : name);
                     }
                 }
             }

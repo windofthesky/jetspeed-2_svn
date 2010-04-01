@@ -74,6 +74,41 @@
     <plugins>
       <plugin>
         <groupId>org.apache.portals.jetspeed-2</groupId>
+        <artifactId>jetspeed-unpack-maven-plugin</artifactId>
+        <version>${dollar}{org.apache.portals.jetspeed.version}</version>
+        <executions>
+          <execution>
+            <id>unpack-jetspeed-properties</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <unpack>
+                <artifact>org.apache.portals.jetspeed-2:jetspeed-portal-resources:jar</artifact>
+                <targetDirectory>${dollar}{project.build.directory}/${dollar}{project.build.finalName}</targetDirectory>
+                <resources>
+                  <resource>
+                    <path>conf/jetspeed</path>
+                    <include>jetspeed.properties</include>
+                    <destination>WEB-INF/conf</destination>
+                  </resource>
+                </resources>
+              </unpack>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.portals.jetspeed-2</groupId>
+            <artifactId>jetspeed-portal-resources</artifactId>
+            <version>${dollar}{org.apache.portals.jetspeed.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-deploy-maven-plugin</artifactId>
         <version>${dollar}{org.apache.portals.jetspeed.version}</version>
         <executions>
@@ -107,36 +142,45 @@
         </dependencies>
       </plugin>
       <plugin>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
+        <artifactId>jetspeed-fileutils-maven-plugin</artifactId>
+        <version>${dollar}{org.apache.portals.jetspeed.version}</version>
+        <executions>
+          <execution>
+            <id>configure-jetspeed-properties</id>
+            <goals>
+              <goal>event</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <srcFilePath>${dollar}{project.build.directory}/${dollar}{project.build.finalName}/WEB-INF/conf/jetspeed.properties</srcFilePath>
+              <editPattern>^jetui.customization.method%5Cs*=.*%24</editPattern><!-- use %24 for '$' and %5C for '\' -->
+              <replacePattern>jetui.customization.method%20=%20ajax</replacePattern><!-- use %20 for space -->
+              <event>edit</event>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <warName>${dollar}{pom.artifactId}</warName>
-          <!--<overlays>
+          <overlays>
             <overlay>
-              <id>jetspeed1</id>
-              <groupId>org.apache.portals.jetspeed-2</groupId>
-              <artifactId>jetspeed</artifactId>
-              <includes>
-                <include>decorations/layout/css/**</include>
-                <include>decorations/portlet/clear/**</include>
-                <include>decorations/portlet/decorator.vm</include>
-              </includes>
-            </overlay>
-            <overlay>
-              <id>jetspeed2</id>
+              <id>jetspeed</id>
               <groupId>org.apache.portals.jetspeed-2</groupId>
               <artifactId>jetspeed</artifactId>
               <excludes>
-                <exclude>*.jsp</exclude>
-                <exclude>ajax/**</exclude>
-                <exclude>decorations/**</exclude>
-                <exclude>images/**</exclude>
-                <exclude>javascript/**</exclude>
                 <exclude>WEB-INF/pages/**</exclude>
                 <exclude>WEB-INF/min-pages/**</exclude>
+                <exclude>WEB-INF/ui-pages/**</exclude>
+                <exclude>WEB-INF/min-ui-pages/**</exclude>
+                <exclude>WEB-INF/conf/jetspeed.properties</exclude>
               </excludes>
             </overlay>
-          </overlays>-->
+          </overlays>
         </configuration>
       </plugin>
     </plugins>

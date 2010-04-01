@@ -18,17 +18,17 @@ package org.apache.jetspeed.maven.plugins;
 
 import java.util.Set;
 
-import org.apache.jetspeed.maven.mojo.AbstractUnpackMojo;
 import org.apache.jetspeed.maven.utils.UnpackResources;
+import org.apache.jetspeed.maven.mojo.AbstractUnpackMojo;
 import org.apache.maven.project.MavenProject;
 
 /**
- * UnpackMojo provides extraction services.
+ * UnpackWarMojo provides extraction services.
  * 
  * @version $Id$
  * @goal unpack
  */
-public class UnpackMojo extends AbstractUnpackMojo
+public class UnpackWarMojo extends AbstractUnpackMojo
 {
     /**
      * When true, skip the execution.

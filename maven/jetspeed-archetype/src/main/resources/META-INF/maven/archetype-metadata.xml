@@ -30,9 +30,20 @@
     <module id="${rootArtifactId}-portal" dir="__rootArtifactId__-portal" name="${rootArtifactId}-portal">
       <fileSets>
         <fileSet filtered="true" encoding="UTF-8">
-          <directory>src/main/webapp</directory>
+          <directory>src/main/webapp/WEB-INF/pages</directory>
           <includes>
+            <include>**/folder.metadata</include>
             <include>**/*.psml</include>
+            <include>**/*.tpsml</include>
+            <include>**/*.fpsml</include>
+            <include>**/*.dpsml</include>
+            <include>**/*.link</include>
+          </includes>
+        </fileSet>
+        <fileSet filtered="true" encoding="UTF-8">
+          <directory>src/main/webapp/WEB-INF/conf</directory>
+          <includes>
+            <include>**/*.properties</include>
           </includes>
         </fileSet>
         <fileSet filtered="true" encoding="UTF-8">

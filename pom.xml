@@ -341,6 +341,12 @@
       </dependency>
       <dependency>
         <groupId>org.apache.portals.jetspeed-2</groupId>
+        <artifactId>jetspeed-unpack-war-maven-plugin</artifactId>
+        <version>${pom.version}</version>
+        <type>maven-plugin</type>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-db-maven-plugin</artifactId>
         <version>${pom.version}</version>
         <type>maven-plugin</type>
@@ -1564,6 +1570,19 @@
               <groupId>${pom.groupId}</groupId>
               <artifactId>jetspeed-portal-resources</artifactId>
               <version>${pom.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.portals.jetspeed-2</groupId>
+          <artifactId>jetspeed-unpack-war-maven-plugin</artifactId>
+          <version>${pom.version}</version>
+          <dependencies>
+            <dependency>
+              <groupId>${pom.groupId}</groupId>
+              <artifactId>jetspeed</artifactId>
+              <version>${pom.version}</version>
+              <type>war</type>
             </dependency>
           </dependencies>
         </plugin>

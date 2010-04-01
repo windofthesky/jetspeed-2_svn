@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   
-  $Id$
+  $Id: pom.xml 777775 2009-05-23 02:41:18Z taylor $
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -25,54 +25,40 @@
     <maven>2.0.9</maven>
   </prerequisites>
 
-  <artifactId>maven</artifactId>
-  <name>Jetspeed-2 Maven Plugins</name>
-  <description>Jetspeed-2 Maven Plugins</description>
+  <artifactId>jetspeed-unpack-war-maven-plugin</artifactId>
+  <name>Jetspeed 2 Unpack WAR Maven Plugin</name>
+  <description>Jetspeed 2 Unpack WAR Maven Plugin</description>
   <parent>
     <groupId>org.apache.portals.jetspeed-2</groupId>
-    <artifactId>jetspeed-2</artifactId>
+    <artifactId>maven</artifactId>
     <version>2.2.1-SNAPSHOT</version>
   </parent>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>jetspeed-maven-utils</module>
-    <module>jetspeed-mvn-maven-plugin</module>
-    <module>jetspeed-unpack-maven-plugin</module>
-    <module>jetspeed-unpack-war-maven-plugin</module>
-    <module>jetspeed-deploy-maven-plugin</module>
-    <module>jetspeed-db-maven-plugin</module>
-    <module>jetspeed-archetype</module>
-    <module>jetspeed-fileutils-maven-plugin</module>
-    <module>jetspeed-maven-skin</module>
-  </modules>
-
-
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <reportSets>
-          <reportSet>            
-            <reports>              
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-    </plugins>
-  </reporting>
-
+  <packaging>maven-plugin</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-maven-utils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>2.0.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-project</artifactId>
+      <version>2.0.7</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
+        <artifactId>maven-plugin-plugin</artifactId>        
         <configuration>
-          <skipAssembly>true</skipAssembly>
+          <goalPrefix>jetspeed-unpack-war</goalPrefix>
         </configuration>
       </plugin>
     </plugins>
   </build>
-
 </project>

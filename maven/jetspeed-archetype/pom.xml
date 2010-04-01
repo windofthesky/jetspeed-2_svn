@@ -23,14 +23,15 @@
   <modelVersion>4.0.0</modelVersion>
   
   <artifactId>jetspeed-archetype</artifactId>
-  <description>Jetspeed 2 Deploy Maven Plugin</description>
-  <name>jetspeed-archetype</name>
+  <description>Jetspeed 2 Maven Archetype</description>
+  <name>Jetspeed 2 Maven Archetype</name>
   <packaging>maven-archetype</packaging>
   <parent>
     <groupId>org.apache.portals.jetspeed-2</groupId>
     <artifactId>maven</artifactId>
     <version>2.2.1-SNAPSHOT</version>
   </parent>
+
   <build>
     <extensions>
       <extension>
@@ -44,6 +45,84 @@
         <artifactId>maven-archetype-plugin</artifactId>
         <version>2.0-alpha-4</version>
         <extensions>true</extensions>
+      </plugin>
+
+      <plugin>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-unpack-maven-plugin</artifactId>
+        <version>${pom.version}</version>
+        <executions>
+          <execution>
+            <id>unpack-archetype-seed-resources</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <unpack>
+                <artifact>${pom.groupId}:jetspeed-portal-resources:jar</artifact>
+                <targetDirectory>${project.build.outputDirectory}</targetDirectory>
+                <resources>
+                  <resource>
+                    <path>seed/min</path>
+                    <include>j2-ui-seed.xml</include>
+                    <destination>archetype-resources/__rootArtifactId__-portal/src/sql/min</destination>
+                    <name>j2-seed.xml</name>
+                  </resource>
+                  <resource>
+                    <path>conf/jetspeed</path>
+                    <include>override.properties</include>
+                    <destination>archetype-resources/__rootArtifactId__-portal/src/main/webapp/WEB-INF/conf</destination>
+                  </resource>
+                </resources>
+              </unpack>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed-portal-resources</artifactId>
+            <version>${pom.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+      <plugin>
+        <groupId>${pom.groupId}</groupId>
+        <artifactId>jetspeed-unpack-war-maven-plugin</artifactId>
+        <version>${pom.version}</version>
+        <executions>
+          <execution>
+            <id>unpack-archetype-page-resources</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <unpack>
+                <artifact>${pom.groupId}:jetspeed:war</artifact>
+                <targetDirectory>${project.build.outputDirectory}</targetDirectory>
+                <resources>
+                  <resource>
+                    <path>WEB-INF/min-ui-pages</path>
+                    <include>**/*</include>
+                    <destination>archetype-resources/__rootArtifactId__-portal/src/main/webapp/WEB-INF/pages</destination>
+                    <overwrite>false</overwrite>
+                  </resource>
+                </resources>
+              </unpack>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>jetspeed</artifactId>
+            <version>${pom.version}</version>
+            <type>war</type>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
