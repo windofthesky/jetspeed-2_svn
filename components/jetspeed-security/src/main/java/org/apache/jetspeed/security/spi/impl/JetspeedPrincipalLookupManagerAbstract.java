@@ -102,7 +102,7 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 				// get the total number of results effected by the query
 				int fromPos = baseSqlStr.toUpperCase().indexOf(" FROM ");
 				if (fromPos >= 0) {
-					baseSqlStr = "select count(security_principal.principal_id)" + baseSqlStr.substring(fromPos);
+					baseSqlStr = "select count(SECURITY_PRINCIPAL.PRINCIPAL_ID)" + baseSqlStr.substring(fromPos);
 				}
 				// strip ORDER BY clause
 				int orderPos = baseSqlStr.toUpperCase().indexOf(" ORDER BY ");
@@ -143,27 +143,27 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 	 */
 	protected String generateBaseSql(JetspeedPrincipalQueryContext queryContext) {
 		String attributeConstraint = null;
-		String fromPart = "security_principal";
+		String fromPart = "SECURITY_PRINCIPAL";
 		if (queryContext.getSecurityAttributes() != null) {
 			int cnt = 1;
 			for (Map.Entry<String, String> attribute : queryContext.getSecurityAttributes().entrySet()) {
 				if (attributeConstraint == null) {
-					attributeConstraint = "a" + cnt + ".PRINCIPAL_ID=security_principal.PRINCIPAL_ID AND a" + cnt
+					attributeConstraint = "a" + cnt + ".PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID AND a" + cnt
 							+ ".ATTR_NAME = '" + attribute.getKey() + "' AND a" + cnt + ".ATTR_VALUE LIKE '"
 							+ attribute.getValue() + "'";
 				} else {
-					attributeConstraint += " AND a" + cnt + ".PRINCIPAL_ID=security_principal.PRINCIPAL_ID AND a" + cnt
+					attributeConstraint += " AND a" + cnt + ".PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID AND a" + cnt
 							+ ".ATTR_NAME = '" + attribute.getKey() + "' AND a" + cnt + ".ATTR_VALUE LIKE '"
 							+ attribute.getValue() + "'";
 				}
-				fromPart += ", security_attribute a" + cnt;
+				fromPart += ", SECURITY_ATTRIBUTE a" + cnt;
 				cnt++;
 			}
 		}
 
 		String constraint = null;
 		if (queryContext.getNameFilter() != null && queryContext.getNameFilter().length() > 0) {
-			constraint = "security_principal.PRINCIPAL_NAME LIKE '" + queryContext.getNameFilter().replace('*', '%')
+			constraint = "SECURITY_PRINCIPAL.PRINCIPAL_NAME LIKE '" + queryContext.getNameFilter().replace('*', '%')
 					+ "'";
 		}
 
@@ -178,15 +178,15 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 					roleConstraints = "r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
 							+ "' AND r" + cnt + ".TO_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
 							+ ".PRINCIPAL_NAME LIKE '" + roleName + "' AND rp" + cnt + ".PRINCIPAL_TYPE='role' AND r"
-							+ cnt + ".FROM_PRINCIPAL_ID=security_principal.PRINCIPAL_ID";
+							+ cnt + ".FROM_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
 				} else {
 					roleConstraints = " AND r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
 							+ "' AND r" + cnt + ".TO_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
 							+ ".PRINCIPAL_NAME LIKE '" + roleName + "' AND rp" + cnt + ".PRINCIPAL_TYPE='role' AND r"
-							+ cnt + ".FROM_PRINCIPAL_ID=security_principal.PRINCIPAL_ID";
+							+ cnt + ".FROM_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
 				}
 			}
-			fromPart += ", security_principal_assoc r" + cnt + ", security_principal rp" + cnt;
+			fromPart += ", SECURITY_PRINCIPAL_ASSOC r" + cnt + ", SECURITY_PRINCIPAL rp" + cnt;
 			cnt++;
 		}
 
@@ -201,15 +201,15 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 					groupConstraints = "r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
 							+ "' AND r" + cnt + ".TO_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
 							+ ".PRINCIPAL_NAME LIKE '" + groupName + "' AND rp" + cnt + ".PRINCIPAL_TYPE='group' AND r"
-							+ cnt + ".FROM_PRINCIPAL_ID=security_principal.PRINCIPAL_ID";
+							+ cnt + ".FROM_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
 				} else {
 					groupConstraints = " AND r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
 							+ "' AND r" + cnt + ".TO_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
 							+ ".PRINCIPAL_NAME LIKE '" + groupName + "' AND rp" + cnt + ".PRINCIPAL_TYPE='group' AND r"
-							+ cnt + ".FROM_PRINCIPAL_ID=security_principal.PRINCIPAL_ID";
+							+ cnt + ".FROM_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
 				}
 			}
-			fromPart += ", security_principal_assoc r" + cnt + ", security_principal rp" + cnt;
+			fromPart += ", SECURITY_PRINCIPAL_ASSOC r" + cnt + ", SECURITY_PRINCIPAL rp" + cnt;
 			cnt++;
 		}
 
@@ -223,15 +223,15 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 					userConstraints = "r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
 							+ "' AND r" + cnt + ".FROM_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
 							+ ".PRINCIPAL_NAME LIKE '" + userName + "' AND rp" + cnt + ".PRINCIPAL_TYPE='user' AND r"
-							+ cnt + ".TO_PRINCIPAL_ID=security_principal.PRINCIPAL_ID";
+							+ cnt + ".TO_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
 				} else {
 					userConstraints = " AND r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
 							+ "' AND r" + cnt + ".FROM_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
 							+ ".PRINCIPAL_NAME LIKE '" + userName + "' AND rp" + cnt + ".PRINCIPAL_TYPE='group' AND r"
-							+ cnt + ".TO_PRINCIPAL_ID=security_principal.PRINCIPAL_ID";
+							+ cnt + ".TO_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
 				}
 			}
-			fromPart += ", security_principal_assoc r" + cnt + ", security_principal rp" + cnt;
+			fromPart += ", SECURITY_PRINCIPAL_ASSOC r" + cnt + ", SECURITY_PRINCIPAL rp" + cnt;
 			cnt++;
 		}
 
@@ -267,8 +267,8 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 			}
 		}
 
-		String baseSqlStr = "SELECT security_principal.* from " + fromPart + " WHERE security_principal.PRINCIPAL_TYPE='"
-				+ queryContext.getJetspeedPrincipalType() + "' AND security_principal.DOMAIN_ID="
+		String baseSqlStr = "SELECT SECURITY_PRINCIPAL.* from " + fromPart + " WHERE SECURITY_PRINCIPAL.PRINCIPAL_TYPE='"
+				+ queryContext.getJetspeedPrincipalType() + "' AND SECURITY_PRINCIPAL.DOMAIN_ID="
 				+ queryContext.getSecurityDomain();
 		
 		if (constraint != null) {
@@ -276,9 +276,9 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 		}
 		
 		if (queryContext.getOrder() != null && queryContext.getOrder().equalsIgnoreCase("desc")) {
-			baseSqlStr += " ORDER BY security_principal.PRINCIPAL_NAME DESC";
+			baseSqlStr += " ORDER BY SECURITY_PRINCIPAL.PRINCIPAL_NAME DESC";
 		} else {
-			baseSqlStr += " ORDER BY security_principal.PRINCIPAL_NAME";
+			baseSqlStr += " ORDER BY SECURITY_PRINCIPAL.PRINCIPAL_NAME";
 		}
 		return baseSqlStr;
 	}
