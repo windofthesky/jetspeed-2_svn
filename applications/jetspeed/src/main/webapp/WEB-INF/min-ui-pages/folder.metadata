@@ -23,6 +23,9 @@ limitations under the License.
      layout-decorator="jetspeed"
      portlet-decorator="jetspeed"
   />
+ 
+  <document-order>landing.psml</document-order>
+  <document-order>default-page.psml</document-order>
   
   <security-constraints>
     <security-constraints-ref>public-view</security-constraints-ref>
