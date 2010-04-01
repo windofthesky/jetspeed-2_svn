@@ -143,7 +143,6 @@ public class DatabasePageManagerServer
         catch (final Exception e)
         {
             resultLine += " -> "+e;
-e.printStackTrace(System.out);
         }
         return resultLine;
     }
