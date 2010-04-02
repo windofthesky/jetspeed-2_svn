@@ -21,9 +21,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.StringTokenizer;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipFile;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -390,23 +390,37 @@ public class UnpackResources
         {
             targetBaseDir.mkdirs();
         }
-                
-        ZipInputStream zis = null;
+        
+        FileEntryCollection fileEntryCollection = null;
+        ZipFile zipFile = null;
+        
         try
         {
-            zis = new ZipInputStream( new FileInputStream( resourceFile ) );
-            ZipEntry ze = null;
-            InputStream is = null;
-            File firstDestFile;
-
-            while ( ( ze = zis.getNextEntry() ) != null )
+            if (!resourceFile.isDirectory())
             {
-                if (!ze.isDirectory())
+                zipFile = new ZipFile( resourceFile );
+                fileEntryCollection = new FileEntryCollection( zipFile );
+            }
+            else
+            {
+                fileEntryCollection = new FileEntryCollection( resourceFile );
+            }
+            
+            FileEntry fileEntry = null;
+            File firstDestFile;
+            
+            Enumeration<? extends FileEntry> entries = fileEntryCollection.entries();
+            
+            while ( entries.hasMoreElements() )
+            {
+                fileEntry = entries.nextElement();
+                
+                if (!fileEntry.isDirectory())
                 {
                     firstDestFile = null;
                     for ( int i = 0; i < unpackResources.length; i++ )
                     {
-                        String destFileName = unpackResources[i].getDestFileName(ze.getName(), targetDirectory);
+                        String destFileName = unpackResources[i].getDestFileName(fileEntry.getName(), targetDirectory);
                         if ( destFileName != null )
                         {
                             File destFile = new File(destFileName);
@@ -416,15 +430,15 @@ public class UnpackResources
                                 {
                                     throw new MojoExecutionException("Destination "+destFile.getAbsolutePath()+" already exists and is not a file");
                                 }
-                                if ( destFile.lastModified() >= ze.getTime() || !unpackResources[i].isOverwrite() )
+                                if ( destFile.lastModified() >= fileEntry.getTime() || !unpackResources[i].isOverwrite() )
                                 {
                                     if (verbose)
                                     {
-                                        log.info(ze.getName()+" skipped: already exists at "+destFile.getAbsolutePath());
+                                        log.info(fileEntry.getName()+" skipped: already exists at "+destFile.getAbsolutePath());
                                     }
                                     else
                                     {
-                                        log.debug(ze.getName()+" skipped: already exists at "+destFile.getAbsolutePath());
+                                        log.debug(fileEntry.getName()+" skipped: already exists at "+destFile.getAbsolutePath());
                                     }
                                     continue;
                                 }
@@ -435,13 +449,14 @@ public class UnpackResources
                             }
                             byte[] buffer = new byte[1024];
                             int length = 0;
+                            InputStream is = null;
                             FileOutputStream fos = null;
                             try
                             {
                                 if (firstDestFile == null)
                                 {
                                     firstDestFile = destFile;
-                                    is = zis;
+                                    is = fileEntryCollection.getInputStream(fileEntry);
                                 }
                                 else
                                 {
@@ -460,7 +475,7 @@ public class UnpackResources
                             }
                             finally
                             {
-                                if (is != zis)
+                                if (is != null)
                                 {
                                     try
                                     {
@@ -482,14 +497,14 @@ public class UnpackResources
                                     }
                                 }
                             }
-                            destFile.setLastModified(ze.getTime());
+                            destFile.setLastModified(fileEntry.getTime());
                             if (verbose)
                             {
-                                log.info(ze.getName()+" extracted to "+destFile.getAbsolutePath());
+                                log.info(fileEntry.getName()+" extracted to "+destFile.getAbsolutePath());
                             }
                             else
                             {
-                                log.debug(ze.getName()+" extracted to "+destFile.getAbsolutePath());
+                                log.debug(fileEntry.getName()+" extracted to "+destFile.getAbsolutePath());
                             }
                         }
                     }
@@ -502,11 +517,11 @@ public class UnpackResources
         }
         finally
         {
-            if ( zis != null )
+            if ( zipFile != null )
             {
                 try
                 {
-                    zis.close();
+                    zipFile.close();
                 }
                 catch ( IOException e )
                 {
