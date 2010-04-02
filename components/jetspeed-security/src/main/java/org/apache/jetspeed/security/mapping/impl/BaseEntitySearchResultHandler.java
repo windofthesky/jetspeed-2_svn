@@ -16,25 +16,34 @@
  */
 package org.apache.jetspeed.security.mapping.impl;
 
+import org.apache.jetspeed.security.mapping.EntityFactory;
+import org.apache.jetspeed.security.mapping.EntitySearchResultHandler;
+import org.apache.jetspeed.security.mapping.model.Entity;
 
 /**
- * @author <a href="mailto:ate@douma.nu>Ate Douma</a>
  * @version $Id$
+ *
  */
-public class CountingSearchResultHandler extends AbstractSearchResultHandler
+public class BaseEntitySearchResultHandler extends BaseSearchResultHandler<Entity,Object> implements EntitySearchResultHandler
 {
-    public CountingSearchResultHandler()
-    {
-        super();
-    }
+    private EntityFactory entityFactory;
     
-    public CountingSearchResultHandler(int maxSize)
+    public BaseEntitySearchResultHandler()
     {
-        super(maxSize);
     }
 
-    protected void processSearchResult(Object result, int pageSize, int pageIndex, int index)
+    public BaseEntitySearchResultHandler(int maxCount)
     {
-        // do nothing
+        super(maxCount);
+    }
+    
+    public void setEntityFactory(EntityFactory entityFactory)
+    {
+        this.entityFactory = entityFactory;
+    }
+
+    protected Entity mapResult(Object result, int pageSize, int pageIndex, int index)
+    {
+        return entityFactory.loadEntity(result);
     }
 }

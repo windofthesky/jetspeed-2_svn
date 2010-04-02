@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
+import javax.naming.directory.SearchResult;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.SecurityAttribute;
@@ -117,7 +118,7 @@ public class EntityFactoryImpl implements EntityFactory
     
     public Entity loadEntity(Object providerContext)
     {
-        DirContextOperations ctx = (DirContextOperations)providerContext;
+        DirContextOperations ctx = (DirContextOperations)((SearchResult)(providerContext)).getObject();
         String entityId = null;
         Entity entity = null;
         String dn = ctx.getNameInNamespace();

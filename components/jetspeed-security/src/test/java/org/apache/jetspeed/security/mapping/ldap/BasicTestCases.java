@@ -24,6 +24,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
+import org.apache.jetspeed.security.mapping.impl.CollectingEntitySearchResultHandler;
 import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
@@ -58,9 +59,10 @@ public class BasicTestCases
 
     public void testFetchAllEntities(int totalNrOfUsers) throws Exception
     {
-        Collection<Entity> entities = entityManager.getAllEntities("user");
-        TestCase.assertNotNull(entities);
-        TestCase.assertEquals(totalNrOfUsers, entities.size());
+        CollectingEntitySearchResultHandler handler = new CollectingEntitySearchResultHandler();
+        entityManager.getAllEntities("user", handler);
+        TestCase.assertNotNull(handler.getResults());
+        TestCase.assertEquals(totalNrOfUsers, handler.getSize());
     }
 
     public void testFetchRelatedEntitiesTo(String fromEntityType,
@@ -69,10 +71,9 @@ public class BasicTestCases
     {
         Entity randomEntity = entityManager.getEntity(toEntityType,toEntityId);
         TestCase.assertNotNull(randomEntity);
-        Collection<Entity> resultEntities = entityManager.getRelatedEntitiesTo(
-                randomEntity, new SecurityEntityRelationTypeImpl(relationType,fromEntityType,toEntityType));
-
-        basicEntityResultSetChecks(expectedEntities, resultEntities);
+        CollectingEntitySearchResultHandler handler = new CollectingEntitySearchResultHandler();
+        entityManager.getRelatedEntitiesTo(randomEntity, new SecurityEntityRelationTypeImpl(relationType,fromEntityType,toEntityType), handler);
+        basicEntityResultSetChecks(expectedEntities, handler.getResults());
     }
     
     public void testFetchRelatedEntitiesFrom(String fromEntityType,
@@ -81,10 +82,9 @@ public class BasicTestCases
     {
         Entity randomEntity = entityManager.getEntity(fromEntityType,fromEntityId);
         TestCase.assertNotNull(randomEntity);
-        Collection<Entity> resultEntities = entityManager.getRelatedEntitiesFrom(
-                randomEntity, new SecurityEntityRelationTypeImpl(relationType,fromEntityType,toEntityType));
-
-        basicEntityResultSetChecks(expectedEntities, resultEntities);
+        CollectingEntitySearchResultHandler handler = new CollectingEntitySearchResultHandler();
+        entityManager.getRelatedEntitiesFrom(randomEntity, new SecurityEntityRelationTypeImpl(relationType,fromEntityType,toEntityType), handler);
+        basicEntityResultSetChecks(expectedEntities, handler.getResults());
     }
 
     @SuppressWarnings("unchecked")

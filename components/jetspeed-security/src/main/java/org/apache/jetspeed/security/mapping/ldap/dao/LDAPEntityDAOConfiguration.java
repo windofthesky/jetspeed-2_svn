@@ -31,6 +31,8 @@ import org.springframework.ldap.filter.Filter;
  */
 public class LDAPEntityDAOConfiguration
 {
+    private static final int          DEFAULT_SEARCH_PAGE_SIZE = 256;
+    
     private DistinguishedName         baseDN = new DistinguishedName().immutableDistinguishedName();
     private DistinguishedName         searchDN = new DistinguishedName().immutableDistinguishedName();
     private Filter                    baseFilter;
@@ -40,6 +42,7 @@ public class LDAPEntityDAOConfiguration
     private String                    entityType;
     private String[]                  objectClassesArr;
     private String[]                  entityAttributeNames;
+    private int                       searchPageSize = DEFAULT_SEARCH_PAGE_SIZE;
 
     public void initialize() throws JetspeedException
     {
@@ -80,6 +83,16 @@ public class LDAPEntityDAOConfiguration
         {
             throw new JetspeedException(getClass().getName() + ": property '" + fieldName + "' cannot be null or empty.");
         }
+    }
+    
+    public int getSearchPageSize()
+    {
+        return searchPageSize;
+    }
+
+    public void setSearchPageSize(int searchPageSize)
+    {
+        this.searchPageSize = searchPageSize;
     }
 
     public DistinguishedName getBaseDN()

@@ -16,9 +16,8 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
-import java.util.Collection;
-
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.mapping.EntitySearchResultHandler;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
 
@@ -30,9 +29,9 @@ public interface EntityRelationDAO
 {
     SecurityEntityRelationType getRelationType();
 
-    Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDao, EntityDAO toDao, Entity fromEntity) throws SecurityException;
+    void getRelatedEntitiesFrom(EntityDAO fromDao, EntityDAO toDao, Entity fromEntity, EntitySearchResultHandler handler) throws SecurityException;
 
-    Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDao, EntityDAO toDao, Entity toEntity) throws SecurityException;
+    void getRelatedEntitiesTo(EntityDAO fromDao, EntityDAO toDao, Entity toEntity, EntitySearchResultHandler handler) throws SecurityException;
 
     void addRelation(EntityDAO sourceDao, EntityDAO targetDao, String sourceEntityId, String targetEntityId) throws SecurityException;
 

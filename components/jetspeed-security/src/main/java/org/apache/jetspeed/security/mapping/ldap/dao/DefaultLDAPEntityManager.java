@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +24,7 @@ import java.util.Set;
 
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.EntityFactory;
+import org.apache.jetspeed.security.mapping.EntitySearchResultHandler;
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
 import org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl;
 import org.apache.jetspeed.security.mapping.model.Entity;
@@ -124,10 +124,13 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         }
     }
     
-    public Collection<Entity> getAllEntities(String entityType) throws SecurityException
+    public void getAllEntities(String entityType, EntitySearchResultHandler handler) throws SecurityException
     {
         EntityDAO dao = entityDAOs.get(entityType);
-        return dao != null ? dao.getAllEntities() : null;
+        if (dao != null)
+        {
+            dao.getAllEntities(handler);
+        }
     }
 
     public Entity getEntity(String entityType, String entityId) throws SecurityException
@@ -136,7 +139,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         return dao != null ? dao.getEntity(entityId) : null;
     }
 
-    public Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType) throws SecurityException
+    public void getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType, EntitySearchResultHandler handler) throws SecurityException
     {
         EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType instanceof SecurityEntityRelationTypeImpl ? relationType : new SecurityEntityRelationTypeImpl(relationType));
         if (relationDAO != null)
@@ -145,14 +148,14 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
             EntityDAO toDAO = entityDAOs.get(relationType.getToEntityType());
             if (fromDAO != null && toDAO != null && toDAO.getEntityType().equals(toEntity.getType()))
             {
-                return relationDAO.getRelatedEntitiesTo(fromDAO, toDAO, toEntity);
+                relationDAO.getRelatedEntitiesTo(fromDAO, toDAO, toEntity, handler);
+                return;
             }
         }
-        return null; // todo : throw exception, since combination of entity
-        // types and relation type is not configured.
+        // todo : throw exception, since combination of entity types and relation type is not configured.
     }
 
-    public Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType) throws SecurityException
+    public void getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType, EntitySearchResultHandler handler) throws SecurityException
     {
         EntityRelationDAO relationDAO = entityRelationDAOs.get(relationType instanceof SecurityEntityRelationTypeImpl ? relationType : new SecurityEntityRelationTypeImpl(relationType));
         if (relationDAO != null)
@@ -161,11 +164,11 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
             EntityDAO toDAO = entityDAOs.get(relationType.getToEntityType());
             if (fromDAO != null && toDAO != null && fromDAO.getEntityType().equals(fromEntity.getType()))
             {
-                return relationDAO.getRelatedEntitiesFrom(fromDAO, toDAO, fromEntity);
+                relationDAO.getRelatedEntitiesFrom(fromDAO, toDAO, fromEntity, handler);
+                return;
             }
         }
-        return null; // todo : throw exception, since combination of entity
-        // types and relation type is not configured.
+        // todo : throw exception, since combination of entity types and relation type is not configured.
     }
 
     public void updateEntity(Entity entity) throws SecurityException

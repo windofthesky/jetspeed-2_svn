@@ -38,6 +38,7 @@ import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributeType;
 import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.mapping.SecurityEntityManager;
+import org.apache.jetspeed.security.mapping.impl.BaseEntitySearchResultHandler;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
@@ -45,6 +46,7 @@ import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @author <a href="mailto:ate@douma.nu>Ate Douma</a>
  * @version $Id$
  */
 public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySynchronizer
@@ -74,15 +76,33 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         {
             // don't skip any entity type when synchronizing all
             Collection<String> skipEntities = new ArrayList<String>();
-            InternalSynchronizationState synchronizationState = new InternalSynchronizationState(skipEntities);
+            final InternalSynchronizationState synchronizationState = new InternalSynchronizationState(skipEntities);
             for (String type : securityEntityManager.getSupportedEntityTypes())
             {
-                for (Entity entity : securityEntityManager.getAllEntities(type))
+                BaseEntitySearchResultHandler handler = new BaseEntitySearchResultHandler()
                 {
-                	// recursive is false, because that will synchronize all associated entities which are
-                	// direct associations of the principal. Because all principal types are being processed, this ensures 
-                	// all associations are being processed.
-                    recursiveSynchronizeEntity(entity, synchronizationState, false);
+                    @Override
+                    protected boolean processSearchResult(Entity result, int pageSize, int pageIndex, int index)
+                    {
+                        // recursive is false, because that will synchronize all associated entities which are
+                        // direct associations of the principal. Because all principal types are being processed, this ensures 
+                        // all associations are being processed.
+                        try
+                        {
+                            recursiveSynchronizeEntity(result, synchronizationState, false);
+                        }
+                        catch (SecurityException e)
+                        {
+                            setFeedback(e);
+                            return false;
+                        }
+                        return true;
+                    }
+                };
+                securityEntityManager.getAllEntities(type,handler);
+                if (handler.getFeedback() != null)
+                {
+                    throw (SecurityException)handler.getFeedback();
                 }
             }
         }
@@ -92,22 +112,39 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
     }
 
-    public synchronized void synchronizePrincipalsByType(String type, boolean recursive) throws SecurityException
+    public synchronized void synchronizePrincipalsByType(String type, final boolean recursive) throws SecurityException
     {
         setSynchronizing(true);
         try
         {
-            Collection<Entity> entites = securityEntityManager.getAllEntities(type);
             Collection<String> skipEntities = new ArrayList<String>();
             if (!type.equals(JetspeedPrincipalType.USER))
             {
                 // skip synchronizing users when not synchronizing the USER type itself
                 skipEntities.add(JetspeedPrincipalType.USER);
             }
-            InternalSynchronizationState synchronizationState = new InternalSynchronizationState(skipEntities);
-            for (Entity entity : entites)
+            final InternalSynchronizationState synchronizationState = new InternalSynchronizationState(skipEntities);
+            BaseEntitySearchResultHandler handler = new BaseEntitySearchResultHandler()
             {
-                recursiveSynchronizeEntity(entity, synchronizationState, recursive);
+                @Override
+                protected boolean processSearchResult(Entity entity, int pageSize, int pageIndex, int index)
+                {
+                    try
+                    {
+                        recursiveSynchronizeEntity(entity, synchronizationState, recursive);
+                    }
+                    catch (SecurityException e)
+                    {
+                        setFeedback(e);
+                        return false;
+                    }
+                    return true;
+                }
+            };
+            securityEntityManager.getAllEntities(type, handler);
+            if (handler.getFeedback() != null)
+            {
+                throw (SecurityException)handler.getFeedback();
             }
         }
         finally
@@ -195,48 +232,69 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
      * @param recursive whether related entities should be recursively synchronized (true) or not (false).
      * @return
      */
-    protected Collection<Long> synchronizeAddedEntityRelations(SecurityEntityRelationType relationTypeForThisEntity, Entity entity, JetspeedPrincipal principal,
-                                                              boolean entityIsFromEntity, InternalSynchronizationState syncState, boolean recursive)
-                                                              throws SecurityException
+    protected Collection<Long> synchronizeAddedEntityRelations(final SecurityEntityRelationType relationTypeForThisEntity, final Entity entity, final JetspeedPrincipal principal,
+                                                               final boolean entityIsFromEntity, final InternalSynchronizationState syncState, final boolean recursive)
+                                                               throws SecurityException
     {
-        Collection<Entity> relatedEntities = entityIsFromEntity ? securityEntityManager.getRelatedEntitiesFrom(entity, relationTypeForThisEntity)
-                                                               : securityEntityManager.getRelatedEntitiesTo(entity, relationTypeForThisEntity);
-        Collection<Long> externalRelatedEntityIds = new ArrayList<Long>();
-        if (relatedEntities != null){
-            for (Entity relatedEntity : relatedEntities)
+        final Collection<Long> externalRelatedEntityIds = new ArrayList<Long>();
+        
+        BaseEntitySearchResultHandler handler = new BaseEntitySearchResultHandler()
+        {
+            @Override
+            protected boolean processSearchResult(Entity relatedEntity, int pageSize, int pageIndex, int index)
             {
-                Entity fromEntity = entityIsFromEntity ? entity : relatedEntity;
-                Entity toEntity = entityIsFromEntity ? relatedEntity : entity;
-                if (!syncState.isRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity))
+                try
                 {
-                    // first flag the relation as processed to
-                    // prevent synchronizing the same relation from
-                    // the other side.
-                    syncState.setRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity, entityIsFromEntity);
-                    // first create/update principal
-                    JetspeedPrincipal relatedPrincipal = null;
-                    if (recursive){
-                        relatedPrincipal = recursiveSynchronizeEntity(relatedEntity, syncState,recursive);
-                    } else {
-                        // don't recursively synchronize the related entity. Only add an association (if missing) when the related entity was previously synchronized.
-                        JetspeedPrincipalManager principalManager = principalManagerProvider.getManager(principalManagerProvider.getPrincipalType(relatedEntity.getType()));
-                        if (principalManager != null)
+                    Entity fromEntity = entityIsFromEntity ? entity : relatedEntity;
+                    Entity toEntity = entityIsFromEntity ? relatedEntity : entity;
+                    if (!syncState.isRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity))
+                    {
+                        // first flag the relation as processed to
+                        // prevent synchronizing the same relation from
+                        // the other side.
+                        syncState.setRelationProcessed(relationTypeForThisEntity, fromEntity, toEntity, entityIsFromEntity);
+                        // first create/update principal
+                        JetspeedPrincipal relatedPrincipal = null;
+                        if (recursive){
+                            relatedPrincipal = recursiveSynchronizeEntity(relatedEntity, syncState,recursive);
+                        } else {
+                            // don't recursively synchronize the related entity. Only add an association (if missing) when the related entity was previously synchronized.
+                            JetspeedPrincipalManager principalManager = principalManagerProvider.getManager(principalManagerProvider.getPrincipalType(relatedEntity.getType()));
+                            if (principalManager != null)
+                            {
+                                relatedPrincipal = principalManager.getPrincipal(relatedEntity.getId());
+                            }
+                        }
+                        // .. then update associations to / from it
+                        JetspeedPrincipal fromPrincipal = entityIsFromEntity ? principal : relatedPrincipal;
+                        JetspeedPrincipal toPrincipal = entityIsFromEntity ? relatedPrincipal : principal;
+                        // does association exist in DB ?
+                        if (relatedPrincipal != null && !associationExists(fromPrincipal, toPrincipal, relationTypeForThisEntity.getRelationType()))
                         {
-                            relatedPrincipal = principalManager.getPrincipal(relatedEntity.getId());
+                            synchronizeAddedPrincipalAssocation(fromPrincipal, toPrincipal, relationTypeForThisEntity.getRelationType());
+                            externalRelatedEntityIds.add(relatedPrincipal.getId());
                         }
                     }
-                    // .. then update associations to / from it
-                    JetspeedPrincipal fromPrincipal = entityIsFromEntity ? principal : relatedPrincipal;
-                    JetspeedPrincipal toPrincipal = entityIsFromEntity ? relatedPrincipal : principal;
-                    // does association exist in DB ?
-                    if (relatedPrincipal != null && !associationExists(fromPrincipal, toPrincipal, relationTypeForThisEntity.getRelationType()))
-                    {
-                        synchronizeAddedPrincipalAssocation(fromPrincipal, toPrincipal, relationTypeForThisEntity.getRelationType());
-                        externalRelatedEntityIds.add(relatedPrincipal.getId());
-                    }
-                    
                 }
+                catch (SecurityException e)
+                {
+                    setFeedback(e);
+                    return false;
+                }
+                return true;
             }
+        };
+        if (entityIsFromEntity)
+        {
+            securityEntityManager.getRelatedEntitiesFrom(entity, relationTypeForThisEntity, handler);
+        }
+        else
+        {
+            securityEntityManager.getRelatedEntitiesTo(entity, relationTypeForThisEntity, handler);
+        }
+        if (handler.getFeedback() != null)
+        {
+            throw (SecurityException)handler.getFeedback();
         }
         return externalRelatedEntityIds;
     }

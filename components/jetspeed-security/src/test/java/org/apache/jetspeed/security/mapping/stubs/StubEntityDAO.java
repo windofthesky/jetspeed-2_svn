@@ -20,8 +20,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.EntityFactory;
+import org.apache.jetspeed.security.mapping.EntitySearchResultHandler;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.springframework.ldap.filter.Filter;
@@ -31,18 +33,35 @@ import org.springframework.ldap.filter.Filter;
  */
 public class StubEntityDAO implements EntityDAO
 {
-
+    private static EntityFactory copyingEntityFactory = new EntityFactory()
+    {
+        public Entity createEntity(JetspeedPrincipal principal) {return null; }
+        public String getEntityType() { return null; }
+        public Entity loadEntity(Object entity) { return (Entity)entity; }
+    };
+    
     private Map<String,Entity> entities = new HashMap<String,Entity>();
+    
+    private void copyEntities(EntitySearchResultHandler handler)
+    {
+        handler.setEntityFactory(copyingEntityFactory);
+        int index = 0;
+        for (Entity e : entities.values() )
+        {
+            handler.handleSearchResult(e, 0, index, index);
+            index++;
+        }
+        handler.setEntityFactory(null);
+    }
     
     public String getEntityType()
     {
         return null;
     }
     
-    public Collection<Entity> getEntities(Entity parentEntity, Filter filter)
+    public void getEntities(Entity parentEntity, Filter filter, EntitySearchResultHandler handler)
     {
         // TODO Auto-generated method stub
-        return null;
     }
 
     public Entity getEntityByInternalId(String internalId)
@@ -62,26 +81,24 @@ public class StubEntityDAO implements EntityDAO
         entities.put(entity.getId(),entity);
     }
 
-    public Collection<Entity> getAllEntities()
+    public void getAllEntities(EntitySearchResultHandler handler)
     {
-        return entities.values();
+        copyEntities(handler);
     }
 
-    public Collection<Entity> getEntities(Filter filter)
+    public void getEntities(Filter filter, EntitySearchResultHandler handler)
     {
-        return entities.values();
+        copyEntities(handler);
     }
 
-    public Collection<Entity> getEntitiesById(Collection<String> entityIds)
+    public void getEntitiesById(Collection<String> entityIds, EntitySearchResultHandler handler)
     {
         // TODO Auto-generated method stub
-        return null;
     }
 
-    public Collection<Entity> getEntitiesByInternalId(Collection<String> entityIds)
+    public void getEntitiesByInternalId(Collection<String> entityIds, EntitySearchResultHandler handler)
     {
         // TODO Auto-generated method stub
-        return null;
     }
 
     public Entity getEntity(String entityId)

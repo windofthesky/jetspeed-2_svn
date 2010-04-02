@@ -24,7 +24,7 @@ import java.util.List;
  * @author <a href="mailto:ate@douma.nu>Ate Douma</a>
  * @version $Id$
  */
-public class CollectingSearchResultHandler<T,R> extends AbstractSearchResultHandler
+public class CollectingSearchResultHandler<T,R> extends BaseSearchResultHandler<T,R>
 {
     private T singleResult;
     private List<T> results;
@@ -64,24 +64,17 @@ public class CollectingSearchResultHandler<T,R> extends AbstractSearchResultHand
         }
         return results;
     }
-
-    @SuppressWarnings("unchecked")
-    protected void processSearchResult(Object result, int pageSize, int pageIndex, int index)
+    
+    protected boolean postHandleSearchResult(T mappedResult, int pageSize, int pageIndex, int index)
     {
-        T mappedResult = mapResult((R)result);
         if (getMaxCount() == 1)
         {
             singleResult = mappedResult;
         }
-        else if (getCount() <= getMaxCount())
+        else if (getMaxCount() == 0 || getCount() <= getMaxCount())
         {
             getResults().add(mappedResult);
         }
-    }
-    
-    @SuppressWarnings("unchecked")
-    protected T mapResult(R result)
-    {
-        return (T)result;
-    }
+        return true;
+    }    
 }

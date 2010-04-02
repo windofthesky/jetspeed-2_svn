@@ -22,23 +22,51 @@ import org.apache.jetspeed.security.mapping.SearchResultCallbackHandler;
  * @author <a href="mailto:ate@douma.nu>Ate Douma</a>
  * @version $Id$
  */
-public abstract class AbstractSearchResultHandler implements SearchResultCallbackHandler
+public class BaseSearchResultHandler<T,R> implements SearchResultCallbackHandler
 {
     private final int maxCount;
+    private int searchPageSize = -1; // disabled
     private int count;
     private int size;
     private boolean aborted;
+    private Object feedback;
         
-    public AbstractSearchResultHandler()
+    public BaseSearchResultHandler()
     {
-        this(Integer.MAX_VALUE);
+        this(0);
     }
     
-    public AbstractSearchResultHandler(int maxCount)
+    public BaseSearchResultHandler(int maxCount)
     {
-        this.maxCount = maxCount < 1 ? Integer.MAX_VALUE : maxCount;
+        this.maxCount = maxCount < 1 ? 0 : maxCount;
+        if (maxCount == 1)
+        {
+            searchPageSize = 0;
+        }
     }
-
+    
+    public void setSearchPageSize(int searchPageSize)
+    {
+        if (searchPageSize < 0)
+        {
+            this.searchPageSize = 0;
+        }
+        else if (maxCount > 1 && searchPageSize > maxCount)
+        {
+            this.searchPageSize = maxCount+1;
+        }
+        else
+        {
+            this.searchPageSize = searchPageSize;
+        }
+    }
+    
+    public int getSearchPageSize()
+    {
+        return searchPageSize;
+    }
+    
+    @SuppressWarnings("unchecked")
     public final boolean handleSearchResult(Object result, int pageSize, int pageIndex, int index)
     {
         count++;
@@ -47,7 +75,15 @@ public abstract class AbstractSearchResultHandler implements SearchResultCallbac
             boolean noExceptions = false;
             try
             {
-                processSearchResult(result, pageSize, pageIndex, index);
+                T mappedResult = mapResult((R)result, pageSize, pageIndex, index);
+                if (mappedResult != null)
+                {
+                    aborted = !processSearchResult(mappedResult, pageSize, pageIndex, index);
+                    if (!aborted)
+                    {
+                        aborted = !postHandleSearchResult(mappedResult, pageSize, pageIndex, index);
+                    }
+                }
                 noExceptions = true;
             }
             finally
@@ -60,7 +96,7 @@ public abstract class AbstractSearchResultHandler implements SearchResultCallbac
             if (!aborted)
             {
                 size++;
-                if (count > maxCount)
+                if (maxCount > 0 && count > maxCount)
                 {
                     aborted = true;
                 }
@@ -69,14 +105,19 @@ public abstract class AbstractSearchResultHandler implements SearchResultCallbac
         return !aborted;
     }
     
+    public void setFeedback(Object feedback)
+    {
+        this.feedback = feedback;
+    }
+        
+    public Object getFeedback()
+    {
+        return feedback;
+    }
+    
     public final boolean isAborted()
     {
         return aborted;
-    }
-    
-    protected final void setAborted()
-    {
-        aborted = true;
     }
     
     public final int getMaxCount()
@@ -94,5 +135,19 @@ public abstract class AbstractSearchResultHandler implements SearchResultCallbac
         return size;
     }
     
-    protected abstract void processSearchResult(Object result, int pageSize, int pageIndex, int index);
+    @SuppressWarnings("unchecked")
+    protected T mapResult(R result, int pageSize, int pageIndex, int index)
+    {
+        return (T)result;
+    }
+
+    protected boolean processSearchResult(T result, int pageSize, int pageIndex, int index)
+    {
+        return true;
+    }
+    
+    protected boolean postHandleSearchResult(T result, int pageSize, int pageIndex, int index)
+    {
+        return true;
+    }
 }

@@ -21,7 +21,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.mapping.EntityFactory;
+import org.apache.jetspeed.security.mapping.EntitySearchResultHandler;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityRelationDAO;
 import org.apache.jetspeed.security.mapping.model.Entity;
@@ -33,7 +36,13 @@ import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
  */
 public class StubEntityRelationDAO implements EntityRelationDAO
 {
-
+    private static EntityFactory copyingEntityFactory = new EntityFactory()
+    {
+        public Entity createEntity(JetspeedPrincipal principal) {return null; }
+        public String getEntityType() { return null; }
+        public Entity loadEntity(Object entity) { return (Entity)entity; }
+    };
+    
     private Map<Entity,Collection<Entity>> fromTo = new HashMap<Entity,Collection<Entity>>();
     private Map<Entity,Collection<Entity>> toFrom = new HashMap<Entity,Collection<Entity>>();
     private SecurityEntityRelationType relationType;
@@ -45,20 +54,28 @@ public class StubEntityRelationDAO implements EntityRelationDAO
         this.relationType = relationType;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.security.mapping.ldap.dao.EntityRelationDAO#getRelatedEntitiesFrom(org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO, org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO, org.apache.jetspeed.security.mapping.model.Entity)
-     */
-    public Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDao, EntityDAO toDao, Entity fromEntity)
+    public void getRelatedEntitiesFrom(EntityDAO fromDao, EntityDAO toDao, Entity fromEntity, EntitySearchResultHandler handler)
     {
-        return fromTo.get(fromEntity);
+        handler.setEntityFactory(copyingEntityFactory);
+        int index = 0;
+        for (Entity e : fromTo.get(fromEntity) )
+        {
+            handler.handleSearchResult(e, 0, index, index);
+            index++;
+        }
+        handler.setEntityFactory(null);
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.security.mapping.ldap.dao.EntityRelationDAO#getRelatedEntitiesTo(org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO, org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO, org.apache.jetspeed.security.mapping.model.Entity)
-     */
-    public Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDao, EntityDAO toDao, Entity toEntity)
+    public void getRelatedEntitiesTo(EntityDAO fromDao, EntityDAO toDao, Entity toEntity, EntitySearchResultHandler handler)
     {
-        return toFrom.get(toEntity);
+        handler.setEntityFactory(copyingEntityFactory);
+        int index = 0;
+        for (Entity e : toFrom.get(toEntity) )
+        {
+            handler.handleSearchResult(e, 0, index, index);
+            index++;
+        }
+        handler.setEntityFactory(null);
     }
     
     public SecurityEntityRelationType getRelationType()

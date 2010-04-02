@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.mapping.EntitySearchResultHandler;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
 import org.apache.jetspeed.security.mapping.model.Attribute;
 import org.apache.jetspeed.security.mapping.model.AttributeDef;
@@ -45,17 +46,18 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
 
     // not used, then the attribute
     // contains the ID(s).
-    public Collection<Entity> getRelatedEntitiesFrom(EntityDAO fromDAO, EntityDAO toDAO, Entity fromEntity) throws SecurityException
+    public void getRelatedEntitiesFrom(EntityDAO fromDAO, EntityDAO toDAO, Entity fromEntity, EntitySearchResultHandler handler) throws SecurityException
     {
-        return internalGetRelatedEntities(fromDAO, toDAO, useFromEntityAttribute, fromEntity);
+        internalGetRelatedEntities(fromDAO, toDAO, useFromEntityAttribute, fromEntity, handler);
     }
 
-    public Collection<Entity> getRelatedEntitiesTo(EntityDAO fromDAO, EntityDAO toDAO, Entity toEntity) throws SecurityException
+    public void getRelatedEntitiesTo(EntityDAO fromDAO, EntityDAO toDAO, Entity toEntity, EntitySearchResultHandler handler) throws SecurityException
     {
-        return internalGetRelatedEntities(toDAO, fromDAO, !useFromEntityAttribute, toEntity);
+        internalGetRelatedEntities(toDAO, fromDAO, !useFromEntityAttribute, toEntity, handler);
     }
 
-    private Collection<Entity> internalGetRelatedEntities(EntityDAO fromDAO, EntityDAO toDAO, boolean useFromEntityAttribute, Entity entity) throws SecurityException
+    private void internalGetRelatedEntities(EntityDAO fromDAO, EntityDAO toDAO, boolean useFromEntityAttribute, Entity entity, 
+                                           EntitySearchResultHandler handler) throws SecurityException
     {
         if (useFromEntityAttribute)
         {
@@ -71,11 +73,11 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
                 }
                 if (attributeContainsInternalId)
                 {
-                    return toDAO.getEntitiesByInternalId(values);
+                    toDAO.getEntitiesByInternalId(values, handler);
                 }
                 else
                 {
-                    return toDAO.getEntitiesById(values);
+                    toDAO.getEntitiesById(values, handler);
                 }
             }
         }
@@ -90,10 +92,9 @@ public class AttributeBasedRelationDAO extends AbstractRelationDAO
                 // fetch entities using target Entity DAO with a specific filter
                 // on the member attribute
                 Filter memberAttrFilter = new EqualsFilter(relationAttribute, fromEntityUsedIdValue);
-                return toDAO.getEntities(memberAttrFilter);
+                toDAO.getEntities(memberAttrFilter, handler);
             }
         }
-        return null;
     }
 
     private String getInternalId(Entity entity, EntityDAO entityDao) throws SecurityException

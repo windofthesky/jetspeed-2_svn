@@ -19,7 +19,6 @@ package org.apache.jetspeed.security.mapping.ldap.dao.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
@@ -30,8 +29,11 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.EntityFactory;
+import org.apache.jetspeed.security.mapping.EntitySearchResultHandler;
+import org.apache.jetspeed.security.mapping.impl.CollectingEntitySearchResultHandler;
 import org.apache.jetspeed.security.mapping.impl.CollectingSearchResultHandler;
 import org.apache.jetspeed.security.mapping.ldap.EntityFactoryImpl;
 import org.apache.jetspeed.security.mapping.ldap.dao.EntityDAO;
@@ -54,6 +56,7 @@ import org.springframework.ldap.filter.OrFilter;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
+ * @author <a href="mailto:ate@douma.nu>Ate Douma</a>
  * @version $Id$
  */
 public class SpringLDAPEntityDAO implements EntityDAO
@@ -62,12 +65,14 @@ public class SpringLDAPEntityDAO implements EntityDAO
     private final EntityFactory              entityFactory;
     private LdapTemplate                     ldapTemplate;
     private String                           defaultSearchFilterStr;
+    private int                              searchPageSize;
 
     public SpringLDAPEntityDAO(LDAPEntityDAOConfiguration configuration)
     {
         this.configuration = configuration;
         this.entityFactory = new EntityFactoryImpl(configuration);
         this.defaultSearchFilterStr = createSearchFilter(null);
+        this.searchPageSize = configuration.getSearchPageSize();
     }
 
     public LDAPEntityDAOConfiguration getConfiguration()
@@ -90,25 +95,25 @@ public class SpringLDAPEntityDAO implements EntityDAO
         this.ldapTemplate = ldapTemplate;
     }
 
-    public Collection<Entity> getEntities(Filter filter) throws SecurityException
+    public void getAllEntities(EntitySearchResultHandler handler) throws SecurityException
     {
+        getEntities(null, handler);
+    }
+
+    public void getEntities(Filter filter, EntitySearchResultHandler handler) throws SecurityException
+    {
+        Validate.notNull(handler, "EntitySearchResultHandler parameter must not be null");
         String sf = createSearchFilter(filter);
         SearchControls sc = getSearchControls(SearchControls.SUBTREE_SCOPE, true, configuration.getEntityAttributeNames());
-        CollectingSearchResultHandler<Entity,SearchResult> cbh = new CollectingSearchResultHandler<Entity,SearchResult>()
-        {
-            protected Entity mapResult(SearchResult result)
-            {
-                return getEntityFactory().loadEntity(result.getObject());
-            }
-        };
-        PagedSearchExecutor pse = new PagedSearchExecutor(configuration.getSearchDN(), sf, sc, cbh);
+        
+        handler.setEntityFactory(getEntityFactory());
+        PagedSearchExecutor pse = new PagedSearchExecutor(configuration.getSearchDN(), sf, sc, handler, searchPageSize);
         
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try
         {
             Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-            ldapTemplate.search(pse,pse); 
-            return cbh.getResults();
+            ldapTemplate.search(pse,pse);            
         }
         catch (NamingException e)
         {
@@ -117,26 +122,20 @@ public class SpringLDAPEntityDAO implements EntityDAO
         finally
         {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
+            handler.setEntityFactory(null);
         }
     }
 
-    public Collection<Entity> getEntities(Entity parent, Filter filter) throws SecurityException
+    public void getEntities(Entity parent, Filter filter, EntitySearchResultHandler handler) throws SecurityException
     {
-        List<Entity> results = new ArrayList<Entity>();
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         DistinguishedName parentDN = getRelativeDN(parent.getInternalId());
         if (configuration.getSearchDN().size() == 0 || parentDN.endsWith(configuration.getSearchDN()))
         {
             String sf = createSearchFilter(filter);
             SearchControls sc = getSearchControls(SearchControls.ONELEVEL_SCOPE, true, configuration.getEntityAttributeNames());
-            CollectingSearchResultHandler<Entity,SearchResult> cbh = new CollectingSearchResultHandler<Entity,SearchResult>(results)
-            {
-                protected Entity mapResult(SearchResult result)
-                {
-                    return getEntityFactory().loadEntity(result.getObject());
-                }
-            };
-            PagedSearchExecutor pse = new PagedSearchExecutor(parentDN, sf, sc, cbh);
+            handler.setEntityFactory(getEntityFactory());
+            PagedSearchExecutor pse = new PagedSearchExecutor(parentDN, sf, sc, handler, searchPageSize);
             
             try
             {
@@ -151,27 +150,19 @@ public class SpringLDAPEntityDAO implements EntityDAO
             finally
             {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
+                handler.setEntityFactory(null);
             }
         }
-        return results;
-    }
-
-    public Collection<Entity> getAllEntities() throws SecurityException
-    {
-        return getEntities(null);
     }
 
     public Entity getEntity(String entityId) throws SecurityException
     {
-        Collection<Entity> entities = getEntities(new EqualsFilter(configuration.getLdapIdAttribute(), entityId));
-        if (entities != null && entities.size() == 1)
-        {
-            return entities.iterator().next();
-        }
-        return null;
+        CollectingEntitySearchResultHandler handler = new CollectingEntitySearchResultHandler(1);
+        getEntities(new EqualsFilter(configuration.getLdapIdAttribute(), entityId), handler);
+        return handler.getCount() == 1 ? handler.getSingleResult() : null;
     }
 
-    public Collection<Entity> getEntitiesById(Collection<String> entityIds) throws SecurityException
+    public void getEntitiesById(Collection<String> entityIds, EntitySearchResultHandler handler) throws SecurityException
     {
         OrFilter filter = new OrFilter();
         String idAttr = configuration.getLdapIdAttribute();
@@ -179,23 +170,24 @@ public class SpringLDAPEntityDAO implements EntityDAO
         {
             filter.or(new EqualsFilter(idAttr, id));
         }
-        return getEntities(filter);
+        getEntities(filter, handler);
     }
 
     public Entity getEntityByInternalId(String internalId) throws SecurityException
+    {
+        CollectingEntitySearchResultHandler handler = new CollectingEntitySearchResultHandler(1);
+        getEntityByInternalId(internalId, handler);
+        return handler.getSingleResult(); 
+    }
+
+    protected void getEntityByInternalId(String internalId, EntitySearchResultHandler handler) throws SecurityException
     {
         DistinguishedName principalDN = getRelativeDN(internalId);
         if (configuration.getSearchDN().size() == 0 || principalDN.endsWith(configuration.getSearchDN()))
         {
             SearchControls sc = getSearchControls(SearchControls.OBJECT_SCOPE, true, configuration.getEntityAttributeNames());
-            CollectingSearchResultHandler<Entity,SearchResult> cbh = new CollectingSearchResultHandler<Entity,SearchResult>(1)
-            {
-                protected Entity mapResult(SearchResult result)
-                {
-                    return getEntityFactory().loadEntity(result.getObject());
-                }
-            };
-            PagedSearchExecutor pse = new PagedSearchExecutor(principalDN, defaultSearchFilterStr, sc, cbh);
+            PagedSearchExecutor pse = new PagedSearchExecutor(principalDN, defaultSearchFilterStr, sc, handler);
+            handler.setEntityFactory(getEntityFactory());
             
             ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
             try
@@ -203,10 +195,6 @@ public class SpringLDAPEntityDAO implements EntityDAO
                 Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
                 
                 ldapTemplate.search(pse,pse);
-                if (cbh.getCount() == 1)
-                {
-                    return cbh.getSingleResult();
-                }
             }
             catch (NamingException e)
             {
@@ -215,23 +203,38 @@ public class SpringLDAPEntityDAO implements EntityDAO
             finally
             {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
+                handler.setEntityFactory(null);
             }
         }
-        return null;
     }
     
-    public Collection<Entity> getEntitiesByInternalId(Collection<String> internalIds) throws SecurityException
+    public void getEntitiesByInternalId(Collection<String> internalIds, final EntitySearchResultHandler handler) throws SecurityException
     {
-        final Collection<Entity> resultSet = new ArrayList<Entity>();
-        for (Iterator<String> iterator = internalIds.iterator(); iterator.hasNext();)
+        EntitySearchResultHandler delegatingHandler = new EntitySearchResultHandler()
         {
-            Entity resultEntity = getEntityByInternalId(iterator.next());
-            if (resultEntity != null)
+            public int getMaxCount() { return handler.getMaxCount(); }
+            public int getSearchPageSize() { return handler.getSearchPageSize(); }
+            public void setFeedback(Object feedback) {}
+            public Object getFeedback() {return null; }
+            public void setEntityFactory(EntityFactory factory) {}
+            public boolean handleSearchResult(Object result, int pageSize, int pageIndex, int index)
             {
-                resultSet.add(resultEntity);
+                return handler.handleSearchResult(result, pageSize, pageIndex, index);
+            }
+        };
+        try
+        {
+            handler.setEntityFactory(getEntityFactory());
+            
+            for (Iterator<String> iterator = internalIds.iterator(); iterator.hasNext();)
+            {
+                getEntityByInternalId(iterator.next(), delegatingHandler);
             }
         }
-        return resultSet;
+        finally
+        {
+            handler.setEntityFactory(null);
+        }
     }
 
     public Entity getParentEntity(Entity childEntity) throws SecurityException
@@ -257,7 +260,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
         CollectingSearchResultHandler<String,SearchResult> cbh = 
             new CollectingSearchResultHandler<String,SearchResult>(1)
         {
-            protected String mapResult(SearchResult result)
+            protected String mapResult(SearchResult result, int pageSize, int pageIndex, int index)
             {
                 return result.getNameInNamespace();
             }
@@ -311,7 +314,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
         CollectingSearchResultHandler<DirContextOperations,SearchResult> cbh = 
             new CollectingSearchResultHandler<DirContextOperations,SearchResult>(1)
         {
-            protected DirContextOperations mapResult(SearchResult result)
+            protected DirContextOperations mapResult(SearchResult result, int pageSize, int pageIndex, int index)
             {
                 return (DirContextOperations)result.getObject();
             }
@@ -351,7 +354,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
             CollectingSearchResultHandler<DirContextOperations,SearchResult> cbh = 
                 new CollectingSearchResultHandler<DirContextOperations,SearchResult>(1)
             {
-                protected DirContextOperations mapResult(SearchResult result)
+                protected DirContextOperations mapResult(SearchResult result, int pageSize, int pageIndex, int index)
                 {
                     return (DirContextOperations)result.getObject();
                 }
@@ -364,10 +367,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
                 Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
                 
                 ldapTemplate.search(pse,pse);
-                if (cbh.getCount() == 1)
-                {
-                    return cbh.getSingleResult();
-                }
+                return cbh.getSingleResult();
             }
             catch (NamingException e)
             {

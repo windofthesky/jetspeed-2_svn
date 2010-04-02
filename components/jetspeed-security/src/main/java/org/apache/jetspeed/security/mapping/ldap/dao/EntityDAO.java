@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.mapping.EntityFactory;
+import org.apache.jetspeed.security.mapping.EntitySearchResultHandler;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.springframework.ldap.filter.Filter;
 
@@ -37,47 +38,43 @@ public interface EntityDAO
     /**
      * Fetch entities by providing a list of specific entity IDs.
      * 
-     * @param entity
-     *            IDs
-     * @return found entities
+     * @param entityIds entity IDs
+     * @param handler the Entity callback handler called for each entity retrieved
      */
-    Collection<Entity> getEntitiesById(Collection<String> entityIds) throws SecurityException;
+    void getEntitiesById(Collection<String> entityIds, EntitySearchResultHandler handler) throws SecurityException;
 
     /**
      * Fetch entity by providing an *internal* entity ID.
      * 
-     * @param internalId
+     * @param internalId internal entity ID
      * @return found entity
      */
     Entity getEntityByInternalId(String internalId) throws SecurityException;
 
     /**
-     * Fetch entities by providing a list of specific *internal* entity IDs.
+     * Fetch entities by providing a list of *internal* entity IDs.
      * 
-     * @param internal
-     *            entity IDs
-     * @return found entities
+     * @param entityIds internal entity IDs
+     * @param handler the Entity callback handler called for each entity retrieved
      */
-    Collection<Entity> getEntitiesByInternalId(Collection<String> entityIds) throws SecurityException;
+    void getEntitiesByInternalId(Collection<String> entityIds, EntitySearchResultHandler handler) throws SecurityException;
 
     /**
-     * Method for applying a specific filter on the complete entity set returned by the DAO. The result would be the same as applying the specific filter to the
-     * result of getAllEntities().
+     * Method for applying a specific filter on the complete entity set retrievable by the DAO.
      * 
-     * @param filter
-     *            a specific filter to narrow the returned entity set
-     * @return found entities
+     * @param filter a specific filter to narrow the returned entity set
+     * @param handler the Entity callback handler called for each entity retrieved
      */
-    Collection<Entity> getEntities(Filter filter) throws SecurityException;
+    void getEntities(Filter filter, EntitySearchResultHandler handler) throws SecurityException;
 
     /**
      * Same as getEntities(Filter filter), except that this method only returns entities which are children of the given parent entity.
      * 
      * @param parentEntity
      * @param filter
-     * @return
+     * @param handler the Entity callback handler called for each entity retrieved
      */
-    Collection<Entity> getEntities(Entity parentEntity, Filter filter) throws SecurityException;
+    void getEntities(Entity parentEntity, Filter filter, EntitySearchResultHandler handler) throws SecurityException;
 
     /**
      * Fetch a single entity by ID.
@@ -99,19 +96,13 @@ public interface EntityDAO
     /**
      * Returns the parent entity of the given entity, if there is any.
      * 
-     * @param filter
-     *            a specific filter to narrow the returned entity set
-     * @return found entities
+     * @param filter a specific filter to narrow the returned entity set
+     * @return parent entity
      */
     Entity getParentEntity(Entity childEntity) throws SecurityException;
 
-    /**
-     * Fetch all entities
-     * 
-     * @return found entities
-     */
-    Collection<Entity> getAllEntities() throws SecurityException;
-
+    void getAllEntities(EntitySearchResultHandler cbh) throws SecurityException;
+    
     void update(Entity entity) throws SecurityException;
 
     void add(Entity entity) throws SecurityException;

@@ -17,14 +17,10 @@
 package org.apache.jetspeed.security.mapping;
 
 /**
- * @author <a href="mailto:ate@douma.nu>Ate Douma</a>
  * @version $Id$
+ *
  */
-public interface SearchResultCallbackHandler
+public interface EntitySearchResultHandler extends SearchResultCallbackHandler
 {
-    int getMaxCount();
-    int getSearchPageSize();
-    boolean handleSearchResult(Object result, int pageSize, int pageIndex, int index);
-    void setFeedback(Object feedback);
-    Object getFeedback();
+    void setEntityFactory(EntityFactory factory);
 }

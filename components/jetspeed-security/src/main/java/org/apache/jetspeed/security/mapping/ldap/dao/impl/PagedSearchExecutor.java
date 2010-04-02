@@ -93,6 +93,11 @@ public class PagedSearchExecutor implements SearchExecutor, NameClassPairCallbac
             PagedResultsCookie cookie = null;
             int index = 0;
             boolean doNext = true;
+            if (handler.getMaxCount() > 0 && controls.getCountLimit() <= 0 || handler.getMaxCount()+1 < controls.getCountLimit())
+            {
+                controls.setCountLimit(handler.getMaxCount()+1);
+            }
+            int pageSize = handler.getSearchPageSize() < 0 ? this.pageSize : handler.getSearchPageSize();
             if (pageSize > 0)
             {
                 do

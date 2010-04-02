@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security.mapping;
 
-import java.util.Collection;
 import java.util.Set;
 
 import org.apache.jetspeed.security.SecurityException;
@@ -39,7 +38,7 @@ public interface SecurityEntityManager
     
     Entity getEntity(String entityType, String entityId) throws SecurityException;
 
-    Collection<Entity> getAllEntities(String entityType) throws SecurityException;
+    void getAllEntities(String entityType, EntitySearchResultHandler handler) throws SecurityException;
 
     void addEntity(Entity entity) throws SecurityException;
 
@@ -53,9 +52,9 @@ public interface SecurityEntityManager
     
     void removeRelation(String fromEntityId, String toEntityId, SecurityEntityRelationType relationType) throws SecurityException;
     
-    Collection<Entity> getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType) throws SecurityException;
+    void getRelatedEntitiesFrom(Entity fromEntity, SecurityEntityRelationType relationType, EntitySearchResultHandler handler) throws SecurityException;
 
-    Collection<Entity> getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType) throws SecurityException;
+    void getRelatedEntitiesTo(Entity toEntity, SecurityEntityRelationType relationType, EntitySearchResultHandler handler) throws SecurityException;
 
     EntityFactory getEntityFactory(String entityType);
 }
