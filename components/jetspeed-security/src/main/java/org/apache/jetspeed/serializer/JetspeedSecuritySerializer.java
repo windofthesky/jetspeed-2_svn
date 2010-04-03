@@ -390,7 +390,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         /** determine whether passwords can be reconstructed or not */
         int passwordEncoding = compareCurrentSecurityProvider(snapshot);
                 
-        log.info("processing old users");
+        log.debug("processing old users");
 
         for (JSUser jsuser : snapshot.getOldUsers())
         {
@@ -616,7 +616,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                             userManager.storePasswordCredential(pwc);
                         }
                     }
-                    log.info("add User done ");
+                    log.debug("add User done ");
                 }
                 if (doPwData)
                 {
