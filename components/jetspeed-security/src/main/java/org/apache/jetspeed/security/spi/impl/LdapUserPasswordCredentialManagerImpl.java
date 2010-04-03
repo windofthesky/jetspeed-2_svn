@@ -33,6 +33,7 @@ import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.spi.AlgorithmUpgradeCredentialPasswordEncoder;
 import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialAccessManager;
@@ -40,6 +41,8 @@ import org.apache.jetspeed.security.spi.UserPasswordCredentialManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialStorageManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
@@ -55,9 +58,12 @@ public class LdapUserPasswordCredentialManagerImpl implements UserPasswordCreden
 {
     private static final long serialVersionUID = 1131764631931510796L;
     
+    static final Logger log = LoggerFactory.getLogger(UserPasswordCredentialManager.class);
+    
     private UserPasswordCredentialStorageManager upcsm;
     private UserPasswordCredentialAccessManager upcam;
     private UserPasswordCredentialPolicyManager upcpm;
+    private UserManager um;
     private JetspeedSecuritySynchronizer synchronizer;
     private PoolingContextSource poolingContextsource;
     private String userEntryPrefix;
@@ -187,6 +193,11 @@ public class LdapUserPasswordCredentialManagerImpl implements UserPasswordCreden
         }
     }
     
+    public void setUserManager(UserManager um)
+    {
+        this.um = um;
+    }
+    
     public void setJetspeedSecuritySynchronizer(JetspeedSecuritySynchronizer synchronizer)
     {
         this.synchronizer = synchronizer;
@@ -245,7 +256,11 @@ public class LdapUserPasswordCredentialManagerImpl implements UserPasswordCreden
         String password = credential.getPassword();
         boolean encoded = credential.isEncoded();
         
-        if (isNewPasswordSet && !SynchronizationStateAccess.isSynchronizing())
+        if (SynchronizationStateAccess.isSynchronizing())
+        {
+            authenticated = true;
+        }
+        else if (isNewPasswordSet)
         {
             userDn = getUserDn(credential.getUserName());
             if (oldPassword != null)
@@ -287,8 +302,22 @@ public class LdapUserPasswordCredentialManagerImpl implements UserPasswordCreden
             }
         }
         PasswordCredential credential = isPersistCredentials() ? upcam.getPasswordCredential(userName) : new PasswordCredentialImpl();
+        if (credential == null)
+        {
+            credential = new PasswordCredentialImpl();
+            // persistCredentials but user credentials not yet synchronized/stored
+            if (um == null)
+            {
+                log.error("New User PasswordCredential cannot be persisted: requires UserManager to be set!!!");
+            }
+            else
+            {
+                // to be able to store the new password credential it needs the User to be set
+                ((PasswordCredentialImpl)credential).setUser(um.getUser(userName));
+            }
+        }
         boolean setPassword = false;
-        if (isPersistCredentials())
+        if (isPersistCredentials() && (!credential.isNew() || credential.getUser() != null))
         {
             if (credential.isNew())
             {
@@ -326,8 +355,7 @@ public class LdapUserPasswordCredentialManagerImpl implements UserPasswordCreden
                 finally
                 {
                     SynchronizationStateAccess.setSynchronizing(synchronizing ? Boolean.TRUE : Boolean.FALSE);
-                }
-                credential = upcam.getPasswordCredential(userName);                
+                }                
             }
             
             if (upcpm != null)
@@ -353,22 +381,24 @@ public class LdapUserPasswordCredentialManagerImpl implements UserPasswordCreden
                 }
             }
         }
-        if (!credential.isNew())
-        {            
-            try
-            {
-                upcam.loadPasswordCredentialUser(credential);
-            }
-            catch (Exception e)
-            {
-                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName), e);
-            }            
-        }
-        else
+        if (credential.getUser() == null)
         {
-            ((PasswordCredentialImpl)credential).setUserName(userName);
+            if (!credential.isNew())
+            {            
+                try
+                {
+                    upcam.loadPasswordCredentialUser(credential);
+                }
+                catch (Exception e)
+                {
+                    throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName), e);
+                }            
+            }
+            else
+            {
+                ((PasswordCredentialImpl)credential).setUserName(userName);
+            }
         }
-        
         return credential;
     }
 }

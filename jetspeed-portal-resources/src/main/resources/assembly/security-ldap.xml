@@ -19,9 +19,9 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean id="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLdapStorageManager" class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLdapStorageManager">
-  	<meta key="j2:cat" value="ldapSecurity" />
-    	<constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
-    	<constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />
+    <meta key="j2:cat" value="ldapSecurity" />
+        <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+        <constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />
   </bean>
   
    <bean id="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" parent="baseTransactionProxy">
@@ -40,15 +40,15 @@
   </bean>
     
    <bean id="org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManager" 
-  	class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLdapAssociationStorageManager">  	
-  		<meta key="j2:cat" value="ldapSecurity" />  	
-    	<constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
-    	<constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />		  		
-    </bean>  	
+    class="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLdapAssociationStorageManager">   
+        <meta key="j2:cat" value="ldapSecurity" />      
+        <constructor-arg index="0" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
+        <constructor-arg index="1" ref="org.apache.jetspeed.security.mapping.SecurityEntityManager" />              
+    </bean>     
     
   <!--
-  	OnStartupSecuritySynchronizationBean will load the guest user from LDAP, in-case its not in portal database
-  	It would be required for loading default page.
+    OnStartupSecuritySynchronizationBean will load the guest user from LDAP, in-case its not in portal database
+    It would be required for loading default page.
     This bean is wrapped in a ContextRefreshableBeanInitializer to kickstart it once the complete Spring context is initialized.
    -->
   <bean id="_ldapOnStartupSecuritySynchronizer" class="org.apache.jetspeed.components.ContextRefreshableBeanInitializer">
@@ -104,7 +104,20 @@
     <property name="changePasswordByUser" value="false"/>
   </bean>
   
-  <bean id="_LdapUserPasswordCredentialManagerImplInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+  <!-- required when LdapUserPasswordCredentialManagerImpl.persistCredentials is set to true (see above) -->
+  <bean id="_LdapUserPasswordCredentialManagerImplInitializer1" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <meta key="j2:cat" value="ldapSecurity" />
+    <property name="targetObject"><ref bean="org.apache.jetspeed.security.spi.impl.LdapUserPasswordCredentialManagerImpl"/></property>
+    <property name="targetMethod"><value>setUserManager</value></property>
+    <property name="arguments">
+      <list>
+        <ref bean="org.apache.jetspeed.security.UserManager"/>
+      </list>
+    </property>
+  </bean>
+  
+  <!-- required when LdapUserPasswordCredentialManagerImpl should synchronize users on authentication  -->
+  <bean id="_LdapUserPasswordCredentialManagerImplInitializer2" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <meta key="j2:cat" value="ldapSecurity" />
     <property name="targetObject"><ref bean="org.apache.jetspeed.security.spi.impl.LdapUserPasswordCredentialManagerImpl"/></property>
     <property name="targetMethod"><value>setJetspeedSecuritySynchronizer</value></property>
