@@ -55,7 +55,6 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
     JetspeedPrincipalManagerProvider principalManagerProvider;
     SecurityEntityManager securityEntityManager;
     Collection<String> supportedExternalEntityTypes = Collections.emptyList();
-    Collection<SecurityEntityRelationType> supportedExternalEntityRelationTypes = Collections.emptyList();
     Map<String, Collection<SecurityEntityRelationType>> entityToRelationTypes = Collections.emptyMap();
 
     /**
@@ -192,6 +191,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
        throws SecurityException
     {
         if (entityToRelationTypes.values().size() != 0)
+        {
             // loop through all relation types for this entity type
             for (SecurityEntityRelationType relationTypeForThisEntity : entityToRelationTypes.get(entity.getType()))
             {
@@ -218,6 +218,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                     }
                 }
             }
+        }
         return principal;
     }
 
@@ -544,7 +545,6 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
     private void createRelations()
     {
         supportedExternalEntityTypes = securityEntityManager.getSupportedEntityTypes();
-        supportedExternalEntityRelationTypes = securityEntityManager.getSupportedEntityRelationTypes();
         entityToRelationTypes = new HashMap<String, Collection<SecurityEntityRelationType>>();
         for (String entityType : supportedExternalEntityTypes)
         {

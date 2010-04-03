@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +47,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
         for (EntityDAO entityDAO: entityDAOs)
         {
             this.entityDAOs.put(entityDAO.getEntityType(), entityDAO);
+            this.entityRelationTypes.put(entityDAO.getEntityType(), new HashSet<SecurityEntityRelationType>());
         }
         if (entityRelationDAOs != null)
         {
@@ -59,24 +61,9 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
                 }
                 this.entityRelationDAOs.put(new SecurityEntityRelationTypeImpl(relationType.getRelationType(), relationType.getFromEntityType(), relationType.getToEntityType()), 
                                             entityRelationDAO);
+                this.entityRelationTypes.get(relationType.getFromEntityType()).add(relationType);
+                this.entityRelationTypes.get(relationType.getToEntityType()).add(relationType);
             }
-        }
-        for (SecurityEntityRelationType relationType : this.entityRelationDAOs.keySet())
-        {
-            Set<SecurityEntityRelationType> relationTypes = entityRelationTypes.get(relationType.getFromEntityType());
-            if (relationTypes == null)
-            {
-                relationTypes = new HashSet<SecurityEntityRelationType>();
-                entityRelationTypes.put(relationType.getFromEntityType(), relationTypes);
-            }
-            relationTypes.add(relationType);
-            relationTypes = entityRelationTypes.get(relationType.getToEntityType());
-            if (relationTypes == null)
-            {
-                relationTypes = new HashSet<SecurityEntityRelationType>();
-                entityRelationTypes.put(relationType.getFromEntityType(), relationTypes);
-            }
-            relationTypes.add(relationType);
         }
     }
     
