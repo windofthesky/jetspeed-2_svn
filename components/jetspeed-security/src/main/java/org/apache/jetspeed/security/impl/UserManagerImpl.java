@@ -127,7 +127,7 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public Subject getSubject(User user) throws SecurityException
 	{
-		if (credentialManager != null)
+		if (!getAnonymousUser().equals(user.getName()) && credentialManager != null)
 		{
 			PasswordCredential pwc = getPasswordCredential(user);
 			if (pwc != null)

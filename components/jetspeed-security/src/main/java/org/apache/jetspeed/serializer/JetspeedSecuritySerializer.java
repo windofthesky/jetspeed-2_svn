@@ -390,7 +390,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
         /** determine whether passwords can be reconstructed or not */
         int passwordEncoding = compareCurrentSecurityProvider(snapshot);
                 
-        log.debug("processing old users");
+        log.info("processing old users");
 
         for (JSUser jsuser : snapshot.getOldUsers())
         {
@@ -403,37 +403,45 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
                 }
                 if ((isSettingSet(settings, JetspeedSerializer.KEY_OVERWRITE_EXISTING)) || (user == null))
                 {
+                    boolean doPwData = jsuser.getPwData() != null;
                     if (user == null) // create new one
                     {
-                        String pwdString = (jsuser.getPwDataValue("password"));
-                        char [] pwdChars = (pwdString != null ? pwdString.toCharArray() : null);
-                        String password = recreatePassword(pwdChars);
-                        log.debug("add User " + jsuser.getName() + " with password " + (password));
-                        
+                        log.debug("add User " + jsuser.getName());
                         user = userManager.addUser(jsuser.getName());
-                        if (password != null && password.length() > 0)
+                        if (doPwData)
                         {
-                            PasswordCredential pwc = userManager.getPasswordCredential(user);
-                            pwc.setPassword(password, (passwordEncoding == JetspeedSerializer.PASSTHRU_REQUIRED));
-                            userManager.storePasswordCredential(pwc);
+                            String pwdString = (jsuser.getPwDataValue("password"));
+                            char [] pwdChars = (pwdString != null ? pwdString.toCharArray() : null);
+                            String password = recreatePassword(pwdChars);
+                            
+                            if (password != null && password.length() > 0)
+                            {
+                                PasswordCredential pwc = userManager.getPasswordCredential(user);
+                                pwc.setPassword(password, (passwordEncoding == JetspeedSerializer.PASSTHRU_REQUIRED));
+                                log.debug("storing password for User " + jsuser.getName());
+                                userManager.storePasswordCredential(pwc);
+                            }
                         }
                         log.debug("add User done ");
                     }
-                    try
+                    if (doPwData)
                     {
-                        PasswordCredential pwc = userManager.getPasswordCredential(user);
-                        pwc.setEnabled(jsuser.getPwDataValueAsBoolean("enabled"));
-                        pwc.setUpdateRequired(jsuser.getPwDataValueAsBoolean("requiresUpdate"));
-                        java.sql.Date d = jsuser.getPwExpirationDate();
-                        if (d != null)
-                            pwc.setExpirationDate(d);
-                        userManager.storePasswordCredential(pwc);
-                    }
-                    catch (Exception e)
-                    {
-                        // most likely caused by protected users (like "guest")
-                        log.error("setting userinfo for " + jsuser.getName() + " failed because of "
-                                + e.getLocalizedMessage());
+                        try
+                        {
+                            PasswordCredential pwc = userManager.getPasswordCredential(user);
+                            pwc.setEnabled(jsuser.getPwDataValueAsBoolean("enabled"));
+                            pwc.setUpdateRequired(jsuser.getPwDataValueAsBoolean("requiresUpdate"));
+                            java.sql.Date d = jsuser.getPwExpirationDate();
+                            if (d != null)
+                                pwc.setExpirationDate(d);
+                            userManager.storePasswordCredential(pwc);
+                        }
+                        catch (Exception e)
+                        {
+                            // most likely caused by protected users (like "guest")
+                            log.error("setting userinfo for " + jsuser.getName() + " failed because of "
+                                    + e.getLocalizedMessage());
+                        }
                     }
 
                     // credentials
@@ -588,37 +596,46 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
             }
             if ((isSettingSet(settings, JetspeedSerializer.KEY_OVERWRITE_EXISTING)) || (user == null))
             {
+                boolean doPwData = jsuser.getPwData() != null;
                 if (user == null) // create new one
                 {
-                    String pwdString = jsuser.getPwDataValue("password");
-                    char [] pwdChars = (pwdString != null ? pwdString.toCharArray() : null);
-                    String password = recreatePassword(pwdChars);
-                    log.debug("add User " + jsuser.getName() + " with password " + (password));
-                    
+                    log.debug("add User " + jsuser.getName());
                     user = userManager.addUser(jsuser.getName(), jsuser.isMapped());
-                    if (password != null && password.length() > 0)
+                    
+                    if (doPwData)
+                    {
+                        String pwdString = jsuser.getPwDataValue("password");
+                        char [] pwdChars = (pwdString != null ? pwdString.toCharArray() : null);
+                        String password = recreatePassword(pwdChars);
+                        
+                        if (password != null && password.length() > 0)
+                        {
+                            PasswordCredential pwc = userManager.getPasswordCredential(user);
+                            pwc.setPassword(password, (passwordEncoding == JetspeedSerializer.PASSTHRU_REQUIRED));
+                            log.debug("storing password for " + jsuser.getName());
+                            userManager.storePasswordCredential(pwc);
+                        }
+                    }
+                    log.info("add User done ");
+                }
+                if (doPwData)
+                {
+                    try
                     {
                         PasswordCredential pwc = userManager.getPasswordCredential(user);
-                        pwc.setPassword(password, (passwordEncoding == JetspeedSerializer.PASSTHRU_REQUIRED));
+                        pwc.setEnabled(jsuser.getPwDataValueAsBoolean("enabled"));
+                        pwc.setUpdateRequired(jsuser.getPwDataValueAsBoolean("requiresUpdate"));
+                        java.sql.Date d = jsuser.getPwDataValueAsDate("expirationDate");
+                        if (d != null)
+                            pwc.setExpirationDate(d);
                         userManager.storePasswordCredential(pwc);
                     }
-                    log.debug("add User done ");
-                }
-                try
-                {
-                    PasswordCredential pwc = userManager.getPasswordCredential(user);
-                    pwc.setEnabled(jsuser.getPwDataValueAsBoolean("enabled"));
-                    pwc.setUpdateRequired(jsuser.getPwDataValueAsBoolean("requiresUpdate"));
-                    java.sql.Date d = jsuser.getPwDataValueAsDate("expirationDate");
-                    if (d != null)
-                        pwc.setExpirationDate(d);
-                    userManager.storePasswordCredential(pwc);
-                }
-                catch (Exception e)
-                {
-                    // most likely caused by protected users (like "guest")
-                    log.error("setting userinfo for " + jsuser.getName() + " failed because of "
-                            + e.getLocalizedMessage());
+                    catch (Exception e)
+                    {
+                        // most likely caused by protected users (like "guest")
+                        log.error("setting userinfo for " + jsuser.getName() + " failed because of "
+                                + e.getLocalizedMessage());
+                    }
                 }
                 
                 // credentials

@@ -251,6 +251,11 @@ public class JSPrincipal
         }
     }
     
+    public JSPWAttributes getPwData()
+    {
+        return pwData;
+    }
+
     public String getPwDataValue(String key)
     {
         return getPwDataValue(key, null);
