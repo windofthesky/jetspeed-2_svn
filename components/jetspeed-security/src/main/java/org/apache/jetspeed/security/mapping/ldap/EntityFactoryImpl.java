@@ -25,6 +25,7 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchResult;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.SecurityAttribute;
 import org.apache.jetspeed.security.SecurityAttributes;
@@ -90,7 +91,7 @@ public class EntityFactoryImpl implements EntityFactory
         return internalCreateEntity(principal.getName(), null, ldapAttrValues);
     }
 
-    protected List<String> getStringAttributes(Attributes originalAttrs, String name)
+    protected List<String> getStringAttributes(Attributes originalAttrs, String name, boolean containsDN)
     {
         ArrayList<String> attributes = null;
         javax.naming.directory.Attribute attribute = originalAttrs.get(name);
@@ -104,7 +105,13 @@ public class EntityFactoryImpl implements EntityFactory
                 {
                     try
                     {
-                        attributes.add((String) attribute.get(i));
+                        String value = (String) attribute.get(i);
+                        if (containsDN && !StringUtils.isEmpty(value))
+                        {
+                            // ensure dn values are all always equally encoded so we can use values.contains(internalId)
+                            value = new DistinguishedName(value).toCompactString();
+                        }
+                        attributes.add(value);
                     }
                     catch (NamingException e)
                     {
@@ -127,7 +134,7 @@ public class EntityFactoryImpl implements EntityFactory
         for (AttributeDef attrDef : searchConfiguration.getEntityAttributeDefinitionsMap().values())
         {
             List<String> values = null;
-            values = getStringAttributes(attrs, attrDef.getName());
+            values = getStringAttributes(attrs, attrDef.getName(), attrDef.requiresDnDefaultValue());
             if (values != null)
             {
                 Attribute a = new AttributeImpl(attrDef);

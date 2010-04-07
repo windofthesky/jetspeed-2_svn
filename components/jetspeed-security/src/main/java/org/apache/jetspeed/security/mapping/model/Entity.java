@@ -17,7 +17,6 @@
 package org.apache.jetspeed.security.mapping.model;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,26 +40,11 @@ public interface Entity
 
     Attribute getAttribute(String name, boolean create);
 
-    /**
-     * Returns a read-only map of attributes (name to attribute). To add attributes, call one of the setAttribute() methods
-     * 
-     * @return collection of all attributes of the entity
-     */
-    Map<String, Attribute> getAttributes();
-
-    /**
-     * Returns a read-only map of attributes (mapped name to attribute). Each attribute is mapped, i.e. is synchronized with a related Jetspeed principal
-     * attribute.
-     * 
-     * @return collection of all attributes of the entity
-     */
-    Map<String, Attribute> getMappedAttributes();
-
     void setAttribute(String name, String value);
 
     void setAttribute(String name, Collection<String> values);
 
     void setAttributes(Set<Attribute> attributes);
 
-    Map<String, AttributeDef> getAllowedAttributes();
+    Collection<AttributeDef> getAttributeDefinitions();
 }

@@ -298,7 +298,7 @@ public class LdapUserPasswordCredentialManagerImpl implements UserPasswordCreden
             authenticateUser(userName, getUserDn(userName), password);
             if (synchronizer != null)
             {
-                synchronizer.synchronizeUserPrincipal(userName,false);
+                synchronizer.synchronizeUserPrincipal(userName);
             }
         }
         PasswordCredential credential = isPersistCredentials() ? upcam.getPasswordCredential(userName) : new PasswordCredentialImpl();

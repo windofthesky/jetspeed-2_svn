@@ -92,7 +92,7 @@ public class LdapAuthenticationProvider extends BaseAuthenticationProvider
         authenticateUser(userName, password);
         if (synchronizer != null)
         {
-            synchronizer.synchronizeUserPrincipal(userName,false);
+            synchronizer.synchronizeUserPrincipal(userName);
         }
         User user = manager.getUser(userName);
         authUser = new AuthenticatedUserImpl(user, new UserCredentialImpl(upcm.getPasswordCredential(user)));

@@ -61,6 +61,23 @@ import org.springframework.ldap.filter.OrFilter;
  */
 public class SpringLDAPEntityDAO implements EntityDAO
 {
+    private static final class DelegatingEntitySearchResultHandler implements EntitySearchResultHandler
+    {
+        private int delegatedIndex;
+        private EntitySearchResultHandler handler;        
+        public DelegatingEntitySearchResultHandler(EntitySearchResultHandler handler) { this.handler = handler; }
+        public int getMaxCount() { return handler.getMaxCount(); }        
+        public int getSearchPageSize() { return handler.getSearchPageSize(); }        
+        public void setFeedback(Object feedback) {}
+        public Object getFeedback() {return null; }
+        public void setEntityFactory(EntityFactory factory) {}
+        public boolean handleSearchResult(Object result, int pageSize, int pageIndex, int index)
+        {
+            delegatedIndex++;
+            return handler.handleSearchResult(result, 0, delegatedIndex, delegatedIndex);
+        }
+    };    
+    
     private final LDAPEntityDAOConfiguration configuration;
     private final EntityFactory              entityFactory;
     private LdapTemplate                     ldapTemplate;
@@ -130,7 +147,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
     {
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         DistinguishedName parentDN = getRelativeDN(parent.getInternalId());
-        if (configuration.getSearchDN().size() == 0 || parentDN.endsWith(configuration.getSearchDN()))
+        if (configuration.getSearchDN().size() == 0 || parentDN.startsWith(configuration.getSearchDN()))
         {
             String sf = createSearchFilter(filter);
             SearchControls sc = getSearchControls(SearchControls.ONELEVEL_SCOPE, true, configuration.getEntityAttributeNames());
@@ -183,7 +200,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
     protected void getEntityByInternalId(String internalId, EntitySearchResultHandler handler) throws SecurityException
     {
         DistinguishedName principalDN = getRelativeDN(internalId);
-        if (configuration.getSearchDN().size() == 0 || principalDN.endsWith(configuration.getSearchDN()))
+        if (configuration.getSearchDN().size() == 0 || principalDN.startsWith(configuration.getSearchDN()))
         {
             SearchControls sc = getSearchControls(SearchControls.OBJECT_SCOPE, true, configuration.getEntityAttributeNames());
             PagedSearchExecutor pse = new PagedSearchExecutor(principalDN, defaultSearchFilterStr, sc, handler);
@@ -210,22 +227,10 @@ public class SpringLDAPEntityDAO implements EntityDAO
     
     public void getEntitiesByInternalId(Collection<String> internalIds, final EntitySearchResultHandler handler) throws SecurityException
     {
-        EntitySearchResultHandler delegatingHandler = new EntitySearchResultHandler()
-        {
-            public int getMaxCount() { return handler.getMaxCount(); }
-            public int getSearchPageSize() { return handler.getSearchPageSize(); }
-            public void setFeedback(Object feedback) {}
-            public Object getFeedback() {return null; }
-            public void setEntityFactory(EntityFactory factory) {}
-            public boolean handleSearchResult(Object result, int pageSize, int pageIndex, int index)
-            {
-                return handler.handleSearchResult(result, pageSize, pageIndex, index);
-            }
-        };
         try
         {
             handler.setEntityFactory(getEntityFactory());
-            
+            DelegatingEntitySearchResultHandler delegatingHandler = new DelegatingEntitySearchResultHandler(handler);
             for (Iterator<String> iterator = internalIds.iterator(); iterator.hasNext();)
             {
                 getEntityByInternalId(iterator.next(), delegatingHandler);
@@ -241,7 +246,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
     {
         DistinguishedName parentDN = new DistinguishedName(childEntity.getInternalId());
         parentDN.removeLast();
-        return getEntityByInternalId(parentDN.encode());
+        return getEntityByInternalId(parentDN.toCompactString());
     }
 
     protected String getInternalId(Entity entity, boolean required) throws SecurityException
@@ -346,7 +351,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
     protected DirContextOperations getEntityContextByInternalId(String internalId, boolean withAttributes) throws SecurityException
     {
         DistinguishedName principalDN = getRelativeDN(internalId);
-        if (configuration.getSearchDN().size() == 0 || principalDN.endsWith(configuration.getSearchDN()))
+        if (configuration.getSearchDN().size() == 0 || principalDN.startsWith(configuration.getSearchDN()))
         {
             String sf = createSearchFilter(null);
             SearchControls sc = getSearchControls(SearchControls.OBJECT_SCOPE, true, 
@@ -404,7 +409,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
         if (dn != null)
         {
             dn.add(configuration.getLdapIdAttribute(), entity.getId());
-            String internalId = getFullDN(dn).encode();
+            String internalId = getFullDN(dn).toCompactString();
             Attributes attributes = new BasicAttributes();
 
             BasicAttribute basicAttr = new BasicAttribute("objectClass");
@@ -696,7 +701,7 @@ public class SpringLDAPEntityDAO implements EntityDAO
     protected DistinguishedName getFullDN(DistinguishedName relativeDN)
     {        
         DistinguishedName fullDN = new DistinguishedName(relativeDN);
-        if (configuration.getBaseDN().size() > 0 && !fullDN.endsWith(configuration.getBaseDN()))
+        if (configuration.getBaseDN().size() > 0 && !fullDN.startsWith(configuration.getBaseDN()))
         {
             fullDN.prepend(configuration.getBaseDN());
         }

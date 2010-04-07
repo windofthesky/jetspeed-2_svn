@@ -29,15 +29,13 @@ public interface JetspeedSecuritySynchronizer
 	 * Synchronizes the user principal with the specified name. 
 	 * @param name
 	 */
-    void synchronizeUserPrincipal(String name, boolean recursive) throws SecurityException;
+    void synchronizeUserPrincipal(String name) throws SecurityException;
     
     /**
      * Synchronize all principals of a certain type.
      * @param principalTypeName
-     * @param recursive if true, all nested principals associated to this principal will be synchronized. If false, only the direct (first level) associated
-     *          principals will be synchronized.
      */
-    void synchronizePrincipalsByType(String principalTypeName, boolean recursive) throws SecurityException;
+    void synchronizePrincipalsByType(String principalTypeName) throws SecurityException;
     
     /**
      *  Synchronizes all principals.
