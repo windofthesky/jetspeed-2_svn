@@ -162,7 +162,7 @@
     <constructor-arg index="1">
       <list>
         <ref bean="UserRoleRelationDAO" />
-            <ref bean="RoleGroupRelationDAO" />
+            <ref bean="GroupRoleRelationDAO" />
             <ref bean="UserGroupRelationDAO" />
       </list>
     </constructor-arg>
@@ -323,11 +323,11 @@
     </property>
   </bean>
   
-  <bean id="RoleGroupRelationDAO" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.AttributeBasedRelationDAO">
+  <bean id="GroupRoleRelationDAO" class="org.apache.jetspeed.security.mapping.ldap.dao.impl.AttributeBasedRelationDAO">
     <meta key="j2:cat" value="ldapSecurity" />
     <property name="relationAttribute" value="member" />
     <property name="attributeContainsInternalId" value="true" />
-    <property name="useFromEntityAttribute" value="true" />
+    <property name="useFromEntityAttribute" value="false" />
     <property name="relationType">
       <bean class="org.apache.jetspeed.security.mapping.impl.SecurityEntityRelationTypeImpl">
         <constructor-arg index="0" value="isMemberOf" />
