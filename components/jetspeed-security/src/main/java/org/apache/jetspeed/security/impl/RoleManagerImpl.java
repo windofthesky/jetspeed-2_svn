@@ -323,7 +323,7 @@ public class RoleManagerImpl extends BaseJetspeedPrincipalManager implements Rol
     @SuppressWarnings("unchecked")
     public List<Role> getRolesAssociatedTo(Role to, String associationName)
     {
-        return (List<Role>)getAssociatedFrom(to.getName(), to.getType(), associationName);
+        return (List<Role>)getAssociatedTo(to.getName(), to.getType(), associationName);
     }
     
     /* (non-Javadoc)

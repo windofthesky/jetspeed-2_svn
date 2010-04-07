@@ -271,7 +271,7 @@ public class GroupManagerImpl extends BaseJetspeedPrincipalManager implements Gr
     @SuppressWarnings("unchecked")
     public List<Group> getGroupsAssociatedTo(Group to, String associationName)
     {
-        return (List<Group>)getAssociatedFrom(to.getName(), to.getType(), associationName);
+        return (List<Group>)getAssociatedTo(to.getName(), to.getType(), associationName);
     }
     
     public JetspeedPrincipal newPrincipal(String name, boolean mapped)
