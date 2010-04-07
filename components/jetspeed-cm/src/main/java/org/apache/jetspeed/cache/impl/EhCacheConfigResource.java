@@ -20,15 +20,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.core.io.AbstractResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.beans.factory.InitializingBean;
 
+import org.apache.jetspeed.components.util.ConfigurationProperties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.jetspeed.components.util.ConfigurationProperties;
 
 /**
  * EhCacheConfigResource
@@ -69,19 +72,23 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
     public static final String EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME = "org.apache.jetspeed.ehcache.pagemanager.maxfiles";
     public static final String EHCACHE_PAGE_MANAGER_MAX_FILES_DEFAULT = "1000";
 
+    // Class Members
+    
+    private static Map overrideSystemProperties;
+    
     // Singleton implementation
     
     private static EhCacheConfigResource instance;
     
-    public static EhCacheConfigResource getInstance(final String defaultConfigResource, final boolean test)
+    public static synchronized EhCacheConfigResource getInstance(String defaultConfigResource, boolean test)
     {
-        // construct and return a default instance
-        if ( instance == null)
+        // construct and return a default or new instance
+        if (test || (instance == null))
         {
-            instance = new EhCacheConfigResource();
-            instance.setDefaultConfigResource(defaultConfigResource);
-            instance.setTest(test);
-            instance.afterPropertiesSet();
+            EhCacheConfigResource newInstance = new EhCacheConfigResource();
+            newInstance.setDefaultConfigResource(defaultConfigResource);
+            newInstance.setTest(test);
+            newInstance.afterPropertiesSet();
         }
         return instance;
     }
@@ -109,101 +116,174 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
      */
     public void afterPropertiesSet()
     {
-        // copy specified configuration settings
-        if (configuration != null)
+        synchronized (EhCacheConfigResource.class)
         {
-            if (configuration.getString(EHCACHE_CONFIG_RESOURCE_PROP_NAME) != null)
+            // copy specified configuration settings
+            if (configuration != null)
             {
-                defaultConfigResource = configuration.getString(EHCACHE_CONFIG_RESOURCE_PROP_NAME);
+                if (configuration.getString(EHCACHE_CONFIG_RESOURCE_PROP_NAME) != null)
+                {
+                    defaultConfigResource = configuration.getString(EHCACHE_CONFIG_RESOURCE_PROP_NAME);
+                }
+                if (configuration.getString(EHCACHE_GROUP_ADDRESS_PROP_NAME) != null)
+                {
+                    defaultGroupAddress = configuration.getString(EHCACHE_GROUP_ADDRESS_PROP_NAME);
+                }
+                if (configuration.getString(EHCACHE_GROUP_PORT_PROP_NAME) != null)
+                {
+                    defaultGroupPort = configuration.getString(EHCACHE_GROUP_PORT_PROP_NAME);
+                }
+                if (configuration.getString(EHCACHE_GROUP_TTL_PROP_NAME) != null)
+                {
+                    defaultGroupTTL = configuration.getString(EHCACHE_GROUP_TTL_PROP_NAME);
+                }
+                if (configuration.getString(EHCACHE_HOSTNAME_PROP_NAME) != null)
+                {
+                    defaultHostname = configuration.getString(EHCACHE_HOSTNAME_PROP_NAME);
+                }
+                if (configuration.getString(EHCACHE_PORT_PROP_NAME) != null)
+                {
+                    defaultPort = configuration.getString(EHCACHE_PORT_PROP_NAME);
+                }
+                if (configuration.getString(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_PROP_NAME) != null)
+                {
+                    defaultPageManagerMaxElements = configuration.getString(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_PROP_NAME);
+                }
+                if (configuration.getString(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_PROP_NAME) != null)
+                {
+                    defaultPageManagerElementTTL = configuration.getString(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_PROP_NAME);
+                }
+                if (configuration.getString(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME) != null)
+                {
+                    defaultPageManagerMaxFiles = configuration.getString(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME);
+                }
             }
-            if (configuration.getString(EHCACHE_GROUP_ADDRESS_PROP_NAME) != null)
-            {
-                defaultGroupAddress = configuration.getString(EHCACHE_GROUP_ADDRESS_PROP_NAME);
-            }
-            if (configuration.getString(EHCACHE_GROUP_PORT_PROP_NAME) != null)
-            {
-                defaultGroupPort = configuration.getString(EHCACHE_GROUP_PORT_PROP_NAME);
-            }
-            if (configuration.getString(EHCACHE_GROUP_TTL_PROP_NAME) != null)
-            {
-                defaultGroupTTL = configuration.getString(EHCACHE_GROUP_TTL_PROP_NAME);
-            }
-            if (configuration.getString(EHCACHE_HOSTNAME_PROP_NAME) != null)
-            {
-                defaultHostname = configuration.getString(EHCACHE_HOSTNAME_PROP_NAME);
-            }
-            if (configuration.getString(EHCACHE_PORT_PROP_NAME) != null)
-            {
-                defaultPort = configuration.getString(EHCACHE_PORT_PROP_NAME);
-            }
-            if (configuration.getString(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_PROP_NAME) != null)
-            {
-                defaultPageManagerMaxElements = configuration.getString(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_PROP_NAME);
-            }
-            if (configuration.getString(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_PROP_NAME) != null)
-            {
-                defaultPageManagerElementTTL = configuration.getString(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_PROP_NAME);
-            }
-            if (configuration.getString(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME) != null)
-            {
-                defaultPageManagerMaxFiles = configuration.getString(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME);
-            }
-        }
-        
-        // set system properties used in global cache configuration
-        if (System.getProperty(EHCACHE_CONFIG_RESOURCE_PROP_NAME) == null)
-        {
-            System.setProperty(EHCACHE_CONFIG_RESOURCE_PROP_NAME, ((defaultConfigResource != null) ? defaultConfigResource : EHCACHE_CONFIG_RESOURCE_DEFAULT));
-        }
-        if (System.getProperty(EHCACHE_GROUP_ADDRESS_PROP_NAME) == null)
-        {
-            System.setProperty(EHCACHE_GROUP_ADDRESS_PROP_NAME, ((defaultGroupAddress != null) ? defaultGroupAddress : EHCACHE_GROUP_ADDRESS_DEFAULT));
-        }
-        if (System.getProperty(EHCACHE_GROUP_PORT_PROP_NAME) == null)
-        {
-            System.setProperty(EHCACHE_GROUP_PORT_PROP_NAME, ((defaultGroupPort != null) ? defaultGroupPort : EHCACHE_GROUP_PORT_DEFAULT));
-        }
-        if (System.getProperty(EHCACHE_GROUP_TTL_PROP_NAME) == null)
-        {
-            System.setProperty(EHCACHE_GROUP_TTL_PROP_NAME, ((defaultGroupTTL != null) ? defaultGroupTTL : (test ? EHCACHE_GROUP_TTL_TEST_DEFAULT : EHCACHE_GROUP_TTL_DEFAULT)));
-        }
-        if (System.getProperty(EHCACHE_HOSTNAME_PROP_NAME) == null)
-        {
-            System.setProperty(EHCACHE_HOSTNAME_PROP_NAME, ((defaultHostname != null) ? defaultHostname : (test ? EHCACHE_HOSTNAME_TEST_DEFAULT : EHCACHE_HOSTNAME_DEFAULT)));
-        }
-        if (System.getProperty(EHCACHE_PORT_PROP_NAME) == null)
-        {
-            System.setProperty(EHCACHE_PORT_PROP_NAME, ((defaultPort != null) ? defaultPort : EHCACHE_PORT_DEFAULT));
-        }
-        
-        // set system properties used in page manager cache configuration
-        if (System.getProperty(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_PROP_NAME) == null)
-        {
-            String pageManagerMaxElements = ((defaultPageManagerMaxElements != null) ? defaultPageManagerMaxElements : System.getProperty(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_LEGACY_PROP_NAME, EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_DEFAULT));
-            if ((pageManagerMaxElements != null) && (Integer.parseInt(pageManagerMaxElements) < 0))
-            {
-                pageManagerMaxElements = EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_DEFAULT;
-            }
-            System.setProperty(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_PROP_NAME, pageManagerMaxElements);
-        }
-        if (System.getProperty(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_PROP_NAME) == null)
-        {
-            String pageManagerElementTTL = ((defaultPageManagerElementTTL != null) ? defaultPageManagerElementTTL : System.getProperty(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_LEGACY_PROP_NAME, EHCACHE_PAGE_MANAGER_ELEMENT_TTL_DEFAULT));
-            if ((pageManagerElementTTL != null) && (Integer.parseInt(pageManagerElementTTL) < 0))
-            {
-                pageManagerElementTTL = EHCACHE_PAGE_MANAGER_ELEMENT_TTL_DEFAULT;
-            }
-            System.setProperty(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_PROP_NAME, pageManagerElementTTL);
-        }
-        if (System.getProperty(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME) == null)
-        {
-            System.setProperty(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME, ((defaultPageManagerMaxFiles != null) ? defaultPageManagerMaxFiles : System.getProperty(EHCACHE_PAGE_MANAGER_MAX_FILES_LEGACY_PROP_NAME, EHCACHE_PAGE_MANAGER_MAX_FILES_DEFAULT)));
-        }
 
-        // setup delegate ClassPathResource
-        final String configResource = System.getProperty(EHCACHE_CONFIG_RESOURCE_PROP_NAME);
-        log.info("Configured with resource: "+configResource);
-        classPathResource = new ClassPathResource(configResource);
+            // save override system properties
+            if (overrideSystemProperties == null)
+            {
+                overrideSystemProperties = new HashMap();
+                String overrideConfigResource = System.getProperty(EHCACHE_CONFIG_RESOURCE_PROP_NAME);
+                if (overrideConfigResource != null)
+                {
+                    overrideSystemProperties.put(EHCACHE_CONFIG_RESOURCE_PROP_NAME, overrideConfigResource);
+                }
+                String overrideGroupAddress = System.getProperty(EHCACHE_GROUP_ADDRESS_PROP_NAME);
+                if (overrideGroupAddress != null)
+                {
+                    overrideSystemProperties.put(EHCACHE_GROUP_ADDRESS_PROP_NAME, overrideGroupAddress);
+                }
+                String overrideGroupPort = System.getProperty(EHCACHE_GROUP_PORT_PROP_NAME);
+                if (overrideGroupPort != null)
+                {
+                    overrideSystemProperties.put(EHCACHE_GROUP_PORT_PROP_NAME, overrideGroupPort);
+                }
+                String overrideGroupTTL = System.getProperty(EHCACHE_GROUP_TTL_PROP_NAME);
+                if (overrideGroupTTL != null)
+                {
+                    overrideSystemProperties.put(EHCACHE_GROUP_TTL_PROP_NAME, overrideGroupTTL);
+                }
+                String overrideHostname = System.getProperty(EHCACHE_HOSTNAME_PROP_NAME);
+                if (overrideHostname != null)
+                {
+                    overrideSystemProperties.put(EHCACHE_HOSTNAME_PROP_NAME, overrideHostname);
+                }
+                String overridePort = System.getProperty(EHCACHE_PORT_PROP_NAME);
+                if (overridePort != null)
+                {
+                    overrideSystemProperties.put(EHCACHE_PORT_PROP_NAME, overridePort);
+                }
+                String overridePageManagerMaxElements = System.getProperty(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_PROP_NAME);
+                if (overridePageManagerMaxElements != null)
+                {
+                    overrideSystemProperties.put(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_PROP_NAME, overridePageManagerMaxElements);
+                }
+                String overridePageManagerElementTTL = System.getProperty(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_PROP_NAME);
+                if (overridePageManagerElementTTL != null)
+                {
+                    overrideSystemProperties.put(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_PROP_NAME, overridePageManagerElementTTL);
+                }
+                String overridePageManagerMaxFiles = System.getProperty(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME);
+                if (overridePageManagerMaxFiles != null)
+                {
+                    overrideSystemProperties.put(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME, overridePageManagerMaxFiles);
+                }
+            }
+            
+            // set system properties used in global cache configuration
+            String setConfigResource = (String)overrideSystemProperties.get(EHCACHE_CONFIG_RESOURCE_PROP_NAME);
+            if (setConfigResource == null)
+            {
+                setConfigResource = ((defaultConfigResource != null) ? defaultConfigResource : EHCACHE_CONFIG_RESOURCE_DEFAULT);
+            }
+            System.setProperty(EHCACHE_CONFIG_RESOURCE_PROP_NAME, setConfigResource);
+            String setGroupAddress = (String)overrideSystemProperties.get(EHCACHE_GROUP_ADDRESS_PROP_NAME);
+            if (setGroupAddress == null)
+            {
+                setGroupAddress = ((defaultGroupAddress != null) ? defaultGroupAddress : EHCACHE_GROUP_ADDRESS_DEFAULT);
+            }
+            System.setProperty(EHCACHE_GROUP_ADDRESS_PROP_NAME, setGroupAddress);
+            String setGroupPort = (String)overrideSystemProperties.get(EHCACHE_GROUP_PORT_PROP_NAME);
+            if (setGroupPort == null)
+            {
+                setGroupPort = ((defaultGroupPort != null) ? defaultGroupPort : EHCACHE_GROUP_PORT_DEFAULT);
+            }
+            System.setProperty(EHCACHE_GROUP_PORT_PROP_NAME, setGroupPort);
+            String setGroupTTL = (String)overrideSystemProperties.get(EHCACHE_GROUP_TTL_PROP_NAME);
+            if (setGroupTTL == null)
+            {
+                setGroupTTL = ((defaultGroupTTL != null) ? defaultGroupTTL : (test ? EHCACHE_GROUP_TTL_TEST_DEFAULT : EHCACHE_GROUP_TTL_DEFAULT));
+            }
+            System.setProperty(EHCACHE_GROUP_TTL_PROP_NAME, setGroupTTL);
+            String setHostname = (String)overrideSystemProperties.get(EHCACHE_HOSTNAME_PROP_NAME);
+            if (setHostname == null)
+            {
+                setHostname = ((defaultHostname != null) ? defaultHostname : (test ? EHCACHE_HOSTNAME_TEST_DEFAULT : EHCACHE_HOSTNAME_DEFAULT));
+            }
+            System.setProperty(EHCACHE_HOSTNAME_PROP_NAME, setHostname);
+            String setPort = (String)overrideSystemProperties.get(EHCACHE_PORT_PROP_NAME);
+            if (setPort == null)
+            {
+                setPort = ((defaultPort != null) ? defaultPort : EHCACHE_PORT_DEFAULT);
+            }
+            System.setProperty(EHCACHE_PORT_PROP_NAME, setPort);
+
+            // set system properties used in page manager cache configuration
+            String setPageManagerMaxElements = (String)overrideSystemProperties.get(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_PROP_NAME);
+            if (setPageManagerMaxElements == null)
+            {
+                setPageManagerMaxElements = ((defaultPageManagerMaxElements != null) ? defaultPageManagerMaxElements : System.getProperty(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_LEGACY_PROP_NAME, EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_DEFAULT));
+                if ((setPageManagerMaxElements != null) && (Integer.parseInt(setPageManagerMaxElements) < 0))
+                {
+                    setPageManagerMaxElements = EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_DEFAULT;
+                }
+            }
+            System.setProperty(EHCACHE_PAGE_MANAGER_MAX_ELEMENTS_PROP_NAME, setPageManagerMaxElements);
+            String setPageManagerElementTTL = (String)overrideSystemProperties.get(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_PROP_NAME);
+            if (setPageManagerElementTTL == null)
+            {
+                setPageManagerElementTTL = ((defaultPageManagerElementTTL != null) ? defaultPageManagerElementTTL : System.getProperty(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_LEGACY_PROP_NAME, EHCACHE_PAGE_MANAGER_ELEMENT_TTL_DEFAULT));
+                if ((setPageManagerElementTTL != null) && (Integer.parseInt(setPageManagerElementTTL) < 0))
+                {
+                    setPageManagerElementTTL = EHCACHE_PAGE_MANAGER_ELEMENT_TTL_DEFAULT;
+                }
+            }
+            System.setProperty(EHCACHE_PAGE_MANAGER_ELEMENT_TTL_PROP_NAME, setPageManagerElementTTL);
+            String setPageManagerMaxFiles = (String)overrideSystemProperties.get(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME);
+            if (setPageManagerMaxFiles == null)
+            {
+                setPageManagerMaxFiles = ((defaultPageManagerMaxFiles != null) ? defaultPageManagerMaxFiles : System.getProperty(EHCACHE_PAGE_MANAGER_MAX_FILES_LEGACY_PROP_NAME, EHCACHE_PAGE_MANAGER_MAX_FILES_DEFAULT));
+            }
+            System.setProperty(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME, setPageManagerMaxFiles);
+
+            // setup delegate ClassPathResource
+            String configResource = System.getProperty(EHCACHE_CONFIG_RESOURCE_PROP_NAME);
+            log.info("Configured with resource: "+configResource);
+            classPathResource = new ClassPathResource(configResource);
+
+            // save global instance
+            instance = this;
+        }
     }
     
     // AbstractResource implementation
