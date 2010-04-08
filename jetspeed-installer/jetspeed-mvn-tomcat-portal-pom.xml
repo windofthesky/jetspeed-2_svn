@@ -39,7 +39,7 @@
 
   <properties>
     <tomcat.version.major>6</tomcat.version.major>
-    <tomcat.version.minor>6.0.18</tomcat.version.minor>
+    <tomcat.version.minor>6.0.26</tomcat.version.minor>
     <tomcat.name>apache-tomcat-${tomcat.version.minor}</tomcat.name>
     <org.apache.portals.jetspeed.version>${pom.version}</org.apache.portals.jetspeed.version>
     <org.apache.jetspeed.portal.context.name>jetspeed</org.apache.jetspeed.portal.context.name>
@@ -81,6 +81,7 @@
                     <delete file="${org.apache.jetspeed.portal.home}/bin/catalina.sh"/>
                     <delete file="${org.apache.jetspeed.portal.home}/conf/context.xml"/>
                     <delete file="${org.apache.jetspeed.portal.home}/conf/server.xml"/>
+                    <delete file="${org.apache.jetspeed.portal.home}/conf/logging.properties"/>
                     <delete file="${org.apache.jetspeed.portal.home}/conf/tomcat-users.xml"/>
                     <delete dir="${org.apache.jetspeed.portal.home}/webapps/examples"/>
                     <delete dir="${org.apache.jetspeed.portal.home}/webapps/docs"/>
