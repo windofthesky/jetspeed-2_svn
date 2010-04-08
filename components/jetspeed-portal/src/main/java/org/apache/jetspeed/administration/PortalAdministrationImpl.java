@@ -621,6 +621,10 @@ public class PortalAdministrationImpl implements PortalAdministration
      */
     private String invokeGetUserFolderPath(final User user, final Locale locale, final String serverName) throws Exception
     {
+    	if (config.getString(PortalConfigurationConstants.JETUI_CUSTOMIZATION_METHOD).equals(PortalConfigurationConstants.JETUI_CUSTOMIZATION_AJAX))
+    	{
+        	return Folder.USER_FOLDER + user.getName();    		
+    	}
         Object doneAs = JSSubject.doAsPrivileged(userManager.getSubject(user), new PrivilegedAction()
         {
             public Object run() 
