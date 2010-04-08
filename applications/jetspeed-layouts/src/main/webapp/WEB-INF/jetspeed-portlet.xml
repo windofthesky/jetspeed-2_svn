@@ -27,7 +27,72 @@ limitations under the License.
     <dc:creator>J2 Team</dc:creator>
     <js:metadata name="layout-app">true</js:metadata>    
     <js:metadata name="pa-version">2.2</js:metadata>
-
+    
+  <portlet>
+    <portlet-name>SimpleLayout</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityOneColumn</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityOneColumnTable</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityTwoColumns</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityTwoColumnsSmallLeft</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityThreeColumns</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityThreeColumnsTable</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityOneColumnNoActions</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityTwoColumnsNoActions</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityThreeColumnsNoActions</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityTwoColumns2575NoActions</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityTwoColumns2575</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityTwoColumnsSmallLeftNoActions</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityTwoColumnsTable</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name>VelocityFourColumns</portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+  <portlet>
+    <portlet-name></portlet-name>
+    <js:metadata name="selector.conditional.role">*</js:metadata>
+  </portlet>
+    
 	<js:services>
 	    <js:service name='IdGenerator'/>
 		<js:service name='PortletRegistryComponent'/>
