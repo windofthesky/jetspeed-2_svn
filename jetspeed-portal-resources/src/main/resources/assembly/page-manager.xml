@@ -198,7 +198,7 @@
     </constructor-arg>
   </bean>
 
-  <bean name="xmlPageManager" class="org.apache.jetspeed.page.psml.CastorXmlPageManager">
+  <bean name="xmlPageManager" class="org.apache.jetspeed.page.psml.CastorXmlPageManager" init-method="init" destroy-method="destroy">
     <meta key="j2:cat" value="xmlPageManager or pageSerializer" />
     <constructor-arg index="0">
       <ref bean="IdGenerator" />
@@ -226,7 +226,7 @@
 
   <!-- Database PageManager -->
 
-  <bean id="dbPageManagerImpl" class="org.apache.jetspeed.page.impl.DatabasePageManager" init-method="init">
+  <bean id="dbPageManagerImpl" class="org.apache.jetspeed.page.impl.DatabasePageManager" init-method="init" destroy-method="destroy">
     <meta key="j2:cat" value="dbPageManager or pageSerializer" />
     <!-- OJB configuration file resource path -->
     <constructor-arg index="0">

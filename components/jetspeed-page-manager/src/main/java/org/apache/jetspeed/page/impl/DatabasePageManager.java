@@ -181,6 +181,26 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     /**
+     * Initialize PageManager component.
+     */
+    public void init() throws Exception
+    {
+        // initialize persistence broker support
+        super.init();
+        // initialize PageManager delegate
+        delegator.init();
+    }
+    
+    /**
+     * Destroy PageManager component.
+     */
+    public void destroy()
+    {
+        // destroy PageManager delegate
+        delegator.destroy();
+    }
+    
+    /**
      * getPageManagerProxy
      *
      * @return proxied page manager interface used to

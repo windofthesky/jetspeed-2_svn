@@ -21,8 +21,7 @@ limitations under the License.
     
   <bean id="org.apache.jetspeed.page.PageManagerImpl" 
         name="pageManagerImpl"
-        init-method="init"
-        class="org.apache.jetspeed.page.impl.DatabasePageManager">
+        class="org.apache.jetspeed.page.impl.DatabasePageManager" init-method="init" destroy-method="destroy">
       <!-- OJB configuration file resource path -->
       <constructor-arg index="0"><value>JETSPEED-INF/ojb/page-manager-repository.xml</value></constructor-arg>       
       <!-- fragment id generator -->
@@ -193,7 +192,7 @@ limitations under the License.
     
   <bean id="org.apache.jetspeed.page.CastorPageManager" 
        name="castorPageManager"
-       class="org.apache.jetspeed.page.psml.CastorXmlPageManager">         
+       class="org.apache.jetspeed.page.psml.CastorXmlPageManager" init-method="init" destroy-method="destroy">         
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><ref bean="DocumentHandlerFactory"/></constructor-arg>
        <constructor-arg index="2"><ref bean="FolderHandler"/></constructor-arg>

@@ -129,7 +129,7 @@ limitations under the License.
     
   <bean id="org.apache.jetspeed.page.PageManager" 
        name="pageManager"
-       class="org.apache.jetspeed.page.psml.CastorXmlPageManager">         
+       class="org.apache.jetspeed.page.psml.CastorXmlPageManager" init-method="init" destroy-method="destroy">         
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><ref bean="DocumentHandlerFactory"/></constructor-arg>
        <constructor-arg index="2"><ref bean="FolderHandler"/></constructor-arg>

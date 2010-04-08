@@ -115,36 +115,70 @@ public abstract class AbstractPageManager
     private List listeners = new LinkedList();
 
     private long nodeReapingInterval = DEFAULT_NODE_REAPING_INTERVAL;
+    
+    private volatile Thread nodeReapingThread;
 
     public AbstractPageManager(IdGenerator generator, boolean permissionsEnabled, boolean constraintsEnabled)
     {
         this.generator = generator;
         this.permissionsEnabled = permissionsEnabled;
         this.constraintsEnabled = constraintsEnabled;
+    }
+    
+    /**
+     * Initialize PageManager component.
+     */
+    public void init()
+    {
         // start node reaping deamon thread
-        if (this.nodeReapingInterval > 0)
+        if ((nodeReapingInterval > 0) && (nodeReapingThread == null))
         {
-            Thread nodeReapingThread = new Thread(new Runnable()
+            nodeReapingThread = new Thread(new Runnable()
             {
                 public void run()
                 {
-                    while (true)
+                    // run while running and reaping thread match
+                    Thread runningThread = Thread.currentThread();
+                    synchronized (runningThread)
                     {
-                        try
+                        while (nodeReapingThread == runningThread)
                         {
-                            // wait for reap interval and invoke reaping
-                            // notification on page manager event listeners
-                            Thread.sleep(nodeReapingInterval);
-                            notifyReapNodes();
+                            try
+                            {
+                                // wait for reap interval or interrupt and invoke
+                                // reaping notification on page manager event listeners
+                                runningThread.wait(nodeReapingInterval);
+                                if (nodeReapingThread == runningThread)
+                                {
+                                    notifyReapNodes();
+                                }
+                            }
+                            catch (InterruptedException ie)
+                            {
+                            }
                         }
-                        catch (InterruptedException ie)
-                        {
-                        }
-                    }                        
-                }
+                    }
+                }   
             }, "PageManagerNodeReapingThread");
             nodeReapingThread.setDaemon(true);
             nodeReapingThread.start();
+        }
+    }
+    
+    /**
+     * Destroy PageManager component.
+     */
+    public void destroy()
+    {
+        // stop node reaping deamon thread
+        Thread destroyReapingThread = nodeReapingThread;
+        if (destroyReapingThread != null)
+        {
+            nodeReapingThread = null;
+            synchronized (destroyReapingThread)
+            {
+                destroyReapingThread.notifyAll();
+            }
         }
     }
     

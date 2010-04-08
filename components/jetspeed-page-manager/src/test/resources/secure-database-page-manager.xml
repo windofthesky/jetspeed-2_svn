@@ -22,7 +22,7 @@ limitations under the License.
     <import resource="database-page-manager-base.xml"/>
 
     <!-- Page Manager -->
-    <bean id="pageManagerImpl" init-method="init" class="org.apache.jetspeed.page.impl.DatabasePageManager">
+    <bean id="pageManagerImpl" class="org.apache.jetspeed.page.impl.DatabasePageManager" init-method="init" destroy-method="destroy">
         <!-- OJB configuration file resource path -->
         <constructor-arg index="0"><value>JETSPEED-INF/ojb/page-manager-repository.xml</value></constructor-arg>       
         <!-- fragment id generator -->

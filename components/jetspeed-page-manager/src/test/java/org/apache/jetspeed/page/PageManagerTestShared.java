@@ -163,7 +163,9 @@ public interface PageManagerTestShared
             handlerFactory.registerDocumentHandler(pageSecurityHandler);
             FolderHandler folderHandler = new FileSystemFolderHandler(idGen, baseDir+"target/testdata/" + pagesDirName, handlerFactory, cache);
 
-            return new CastorXmlPageManager(idGen, handlerFactory, folderHandler, cache, permissionsEnabled, constraintsEnabled);
+            CastorXmlPageManager pageManager = new CastorXmlPageManager(idGen, handlerFactory, folderHandler, cache, permissionsEnabled, constraintsEnabled);
+            pageManager.init();
+            return pageManager;
         }
         
         /**
@@ -177,6 +179,8 @@ public interface PageManagerTestShared
             pageManager.reset();
             // shutdown page manager and handlers
             pageManager.shutdown();
+            // destroy page manager
+            pageManager.destroy();
         }
 
         /**
