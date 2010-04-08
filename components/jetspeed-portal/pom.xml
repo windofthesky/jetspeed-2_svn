@@ -275,13 +275,6 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Runtime Dependencies -->
-    <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-
     <!--
       defining optional dependencies which are included transitively so their exclusions (defined in the root pom) are
       honored
