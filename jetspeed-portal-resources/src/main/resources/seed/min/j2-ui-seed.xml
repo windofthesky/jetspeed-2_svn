@@ -333,6 +333,28 @@
 		</User>
 	</Users>
 	<Permissions/>
-	<ProfilingRules/>
+	<ProfilingRules>
+		<ProfilingRule id="j2" standardRule="true">
+			<description value="The default profiling rule for users and mediatype minus language and country."/>
+			<Criteria>
+				<Criterion name="user">
+					<type value="group.role.user"/>
+					<fallBackOrder value="1"/>
+					<fallBackType value="0"/>
+				</Criterion>
+				<Criterion name="mediatype">
+					<type value="mediatype"/>
+					<fallBackOrder value="2"/>
+					<fallBackType value="1"/>
+				</Criterion>
+				<Criterion name="page">
+					<type value="path.session"/>
+					<value value="default-page"/>
+					<fallBackOrder value="0"/>
+					<fallBackType value="0"/>
+				</Criterion>
+			</Criteria>
+		</ProfilingRule>	
+	</ProfilingRules>
 
 </Snapshot>
