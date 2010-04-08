@@ -174,10 +174,19 @@ public abstract class AbstractPageManager
         Thread destroyReapingThread = nodeReapingThread;
         if (destroyReapingThread != null)
         {
+            // stop thread
             nodeReapingThread = null;
             synchronized (destroyReapingThread)
             {
                 destroyReapingThread.notifyAll();
+            }
+            // wait for thread stop
+            try
+            {
+                destroyReapingThread.join(nodeReapingInterval);
+            }
+            catch (InterruptedException ie)
+            {
             }
         }
     }
