@@ -442,7 +442,7 @@ public class PortalAdministrationImpl implements PortalAdministration
         catch (MailException ex)
         {
             throw new AdministrationEmailException(
-                    "Failed to send forgotten password email to user with email address because "+ex.getMessage()
+                    "Failed to send forgotten password email to user with email address because "+ex.getMessage(), ex
                             ); //+ user.getEmail());
         }
     }
