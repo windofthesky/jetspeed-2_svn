@@ -291,14 +291,37 @@ public class FileCache
 
         public void setStopping(boolean flag)
         {
-            this.stopping = flag;
+            // stop this scanning thread
+            synchronized (this)
+            {
+                if (!stopping && flag)
+                {
+                    stopping = flag;
+                    notifyAll();
+                }
+                else
+                {
+                    flag = false;
+                }
+            }
+            // wait for scanning thread to stop
+            if (flag)
+            {
+                try
+                {
+                    join(FileCache.this.getScanRate() * 1000);
+                }
+                catch (InterruptedException ie)
+                {
+                }
+            }
         }
 
         /**
          * Run the file scanner thread
          *
          */
-        public void run()
+        public synchronized void run()
         {
             boolean done = false;
 
@@ -337,7 +360,7 @@ public class FileCache
                         log.error("FileCache Scanner: Error in iteration...", e);
                     }
                     
-                    sleep(FileCache.this.getScanRate() * 1000);                
+                    wait(FileCache.this.getScanRate() * 1000);                
 
                     if (this.stopping)
                     {
