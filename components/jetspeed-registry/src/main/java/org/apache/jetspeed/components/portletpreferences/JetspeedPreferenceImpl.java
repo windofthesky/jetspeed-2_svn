@@ -28,8 +28,8 @@ import org.apache.pluto.container.impl.PortletPreferenceImpl;
  */
 public class JetspeedPreferenceImpl extends PortletPreferenceImpl
 {
-    public JetspeedPreferenceImpl(String name, String[] values)
+    public JetspeedPreferenceImpl(String name, String[] values, boolean readOnly)
     {
-        super(name, values);
+        super(name, values, readOnly);
     }
 }

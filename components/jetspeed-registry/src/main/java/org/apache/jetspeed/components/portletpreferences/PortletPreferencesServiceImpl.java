@@ -213,9 +213,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         while (preferences.hasNext())
         {
             DatabasePreference preference = preferences.next();            
-            JetspeedPreferenceImpl value = new JetspeedPreferenceImpl(preference.getName(), preference.getValues());
-            value.setReadOnly(preference.isReadOnly());
-            map.put(preference.getName(), value);
+            map.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues(), preference.isReadOnly()));
         }
         preferenceCache.put(preferenceCache.createElement(cacheKey, map));
         return map;                
@@ -405,9 +403,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
                 preferenceCache.put(preferenceCache.createElement(defaultsCacheKey, map));
                 previousPortletName = preference.getPortletName();
             }
-            JetspeedPreferenceImpl value = new JetspeedPreferenceImpl(preference.getName(), preference.getValues());
-            value.setReadOnly(preference.isReadOnly());
-            map.put(preference.getName(), value);
+            map.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues(), preference.isReadOnly()));
         }
     }
     
@@ -437,9 +433,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
                 preferenceCache.put(preferenceCache.createElement(cacheKey, map));
                 previousKey = cacheKey;
             }
-            JetspeedPreferenceImpl value = new JetspeedPreferenceImpl(preference.getName(), preference.getValues());
-            value.setReadOnly(preference.isReadOnly());
-            map.put(preference.getName(), value);
+            map.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues(), preference.isReadOnly()));
         }
     }
 
@@ -480,7 +474,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         JetspeedPreferencesMap map = new JetspeedPreferencesMap();
         for (Preference preference : preferences.getPortletPreferences())
         {
-            map.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues().toArray(new String[preference.getValues().size()])));
+            map.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues().toArray(new String[preference.getValues().size()]), preference.isReadOnly()));
         }
         this.storePortletPreference(pd, null, null, map);
     }
@@ -527,12 +521,10 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
 
         getPersistenceBrokerTemplate().store(dbPref);
 
-        JetspeedPreferenceImpl cached = new JetspeedPreferenceImpl(preferenceName, dbPref.getValues());
-        cached.setReadOnly(dbPref.isReadOnly());
         String defaultsCacheKey = getPortletPreferenceKey(appName, portletName);
         CacheElement cacheElement = preferenceCache.get(defaultsCacheKey);
         JetspeedPreferencesMap map = (cacheElement != null ? (JetspeedPreferencesMap) cacheElement.getContent() : new JetspeedPreferencesMap());
-        map.put(preferenceName, cached);
+        map.put(preferenceName, new JetspeedPreferenceImpl(preferenceName, dbPref.getValues(), dbPref.isReadOnly()));
         preferenceCache.put(preferenceCache.createElement(defaultsCacheKey, map));
     }
     
@@ -555,9 +547,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
                     entityValues[ix] = (String)value;
                     ix++;
                 }
-                JetspeedPreferenceImpl preference = new JetspeedPreferenceImpl(fragmentPref.getName(), entityValues);
-                preference.setReadOnly(fragmentPref.isReadOnly());                    
-                entityMap.put(fragmentPref.getName(), preference);                    
+                entityMap.put(fragmentPref.getName(), new JetspeedPreferenceImpl(fragmentPref.getName(), entityValues, fragmentPref.isReadOnly()));                    
             }
         }
         return entityMap;
@@ -666,9 +656,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             while (preferences.hasNext())
             {
                 DatabasePreference preference = preferences.next();
-                JetspeedPreferenceImpl value = new JetspeedPreferenceImpl(preference.getName(), preference.getValues());
-                value.setReadOnly(preference.isReadOnly());
-                map.put(preference.getName(), value);
+                map.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues(), preference.isReadOnly()));
             }
             preferenceCache.put(preferenceCache.createElement(defaultsCacheKey, map));
             defaultsMap = map;
@@ -722,9 +710,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             while (preferences.hasNext())
             {
                 DatabasePreference preference = preferences.next();
-                JetspeedPreferenceImpl value = new JetspeedPreferenceImpl(preference.getName(), preference.getValues());
-                value.setReadOnly(preference.isReadOnly());
-                userPreferences.put(preference.getName(), value);
+                userPreferences.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues(), preference.isReadOnly()));
             }
             preferenceCache.put(preferenceCache.createElement(userCacheKey, userPreferences));
         }

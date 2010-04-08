@@ -212,15 +212,11 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                 {
                     if (element.getValues() == null)
                     {
-                        JetspeedPreferenceImpl pref = new JetspeedPreferenceImpl(element.getKey(), new String[] { element.getValue() });
-                        pref.setReadOnly(element.isReadOnly());
-                        portletPreference.put(element.getKey(), pref);
+                        portletPreference.put(element.getKey(), new JetspeedPreferenceImpl(element.getKey(), new String[] { element.getValue() }, element.isReadOnly()));
                     }
                     else
                     {
-                        JetspeedPreferenceImpl pref = new JetspeedPreferenceImpl(element.getKey(), element.getValues());
-                        pref.setReadOnly(element.isReadOnly());
-                        portletPreference.put(element.getKey(), pref);
+                        portletPreference.put(element.getKey(), new JetspeedPreferenceImpl(element.getKey(), element.getValues(), element.isReadOnly()));
                     }
                 }
                 if (portletPreference.size() > 0)
