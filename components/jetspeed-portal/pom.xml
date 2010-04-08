@@ -128,8 +128,8 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-javamail_1.4_spec</artifactId>
     </dependency>
     <dependency>
       <groupId>net.sf.ehcache</groupId>
@@ -250,8 +250,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.1_spec</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

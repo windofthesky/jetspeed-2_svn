@@ -39,9 +39,9 @@
 
     <!-- Runtime container dependencies (for commandline or standalone maven plugin executions) -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>${javax.servlet.version}</version>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-servlet_2.4_spec</artifactId>
+      <version>${geronimo-servlet_2.4_spec.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.portals</groupId>

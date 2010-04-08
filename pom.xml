@@ -262,17 +262,21 @@
     <ehcache.version>1.7.2</ehcache.version>
     <hsqldb.version>1.8.0.2</hsqldb.version>
     <javolution.version>4.0.2</javolution.version>
+    <geronimo-javamail_1.4_spec.version>1.6</geronimo-javamail_1.4_spec.version>
     <javax.activation.version>1.1</javax.activation.version>
-    <javax.mail.version>1.3.3</javax.mail.version>
     <javax.servlet.jstl.version>1.1.2</javax.servlet.jstl.version>
-    <javax.servlet.version>2.4</javax.servlet.version>
-    <javax.servlet.jsp.version>2.0</javax.servlet.jsp.version>
+    <geronimo-servlet_2.4_spec.version>1.1.1</geronimo-servlet_2.4_spec.version>
+    <geronimo-jsp_2.0_spec.version>1.1</geronimo-jsp_2.0_spec.version>
     <javax.sql.version>2.0</javax.sql.version>
-    <javax.transaction.version>1.0.1B</javax.transaction.version>
+    <geronimo-jta_1.1_spec.version>1.1</geronimo-jta_1.1_spec.version>
     <javax.ws.rs.version>1.0</javax.ws.rs.version>
     <jaxen.version>1.0-FCS</jaxen.version>
-    <jaxb.version>2.1</jaxb.version>
+    <geronimo-jaxb_2.1_spec.version>1.0</geronimo-jaxb_2.1_spec.version>
     <jaxb-impl.version>2.1.9</jaxb-impl.version>
+    <geronimo-stax-api_1.0_spec.version>1.0.1</geronimo-stax-api_1.0_spec.version>
+    <stax.version>1.2.0</stax.version>
+    <geronimo-activation_1.1_spec.version>1.0.2</geronimo-activation_1.1_spec.version>
+    
     <jdom.version>1.1</jdom.version>
     <log4j.version>1.2.14</log4j.version>
     <lucene.version>2.3.2</lucene.version>
@@ -576,14 +580,14 @@
         <version>${portals.portlet2-api-spec.version}</version>
       </dependency>
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>${javax.servlet.version}</version>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-servlet_2.4_spec</artifactId>
+        <version>${geronimo-servlet_2.4_spec.version}</version>
       </dependency>
       <dependency>
-        <groupId>javax.servlet.jsp</groupId>
-        <artifactId>jsp-api</artifactId>
-        <version>${javax.servlet.jsp.version}</version>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jsp_2.0_spec</artifactId>
+        <version>${geronimo-jsp_2.0_spec.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.ccpp</groupId>
@@ -601,6 +605,12 @@
         <groupId>org.apache.portals.pluto</groupId>
         <artifactId>pluto-container</artifactId>
         <version>${org.apache.pluto.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- OJB -->
@@ -985,14 +995,36 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>${jaxb.version}</version>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jaxb_2.1_spec</artifactId>
+        <version>${geronimo-jaxb_2.1_spec.version}</version>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
         <version>${jaxb-impl.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+        <version>${geronimo-stax-api_1.0_spec.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>stax</groupId>
+        <artifactId>stax</artifactId>
+        <version>${stax.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>stax</groupId>
+            <artifactId>stax-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       
       <!-- JAX-RS -->
@@ -1040,6 +1072,10 @@
           <exclusion>
             <groupId>org.apache.abdera</groupId>
             <artifactId>abdera-extensions-json</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1147,9 +1183,9 @@
 
       <!-- Database -->
       <dependency>
-        <groupId>javax.transaction</groupId>
-        <artifactId>jta</artifactId>
-        <version>${javax.transaction.version}</version>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jta_1.1_spec</artifactId>
+        <version>${geronimo-jta_1.1_spec.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.sql</groupId>
@@ -1192,9 +1228,14 @@
 
       <!-- Email -->
       <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>mail</artifactId>
-        <version>${javax.mail.version}</version>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-javamail_1.4_spec</artifactId>
+        <version>${geronimo-javamail_1.4_spec.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-activation_1.1_spec</artifactId>
+        <version>${geronimo-activation_1.1_spec.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.activation</groupId>
@@ -1246,6 +1287,10 @@
         <artifactId>velocity-tools</artifactId>
         <version>${velocity-tools.version}</version>
         <exclusions>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
@@ -1400,26 +1445,26 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-servlet_2.4_spec</artifactId>
       <scope>provided</scope>
     </dependency>
-      <dependency>
-        <groupId>javax.servlet.jsp</groupId>
-        <artifactId>jsp-api</artifactId>
-        <scope>provided</scope>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jsp_2.0_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>javax.ccpp</groupId>
       <artifactId>ccpp</artifactId>
       <scope>provided</scope>
     </dependency>
-      <dependency>
-        <groupId>org.apache.portals.pluto</groupId>
-        <artifactId>pluto-container-api</artifactId>
-        <version>${org.apache.pluto.version}</version>
-        <scope>provided</scope>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.portals.pluto</groupId>
+      <artifactId>pluto-container-api</artifactId>
+      <version>${org.apache.pluto.version}</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.portals.bridges</groupId>
       <artifactId>portals-bridges-common</artifactId>
