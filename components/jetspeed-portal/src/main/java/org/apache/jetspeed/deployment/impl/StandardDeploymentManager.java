@@ -332,7 +332,7 @@ public class StandardDeploymentManager implements DeploymentManager
         /**
          * @see java.lang.Runnable#run()
          */
-        public void run()
+        public synchronized void run()
         {
             // use a double scanningDelay at startup to give the App Server some time to wake up...
             // see: http://issues.apache.org/jira/browse/JS2-261
@@ -346,8 +346,8 @@ public class StandardDeploymentManager implements DeploymentManager
                 //
                 // autodeployment.delay=10000
                 //
-                //sleep(scanningDelay*2);
-                sleep(scanningDelay);
+                //wait(scanningDelay*2);
+                wait(scanningDelay);
             }
             catch (InterruptedException e)
             {
@@ -355,10 +355,9 @@ public class StandardDeploymentManager implements DeploymentManager
             while (started)
             {
                 fireDeploymentEvent();
-
                 try
                 {
-                    sleep(scanningDelay);
+                    wait(scanningDelay);
                 }
                 catch (InterruptedException e)
                 {
@@ -368,11 +367,24 @@ public class StandardDeploymentManager implements DeploymentManager
         }
 
         /**
-         * notifies a switch variable that exits the watcher's montior loop started in the <code>run()</code> method.
+         * notifies a switch variable that exits the watcher's monitor loop started in the <code>run()</code> method.
          */
         public void safeStop()
         {
-            started = false;
+            // stop this monitor thread
+            synchronized (this)
+            {
+                started = false;
+                notifyAll();
+            }
+            // wait for monitor thread stop
+            try
+            {
+                join(scanningDelay);
+            }
+            catch (InterruptedException ie)
+            {
+            }
         }
 
     }
