@@ -67,7 +67,7 @@ rem
 rem $Id: catalina.bat 656834 2008-05-15 21:04:04Z markt $
 rem ---------------------------------------------------------------------------
 
-set JAVA_OPTS=%JAVA_OPTS% -Xmx256m
+set JAVA_OPTS=%JAVA_OPTS% -Xmx512m -XX:MaxPermSize=128m
 
 rem Guess CATALINA_HOME if not defined
 set CURRENT_DIR=%cd%
