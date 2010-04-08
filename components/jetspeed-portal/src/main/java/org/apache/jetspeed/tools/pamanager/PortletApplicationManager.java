@@ -949,11 +949,11 @@ public class PortletApplicationManager implements PortletApplicationManagement
             this.maxRetriedStarts = maxretriedStarts;
         }
         
-        public void run()
+        public synchronized void run()
         {
             try
             {
-                sleep(interval);
+                wait(interval);
             }
             catch (InterruptedException e)
             {
@@ -961,14 +961,12 @@ public class PortletApplicationManager implements PortletApplicationManagement
             while (started)
             {
                 checkDescriptorChanges();
-
                 try
                 {
-                    sleep(interval);
+                    wait(interval);
                 }
                 catch (InterruptedException e)
                 {
-
                 }
             }
         }
@@ -976,10 +974,23 @@ public class PortletApplicationManager implements PortletApplicationManagement
         /**
          * notifies a switch variable that exits the watcher's montior loop started in the <code>run()</code> method.
          */
-        public synchronized void safeStop()
+        public void safeStop()
         {
-            started = false;
-            monitorInfos.clear();
+            // stop this monitor thread
+            synchronized (this)
+            {
+                started = false;
+                monitorInfos.clear();
+                notifyAll();
+            }
+            // wait for monitor thread stop
+            try
+            {
+                join(interval);
+            }
+            catch (InterruptedException ie)
+            {
+            }
         }
         
         public synchronized void monitor(String contextName, String contextPath, ClassLoader paClassLoader, int paType, File paDir, long checksum)
