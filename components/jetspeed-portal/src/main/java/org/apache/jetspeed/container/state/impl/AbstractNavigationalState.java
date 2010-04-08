@@ -578,6 +578,16 @@ public abstract class AbstractNavigationalState implements MutableNavigationalSt
     public Map<String, String[]> getPublicRenderParameterMap(PortletWindow window)
     {
         PortletWindowRequestNavigationalState state = requestStates.getPortletWindowNavigationalState(window.getId().toString());
+        if (state == null && requestStates.getPublicRenderParametersMap() != null && window.isValid() && window.getPortletDefinition().getSupportedPublicRenderParameters() != null)
+        {
+        	// Window doesn't have any state of its own yet but potentially could require access to the public render parameters
+        	// This could also be an instantly created PortletWindow for which we also need to support access to the public render parameters
+        	// need to create and inject a new state object on the fly to be able to resolve this
+            state = new PortletWindowRequestNavigationalState(window.getWindowId());
+            state.setPortletDefinition(window.getPortletDefinition());
+            state.resolveActionScopedRequestAttributes();
+            requestStates.addPortletWindowNavigationalState(window.getWindowId(), state);
+        }
         if (state != null)
         {
             return requestStates.getPublicRenderParametersMap(window.getWindowId());
