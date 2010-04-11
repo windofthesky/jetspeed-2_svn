@@ -44,11 +44,11 @@ public class WorkerImpl extends Thread implements Worker
     protected final static Logger log = LoggerFactory.getLogger(WorkerImpl.class);
 
     /** Running status of this worker */
-    private boolean running = true;
+    private volatile boolean running = true;
 
     /** Counter of consecutive jobs that can be processed before the
         worker being actually put back on the idle queue */
-    private int jobCount = 0;
+    private volatile int jobCount = 0;
 
     /** Job to process */
     Runnable job = null;
@@ -152,7 +152,8 @@ public class WorkerImpl extends Thread implements Worker
                     }
                     catch (InterruptedException e)
                     {
-                        // nothing done
+                        ((WorkerMonitorImpl) monitor).release(this);
+                        this.running = false;
                     }
                 }
             }
@@ -202,6 +203,12 @@ public class WorkerImpl extends Thread implements Worker
             // release the worker
             ((WorkerMonitorImpl) monitor).release(this);
         }
+    }
+
+    public void interrupt()
+    {
+    	this.running = false;
+    	super.interrupt();
     }
     
 }

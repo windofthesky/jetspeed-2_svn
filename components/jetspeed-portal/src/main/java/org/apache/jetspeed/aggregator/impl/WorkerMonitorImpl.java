@@ -20,6 +20,7 @@ package org.apache.jetspeed.aggregator.impl;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 import java.util.LinkedList;
@@ -106,6 +107,14 @@ public class WorkerMonitorImpl implements WorkerMonitor
 
     public void stop()
     {    
+    	for (WorkerImpl worker : workers)
+    	{
+    		worker.interrupt();
+    	}
+    	for (WorkerImpl worker : workersMonitored)
+    	{
+    		worker.interrupt();
+    	}
     	if (jobMonitor != null)
     	{
     		jobMonitor.endThread();
