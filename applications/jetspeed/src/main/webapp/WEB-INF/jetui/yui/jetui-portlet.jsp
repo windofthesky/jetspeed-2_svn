@@ -104,7 +104,7 @@ if (request.getUserPrincipal() != null && fragment.getDecoration().getActions().
 		if (x == null) x = "0"; if (y == null) y = "0";
 		if (h == null) h = "100"; if (w == null) w = "150";
 		int top = new Double(Double.parseDouble(h)).intValue() + 17; // FIXME: hardcoded 
-		double left = new Double(Double.parseDouble(w)).intValue();
+		double left = new Double(Double.parseDouble(w)).intValue() - 4;
 %>                 
                  <div class="PContent" style='height: <%=h%>px; width: <%=w%>px;'><%=content%>                
                     <div class="resizeHandle" style='position: absolute; top: <%=top%>px; left: <%=left%>px;'></div>

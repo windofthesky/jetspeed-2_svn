@@ -28,10 +28,8 @@ limitations under the License.
 {
     white-space:normal;
     background-color: white;
-	overflow: auto; 
-	width: 96%;    
-	padding-left: 2px;
-	padding-right: 2px;
+    overflow: auto;
+	width: 100%;    
 }
 
 .purpleplanet .PTitleContent

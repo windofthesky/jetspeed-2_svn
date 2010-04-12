@@ -148,7 +148,7 @@ YUI.add('jetui-portal', function(Y) {
         /**
          * Margins (resizeHandler, PContent left margin, PContent top margin
          */
-        margins: [7, 4, 0, 17],
+        margins: [-4, 4, 0, 17],
         
         /**
          * Modal window base z-index
