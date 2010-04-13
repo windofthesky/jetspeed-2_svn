@@ -123,6 +123,10 @@
           <meta key="j2:cat" value="default" />
           <constructor-arg ref="jaxrsPageManagementService" />
         </bean>
+        <bean class="org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider">
+          <meta key="j2:cat" value="default" />
+          <constructor-arg ref="jaxrsUserManagerService" />
+        </bean>
       </list>
     </property>
   </bean>
@@ -142,7 +146,18 @@
     <constructor-arg ref="org.apache.jetspeed.components.portletregistry.PortletRegistry" />
     <constructor-arg ref="PortletActionSecurityBehavior" />
   </bean>
-  
+
+  <!-- User Management JAX-RS Service -->
+  <bean id="jaxrsUserManagerService" class="org.apache.jetspeed.services.rest.UserManagerService">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg ref="org.apache.jetspeed.security.UserManager" />
+    <constructor-arg ref="org.apache.jetspeed.security.RoleManager" />
+    <constructor-arg ref="org.apache.jetspeed.security.GroupManager" />
+    <constructor-arg ref="org.apache.jetspeed.profiler.Profiler" />
+    <constructor-arg ref="org.apache.jetspeed.page.PageManager" />
+    <constructor-arg ref="RolesSecurityBehavior" />
+  </bean>
+
   <!-- Portal Page Management JAX-RS Service -->
   <bean id="jaxrsPageManagementService" class="org.apache.jetspeed.services.rest.PageManagementService">
     <meta key="j2:cat" value="default" />
