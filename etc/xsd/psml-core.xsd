@@ -96,6 +96,8 @@
 			<xs:attribute name="layout" use="optional" type="xs:string" />
 			<xs:attribute name="name" use="required" type="xs:string" />
 			<xs:attribute name="value" use="required" type="xs:string" />
+			<xs:attribute name="scope" use="optional" type="xs:string" />
+			<xs:attribute name="scopeValue" use="optional" type="xs:string" />			
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="value" type="xs:string" />
