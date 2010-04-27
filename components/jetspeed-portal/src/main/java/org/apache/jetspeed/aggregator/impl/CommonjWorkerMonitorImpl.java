@@ -403,6 +403,7 @@ public class CommonjWorkerMonitorImpl implements WorkerMonitor, WorkListener
         CommonjWorkerRenderingJobTimeoutMonitor(long interval) 
         {
             super("CommonjWorkerRenderingJobTimeoutMonitor");
+            setDaemon(true);
 
             if (interval > 0) 
             {

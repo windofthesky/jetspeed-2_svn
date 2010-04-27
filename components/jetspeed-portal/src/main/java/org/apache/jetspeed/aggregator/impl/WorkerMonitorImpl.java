@@ -20,7 +20,6 @@ package org.apache.jetspeed.aggregator.impl;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 import java.util.LinkedList;
@@ -106,15 +105,21 @@ public class WorkerMonitorImpl implements WorkerMonitor
     }
 
     public void stop()
-    {    
-    	for (WorkerImpl worker : workers)
-    	{
-    		worker.interrupt();
-    	}
-    	for (WorkerImpl worker : workersMonitored)
-    	{
-    		worker.interrupt();
-    	}
+    {
+        synchronized (workers)
+        {        
+            for (WorkerImpl worker : new ArrayList<WorkerImpl>(workers))
+            {
+                worker.interrupt();
+            }
+        }
+        synchronized (workersMonitored)
+        {        
+            for (WorkerImpl worker : new ArrayList<WorkerImpl>(workersMonitored))
+            {
+                worker.interrupt();
+            }
+        }
     	if (jobMonitor != null)
     	{
     		jobMonitor.endThread();
@@ -319,6 +324,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
         RenderingJobTimeoutMonitor(long interval)
         {
             super("RenderingJobTimeoutMonitor");
+            setDaemon(true);
 
             if (interval > 0)
             {
@@ -385,10 +391,9 @@ public class WorkerMonitorImpl implements WorkerMonitor
                     {
                         wait(this.interval);
                     }
-                } 
+                }   
                 catch (InterruptedException e) 
-                {
-                    ;
+                {   
                 }
             }
         }
