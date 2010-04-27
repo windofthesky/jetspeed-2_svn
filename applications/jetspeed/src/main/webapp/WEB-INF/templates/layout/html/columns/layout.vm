@@ -50,7 +50,7 @@ limitations under the License.
 #set($decorationFactory = $renderRequest.getAttribute("decorationFactory"))
 #set($rc = $renderRequest.getAttribute("org.apache.jetspeed.request.RequestContext"))
 #set($psrc = $rc.getAttribute("org.apache.jetspeed.portalsite.PortalSiteRequestContext"))
-#set($profiledPage = $psrc.Page.Path)
+#set($profiledPage = $psrc.PageOrTemplate.Path)
 
 <div id="$renderResponse.namespace" class="${layoutClass} ${layoutClass}-${layoutType}">
 
