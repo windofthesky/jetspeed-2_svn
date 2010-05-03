@@ -33,6 +33,7 @@
           <directory>src/main/webapp/WEB-INF/pages</directory>
           <includes>
             <include>**/folder.metadata</include>
+            <include>**/page.security</include>
             <include>**/*.psml</include>
             <include>**/*.tpsml</include>
             <include>**/*.fpsml</include>
