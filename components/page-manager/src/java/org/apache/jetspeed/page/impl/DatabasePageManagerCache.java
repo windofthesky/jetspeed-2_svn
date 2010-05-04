@@ -442,7 +442,10 @@ public class DatabasePageManagerCache implements ObjectCache
         while (resetIter.hasNext())
         {
             final NodeImpl node = (NodeImpl)cacheLookup((Identity)resetIter.next());
-            node.resetCachedSecurityConstraints();
+            if (node != null)
+            {
+            	node.resetCachedSecurityConstraints();
+            }
         }
     }
     
