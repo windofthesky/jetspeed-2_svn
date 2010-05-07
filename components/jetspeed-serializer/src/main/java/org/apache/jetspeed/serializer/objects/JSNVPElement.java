@@ -248,7 +248,7 @@ public class JSNVPElement
     
     public void setAttribute(String key, String value)
     {
-        if (key != null && value != null && key.trim().length() > 0 && value.trim().length() > 0)
+        if (key != null && value != null && key.trim().length() > 0)
         {
             if (READONLY.equals(key))
             {
