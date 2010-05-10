@@ -23,9 +23,9 @@
   "http://antinstaller.sourceforge.net/dtd/antinstall-config-0.8.dtd">
 -->
 
-<installer ui="swing,text" verbose="false" lookAndFeel="jgoodies" name="Jetspeed Enterprise Portal 2.2.2-SNAPSHOT Installer"
+<installer ui="swing,text" lookAndFeel="jgoodies" name="Jetspeed Enterprise Portal 2.2.2-SNAPSHOT Installer"
   windowIcon="/resources/feather-small.png" defaultImageResource="/resources/Jetspeed_blue_med.png" minJavaVersion="1.5"
-  wide="700:250" antialiased="true">
+  wide="700:250" antialiased="true" finishButtonText="Install or Execute" debug="true" verbose="true">
 
   <page type="input" name="intro" displayText="Welcome to the Jetspeed Enterprise Portal 2.2.2-SNAPSHOT">
     <comment displayText="" />
@@ -36,6 +36,7 @@
   <page type="license" name="license" displayText="License conditions" resource="/LICENSE-ant-install.txt"></page>
 
   <page type="input" name="chooseOperation" displayText="Choose installation operation to perform">
+    <hidden property="abort" value="false" />
     <comment displayText="Please select the operation the installer is to perform." />
     <comment displayText="" />
     <select property="operation" displayText="Operation" defaultValue="">
@@ -43,6 +44,7 @@
       <option text="Export Jetspeed Portal database" value="exportdb" />
       <option text="Initialize Jetspeed Portal database" value="initdb" />
       <option text="Import Jetspeed Portal database" value="importdb" />
+      <option text="Migrate Jetspeed Portal database" value="migratedb" />
     </select>
   </page>
 
@@ -73,7 +75,8 @@
       displayText="Enter temporary directory"/>
   </page>
 
-  <page type="input" name="jvmProperties" displayText="JVM memory size" ifProperty="(${operation}=importdb) OR (${operation}=exportdb)">
+  <page type="input" name="jvmProperties" displayText="JVM memory size"
+    ifProperty="(${operation}=importdb) OR (${operation}=exportdb)">
     <comment displayText="Enter maximum memory size of the import/export JVM process;" />
     <comment displayText="large data sets will often require additional memory." />
     <comment displayText="" />
@@ -93,7 +96,8 @@
     </select>
   </page>
 
-  <page type="input" name="requiredComponents" displayText="Components selection, (Demo)" ifProperty="(${operation}=install) AND (${installationType}=demo)">
+  <page type="input" name="requiredComponents" displayText="Components selection, (Demo)"
+    ifProperty="(${operation}=install) AND (${installationType}=demo)">
     <hidden property="setupDBAntTarget" value="runSetupNoDB" />
     <comment displayText="Jetspeed Enterprise Portal version 2.2.2-SNAPSHOT, (Demo)" bold="true" />
     <target displayText="Tomcat 6.0.18 Webserver" target="install" defaultValue="true" force="true" />
@@ -107,7 +111,8 @@
     <checkbox displayText="Store PSML in the database?" property="dbImportPsml" defaultValue="false" />
   </page>
 
-  <page type="input" name="requiredComponents" displayText="Components selection, (Minimal)" ifProperty="(${operation}=install) AND (${installationType}=minimal)">
+  <page type="input" name="requiredComponents" displayText="Components selection, (Minimal)"
+    ifProperty="(${operation}=install) AND (${installationType}=minimal)">
     <hidden property="setupDBAntTarget" value="runSetupNoDB" />
     <comment displayText="Jetspeed Enterprise Portal version 2.2.2-SNAPSHOT" bold="true" />
     <target displayText="Tomcat 6.0.18 Webserver" target="install" defaultValue="true" force="true" />
@@ -117,7 +122,187 @@
     <checkbox displayText="Store PSML in the database?" property="dbImportPsml" defaultValue="false" />
   </page>
 
-  <page type="input" name="databaseSelection" displayText="Database selection" ifProperty="${operation}=install">
+  <page type="input" name="sourceDatabaseSelection" displayText="Source database selection" ifProperty="${operation}=migratedb">
+    <hidden property="source.checkdb" value="false" />
+    <hidden property="source.dbvalid" value="false" />
+    <hidden property="source.db.type" value="" />
+    <hidden property="source.dbDisplayName" value=""/>
+
+    <comment displayText="Please select the source portal database type." />
+    <select property="source.dbName" displayText="Database type" defaultValue="">
+      <option text="DB2" value="db2" />
+      <option text="MSSQL" value="mssql" />
+      <option text="MySql" value="mysql" />
+      <option text="PostgreSQL" value="postgresql" />
+      <option text="Oracle 9" value="oracle9" />
+      <option text="Oracle 10 or higher" value="oracle10" />
+      <option text="SapDB" value="sapdb" />
+    </select>
+  </page>
+
+  <page type="input" name="sourceMysql" displayText="MySQL Database connection parameters"
+    ifProperty="(${operation}=migratedb) AND (${source.dbName}=mysql)">
+    <hidden property="source.checkdb" value="true" />
+    <hidden property="source.dbvalid" value="false" />
+    <hidden property="source.dbDisplayName" value="MySQL"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the MySQL database." />
+
+    <text property="source.dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="source.dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="source.jdbcUrl" displayText="JDBC Connection String"
+      defaultValue="jdbc:mysql://localhost:3306/&lt;dbname&gt;" />
+    <text property="source.jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="com.mysql.jdbc.Driver" />
+
+    <file property="source.jdbcDriverJar"
+      defaultValue="${java.user.home}${java.file.separator}mysql-connector-java-5.1.7.jar" displayText="JDBC driver"
+      checkExists="true" />
+  </page>
+
+  <page type="input" name="sourcePostgresql" displayText="PostgreSQL Database connection parameters"
+    ifProperty="(${operation}=migratedb) AND (${source.dbName}=postgresql)">
+    <hidden property="source.checkdb" value="true" />
+    <hidden property="source.dbvalid" value="false" />
+    <hidden property="source.dbDisplayName" value="PostgreSQL"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the PostgreSQL database." />
+
+    <text property="source.dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="source.dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="source.jdbcUrl" displayText="JDBC Connection String"
+      defaultValue="jdbc:postgresql://localhost:5432/&lt;dbname&gt;" />
+    <text property="source.jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="org.postgresql.Driver" />
+
+    <file property="source.jdbcDriverJar"
+      defaultValue="${java.user.home}${java.file.separator}postgresql-8.1-405.jdbc3.jar" displayText="JDBC driver"
+      checkExists="true" />
+  </page>
+
+  <page type="input" name="sourceSapdb" displayText="SapDB Database connection parameters"
+    ifProperty="(${operation}=migratedb) AND (${source.dbName}=sapdb)">
+    <hidden property="source.checkdb" value="true" />
+    <hidden property="source.dbvalid" value="false" />
+    <hidden property="source.dbDisplayName" value="SapDB"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the SapDB database." />
+
+    <text property="source.dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="source.dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="source.jdbcUrl" displayText="JDBC Connection String" defaultValue="jdbc:sapdb://localhost/&lt;dbname&gt;" />
+    <text property="source.jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="com.sap.dbtech.jdbc.DriverSapDB" />
+
+    <file property="source.jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}sapdb-jdbc-bin-7.4.04.03a.jar"
+      displayText="JDBC driver" checkExists="true" />
+  </page>
+
+  <page type="input" name="sourceOracle9" displayText="Oracle Database connection parameters"
+    ifProperty="(${operation}=migratedb) AND (${source.dbName}=oracle9)">
+    <hidden property="source.checkdb" value="true" />
+    <hidden property="source.dbvalid" value="false" />
+    <hidden property="source.dbDisplayName" value="Oracle 9"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the Oracle database." />
+
+    <text property="source.dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="source.dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="source.jdbcUrl" displayText="JDBC Connection String"
+      defaultValue="jdbc:oracle:thin:@localhost:1521:&lt;instance&gt;" />
+    <text property="source.jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="oracle.jdbc.driver.OracleDriver" />
+
+    <file property="source.jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}ojdbc14.jar"
+      displayText="JDBC driver" checkExists="true" />
+  </page>
+  
+  <page type="input" name="sourceOracle10" displayText="Oracle Database connection parameters"
+    ifProperty="(${operation}=migratedb) AND (${source.dbName}=oracle10)">
+    <hidden property="source.checkdb" value="true" />
+    <hidden property="source.dbvalid" value="false" />
+    <hidden property="source.dbDisplayName" value="Oracle 10 or higher"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the Oracle database." />
+
+    <text property="source.dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="source.dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="source.jdbcUrl" displayText="JDBC Connection String"
+      defaultValue="jdbc:oracle:thin:@localhost:1521:&lt;instance&gt;" />
+    <text property="source.jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="oracle.jdbc.driver.OracleDriver" />
+
+    <file property="source.jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}ojdbc14.jar"
+      displayText="JDBC driver" checkExists="true" />
+  </page>
+  
+  <page type="input" name="sourceMssql" displayText="Microsoft SQL Server connection parameters"
+    ifProperty="(${operation}=migratedb) AND (${source.dbName}=mssql)">
+    <hidden property="source.checkdb" value="true" />
+    <hidden property="source.dbvalid" value="false" />
+    <hidden property="source.dbDisplayName" value="MSSQL"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the Microsoft SQL Server." />
+
+    <text property="source.dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="source.dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="source.jdbcUrl" displayText="JDBC Connection String"
+      defaultValue="jdbc:jtds:sqlserver://localhost:1433/&lt;dbname&gt;" />
+    <text property="source.jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="net.sourceforge.jtds.jdbc.Driver" />
+
+    <file property="source.jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}jtds-1.2.jar"
+      displayText="JDBC driver" checkExists="true" />
+  </page>
+
+  <page type="input" name="sourceDb2" displayText="DB2 Database connection parameters"
+    ifProperty="(${operation}=migratedb) AND (${source.dbName}=db2)">
+    <hidden property="source.checkdb" value="true" />
+    <hidden property="source.dbvalid" value="false" />
+    <hidden property="source.dbDisplayName" value="DB2"/>
+
+    <comment displayText="Please fill in the fields below for connecting to the DB2 database." />
+
+    <text property="source.dbUser" displayText="Database User Name" defaultValue="" />
+    <text property="source.dbPassword" displayText="Database Password" defaultValue="" />
+
+    <text property="source.jdbcUrl" displayText="JDBC Connection String" defaultValue="jdbc:db2://localhost:1527/&lt;dbname&gt;" />
+    <text property="source.jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="COM.ibm.db2.jdbc.app.DB2Driver" />
+
+    <file property="source.jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}db2jcc.jar"
+          displayText="JDBC driver" checkExists="true" />
+  </page>
+
+  <page type="input" name="sourceNoDBCheck" displayText="Skipping source database connection check"
+    ifProperty="(${operation}=migratedb) AND (${source.checkdb}=false)">
+    <hidden property="abort" value="false" />
+    <hidden property="source.dbvalid" value="true" />
+    <comment displayText="No database connection check required for selected ${source.dbDisplayName}" />
+    <comment displayText="database type, press Next to continue..." />
+  </page>
+
+  <page type="input" name="sourcePreDBCheck" displayText="Testing the source database connection"
+    ifProperty="(${operation}=migratedb) AND (${source.checkdb}=true) AND (${source.dbvalid}=false)"
+    postDisplayTarget="antinstaller-checksourcedb">
+    <hidden property="abort" value="false" />
+    <hidden property="source.db.type" value="${source.dbName}" />
+    <hidden property="source.db.username" value="${source.dbUser}" />
+    <hidden property="source.db.password" value="${source.dbPassword}" />
+    <hidden property="source.jdbc.url" value="${source.jdbcUrl}" />
+    <hidden property="source.jdbc.driver.class" value="${source.jdbcDriverClass}" />
+    <hidden property="source.jdbc.driver.jar" value="${source.jdbcDriverJar}" />
+    <comment displayText="Press Next to test the source database connection..." />
+  </page>
+
+  <page type="input" name="sourceDBCheckFailed" displayText="Connection to the source database failed"
+    ifProperty="(${operation}=migratedb) AND (${source.checkdb}=true) AND (${source.dbvalid}=false)">
+    <hidden property="abort" value="true" />
+    <comment displayText="Please go back and specify the correct source database configuration" bold="true" />
+    <comment displayText="parameters." bold="true" />
+  </page>
+
+  <page type="input" name="databaseSelection" displayText="Database selection"
+    ifProperty="(${operation}=install) AND (${abort}=false)">
     <hidden property="checkdb" value="false" />
     <hidden property="dbvalid" value="false" />
     <hidden property="db.type" value="derby" />
@@ -137,14 +322,15 @@
     </select>
   </page>
 
-  <page type="input" name="databaseSelection" displayText="Database selection" ifProperty="${operation}!=install">
+  <page type="input" name="databaseSelection" displayText="Target database selection"
+    ifProperty="(${operation}!=install) AND (${abort}=false)">
     <hidden property="checkdb" value="false" />
     <hidden property="dbvalid" value="false" />
-    <hidden property="db.type" value="derby" />
-    <hidden property="dbDisplayName" value="Derby"/>
+    <hidden property="db.type" value="" />
+    <hidden property="dbDisplayName" value=""/>
 
     <comment displayText="Please select the target portal database type." />
-    <select property="dbName" displayText="Database type" defaultValue="derby">
+    <select property="dbName" displayText="Database type" defaultValue="">
       <option text="DB2" value="db2" />
       <option text="MSSQL" value="mssql" />
       <option text="MySql" value="mysql" />
@@ -155,7 +341,8 @@
     </select>
   </page>
 
-  <page type="input" name="mysql" displayText="MySQL Database connection parameters" ifProperty="${dbName}=mysql">
+  <page type="input" name="mysql" displayText="MySQL Database connection parameters"
+    ifProperty="(${dbName}=mysql) AND (${abort}=false)">
     <hidden property="checkdb" value="true" />
     <hidden property="dbvalid" value="false" />
     <hidden property="dbDisplayName" value="MySQL"/>
@@ -174,7 +361,7 @@
   </page>
 
   <page type="input" name="postgresql" displayText="PostgreSQL Database connection parameters"
-    ifProperty="${dbName}=postgresql">
+    ifProperty="(${dbName}=postgresql) AND (${abort}=false)">
     <hidden property="checkdb" value="true" />
     <hidden property="dbvalid" value="false" />
     <hidden property="dbDisplayName" value="PostgreSQL"/>
@@ -192,7 +379,8 @@
       displayText="JDBC driver" checkExists="true" />
   </page>
 
-  <page type="input" name="sapdb" displayText="SapDB Database connection parameters" ifProperty="${dbName}=sapdb">
+  <page type="input" name="sapdb" displayText="SapDB Database connection parameters"
+    ifProperty="(${dbName}=sapdb) AND (${abort}=false)">
     <hidden property="checkdb" value="true" />
     <hidden property="dbvalid" value="false" />
     <hidden property="dbDisplayName" value="SapDB"/>
@@ -209,7 +397,8 @@
       displayText="JDBC driver" checkExists="true" />
   </page>
 
-  <page type="input" name="oracle9" displayText="Oracle Database connection parameters" ifProperty="${dbName}=oracle9">
+  <page type="input" name="oracle9" displayText="Oracle Database connection parameters"
+    ifProperty="(${dbName}=oracle9) AND (${abort}=false)">
     <hidden property="checkdb" value="true" />
     <hidden property="dbvalid" value="false" />
     <hidden property="dbDisplayName" value="Oracle 9"/>
@@ -227,7 +416,8 @@
       displayText="JDBC driver" checkExists="true" />
   </page>
   
-  <page type="input" name="oracle10" displayText="Oracle Database connection parameters" ifProperty="${dbName}=oracle10">
+  <page type="input" name="oracle10" displayText="Oracle Database connection parameters"
+    ifProperty="(${dbName}=oracle10) AND (${abort}=false)">
     <hidden property="checkdb" value="true" />
     <hidden property="dbvalid" value="false" />
     <hidden property="dbDisplayName" value="Oracle 10 or higher"/>
@@ -246,7 +436,7 @@
   </page>
   
   <page type="input" name="mssql" displayText="Microsoft SQL Server connection parameters"
-    ifProperty="${dbName}=mssql">
+    ifProperty="(${dbName}=mssql) AND (${abort}=false)">
     <hidden property="checkdb" value="true" />
     <hidden property="dbvalid" value="false" />
     <hidden property="dbDisplayName" value="MSSQL"/>
@@ -265,7 +455,8 @@
       displayText="JDBC driver" checkExists="true" />
   </page>
 
-  <page type="input" name="db2" displayText="DB2 Database connection parameters" ifProperty="${dbName}=db2">
+  <page type="input" name="db2" displayText="DB2 Database connection parameters"
+    ifProperty="(${dbName}=db2) AND (${abort}=false)">
     <hidden property="checkdb" value="true" />
     <hidden property="dbvalid" value="false" />
     <hidden property="dbDisplayName" value="DB2"/>
@@ -283,16 +474,16 @@
       displayText="JDBC driver" checkExists="true" />
   </page>
 
-  <page type="input" name="noDBCheck" displayText="Skipping database connection check"
-    ifProperty="(${checkdb}=false) AND (${dbName}!=manual)">
+  <page type="input" name="noDBCheck" displayText="Skipping target database connection check"
+    ifProperty="(${checkdb}=false) AND (${dbName}!=manual) AND (${abort}=false)">
     <hidden property="dbvalid" value="true" />
     <hidden property="setupDBAntTarget" value="runSetupDB" />
     <comment displayText="No database connection check required for selected ${dbDisplayName}" />
     <comment displayText="database type, press Next to continue..." />
   </page>
 
-  <page type="input" name="preDBCheck" displayText="Testing the database connection"
-    ifProperty="(${checkdb}=true) AND (${dbvalid}=false)" postDisplayTarget="antinstaller-checkdb">
+  <page type="input" name="preDBCheck" displayText="Testing the target database connection"
+    ifProperty="(${checkdb}=true) AND (${dbvalid}=false) AND (${abort}=false)" postDisplayTarget="antinstaller-checkdb">
     <hidden property="db.type" value="${dbName}" />
     <hidden property="db.username" value="${dbUser}" />
     <hidden property="db.password" value="${dbPassword}" />
@@ -300,21 +491,22 @@
     <hidden property="jdbc.driver.class" value="${jdbcDriverClass}" />
     <hidden property="jdbc.driver.jar" value="${jdbcDriverJar}" />
     <hidden property="setupDBAntTarget" value="runSetupDB" />
-    <comment displayText="Press Next to test the database connection..." />
+    <comment displayText="Press Next to test the target database connection..." />
   </page>
 
-  <page type="input" name="dbCheckFailed" displayText="Connection to the database failed"
-    ifProperty="(${checkdb}=true) AND (${dbvalid}=false)">
+  <page type="input" name="dbCheckFailed" displayText="Connection to the target database failed"
+    ifProperty="(${checkdb}=true) AND (${dbvalid}=false) AND (${abort}=false)">
     <hidden property="checkdb" value="false" />
     <hidden property="setupDBAntTarget" value="runSetupNoDB" />
 
-    <comment displayText="Please go back and specify the correct database configuration parameters." bold="true" />
+    <comment displayText="Please go back and specify the correct target database configuration" bold="true" />
+    <comment displayText="parameters." bold="true" />
     <comment displayText="" />
     <comment displayText="Continuing now will otherwise require manual setup of the database."/>
   </page>
 
   <page type="input" name="beforeInstall" displayText="Before you install..."
-    ifProperty="(${operation}=install) AND (${setupDBAntTarget}=runSetupNoDB)">
+    ifProperty="(${operation}=install) AND (${setupDBAntTarget}=runSetupNoDB) AND (${abort}=false)">
     <hidden property="db.username" value="" />
     <hidden property="db.password" value="" />
     <hidden property="jdbc.url" value="" />
@@ -332,7 +524,7 @@
   </page>
 
   <page type="input" name="beforeInstall" displayText="Before you install..."
-    ifProperty="(${operation}=install) AND (${setupDBAntTarget}=runSetupDB)">
+    ifProperty="(${operation}=install) AND (${setupDBAntTarget}=runSetupDB) AND (${abort}=false)">
     <comment displayText="Jetspeed will be installed using a ${dbDisplayName} database to:" bold="true"/>
     <comment displayText="  ${installDir}"/>
     <comment displayText="Warning: all content in this directory will be deleted first!" bold="true"/>
@@ -346,7 +538,7 @@
   </page>
 
   <page type="input" name="beforeDBInit" displayText="Before you initialze the database..."
-    ifProperty="(${operation}=initdb) AND (${dbvalid}=true)">
+    ifProperty="(${operation}=initdb) AND (${dbvalid}=true) AND (${abort}=false)">
     <target displayText="Initialze Jetspeed Database" target="initdb" defaultValue="true" force="true" />
     <comment displayText=""/>
     <comment displayText="Jetspeed ${dbDisplayName} database will be reset and initialized." bold="true"/>
@@ -358,7 +550,7 @@
   </page>
 
   <page type="input" name="beforeDBExport" displayText="Before you export the database..."
-    ifProperty="(${operation}=exportdb) AND (${dbvalid}=true)">
+    ifProperty="(${operation}=exportdb) AND (${dbvalid}=true) AND (${abort}=false)">
     <target displayText="Export Jetspeed Database" target="exportdb" defaultValue="true" force="true" />
     <comment displayText=""/>
     <comment displayText="Jetspeed ${dbDisplayName} database data will be exported to:" bold="true"/>
@@ -371,7 +563,7 @@
   </page>
 
   <page type="input" name="beforeDBImport" displayText="Before you import the database..."
-    ifProperty="(${operation}=importdb) AND (${dbvalid}=true)">
+    ifProperty="(${operation}=importdb) AND (${dbvalid}=true) AND (${abort}=false)">
     <target displayText="Import Jetspeed Database" target="importdb" defaultValue="true" force="true" />
     <comment displayText=""/>
     <comment displayText="Jetspeed ${dbDisplayName} database data will be imported from:" bold="true"/>
@@ -383,6 +575,21 @@
     <comment displayText=""/>
   </page>
 
-  <page type="progress" name="progress" displayText="Installation progress" />
+  <page type="input" name="beforeDBMigrate" displayText="Before you migrate the database..."
+    ifProperty="(${operation}=migratedb) AND (${source.dbvalid}=true) AND (${dbvalid}=true) AND (${abort}=false)">
+    <target displayText="Migrate Jetspeed Database" target="migratedb" defaultValue="true" force="true" />
+    <comment displayText=""/>
+    <comment displayText="Jetspeed ${source.dbDisplayName} database at" bold="true"/>
+    <comment displayText="  ${source.jdbcUrl}"/>
+    <comment displayText="will be migrated to ${dbDisplayName} database at" bold="true"/>
+    <comment displayText="  ${jdbcUrl}"/>
+    <comment displayText=""/>
+    <comment displayText="Note: Jetspeed will be temporarily installed to" />
+    <comment displayText="  ${installDir}"/>
+    <comment displayText="during this operation and removed afterward." />
+    <comment displayText=""/>
+  </page>
+
+  <page type="progress" name="progress" displayText="Installation progress" ifProperty="${abort}=false"/>
 
 </installer>

@@ -39,17 +39,23 @@
     </condition>
     <property name="_jdbc.driver.class" value="${jdbc.driver.class}" />
 
+    <property name="_source.db.username" value="${source.db.username}" />
+    <property name="_source.db.password" value="${source.db.password}" />
+    <property name="_source.jdbc.url" value="${source.jdbc.url}" />
+    <property name="_source.jdbc.driver.class" value="${source.jdbc.driver.class}" />
+
     <property name="jetspeedWebInfDir" value="${basedir}/../webapps/${portalName}/WEB-INF" />
     <property name="org.apache.portals.logdir" value="${basedir}/../logs" />
 
     <path id="installationClasspath">
+        <fileset dir="${basedir}/lib">
+            <include name="**/*.jar" />
+        </fileset>
+        <pathelement location="${basedir}/lib" />
         <fileset dir="${basedir}/../lib">
             <include name="**/*.jar" />
         </fileset>
         <fileset dir="${jetspeedWebInfDir}/lib">
-            <include name="**/*.jar" />
-        </fileset>
-        <fileset dir="${basedir}/lib">
             <include name="**/*.jar" />
         </fileset>
         <pathelement location="${basedir}/../lib" />
@@ -211,6 +217,27 @@
 
     </target>
 
+    <target name="migrateDB" depends="checkSourceOrTargetDerby" unless="_derby" >
+
+        <echo>Migrate Jetspeed database from ${_source.jdbc.url} to ${_jdbc.url}</echo>
+        <java classname="org.apache.jetspeed.tools.migration.JetspeedMigrationApplication" fork="yes" maxmemory="${jvmMaxMemory}" failonerror="yes">
+            <classpath refid="installationClasspath"/>
+            <syspropertyset refid="installationProps"/>
+            <arg line="-source-db-username=&quot;${_source.db.username}&quot;
+                       -source-db-password=&quot;${_source.db.password}&quot;
+                       -source-jdbc-url=&quot;${_source.jdbc.url}&quot;
+                       -source-jdbc-driver-class=&quot;${_source.jdbc.driver.class}&quot;
+                       -db-username=&quot;${_db.username}&quot;
+                       -db-password=&quot;${_db.password}&quot;
+                       -jdbc-url=&quot;${_jdbc.url}&quot;
+                       -jdbc-driver-class=&quot;${_jdbc.driver.class}&quot;
+                       -drop-schema-sql=&quot;${basedir}/${db.type}/drop-schema.sql&quot;
+                       -create-schema-sql=&quot;${basedir}/${db.type}/create-schema.sql&quot;"/>
+        </java>
+        <echo>Jetspeed database migration complete!</echo>
+
+    </target>
+
     <target name="checkInput" unless="failSetup">
         <antcall target="runSetupDB" />
     </target>
@@ -218,6 +245,15 @@
     <target name="checkDerby">
         <condition property="_derby">
             <equals arg1="${db.type}" arg2="derby" />
+        </condition>
+    </target>
+
+    <target name="checkSourceOrTargetDerby">
+        <condition property="_derby">
+            <or>
+                <equals arg1="${db.type}" arg2="derby" />
+                <equals arg1="${source.db.type}" arg2="derby" />
+            </or>
         </condition>
     </target>
 

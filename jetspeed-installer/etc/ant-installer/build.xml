@@ -168,6 +168,17 @@
 
   </target>
 
+  <target name="antinstaller-checksourcedb">
+
+    <checkConnection driver="${source.jdbcDriverClass}" url="${source.jdbcUrl}" userid="${source.dbUser}" password="${source.dbPassword}">
+      <classpath>
+        <pathelement location="${source.jdbcDriverJar}" />
+      </classpath>
+    </checkConnection>
+    <antinstaller-property name="source.dbvalid" value="true" />
+
+  </target>
+
   <target name="antinstaller-checkdb">
 
     <checkConnection driver="${jdbcDriverClass}" url="${jdbcUrl}" userid="${dbUser}" password="${dbPassword}">
@@ -179,7 +190,9 @@
 
   </target>
 
-  <target name="initdb" depends="setupInstallation">
+  <target name="initdb" depends="setupInstallation,initPortalDB"/>
+
+  <target name="initPortalDB">
 
     <echo>Reset and initialize Jetspeed database</echo>
     <ant antfile="${installDir}/database/build.xml" target="initDB" dir="${installDir}/database" inheritAll="true" />
@@ -189,7 +202,9 @@
 
   </target>
 
-  <target name="exportdb" depends="setupInstallation">
+  <target name="exportdb" depends="setupInstallation,exportPortalDB"/>
+
+  <target name="exportPortalDB">
 
     <echo>Export all data from Jetspeed database</echo>
     <mkdir dir="${exportDataDir}"/>
@@ -203,10 +218,27 @@
 
   </target>
 
-  <target name="importdb" depends="setupInstallation">
+  <target name="importdb" depends="setupInstallation,importPortalDB"/>
+
+  <target name="importPortalDB">
 
     <echo>Import all data into Jetspeed database</echo>
     <ant antfile="${installDir}/database/build.xml" target="importDB" dir="${installDir}/database" inheritAll="true" />
+
+    <echo>Deleting temporary installation target directory</echo>
+    <delete dir="${installDir}"/>
+
+  </target>
+
+  <target name="migratedb" depends="setupInstallation,migratePortalDB"/>
+
+  <target name="migratePortalDB">
+
+    <echo>Setting up the source database configuration</echo>
+    <copy failonerror="false" todir="${installDir}/lib" file="${source.jdbc.driver.jar}" />
+
+    <echo>Migrate Jetspeed databases</echo>
+    <ant antfile="${installDir}/database/build.xml" target="migrateDB" dir="${installDir}/database" inheritAll="true" />
 
     <echo>Deleting temporary installation target directory</echo>
     <delete dir="${installDir}"/>

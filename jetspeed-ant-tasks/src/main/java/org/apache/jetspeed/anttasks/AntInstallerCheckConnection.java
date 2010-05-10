@@ -25,17 +25,8 @@ import org.apache.tools.ant.taskdefs.JDBCTask;
 
 public class AntInstallerCheckConnection extends JDBCTask
 {
-    public void setDriver(String driver)
-    {
-        super.setDriver(driver);
-    }
-    
     public void execute() throws BuildException
     {
-        setDriver(getProject().getUserProperty("jdbcDriverClass"));
-        setUserid(getProject().getUserProperty("dbUser"));
-        setPassword(getProject().getUserProperty("dbPassword"));
-        setUrl(getProject().getUserProperty("jdbcUrl"));
         try
         {
             getConnection();
