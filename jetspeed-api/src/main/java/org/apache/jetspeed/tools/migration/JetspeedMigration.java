@@ -32,6 +32,8 @@ import java.util.Map;
  */
 public interface JetspeedMigration
 {
+    static final int FETCH_SIZE = 10000;
+    
     static final int JETSPEED_SCHEMA_VERSION_UNKNOWN = 0;
     static final int JETSPEED_SCHEMA_VERSION_2_1_3 = 213;
     static final int JETSPEED_SCHEMA_VERSION_2_1_4 = 214;

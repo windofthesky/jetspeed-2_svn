@@ -159,8 +159,10 @@ public class JetspeedMigrationApplication
         {
             throw new RuntimeException("Source and target JDBC databases must be different: "+this.jdbcUrl);
         }
-
+        
+        this.sourceJDBCUrl = validateJDBCUrlOptions(this.sourceJDBCUrl, this.sourceJDBCDriverClass);
         sourceDataSourceFactory = new DBCPDatasourceComponent(this.sourceDBUsername, this.sourceDBPassword, this.sourceJDBCDriverClass, this.sourceJDBCUrl, 2, 0, GenericObjectPool.WHEN_EXHAUSTED_GROW, true);
+        this.jdbcUrl = validateJDBCUrlOptions(this.jdbcUrl, this.jdbcDriverClass);
         targetDataSourceFactory = new DBCPDatasourceComponent(this.dbUsername, this.dbPassword, this.jdbcDriverClass, this.jdbcUrl, 2, 0, GenericObjectPool.WHEN_EXHAUSTED_GROW, true);
         
         migrations = new JetspeedMigration[]{new JetspeedCapabilitiesMigration(),
@@ -170,6 +172,28 @@ public class JetspeedMigrationApplication
                                              new JetspeedRegistryMigration(),
                                              new JetspeedSecurityMigration(),
                                              new JetspeedSSOSecurityMigration()};
+    }
+    
+    /**
+     * Validate required JDBC URL options.
+     * 
+     * @param jdbcUrl JDBC URL
+     * @param jdbcDriverClass JDBC driver class name
+     * @return validated JDBC URL
+     */
+    private String validateJDBCUrlOptions(String jdbcUrl, String jdbcDriverClass)
+    {
+        // add cursor fetch option for mysql, (assumes server and connector 5.0.3+)
+        if (jdbcUrl.startsWith("jdbc:mysql://") && jdbcDriverClass.startsWith("com.mysql.jdbc."))
+        {
+            if (!jdbcUrl.contains("useCursorFetch="))
+            {
+                jdbcUrl += (jdbcUrl.contains("?") ? "&" : "?")+"useCursorFetch=true";
+            }
+        }
+        
+        // return validated URL
+        return jdbcUrl;
     }
     
     /**

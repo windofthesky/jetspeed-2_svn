@@ -57,6 +57,7 @@ public class JetspeedProfilerMigration implements JetspeedMigration
         // PROFILING_RULE
         PreparedStatement profilingRuleInsertStatement = targetConnection.prepareStatement("INSERT INTO PROFILING_RULE (RULE_ID, CLASS_NAME, TITLE) VALUES (?, ?, ?);");
         Statement profilingRuleQueryStatement = sourceConnection.createStatement();
+        profilingRuleQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet profilingRuleResultSet = profilingRuleQueryStatement.executeQuery("SELECT RULE_ID, CLASS_NAME, TITLE FROM PROFILING_RULE;");
         while (profilingRuleResultSet.next())
         {
@@ -73,6 +74,7 @@ public class JetspeedProfilerMigration implements JetspeedMigration
         // RULE_CRITERION
         PreparedStatement ruleCriterionInsertStatement = targetConnection.prepareStatement("INSERT INTO RULE_CRITERION (CRITERION_ID, RULE_ID, FALLBACK_ORDER, REQUEST_TYPE, NAME, COLUMN_VALUE, FALLBACK_TYPE) VALUES (?, ?, ?, ?, ?, ?, ?);");
         Statement ruleCriterionQueryStatement = sourceConnection.createStatement();
+        ruleCriterionQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet ruleCriterionResultSet = ruleCriterionQueryStatement.executeQuery("SELECT CRITERION_ID, RULE_ID, FALLBACK_ORDER, REQUEST_TYPE, NAME, COLUMN_VALUE, FALLBACK_TYPE FROM RULE_CRITERION;");
         while (ruleCriterionResultSet.next())
         {
@@ -93,6 +95,7 @@ public class JetspeedProfilerMigration implements JetspeedMigration
         // PRINCIPAL_RULE_ASSOC
         PreparedStatement principalRuleAssocInsertStatement = targetConnection.prepareStatement("INSERT INTO PRINCIPAL_RULE_ASSOC (PRINCIPAL_NAME, LOCATOR_NAME, RULE_ID) VALUES (?, ?, ?);");
         Statement principalRuleAssocQueryStatement = sourceConnection.createStatement();
+        principalRuleAssocQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet principalRuleAssocResultSet = principalRuleAssocQueryStatement.executeQuery("SELECT PRINCIPAL_NAME, LOCATOR_NAME, RULE_ID FROM PRINCIPAL_RULE_ASSOC;");
         while (principalRuleAssocResultSet.next())
         {
@@ -109,6 +112,7 @@ public class JetspeedProfilerMigration implements JetspeedMigration
         // PROFILE_PAGE_ASSOC
         PreparedStatement profilePageAssocInsertStatement = targetConnection.prepareStatement("INSERT INTO PROFILE_PAGE_ASSOC (LOCATOR_HASH, PAGE_ID) VALUES (?, ?);");
         Statement profilePageAssocQueryStatement = sourceConnection.createStatement();
+        profilePageAssocQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet profilePageAssocResultSet = profilePageAssocQueryStatement.executeQuery("SELECT LOCATOR_HASH, PAGE_ID FROM PROFILE_PAGE_ASSOC;");
         while (profilePageAssocResultSet.next())
         {

@@ -67,6 +67,7 @@ public class JetspeedSSOSecurityMigration implements JetspeedMigration
         // SSO_SITE
         PreparedStatement ssoSiteInsertStatement = targetConnection.prepareStatement("INSERT INTO SSO_SITE (SITE_ID, NAME, URL, ALLOW_USER_SET, REQUIRES_CERTIFICATE, CHALLENGE_RESPONSE_AUTH, FORM_AUTH, FORM_USER_FIELD, FORM_PWD_FIELD, REALM, DOMAIN_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
         Statement ssoSiteQueryStatement = sourceConnection.createStatement();
+        ssoSiteQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet ssoSiteResultSet = null;
         switch (sourceVersion)
         {

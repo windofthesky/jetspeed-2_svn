@@ -57,6 +57,7 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
         // PORTLET_STATISTICS
         PreparedStatement portletStatisticsInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_STATISTICS (IPADDRESS, USER_NAME, TIME_STAMP, PAGE, PORTLET, STATUS, ELAPSED_TIME) VALUES (?, ?, ?, ?, ?, ?, ?);");
         Statement portletStatisticsQueryStatement = sourceConnection.createStatement();
+        portletStatisticsQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet portletStatisticsResultSet = portletStatisticsQueryStatement.executeQuery("SELECT IPADDRESS, USER_NAME, TIME_STAMP, PAGE, PORTLET, STATUS, ELAPSED_TIME FROM PORTLET_STATISTICS;");
         while (portletStatisticsResultSet.next())
         {
@@ -88,6 +89,7 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
         // PAGE_STATISTICS
         PreparedStatement pageStatisticsInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_STATISTICS (IPADDRESS, USER_NAME, TIME_STAMP, PAGE, STATUS, ELAPSED_TIME) VALUES (?, ?, ?, ?, ?, ?);");
         Statement pageStatisticsQueryStatement = sourceConnection.createStatement();
+        pageStatisticsQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet pageStatisticsResultSet = pageStatisticsQueryStatement.executeQuery("SELECT IPADDRESS, USER_NAME, TIME_STAMP, PAGE, STATUS, ELAPSED_TIME FROM PAGE_STATISTICS;");
         while (pageStatisticsResultSet.next())
         {
@@ -107,6 +109,7 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
         // USER_STATISTICS
         PreparedStatement userStatisticsInsertStatement = targetConnection.prepareStatement("INSERT INTO USER_STATISTICS (IPADDRESS, USER_NAME, TIME_STAMP, STATUS, ELAPSED_TIME) VALUES (?, ?, ?, ?, ?);");
         Statement userStatisticsQueryStatement = sourceConnection.createStatement();
+        userStatisticsQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet userStatisticsResultSet = userStatisticsQueryStatement.executeQuery("SELECT IPADDRESS, USER_NAME, TIME_STAMP, STATUS, ELAPSED_TIME FROM USER_STATISTICS;");
         while (userStatisticsResultSet.next())
         {
@@ -125,6 +128,7 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
         // ADMIN_ACTIVITY
         PreparedStatement adminActivityInsertStatement = targetConnection.prepareStatement("INSERT INTO ADMIN_ACTIVITY (ACTIVITY, CATEGORY, ADMIN, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
         Statement adminActivityQueryStatement = sourceConnection.createStatement();
+        adminActivityQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet adminActivityResultSet = adminActivityQueryStatement.executeQuery("SELECT ACTIVITY, CATEGORY, ADMIN, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION FROM ADMIN_ACTIVITY;");
         while (adminActivityResultSet.next())
         {
@@ -148,6 +152,7 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
         // USER_ACTIVITY
         PreparedStatement userActivityInsertStatement = targetConnection.prepareStatement("INSERT INTO USER_ACTIVITY (ACTIVITY, CATEGORY, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
         Statement userActivityQueryStatement = sourceConnection.createStatement();
+        userActivityQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet userActivityResultSet = userActivityQueryStatement.executeQuery("SELECT ACTIVITY, CATEGORY, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION FROM USER_ACTIVITY;");
         while (userActivityResultSet.next())
         {

@@ -78,6 +78,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
         int maxSecurityDomainId = -1;
         PreparedStatement securityDomainInsertStatement = targetConnection.prepareStatement("INSERT INTO SECURITY_DOMAIN (DOMAIN_ID, DOMAIN_NAME, REMOTE, ENABLED, OWNER_DOMAIN_ID) VALUES (?, ?, ?, ?, ?);");
         Statement securityDomainQueryStatement = sourceConnection.createStatement();
+        securityDomainQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet securityDomainResultSet = null;
         switch (sourceVersion)
         {
@@ -138,6 +139,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
         // SECURITY_PRINCIPAL
         PreparedStatement securityPrincipalInsertStatement = targetConnection.prepareStatement("INSERT INTO SECURITY_PRINCIPAL (PRINCIPAL_ID, PRINCIPAL_TYPE, PRINCIPAL_NAME, IS_MAPPED, IS_ENABLED, IS_READONLY, IS_REMOVABLE, CREATION_DATE, MODIFIED_DATE, DOMAIN_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
         Statement securityPrincipalQueryStatement = sourceConnection.createStatement();
+        securityPrincipalQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet securityPrincipalResultSet = null;
         switch (sourceVersion)
         {
@@ -249,6 +251,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
         boolean securityAttributeRowsMigrated = false;
         PreparedStatement securityAttributeInsertStatement = targetConnection.prepareStatement("INSERT INTO SECURITY_ATTRIBUTE (ATTR_ID, PRINCIPAL_ID, ATTR_NAME, ATTR_VALUE) VALUES (?, ?, ?, ?);");
         Statement securityAttributeQueryStatement = sourceConnection.createStatement();
+        securityAttributeQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet securityAttributeResultSet = null;
         switch (sourceVersion)
         {
@@ -333,6 +336,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
                 Statement securityPrincipalAssocQueryStatement1 = sourceConnection.createStatement();
+                securityPrincipalAssocQueryStatement1.setFetchSize(FETCH_SIZE);
                 ResultSet securityPrincipalAssocResultSet = securityPrincipalAssocQueryStatement1.executeQuery("SELECT USER_ID, ROLE_ID FROM SECURITY_USER_ROLE;");
                 while (securityPrincipalAssocResultSet.next())
                 {
@@ -346,6 +350,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                 securityPrincipalAssocQueryStatement1.close();
 
                 Statement securityPrincipalAssocQueryStatement2 = sourceConnection.createStatement();
+                securityPrincipalAssocQueryStatement2.setFetchSize(FETCH_SIZE);
                 securityPrincipalAssocResultSet = securityPrincipalAssocQueryStatement2.executeQuery("SELECT USER_ID, GROUP_ID FROM SECURITY_USER_GROUP;");
                 while (securityPrincipalAssocResultSet.next())
                 {
@@ -359,6 +364,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                 securityPrincipalAssocQueryStatement2.close();
 
                 Statement securityPrincipalAssocQueryStatement3 = sourceConnection.createStatement();
+                securityPrincipalAssocQueryStatement3.setFetchSize(FETCH_SIZE);
                 securityPrincipalAssocResultSet = securityPrincipalAssocQueryStatement3.executeQuery("SELECT GROUP_ID, ROLE_ID FROM SECURITY_GROUP_ROLE;");
                 while (securityPrincipalAssocResultSet.next())
                 {
@@ -372,6 +378,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                 securityPrincipalAssocQueryStatement3.close();
                 
                 Statement ssoPrincipalQueryStatement = sourceConnection.createStatement();
+                ssoPrincipalQueryStatement.setFetchSize(FETCH_SIZE);
                 ResultSet ssoPrincipalResultSet = ssoPrincipalQueryStatement.executeQuery("SELECT PRINCIPAL_ID, FULL_PATH FROM SECURITY_PRINCIPAL WHERE FULL_PATH LIKE '/sso/%';");
                 PreparedStatement principalQueryStatement = targetConnection.prepareStatement("SELECT PRINCIPAL_ID FROM SECURITY_PRINCIPAL WHERE PRINCIPAL_TYPE = 'user' AND DOMAIN_ID = "+DEFAULT_SECURITY_DOMAIN_ID+" AND PRINCIPAL_NAME = ?");
                 while (ssoPrincipalResultSet.next())
@@ -410,6 +417,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
                 Statement securityPrincipalAssocQueryStatement = sourceConnection.createStatement();
+                securityPrincipalAssocQueryStatement.setFetchSize(FETCH_SIZE);
                 ResultSet securityPrincipalAssocResultSet = securityPrincipalAssocQueryStatement.executeQuery("SELECT ASSOC_NAME, FROM_PRINCIPAL_ID, TO_PRINCIPAL_ID FROM SECURITY_PRINCIPAL_ASSOC;");
                 while (securityPrincipalAssocResultSet.next())
                 {
@@ -429,6 +437,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
         // SECURITY_PERMISSION
         PreparedStatement securityPermissionInsertStatement = targetConnection.prepareStatement("INSERT INTO SECURITY_PERMISSION (PERMISSION_ID, PERMISSION_TYPE, NAME, ACTIONS) VALUES (?, ?, ?, ?);");
         Statement securityPermissionQueryStatement = sourceConnection.createStatement();
+        securityPermissionQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet securityPermissionResultSet = null;
         switch (sourceVersion)
         {
@@ -497,6 +506,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
         // PRINCIPAL_PERMISSION
         PreparedStatement principalPermissionInsertStatement = targetConnection.prepareStatement("INSERT INTO PRINCIPAL_PERMISSION (PRINCIPAL_ID, PERMISSION_ID) VALUES (?, ?);");
         Statement principalPermissionQueryStatement = sourceConnection.createStatement();
+        principalPermissionQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet principalPermissionResultSet = principalPermissionQueryStatement.executeQuery("SELECT PRINCIPAL_ID, PERMISSION_ID FROM PRINCIPAL_PERMISSION;");
         while (principalPermissionResultSet.next())
         {
@@ -512,6 +522,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
         // SECURITY_CREDENTIAL
         PreparedStatement securityCredentialInsertStatement = targetConnection.prepareStatement("INSERT INTO SECURITY_CREDENTIAL (CREDENTIAL_ID, PRINCIPAL_ID, CREDENTIAL_VALUE, TYPE, UPDATE_ALLOWED, IS_STATE_READONLY, UPDATE_REQUIRED, IS_ENCODED, IS_ENABLED, AUTH_FAILURES, IS_EXPIRED, CREATION_DATE, MODIFIED_DATE, PREV_AUTH_DATE, LAST_AUTH_DATE, EXPIRATION_DATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
         Statement securityCredentialQueryStatement = sourceConnection.createStatement();
+        securityCredentialQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet securityCredentialResultSet = null;
         switch (sourceVersion)
         {

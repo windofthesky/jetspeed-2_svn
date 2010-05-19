@@ -57,6 +57,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         // MEDIA_TYPE
         PreparedStatement mediaTypeInsertStatement = targetConnection.prepareStatement("INSERT INTO MEDIA_TYPE (MEDIATYPE_ID, NAME, CHARACTER_SET, TITLE, DESCRIPTION) VALUES (?, ?, ?, ?, ?);");
         Statement mediaTypeQueryStatement = sourceConnection.createStatement();
+        mediaTypeQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet mediaTypeResultSet = mediaTypeQueryStatement.executeQuery("SELECT MEDIATYPE_ID, NAME, CHARACTER_SET, TITLE, DESCRIPTION FROM MEDIA_TYPE;");
         while (mediaTypeResultSet.next())
         {
@@ -75,6 +76,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         // CLIENT
         PreparedStatement clientInsertStatement = targetConnection.prepareStatement("INSERT INTO CLIENT (CLIENT_ID, EVAL_ORDER, NAME, USER_AGENT_PATTERN, MANUFACTURER, MODEL, VERSION, PREFERRED_MIMETYPE_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
         Statement clientQueryStatement = sourceConnection.createStatement();
+        clientQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet clientResultSet = clientQueryStatement.executeQuery("SELECT CLIENT_ID, EVAL_ORDER, NAME, USER_AGENT_PATTERN, MANUFACTURER, MODEL, VERSION, PREFERRED_MIMETYPE_ID FROM CLIENT;");
         while (clientResultSet.next())
         {
@@ -96,6 +98,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         // MIMETYPE
         PreparedStatement mimeTypeInsertStatement = targetConnection.prepareStatement("INSERT INTO MIMETYPE (MIMETYPE_ID, NAME) VALUES (?, ?);");
         Statement mimeTypeQueryStatement = sourceConnection.createStatement();
+        mimeTypeQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet mimeTypeResultSet = mimeTypeQueryStatement.executeQuery("SELECT MIMETYPE_ID, NAME FROM MIMETYPE;");
         while (mimeTypeResultSet.next())
         {
@@ -111,6 +114,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         // CAPABILITY
         PreparedStatement capabilityInsertStatement = targetConnection.prepareStatement("INSERT INTO CAPABILITY (CAPABILITY_ID, CAPABILITY) VALUES (?, ?);");
         Statement capabilityQueryStatement = sourceConnection.createStatement();
+        capabilityQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet capabilityResultSet = capabilityQueryStatement.executeQuery("SELECT CAPABILITY_ID, CAPABILITY FROM CAPABILITY;");
         while (capabilityResultSet.next())
         {
@@ -126,6 +130,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         // CLIENT_TO_CAPABILITY
         PreparedStatement clientToCapabilityInsertStatement = targetConnection.prepareStatement("INSERT INTO CLIENT_TO_CAPABILITY (CLIENT_ID, CAPABILITY_ID) VALUES (?, ?);");
         Statement clientToCapabilityQueryStatement = sourceConnection.createStatement();
+        clientToCapabilityQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet clientToCapabilityResultSet = clientToCapabilityQueryStatement.executeQuery("SELECT CLIENT_ID, CAPABILITY_ID FROM CLIENT_TO_CAPABILITY;");
         while (clientToCapabilityResultSet.next())
         {
@@ -141,6 +146,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         // CLIENT_TO_MIMETYPE
         PreparedStatement clientToMimeTypeInsertStatement = targetConnection.prepareStatement("INSERT INTO CLIENT_TO_MIMETYPE (CLIENT_ID, MIMETYPE_ID) VALUES (?, ?);");
         Statement clientToMimeTypeQueryStatement = sourceConnection.createStatement();
+        clientToMimeTypeQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet clientToMimeTypeResultSet = clientToMimeTypeQueryStatement.executeQuery("SELECT CLIENT_ID, MIMETYPE_ID FROM CLIENT_TO_MIMETYPE;");
         while (clientToMimeTypeResultSet.next())
         {
@@ -156,6 +162,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         // MEDIATYPE_TO_CAPABILITY
         PreparedStatement mediaTypeToCapabilityInsertStatement = targetConnection.prepareStatement("INSERT INTO MEDIATYPE_TO_CAPABILITY (MEDIATYPE_ID, CAPABILITY_ID) VALUES (?, ?);");
         Statement mediaTypeToCapabilityQueryStatement = sourceConnection.createStatement();
+        mediaTypeToCapabilityQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet mediaTypeToCapabilityResultSet = mediaTypeToCapabilityQueryStatement.executeQuery("SELECT MEDIATYPE_ID, CAPABILITY_ID FROM MEDIATYPE_TO_CAPABILITY;");
         while (mediaTypeToCapabilityResultSet.next())
         {
@@ -171,6 +178,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         // MEDIATYPE_TO_MIMETYPE
         PreparedStatement mediaTypeToMimeTypeInsertStatement = targetConnection.prepareStatement("INSERT INTO MEDIATYPE_TO_MIMETYPE (MEDIATYPE_ID, MIMETYPE_ID) VALUES (?, ?);");
         Statement mediaTypeToMimeTypeQueryStatement = sourceConnection.createStatement();
+        mediaTypeToMimeTypeQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet mediaTypeToMimeTypeResultSet = mediaTypeToMimeTypeQueryStatement.executeQuery("SELECT MEDIATYPE_ID, MIMETYPE_ID FROM MEDIATYPE_TO_MIMETYPE;");
         while (mediaTypeToMimeTypeResultSet.next())
         {
