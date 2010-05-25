@@ -289,7 +289,7 @@
     <org.apache.portals.bridges.velocity.version>2.0</org.apache.portals.bridges.velocity.version>
     <org.apache.portals.bridges.groovy.version>1.0.4</org.apache.portals.bridges.groovy.version>
     <org.apache.portals.bridges.portletfilter.version>1.0.4</org.apache.portals.bridges.portletfilter.version>
-    <org.apache.portals.applications.apa-demo.version>1.1</org.apache.portals.applications.apa-demo.version>
+    <org.apache.portals.applications.apa-demo.version>1.2-SNAPSHOT</org.apache.portals.applications.apa-demo.version>
     <org.apache.portals.applications.apa-gems.version>1.1</org.apache.portals.applications.apa-gems.version>
     <org.apache.portals.applications.apa-logging.version>1.0</org.apache.portals.applications.apa-logging.version>
     <org.apache.portals.applications.apa-rss.version>1.1</org.apache.portals.applications.apa-rss.version>
