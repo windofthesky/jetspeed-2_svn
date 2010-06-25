@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * SQL Script Reader
@@ -30,13 +32,38 @@ import java.io.IOException;
  */
 public class SQLScriptReader
 {
+    private static final String EOL = System.getProperty("line.separator");
+    
     private BufferedReader reader;
     
+    /**
+     * Construct reader for SQL script stream.
+     * 
+     * @param scriptStream script stream
+     * @throws FileNotFoundException
+     */
+    public SQLScriptReader(InputStream scriptStream) throws FileNotFoundException
+    {
+        this.reader = new BufferedReader(new InputStreamReader(scriptStream));
+    }
+    
+    /**
+     * Construct reader for SQL script file.
+     * 
+     * @param scriptFile script file
+     * @throws FileNotFoundException
+     */
     public SQLScriptReader(File scriptFile) throws FileNotFoundException
     {
         this.reader = new BufferedReader(new FileReader(scriptFile));
     }
     
+    /**
+     * Read next SQL statement from script file.
+     * 
+     * @return read SQL statement
+     * @throws IOException
+     */
     public String readSQLStatement() throws IOException
     {
         StringBuilder sqlStatement = new StringBuilder();
@@ -58,12 +85,16 @@ public class SQLScriptReader
                     {
                         if (sqlStatement.length() > 0)
                         {
-                            sqlStatement.append(' ');
+                            sqlStatement.append(EOL);
                         }
-                        sqlStatement.append(line);
                         if (line.endsWith(";"))
                         {
+                            sqlStatement.append(line.substring(0, line.length()-1));
                             break;
+                        }
+                        else
+                        {
+                            sqlStatement.append(line);
                         }
                     }
                 }
@@ -77,6 +108,11 @@ public class SQLScriptReader
         return ((sqlStatement.length() > 0) ? sqlStatement.toString() : null);
     }
 
+    /**
+     * Close reader.
+     * 
+     * @throws IOException
+     */
     public void close() throws IOException
     {
         reader.close();
