@@ -55,10 +55,10 @@ public class JetspeedProfilerMigration implements JetspeedMigration
         int rowsMigrated = 0;
         
         // PROFILING_RULE
-        PreparedStatement profilingRuleInsertStatement = targetConnection.prepareStatement("INSERT INTO PROFILING_RULE (RULE_ID, CLASS_NAME, TITLE) VALUES (?, ?, ?);");
+        PreparedStatement profilingRuleInsertStatement = targetConnection.prepareStatement("INSERT INTO PROFILING_RULE (RULE_ID, CLASS_NAME, TITLE) VALUES (?, ?, ?)");
         Statement profilingRuleQueryStatement = sourceConnection.createStatement();
         profilingRuleQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet profilingRuleResultSet = profilingRuleQueryStatement.executeQuery("SELECT RULE_ID, CLASS_NAME, TITLE FROM PROFILING_RULE;");
+        ResultSet profilingRuleResultSet = profilingRuleQueryStatement.executeQuery("SELECT RULE_ID, CLASS_NAME, TITLE FROM PROFILING_RULE");
         while (profilingRuleResultSet.next())
         {
             profilingRuleInsertStatement.setString(1, profilingRuleResultSet.getString(1));
@@ -72,10 +72,10 @@ public class JetspeedProfilerMigration implements JetspeedMigration
         profilingRuleInsertStatement.close();
         
         // RULE_CRITERION
-        PreparedStatement ruleCriterionInsertStatement = targetConnection.prepareStatement("INSERT INTO RULE_CRITERION (CRITERION_ID, RULE_ID, FALLBACK_ORDER, REQUEST_TYPE, NAME, COLUMN_VALUE, FALLBACK_TYPE) VALUES (?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement ruleCriterionInsertStatement = targetConnection.prepareStatement("INSERT INTO RULE_CRITERION (CRITERION_ID, RULE_ID, FALLBACK_ORDER, REQUEST_TYPE, NAME, COLUMN_VALUE, FALLBACK_TYPE) VALUES (?, ?, ?, ?, ?, ?, ?)");
         Statement ruleCriterionQueryStatement = sourceConnection.createStatement();
         ruleCriterionQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet ruleCriterionResultSet = ruleCriterionQueryStatement.executeQuery("SELECT CRITERION_ID, RULE_ID, FALLBACK_ORDER, REQUEST_TYPE, NAME, COLUMN_VALUE, FALLBACK_TYPE FROM RULE_CRITERION;");
+        ResultSet ruleCriterionResultSet = ruleCriterionQueryStatement.executeQuery("SELECT CRITERION_ID, RULE_ID, FALLBACK_ORDER, REQUEST_TYPE, NAME, COLUMN_VALUE, FALLBACK_TYPE FROM RULE_CRITERION");
         while (ruleCriterionResultSet.next())
         {
             ruleCriterionInsertStatement.setString(1, ruleCriterionResultSet.getString(1));
@@ -93,10 +93,10 @@ public class JetspeedProfilerMigration implements JetspeedMigration
         ruleCriterionInsertStatement.close();
         
         // PRINCIPAL_RULE_ASSOC
-        PreparedStatement principalRuleAssocInsertStatement = targetConnection.prepareStatement("INSERT INTO PRINCIPAL_RULE_ASSOC (PRINCIPAL_NAME, LOCATOR_NAME, RULE_ID) VALUES (?, ?, ?);");
+        PreparedStatement principalRuleAssocInsertStatement = targetConnection.prepareStatement("INSERT INTO PRINCIPAL_RULE_ASSOC (PRINCIPAL_NAME, LOCATOR_NAME, RULE_ID) VALUES (?, ?, ?)");
         Statement principalRuleAssocQueryStatement = sourceConnection.createStatement();
         principalRuleAssocQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet principalRuleAssocResultSet = principalRuleAssocQueryStatement.executeQuery("SELECT PRINCIPAL_NAME, LOCATOR_NAME, RULE_ID FROM PRINCIPAL_RULE_ASSOC;");
+        ResultSet principalRuleAssocResultSet = principalRuleAssocQueryStatement.executeQuery("SELECT PRINCIPAL_NAME, LOCATOR_NAME, RULE_ID FROM PRINCIPAL_RULE_ASSOC");
         while (principalRuleAssocResultSet.next())
         {
             principalRuleAssocInsertStatement.setString(1, principalRuleAssocResultSet.getString(1));
@@ -110,10 +110,10 @@ public class JetspeedProfilerMigration implements JetspeedMigration
         principalRuleAssocInsertStatement.close();
         
         // PROFILE_PAGE_ASSOC
-        PreparedStatement profilePageAssocInsertStatement = targetConnection.prepareStatement("INSERT INTO PROFILE_PAGE_ASSOC (LOCATOR_HASH, PAGE_ID) VALUES (?, ?);");
+        PreparedStatement profilePageAssocInsertStatement = targetConnection.prepareStatement("INSERT INTO PROFILE_PAGE_ASSOC (LOCATOR_HASH, PAGE_ID) VALUES (?, ?)");
         Statement profilePageAssocQueryStatement = sourceConnection.createStatement();
         profilePageAssocQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet profilePageAssocResultSet = profilePageAssocQueryStatement.executeQuery("SELECT LOCATOR_HASH, PAGE_ID FROM PROFILE_PAGE_ASSOC;");
+        ResultSet profilePageAssocResultSet = profilePageAssocQueryStatement.executeQuery("SELECT LOCATOR_HASH, PAGE_ID FROM PROFILE_PAGE_ASSOC");
         while (profilePageAssocResultSet.next())
         {
             profilePageAssocInsertStatement.setString(1, profilePageAssocResultSet.getString(1));
@@ -126,9 +126,9 @@ public class JetspeedProfilerMigration implements JetspeedMigration
         profilePageAssocInsertStatement.close();
         
         // OJB_HL_SEQ
-        PreparedStatement ojbInsertStatement = targetConnection.prepareStatement("INSERT INTO OJB_HL_SEQ (TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement ojbInsertStatement = targetConnection.prepareStatement("INSERT INTO OJB_HL_SEQ (TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION) VALUES (?, ?, ?, ?, ?)");
         Statement ojbQueryStatement = sourceConnection.createStatement();
-        ResultSet ojbResultSet = ojbQueryStatement.executeQuery("SELECT TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION FROM OJB_HL_SEQ WHERE TABLENAME IN ('SEQ_RULE_CRITERION');");
+        ResultSet ojbResultSet = ojbQueryStatement.executeQuery("SELECT TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION FROM OJB_HL_SEQ WHERE TABLENAME IN ('SEQ_RULE_CRITERION')");
         while (ojbResultSet.next())
         {
             ojbInsertStatement.setString(1, ojbResultSet.getString(1));

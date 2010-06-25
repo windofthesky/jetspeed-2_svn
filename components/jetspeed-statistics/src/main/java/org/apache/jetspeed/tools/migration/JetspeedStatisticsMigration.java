@@ -55,10 +55,10 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
         int rowsMigrated = 0;
                 
         // PORTLET_STATISTICS
-        PreparedStatement portletStatisticsInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_STATISTICS (IPADDRESS, USER_NAME, TIME_STAMP, PAGE, PORTLET, STATUS, ELAPSED_TIME) VALUES (?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement portletStatisticsInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_STATISTICS (IPADDRESS, USER_NAME, TIME_STAMP, PAGE, PORTLET, STATUS, ELAPSED_TIME) VALUES (?, ?, ?, ?, ?, ?, ?)");
         Statement portletStatisticsQueryStatement = sourceConnection.createStatement();
         portletStatisticsQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet portletStatisticsResultSet = portletStatisticsQueryStatement.executeQuery("SELECT IPADDRESS, USER_NAME, TIME_STAMP, PAGE, PORTLET, STATUS, ELAPSED_TIME FROM PORTLET_STATISTICS;");
+        ResultSet portletStatisticsResultSet = portletStatisticsQueryStatement.executeQuery("SELECT IPADDRESS, USER_NAME, TIME_STAMP, PAGE, PORTLET, STATUS, ELAPSED_TIME FROM PORTLET_STATISTICS");
         while (portletStatisticsResultSet.next())
         {
             portletStatisticsInsertStatement.setString(1, portletStatisticsResultSet.getString(1));
@@ -87,10 +87,10 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
         portletStatisticsInsertStatement.close();
 
         // PAGE_STATISTICS
-        PreparedStatement pageStatisticsInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_STATISTICS (IPADDRESS, USER_NAME, TIME_STAMP, PAGE, STATUS, ELAPSED_TIME) VALUES (?, ?, ?, ?, ?, ?);");
+        PreparedStatement pageStatisticsInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_STATISTICS (IPADDRESS, USER_NAME, TIME_STAMP, PAGE, STATUS, ELAPSED_TIME) VALUES (?, ?, ?, ?, ?, ?)");
         Statement pageStatisticsQueryStatement = sourceConnection.createStatement();
         pageStatisticsQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet pageStatisticsResultSet = pageStatisticsQueryStatement.executeQuery("SELECT IPADDRESS, USER_NAME, TIME_STAMP, PAGE, STATUS, ELAPSED_TIME FROM PAGE_STATISTICS;");
+        ResultSet pageStatisticsResultSet = pageStatisticsQueryStatement.executeQuery("SELECT IPADDRESS, USER_NAME, TIME_STAMP, PAGE, STATUS, ELAPSED_TIME FROM PAGE_STATISTICS");
         while (pageStatisticsResultSet.next())
         {
             pageStatisticsInsertStatement.setString(1, pageStatisticsResultSet.getString(1));
@@ -107,10 +107,10 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
         pageStatisticsInsertStatement.close();
 
         // USER_STATISTICS
-        PreparedStatement userStatisticsInsertStatement = targetConnection.prepareStatement("INSERT INTO USER_STATISTICS (IPADDRESS, USER_NAME, TIME_STAMP, STATUS, ELAPSED_TIME) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement userStatisticsInsertStatement = targetConnection.prepareStatement("INSERT INTO USER_STATISTICS (IPADDRESS, USER_NAME, TIME_STAMP, STATUS, ELAPSED_TIME) VALUES (?, ?, ?, ?, ?)");
         Statement userStatisticsQueryStatement = sourceConnection.createStatement();
         userStatisticsQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet userStatisticsResultSet = userStatisticsQueryStatement.executeQuery("SELECT IPADDRESS, USER_NAME, TIME_STAMP, STATUS, ELAPSED_TIME FROM USER_STATISTICS;");
+        ResultSet userStatisticsResultSet = userStatisticsQueryStatement.executeQuery("SELECT IPADDRESS, USER_NAME, TIME_STAMP, STATUS, ELAPSED_TIME FROM USER_STATISTICS");
         while (userStatisticsResultSet.next())
         {
             userStatisticsInsertStatement.setString(1, userStatisticsResultSet.getString(1));
@@ -126,10 +126,10 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
         userStatisticsInsertStatement.close();
 
         // ADMIN_ACTIVITY
-        PreparedStatement adminActivityInsertStatement = targetConnection.prepareStatement("INSERT INTO ADMIN_ACTIVITY (ACTIVITY, CATEGORY, ADMIN, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement adminActivityInsertStatement = targetConnection.prepareStatement("INSERT INTO ADMIN_ACTIVITY (ACTIVITY, CATEGORY, ADMIN, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Statement adminActivityQueryStatement = sourceConnection.createStatement();
         adminActivityQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet adminActivityResultSet = adminActivityQueryStatement.executeQuery("SELECT ACTIVITY, CATEGORY, ADMIN, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION FROM ADMIN_ACTIVITY;");
+        ResultSet adminActivityResultSet = adminActivityQueryStatement.executeQuery("SELECT ACTIVITY, CATEGORY, ADMIN, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION FROM ADMIN_ACTIVITY");
         while (adminActivityResultSet.next())
         {
             adminActivityInsertStatement.setString(1, adminActivityResultSet.getString(1));
@@ -150,10 +150,10 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
         adminActivityInsertStatement.close();
 
         // USER_ACTIVITY
-        PreparedStatement userActivityInsertStatement = targetConnection.prepareStatement("INSERT INTO USER_ACTIVITY (ACTIVITY, CATEGORY, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement userActivityInsertStatement = targetConnection.prepareStatement("INSERT INTO USER_ACTIVITY (ACTIVITY, CATEGORY, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Statement userActivityQueryStatement = sourceConnection.createStatement();
         userActivityQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet userActivityResultSet = userActivityQueryStatement.executeQuery("SELECT ACTIVITY, CATEGORY, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION FROM USER_ACTIVITY;");
+        ResultSet userActivityResultSet = userActivityQueryStatement.executeQuery("SELECT ACTIVITY, CATEGORY, USER_NAME, TIME_STAMP, IPADDRESS, ATTR_NAME, ATTR_VALUE_BEFORE, ATTR_VALUE_AFTER, DESCRIPTION FROM USER_ACTIVITY");
         while (userActivityResultSet.next())
         {
             userActivityInsertStatement.setString(1, userActivityResultSet.getString(1));

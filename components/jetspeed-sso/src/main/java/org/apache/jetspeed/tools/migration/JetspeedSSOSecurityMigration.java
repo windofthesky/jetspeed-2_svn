@@ -48,7 +48,7 @@ public class JetspeedSSOSecurityMigration implements JetspeedMigration
         try
         {
             Statement securityDomainQueryStatement = sourceConnection.createStatement();
-            securityDomainQueryStatement.executeQuery("SELECT DOMAIN_ID FROM SSO_SITE WHERE SITE_ID = 0;");
+            securityDomainQueryStatement.executeQuery("SELECT DOMAIN_ID FROM SSO_SITE WHERE SITE_ID = 0");
             sourceSecurityVersion = JETSPEED_SCHEMA_VERSION_2_2_0;
         }
         catch (SQLException sqle)
@@ -65,7 +65,7 @@ public class JetspeedSSOSecurityMigration implements JetspeedMigration
         int rowsMigrated = 0;
         
         // SSO_SITE
-        PreparedStatement ssoSiteInsertStatement = targetConnection.prepareStatement("INSERT INTO SSO_SITE (SITE_ID, NAME, URL, ALLOW_USER_SET, REQUIRES_CERTIFICATE, CHALLENGE_RESPONSE_AUTH, FORM_AUTH, FORM_USER_FIELD, FORM_PWD_FIELD, REALM, DOMAIN_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement ssoSiteInsertStatement = targetConnection.prepareStatement("INSERT INTO SSO_SITE (SITE_ID, NAME, URL, ALLOW_USER_SET, REQUIRES_CERTIFICATE, CHALLENGE_RESPONSE_AUTH, FORM_AUTH, FORM_USER_FIELD, FORM_PWD_FIELD, REALM, DOMAIN_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Statement ssoSiteQueryStatement = sourceConnection.createStatement();
         ssoSiteQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet ssoSiteResultSet = null;
@@ -74,7 +74,7 @@ public class JetspeedSSOSecurityMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                ssoSiteResultSet = ssoSiteQueryStatement.executeQuery("SELECT SITE_ID, NAME, URL, ALLOW_USER_SET, REQUIRES_CERTIFICATE, CHALLENGE_RESPONSE_AUTH, FORM_AUTH, FORM_USER_FIELD, FORM_PWD_FIELD, REALM FROM SSO_SITE;");
+                ssoSiteResultSet = ssoSiteQueryStatement.executeQuery("SELECT SITE_ID, NAME, URL, ALLOW_USER_SET, REQUIRES_CERTIFICATE, CHALLENGE_RESPONSE_AUTH, FORM_AUTH, FORM_USER_FIELD, FORM_PWD_FIELD, REALM FROM SSO_SITE");
                 PreparedStatement domainQueryStatement = targetConnection.prepareStatement("SELECT DOMAIN_ID FROM SECURITY_DOMAIN WHERE DOMAIN_NAME = ?");
                 while (ssoSiteResultSet.next())
                 {
@@ -112,7 +112,7 @@ public class JetspeedSSOSecurityMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                ssoSiteResultSet = ssoSiteQueryStatement.executeQuery("SELECT SITE_ID, NAME, URL, ALLOW_USER_SET, REQUIRES_CERTIFICATE, CHALLENGE_RESPONSE_AUTH, FORM_AUTH, FORM_USER_FIELD, FORM_PWD_FIELD, REALM, DOMAIN_ID FROM SSO_SITE;");
+                ssoSiteResultSet = ssoSiteQueryStatement.executeQuery("SELECT SITE_ID, NAME, URL, ALLOW_USER_SET, REQUIRES_CERTIFICATE, CHALLENGE_RESPONSE_AUTH, FORM_AUTH, FORM_USER_FIELD, FORM_PWD_FIELD, REALM, DOMAIN_ID FROM SSO_SITE");
                 while (ssoSiteResultSet.next())
                 {
                     ssoSiteInsertStatement.setInt(1, ssoSiteResultSet.getInt(1));
@@ -137,9 +137,9 @@ public class JetspeedSSOSecurityMigration implements JetspeedMigration
         ssoSiteInsertStatement.close();
         
         // OJB_HL_SEQ
-        PreparedStatement ojbInsertStatement = targetConnection.prepareStatement("INSERT INTO OJB_HL_SEQ (TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement ojbInsertStatement = targetConnection.prepareStatement("INSERT INTO OJB_HL_SEQ (TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION) VALUES (?, ?, ?, ?, ?)");
         Statement ojbQueryStatement = sourceConnection.createStatement();
-        ResultSet ojbResultSet = ojbQueryStatement.executeQuery("SELECT TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION FROM OJB_HL_SEQ WHERE TABLENAME IN ('SEQ_SSO_SITE');");
+        ResultSet ojbResultSet = ojbQueryStatement.executeQuery("SELECT TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION FROM OJB_HL_SEQ WHERE TABLENAME IN ('SEQ_SSO_SITE')");
         while (ojbResultSet.next())
         {
             ojbInsertStatement.setString(1, ojbResultSet.getString(1));

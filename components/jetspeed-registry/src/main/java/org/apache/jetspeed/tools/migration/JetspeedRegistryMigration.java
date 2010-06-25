@@ -56,7 +56,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         try
         {
             Statement portletSupportsQueryStatement = sourceConnection.createStatement();
-            portletSupportsQueryStatement.executeQuery("SELECT SUPPORTS_ID FROM PORTLET_SUPPORTS WHERE SUPPORTS_ID = 0;");
+            portletSupportsQueryStatement.executeQuery("SELECT SUPPORTS_ID FROM PORTLET_SUPPORTS WHERE SUPPORTS_ID = 0");
             sourceRegistryVersion = JETSPEED_SCHEMA_VERSION_2_2_0;
         }
         catch (SQLException sqle)
@@ -74,7 +74,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         int rowsMigrated = 0;
         
         // PORTLET_DEFINITION
-        PreparedStatement portletDefinitionInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_DEFINITION (ID, NAME, CLASS_NAME, APPLICATION_ID, EXPIRATION_CACHE, RESOURCE_BUNDLE, PREFERENCE_VALIDATOR, SECURITY_REF, CACHE_SCOPE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement portletDefinitionInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_DEFINITION (ID, NAME, CLASS_NAME, APPLICATION_ID, EXPIRATION_CACHE, RESOURCE_BUNDLE, PREFERENCE_VALIDATOR, SECURITY_REF, CACHE_SCOPE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Statement portletDefinitionQueryStatement = sourceConnection.createStatement();
         portletDefinitionQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet portletDefinitionResultSet = null;
@@ -83,7 +83,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                portletDefinitionResultSet = portletDefinitionQueryStatement.executeQuery("SELECT ID, NAME, CLASS_NAME, APPLICATION_ID, EXPIRATION_CACHE, RESOURCE_BUNDLE, PREFERENCE_VALIDATOR, SECURITY_REF FROM PORTLET_DEFINITION;");
+                portletDefinitionResultSet = portletDefinitionQueryStatement.executeQuery("SELECT ID, NAME, CLASS_NAME, APPLICATION_ID, EXPIRATION_CACHE, RESOURCE_BUNDLE, PREFERENCE_VALIDATOR, SECURITY_REF FROM PORTLET_DEFINITION");
                 while (portletDefinitionResultSet.next())
                 {
                     portletDefinitionInsertStatement.setInt(1, portletDefinitionResultSet.getInt(1));
@@ -111,7 +111,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                portletDefinitionResultSet = portletDefinitionQueryStatement.executeQuery("SELECT ID, NAME, CLASS_NAME, APPLICATION_ID, EXPIRATION_CACHE, RESOURCE_BUNDLE, PREFERENCE_VALIDATOR, SECURITY_REF, CACHE_SCOPE FROM PORTLET_DEFINITION;");
+                portletDefinitionResultSet = portletDefinitionQueryStatement.executeQuery("SELECT ID, NAME, CLASS_NAME, APPLICATION_ID, EXPIRATION_CACHE, RESOURCE_BUNDLE, PREFERENCE_VALIDATOR, SECURITY_REF, CACHE_SCOPE FROM PORTLET_DEFINITION");
                 while (portletDefinitionResultSet.next())
                 {
                     portletDefinitionInsertStatement.setInt(1, portletDefinitionResultSet.getInt(1));
@@ -134,7 +134,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         portletDefinitionInsertStatement.close();
         
         // PORTLET_APPLICATION
-        PreparedStatement portletApplicationInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_APPLICATION (APPLICATION_ID, APP_NAME, CONTEXT_PATH, REVISION, VERSION, APP_TYPE, CHECKSUM, SECURITY_REF, DEFAULT_NAMESPACE, RESOURCE_BUNDLE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement portletApplicationInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_APPLICATION (APPLICATION_ID, APP_NAME, CONTEXT_PATH, REVISION, VERSION, APP_TYPE, CHECKSUM, SECURITY_REF, DEFAULT_NAMESPACE, RESOURCE_BUNDLE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Statement portletApplicationQueryStatement = sourceConnection.createStatement();
         portletApplicationQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet portletApplicationResultSet = null;
@@ -143,8 +143,8 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                portletApplicationResultSet = portletApplicationQueryStatement.executeQuery("SELECT APPLICATION_ID, APP_NAME, VERSION, APP_TYPE, CHECKSUM, SECURITY_REF, DESCRIPTION, WEB_APP_ID FROM PORTLET_APPLICATION;");
-                PreparedStatement webApplicationQueryStatement = sourceConnection.prepareStatement("SELECT CONTEXT_ROOT FROM WEB_APPLICATION WHERE ID = ?;");
+                portletApplicationResultSet = portletApplicationQueryStatement.executeQuery("SELECT APPLICATION_ID, APP_NAME, VERSION, APP_TYPE, CHECKSUM, SECURITY_REF, DESCRIPTION, WEB_APP_ID FROM PORTLET_APPLICATION");
+                PreparedStatement webApplicationQueryStatement = sourceConnection.prepareStatement("SELECT CONTEXT_ROOT FROM WEB_APPLICATION WHERE ID = ?");
                 while (portletApplicationResultSet.next())
                 {
                     String contextPath = null;
@@ -187,7 +187,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                portletApplicationResultSet = portletApplicationQueryStatement.executeQuery("SELECT APPLICATION_ID, APP_NAME, CONTEXT_PATH, REVISION, VERSION, APP_TYPE, CHECKSUM, SECURITY_REF, DEFAULT_NAMESPACE, RESOURCE_BUNDLE FROM PORTLET_APPLICATION;");
+                portletApplicationResultSet = portletApplicationQueryStatement.executeQuery("SELECT APPLICATION_ID, APP_NAME, CONTEXT_PATH, REVISION, VERSION, APP_TYPE, CHECKSUM, SECURITY_REF, DEFAULT_NAMESPACE, RESOURCE_BUNDLE FROM PORTLET_APPLICATION");
                 while (portletApplicationResultSet.next())
                 {
                     portletApplicationInsertStatement.setInt(1, portletApplicationResultSet.getInt(1));
@@ -211,10 +211,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         portletApplicationInsertStatement.close();
 
         // PA_METADATA_FIELDS
-        PreparedStatement portletApplicationMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO PA_METADATA_FIELDS (ID, OBJECT_ID, COLUMN_VALUE, NAME, LOCALE_STRING) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement portletApplicationMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO PA_METADATA_FIELDS (ID, OBJECT_ID, COLUMN_VALUE, NAME, LOCALE_STRING) VALUES (?, ?, ?, ?, ?)");
         Statement portletApplicationMetadataQueryStatement = sourceConnection.createStatement();
         portletApplicationMetadataQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet portletApplicationMetadataResultSet = portletApplicationMetadataQueryStatement.executeQuery("SELECT ID, OBJECT_ID, COLUMN_VALUE, NAME, LOCALE_STRING FROM PA_METADATA_FIELDS;");
+        ResultSet portletApplicationMetadataResultSet = portletApplicationMetadataQueryStatement.executeQuery("SELECT ID, OBJECT_ID, COLUMN_VALUE, NAME, LOCALE_STRING FROM PA_METADATA_FIELDS");
         while (portletApplicationMetadataResultSet.next())
         {
             portletApplicationMetadataInsertStatement.setInt(1, portletApplicationMetadataResultSet.getInt(1));
@@ -230,10 +230,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         portletApplicationMetadataInsertStatement.close();
 
         // PD_METADATA_FIELDS
-        PreparedStatement portletDefinitionMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO PD_METADATA_FIELDS (ID, OBJECT_ID, COLUMN_VALUE, NAME, LOCALE_STRING) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement portletDefinitionMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO PD_METADATA_FIELDS (ID, OBJECT_ID, COLUMN_VALUE, NAME, LOCALE_STRING) VALUES (?, ?, ?, ?, ?)");
         Statement portletDefinitionMetadataQueryStatement = sourceConnection.createStatement();
         portletDefinitionMetadataQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet portletDefinitionMetadataResultSet = portletDefinitionMetadataQueryStatement.executeQuery("SELECT ID, OBJECT_ID, COLUMN_VALUE, NAME, LOCALE_STRING FROM PD_METADATA_FIELDS;");
+        ResultSet portletDefinitionMetadataResultSet = portletDefinitionMetadataQueryStatement.executeQuery("SELECT ID, OBJECT_ID, COLUMN_VALUE, NAME, LOCALE_STRING FROM PD_METADATA_FIELDS");
         while (portletDefinitionMetadataResultSet.next())
         {
             portletDefinitionMetadataInsertStatement.setInt(1, portletDefinitionMetadataResultSet.getInt(1));
@@ -249,7 +249,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         portletDefinitionMetadataInsertStatement.close();
 
         // LANGUAGE
-        PreparedStatement languageInsertStatement = targetConnection.prepareStatement("INSERT INTO LANGUAGE (ID, PORTLET_ID, LOCALE_STRING, SUPPORTED_LOCALE, TITLE, SHORT_TITLE, KEYWORDS) VALUES (?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement languageInsertStatement = targetConnection.prepareStatement("INSERT INTO LANGUAGE (ID, PORTLET_ID, LOCALE_STRING, SUPPORTED_LOCALE, TITLE, SHORT_TITLE, KEYWORDS) VALUES (?, ?, ?, ?, ?, ?, ?)");
         Statement languageQueryStatement = sourceConnection.createStatement();
         languageQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet languageResultSet = null;
@@ -258,7 +258,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                languageResultSet = languageQueryStatement.executeQuery("SELECT ID, PORTLET_ID, LOCALE_STRING, TITLE, SHORT_TITLE, KEYWORDS FROM LANGUAGE;");
+                languageResultSet = languageQueryStatement.executeQuery("SELECT ID, PORTLET_ID, LOCALE_STRING, TITLE, SHORT_TITLE, KEYWORDS FROM LANGUAGE");
                 while (languageResultSet.next())
                 {
                     languageInsertStatement.setInt(1, languageResultSet.getInt(1));
@@ -276,7 +276,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                languageResultSet = languageQueryStatement.executeQuery("SELECT ID, PORTLET_ID, LOCALE_STRING, SUPPORTED_LOCALE, TITLE, SHORT_TITLE, KEYWORDS FROM LANGUAGE;");
+                languageResultSet = languageQueryStatement.executeQuery("SELECT ID, PORTLET_ID, LOCALE_STRING, SUPPORTED_LOCALE, TITLE, SHORT_TITLE, KEYWORDS FROM LANGUAGE");
                 while (languageResultSet.next())
                 {
                     languageInsertStatement.setInt(1, languageResultSet.getInt(1));
@@ -297,7 +297,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         languageInsertStatement.close();
 
         // PORTLET_SUPPORTS
-        PreparedStatement portletSupportsInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_SUPPORTS (SUPPORTS_ID, PORTLET_ID, MIME_TYPE, MODES, STATES) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement portletSupportsInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_SUPPORTS (SUPPORTS_ID, PORTLET_ID, MIME_TYPE, MODES, STATES) VALUES (?, ?, ?, ?, ?)");
         Statement portletSupportsQueryStatement = sourceConnection.createStatement();
         portletSupportsQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet portletSupportsResultSet = null;
@@ -306,7 +306,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                portletSupportsResultSet = portletSupportsQueryStatement.executeQuery("SELECT CONTENT_TYPE_ID, PORTLET_ID, CONTENT_TYPE, MODES FROM PORTLET_CONTENT_TYPE;");
+                portletSupportsResultSet = portletSupportsQueryStatement.executeQuery("SELECT CONTENT_TYPE_ID, PORTLET_ID, CONTENT_TYPE, MODES FROM PORTLET_CONTENT_TYPE");
                 while (portletSupportsResultSet.next())
                 {
                     portletSupportsInsertStatement.setInt(1, portletSupportsResultSet.getInt(1));
@@ -322,7 +322,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                portletSupportsResultSet = portletSupportsQueryStatement.executeQuery("SELECT SUPPORTS_ID, PORTLET_ID, MIME_TYPE, MODES, STATES FROM PORTLET_SUPPORTS;");
+                portletSupportsResultSet = portletSupportsQueryStatement.executeQuery("SELECT SUPPORTS_ID, PORTLET_ID, MIME_TYPE, MODES, STATES FROM PORTLET_SUPPORTS");
                 while (portletSupportsResultSet.next())
                 {
                     portletSupportsInsertStatement.setInt(1, portletSupportsResultSet.getInt(1));
@@ -341,7 +341,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         portletSupportsInsertStatement.close();
 
         // PARAMETER
-        PreparedStatement parameterInsertStatement = targetConnection.prepareStatement("INSERT INTO PARAMETER (PARAMETER_ID, OWNER_ID, OWNER_CLASS_NAME, NAME, PARAMETER_VALUE) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement parameterInsertStatement = targetConnection.prepareStatement("INSERT INTO PARAMETER (PARAMETER_ID, OWNER_ID, OWNER_CLASS_NAME, NAME, PARAMETER_VALUE) VALUES (?, ?, ?, ?, ?)");
         Statement parameterQueryStatement = sourceConnection.createStatement();
         parameterQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet parameterResultSet = null;
@@ -350,7 +350,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                parameterResultSet = parameterQueryStatement.executeQuery("SELECT PARAMETER_ID, PARENT_ID, CLASS_NAME, NAME, PARAMETER_VALUE FROM PARAMETER;");
+                parameterResultSet = parameterQueryStatement.executeQuery("SELECT PARAMETER_ID, PARENT_ID, CLASS_NAME, NAME, PARAMETER_VALUE FROM PARAMETER");
                 while (parameterResultSet.next())
                 {
                     parameterInsertStatement.setInt(1, parameterResultSet.getInt(1));
@@ -366,7 +366,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                parameterResultSet = parameterQueryStatement.executeQuery("SELECT PARAMETER_ID, OWNER_ID, OWNER_CLASS_NAME, NAME, PARAMETER_VALUE FROM PARAMETER;");
+                parameterResultSet = parameterQueryStatement.executeQuery("SELECT PARAMETER_ID, OWNER_ID, OWNER_CLASS_NAME, NAME, PARAMETER_VALUE FROM PARAMETER");
                 while (parameterResultSet.next())
                 {
                     parameterInsertStatement.setInt(1, parameterResultSet.getInt(1));
@@ -385,7 +385,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         parameterInsertStatement.close();
 
         // PORTLET_PREFERENCE
-        PreparedStatement portletPreferenceInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_PREFERENCE (ID, DTYPE, APPLICATION_NAME, PORTLET_NAME, ENTITY_ID, USER_NAME, NAME, READONLY) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement portletPreferenceInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_PREFERENCE (ID, DTYPE, APPLICATION_NAME, PORTLET_NAME, ENTITY_ID, USER_NAME, NAME, READONLY) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         Statement portletPreferenceQueryStatement = sourceConnection.createStatement();
         portletPreferenceQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet portletPreferenceResultSet = null;
@@ -394,9 +394,9 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                portletPreferenceResultSet = portletPreferenceQueryStatement.executeQuery("SELECT NODE_ID, NODE_TYPE, FULL_PATH FROM PREFS_NODE WHERE FULL_PATH LIKE '%/preferences/%';");
-                PreparedStatement portletEntityQueryStatement = sourceConnection.prepareStatement("SELECT APP_NAME, PORTLET_NAME FROM PORTLET_ENTITY WHERE ID = ?;");
-                PreparedStatement readOnlyQueryStatement = sourceConnection.prepareStatement("SELECT PROPERTY_VALUE FROM PREFS_PROPERTY_VALUE WHERE PROPERTY_NAME = 'read_only' AND NODE_ID = ?;");
+                portletPreferenceResultSet = portletPreferenceQueryStatement.executeQuery("SELECT NODE_ID, NODE_TYPE, FULL_PATH FROM PREFS_NODE WHERE FULL_PATH LIKE '%/preferences/%'");
+                PreparedStatement portletEntityQueryStatement = sourceConnection.prepareStatement("SELECT APP_NAME, PORTLET_NAME FROM PORTLET_ENTITY WHERE ID = ?");
+                PreparedStatement readOnlyQueryStatement = sourceConnection.prepareStatement("SELECT PROPERTY_VALUE FROM PREFS_PROPERTY_VALUE WHERE PROPERTY_NAME = 'read_only' AND NODE_ID = ?");
                 while (portletPreferenceResultSet.next())
                 {
                     int nodeId = portletPreferenceResultSet.getInt(1);
@@ -483,7 +483,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                portletPreferenceResultSet = portletPreferenceQueryStatement.executeQuery("SELECT ID, DTYPE, APPLICATION_NAME, PORTLET_NAME, ENTITY_ID, USER_NAME, NAME, READONLY FROM PORTLET_PREFERENCE;");
+                portletPreferenceResultSet = portletPreferenceQueryStatement.executeQuery("SELECT ID, DTYPE, APPLICATION_NAME, PORTLET_NAME, ENTITY_ID, USER_NAME, NAME, READONLY FROM PORTLET_PREFERENCE");
                 while (portletPreferenceResultSet.next())
                 {
                     portletPreferenceInsertStatement.setInt(1, portletPreferenceResultSet.getInt(1));
@@ -505,7 +505,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         portletPreferenceInsertStatement.close();
 
         // PORTLET_PREFERENCE_VALUE
-        PreparedStatement portletPreferenceValueInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_PREFERENCE_VALUE (ID, PREF_ID, IDX, PREF_VALUE) VALUES (?, ?, ?, ?);");
+        PreparedStatement portletPreferenceValueInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_PREFERENCE_VALUE (ID, PREF_ID, IDX, PREF_VALUE) VALUES (?, ?, ?, ?)");
         Statement portletPreferenceValueQueryStatement = sourceConnection.createStatement();
         portletPreferenceValueQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet portletPreferenceValueResultSet = null;
@@ -514,7 +514,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                portletPreferenceValueResultSet = portletPreferenceValueQueryStatement.executeQuery("SELECT V.PROPERTY_VALUE_ID, N.NODE_ID, V.PROPERTY_NAME, V.PROPERTY_VALUE FROM PREFS_PROPERTY_VALUE V, PREFS_NODE N, PREFS_NODE NV WHERE NV.NODE_ID = V.NODE_ID AND NV.FULL_PATH LIKE '%/values' AND N.NODE_ID = NV.PARENT_NODE_ID;");
+                portletPreferenceValueResultSet = portletPreferenceValueQueryStatement.executeQuery("SELECT V.PROPERTY_VALUE_ID, N.NODE_ID, V.PROPERTY_NAME, V.PROPERTY_VALUE FROM PREFS_PROPERTY_VALUE V, PREFS_NODE N, PREFS_NODE NV WHERE NV.NODE_ID = V.NODE_ID AND NV.FULL_PATH LIKE '%/values' AND N.NODE_ID = NV.PARENT_NODE_ID");
                 while (portletPreferenceValueResultSet.next())
                 {
                     portletPreferenceValueInsertStatement.setInt(1, portletPreferenceValueResultSet.getInt(1));
@@ -529,7 +529,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                portletPreferenceValueResultSet = portletPreferenceValueQueryStatement.executeQuery("SELECT ID, PREF_ID, IDX, PREF_VALUE FROM PORTLET_PREFERENCE_VALUE;");
+                portletPreferenceValueResultSet = portletPreferenceValueQueryStatement.executeQuery("SELECT ID, PREF_ID, IDX, PREF_VALUE FROM PORTLET_PREFERENCE_VALUE");
                 while (portletPreferenceValueResultSet.next())
                 {
                     portletPreferenceValueInsertStatement.setInt(1, portletPreferenceValueResultSet.getInt(1));
@@ -547,10 +547,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         portletPreferenceValueInsertStatement.close();
 
         // SECURITY_ROLE_REFERENCE
-        PreparedStatement securityRoleReferenceInsertStatement = targetConnection.prepareStatement("INSERT INTO SECURITY_ROLE_REFERENCE (ID, PORTLET_DEFINITION_ID, ROLE_NAME, ROLE_LINK) VALUES (?, ?, ?, ?);");
+        PreparedStatement securityRoleReferenceInsertStatement = targetConnection.prepareStatement("INSERT INTO SECURITY_ROLE_REFERENCE (ID, PORTLET_DEFINITION_ID, ROLE_NAME, ROLE_LINK) VALUES (?, ?, ?, ?)");
         Statement securityRoleReferenceQueryStatement = sourceConnection.createStatement();
         securityRoleReferenceQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet securityRoleReferenceResultSet = securityRoleReferenceQueryStatement.executeQuery("SELECT ID, PORTLET_DEFINITION_ID, ROLE_NAME, ROLE_LINK FROM SECURITY_ROLE_REFERENCE;");
+        ResultSet securityRoleReferenceResultSet = securityRoleReferenceQueryStatement.executeQuery("SELECT ID, PORTLET_DEFINITION_ID, ROLE_NAME, ROLE_LINK FROM SECURITY_ROLE_REFERENCE");
         while (securityRoleReferenceResultSet.next())
         {
             securityRoleReferenceInsertStatement.setInt(1, securityRoleReferenceResultSet.getInt(1));
@@ -565,7 +565,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         securityRoleReferenceInsertStatement.close();
 
         // SECURITY_ROLE
-        PreparedStatement securityRoleInsertStatement = targetConnection.prepareStatement("INSERT INTO SECURITY_ROLE (ID, APPLICATION_ID, NAME) VALUES (?, ?, ?);");
+        PreparedStatement securityRoleInsertStatement = targetConnection.prepareStatement("INSERT INTO SECURITY_ROLE (ID, APPLICATION_ID, NAME) VALUES (?, ?, ?)");
         Statement securityRoleQueryStatement = sourceConnection.createStatement();
         securityRoleQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet securityRoleResultSet = null;
@@ -574,9 +574,9 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                securityRoleResultSet = securityRoleQueryStatement.executeQuery("SELECT ID, WEB_APPLICATION_ID, ROLE_NAME, DESCRIPTION FROM SECURITY_ROLE;");
-                PreparedStatement webApplicationQueryStatement = sourceConnection.prepareStatement("SELECT CONTEXT_ROOT FROM WEB_APPLICATION WHERE ID = ?;");
-                PreparedStatement applicationQueryStatement = targetConnection.prepareStatement("SELECT APPLICATION_ID FROM PORTLET_APPLICATION WHERE CONTEXT_PATH = ?;");
+                securityRoleResultSet = securityRoleQueryStatement.executeQuery("SELECT ID, WEB_APPLICATION_ID, ROLE_NAME, DESCRIPTION FROM SECURITY_ROLE");
+                PreparedStatement webApplicationQueryStatement = sourceConnection.prepareStatement("SELECT CONTEXT_ROOT FROM WEB_APPLICATION WHERE ID = ?");
+                PreparedStatement applicationQueryStatement = targetConnection.prepareStatement("SELECT APPLICATION_ID FROM PORTLET_APPLICATION WHERE CONTEXT_PATH = ?");
                 while (securityRoleResultSet.next())
                 {
                     String contextPath = null;
@@ -626,7 +626,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                securityRoleResultSet = securityRoleQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, NAME FROM SECURITY_ROLE;");
+                securityRoleResultSet = securityRoleQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, NAME FROM SECURITY_ROLE");
                 while (securityRoleResultSet.next())
                 {
                     securityRoleInsertStatement.setInt(1, securityRoleResultSet.getInt(1));
@@ -643,10 +643,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         securityRoleInsertStatement.close();
 
         // USER_ATTRIBUTE_REF
-        PreparedStatement userAttributeRefInsertStatement = targetConnection.prepareStatement("INSERT INTO USER_ATTRIBUTE_REF (ID, APPLICATION_ID, NAME, NAME_LINK) VALUES (?, ?, ?, ?);");
+        PreparedStatement userAttributeRefInsertStatement = targetConnection.prepareStatement("INSERT INTO USER_ATTRIBUTE_REF (ID, APPLICATION_ID, NAME, NAME_LINK) VALUES (?, ?, ?, ?)");
         Statement userAttributeRefQueryStatement = sourceConnection.createStatement();
         userAttributeRefQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet userAttributeRefResultSet = userAttributeRefQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, NAME, NAME_LINK FROM USER_ATTRIBUTE_REF;");
+        ResultSet userAttributeRefResultSet = userAttributeRefQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, NAME, NAME_LINK FROM USER_ATTRIBUTE_REF");
         while (userAttributeRefResultSet.next())
         {
             userAttributeRefInsertStatement.setInt(1, userAttributeRefResultSet.getInt(1));
@@ -661,7 +661,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         userAttributeRefInsertStatement.close();
 
         // USER_ATTRIBUTE
-        PreparedStatement userAttributeInsertStatement = targetConnection.prepareStatement("INSERT INTO USER_ATTRIBUTE (ID, APPLICATION_ID, NAME) VALUES (?, ?, ?);");
+        PreparedStatement userAttributeInsertStatement = targetConnection.prepareStatement("INSERT INTO USER_ATTRIBUTE (ID, APPLICATION_ID, NAME) VALUES (?, ?, ?)");
         Statement userAttributeQueryStatement = sourceConnection.createStatement();
         userAttributeQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet userAttributeResultSet = null;
@@ -670,7 +670,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                userAttributeResultSet = userAttributeQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, NAME, DESCRIPTION FROM USER_ATTRIBUTE;");
+                userAttributeResultSet = userAttributeQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, NAME, DESCRIPTION FROM USER_ATTRIBUTE");
                 while (userAttributeResultSet.next())
                 {
                     userAttributeInsertStatement.setInt(1, userAttributeResultSet.getInt(1));
@@ -691,7 +691,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                userAttributeResultSet = userAttributeQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, NAME FROM USER_ATTRIBUTE;");
+                userAttributeResultSet = userAttributeQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, NAME FROM USER_ATTRIBUTE");
                 while (userAttributeResultSet.next())
                 {
                     userAttributeInsertStatement.setInt(1, userAttributeResultSet.getInt(1));
@@ -708,10 +708,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         userAttributeInsertStatement.close();
 
         // JETSPEED_SERVICE
-        PreparedStatement jetspeedServiceInsertStatement = targetConnection.prepareStatement("INSERT INTO JETSPEED_SERVICE (ID, APPLICATION_ID, NAME) VALUES (?, ?, ?);");
+        PreparedStatement jetspeedServiceInsertStatement = targetConnection.prepareStatement("INSERT INTO JETSPEED_SERVICE (ID, APPLICATION_ID, NAME) VALUES (?, ?, ?)");
         Statement jetspeedServiceQueryStatement = sourceConnection.createStatement();
         jetspeedServiceQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet jetspeedServiceResultSet = jetspeedServiceQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, NAME FROM JETSPEED_SERVICE;");
+        ResultSet jetspeedServiceResultSet = jetspeedServiceQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, NAME FROM JETSPEED_SERVICE");
         while (jetspeedServiceResultSet.next())
         {
             jetspeedServiceInsertStatement.setInt(1, jetspeedServiceResultSet.getInt(1));
@@ -725,7 +725,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         jetspeedServiceInsertStatement.close();
 
         // CUSTOM_PORTLET_MODE
-        PreparedStatement customPortletModeInsertStatement = targetConnection.prepareStatement("INSERT INTO CUSTOM_PORTLET_MODE (ID, APPLICATION_ID, CUSTOM_NAME, MAPPED_NAME, PORTAL_MANAGED) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement customPortletModeInsertStatement = targetConnection.prepareStatement("INSERT INTO CUSTOM_PORTLET_MODE (ID, APPLICATION_ID, CUSTOM_NAME, MAPPED_NAME, PORTAL_MANAGED) VALUES (?, ?, ?, ?, ?)");
         Statement customPortletModeQueryStatement = sourceConnection.createStatement();
         customPortletModeQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet customPortletModeResultSet = null;
@@ -734,7 +734,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                customPortletModeResultSet = customPortletModeQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, CUSTOM_NAME, MAPPED_NAME, DESCRIPTION FROM CUSTOM_PORTLET_MODE;");
+                customPortletModeResultSet = customPortletModeQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, CUSTOM_NAME, MAPPED_NAME, DESCRIPTION FROM CUSTOM_PORTLET_MODE");
                 while (customPortletModeResultSet.next())
                 {
                     customPortletModeInsertStatement.setInt(1, customPortletModeResultSet.getInt(1));
@@ -757,7 +757,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                customPortletModeResultSet = customPortletModeQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, CUSTOM_NAME, MAPPED_NAME, PORTAL_MANAGED FROM CUSTOM_PORTLET_MODE;");
+                customPortletModeResultSet = customPortletModeQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, CUSTOM_NAME, MAPPED_NAME, PORTAL_MANAGED FROM CUSTOM_PORTLET_MODE");
                 while (customPortletModeResultSet.next())
                 {
                     customPortletModeInsertStatement.setInt(1, customPortletModeResultSet.getInt(1));
@@ -776,7 +776,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         customPortletModeInsertStatement.close();
 
         // CUSTOM_WINDOW_STATE
-        PreparedStatement customWindowStateInsertStatement = targetConnection.prepareStatement("INSERT INTO CUSTOM_WINDOW_STATE (ID, APPLICATION_ID, CUSTOM_NAME, MAPPED_NAME) VALUES (?, ?, ?, ?);");
+        PreparedStatement customWindowStateInsertStatement = targetConnection.prepareStatement("INSERT INTO CUSTOM_WINDOW_STATE (ID, APPLICATION_ID, CUSTOM_NAME, MAPPED_NAME) VALUES (?, ?, ?, ?)");
         Statement customWindowStateQueryStatement = sourceConnection.createStatement();
         customWindowStateQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet customWindowStateResultSet = null;
@@ -785,7 +785,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                customWindowStateResultSet = customWindowStateQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, CUSTOM_NAME, MAPPED_NAME, DESCRIPTION FROM CUSTOM_WINDOW_STATE;");
+                customWindowStateResultSet = customWindowStateQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, CUSTOM_NAME, MAPPED_NAME, DESCRIPTION FROM CUSTOM_WINDOW_STATE");
                 while (customWindowStateResultSet.next())
                 {
                     customWindowStateInsertStatement.setInt(1, customWindowStateResultSet.getInt(1));
@@ -807,7 +807,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                customWindowStateResultSet = customWindowStateQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, CUSTOM_NAME, MAPPED_NAME FROM CUSTOM_WINDOW_STATE;");
+                customWindowStateResultSet = customWindowStateQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, CUSTOM_NAME, MAPPED_NAME FROM CUSTOM_WINDOW_STATE");
                 while (customWindowStateResultSet.next())
                 {
                     customWindowStateInsertStatement.setInt(1, customWindowStateResultSet.getInt(1));
@@ -826,7 +826,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
 
         // LOCALIZED_DESCRIPTION
         int maxLocalizedDescriptionId = 0;
-        PreparedStatement localizedDescriptionInsertStatement = targetConnection.prepareStatement("INSERT INTO LOCALIZED_DESCRIPTION (ID, OWNER_ID, OWNER_CLASS_NAME, DESCRIPTION, LOCALE_STRING) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement localizedDescriptionInsertStatement = targetConnection.prepareStatement("INSERT INTO LOCALIZED_DESCRIPTION (ID, OWNER_ID, OWNER_CLASS_NAME, DESCRIPTION, LOCALE_STRING) VALUES (?, ?, ?, ?, ?)");
         Statement localizedDescriptionQueryStatement = sourceConnection.createStatement();
         localizedDescriptionQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet localizedDescriptionResultSet = null;
@@ -835,7 +835,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                localizedDescriptionResultSet = localizedDescriptionQueryStatement.executeQuery("SELECT ID, OBJECT_ID, CLASS_NAME, DESCRIPTION, LOCALE_STRING FROM LOCALIZED_DESCRIPTION;");
+                localizedDescriptionResultSet = localizedDescriptionQueryStatement.executeQuery("SELECT ID, OBJECT_ID, CLASS_NAME, DESCRIPTION, LOCALE_STRING FROM LOCALIZED_DESCRIPTION");
                 while (localizedDescriptionResultSet.next())
                 {
                     String className = localizedDescriptionResultSet.getString(3);
@@ -883,7 +883,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                localizedDescriptionResultSet = localizedDescriptionQueryStatement.executeQuery("SELECT ID, OWNER_ID, OWNER_CLASS_NAME, DESCRIPTION, LOCALE_STRING FROM LOCALIZED_DESCRIPTION;");
+                localizedDescriptionResultSet = localizedDescriptionQueryStatement.executeQuery("SELECT ID, OWNER_ID, OWNER_CLASS_NAME, DESCRIPTION, LOCALE_STRING FROM LOCALIZED_DESCRIPTION");
                 while (localizedDescriptionResultSet.next())
                 {
                     localizedDescriptionInsertStatement.setInt(1, localizedDescriptionResultSet.getInt(1));
@@ -902,7 +902,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         localizedDescriptionInsertStatement.close();
         
         // LOCALIZED_DISPLAY_NAME
-        PreparedStatement localizedDisplayNameInsertStatement = targetConnection.prepareStatement("INSERT INTO LOCALIZED_DISPLAY_NAME (ID, OWNER_ID, OWNER_CLASS_NAME, DISPLAY_NAME, LOCALE_STRING) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement localizedDisplayNameInsertStatement = targetConnection.prepareStatement("INSERT INTO LOCALIZED_DISPLAY_NAME (ID, OWNER_ID, OWNER_CLASS_NAME, DISPLAY_NAME, LOCALE_STRING) VALUES (?, ?, ?, ?, ?)");
         Statement localizedDisplayNameQueryStatement = sourceConnection.createStatement();
         localizedDisplayNameQueryStatement.setFetchSize(FETCH_SIZE);
         ResultSet localizedDisplayNameResultSet = null;
@@ -911,7 +911,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                localizedDisplayNameResultSet = localizedDisplayNameQueryStatement.executeQuery("SELECT ID, OBJECT_ID, CLASS_NAME, DISPLAY_NAME, LOCALE_STRING FROM LOCALIZED_DISPLAY_NAME;");
+                localizedDisplayNameResultSet = localizedDisplayNameQueryStatement.executeQuery("SELECT ID, OBJECT_ID, CLASS_NAME, DISPLAY_NAME, LOCALE_STRING FROM LOCALIZED_DISPLAY_NAME");
                 while (localizedDisplayNameResultSet.next())
                 {
                     String className = localizedDisplayNameResultSet.getString(3);
@@ -936,7 +936,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                localizedDisplayNameResultSet = localizedDisplayNameQueryStatement.executeQuery("SELECT ID, OWNER_ID, OWNER_CLASS_NAME, DISPLAY_NAME, LOCALE_STRING FROM LOCALIZED_DISPLAY_NAME;");
+                localizedDisplayNameResultSet = localizedDisplayNameQueryStatement.executeQuery("SELECT ID, OWNER_ID, OWNER_CLASS_NAME, DISPLAY_NAME, LOCALE_STRING FROM LOCALIZED_DISPLAY_NAME");
                 while (localizedDisplayNameResultSet.next())
                 {
                     localizedDisplayNameInsertStatement.setInt(1, localizedDisplayNameResultSet.getInt(1));
@@ -960,10 +960,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
                 // EVENT_DEFINITION
-                PreparedStatement eventDefinitionInsertStatement = targetConnection.prepareStatement("INSERT INTO EVENT_DEFINITION (ID, APPLICATION_ID, LOCAL_PART, NAMESPACE, PREFIX, VALUE_TYPE) VALUES (?, ?, ?, ?, ?, ?);");
+                PreparedStatement eventDefinitionInsertStatement = targetConnection.prepareStatement("INSERT INTO EVENT_DEFINITION (ID, APPLICATION_ID, LOCAL_PART, NAMESPACE, PREFIX, VALUE_TYPE) VALUES (?, ?, ?, ?, ?, ?)");
                 Statement eventDefinitionQueryStatement = sourceConnection.createStatement();
                 eventDefinitionQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet eventDefinitionResultSet = eventDefinitionQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, LOCAL_PART, NAMESPACE, PREFIX, VALUE_TYPE FROM EVENT_DEFINITION;");
+                ResultSet eventDefinitionResultSet = eventDefinitionQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, LOCAL_PART, NAMESPACE, PREFIX, VALUE_TYPE FROM EVENT_DEFINITION");
                 while (eventDefinitionResultSet.next())
                 {
                     eventDefinitionInsertStatement.setInt(1, eventDefinitionResultSet.getInt(1));
@@ -980,10 +980,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 eventDefinitionInsertStatement.close();
 
                 // EVENT_ALIAS
-                PreparedStatement eventAliasInsertStatement = targetConnection.prepareStatement("INSERT INTO EVENT_ALIAS (ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX) VALUES (?, ?, ?, ?, ?);");
+                PreparedStatement eventAliasInsertStatement = targetConnection.prepareStatement("INSERT INTO EVENT_ALIAS (ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX) VALUES (?, ?, ?, ?, ?)");
                 Statement eventAliasQueryStatement = sourceConnection.createStatement();
                 eventAliasQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet eventAliasResultSet = eventAliasQueryStatement.executeQuery("SELECT ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX FROM EVENT_ALIAS;");
+                ResultSet eventAliasResultSet = eventAliasQueryStatement.executeQuery("SELECT ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX FROM EVENT_ALIAS");
                 while (eventAliasResultSet.next())
                 {
                     eventAliasInsertStatement.setInt(1, eventAliasResultSet.getInt(1));
@@ -999,10 +999,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 eventAliasInsertStatement.close();
 
                 // PARAMETER_ALIAS
-                PreparedStatement parameterAliasInsertStatement = targetConnection.prepareStatement("INSERT INTO PARAMETER_ALIAS (ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX) VALUES (?, ?, ?, ?, ?);");
+                PreparedStatement parameterAliasInsertStatement = targetConnection.prepareStatement("INSERT INTO PARAMETER_ALIAS (ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX) VALUES (?, ?, ?, ?, ?)");
                 Statement parameterAliasQueryStatement = sourceConnection.createStatement();
                 parameterAliasQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet parameterAliasResultSet = parameterAliasQueryStatement.executeQuery("SELECT ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX FROM PARAMETER_ALIAS;");
+                ResultSet parameterAliasResultSet = parameterAliasQueryStatement.executeQuery("SELECT ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX FROM PARAMETER_ALIAS");
                 while (parameterAliasResultSet.next())
                 {
                     parameterAliasInsertStatement.setInt(1, parameterAliasResultSet.getInt(1));
@@ -1018,10 +1018,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 parameterAliasInsertStatement.close();
 
                 // PUBLISHING_EVENT
-                PreparedStatement publishingEventInsertStatement = targetConnection.prepareStatement("INSERT INTO PUBLISHING_EVENT (ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX) VALUES (?, ?, ?, ?, ?);");
+                PreparedStatement publishingEventInsertStatement = targetConnection.prepareStatement("INSERT INTO PUBLISHING_EVENT (ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX) VALUES (?, ?, ?, ?, ?)");
                 Statement publishingEventQueryStatement = sourceConnection.createStatement();
                 publishingEventQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet publishingEventResultSet = publishingEventQueryStatement.executeQuery("SELECT ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX FROM PUBLISHING_EVENT;");
+                ResultSet publishingEventResultSet = publishingEventQueryStatement.executeQuery("SELECT ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX FROM PUBLISHING_EVENT");
                 while (publishingEventResultSet.next())
                 {
                     publishingEventInsertStatement.setInt(1, publishingEventResultSet.getInt(1));
@@ -1037,10 +1037,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 publishingEventInsertStatement.close();
 
                 // PROCESSING_EVENT
-                PreparedStatement processingEventInsertStatement = targetConnection.prepareStatement("INSERT INTO PROCESSING_EVENT (ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX) VALUES (?, ?, ?, ?, ?);");
+                PreparedStatement processingEventInsertStatement = targetConnection.prepareStatement("INSERT INTO PROCESSING_EVENT (ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX) VALUES (?, ?, ?, ?, ?)");
                 Statement processingEventQueryStatement = sourceConnection.createStatement();
                 processingEventQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet processingEventResultSet = processingEventQueryStatement.executeQuery("SELECT ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX FROM PROCESSING_EVENT;");
+                ResultSet processingEventResultSet = processingEventQueryStatement.executeQuery("SELECT ID, OWNER_ID, LOCAL_PART, NAMESPACE, PREFIX FROM PROCESSING_EVENT");
                 while (processingEventResultSet.next())
                 {
                     processingEventInsertStatement.setInt(1, processingEventResultSet.getInt(1));
@@ -1056,10 +1056,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 processingEventInsertStatement.close();
 
                 // NAMED_PARAMETER
-                PreparedStatement namedParameterInsertStatement = targetConnection.prepareStatement("INSERT INTO NAMED_PARAMETER (ID, OWNER_ID, NAME) VALUES (?, ?, ?);");
+                PreparedStatement namedParameterInsertStatement = targetConnection.prepareStatement("INSERT INTO NAMED_PARAMETER (ID, OWNER_ID, NAME) VALUES (?, ?, ?)");
                 Statement namedParameterQueryStatement = sourceConnection.createStatement();
                 namedParameterQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet namedParameterResultSet = namedParameterQueryStatement.executeQuery("SELECT ID, OWNER_ID, NAME FROM NAMED_PARAMETER;");
+                ResultSet namedParameterResultSet = namedParameterQueryStatement.executeQuery("SELECT ID, OWNER_ID, NAME FROM NAMED_PARAMETER");
                 while (namedParameterResultSet.next())
                 {
                     namedParameterInsertStatement.setInt(1, namedParameterResultSet.getInt(1));
@@ -1073,10 +1073,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 namedParameterInsertStatement.close();
                 
                 // RUNTIME_OPTION
-                PreparedStatement runtimeOptionInsertStatement = targetConnection.prepareStatement("INSERT INTO RUNTIME_OPTION (ID, OWNER_ID, OWNER_CLASS_NAME, NAME) VALUES (?, ?, ?, ?);");
+                PreparedStatement runtimeOptionInsertStatement = targetConnection.prepareStatement("INSERT INTO RUNTIME_OPTION (ID, OWNER_ID, OWNER_CLASS_NAME, NAME) VALUES (?, ?, ?, ?)");
                 Statement runtimeOptionQueryStatement = sourceConnection.createStatement();
                 runtimeOptionQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet runtimeOptionResultSet = runtimeOptionQueryStatement.executeQuery("SELECT ID, OWNER_ID, OWNER_CLASS_NAME, NAME FROM RUNTIME_OPTION;");
+                ResultSet runtimeOptionResultSet = runtimeOptionQueryStatement.executeQuery("SELECT ID, OWNER_ID, OWNER_CLASS_NAME, NAME FROM RUNTIME_OPTION");
                 while (runtimeOptionResultSet.next())
                 {
                     runtimeOptionInsertStatement.setInt(1, runtimeOptionResultSet.getInt(1));
@@ -1091,10 +1091,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 runtimeOptionInsertStatement.close();
                 
                 // RUNTIME_VALUE
-                PreparedStatement runtimeValueInsertStatement = targetConnection.prepareStatement("INSERT INTO RUNTIME_VALUE (ID, OWNER_ID, RVALUE) VALUES (?, ?, ?);");
+                PreparedStatement runtimeValueInsertStatement = targetConnection.prepareStatement("INSERT INTO RUNTIME_VALUE (ID, OWNER_ID, RVALUE) VALUES (?, ?, ?)");
                 Statement runtimeValueQueryStatement = sourceConnection.createStatement();
                 runtimeValueQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet runtimeValueResultSet = runtimeValueQueryStatement.executeQuery("SELECT ID, OWNER_ID, RVALUE FROM RUNTIME_VALUE;");
+                ResultSet runtimeValueResultSet = runtimeValueQueryStatement.executeQuery("SELECT ID, OWNER_ID, RVALUE FROM RUNTIME_VALUE");
                 while (runtimeValueResultSet.next())
                 {
                     runtimeValueInsertStatement.setInt(1, runtimeValueResultSet.getInt(1));
@@ -1108,10 +1108,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 runtimeValueInsertStatement.close();
 
                 // PUBLIC_PARAMETER
-                PreparedStatement publicParameterInsertStatement = targetConnection.prepareStatement("INSERT INTO PUBLIC_PARAMETER (ID, APPLICATION_ID, LOCAL_PART, NAMESPACE, PREFIX, IDENTIFIER) VALUES (?, ?, ?, ?, ?, ?);");
+                PreparedStatement publicParameterInsertStatement = targetConnection.prepareStatement("INSERT INTO PUBLIC_PARAMETER (ID, APPLICATION_ID, LOCAL_PART, NAMESPACE, PREFIX, IDENTIFIER) VALUES (?, ?, ?, ?, ?, ?)");
                 Statement publicParameterQueryStatement = sourceConnection.createStatement();
                 publicParameterQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet publicParameterResultSet = publicParameterQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, LOCAL_PART, NAMESPACE, PREFIX, IDENTIFIER FROM PUBLIC_PARAMETER;");
+                ResultSet publicParameterResultSet = publicParameterQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, LOCAL_PART, NAMESPACE, PREFIX, IDENTIFIER FROM PUBLIC_PARAMETER");
                 while (publicParameterResultSet.next())
                 {
                     publicParameterInsertStatement.setInt(1, publicParameterResultSet.getInt(1));
@@ -1128,10 +1128,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 publicParameterInsertStatement.close();
 
                 // PORTLET_FILTER
-                PreparedStatement portletFilterInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_FILTER (ID, APPLICATION_ID, FILTER_NAME, FILTER_CLASS) VALUES (?, ?, ?, ?);");
+                PreparedStatement portletFilterInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_FILTER (ID, APPLICATION_ID, FILTER_NAME, FILTER_CLASS) VALUES (?, ?, ?, ?)");
                 Statement portletFilterQueryStatement = sourceConnection.createStatement();
                 portletFilterQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet portletFilterResultSet = portletFilterQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, FILTER_NAME, FILTER_CLASS FROM PORTLET_FILTER;");
+                ResultSet portletFilterResultSet = portletFilterQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, FILTER_NAME, FILTER_CLASS FROM PORTLET_FILTER");
                 while (portletFilterResultSet.next())
                 {
                     portletFilterInsertStatement.setInt(1, portletFilterResultSet.getInt(1));
@@ -1146,10 +1146,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 portletFilterInsertStatement.close();
 
                 // FILTER_LIFECYCLE
-                PreparedStatement filterLifecycleInsertStatement = targetConnection.prepareStatement("INSERT INTO FILTER_LIFECYCLE (ID, OWNER_ID, NAME) VALUES (?, ?, ?);");
+                PreparedStatement filterLifecycleInsertStatement = targetConnection.prepareStatement("INSERT INTO FILTER_LIFECYCLE (ID, OWNER_ID, NAME) VALUES (?, ?, ?)");
                 Statement filterLifecycleQueryStatement = sourceConnection.createStatement();
                 filterLifecycleQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet filterLifecycleResultSet = filterLifecycleQueryStatement.executeQuery("SELECT ID, OWNER_ID, NAME FROM FILTER_LIFECYCLE;");
+                ResultSet filterLifecycleResultSet = filterLifecycleQueryStatement.executeQuery("SELECT ID, OWNER_ID, NAME FROM FILTER_LIFECYCLE");
                 while (filterLifecycleResultSet.next())
                 {
                     filterLifecycleInsertStatement.setInt(1, filterLifecycleResultSet.getInt(1));
@@ -1163,10 +1163,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 filterLifecycleInsertStatement.close();
 
                 // FILTER_MAPPING
-                PreparedStatement filterMappingInsertStatement = targetConnection.prepareStatement("INSERT INTO FILTER_MAPPING (ID, APPLICATION_ID, FILTER_NAME) VALUES (?, ?, ?);");
+                PreparedStatement filterMappingInsertStatement = targetConnection.prepareStatement("INSERT INTO FILTER_MAPPING (ID, APPLICATION_ID, FILTER_NAME) VALUES (?, ?, ?)");
                 Statement filterMappingQueryStatement = sourceConnection.createStatement();
                 filterMappingQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet filterMappingResultSet = filterMappingQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, FILTER_NAME FROM FILTER_MAPPING;");
+                ResultSet filterMappingResultSet = filterMappingQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, FILTER_NAME FROM FILTER_MAPPING");
                 while (filterMappingResultSet.next())
                 {
                     filterMappingInsertStatement.setInt(1, filterMappingResultSet.getInt(1));
@@ -1180,10 +1180,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 filterMappingInsertStatement.close();
 
                 // FILTERED_PORTLET
-                PreparedStatement filteredPortletInsertStatement = targetConnection.prepareStatement("INSERT INTO FILTERED_PORTLET (ID, OWNER_ID, NAME) VALUES (?, ?, ?);");
+                PreparedStatement filteredPortletInsertStatement = targetConnection.prepareStatement("INSERT INTO FILTERED_PORTLET (ID, OWNER_ID, NAME) VALUES (?, ?, ?)");
                 Statement filteredPortletQueryStatement = sourceConnection.createStatement();
                 filteredPortletQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet filteredPortletResultSet = filteredPortletQueryStatement.executeQuery("SELECT ID, OWNER_ID, NAME FROM FILTERED_PORTLET;");
+                ResultSet filteredPortletResultSet = filteredPortletQueryStatement.executeQuery("SELECT ID, OWNER_ID, NAME FROM FILTERED_PORTLET");
                 while (filteredPortletResultSet.next())
                 {
                     filteredPortletInsertStatement.setInt(1, filteredPortletResultSet.getInt(1));
@@ -1197,10 +1197,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 filteredPortletInsertStatement.close();
 
                 // PORTLET_LISTENER
-                PreparedStatement portletListenerInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_LISTENER (ID, APPLICATION_ID, LISTENER_CLASS) VALUES (?, ?, ?);");
+                PreparedStatement portletListenerInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_LISTENER (ID, APPLICATION_ID, LISTENER_CLASS) VALUES (?, ?, ?)");
                 Statement portletListenerQueryStatement = sourceConnection.createStatement();
                 portletListenerQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet portletListenerResultSet = portletListenerQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, LISTENER_CLASS FROM PORTLET_LISTENER;");
+                ResultSet portletListenerResultSet = portletListenerQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, LISTENER_CLASS FROM PORTLET_LISTENER");
                 while (portletListenerResultSet.next())
                 {
                     portletListenerInsertStatement.setInt(1, portletListenerResultSet.getInt(1));
@@ -1214,10 +1214,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 portletListenerInsertStatement.close();
 
                 // PA_SECURITY_CONSTRAINT
-                PreparedStatement portletApplicationSecurityConstraintInsertStatement = targetConnection.prepareStatement("INSERT INTO PA_SECURITY_CONSTRAINT (ID, APPLICATION_ID, TRANSPORT) VALUES (?, ?, ?);");
+                PreparedStatement portletApplicationSecurityConstraintInsertStatement = targetConnection.prepareStatement("INSERT INTO PA_SECURITY_CONSTRAINT (ID, APPLICATION_ID, TRANSPORT) VALUES (?, ?, ?)");
                 Statement portletApplicationSecurityConstraintQueryStatement = sourceConnection.createStatement();
                 portletApplicationSecurityConstraintQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet portletApplicationSecurityConstraintResultSet = portletApplicationSecurityConstraintQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, TRANSPORT FROM PA_SECURITY_CONSTRAINT;");
+                ResultSet portletApplicationSecurityConstraintResultSet = portletApplicationSecurityConstraintQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, TRANSPORT FROM PA_SECURITY_CONSTRAINT");
                 while (portletApplicationSecurityConstraintResultSet.next())
                 {
                     portletApplicationSecurityConstraintInsertStatement.setInt(1, portletApplicationSecurityConstraintResultSet.getInt(1));
@@ -1231,10 +1231,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 portletApplicationSecurityConstraintInsertStatement.close();
 
                 // SECURED_PORTLET
-                PreparedStatement securedPortletInsertStatement = targetConnection.prepareStatement("INSERT INTO SECURED_PORTLET (ID, OWNER_ID, NAME) VALUES (?, ?, ?);");
+                PreparedStatement securedPortletInsertStatement = targetConnection.prepareStatement("INSERT INTO SECURED_PORTLET (ID, OWNER_ID, NAME) VALUES (?, ?, ?)");
                 Statement securedPortletQueryStatement = sourceConnection.createStatement();
                 securedPortletQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet securedPortletResultSet = securedPortletQueryStatement.executeQuery("SELECT ID, OWNER_ID, NAME FROM SECURED_PORTLET;");
+                ResultSet securedPortletResultSet = securedPortletQueryStatement.executeQuery("SELECT ID, OWNER_ID, NAME FROM SECURED_PORTLET");
                 while (securedPortletResultSet.next())
                 {
                     securedPortletInsertStatement.setInt(1, securedPortletResultSet.getInt(1));
@@ -1248,10 +1248,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 securedPortletInsertStatement.close();
 
                 // LOCALE_ENCODING_MAPPING      
-                PreparedStatement localeEncodingMappingInsertStatement = targetConnection.prepareStatement("INSERT INTO LOCALE_ENCODING_MAPPING (ID, APPLICATION_ID, LOCALE_STRING, ENCODING) VALUES (?, ?, ?, ?);");
+                PreparedStatement localeEncodingMappingInsertStatement = targetConnection.prepareStatement("INSERT INTO LOCALE_ENCODING_MAPPING (ID, APPLICATION_ID, LOCALE_STRING, ENCODING) VALUES (?, ?, ?, ?)");
                 Statement localeEncodingMappingQueryStatement = sourceConnection.createStatement();
                 localeEncodingMappingQueryStatement.setFetchSize(FETCH_SIZE);
-                ResultSet localeEncodingMappingResultSet = localeEncodingMappingQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, LOCALE_STRING, ENCODING FROM LOCALE_ENCODING_MAPPING;");
+                ResultSet localeEncodingMappingResultSet = localeEncodingMappingQueryStatement.executeQuery("SELECT ID, APPLICATION_ID, LOCALE_STRING, ENCODING FROM LOCALE_ENCODING_MAPPING");
                 while (localeEncodingMappingResultSet.next())
                 {
                     localeEncodingMappingInsertStatement.setInt(1, localeEncodingMappingResultSet.getInt(1));
@@ -1270,9 +1270,9 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         
         // OJB_HL_SEQ
         boolean localizedDescriptionSeqMigrated = false;
-        PreparedStatement ojbInsertStatement = targetConnection.prepareStatement("INSERT INTO OJB_HL_SEQ (TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement ojbInsertStatement = targetConnection.prepareStatement("INSERT INTO OJB_HL_SEQ (TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION) VALUES (?, ?, ?, ?, ?)");
         Statement ojbQueryStatement = sourceConnection.createStatement();
-        ResultSet ojbResultSet = ojbQueryStatement.executeQuery("SELECT TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION FROM OJB_HL_SEQ WHERE TABLENAME IN ('SEQ_PORTLET_DEFINITION', 'SEQ_PORTLET_APPLICATION', 'SEQ_PA_METADATA_FIELDS', 'SEQ_PD_METADATA_FIELDS', 'SEQ_LANGUAGE', 'SEQ_PORTLET_SUPPORTS', 'SEQ_PORTLET_PREFERENCE', 'SEQ_PORTLET_PREFERENCE_VALUE', 'SEQ_PARAMETER', 'SEQ_SECURITY_ROLE_REFERENCE', 'SEQ_SECURITY_ROLE', 'SEQ_USER_ATTRIBUTE_REF', 'SEQ_USER_ATTRIBUTE', 'SEQ_JETSPEED_SERVICE', 'SEQ_CUSTOM_PORTLET_MODE', 'SEQ_CUSTOM_WINDOW_STATE', 'SEQ_LOCALIZED_DESCRIPTION', 'SEQ_LOCALIZED_DISPLAY_NAME', 'SEQ_EVENT_DEFINITION', 'SEQ_EVENT_ALIAS', 'SEQ_PARAMETER_ALIAS', 'SEQ_PUBLISHING_EVENT', 'SEQ_PROCESSING_EVENT', 'SEQ_NAMED_PARAMETER', 'SEQ_RUNTIME_OPTION', 'SEQ_RUNTIME_VALUE', 'SEQ_PUBLIC_PARAMETER', 'SEQ_PORTLET_FILTER', 'SEQ_FILTER_LIFECYCLE', 'SEQ_FILTER_MAPPING', 'SEQ_FILTERED_PORTLET', 'SEQ_PORTLET_LISTENER', 'SEQ_PA_SECURITY_CONSTRAINT', 'SEQ_SECURED_PORTLET', 'SEQ_LOCALE_ENCODING_MAPPING');");
+        ResultSet ojbResultSet = ojbQueryStatement.executeQuery("SELECT TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION FROM OJB_HL_SEQ WHERE TABLENAME IN ('SEQ_PORTLET_DEFINITION', 'SEQ_PORTLET_APPLICATION', 'SEQ_PA_METADATA_FIELDS', 'SEQ_PD_METADATA_FIELDS', 'SEQ_LANGUAGE', 'SEQ_PORTLET_SUPPORTS', 'SEQ_PORTLET_PREFERENCE', 'SEQ_PORTLET_PREFERENCE_VALUE', 'SEQ_PARAMETER', 'SEQ_SECURITY_ROLE_REFERENCE', 'SEQ_SECURITY_ROLE', 'SEQ_USER_ATTRIBUTE_REF', 'SEQ_USER_ATTRIBUTE', 'SEQ_JETSPEED_SERVICE', 'SEQ_CUSTOM_PORTLET_MODE', 'SEQ_CUSTOM_WINDOW_STATE', 'SEQ_LOCALIZED_DESCRIPTION', 'SEQ_LOCALIZED_DISPLAY_NAME', 'SEQ_EVENT_DEFINITION', 'SEQ_EVENT_ALIAS', 'SEQ_PARAMETER_ALIAS', 'SEQ_PUBLISHING_EVENT', 'SEQ_PROCESSING_EVENT', 'SEQ_NAMED_PARAMETER', 'SEQ_RUNTIME_OPTION', 'SEQ_RUNTIME_VALUE', 'SEQ_PUBLIC_PARAMETER', 'SEQ_PORTLET_FILTER', 'SEQ_FILTER_LIFECYCLE', 'SEQ_FILTER_MAPPING', 'SEQ_FILTERED_PORTLET', 'SEQ_PORTLET_LISTENER', 'SEQ_PA_SECURITY_CONSTRAINT', 'SEQ_SECURED_PORTLET', 'SEQ_LOCALE_ENCODING_MAPPING')");
         while (ojbResultSet.next())
         {
             String tableName = ojbResultSet.getString(1);
@@ -1309,7 +1309,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
                 ojbQueryStatement = sourceConnection.createStatement();
-                ojbResultSet = ojbQueryStatement.executeQuery("SELECT TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION FROM OJB_HL_SEQ WHERE TABLENAME IN ('SEQ_PORTLET_CONTENT_TYPE', 'SEQ_PREFS_NODE', 'SEQ_PREFS_PROPERTY_VALUE');");
+                ojbResultSet = ojbQueryStatement.executeQuery("SELECT TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION FROM OJB_HL_SEQ WHERE TABLENAME IN ('SEQ_PORTLET_CONTENT_TYPE', 'SEQ_PREFS_NODE', 'SEQ_PREFS_PROPERTY_VALUE')");
                 while (ojbResultSet.next())
                 {
                     String tableName = ojbResultSet.getString(1);

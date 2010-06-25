@@ -49,7 +49,7 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         try
         {
             Statement fragmentPropQueryStatement = sourceConnection.createStatement();
-            fragmentPropQueryStatement.executeQuery("SELECT PROP_ID FROM FRAGMENT_PROP WHERE PROP_ID = 0;");
+            fragmentPropQueryStatement.executeQuery("SELECT PROP_ID FROM FRAGMENT_PROP WHERE PROP_ID = 0");
             sourcePageManagerVersion = JETSPEED_SCHEMA_VERSION_2_2_1;
         }
         catch (SQLException sqle)
@@ -58,7 +58,7 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         try
         {
             Statement fragmentQueryStatement = sourceConnection.createStatement();
-            fragmentQueryStatement.executeQuery("SELECT FRAGMENT_STRING_ID FROM FRAGMENT WHERE FRAGMENT_ID = 0;");
+            fragmentQueryStatement.executeQuery("SELECT FRAGMENT_STRING_ID FROM FRAGMENT WHERE FRAGMENT_ID = 0");
             if (sourceVersion > JETSPEED_SCHEMA_VERSION_2_1_4)
             {
                 sourcePageManagerVersion = JETSPEED_SCHEMA_VERSION_2_2_1;
@@ -82,10 +82,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         int rowsMigrated = 0;
         
         // FOLDER
-        PreparedStatement folderInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER (FOLDER_ID, PARENT_ID, PATH, NAME, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, DEFAULT_LAYOUT_DECORATOR, DEFAULT_PORTLET_DECORATOR, DEFAULT_PAGE_NAME, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement folderInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER (FOLDER_ID, PARENT_ID, PATH, NAME, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, DEFAULT_LAYOUT_DECORATOR, DEFAULT_PORTLET_DECORATOR, DEFAULT_PAGE_NAME, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Statement folderQueryStatement = sourceConnection.createStatement();
         folderQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet folderResultSet = folderQueryStatement.executeQuery("SELECT FOLDER_ID, PARENT_ID, PATH, NAME, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, DEFAULT_LAYOUT_DECORATOR, DEFAULT_PORTLET_DECORATOR, DEFAULT_PAGE_NAME, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL FROM FOLDER;");
+        ResultSet folderResultSet = folderQueryStatement.executeQuery("SELECT FOLDER_ID, PARENT_ID, PATH, NAME, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, DEFAULT_LAYOUT_DECORATOR, DEFAULT_PORTLET_DECORATOR, DEFAULT_PAGE_NAME, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL FROM FOLDER");
         while (folderResultSet.next())
         {
             folderInsertStatement.setInt(1, folderResultSet.getInt(1));
@@ -138,10 +138,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         folderInsertStatement.close();
 
         // FOLDER_METADATA
-        PreparedStatement folderMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER_METADATA (METADATA_ID, FOLDER_ID, NAME, LOCALE, VALUE) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement folderMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER_METADATA (METADATA_ID, FOLDER_ID, NAME, LOCALE, VALUE) VALUES (?, ?, ?, ?, ?)");
         Statement folderMetadataQueryStatement = sourceConnection.createStatement();
         folderMetadataQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet folderMetadataResultSet = folderMetadataQueryStatement.executeQuery("SELECT METADATA_ID, FOLDER_ID, NAME, LOCALE, VALUE FROM FOLDER_METADATA;");
+        ResultSet folderMetadataResultSet = folderMetadataQueryStatement.executeQuery("SELECT METADATA_ID, FOLDER_ID, NAME, LOCALE, VALUE FROM FOLDER_METADATA");
         while (folderMetadataResultSet.next())
         {
             folderMetadataInsertStatement.setInt(1, folderMetadataResultSet.getInt(1));
@@ -157,10 +157,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         folderMetadataInsertStatement.close();
 
         // FOLDER_CONSTRAINT
-        PreparedStatement folderConstraintInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER_CONSTRAINT (CONSTRAINT_ID, FOLDER_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL) VALUES (?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement folderConstraintInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER_CONSTRAINT (CONSTRAINT_ID, FOLDER_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL) VALUES (?, ?, ?, ?, ?, ?, ?)");
         Statement folderConstraintQueryStatement = sourceConnection.createStatement();
         folderConstraintQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet folderConstraintResultSet = folderConstraintQueryStatement.executeQuery("SELECT CONSTRAINT_ID, FOLDER_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL FROM FOLDER_CONSTRAINT;");
+        ResultSet folderConstraintResultSet = folderConstraintQueryStatement.executeQuery("SELECT CONSTRAINT_ID, FOLDER_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL FROM FOLDER_CONSTRAINT");
         while (folderConstraintResultSet.next())
         {
             folderConstraintInsertStatement.setInt(1, folderConstraintResultSet.getInt(1));
@@ -178,10 +178,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         folderConstraintInsertStatement.close();
 
         // FOLDER_CONSTRAINTS_REF
-        PreparedStatement folderConstraintsRefInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER_CONSTRAINTS_REF (CONSTRAINTS_REF_ID, FOLDER_ID, APPLY_ORDER, NAME) VALUES (?, ?, ?, ?);");
+        PreparedStatement folderConstraintsRefInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER_CONSTRAINTS_REF (CONSTRAINTS_REF_ID, FOLDER_ID, APPLY_ORDER, NAME) VALUES (?, ?, ?, ?)");
         Statement folderConstraintsRefQueryStatement = sourceConnection.createStatement();
         folderConstraintsRefQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet folderConstraintsRefResultSet = folderConstraintsRefQueryStatement.executeQuery("SELECT CONSTRAINTS_REF_ID, FOLDER_ID, APPLY_ORDER, NAME FROM FOLDER_CONSTRAINTS_REF;");
+        ResultSet folderConstraintsRefResultSet = folderConstraintsRefQueryStatement.executeQuery("SELECT CONSTRAINTS_REF_ID, FOLDER_ID, APPLY_ORDER, NAME FROM FOLDER_CONSTRAINTS_REF");
         while (folderConstraintsRefResultSet.next())
         {
             folderConstraintsRefInsertStatement.setInt(1, folderConstraintsRefResultSet.getInt(1));
@@ -196,10 +196,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         folderConstraintsRefInsertStatement.close();
 
         // FOLDER_ORDER
-        PreparedStatement folderOrderInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER_ORDER (ORDER_ID, FOLDER_ID, SORT_ORDER, NAME) VALUES (?, ?, ?, ?);");
+        PreparedStatement folderOrderInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER_ORDER (ORDER_ID, FOLDER_ID, SORT_ORDER, NAME) VALUES (?, ?, ?, ?)");
         Statement folderOrderQueryStatement = sourceConnection.createStatement();
         folderOrderQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet folderOrderResultSet = folderOrderQueryStatement.executeQuery("SELECT ORDER_ID, FOLDER_ID, SORT_ORDER, NAME FROM FOLDER_ORDER;");
+        ResultSet folderOrderResultSet = folderOrderQueryStatement.executeQuery("SELECT ORDER_ID, FOLDER_ID, SORT_ORDER, NAME FROM FOLDER_ORDER");
         while (folderOrderResultSet.next())
         {
             folderOrderInsertStatement.setInt(1, folderOrderResultSet.getInt(1));
@@ -214,10 +214,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         folderOrderInsertStatement.close();
 
         // FOLDER_MENU
-        PreparedStatement folderMenuInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER_MENU (MENU_ID, CLASS_NAME, PARENT_ID, FOLDER_ID, ELEMENT_ORDER, NAME, TITLE, SHORT_TITLE, TEXT, OPTIONS, DEPTH, IS_PATHS, IS_REGEXP, PROFILE, OPTIONS_ORDER, SKIN, IS_NEST) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement folderMenuInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER_MENU (MENU_ID, CLASS_NAME, PARENT_ID, FOLDER_ID, ELEMENT_ORDER, NAME, TITLE, SHORT_TITLE, TEXT, OPTIONS, DEPTH, IS_PATHS, IS_REGEXP, PROFILE, OPTIONS_ORDER, SKIN, IS_NEST) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Statement folderMenuQueryStatement = sourceConnection.createStatement();
         folderMenuQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet folderMenuResultSet = folderMenuQueryStatement.executeQuery("SELECT MENU_ID, CLASS_NAME, PARENT_ID, FOLDER_ID, ELEMENT_ORDER, NAME, TITLE, SHORT_TITLE, TEXT, OPTIONS, DEPTH, IS_PATHS, IS_REGEXP, PROFILE, OPTIONS_ORDER, SKIN, IS_NEST FROM FOLDER_MENU;");
+        ResultSet folderMenuResultSet = folderMenuQueryStatement.executeQuery("SELECT MENU_ID, CLASS_NAME, PARENT_ID, FOLDER_ID, ELEMENT_ORDER, NAME, TITLE, SHORT_TITLE, TEXT, OPTIONS, DEPTH, IS_PATHS, IS_REGEXP, PROFILE, OPTIONS_ORDER, SKIN, IS_NEST FROM FOLDER_MENU");
         while (folderMenuResultSet.next())
         {
             folderMenuInsertStatement.setInt(1, folderMenuResultSet.getInt(1));
@@ -245,10 +245,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         folderMenuInsertStatement.close();
 
         // FOLDER_MENU_METADATA
-        PreparedStatement folderMenuMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER_MENU_METADATA (METADATA_ID, MENU_ID, NAME, LOCALE, VALUE) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement folderMenuMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO FOLDER_MENU_METADATA (METADATA_ID, MENU_ID, NAME, LOCALE, VALUE) VALUES (?, ?, ?, ?, ?)");
         Statement folderMenuMetadataQueryStatement = sourceConnection.createStatement();
         folderMenuMetadataQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet folderMenuMetadataResultSet = folderMenuMetadataQueryStatement.executeQuery("SELECT METADATA_ID, MENU_ID, NAME, LOCALE, VALUE FROM FOLDER_MENU_METADATA;");
+        ResultSet folderMenuMetadataResultSet = folderMenuMetadataQueryStatement.executeQuery("SELECT METADATA_ID, MENU_ID, NAME, LOCALE, VALUE FROM FOLDER_MENU_METADATA");
         while (folderMenuMetadataResultSet.next())
         {
             folderMenuMetadataInsertStatement.setInt(1, folderMenuMetadataResultSet.getInt(1));
@@ -264,7 +264,7 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         folderMenuMetadataInsertStatement.close();
 
         // PAGE
-        PreparedStatement pageInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE (PAGE_ID, CLASS_NAME, PARENT_ID, PATH, CONTENT_TYPE, IS_INHERITABLE, NAME, VERSION, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, DEFAULT_LAYOUT_DECORATOR, DEFAULT_PORTLET_DECORATOR, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement pageInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE (PAGE_ID, CLASS_NAME, PARENT_ID, PATH, CONTENT_TYPE, IS_INHERITABLE, NAME, VERSION, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, DEFAULT_LAYOUT_DECORATOR, DEFAULT_PORTLET_DECORATOR, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Statement pageQueryStatement = sourceConnection.createStatement();
         pageQueryStatement.setFetchSize(FETCH_SIZE);
         switch (sourceVersion)
@@ -273,7 +273,7 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             {
-                ResultSet pageResultSet = pageQueryStatement.executeQuery("SELECT PAGE_ID, PARENT_ID, PATH, NAME, VERSION, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, DEFAULT_LAYOUT_DECORATOR, DEFAULT_PORTLET_DECORATOR, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL FROM PAGE;");
+                ResultSet pageResultSet = pageQueryStatement.executeQuery("SELECT PAGE_ID, PARENT_ID, PATH, NAME, VERSION, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, DEFAULT_LAYOUT_DECORATOR, DEFAULT_PORTLET_DECORATOR, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL FROM PAGE");
                 while (pageResultSet.next())
                 {
                     pageInsertStatement.setInt(1, pageResultSet.getInt(1));
@@ -329,7 +329,7 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
             break;
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                ResultSet pageResultSet = pageQueryStatement.executeQuery("SELECT PAGE_ID, CLASS_NAME, PARENT_ID, PATH, CONTENT_TYPE, IS_INHERITABLE, NAME, VERSION, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, DEFAULT_LAYOUT_DECORATOR, DEFAULT_PORTLET_DECORATOR, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL FROM PAGE;");
+                ResultSet pageResultSet = pageQueryStatement.executeQuery("SELECT PAGE_ID, CLASS_NAME, PARENT_ID, PATH, CONTENT_TYPE, IS_INHERITABLE, NAME, VERSION, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, DEFAULT_LAYOUT_DECORATOR, DEFAULT_PORTLET_DECORATOR, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL FROM PAGE");
                 while (pageResultSet.next())
                 {
                     pageInsertStatement.setInt(1, pageResultSet.getInt(1));
@@ -366,10 +366,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         pageInsertStatement.close();
 
         // PAGE_METADATA
-        PreparedStatement pageMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_METADATA (METADATA_ID, PAGE_ID, NAME, LOCALE, VALUE) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement pageMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_METADATA (METADATA_ID, PAGE_ID, NAME, LOCALE, VALUE) VALUES (?, ?, ?, ?, ?)");
         Statement pageMetadataQueryStatement = sourceConnection.createStatement();
         pageMetadataQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet pageMetadataResultSet = pageMetadataQueryStatement.executeQuery("SELECT METADATA_ID, PAGE_ID, NAME, LOCALE, VALUE FROM PAGE_METADATA;");
+        ResultSet pageMetadataResultSet = pageMetadataQueryStatement.executeQuery("SELECT METADATA_ID, PAGE_ID, NAME, LOCALE, VALUE FROM PAGE_METADATA");
         while (pageMetadataResultSet.next())
         {
             pageMetadataInsertStatement.setInt(1, pageMetadataResultSet.getInt(1));
@@ -385,10 +385,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         pageMetadataInsertStatement.close();
 
         // PAGE_CONSTRAINT
-        PreparedStatement pageConstraintInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_CONSTRAINT (CONSTRAINT_ID, PAGE_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL) VALUES (?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement pageConstraintInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_CONSTRAINT (CONSTRAINT_ID, PAGE_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL) VALUES (?, ?, ?, ?, ?, ?, ?)");
         Statement pageConstraintQueryStatement = sourceConnection.createStatement();
         pageConstraintQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet pageConstraintResultSet = pageConstraintQueryStatement.executeQuery("SELECT CONSTRAINT_ID, PAGE_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL FROM PAGE_CONSTRAINT;");
+        ResultSet pageConstraintResultSet = pageConstraintQueryStatement.executeQuery("SELECT CONSTRAINT_ID, PAGE_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL FROM PAGE_CONSTRAINT");
         while (pageConstraintResultSet.next())
         {
             pageConstraintInsertStatement.setInt(1, pageConstraintResultSet.getInt(1));
@@ -406,10 +406,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         pageConstraintInsertStatement.close();
 
         // PAGE_CONSTRAINTS_REF
-        PreparedStatement pageConstraintsRefInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_CONSTRAINTS_REF (CONSTRAINTS_REF_ID, PAGE_ID, APPLY_ORDER, NAME) VALUES (?, ?, ?, ?);");
+        PreparedStatement pageConstraintsRefInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_CONSTRAINTS_REF (CONSTRAINTS_REF_ID, PAGE_ID, APPLY_ORDER, NAME) VALUES (?, ?, ?, ?)");
         Statement pageConstraintsRefQueryStatement = sourceConnection.createStatement();
         pageConstraintsRefQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet pageConstraintsRefResultSet = pageConstraintsRefQueryStatement.executeQuery("SELECT CONSTRAINTS_REF_ID, PAGE_ID, APPLY_ORDER, NAME FROM PAGE_CONSTRAINTS_REF;");
+        ResultSet pageConstraintsRefResultSet = pageConstraintsRefQueryStatement.executeQuery("SELECT CONSTRAINTS_REF_ID, PAGE_ID, APPLY_ORDER, NAME FROM PAGE_CONSTRAINTS_REF");
         while (pageConstraintsRefResultSet.next())
         {
             pageConstraintsRefInsertStatement.setInt(1, pageConstraintsRefResultSet.getInt(1));
@@ -424,10 +424,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         pageConstraintsRefInsertStatement.close();
         
         // PAGE_MENU
-        PreparedStatement pageMenuInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_MENU (MENU_ID, CLASS_NAME, PARENT_ID, PAGE_ID, ELEMENT_ORDER, NAME, TITLE, SHORT_TITLE, TEXT, OPTIONS, DEPTH, IS_PATHS, IS_REGEXP, PROFILE, OPTIONS_ORDER, SKIN, IS_NEST) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement pageMenuInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_MENU (MENU_ID, CLASS_NAME, PARENT_ID, PAGE_ID, ELEMENT_ORDER, NAME, TITLE, SHORT_TITLE, TEXT, OPTIONS, DEPTH, IS_PATHS, IS_REGEXP, PROFILE, OPTIONS_ORDER, SKIN, IS_NEST) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Statement pageMenuQueryStatement = sourceConnection.createStatement();
         pageMenuQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet pageMenuResultSet = pageMenuQueryStatement.executeQuery("SELECT MENU_ID, CLASS_NAME, PARENT_ID, PAGE_ID, ELEMENT_ORDER, NAME, TITLE, SHORT_TITLE, TEXT, OPTIONS, DEPTH, IS_PATHS, IS_REGEXP, PROFILE, OPTIONS_ORDER, SKIN, IS_NEST FROM PAGE_MENU;");
+        ResultSet pageMenuResultSet = pageMenuQueryStatement.executeQuery("SELECT MENU_ID, CLASS_NAME, PARENT_ID, PAGE_ID, ELEMENT_ORDER, NAME, TITLE, SHORT_TITLE, TEXT, OPTIONS, DEPTH, IS_PATHS, IS_REGEXP, PROFILE, OPTIONS_ORDER, SKIN, IS_NEST FROM PAGE_MENU");
         while (pageMenuResultSet.next())
         {
             pageMenuInsertStatement.setInt(1, pageMenuResultSet.getInt(1));
@@ -455,10 +455,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         pageMenuInsertStatement.close();
 
         // PAGE_MENU_METADATA
-        PreparedStatement pageMenuMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_MENU_METADATA (METADATA_ID, MENU_ID, NAME, LOCALE, VALUE) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement pageMenuMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_MENU_METADATA (METADATA_ID, MENU_ID, NAME, LOCALE, VALUE) VALUES (?, ?, ?, ?, ?)");
         Statement pageMenuMetadataQueryStatement = sourceConnection.createStatement();
         pageMenuMetadataQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet pageMenuMetadataResultSet = pageMenuMetadataQueryStatement.executeQuery("SELECT METADATA_ID, MENU_ID, NAME, LOCALE, VALUE FROM PAGE_MENU_METADATA;");
+        ResultSet pageMenuMetadataResultSet = pageMenuMetadataQueryStatement.executeQuery("SELECT METADATA_ID, MENU_ID, NAME, LOCALE, VALUE FROM PAGE_MENU_METADATA");
         while (pageMenuMetadataResultSet.next())
         {
             pageMenuMetadataInsertStatement.setInt(1, pageMenuMetadataResultSet.getInt(1));
@@ -474,7 +474,7 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         pageMenuMetadataInsertStatement.close();
 
         // FRAGMENT
-        PreparedStatement fragmentInsertStatement = targetConnection.prepareStatement("INSERT INTO FRAGMENT (FRAGMENT_ID, CLASS_NAME, PARENT_ID, PAGE_ID, FRAGMENT_STRING_ID, FRAGMENT_STRING_REFID, NAME, TITLE, SHORT_TITLE, TYPE, SKIN, DECORATOR, STATE, PMODE, LAYOUT_ROW, LAYOUT_COLUMN, LAYOUT_SIZES, LAYOUT_X, LAYOUT_Y, LAYOUT_Z, LAYOUT_WIDTH, LAYOUT_HEIGHT, OWNER_PRINCIPAL) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement fragmentInsertStatement = targetConnection.prepareStatement("INSERT INTO FRAGMENT (FRAGMENT_ID, CLASS_NAME, PARENT_ID, PAGE_ID, FRAGMENT_STRING_ID, FRAGMENT_STRING_REFID, NAME, TITLE, SHORT_TITLE, TYPE, SKIN, DECORATOR, STATE, PMODE, LAYOUT_ROW, LAYOUT_COLUMN, LAYOUT_SIZES, LAYOUT_X, LAYOUT_Y, LAYOUT_Z, LAYOUT_WIDTH, LAYOUT_HEIGHT, OWNER_PRINCIPAL) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Statement fragmentQueryStatement = sourceConnection.createStatement();
         fragmentQueryStatement.setFetchSize(FETCH_SIZE);
         switch (sourceVersion)
@@ -482,7 +482,7 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_3:
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             {
-                ResultSet fragmentResultSet = fragmentQueryStatement.executeQuery("SELECT FRAGMENT_ID, PARENT_ID, PAGE_ID, NAME, TITLE, SHORT_TITLE, TYPE, SKIN, DECORATOR, STATE, PMODE, LAYOUT_ROW, LAYOUT_COLUMN, LAYOUT_SIZES, LAYOUT_X, LAYOUT_Y, LAYOUT_Z, LAYOUT_WIDTH, LAYOUT_HEIGHT, OWNER_PRINCIPAL FROM FRAGMENT;");
+                ResultSet fragmentResultSet = fragmentQueryStatement.executeQuery("SELECT FRAGMENT_ID, PARENT_ID, PAGE_ID, NAME, TITLE, SHORT_TITLE, TYPE, SKIN, DECORATOR, STATE, PMODE, LAYOUT_ROW, LAYOUT_COLUMN, LAYOUT_SIZES, LAYOUT_X, LAYOUT_Y, LAYOUT_Z, LAYOUT_WIDTH, LAYOUT_HEIGHT, OWNER_PRINCIPAL FROM FRAGMENT");
                 while (fragmentResultSet.next())
                 {
                     fragmentInsertStatement.setInt(1, fragmentResultSet.getInt(1));
@@ -536,7 +536,7 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
             break;
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
-                ResultSet fragmentResultSet = fragmentQueryStatement.executeQuery("SELECT FRAGMENT_ID, PARENT_ID, PAGE_ID, FRAGMENT_STRING_ID, NAME, TITLE, SHORT_TITLE, TYPE, SKIN, DECORATOR, STATE, PMODE, LAYOUT_ROW, LAYOUT_COLUMN, LAYOUT_SIZES, LAYOUT_X, LAYOUT_Y, LAYOUT_Z, LAYOUT_WIDTH, LAYOUT_HEIGHT, OWNER_PRINCIPAL FROM FRAGMENT;");
+                ResultSet fragmentResultSet = fragmentQueryStatement.executeQuery("SELECT FRAGMENT_ID, PARENT_ID, PAGE_ID, FRAGMENT_STRING_ID, NAME, TITLE, SHORT_TITLE, TYPE, SKIN, DECORATOR, STATE, PMODE, LAYOUT_ROW, LAYOUT_COLUMN, LAYOUT_SIZES, LAYOUT_X, LAYOUT_Y, LAYOUT_Z, LAYOUT_WIDTH, LAYOUT_HEIGHT, OWNER_PRINCIPAL FROM FRAGMENT");
                 while (fragmentResultSet.next())
                 {
                     fragmentInsertStatement.setInt(1, fragmentResultSet.getInt(1));
@@ -576,7 +576,7 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
             break;
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                ResultSet fragmentResultSet = fragmentQueryStatement.executeQuery("SELECT FRAGMENT_ID, CLASS_NAME, PARENT_ID, PAGE_ID, FRAGMENT_STRING_ID, FRAGMENT_STRING_REFID, NAME, TITLE, SHORT_TITLE, TYPE, SKIN, DECORATOR, STATE, PMODE, LAYOUT_ROW, LAYOUT_COLUMN, LAYOUT_SIZES, LAYOUT_X, LAYOUT_Y, LAYOUT_Z, LAYOUT_WIDTH, LAYOUT_HEIGHT, OWNER_PRINCIPAL FROM FRAGMENT;");
+                ResultSet fragmentResultSet = fragmentQueryStatement.executeQuery("SELECT FRAGMENT_ID, CLASS_NAME, PARENT_ID, PAGE_ID, FRAGMENT_STRING_ID, FRAGMENT_STRING_REFID, NAME, TITLE, SHORT_TITLE, TYPE, SKIN, DECORATOR, STATE, PMODE, LAYOUT_ROW, LAYOUT_COLUMN, LAYOUT_SIZES, LAYOUT_X, LAYOUT_Y, LAYOUT_Z, LAYOUT_WIDTH, LAYOUT_HEIGHT, OWNER_PRINCIPAL FROM FRAGMENT");
                 while (fragmentResultSet.next())
                 {
                     fragmentInsertStatement.setInt(1, fragmentResultSet.getInt(1));
@@ -613,10 +613,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         fragmentInsertStatement.close();
 
         // FRAGMENT_CONSTRAINT
-        PreparedStatement fragmentConstraintInsertStatement = targetConnection.prepareStatement("INSERT INTO FRAGMENT_CONSTRAINT (CONSTRAINT_ID, FRAGMENT_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL) VALUES (?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement fragmentConstraintInsertStatement = targetConnection.prepareStatement("INSERT INTO FRAGMENT_CONSTRAINT (CONSTRAINT_ID, FRAGMENT_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL) VALUES (?, ?, ?, ?, ?, ?, ?)");
         Statement fragmentConstraintQueryStatement = sourceConnection.createStatement();
         fragmentConstraintQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet fragmentConstraintResultSet = fragmentConstraintQueryStatement.executeQuery("SELECT CONSTRAINT_ID, FRAGMENT_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL FROM FRAGMENT_CONSTRAINT;");
+        ResultSet fragmentConstraintResultSet = fragmentConstraintQueryStatement.executeQuery("SELECT CONSTRAINT_ID, FRAGMENT_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL FROM FRAGMENT_CONSTRAINT");
         while (fragmentConstraintResultSet.next())
         {
             fragmentConstraintInsertStatement.setInt(1, fragmentConstraintResultSet.getInt(1));
@@ -634,10 +634,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         fragmentConstraintInsertStatement.close();
 
         // FRAGMENT_CONSTRAINTS_REF
-        PreparedStatement fragmentConstraintsRefInsertStatement = targetConnection.prepareStatement("INSERT INTO FRAGMENT_CONSTRAINTS_REF (CONSTRAINTS_REF_ID, FRAGMENT_ID, APPLY_ORDER, NAME) VALUES (?, ?, ?, ?);");
+        PreparedStatement fragmentConstraintsRefInsertStatement = targetConnection.prepareStatement("INSERT INTO FRAGMENT_CONSTRAINTS_REF (CONSTRAINTS_REF_ID, FRAGMENT_ID, APPLY_ORDER, NAME) VALUES (?, ?, ?, ?)");
         Statement fragmentConstraintsRefQueryStatement = sourceConnection.createStatement();
         fragmentConstraintsRefQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet fragmentConstraintsRefResultSet = fragmentConstraintsRefQueryStatement.executeQuery("SELECT CONSTRAINTS_REF_ID, FRAGMENT_ID, APPLY_ORDER, NAME FROM FRAGMENT_CONSTRAINTS_REF;");
+        ResultSet fragmentConstraintsRefResultSet = fragmentConstraintsRefQueryStatement.executeQuery("SELECT CONSTRAINTS_REF_ID, FRAGMENT_ID, APPLY_ORDER, NAME FROM FRAGMENT_CONSTRAINTS_REF");
         while (fragmentConstraintsRefResultSet.next())
         {
             fragmentConstraintsRefInsertStatement.setInt(1, fragmentConstraintsRefResultSet.getInt(1));
@@ -652,10 +652,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         fragmentConstraintsRefInsertStatement.close();
         
         // FRAGMENT_PREF
-        PreparedStatement fragmentPrefInsertStatement = targetConnection.prepareStatement("INSERT INTO FRAGMENT_PREF (PREF_ID, FRAGMENT_ID, NAME, IS_READ_ONLY) VALUES (?, ?, ?, ?);");
+        PreparedStatement fragmentPrefInsertStatement = targetConnection.prepareStatement("INSERT INTO FRAGMENT_PREF (PREF_ID, FRAGMENT_ID, NAME, IS_READ_ONLY) VALUES (?, ?, ?, ?)");
         Statement fragmentPrefQueryStatement = sourceConnection.createStatement();
         fragmentPrefQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet fragmentPrefResultSet = fragmentPrefQueryStatement.executeQuery("SELECT PREF_ID, FRAGMENT_ID, NAME, IS_READ_ONLY FROM FRAGMENT_PREF;");
+        ResultSet fragmentPrefResultSet = fragmentPrefQueryStatement.executeQuery("SELECT PREF_ID, FRAGMENT_ID, NAME, IS_READ_ONLY FROM FRAGMENT_PREF");
         while (fragmentPrefResultSet.next())
         {
             fragmentPrefInsertStatement.setInt(1, fragmentPrefResultSet.getInt(1));
@@ -670,10 +670,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         fragmentPrefInsertStatement.close();
 
         // FRAGMENT_PREF_VALUE
-        PreparedStatement fragmentPrefValueInsertStatement = targetConnection.prepareStatement("INSERT INTO FRAGMENT_PREF_VALUE (PREF_VALUE_ID, PREF_ID, VALUE_ORDER, VALUE) VALUES (?, ?, ?, ?);");
+        PreparedStatement fragmentPrefValueInsertStatement = targetConnection.prepareStatement("INSERT INTO FRAGMENT_PREF_VALUE (PREF_VALUE_ID, PREF_ID, VALUE_ORDER, VALUE) VALUES (?, ?, ?, ?)");
         Statement fragmentPrefValueQueryStatement = sourceConnection.createStatement();
         fragmentPrefValueQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet fragmentPrefValueResultSet = fragmentPrefValueQueryStatement.executeQuery("SELECT PREF_VALUE_ID, PREF_ID, VALUE_ORDER, VALUE FROM FRAGMENT_PREF_VALUE;");
+        ResultSet fragmentPrefValueResultSet = fragmentPrefValueQueryStatement.executeQuery("SELECT PREF_VALUE_ID, PREF_ID, VALUE_ORDER, VALUE FROM FRAGMENT_PREF_VALUE");
         while (fragmentPrefValueResultSet.next())
         {
             fragmentPrefValueInsertStatement.setInt(1, fragmentPrefValueResultSet.getInt(1));
@@ -689,7 +689,7 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
 
         // FRAGMENT_PROP
         int fragmentPropRowsMigrated = 0;
-        PreparedStatement fragmentPropInsertStatement = targetConnection.prepareStatement("INSERT INTO FRAGMENT_PROP (PROP_ID, FRAGMENT_ID, NAME, SCOPE, SCOPE_VALUE, VALUE) VALUES (?, ?, ?, ?, ?, ?);");
+        PreparedStatement fragmentPropInsertStatement = targetConnection.prepareStatement("INSERT INTO FRAGMENT_PROP (PROP_ID, FRAGMENT_ID, NAME, SCOPE, SCOPE_VALUE, VALUE) VALUES (?, ?, ?, ?, ?, ?)");
         Statement fragmentPropQueryStatement = sourceConnection.createStatement();
         fragmentPropQueryStatement.setFetchSize(FETCH_SIZE);
         switch (sourceVersion)
@@ -698,7 +698,7 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             case JETSPEED_SCHEMA_VERSION_2_2_0:
             {
-                ResultSet fragmentResultSet = fragmentPropQueryStatement.executeQuery("SELECT FRAGMENT_ID, EXT_PROP_NAME_1, EXT_PROP_VALUE_1, EXT_PROP_NAME_2, EXT_PROP_VALUE_2 FROM FRAGMENT WHERE EXT_PROP_NAME_1 IS NOT NULL OR EXT_PROP_NAME_2 IS NOT NULL;");
+                ResultSet fragmentResultSet = fragmentPropQueryStatement.executeQuery("SELECT FRAGMENT_ID, EXT_PROP_NAME_1, EXT_PROP_VALUE_1, EXT_PROP_NAME_2, EXT_PROP_VALUE_2 FROM FRAGMENT WHERE EXT_PROP_NAME_1 IS NOT NULL OR EXT_PROP_NAME_2 IS NOT NULL");
                 while (fragmentResultSet.next())
                 {
                     if ((fragmentResultSet.getString(2) != null) && (fragmentResultSet.getString(3) != null))
@@ -729,7 +729,7 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
             break;
             case JETSPEED_SCHEMA_VERSION_2_2_1:
             {
-                ResultSet fragmentPropResultSet = fragmentPropQueryStatement.executeQuery("SELECT PROP_ID, FRAGMENT_ID, NAME, SCOPE, SCOPE_VALUE, VALUE FROM FRAGMENT_PROP;");
+                ResultSet fragmentPropResultSet = fragmentPropQueryStatement.executeQuery("SELECT PROP_ID, FRAGMENT_ID, NAME, SCOPE, SCOPE_VALUE, VALUE FROM FRAGMENT_PROP");
                 while (fragmentPropResultSet.next())
                 {
                     fragmentPropInsertStatement.setInt(1, fragmentPropResultSet.getInt(1));
@@ -748,10 +748,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         fragmentPropInsertStatement.close();
 
         // LINK
-        PreparedStatement linkInsertStatement = targetConnection.prepareStatement("INSERT INTO LINK (LINK_ID, PARENT_ID, PATH, NAME, VERSION, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, TARGET, URL, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement linkInsertStatement = targetConnection.prepareStatement("INSERT INTO LINK (LINK_ID, PARENT_ID, PATH, NAME, VERSION, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, TARGET, URL, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Statement linkQueryStatement = sourceConnection.createStatement();
         linkQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet linkResultSet = linkQueryStatement.executeQuery("SELECT LINK_ID, PARENT_ID, PATH, NAME, VERSION, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, TARGET, URL, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL FROM LINK;");
+        ResultSet linkResultSet = linkQueryStatement.executeQuery("SELECT LINK_ID, PARENT_ID, PATH, NAME, VERSION, TITLE, SHORT_TITLE, IS_HIDDEN, SKIN, TARGET, URL, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE, OWNER_PRINCIPAL FROM LINK");
         while (linkResultSet.next())
         {
             linkInsertStatement.setInt(1, linkResultSet.getInt(1));
@@ -782,10 +782,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         linkInsertStatement.close();
 
         // LINK_METADATA
-        PreparedStatement linkMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO LINK_METADATA (METADATA_ID, LINK_ID, NAME, LOCALE, VALUE) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement linkMetadataInsertStatement = targetConnection.prepareStatement("INSERT INTO LINK_METADATA (METADATA_ID, LINK_ID, NAME, LOCALE, VALUE) VALUES (?, ?, ?, ?, ?)");
         Statement linkMetadataQueryStatement = sourceConnection.createStatement();
         linkMetadataQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet linkMetadataResultSet = linkMetadataQueryStatement.executeQuery("SELECT METADATA_ID, LINK_ID, NAME, LOCALE, VALUE FROM LINK_METADATA;");
+        ResultSet linkMetadataResultSet = linkMetadataQueryStatement.executeQuery("SELECT METADATA_ID, LINK_ID, NAME, LOCALE, VALUE FROM LINK_METADATA");
         while (linkMetadataResultSet.next())
         {
             linkMetadataInsertStatement.setInt(1, linkMetadataResultSet.getInt(1));
@@ -801,10 +801,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         linkMetadataInsertStatement.close();
 
         // LINK_CONSTRAINT
-        PreparedStatement linkConstraintInsertStatement = targetConnection.prepareStatement("INSERT INTO LINK_CONSTRAINT (CONSTRAINT_ID, LINK_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL) VALUES (?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement linkConstraintInsertStatement = targetConnection.prepareStatement("INSERT INTO LINK_CONSTRAINT (CONSTRAINT_ID, LINK_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL) VALUES (?, ?, ?, ?, ?, ?, ?)");
         Statement linkConstraintQueryStatement = sourceConnection.createStatement();
         linkConstraintQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet linkConstraintResultSet = linkConstraintQueryStatement.executeQuery("SELECT CONSTRAINT_ID, LINK_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL FROM LINK_CONSTRAINT;");
+        ResultSet linkConstraintResultSet = linkConstraintQueryStatement.executeQuery("SELECT CONSTRAINT_ID, LINK_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL FROM LINK_CONSTRAINT");
         while (linkConstraintResultSet.next())
         {
             linkConstraintInsertStatement.setInt(1, linkConstraintResultSet.getInt(1));
@@ -822,10 +822,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         linkConstraintInsertStatement.close();
 
         // LINK_CONSTRAINTS_REF
-        PreparedStatement linkConstraintsRefInsertStatement = targetConnection.prepareStatement("INSERT INTO LINK_CONSTRAINTS_REF (CONSTRAINTS_REF_ID, LINK_ID, APPLY_ORDER, NAME) VALUES (?, ?, ?, ?);");
+        PreparedStatement linkConstraintsRefInsertStatement = targetConnection.prepareStatement("INSERT INTO LINK_CONSTRAINTS_REF (CONSTRAINTS_REF_ID, LINK_ID, APPLY_ORDER, NAME) VALUES (?, ?, ?, ?)");
         Statement linkConstraintsRefQueryStatement = sourceConnection.createStatement();
         linkConstraintsRefQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet linkConstraintsRefResultSet = linkConstraintsRefQueryStatement.executeQuery("SELECT CONSTRAINTS_REF_ID, LINK_ID, APPLY_ORDER, NAME FROM LINK_CONSTRAINTS_REF;");
+        ResultSet linkConstraintsRefResultSet = linkConstraintsRefQueryStatement.executeQuery("SELECT CONSTRAINTS_REF_ID, LINK_ID, APPLY_ORDER, NAME FROM LINK_CONSTRAINTS_REF");
         while (linkConstraintsRefResultSet.next())
         {
             linkConstraintsRefInsertStatement.setInt(1, linkConstraintsRefResultSet.getInt(1));
@@ -840,10 +840,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         linkConstraintsRefInsertStatement.close();
 
         // PAGE_SECURITY
-        PreparedStatement pageSecurityInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_SECURITY (PAGE_SECURITY_ID, PARENT_ID, PATH, NAME, VERSION, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement pageSecurityInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_SECURITY (PAGE_SECURITY_ID, PARENT_ID, PATH, NAME, VERSION, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Statement pageSecurityQueryStatement = sourceConnection.createStatement();
         pageSecurityQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet pageSecurityResultSet = pageSecurityQueryStatement.executeQuery("SELECT PAGE_SECURITY_ID, PARENT_ID, PATH, NAME, VERSION, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE FROM PAGE_SECURITY;");
+        ResultSet pageSecurityResultSet = pageSecurityQueryStatement.executeQuery("SELECT PAGE_SECURITY_ID, PARENT_ID, PATH, NAME, VERSION, SUBSITE, USER_PRINCIPAL, ROLE_PRINCIPAL, GROUP_PRINCIPAL, MEDIATYPE, LOCALE, EXT_ATTR_NAME, EXT_ATTR_VALUE FROM PAGE_SECURITY");
         while (pageSecurityResultSet.next())
         {
             pageSecurityInsertStatement.setInt(1, pageSecurityResultSet.getInt(1));
@@ -867,10 +867,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         pageSecurityInsertStatement.close();
 
         // PAGE_SEC_CONSTRAINTS_DEF
-        PreparedStatement pageSecurityConstraintsDefInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_SEC_CONSTRAINTS_DEF (CONSTRAINTS_DEF_ID, PAGE_SECURITY_ID, NAME) VALUES (?, ?, ?);");
+        PreparedStatement pageSecurityConstraintsDefInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_SEC_CONSTRAINTS_DEF (CONSTRAINTS_DEF_ID, PAGE_SECURITY_ID, NAME) VALUES (?, ?, ?)");
         Statement pageSecurityConstraintsDefQueryStatement = sourceConnection.createStatement();
         pageSecurityConstraintsDefQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet pageSecurityConstraintsDefResultSet = pageSecurityConstraintsDefQueryStatement.executeQuery("SELECT CONSTRAINTS_DEF_ID, PAGE_SECURITY_ID, NAME FROM PAGE_SEC_CONSTRAINTS_DEF;");
+        ResultSet pageSecurityConstraintsDefResultSet = pageSecurityConstraintsDefQueryStatement.executeQuery("SELECT CONSTRAINTS_DEF_ID, PAGE_SECURITY_ID, NAME FROM PAGE_SEC_CONSTRAINTS_DEF");
         while (pageSecurityConstraintsDefResultSet.next())
         {
             pageSecurityConstraintsDefInsertStatement.setInt(1, pageSecurityConstraintsDefResultSet.getInt(1));
@@ -884,10 +884,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         pageSecurityConstraintsDefInsertStatement.close();
 
         // PAGE_SEC_CONSTRAINT_DEF
-        PreparedStatement pageSecurityConstraintDefInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_SEC_CONSTRAINT_DEF (CONSTRAINT_DEF_ID, CONSTRAINTS_DEF_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL) VALUES (?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement pageSecurityConstraintDefInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_SEC_CONSTRAINT_DEF (CONSTRAINT_DEF_ID, CONSTRAINTS_DEF_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL) VALUES (?, ?, ?, ?, ?, ?, ?)");
         Statement pageSecurityConstraintDefQueryStatement = sourceConnection.createStatement();
         pageSecurityConstraintDefQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet pageSecurityConstraintDefResultSet = pageSecurityConstraintDefQueryStatement.executeQuery("SELECT CONSTRAINT_DEF_ID, CONSTRAINTS_DEF_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL FROM PAGE_SEC_CONSTRAINT_DEF;");
+        ResultSet pageSecurityConstraintDefResultSet = pageSecurityConstraintDefQueryStatement.executeQuery("SELECT CONSTRAINT_DEF_ID, CONSTRAINTS_DEF_ID, APPLY_ORDER, USER_PRINCIPALS_ACL, ROLE_PRINCIPALS_ACL, GROUP_PRINCIPALS_ACL, PERMISSIONS_ACL FROM PAGE_SEC_CONSTRAINT_DEF");
         while (pageSecurityConstraintDefResultSet.next())
         {
             pageSecurityConstraintDefInsertStatement.setInt(1, pageSecurityConstraintDefResultSet.getInt(1));
@@ -905,10 +905,10 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         pageSecurityConstraintDefInsertStatement.close();
 
         // PAGE_SEC_CONSTRAINTS_REF
-        PreparedStatement pageSecurityConstraintsRefInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_SEC_CONSTRAINTS_REF (CONSTRAINTS_REF_ID, PAGE_SECURITY_ID, APPLY_ORDER, NAME) VALUES (?, ?, ?, ?);");
+        PreparedStatement pageSecurityConstraintsRefInsertStatement = targetConnection.prepareStatement("INSERT INTO PAGE_SEC_CONSTRAINTS_REF (CONSTRAINTS_REF_ID, PAGE_SECURITY_ID, APPLY_ORDER, NAME) VALUES (?, ?, ?, ?)");
         Statement pageSecurityConstraintsRefQueryStatement = sourceConnection.createStatement();
         pageSecurityConstraintsRefQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet pageSecurityConstraintsRefResultSet = pageSecurityConstraintsRefQueryStatement.executeQuery("SELECT CONSTRAINTS_REF_ID, PAGE_SECURITY_ID, APPLY_ORDER, NAME FROM PAGE_SEC_CONSTRAINTS_REF;");
+        ResultSet pageSecurityConstraintsRefResultSet = pageSecurityConstraintsRefQueryStatement.executeQuery("SELECT CONSTRAINTS_REF_ID, PAGE_SECURITY_ID, APPLY_ORDER, NAME FROM PAGE_SEC_CONSTRAINTS_REF");
         while (pageSecurityConstraintsRefResultSet.next())
         {
             pageSecurityConstraintsRefInsertStatement.setInt(1, pageSecurityConstraintsRefResultSet.getInt(1));
@@ -923,9 +923,9 @@ public class JetspeedDBPageManagerMigration implements JetspeedMigration
         pageSecurityConstraintsRefInsertStatement.close();
         
         // OJB_HL_SEQ
-        PreparedStatement ojbInsertStatement = targetConnection.prepareStatement("INSERT INTO OJB_HL_SEQ (TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement ojbInsertStatement = targetConnection.prepareStatement("INSERT INTO OJB_HL_SEQ (TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION) VALUES (?, ?, ?, ?, ?)");
         Statement ojbQueryStatement = sourceConnection.createStatement();
-        ResultSet ojbResultSet = ojbQueryStatement.executeQuery("SELECT TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION FROM OJB_HL_SEQ WHERE TABLENAME IN ('SEQ_FOLDER', 'SEQ_FOLDER_CONSTRAINT', 'SEQ_FOLDER_CONSTRAINTS_REF', 'SEQ_FOLDER_MENU', 'SEQ_FOLDER_MENU_METADATA', 'SEQ_FOLDER_METADATA', 'SEQ_FOLDER_ORDER', 'SEQ_FRAGMENT', 'SEQ_FRAGMENT_CONSTRAINT', 'SEQ_FRAGMENT_CONSTRAINTS_REF', 'SEQ_FRAGMENT_PREF', 'SEQ_FRAGMENT_PREF_VALUE', 'SEQ_FRAGMENT_PROP', 'SEQ_LINK', 'SEQ_LINK_CONSTRAINT', 'SEQ_LINK_CONSTRAINTS_REF', 'SEQ_LINK_METADATA', 'SEQ_PAGE', 'SEQ_PAGE_CONSTRAINT', 'SEQ_PAGE_CONSTRAINTS_REF', 'SEQ_PAGE_MENU', 'SEQ_PAGE_MENU_METADATA', 'SEQ_PAGE_METADATA', 'SEQ_PAGE_SECURITY', 'SEQ_PAGE_SEC_CONSTRAINTS_DEF', 'SEQ_PAGE_SEC_CONSTRAINTS_REF', 'SEQ_PAGE_SEC_CONSTRAINT_DEF');");
+        ResultSet ojbResultSet = ojbQueryStatement.executeQuery("SELECT TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION FROM OJB_HL_SEQ WHERE TABLENAME IN ('SEQ_FOLDER', 'SEQ_FOLDER_CONSTRAINT', 'SEQ_FOLDER_CONSTRAINTS_REF', 'SEQ_FOLDER_MENU', 'SEQ_FOLDER_MENU_METADATA', 'SEQ_FOLDER_METADATA', 'SEQ_FOLDER_ORDER', 'SEQ_FRAGMENT', 'SEQ_FRAGMENT_CONSTRAINT', 'SEQ_FRAGMENT_CONSTRAINTS_REF', 'SEQ_FRAGMENT_PREF', 'SEQ_FRAGMENT_PREF_VALUE', 'SEQ_FRAGMENT_PROP', 'SEQ_LINK', 'SEQ_LINK_CONSTRAINT', 'SEQ_LINK_CONSTRAINTS_REF', 'SEQ_LINK_METADATA', 'SEQ_PAGE', 'SEQ_PAGE_CONSTRAINT', 'SEQ_PAGE_CONSTRAINTS_REF', 'SEQ_PAGE_MENU', 'SEQ_PAGE_MENU_METADATA', 'SEQ_PAGE_METADATA', 'SEQ_PAGE_SECURITY', 'SEQ_PAGE_SEC_CONSTRAINTS_DEF', 'SEQ_PAGE_SEC_CONSTRAINTS_REF', 'SEQ_PAGE_SEC_CONSTRAINT_DEF')");
         while (ojbResultSet.next())
         {
             ojbInsertStatement.setString(1, ojbResultSet.getString(1));

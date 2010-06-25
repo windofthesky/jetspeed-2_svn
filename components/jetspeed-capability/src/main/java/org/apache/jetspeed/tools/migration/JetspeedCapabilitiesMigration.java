@@ -55,10 +55,10 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         int rowsMigrated = 0;
         
         // MEDIA_TYPE
-        PreparedStatement mediaTypeInsertStatement = targetConnection.prepareStatement("INSERT INTO MEDIA_TYPE (MEDIATYPE_ID, NAME, CHARACTER_SET, TITLE, DESCRIPTION) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement mediaTypeInsertStatement = targetConnection.prepareStatement("INSERT INTO MEDIA_TYPE (MEDIATYPE_ID, NAME, CHARACTER_SET, TITLE, DESCRIPTION) VALUES (?, ?, ?, ?, ?)");
         Statement mediaTypeQueryStatement = sourceConnection.createStatement();
         mediaTypeQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet mediaTypeResultSet = mediaTypeQueryStatement.executeQuery("SELECT MEDIATYPE_ID, NAME, CHARACTER_SET, TITLE, DESCRIPTION FROM MEDIA_TYPE;");
+        ResultSet mediaTypeResultSet = mediaTypeQueryStatement.executeQuery("SELECT MEDIATYPE_ID, NAME, CHARACTER_SET, TITLE, DESCRIPTION FROM MEDIA_TYPE");
         while (mediaTypeResultSet.next())
         {
             mediaTypeInsertStatement.setInt(1, mediaTypeResultSet.getInt(1));
@@ -74,10 +74,10 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         mediaTypeInsertStatement.close();
         
         // CLIENT
-        PreparedStatement clientInsertStatement = targetConnection.prepareStatement("INSERT INTO CLIENT (CLIENT_ID, EVAL_ORDER, NAME, USER_AGENT_PATTERN, MANUFACTURER, MODEL, VERSION, PREFERRED_MIMETYPE_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement clientInsertStatement = targetConnection.prepareStatement("INSERT INTO CLIENT (CLIENT_ID, EVAL_ORDER, NAME, USER_AGENT_PATTERN, MANUFACTURER, MODEL, VERSION, PREFERRED_MIMETYPE_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         Statement clientQueryStatement = sourceConnection.createStatement();
         clientQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet clientResultSet = clientQueryStatement.executeQuery("SELECT CLIENT_ID, EVAL_ORDER, NAME, USER_AGENT_PATTERN, MANUFACTURER, MODEL, VERSION, PREFERRED_MIMETYPE_ID FROM CLIENT;");
+        ResultSet clientResultSet = clientQueryStatement.executeQuery("SELECT CLIENT_ID, EVAL_ORDER, NAME, USER_AGENT_PATTERN, MANUFACTURER, MODEL, VERSION, PREFERRED_MIMETYPE_ID FROM CLIENT");
         while (clientResultSet.next())
         {
             clientInsertStatement.setInt(1, clientResultSet.getInt(1));
@@ -96,10 +96,10 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         clientInsertStatement.close();
         
         // MIMETYPE
-        PreparedStatement mimeTypeInsertStatement = targetConnection.prepareStatement("INSERT INTO MIMETYPE (MIMETYPE_ID, NAME) VALUES (?, ?);");
+        PreparedStatement mimeTypeInsertStatement = targetConnection.prepareStatement("INSERT INTO MIMETYPE (MIMETYPE_ID, NAME) VALUES (?, ?)");
         Statement mimeTypeQueryStatement = sourceConnection.createStatement();
         mimeTypeQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet mimeTypeResultSet = mimeTypeQueryStatement.executeQuery("SELECT MIMETYPE_ID, NAME FROM MIMETYPE;");
+        ResultSet mimeTypeResultSet = mimeTypeQueryStatement.executeQuery("SELECT MIMETYPE_ID, NAME FROM MIMETYPE");
         while (mimeTypeResultSet.next())
         {
             mimeTypeInsertStatement.setInt(1, mimeTypeResultSet.getInt(1));
@@ -112,10 +112,10 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         mimeTypeInsertStatement.close();
         
         // CAPABILITY
-        PreparedStatement capabilityInsertStatement = targetConnection.prepareStatement("INSERT INTO CAPABILITY (CAPABILITY_ID, CAPABILITY) VALUES (?, ?);");
+        PreparedStatement capabilityInsertStatement = targetConnection.prepareStatement("INSERT INTO CAPABILITY (CAPABILITY_ID, CAPABILITY) VALUES (?, ?)");
         Statement capabilityQueryStatement = sourceConnection.createStatement();
         capabilityQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet capabilityResultSet = capabilityQueryStatement.executeQuery("SELECT CAPABILITY_ID, CAPABILITY FROM CAPABILITY;");
+        ResultSet capabilityResultSet = capabilityQueryStatement.executeQuery("SELECT CAPABILITY_ID, CAPABILITY FROM CAPABILITY");
         while (capabilityResultSet.next())
         {
             capabilityInsertStatement.setInt(1, capabilityResultSet.getInt(1));
@@ -128,10 +128,10 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         capabilityInsertStatement.close();
 
         // CLIENT_TO_CAPABILITY
-        PreparedStatement clientToCapabilityInsertStatement = targetConnection.prepareStatement("INSERT INTO CLIENT_TO_CAPABILITY (CLIENT_ID, CAPABILITY_ID) VALUES (?, ?);");
+        PreparedStatement clientToCapabilityInsertStatement = targetConnection.prepareStatement("INSERT INTO CLIENT_TO_CAPABILITY (CLIENT_ID, CAPABILITY_ID) VALUES (?, ?)");
         Statement clientToCapabilityQueryStatement = sourceConnection.createStatement();
         clientToCapabilityQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet clientToCapabilityResultSet = clientToCapabilityQueryStatement.executeQuery("SELECT CLIENT_ID, CAPABILITY_ID FROM CLIENT_TO_CAPABILITY;");
+        ResultSet clientToCapabilityResultSet = clientToCapabilityQueryStatement.executeQuery("SELECT CLIENT_ID, CAPABILITY_ID FROM CLIENT_TO_CAPABILITY");
         while (clientToCapabilityResultSet.next())
         {
             clientToCapabilityInsertStatement.setInt(1, clientToCapabilityResultSet.getInt(1));
@@ -144,10 +144,10 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         clientToCapabilityInsertStatement.close();
 
         // CLIENT_TO_MIMETYPE
-        PreparedStatement clientToMimeTypeInsertStatement = targetConnection.prepareStatement("INSERT INTO CLIENT_TO_MIMETYPE (CLIENT_ID, MIMETYPE_ID) VALUES (?, ?);");
+        PreparedStatement clientToMimeTypeInsertStatement = targetConnection.prepareStatement("INSERT INTO CLIENT_TO_MIMETYPE (CLIENT_ID, MIMETYPE_ID) VALUES (?, ?)");
         Statement clientToMimeTypeQueryStatement = sourceConnection.createStatement();
         clientToMimeTypeQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet clientToMimeTypeResultSet = clientToMimeTypeQueryStatement.executeQuery("SELECT CLIENT_ID, MIMETYPE_ID FROM CLIENT_TO_MIMETYPE;");
+        ResultSet clientToMimeTypeResultSet = clientToMimeTypeQueryStatement.executeQuery("SELECT CLIENT_ID, MIMETYPE_ID FROM CLIENT_TO_MIMETYPE");
         while (clientToMimeTypeResultSet.next())
         {
             clientToMimeTypeInsertStatement.setInt(1, clientToMimeTypeResultSet.getInt(1));
@@ -160,10 +160,10 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         clientToMimeTypeInsertStatement.close();
 
         // MEDIATYPE_TO_CAPABILITY
-        PreparedStatement mediaTypeToCapabilityInsertStatement = targetConnection.prepareStatement("INSERT INTO MEDIATYPE_TO_CAPABILITY (MEDIATYPE_ID, CAPABILITY_ID) VALUES (?, ?);");
+        PreparedStatement mediaTypeToCapabilityInsertStatement = targetConnection.prepareStatement("INSERT INTO MEDIATYPE_TO_CAPABILITY (MEDIATYPE_ID, CAPABILITY_ID) VALUES (?, ?)");
         Statement mediaTypeToCapabilityQueryStatement = sourceConnection.createStatement();
         mediaTypeToCapabilityQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet mediaTypeToCapabilityResultSet = mediaTypeToCapabilityQueryStatement.executeQuery("SELECT MEDIATYPE_ID, CAPABILITY_ID FROM MEDIATYPE_TO_CAPABILITY;");
+        ResultSet mediaTypeToCapabilityResultSet = mediaTypeToCapabilityQueryStatement.executeQuery("SELECT MEDIATYPE_ID, CAPABILITY_ID FROM MEDIATYPE_TO_CAPABILITY");
         while (mediaTypeToCapabilityResultSet.next())
         {
             mediaTypeToCapabilityInsertStatement.setInt(1, mediaTypeToCapabilityResultSet.getInt(1));
@@ -176,10 +176,10 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         mediaTypeToCapabilityInsertStatement.close();
 
         // MEDIATYPE_TO_MIMETYPE
-        PreparedStatement mediaTypeToMimeTypeInsertStatement = targetConnection.prepareStatement("INSERT INTO MEDIATYPE_TO_MIMETYPE (MEDIATYPE_ID, MIMETYPE_ID) VALUES (?, ?);");
+        PreparedStatement mediaTypeToMimeTypeInsertStatement = targetConnection.prepareStatement("INSERT INTO MEDIATYPE_TO_MIMETYPE (MEDIATYPE_ID, MIMETYPE_ID) VALUES (?, ?)");
         Statement mediaTypeToMimeTypeQueryStatement = sourceConnection.createStatement();
         mediaTypeToMimeTypeQueryStatement.setFetchSize(FETCH_SIZE);
-        ResultSet mediaTypeToMimeTypeResultSet = mediaTypeToMimeTypeQueryStatement.executeQuery("SELECT MEDIATYPE_ID, MIMETYPE_ID FROM MEDIATYPE_TO_MIMETYPE;");
+        ResultSet mediaTypeToMimeTypeResultSet = mediaTypeToMimeTypeQueryStatement.executeQuery("SELECT MEDIATYPE_ID, MIMETYPE_ID FROM MEDIATYPE_TO_MIMETYPE");
         while (mediaTypeToMimeTypeResultSet.next())
         {
             mediaTypeToMimeTypeInsertStatement.setInt(1, mediaTypeToMimeTypeResultSet.getInt(1));
@@ -192,9 +192,9 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
         mediaTypeToMimeTypeInsertStatement.close();
         
         // OJB_HL_SEQ
-        PreparedStatement ojbInsertStatement = targetConnection.prepareStatement("INSERT INTO OJB_HL_SEQ (TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION) VALUES (?, ?, ?, ?, ?);");
+        PreparedStatement ojbInsertStatement = targetConnection.prepareStatement("INSERT INTO OJB_HL_SEQ (TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION) VALUES (?, ?, ?, ?, ?)");
         Statement ojbQueryStatement = sourceConnection.createStatement();
-        ResultSet ojbResultSet = ojbQueryStatement.executeQuery("SELECT TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION FROM OJB_HL_SEQ WHERE TABLENAME IN ('SEQ_CAPABILITY', 'SEQ_CLIENT', 'SEQ_MEDIA_TYPE', 'SEQ_MIMETYPE');");
+        ResultSet ojbResultSet = ojbQueryStatement.executeQuery("SELECT TABLENAME, FIELDNAME, MAX_KEY, GRAB_SIZE, VERSION FROM OJB_HL_SEQ WHERE TABLENAME IN ('SEQ_CAPABILITY', 'SEQ_CLIENT', 'SEQ_MEDIA_TYPE', 'SEQ_MIMETYPE')");
         while (ojbResultSet.next())
         {
             ojbInsertStatement.setString(1, ojbResultSet.getString(1));
