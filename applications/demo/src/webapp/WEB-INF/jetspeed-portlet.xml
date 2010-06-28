@@ -39,7 +39,7 @@ limitations under the License.
     <dc:source>Default Source</dc:source>
     <dc:type>Default Type</dc:type>
     <js:metadata name="my_metadata" xml:lang="en">English My_Metadata</js:metadata>
-    <js:metadata name="pa-version">2.1.4-SNAPSHOT</js:metadata>
+    <js:metadata name="pa-version">2.1.4</js:metadata>
     
     <!--  map custom "popup" window state to Jetspeed-2 internal "solo" state -->
     <custom-window-state>

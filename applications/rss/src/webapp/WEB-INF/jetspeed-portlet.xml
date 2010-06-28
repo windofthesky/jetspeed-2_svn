@@ -25,6 +25,6 @@ limitations under the License.
     <dc:title>RSS Portlets</dc:title>
     <dc:title xml:lang="en">RSS Portlets</dc:title>
     <dc:creator>J2 Team</dc:creator>
-    <js:metadata name="pa-version">2.1.4-SNAPSHOT</js:metadata>
+    <js:metadata name="pa-version">2.1.4</js:metadata>
     	
 </portlet-app>
