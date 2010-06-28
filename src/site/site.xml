@@ -32,7 +32,7 @@
     <links>
       <item name="Applications" href="http://portals.apache.org/applications/" />
       <item name="Portals" href="http://portals.apache.org/" />
-      <item name="Jetspeed-2.1.3" href="http://portals.apache.org/jetspeed-2.1.3/" />
+      <item name="Jetspeed-2.1.4" href="http://portals.apache.org/jetspeed-2.1.4/" />
       <!-- TODO: During build, pdf docs need to be generated. 
       <item name="PDF Documentation" href="/jetspeed2.pdf" img="images/pdf.gif" />
       -->      
