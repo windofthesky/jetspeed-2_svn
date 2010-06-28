@@ -108,7 +108,7 @@ limitations under the License.
             to ensure test isolation for spring test cases;
             specifically connection datasource management.
         -->
-        <org.apache.maven.plugins.maven-surefire-plugin.version>2.1.4-SNAPSHOT</org.apache.maven.plugins.maven-surefire-plugin.version>
+        <org.apache.maven.plugins.maven-surefire-plugin.version>2.1.3</org.apache.maven.plugins.maven-surefire-plugin.version>
         <torque.version>3.2-rc3</torque.version>
 
         <!-- Project Dependency Version Properties -->

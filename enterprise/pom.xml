@@ -81,9 +81,9 @@ limitations under the License.
     <!-- Project Information -->
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/enterprise</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/enterprise</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/enterprise/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/enterprise</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/enterprise</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/enterprise/</url>
     </scm>
     
 </project>

@@ -105,9 +105,9 @@ limitations under the License.
     <!-- Project Information -->
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/webapp-logging</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/webapp-logging</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/webapp-logging/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/components/webapp-logging</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/components/webapp-logging</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/components/webapp-logging/</url>
     </scm>
 
 </project>

@@ -94,9 +94,9 @@ limitations under the License.
     <!-- Project Information -->
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/portlet-factory</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/components/portlet-factory</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/portlet-factory/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/components/portlet-factory</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/components/portlet-factory</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/components/portlet-factory/</url>
     </scm>
 
 </project>

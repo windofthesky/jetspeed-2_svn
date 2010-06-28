@@ -193,6 +193,40 @@ limitations under the License.
 
     <build>
         <plugins>
+      <plugin>
+        <!--
+          workaround for war processing of m-r-r-plugin causing the generated
+          NOTICE and LICENSE file to be put under WEB-INF/classes/META-INF
+        -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${build.finalName}</outputDirectory>
+              <attached>false</attached>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+	  <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-source-plugin</artifactId>
+          <configuration>
+          <attach>false</attach>
+         </configuration>
+      </plugin>         
+       <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+          <attach>false</attach>
+         </configuration>
+      </plugin>         
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -230,9 +264,9 @@ limitations under the License.
     <!-- Project Information -->
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/j2-admin</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/applications/j2-admin</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/applications/j2-admin/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/applications/j2-admin</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/applications/j2-admin</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/applications/j2-admin/</url>
     </scm>
 
 </project>

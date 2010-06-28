@@ -125,9 +125,9 @@ limitations under the License.
     <!-- Project Information -->
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/rewriter</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/trunk/rewriter</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/trunk/components/rewriter/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/rewriter</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/rewriter</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/portal/branches/JETSPEED-2.1.4/components/rewriter/</url>
     </scm>
 
 </project>

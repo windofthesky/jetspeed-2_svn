@@ -69,7 +69,7 @@
   <page type="input" name="properties" displayText="Temporary installation location" ifProperty="${operation}!=install">
     <comment displayText="Select temporary directory requried by installer if necessary." />
     <comment displayText="" />
-    <directory property="installDir" defaultValue="${java.java.io.tmpdir}/Jetspeed-2.2.1-SNAPSHOT"
+    <directory property="installDir" defaultValue="${java.java.io.tmpdir}/Jetspeed-2.1.4"
       displayText="Enter temporary directory"/>
   </page>
 
