@@ -588,36 +588,38 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     {
                         contextPath = webApplicationResultSet.getString(1);
                     }
-                    else
-                    {
-                        throw new SQLException("Unable to find web application for id: "+webApplicationId);
-                    }
                     webApplicationResultSet.close();
                     
                     int applicationId = 0;
-                    applicationQueryStatement.setString(1, contextPath);
-                    ResultSet applicationResultSet = applicationQueryStatement.executeQuery();
-                    if (applicationResultSet.next())
+                    if (contextPath != null)
                     {
-                        applicationId = applicationResultSet.getInt(1);
+                        applicationQueryStatement.setString(1, contextPath);
+                        ResultSet applicationResultSet = applicationQueryStatement.executeQuery();
+                        if (applicationResultSet.next())
+                        {
+                            applicationId = applicationResultSet.getInt(1);
+                        }
+                        applicationResultSet.close();
+                    }
+     
+                    if ((contextPath != null) && (applicationId != 0))
+                    {
+                        securityRoleInsertStatement.setInt(1, securityRoleResultSet.getInt(1));
+                        securityRoleInsertStatement.setInt(2, applicationId);
+                        securityRoleInsertStatement.setString(3, securityRoleResultSet.getString(3));
+                        securityRoleInsertStatement.executeUpdate();
+                        rowsMigrated++;
+
+                        int securityRoleId = securityRoleResultSet.getInt(1);
+                        String description = securityRoleResultSet.getString(4);
+                        if (description != null)
+                        {
+                            localizedDescriptions.add(new LocalizedDescription(securityRoleId, "org.apache.jetspeed.om.portlet.impl.SecurityRoleImpl", description));
+                        }
                     }
                     else
                     {
-                        throw new SQLException("Unable to find portlet application for context: "+contextPath);
-                    }
-                    applicationResultSet.close();
-                    
-                    securityRoleInsertStatement.setInt(1, securityRoleResultSet.getInt(1));
-                    securityRoleInsertStatement.setInt(2, applicationId);
-                    securityRoleInsertStatement.setString(3, securityRoleResultSet.getString(3));
-                    securityRoleInsertStatement.executeUpdate();
-                    rowsMigrated++;
-
-                    int securityRoleId = securityRoleResultSet.getInt(1);
-                    String description = securityRoleResultSet.getString(4);
-                    if (description != null)
-                    {
-                        localizedDescriptions.add(new LocalizedDescription(securityRoleId, "org.apache.jetspeed.om.portlet.impl.SecurityRoleImpl", description));
+                        rowsDropped++;
                     }
                 }
                 applicationQueryStatement.close();
