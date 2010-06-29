@@ -67,10 +67,10 @@ public interface JetspeedMigration
      * @param sourceConnection connection to source database
      * @param sourceVersion source version
      * @param targetConnection connection to target database
-     * @return database rows migrated
+     * @return migration result
      * @throws SQLException on SQL error or version incompatibility
      */
-    int migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection) throws SQLException;
+    JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection) throws SQLException;
 
     /**
      * Static utility functions class.

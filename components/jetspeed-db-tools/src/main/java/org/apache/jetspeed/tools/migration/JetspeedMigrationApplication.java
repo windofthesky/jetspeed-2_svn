@@ -237,8 +237,15 @@ public class JetspeedMigrationApplication
         for (JetspeedMigration migration : migrations)
         {
             log.info("Migrating "+migration.getName()+" data...");
-            int rowsMigrated = migration.migrate(sourceConnection, sourceVersion, targetConnection);
-            log.info("Migrated "+rowsMigrated+" "+migration.getName()+" data rows.");
+            JetspeedMigrationResult result = migration.migrate(sourceConnection, sourceVersion, targetConnection);
+            if (result.getDroppedRows() == 0)
+            {
+                log.info("Migrated "+result.getMigratedRows()+" "+migration.getName()+" data rows.");
+            }
+            else
+            {
+                log.info("Migrated "+result.getMigratedRows()+" "+migration.getName()+" data rows, ("+result.getDroppedRows()+" dropped).");
+            }
         }
 
         // add constraints and remaining schema to target database

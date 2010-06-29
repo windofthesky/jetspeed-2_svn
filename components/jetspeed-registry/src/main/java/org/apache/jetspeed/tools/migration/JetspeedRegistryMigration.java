@@ -68,10 +68,11 @@ public class JetspeedRegistryMigration implements JetspeedMigration
     /* (non-Javadoc)
      * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection)
      */
-    public int migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection) throws SQLException
+    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection) throws SQLException
     {
         List<LocalizedDescription> localizedDescriptions = new ArrayList<LocalizedDescription>();
         int rowsMigrated = 0;
+        int rowsDropped = 0;
         
         // PORTLET_DEFINITION
         PreparedStatement portletDefinitionInsertStatement = targetConnection.prepareStatement("INSERT INTO PORTLET_DEFINITION (ID, NAME, CLASS_NAME, APPLICATION_ID, EXPIRATION_CACHE, RESOURCE_BUNDLE, PREFERENCE_VALIDATOR, SECURITY_REF, CACHE_SCOPE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -429,10 +430,6 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                                     applicationName = portletEntityResultSet.getString(1);
                                     portletName = portletEntityResultSet.getString(2);
                                 }
-                                else
-                                {
-                                    throw new SQLException("Unable to find portlet entity for id: "+entityId);
-                                }
                                 portletEntityResultSet.close();
                             }
                         }
@@ -473,6 +470,10 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                             portletPreferenceInsertStatement.setShort(8, readOnly);
                             portletPreferenceInsertStatement.executeUpdate();
                             rowsMigrated++;                            
+                        }
+                        else
+                        {
+                            rowsDropped++;
                         }
                     }
                 }
@@ -1358,7 +1359,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
         }
         ojbInsertStatement.close();
         
-        return rowsMigrated;
+        return new JetspeedMigrationResultImpl(rowsMigrated, rowsDropped);
     }
     
     /**

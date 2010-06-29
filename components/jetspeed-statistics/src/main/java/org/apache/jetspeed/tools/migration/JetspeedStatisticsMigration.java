@@ -50,7 +50,7 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
     /* (non-Javadoc)
      * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection)
      */
-    public int migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection) throws SQLException
+    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection) throws SQLException
     {
         int rowsMigrated = 0;
                 
@@ -172,6 +172,6 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
         userActivityQueryStatement.close();
         userActivityInsertStatement.close();
         
-        return rowsMigrated;
+        return new JetspeedMigrationResultImpl(rowsMigrated);
     }
 }

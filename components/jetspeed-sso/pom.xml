@@ -47,6 +47,11 @@
     </dependency>
     <dependency>
       <groupId>${pom.groupId}</groupId>
+      <artifactId>jetspeed-commons</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>${pom.groupId}</groupId>
       <artifactId>jetspeed-rdbms</artifactId>
     </dependency>
     <dependency>
@@ -64,11 +69,6 @@
     </dependency>
 
     <!-- Test Dependencies -->
-    <dependency>
-      <groupId>${pom.groupId}</groupId>
-      <artifactId>jetspeed-commons</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>${pom.groupId}</groupId>
       <artifactId>jetspeed-file-cache</artifactId>
