@@ -516,15 +516,30 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             case JETSPEED_SCHEMA_VERSION_2_1_4:
             {
                 portletPreferenceValueResultSet = portletPreferenceValueQueryStatement.executeQuery("SELECT V.PROPERTY_VALUE_ID, N.NODE_ID, V.PROPERTY_NAME, V.PROPERTY_VALUE FROM PREFS_PROPERTY_VALUE V, PREFS_NODE N, PREFS_NODE NV WHERE NV.NODE_ID = V.NODE_ID AND NV.FULL_PATH LIKE '%/values' AND N.NODE_ID = NV.PARENT_NODE_ID");
+                PreparedStatement portletPreferenceIdQueryStatement = targetConnection.prepareStatement("SELECT ID FROM PORTLET_PREFERENCE WHERE ID = ?");
                 while (portletPreferenceValueResultSet.next())
                 {
-                    portletPreferenceValueInsertStatement.setInt(1, portletPreferenceValueResultSet.getInt(1));
-                    portletPreferenceValueInsertStatement.setInt(2, portletPreferenceValueResultSet.getInt(2));
-                    portletPreferenceValueInsertStatement.setShort(3, Short.parseShort(portletPreferenceValueResultSet.getString(3)));
-                    portletPreferenceValueInsertStatement.setString(4, portletPreferenceValueResultSet.getString(4));
-                    portletPreferenceValueInsertStatement.executeUpdate();
-                    rowsMigrated++;
+                    int portletPreferenceId = portletPreferenceValueResultSet.getInt(2);
+                    portletPreferenceIdQueryStatement.setInt(1, portletPreferenceId);
+                    ResultSet portletPreferenceIdResultSet = portletPreferenceIdQueryStatement.executeQuery();
+                    boolean portletPreferenceIdExists = portletPreferenceIdResultSet.next();
+                    portletPreferenceIdResultSet.close();
+                    
+                    if (portletPreferenceIdExists)
+                    {
+                        portletPreferenceValueInsertStatement.setInt(1, portletPreferenceValueResultSet.getInt(1));
+                        portletPreferenceValueInsertStatement.setInt(2, portletPreferenceId);
+                        portletPreferenceValueInsertStatement.setShort(3, Short.parseShort(portletPreferenceValueResultSet.getString(3)));
+                        portletPreferenceValueInsertStatement.setString(4, portletPreferenceValueResultSet.getString(4));
+                        portletPreferenceValueInsertStatement.executeUpdate();
+                        rowsMigrated++;
+                    }
+                    else
+                    {
+                        rowsDropped++;
+                    }
                 }
+                portletPreferenceIdQueryStatement.close();
             }
             break;
             case JETSPEED_SCHEMA_VERSION_2_2_0:
