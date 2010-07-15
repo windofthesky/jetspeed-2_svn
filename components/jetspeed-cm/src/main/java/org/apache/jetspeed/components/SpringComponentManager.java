@@ -267,8 +267,12 @@ public class SpringComponentManager implements ComponentManager
     {
         if (started)
         {
+            appContext.stop();
             appContext.close();
+
+            bootCtx.stop();
             bootCtx.close();
+            
             started = false;
         }
     }
@@ -304,8 +308,11 @@ public class SpringComponentManager implements ComponentManager
                 bootCtx.getBeanFactory().registerSingleton(entry.getKey().toString(), entry.getValue());
             }
         }
-
+        bootCtx.start();
+        
         appContext.refresh();
+        appContext.start();
+        
         started = true;
     }
 }

@@ -173,7 +173,7 @@
     deploying components.  What components get deployed depend of
     DeploymentEventListeners registered to it.
   -->
-  <bean id="deploymentManager" class="org.apache.jetspeed.deployment.impl.StandardDeploymentManager" init-method="start"
+  <bean id="deploymentManager" class="org.apache.jetspeed.deployment.impl.StandardDeploymentManager"
     destroy-method="stop">
     <meta key="j2:cat" value="default" />
     <constructor-arg>
@@ -187,6 +187,25 @@
         <ref bean="portletAppDeploymentListener" />
         <ref bean="decoratorDeploymentListener" />
       </list>
+    </constructor-arg>
+  </bean>
+  
+  <!-- Start the deploymentManager after the application context started. -->
+  <bean class="org.apache.jetspeed.components.ApplicationEventMethodsInvoker">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg>
+      <map>
+        <entry>
+          <key><value>org.springframework.context.event.ContextStartedEvent</value></key>
+          <list>
+            <bean class="org.springframework.util.MethodInvoker">
+              <meta key="j2:cat" value="default" />
+              <property name="targetObject" ref="deploymentManager" />
+              <property name="targetMethod" value="start" />
+            </bean>
+          </list>
+        </entry>
+      </map>
     </constructor-arg>
   </bean>
 
