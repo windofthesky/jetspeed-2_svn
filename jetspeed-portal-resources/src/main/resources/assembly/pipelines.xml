@@ -442,6 +442,13 @@
       <ref bean="portletFactory" />
     </constructor-arg>
     
+    <!-- default decorator actions factory -->
+    <constructor-arg index='5'>
+      <bean class="org.apache.jetspeed.decoration.DefaultDecoratorActionsFactory">
+        <meta key="j2:cat" value="default" />
+      </bean>
+    </constructor-arg>
+    
     <!-- When clicking on Edit Mode, also switch to Maximize -->
     <property name="maximizeOnEdit">
       <value>false</value>

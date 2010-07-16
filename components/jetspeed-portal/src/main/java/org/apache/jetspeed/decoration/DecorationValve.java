@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.portlet.PortletMode;
@@ -63,7 +64,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @author <href a="mailto:firevelocity@gmail.com">Vivek Kumar</a>
- *
+ * @version $Id$
  */
 public class DecorationValve extends AbstractValve implements Valve
 {
@@ -74,9 +75,11 @@ public class DecorationValve extends AbstractValve implements Valve
     
     private final DecorationFactory decorationFactory;
 
-    private HashMap decoratorActionsAdapterCache = new HashMap();
+    private Map<String, DecoratorActionsFactory> decoratorActionsAdapterCache = Collections.synchronizedMap(new HashMap<String, DecoratorActionsFactory>());
     
     private DecoratorActionsFactory defaultDecoratorActionsFactory;
+    
+    private String defaultDecoratorActionsFactoryClassName;
 
     private JetspeedContentCache cache = null;
     
@@ -130,9 +133,19 @@ public class DecorationValve extends AbstractValve implements Valve
                            SecurityAccessController accessController, 
                            JetspeedContentCache cache, boolean useSessionForThemeCaching,
                            PortletFactory portletFactory)
-    {       
+    {
+        this(decorationFactory, accessController, cache, useSessionForThemeCaching, null, new DefaultDecoratorActionsFactory());
+    }
+    
+    public DecorationValve(DecorationFactory decorationFactory,
+                           SecurityAccessController accessController, 
+                           JetspeedContentCache cache, boolean useSessionForThemeCaching,
+                           PortletFactory portletFactory,
+                           DecoratorActionsFactory defaultDecoratorActionsFactory)
+    {
         this.decorationFactory = decorationFactory;
-        this.defaultDecoratorActionsFactory = new DefaultDecoratorActionsFactory();        
+        this.defaultDecoratorActionsFactory = defaultDecoratorActionsFactory;
+        this.defaultDecoratorActionsFactoryClassName = defaultDecoratorActionsFactory.getClass().getName();
         //added the accessController in portlet decorater for checking the actions
         this.accessController = accessController;        
         this.cache = cache;
@@ -298,37 +311,33 @@ public class DecorationValve extends AbstractValve implements Valve
     
     public DecoratorActionsFactory getDecoratorActionsAdapter(Decoration decoration)
     {
-        // FIXME: why always get this property
+        // read custom decorator actions factory class name from the decoration properties.
         String decoratorActionsAdapterClassName = decoration.getProperty("actions.factory");
-        if ( decoratorActionsAdapterClassName == null )
+        if (decoratorActionsAdapterClassName == null || "".equals(decoratorActionsAdapterClassName) || decoratorActionsAdapterClassName.equals(defaultDecoratorActionsFactoryClassName))
         {
-            decoratorActionsAdapterClassName = defaultDecoratorActionsFactory.getClass().getName();
+            return defaultDecoratorActionsFactory;
         }
-        synchronized (decoratorActionsAdapterCache)
+        
+        DecoratorActionsFactory adapter = (DecoratorActionsFactory) decoratorActionsAdapterCache.get(decoratorActionsAdapterClassName);
+        
+        if (adapter == null)
         {
-            DecoratorActionsFactory adapter = (DecoratorActionsFactory)decoratorActionsAdapterCache.get(decoratorActionsAdapterClassName);
-            if ( adapter == null )
+            try
             {
-                try
-                {
-                    adapter = (DecoratorActionsFactory)Class.forName(decoratorActionsAdapterClassName).newInstance();
-                    adapter.setMaximizeOnEdit(this.maxOnEdit);
-                    adapter.setMaximizeOnConfig(this.maxOnConfig);
-                    adapter.setMaximizeOnEditDefaults(this.maxOnEditDefaults);
-                }
-                catch (Exception e)
-                {
-                    log.error("Failed to instantiate custom DecoratorActionsAdaptor "+decoratorActionsAdapterClassName+", falling back to default.",e);
-                    adapter = (DecoratorActionsFactory)decoratorActionsAdapterCache.get(defaultDecoratorActionsFactory.getClass().getName());
-                    if ( adapter == null )
-                    {
-                        adapter = defaultDecoratorActionsFactory;
-                    }
-                }
-                decoratorActionsAdapterCache.put(decoratorActionsAdapterClassName,adapter);
+                adapter = (DecoratorActionsFactory) Class.forName(decoratorActionsAdapterClassName).newInstance();
+                adapter.setMaximizeOnEdit(this.maxOnEdit);
+                adapter.setMaximizeOnConfig(this.maxOnConfig);
+                adapter.setMaximizeOnEditDefaults(this.maxOnEditDefaults);
+                decoratorActionsAdapterCache.put(decoratorActionsAdapterClassName, adapter);
             }
-            return adapter;
+            catch (Exception e)
+            {
+                adapter = defaultDecoratorActionsFactory;
+                log.error("Failed to instantiate custom DecoratorActionsAdaptor " + decoratorActionsAdapterClassName + ", falling back to default.", e);
+            }
         }
+        
+        return adapter;
     }
     
     /**
