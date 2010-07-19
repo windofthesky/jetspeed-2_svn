@@ -293,7 +293,7 @@
     <org.apache.portals.applications.apa-gems.version>1.1</org.apache.portals.applications.apa-gems.version>
     <org.apache.portals.applications.apa-logging.version>1.0</org.apache.portals.applications.apa-logging.version>
     <org.apache.portals.applications.apa-rss.version>1.1</org.apache.portals.applications.apa-rss.version>
-    <org.apache.portals.applications.apa-webcontent.version>1.1</org.apache.portals.applications.apa-webcontent.version>
+    <org.apache.portals.applications.apa-webcontent.version>1.2-SNAPSHOT</org.apache.portals.applications.apa-webcontent.version>
     <org.apache.portals.applications.apa-dbbrowser.version>1.1</org.apache.portals.applications.apa-dbbrowser.version>
     <org.openid4java.version>0.9.5</org.openid4java.version>
     <oro.version>2.0.8</oro.version>
