@@ -13,26 +13,30 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="groovy"
+<page id="script"
     xmlns="http://portals.apache.org/jetspeed"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/psml.xsd">
  
-  <title>Groovy</title>
-  <fragment id="groovy-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="groovy-2" type="portlet" name="demo::HelloGroovy" >
+  <title>Script Portlets</title>
+  <fragment id="script-1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
+    <fragment id="script-2" type="portlet" name="demo::HelloJRuby" >
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="groovy-3" type="portlet" name="demo::GroovyCustomerList" >
+    <fragment id="script-3" type="portlet" name="demo::HelloGroovy" >
       <property layout="TwoColumns" name="row" value="0" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="groovy-4" type="portlet" name="demo::GroovyCustomerInfo" >
+    <fragment id="script-4" type="portlet" name="demo::GroovyCustomerList" >
+      <property layout="TwoColumns" name="row" value="0" />
+      <property layout="TwoColumns" name="column" value="2" />
+    </fragment>
+    <fragment id="script-5" type="portlet" name="demo::GroovyCustomerInfo" >
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
-    <fragment id="groovy-5" type="portlet" name="demo::GroovyDojoCustomerList" >
+    <fragment id="script-6" type="portlet" name="demo::GroovyDojoCustomerList" >
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
