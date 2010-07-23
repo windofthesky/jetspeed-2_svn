@@ -166,6 +166,7 @@ public class PortletRegistryService
     public PortletDefinitionBeanCollection getPortletDefinitions(@Context HttpServletRequest servletRequest,
                                                                  @Context UriInfo uriInfo,
                                                                  @PathParam("path") List<PathSegment> pathSegments, 
+                                                                 @QueryParam("keywords") String keywordsParam, 
                                                                  @QueryParam("query") String queryParam, 
                                                                  @QueryParam("begin") String beginIndexParam,
                                                                  @QueryParam("max") String maxResultsParam)
@@ -194,13 +195,23 @@ public class PortletRegistryService
         pdBeans.setTotalSize(0);
         List<PortletDefinitionBean> pdBeanList = new ArrayList<PortletDefinitionBean>();
         
-        if (!StringUtils.isBlank(queryParam))
+        if (!StringUtils.isBlank(keywordsParam) || !StringUtils.isBlank(queryParam))
         {
             String queryText = 
                 ParsedObject.FIELDNAME_TYPE + ":\"" + ParsedObject.OBJECT_TYPE_PORTLET + "\" " +
                 "AND NOT " + ParsedObject.FIELDNAME_TYPE + ":\"" + ParsedObject.OBJECT_TYPE_PORTLET_APPLICATION + "\" " + 
-                "AND ( " + queryParam + " )";
-            SearchResults searchResults = searchEngine.search(queryText);
+                "AND ( " + (!StringUtils.isBlank(keywordsParam) ? keywordsParam : queryParam) + " )";
+            SearchResults searchResults = null;
+            
+            if (!StringUtils.isBlank(keywordsParam))
+            {
+                searchResults = searchEngine.search(queryText, ParsedObject.FIELDNAME_KEYWORDS);
+            }
+            else
+            {
+                searchResults = searchEngine.search(queryText);
+            }
+            
             List<ParsedObject> searchResultList = searchResults.getResults();
             ArrayList<PortletDefinition> searchedPortletDefinitions = new ArrayList<PortletDefinition>();
             

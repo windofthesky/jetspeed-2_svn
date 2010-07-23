@@ -40,5 +40,7 @@ public interface SearchEngine
     
     SearchResults search(String query);
     
-    SearchResults search(String query, int topHitsCount);
+    SearchResults search(String query, String defaultFieldName);
+    
+    SearchResults search(String query, String defaultFieldName, int topHitsCount);
 }

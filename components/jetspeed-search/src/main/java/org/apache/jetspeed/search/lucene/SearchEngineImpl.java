@@ -495,13 +495,21 @@ public class SearchEngineImpl implements SearchEngine
      */
     public SearchResults search(String queryString)
     {
-        return search(queryString, defaultTopHitsCount);
+        return search(queryString, ParsedObject.FIELDNAME_SYNTHETIC);
     }
     
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.search.SearchEngine#search(java.lang.String)
+     * @see org.apache.jetspeed.search.SearchEngine#search(java.lang.String, java.lang.String)
      */
-    public SearchResults search(String queryString, int topHitsCount)
+    public SearchResults search(String queryString, String defaultFieldName)
+    {
+        return search(queryString, defaultFieldName, defaultTopHitsCount);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.search.SearchEngine#search(java.lang.String, java.lang.String, int)
+     */
+    public SearchResults search(String queryString, String defaultFieldName, int topHitsCount)
     {
         SearchResults results = null;
         
@@ -513,7 +521,7 @@ public class SearchEngineImpl implements SearchEngine
             indexReader = IndexReader.open(directory);
             searcher = new IndexSearcher(indexReader);
             
-            QueryParser queryParser = new QueryParser(Version.LUCENE_30, ParsedObject.FIELDNAME_SYNTHETIC, analyzer);
+            QueryParser queryParser = new QueryParser(Version.LUCENE_30, defaultFieldName, analyzer);
             Query query = queryParser.parse(queryString);
             TopDocs topDocs = searcher.search(query, topHitsCount);
             
