@@ -17,24 +17,25 @@
 package org.apache.jetspeed.search;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.jetspeed.search.ParsedObject;
-import org.apache.jetspeed.search.SearchEngine;
-import org.apache.jetspeed.search.SearchResults;
-import org.apache.jetspeed.search.handlers.HandlerFactoryImpl;
-import org.apache.jetspeed.search.lucene.SearchEngineImpl;
-import org.apache.jetspeed.test.JetspeedTestCase;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.search.handlers.HandlerFactoryImpl;
+import org.apache.jetspeed.search.lucene.SearchEngineImpl;
+import org.apache.jetspeed.test.JetspeedTestCase;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.Version;
+
 /**
  * @author jford
- *
+ * @version $Id$
  */
 public class TestSearch extends JetspeedTestCase
 {
@@ -42,6 +43,10 @@ public class TestSearch extends JetspeedTestCase
     private final static String INDEX_DIRECTORY = "target/search_index";
 
     private File indexRoot;
+    
+    private Directory directory;
+    private Analyzer analyzer;
+    
     SearchEngine searchEngine;
     
     private URL jetspeedHomePage = null;
@@ -51,12 +56,15 @@ public class TestSearch extends JetspeedTestCase
         super(name);
         
         try {
-            jetspeedHomePage = new URL("http://portals.apache.org/jetspeed-1/");
-        } catch (MalformedURLException e) {
+            jetspeedHomePage = getClass().getResource("jetspeed-1.txt");
+        } catch (Exception e) {
             e.printStackTrace();
         }
         
         indexRoot = new File(getBaseDir()+INDEX_DIRECTORY);
+        
+        directory = new RAMDirectory();
+        analyzer = new StandardAnalyzer(Version.LUCENE_30);
     }
     
     /**
@@ -89,29 +97,17 @@ public class TestSearch extends JetspeedTestCase
         
         HandlerFactoryImpl hfi = new HandlerFactoryImpl(mapping);
         
-        searchEngine = new SearchEngineImpl(indexRoot.getPath(), null, true, hfi);
+        //searchEngine = new SearchEngineImpl(indexRoot.getPath(), null, true, hfi);
+        searchEngine = new SearchEngineImpl(directory, analyzer, true, hfi);
     }
     
     protected void tearDown() throws Exception
     {
-        File[] indexFiles = indexRoot.listFiles();
-        if(indexFiles != null)
-        {
-	        for(int i=0; i<indexFiles.length; i++)
-	        {
-	            File file = indexFiles[i];
-	            file.delete();
-	        }
-        }
-        
-        indexRoot.delete();
         super.tearDown();
     }
     
     public void testRemoveWebPage() throws Exception
     {
-        //System.out.println("search home = " + JetspeedResources.getString("services.SearchService.directory"));
-        
         assertNotNull("Created URL to Jetspeed Home Page",  jetspeedHomePage);
         assertTrue("Removing non-existent index entry", searchEngine.remove(jetspeedHomePage) == false);
         assertTrue("Adding to index", searchEngine.add(jetspeedHomePage));
@@ -120,12 +116,10 @@ public class TestSearch extends JetspeedTestCase
     
     public void testPutWebPage() throws Exception
     {
-        //System.out.println("search home = " + JetspeedResources.getString("services.SearchService.directory"));
-        
         assertNotNull("Created URL to Jetspeed Home Page",  jetspeedHomePage);
         assertTrue("Adding to index", searchEngine.add(jetspeedHomePage));
-        assertTrue("Adding to index", searchEngine.add(new URL("http://www.java.net")));
-        assertTrue("Adding to index", searchEngine.add(new URL("http://portals.apache.org")));
+        assertTrue("Adding to index", searchEngine.add(getClass().getResource("supporting.txt")));
+        assertTrue("Adding to index", searchEngine.add(getClass().getResource("portals.txt")));
     }
     
     /**
@@ -154,10 +148,11 @@ public class TestSearch extends JetspeedTestCase
     
     public void testVerifyJetspeedSearch1() throws Exception
     {
-//      because tear down deletes files, need to do add again
+        //because tear down deletes files, need to do add again
         testPutWebPage();
         
         SearchResults results  = searchEngine.search("Jetspeed");
+        System.out.println("Hit count: " + results.size());
         assertTrue(" Hit count == 0", results.size() > 0);
         
         Iterator resultIter = results.iterator();
@@ -173,10 +168,11 @@ public class TestSearch extends JetspeedTestCase
     
     public void testVerifyJetspeedSearch2() throws Exception
     {
-//      because tear down deletes files, need to do add again
+        //because tear down deletes files, need to do add again
         testPutWebPage();
         
-        SearchResults results  = searchEngine.search("community");
+        SearchResults results  = searchEngine.search("collaborative");
+        System.out.println("Hit count: " + results.size());
         assertTrue(" Hit count == 0", results.size() > 0);
         
         Iterator resultIter = results.iterator();

@@ -18,11 +18,13 @@ package org.apache.jetspeed.search.handlers;
 
 // Java imports
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.io.IOUtils;
 import org.apache.jetspeed.search.AbstractObjectHandler;
 import org.apache.jetspeed.search.BaseParsedObject;
 
@@ -56,9 +58,45 @@ public class URLToDocHandler extends AbstractObjectHandler
         }
 
         URL pageToAdd = (URL) o;
+        String content = getContentFromURL(pageToAdd);
+        
+        if (content != null)
+        {
+            try
+            {
+                result.setKey(java.net.URLEncoder.encode(pageToAdd.toString(),"UTF-8"));
+                result.setType(org.apache.jetspeed.search.ParsedObject.OBJECT_TYPE_URL);
+                // TODO: We should extract the <title> tag here.
+                result.setTitle(pageToAdd.toString());
+                result.setContent(content);
+                result.setDescription("");
+                result.setLanguage("");
+                result.setURL(pageToAdd);
+                result.setClassName(o.getClass().getName());
+                //logger.info("Parsed '" + pageToAdd.toString() + "'");
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                //logger.error("Adding document to index", e);
+            }
+        }
+        
+        return result;
 
+    }
+    
+    private String getContentFromURL(final URL url)
+    {
+        if ("file".equals(url.getProtocol()))
+        {
+            return readContentFromURL(url);
+        }
+        
+        String content = null;
+        
         HttpClient client = new HttpClient();
-        GetMethod method = new GetMethod(pageToAdd.toString());
+        GetMethod method = new GetMethod(url.toString());
         method.setFollowRedirects(true);
         int statusCode = -1;
         int attempt = 0;
@@ -91,7 +129,6 @@ public class URLToDocHandler extends AbstractObjectHandler
             // Check that we didn't run out of retries.
             if (statusCode != -1)
             {
-                String content = null;
                 try
                 {
                     content = method.getResponseBodyAsString();
@@ -100,28 +137,6 @@ public class URLToDocHandler extends AbstractObjectHandler
                 {
                     //logger.error("Getting content for " + pageToAdd.toString(), ioe);
                 }
-
-                if (content != null)
-                {
-                    try
-                    {
-                        result.setKey(java.net.URLEncoder.encode(pageToAdd.toString(),"UTF-8"));
-                        result.setType(org.apache.jetspeed.search.ParsedObject.OBJECT_TYPE_URL);
-                        // TODO: We should extract the <title> tag here.
-                        result.setTitle(pageToAdd.toString());
-                        result.setContent(content);
-                        result.setDescription("");
-                        result.setLanguage("");
-                        result.setURL(pageToAdd);
-                        result.setClassName(o.getClass().getName());
-                        //logger.info("Parsed '" + pageToAdd.toString() + "'");
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                        //logger.error("Adding document to index", e);
-                    }
-                }
             }
         }
         finally
@@ -129,8 +144,37 @@ public class URLToDocHandler extends AbstractObjectHandler
             method.releaseConnection();
         }
 
-        return result;
-
+        return content;
+    }
+    
+    private String readContentFromURL(final URL url)
+    {
+        String content = null;
+        InputStream input = null;
+        
+        try
+        {
+            input = url.openStream();
+            content = IOUtils.toString(input);
+        }
+        catch (Exception e)
+        {
+        }
+        finally
+        {
+            if (input != null)
+            {
+                try
+                {
+                    input.close();
+                }
+                catch (Exception ce)
+                {
+                }
+            }
+        }
+        
+        return content;
     }
 }
 

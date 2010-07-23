@@ -1,0 +1,49 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+Welcome to the Apache Portals Project
+
+Apache Portals is a collaborative software development project dedicated to providing robust, full-featured, commercial-quality, and freely available Portal related software on a wide variety of platforms and programming languages. This project is managed in cooperation with various individuals worldwide (both independent and company-affiliated experts), who use the Internet to communicate, plan, and develop Portal software and related documentation.
+
+For more information on getting started with Apache Portals, see the Getting Started guide.
+About Portals
+
+Modern software is complex and expensive, which has motivated many companies to invest in enterprise portals as a mechanism by which they can manage information in a cohesive and structured fashion.
+
+Portals offer many advantages over other software applications. First, they provide a single point of entry for employees, partners, and customers. Second, portals can access Web services transparently from any device in virtually any location. Third, portals are highly flexible; they can exist in the form of B2E intra-nets, B2B extra-nets, or B2C inter-nets. Fourth, portals can be combined to form a portal network that can span a companys entire enterprise system, allowing for access both inside and outside the firewall.
+
+Portals have many advantages, which is why they have become the de facto standard for Web application delivery. In fact, analysts have predicted that portals will become the next generation for the desktop environment.
+
+Portals distinguish themselves from other software systems because they provide the ability to integrate disparate systems and leverage the functionality provided by those systems. As such, they are not mutually exclusive, and do not force you into an either-or decision vis-a-vis existing software systems. This point is of paramount importance, particularly when you consider the fact that Web services are destined to fuel the explosion of Web applications. Since portals can access any Web services, the conclusion is inescapable: portals provide a unique opportunity to leverage the functionality of nascent technologies as well as mature, well-established software systems.
+Jetspeed-2
+
+Jetspeed-2 is an Open Portal Platform and Enterprise Information Portal, written entirely in open source under the Apache license in Java and XML and based on open standards. All access to the portal is managed through a robust portal security policy. Within a Jetspeed portal, individual portlets can be aggregated to create a page. Each portlet is an independent application with Jetspeed acting as the central hub making information from multiple sources available in an easy to use manner.
+
+The latest version of Jetspeed, Version 2.2.1, most significantly introduces the Jetui client-side customization engine. Version 2.2.0 was our first release conformant to the Java Portlet 2.0 Standard. All releases prior, such as the 2.1.x releases, are conformant to the first Java Portlet Specification, the Java Portlet 1.0 Standard.
+Pluto
+
+Pluto is the Reference Implementation of the Java Portlet Specification. The current version of this Portlet specification is JSR 168 1.0 Portlets are designed to run in the context of a portal. They are written to the Portlet API. Pluto implements the contract, the Portlet API, between portlets and portals. Pluto is a portlet container.
+Applications
+
+ApplicationsApache Portals Applications (APA) is a collaborative software development project existing under the Apache Portals project. APA is dedicated to providing robust, full-featured, commercial-quality, and freely available Portlet Applications under the Apache license developed at the Apache Software Foundation.
+Portals-bridges
+
+The Bridges subproject includes common code and demos for the use of common web frameworks via portlets. Currently there is support for writing portlets using JSF, Struts, perl CGI scripts, php code and Velocity templates. Jetspeed-2 includes demos for those technologies.
+Jetspeed-1
+
+Jetspeed-1 is an Open Source implementation of an Enterprise Information Portal, using Java and XML. Jetspeed-1 is a user-customizable portal system, supporting a rich feature set and mature user base. 
+
+Copyright © 2010 The Apache Software Foundation, Licensed under the Apache License, Version 2.0.
+Apache and the Apache feather logo are trademarks of The Apache Software Foundation.

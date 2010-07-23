@@ -1,0 +1,43 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+Project Status Update
+Jetspeed-1 is Retired
+
+    As of 2008-12-04, the Jetspeed-1 project is retired.
+
+    All new development for Jetspeed is now found under the current, active project, Apache Project Jetspeed-2.
+
+    This site is kept online to provide documentation for legacy projects.
+
+What is Jetspeed?
+
+Jetspeed is an Open Source implementation of an Enterprise Information Portal, using Java and XML. A portal makes network resources (applications, databases and so forth) available to end-users. The user can access the portal via a web browser, WAP-phone, pager or any other device. Jetspeed acts as the central hub where information from multiple sources are made available in an easy to use manner.
+
+The data presented via Jetspeed is independent of content type, This means that content from for example XML,RSS or SMTP can be integrated with Jetspeed. The actual presentation of the data is handled via ates XSL and delivered to the user for example via the combination of Java Server Pages (JSPs) and HTML. Jetspeed provides support for templating and content publication frameworks such as Cocoon, WebMacro and Velocity. Note that outside of regualar browser Jetspeed also supports WAP devices.
+
+Jetspeed helps you build portal applications quickly. The goal is to make Jetspeed a tool for both portal developers as well as user interface designers. Currently the focus is on providing developers with a set of tools that facilitates building the base for the portal. With Jetspeed you can quickly build an XML portal and also syndicate your own content.
+Overview
+
+Around 1995 the Internet really started to catch on. Real value started to be created when companies put their information online. Soon after this, many companies were started that had the goal of organizing all this information. The term "Portal" was created that described a Web Application that was designed to present a ton of information in a concise and centered way, thereby making the Internet easier to use. Popular examples would be Yahoo.com or Netscape.com, etc.
+
+Around 1999 Open Source really started to catch on. Apache and Java were really taking off. Enterprise Information Portals were created that would provide a drop down Intranet/Internet for companies. Jetspeed was created to deliver an Open Source Portal that individuals or companies could use and contribute to in an Open (Source) manner.
+
+Soon after creation, it became apparent that Jetspeed was going to become an "engine" for web applications. The only problem is that this was beyond the scope of this project. Around that time there were many discussions on the mailing list that spawned the Turbine project based on technology donated by Jon Stevens/Clear Ink. Turbine is now the Web Application framework that Jetspeed shares with many other web applications including Jyve.
+
+Please see the Resources page for more information.
+
+Copyright © 2010 The Apache Software Foundation, Licensed under the Apache License, Version 2.0.
+Apache and the Apache feather logo are trademarks of The Apache Software Foundation.

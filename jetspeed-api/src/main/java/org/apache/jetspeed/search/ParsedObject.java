@@ -50,7 +50,8 @@ public interface ParsedObject
     public static final String FIELDNAME_SCORE_DEFAULT = "Score";
     public static final String FIELDNAME_CLASSNAME = "fieldname.className";
     public static final String FIELDNAME_CLASSNAME_DEFAULT = "ClassName";
-
+    public static final String FIELDNAME_SYNTHETIC = "fieldname.synthetic";
+    
     // Known object types
     public static final String OBJECT_TYPE_URL = "url";
     public static final String OBJECT_TYPE_PORTLET = "portlet";

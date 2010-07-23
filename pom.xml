@@ -279,7 +279,7 @@
     
     <jdom.version>1.1</jdom.version>
     <log4j.version>1.2.14</log4j.version>
-    <lucene.version>2.3.2</lucene.version>
+    <lucene.version>3.0.2</lucene.version>
     <myfaces.version>1.1.5</myfaces.version>
     <ojb.version>1.0.3</ojb.version>
     <org.apache.derby.version>10.3.2.1</org.apache.derby.version>

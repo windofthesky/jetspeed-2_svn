@@ -20,6 +20,7 @@ import java.util.Collection;
 
 /**
  * @author <a href="mailto: jford@apache.org">Jeremy Ford</a>
+ * @version $Id$
  */
 public interface SearchEngine
 {
@@ -38,4 +39,6 @@ public interface SearchEngine
     boolean optimize();
     
     SearchResults search(String query);
+    
+    SearchResults search(String query, int topHitsCount);
 }
