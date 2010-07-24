@@ -158,185 +158,11 @@ public class SearchEngineImpl implements SearchEngine
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#add(java.util.Collection)
      */
-    public synchronized boolean add(Collection objects)
+    public boolean add(Collection objects)
     {
-        IndexWriter indexWriter = null;
-        IndexReader indexReader = null;
-        Searcher searcher = null;
-        
-        try
-        {
-            Iterator it = objects.iterator();
-            while (it.hasNext()) 
-            {
-                if (indexWriter == null)
-                {
-                    indexWriter = new IndexWriter(directory, analyzer, false, IndexWriter.MaxFieldLength.UNLIMITED);
-                    indexReader = indexWriter.getReader();
-                    searcher = new IndexSearcher(indexReader);
-                }
-                
-                Object o = it.next();
-                // Look up appropriate handler
-                ObjectHandler handler = null;
-                try
-                {
-                    handler = handlerFactory.getHandler(o);
-                }
-                catch (Exception e)
-                {
-                    log.error("Failed to create hanlder for object " + o.getClass().getName());
-                    continue;
-                }
-    
-                // Parse the object
-                ParsedObject parsedObject = handler.parseObject(o);
-                
-                String key = parsedObject.getKey();
-                // if there's an existing one with the same key, then remove it first.
-                if (parsedObject.getKey() != null)
-                {
-                    Term keyTerm = new Term(ParsedObject.FIELDNAME_KEY, key);
-                    TopDocs topDocs = searcher.search(new TermQuery(keyTerm), 1);
-                    if (topDocs.totalHits > 0)
-                    {
-                        indexWriter.deleteDocuments(keyTerm);
-                    }
-                }
-                
-                String type = parsedObject.getType();
-                String title = parsedObject.getTitle();
-                String description = parsedObject.getDescription();
-                String content = parsedObject.getContent();
-                String language = parsedObject.getLanguage();
-                URL url = parsedObject.getURL();
-                String className = parsedObject.getClassName();
-                
-                // Create document
-                Document doc = new Document();
-                
-                // Populate document from the parsed object
-                if (key != null)
-                {
-                    doc.add(new Field(ParsedObject.FIELDNAME_KEY, key, Field.Store.YES, Field.Index.NOT_ANALYZED));
-                }
-                if (type != null)
-                {
-                    doc.add(new Field(ParsedObject.FIELDNAME_TYPE, type, Field.Store.YES, Field.Index.ANALYZED));
-                }
-                if (title != null)
-                {
-                    doc.add(new Field(ParsedObject.FIELDNAME_TITLE, title, Field.Store.YES, Field.Index.ANALYZED));
-                }
-                if (description != null)
-                {
-                    doc.add(new Field(ParsedObject.FIELDNAME_DESCRIPTION, description, Field.Store.YES, Field.Index.ANALYZED));
-                }
-                if (content != null)
-                {
-                    doc.add(new Field(ParsedObject.FIELDNAME_CONTENT, content, Field.Store.NO, Field.Index.ANALYZED));
-                }
-                if (language != null)
-                {
-                    doc.add(new Field(ParsedObject.FIELDNAME_LANGUAGE, language, Field.Store.YES, Field.Index.ANALYZED));
-                }
-                if (url != null)
-                {
-                    String urlString = url.toString();
-                    doc.add(new Field(ParsedObject.FIELDNAME_URL, urlString, Field.Store.YES, Field.Index.ANALYZED));
-                }
-                if (className != null)
-                {
-                    doc.add(new Field(ParsedObject.FIELDNAME_CLASSNAME, className, Field.Store.YES, Field.Index.ANALYZED));
-                }
-                
-                String[] keywordArray = parsedObject.getKeywords();
-                if(keywordArray != null)
-                {
-                	for(int i=0; i<keywordArray.length; ++i)
-                	{
-                		String keyword = keywordArray[i];
-                		doc.add(new Field(ParsedObject.FIELDNAME_KEYWORDS, keyword, Field.Store.YES, Field.Index.NOT_ANALYZED));
-                	}
-                }
-    
-                Map keywords = parsedObject.getKeywordsMap();
-                addFieldsToDocument(doc, keywords, KEYWORD);
-                
-                Map fields = parsedObject.getFields();
-                addFieldsToDocument(doc, fields, TEXT);
-                
-                List<String> syntheticField = new ArrayList<String>();
-                for (Fieldable fieldable : doc.getFields())
-                {
-                    String value = fieldable.stringValue();
-                    if (value != null)
-                    {
-                        syntheticField.add(value);
-                    }
-                }
-                doc.add(new Field(ParsedObject.FIELDNAME_SYNTHETIC, StringUtils.join(syntheticField, ' '), Field.Store.NO, Field.Index.ANALYZED));
-
-                // Add the document to search index
-                indexWriter.addDocument(doc);
-                //logger.debug("Index Document Count = " + indexWriter.docCount());
-                //logger.info("Added '" + parsedObject.getTitle() + "' to index");
-            }
-
-        	if (objects.size() > 0 && optimizeAfterUpdate && indexWriter != null)
-            {
-        	    try
-        	    {
-        	        indexWriter.optimize();
-        	    }
-                catch (IOException e)
-                {
-                    log.error("Error while trying to optimize index.", e);
-                }
-            }
-        }
-        catch (IOException e)
-        {
-            log.error("Error while writing index.", e);
-            return false;
-        }
-        finally
-        {
-            if (searcher != null)
-            {
-                try
-                {
-                    searcher.close();
-                }
-                catch (IOException ce)
-                {
-                }
-            }
-            if (indexReader != null)
-            {
-                try
-                {
-                    indexReader.close();
-                }
-                catch (IOException ce)
-                {
-                }
-            }
-            if (indexWriter != null)
-            {
-                try
-                {
-                    indexWriter.close();
-                }
-                catch (IOException ce)
-                {
-                }
-            }
-        }
-        
-        return true;
+        return removeIfExistsAndAdd(objects);
     }
-
+    
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#remove(java.lang.Object)
      */
@@ -432,36 +258,9 @@ public class SearchEngineImpl implements SearchEngine
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#update(java.util.Collection)
      */
-    public synchronized boolean update(Collection objects)
+    public boolean update(Collection objects)
     {
-        boolean result = false;
-        
-        try
-        {
-            // Delete entries from index
-            remove(objects);
-            result = true;
-        }
-        catch (Throwable e)
-        {
-            //logger.error("Exception",  e);
-        }
-
-        try
-        {
-            // Add entries to index
-        	if(result)
-        	{
-        		add(objects);
-        		result = true;
-        	}
-        }
-        catch (Throwable e)
-        {
-            //logger.error("Exception",  e);
-        }
-        
-        return result;
+        return removeIfExistsAndAdd(objects);
     }
 
     /* (non-Javadoc)
@@ -638,6 +437,185 @@ public class SearchEngineImpl implements SearchEngine
         return (results != null ? results : new SearchResultsImpl(new ArrayList<ParsedObject>()));
     }
     
+    private synchronized boolean removeIfExistsAndAdd(Collection objects)
+    {
+        IndexWriter indexWriter = null;
+        IndexReader indexReader = null;
+        Searcher searcher = null;
+        
+        try
+        {
+            Iterator it = objects.iterator();
+            while (it.hasNext()) 
+            {
+                if (indexWriter == null)
+                {
+                    indexWriter = new IndexWriter(directory, analyzer, false, IndexWriter.MaxFieldLength.UNLIMITED);
+                    indexReader = indexWriter.getReader();
+                    searcher = new IndexSearcher(indexReader);
+                }
+                
+                Object o = it.next();
+                // Look up appropriate handler
+                ObjectHandler handler = null;
+                try
+                {
+                    handler = handlerFactory.getHandler(o);
+                }
+                catch (Exception e)
+                {
+                    log.error("Failed to create hanlder for object " + o.getClass().getName());
+                    continue;
+                }
+    
+                // Parse the object
+                ParsedObject parsedObject = handler.parseObject(o);
+                
+                String key = parsedObject.getKey();
+                // if there's an existing one with the same key, then remove it first.
+                if (parsedObject.getKey() != null)
+                {
+                    Term keyTerm = new Term(ParsedObject.FIELDNAME_KEY, key);
+                    TopDocs topDocs = searcher.search(new TermQuery(keyTerm), 1);
+                    if (topDocs.totalHits > 0)
+                    {
+                        indexWriter.deleteDocuments(keyTerm);
+                    }
+                }
+                
+                String type = parsedObject.getType();
+                String title = parsedObject.getTitle();
+                String description = parsedObject.getDescription();
+                String content = parsedObject.getContent();
+                String language = parsedObject.getLanguage();
+                URL url = parsedObject.getURL();
+                String className = parsedObject.getClassName();
+                
+                // Create document
+                Document doc = new Document();
+                
+                // Populate document from the parsed object
+                if (key != null)
+                {
+                    doc.add(new Field(ParsedObject.FIELDNAME_KEY, key, Field.Store.YES, Field.Index.NOT_ANALYZED));
+                }
+                if (type != null)
+                {
+                    doc.add(new Field(ParsedObject.FIELDNAME_TYPE, type, Field.Store.YES, Field.Index.ANALYZED));
+                }
+                if (title != null)
+                {
+                    doc.add(new Field(ParsedObject.FIELDNAME_TITLE, title, Field.Store.YES, Field.Index.ANALYZED));
+                }
+                if (description != null)
+                {
+                    doc.add(new Field(ParsedObject.FIELDNAME_DESCRIPTION, description, Field.Store.YES, Field.Index.ANALYZED));
+                }
+                if (content != null)
+                {
+                    doc.add(new Field(ParsedObject.FIELDNAME_CONTENT, content, Field.Store.NO, Field.Index.ANALYZED));
+                }
+                if (language != null)
+                {
+                    doc.add(new Field(ParsedObject.FIELDNAME_LANGUAGE, language, Field.Store.YES, Field.Index.ANALYZED));
+                }
+                if (url != null)
+                {
+                    String urlString = url.toString();
+                    doc.add(new Field(ParsedObject.FIELDNAME_URL, urlString, Field.Store.YES, Field.Index.ANALYZED));
+                }
+                if (className != null)
+                {
+                    doc.add(new Field(ParsedObject.FIELDNAME_CLASSNAME, className, Field.Store.YES, Field.Index.ANALYZED));
+                }
+                
+                String[] keywordArray = parsedObject.getKeywords();
+                if(keywordArray != null)
+                {
+                    for(int i=0; i<keywordArray.length; ++i)
+                    {
+                        String keyword = keywordArray[i];
+                        doc.add(new Field(ParsedObject.FIELDNAME_KEYWORDS, keyword, Field.Store.YES, Field.Index.NOT_ANALYZED));
+                    }
+                }
+    
+                Map keywords = parsedObject.getKeywordsMap();
+                addFieldsToDocument(doc, keywords, KEYWORD);
+                
+                Map fields = parsedObject.getFields();
+                addFieldsToDocument(doc, fields, TEXT);
+                
+                List<String> syntheticField = new ArrayList<String>();
+                for (Fieldable fieldable : doc.getFields())
+                {
+                    String value = fieldable.stringValue();
+                    if (value != null)
+                    {
+                        syntheticField.add(value);
+                    }
+                }
+                doc.add(new Field(ParsedObject.FIELDNAME_SYNTHETIC, StringUtils.join(syntheticField, ' '), Field.Store.NO, Field.Index.ANALYZED));
+
+                // Add the document to search index
+                indexWriter.addDocument(doc);
+                //logger.debug("Index Document Count = " + indexWriter.docCount());
+                //logger.info("Added '" + parsedObject.getTitle() + "' to index");
+            }
+
+            if (objects.size() > 0 && optimizeAfterUpdate && indexWriter != null)
+            {
+                try
+                {
+                    indexWriter.optimize();
+                }
+                catch (IOException e)
+                {
+                    log.error("Error while trying to optimize index.", e);
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            log.error("Error while writing index.", e);
+            return false;
+        }
+        finally
+        {
+            if (searcher != null)
+            {
+                try
+                {
+                    searcher.close();
+                }
+                catch (IOException ce)
+                {
+                }
+            }
+            if (indexReader != null)
+            {
+                try
+                {
+                    indexReader.close();
+                }
+                catch (IOException ce)
+                {
+                }
+            }
+            if (indexWriter != null)
+            {
+                try
+                {
+                    indexWriter.close();
+                }
+                catch (IOException ce)
+                {
+                }
+            }
+        }
+        
+        return true;
+    }
+
     private void addFieldsToDocument(Document doc, Map fields, int type)
     {
         if(fields != null)

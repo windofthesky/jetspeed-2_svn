@@ -15,6 +15,7 @@
  */
 package org.apache.jetspeed.serializer;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -108,8 +109,10 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                     List<PortletDefinition> portlets = pa.getPortlets();
                     if (searchEngine != null)
                     {
-                        searchEngine.remove(pa);
-                        searchEngine.remove(portlets);
+                        List<Object> list = new ArrayList<Object>(portlets.size() + 1);
+                        list.add(pa);
+                        list.addAll(portlets);
+                        searchEngine.remove(list);
                     }
                     registry.removeApplication(pa);
                 }

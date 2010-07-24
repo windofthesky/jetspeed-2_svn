@@ -21,14 +21,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.cluster.NodeManager;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
 import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.SecurityRole;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.JetspeedPermission;
@@ -40,6 +39,8 @@ import org.apache.jetspeed.util.DirectoryHelper;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * PortletApplicationManager
@@ -717,21 +718,26 @@ public class PortletApplicationManager implements PortletApplicationManagement
     {
         if (searchEngine != null)
         {
+            List<PortletDefinition> portletDefList = pa.getPortlets();
+            List<Object> list = new ArrayList<Object>(portletDefList.size() + 1);
+            
             if (remove)
             {
-                searchEngine.remove(pa);
-                searchEngine.remove(pa.getPortlets());
+                list.addAll(portletDefList);
+                list.add(pa);
+                searchEngine.remove(list);
                 log.info("Un-Registered the portlet application in the search engine... " + pa.getName());
             }
             else
             {
-                searchEngine.add(pa);
-                searchEngine.add(pa.getPortlets());
+                list.add(pa);
+                list.addAll(portletDefList);
+                searchEngine.add(list);
                 log.info("Registered the portlet application in the search engine... " + pa.getName());
             }
         }
-        
     }
+    
     protected void unregisterPortletApplication(PortletApplication pa,
         boolean purgeEntityInfo)
         throws RegistryException

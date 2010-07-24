@@ -24,23 +24,98 @@ import java.util.Collection;
  */
 public interface SearchEngine
 {
+    /**
+     * Adds search index document for the argument object.
+     * An object handler for the object type is responsible for parsing.
+     * <BR/>
+     * <P>
+     * <EM>Note: Normally, it is more efficient to invoke {@link #add(Collection)}.</EM>
+     * </P>
+     * @param o
+     * @return
+     * @see {@link org.apache.jetspeed.search.ObjectHandler}
+     * @see {@link org.apache.jetspeed.search.ParsedObject}
+     */
     boolean add(Object o);
     
+    /**
+     * Adds search index documents for the argument object collection.
+     * Each object handler for the object type of each item is responsible for parsing.
+     * @param objects
+     * @return
+     */
     boolean add(Collection objects);
     
+    /**
+     * Removes search index document for the argument object.
+     * An object handler for the object type is responsible for parsing.
+     * <BR/>
+     * <P>
+     * <EM>Note: Normally, it is more efficient to invoke {@link #remove(Collection)}.</EM>
+     * </P>
+     * @param o
+     * @return
+     */
     boolean remove(Object o);
     
+    /**
+     * Removes search index documents for the argument object collection.
+     * Each object handler for the object type of each item is responsible for parsing.
+     * @param objects
+     * @return
+     */
     boolean remove(Collection objects);
     
+    /**
+     * Updates the search index document for the argument object.
+     * An object handler for the object type is responsible for parsing.
+     * <BR/>
+     * <P>
+     * <EM>Note: Normally, it is more efficient to invoke {@link #update(Collection)}.</EM>
+     * </P>
+     * @param o
+     * @return
+     */
     boolean update(Object o);
     
+    /**
+     * Updates the search index documents for the argument object collection.
+     * Each object handler for the object type of each item is responsible for parsing.
+     * @param objects
+     * @return
+     */
     boolean update(Collection objects);
     
+    /**
+     * Requests optimization
+     * @return
+     */
     boolean optimize();
     
+    /**
+     * Searches documents by the query.
+     * The default field name and the default top hits count can be used in a specific implementation.
+     * @param query
+     * @return
+     */
     SearchResults search(String query);
     
+    /**
+     * Searches documents by the query against the default field name.
+     * The default top hits count can be used in a specific implementation.
+     * @param query
+     * @param defaultFieldName
+     * @return
+     */
     SearchResults search(String query, String defaultFieldName);
     
+    /**
+     * Searches documents by the query against the default field name.
+     * The returned item count will not be more than topHitsCount.
+     * @param query
+     * @param defaultFieldName
+     * @param topHitsCount
+     * @return
+     */
     SearchResults search(String query, String defaultFieldName, int topHitsCount);
 }
