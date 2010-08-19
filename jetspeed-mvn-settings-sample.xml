@@ -54,6 +54,7 @@
       <properties>
 
         <org.apache.jetspeed.server.home>@rootdir@/applications/jetspeed-demo/target/demo-deploy</org.apache.jetspeed.server.home>
+        <org.apache.jetspeed.catalina.version.major>6</org.apache.jetspeed.catalina.version.major>
 
         <!-- demo embedded Derby database configurations -->
         
