@@ -222,64 +222,82 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
                 }
             } else
             {
-                // Found Client entry start populating the capability map.
-                map = new CapabilityMapImpl();
+                bClientFound = true;
 
-                // Add client to CapabilityMap
-                map.setClient(entry);
-
-                // Add capabilities
-                Iterator capabilities = entry.getCapabilities().iterator();
-                while (capabilities.hasNext())
+                try
                 {
-                    map.addCapability((Capability) capabilities.next());
-                }
+                    // Found Client entry start populating the capability map.
+                    map = new CapabilityMapImpl();
 
-                Collection mediatypes =
-                    getMediaTypesForMimeTypes(entry.getMimetypes().iterator());
+                    // Add client to CapabilityMap
+                    map.setClient(entry);
 
-                // Add Mimetypes to map
-                Iterator mimetypes = entry.getMimetypes().iterator();
-                while (mimetypes.hasNext())
-                {
-                    map.addMimetype((MimeType) mimetypes.next());
-                }
-
-                Iterator media = mediatypes.iterator();
-                while (media.hasNext())
-                {
-                    map.addMediaType((MediaType) media.next());
-                }
-
-                //Set preferred Mimetype
-                MediaType mtEntry =
-                    getMediaTypeForMimeType(map.getPreferredType().getName());
-
-                map.setPreferredMediaType(mtEntry);
-
-                // Add map to cache
-                synchronized (capabilityMapCache)
-                {
-                    if (capabilityMapCache.put(userAgent, map) != null)
+                    // Add capabilities
+                    Iterator capabilities = entry.getCapabilities().iterator();
+                    while (capabilities.hasNext())
                     {
-                        capabilityMapCacheKeyList.remove(userAgent);
+                        map.addCapability((Capability) capabilities.next());
                     }
-                    capabilityMapCacheKeyList.addFirst(userAgent);
-                    if (defaultAgent != null)
+
+                    // Add Mimetypes to map
+                    Iterator mimetypes = entry.getMimetypes().iterator();
+                    while (mimetypes.hasNext())
                     {
-                        if (capabilityMapCache.put(defaultAgent, map) != null)
+                        map.addMimetype((MimeType) mimetypes.next());
+                    }
+
+                    // Add Mediatypes for Mimetype to map
+                    Collection mediatypes =
+                        getMediaTypesForMimeTypes(entry.getMimetypes().iterator());
+                    Iterator media = mediatypes.iterator();
+                    while (media.hasNext())
+                    {
+                        map.addMediaType((MediaType) media.next());
+                    }
+
+                    // Validate preferred Mimetype
+                    MimeType mimeTypeEntry = map.getPreferredType();
+                    if (mimeTypeEntry == null)
+                    {
+                        throw new RuntimeException("Unable to get preferred Mimetype for client: "+entry.getName());                        
+                    }
+
+                    // Set preferred Mediatype for Mimetype
+                    MediaType mediaTypeEntry = getMediaTypeForMimeType(mimeTypeEntry.getName());
+                    if (mediaTypeEntry == null)
+                    {
+                        throw new RuntimeException("Unable to find preferred Mediatype for Mimetype/client: "+mimeTypeEntry.getName()+"/"+entry.getName());
+                    }
+                    map.setPreferredMediaType(mediaTypeEntry);
+
+                    // Add map to cache
+                    synchronized (capabilityMapCache)
+                    {
+                        if (capabilityMapCache.put(userAgent, map) != null)
                         {
-                            capabilityMapCacheKeyList.remove(defaultAgent);
+                            capabilityMapCacheKeyList.remove(userAgent);
                         }
-                        capabilityMapCacheKeyList.addFirst(defaultAgent);
-                    }
-                    while (capabilityMapCache.size() > MAX_CACHE_SIZE)
-                    {
-                        String reapAgent = (String)capabilityMapCacheKeyList.removeLast();
-                        capabilityMapCache.remove(reapAgent);
+                        capabilityMapCacheKeyList.addFirst(userAgent);
+                        if (defaultAgent != null)
+                        {
+                            if (capabilityMapCache.put(defaultAgent, map) != null)
+                            {
+                                capabilityMapCacheKeyList.remove(defaultAgent);
+                            }
+                            capabilityMapCacheKeyList.addFirst(defaultAgent);
+                        }
+                        while (capabilityMapCache.size() > MAX_CACHE_SIZE)
+                        {
+                            String reapAgent = (String)capabilityMapCacheKeyList.removeLast();
+                            capabilityMapCache.remove(reapAgent);
+                        }
                     }
                 }
-                return map;
+                catch (Exception e)
+                {
+                    log.error("Unable to build capability map for "+userAgent+": "+e, e);
+                    map = null;
+                }
             }
 
         }
