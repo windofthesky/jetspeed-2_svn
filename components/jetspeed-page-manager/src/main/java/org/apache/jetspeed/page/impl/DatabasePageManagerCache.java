@@ -493,30 +493,27 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     private static void clearPrincipalPropertiesCache(int fragmentId)
     {
-        synchronized (DatabasePageManagerCache.class)
+        // scan principal fragment property cache
+        List principalKeys = principalPropertiesCache.getKeys();
+        Iterator principalKeysIter = principalKeys.iterator();
+        while (principalKeysIter.hasNext())
         {
-            // scan principal fragment property cache
-            List principalKeys = principalPropertiesCache.getKeys();
-            Iterator principalKeysIter = principalKeys.iterator();
-            while (principalKeysIter.hasNext())
+            String principalKey = (String)principalKeysIter.next();
+            CacheElement propertiesElement = principalPropertiesCache.get(principalKey);
+            if (propertiesElement != null)
             {
-                String principalKey = (String)principalKeysIter.next();
-                CacheElement propertiesElement = principalPropertiesCache.get(principalKey);
-                if (propertiesElement != null)
+                // scan cached principal fragment property list
+                DatabasePageManagerCachedFragmentPropertyList cachedPrincipalFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)propertiesElement.getContent();
+                Iterator fragmentPropertyIter = cachedPrincipalFragmentPropertyList.iterator();
+                while (fragmentPropertyIter.hasNext())
                 {
-                    // scan cached principal fragment property list
-                    DatabasePageManagerCachedFragmentPropertyList cachedPrincipalFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)propertiesElement.getContent();
-                    Iterator fragmentPropertyIter = cachedPrincipalFragmentPropertyList.iterator();
-                    while (fragmentPropertyIter.hasNext())
+                    FragmentPropertyImpl fragmentProperty = (FragmentPropertyImpl)fragmentPropertyIter.next();
+                    if (((BaseFragmentElementImpl)fragmentProperty.getFragment()).getIdentity() == fragmentId)
                     {
-                        FragmentPropertyImpl fragmentProperty = (FragmentPropertyImpl)fragmentPropertyIter.next();
-                        if (((BaseFragmentElementImpl)fragmentProperty.getFragment()).getIdentity() == fragmentId)
-                        {
-                            // remove cached principal fragment property list
-                            DatabasePageManagerCache.principalPropertiesCache.removeQuiet(principalKey);
-                            DatabasePageManagerCache.principalPropertiesPathCache.removeQuiet(principalKey);                            
-                            break;
-                        }
+                        // remove cached principal fragment property list
+                        DatabasePageManagerCache.principalPropertiesCache.removeQuiet(principalKey);
+                        DatabasePageManagerCache.principalPropertiesPathCache.removeQuiet(principalKey);                            
+                        break;
                     }
                 }
             }

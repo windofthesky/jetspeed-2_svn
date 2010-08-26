@@ -1165,4 +1165,11 @@ public interface PageManager
      * Cleanup request level cache for current thread.
      */
     public void cleanupRequestCache();
+    
+    /**
+     * Supplemental and optional service supported by Page Managers. 
+     * Fragment Property lists can be manipulated with this interface 
+     */
+    public FragmentPropertyManagement getFragmentPropertyManager();
+    
 }

@@ -1878,4 +1878,8 @@ public abstract class AbstractPageManager
         PageManagerUtils.createUserHomePagesFromRoles(this, subject);
     }
 
+    public FragmentPropertyManagement getFragmentPropertyManager()
+    {
+    	return null; 
+    }
 }

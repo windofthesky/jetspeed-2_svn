@@ -69,7 +69,7 @@ import org.apache.jetspeed.om.page.impl.FragmentDefinitionImpl;
 import org.apache.jetspeed.om.page.impl.FragmentImpl;
 import org.apache.jetspeed.om.page.impl.FragmentPreferenceImpl;
 import org.apache.jetspeed.om.page.impl.FragmentPropertyImpl;
-import org.apache.jetspeed.om.page.impl.FragmentPropertyList;
+import org.apache.jetspeed.om.page.impl.FragmentPropertyListImpl;
 import org.apache.jetspeed.om.page.impl.FragmentReferenceImpl;
 import org.apache.jetspeed.om.page.impl.FragmentSecurityConstraintImpl;
 import org.apache.jetspeed.om.page.impl.LinkImpl;
@@ -91,6 +91,8 @@ import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.DelegatingPageManager;
 import org.apache.jetspeed.page.FolderNotRemovedException;
 import org.apache.jetspeed.page.FolderNotUpdatedException;
+import org.apache.jetspeed.page.FragmentPropertyList;
+import org.apache.jetspeed.page.FragmentPropertyManagement;
 import org.apache.jetspeed.page.LinkNotRemovedException;
 import org.apache.jetspeed.page.LinkNotUpdatedException;
 import org.apache.jetspeed.page.PageManager;
@@ -117,7 +119,6 @@ import org.apache.ojb.broker.core.proxy.ProxyHelper;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,7 +129,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id: $
  */
-public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport implements PageManager
+public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport implements PageManager, FragmentPropertyManagement
 {
     private static Logger log = LoggerFactory.getLogger(DatabasePageManager.class);
     
@@ -2784,7 +2785,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             
             // assemble fragment property list instance, (use transient
             // list or create new fragment property list)
-            list = new FragmentPropertyList(baseFragmentElementImpl);
+            list = new FragmentPropertyListImpl(baseFragmentElementImpl);
             list.getProperties().addAll(globalFragmentPropertyList);
             if (subject != null)
             {
@@ -3240,4 +3241,31 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         // do not clear thread local cache: cache across transactions
     }
+
+	public FragmentPropertyManagement getFragmentPropertyManager() 
+	{
+		return this;
+	}
+
+	public FragmentPropertyList getFragmentPropertyList(
+			BaseFragmentElement baseFragmentElement,
+			FragmentPropertyList transientList) 
+	{
+		return getFragmentPropertyList((BaseFragmentElementImpl)baseFragmentElement, transientList);
+	}
+
+	public void removeFragmentPropertyList(
+			BaseFragmentElement baseFragmentElement,
+			FragmentPropertyList transientList) 
+	{
+		removeFragmentPropertyList((BaseFragmentElementImpl)baseFragmentElement, transientList);
+	}
+
+	public void updateFragmentPropertyList(
+			BaseFragmentElement baseFragmentElement, String scope,
+			FragmentPropertyList transientList) 
+	{
+		updateFragmentPropertyList((BaseFragmentElementImpl)baseFragmentElement, scope, transientList);
+	}
+        
 }

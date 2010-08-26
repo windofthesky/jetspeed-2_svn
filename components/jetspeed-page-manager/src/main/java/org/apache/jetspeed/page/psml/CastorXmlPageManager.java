@@ -38,9 +38,7 @@ import org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.DynamicPage;
-import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.FragmentDefinition;
-import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
@@ -64,6 +62,8 @@ import org.apache.jetspeed.om.page.psml.SecurityConstraintsDefImpl;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.page.AbstractPageManager;
 import org.apache.jetspeed.page.FolderNotUpdatedException;
+import org.apache.jetspeed.page.FragmentPropertyList;
+import org.apache.jetspeed.page.FragmentPropertyManagement;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerSecurityUtils;
 import org.apache.jetspeed.page.PageNotFoundException;
@@ -79,7 +79,6 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +90,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:weaver@apache.org">Scott T Weaver </a>
  * @version $Id$
  */
-public class CastorXmlPageManager extends AbstractPageManager implements PageManager, FileCacheEventListener
+public class CastorXmlPageManager extends AbstractPageManager implements PageManager, FileCacheEventListener, FragmentPropertyManagement
 {
     private final static Logger log = LoggerFactory.getLogger(CastorXmlPageManager.class);
 
@@ -1280,11 +1279,48 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         // this page manager
     }
 
+	public FragmentPropertyManagement getFragmentPropertyManager() 
+	{
+		return this;
+	}
+
+	public FragmentPropertyList getFragmentPropertyList(
+			BaseFragmentElement baseFragmentElement,
+			FragmentPropertyList transientList) 
+	{
+		return null;
+	}
+
+	public void removeFragmentPropertyList(
+			BaseFragmentElement baseFragmentElement,
+			FragmentPropertyList transientList) 
+	{
+	}
+
+	public void updateFragmentPropertyList(
+			BaseFragmentElement baseFragmentElement, String scope,
+			FragmentPropertyList transientList) 
+	{
+	}
+
     public int addPages(Page[] pages)
     throws NodeException
-    {
-        this.updatePage(pages[0]);
-        this.updatePage(pages[1]);
-        throw new NodeException("Its gonna blow captain!");
-    }    
+    {   
+        if (pages.length > 0 && pages[0].getPath().equals("/tx__test1.psml"))
+        {
+            // for tx testing
+            log.debug("Adding first page");
+            this.updatePage(pages[0]);
+            log.debug("Adding second page");
+            this.updatePage(pages[1]);
+            log.debug("About to throw ex");
+            throw new NodeException("Its gonna blow captain!");
+        }
+        for (int ix = 0; ix < pages.length; ix++)
+        {
+            this.updatePage(pages[ix]);
+        }
+        return pages.length;
+    }
+    
 }

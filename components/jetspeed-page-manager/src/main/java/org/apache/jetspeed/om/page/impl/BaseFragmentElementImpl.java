@@ -25,8 +25,8 @@ import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
 import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.page.FragmentPropertyList;
 import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.impl.DatabasePageManager;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
@@ -176,7 +176,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#getPageManager()
      */
-    public DatabasePageManager getPageManager()
+    public PageManager getPageManager()
     {
         return ((baseFragmentsElement != null) ? baseFragmentsElement.getPageManager() : null);
     }    
@@ -779,10 +779,10 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
         // if fragment is not newly constructed
         if (getIdentity() != 0)
         {
-            DatabasePageManager pageManager = getPageManager();
+            PageManager pageManager = getPageManager();
             if (pageManager != null)
             {
-                FragmentPropertyList properties = pageManager.getFragmentPropertyList(this, fragmentProperties);
+                FragmentPropertyList properties = pageManager.getFragmentPropertyManager().getFragmentPropertyList(this, fragmentProperties);
                 fragmentProperties = null;
                 return properties;
             }
@@ -790,7 +790,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
         // create transient properties list place holder
         if (fragmentProperties == null)
         {
-            fragmentProperties = new FragmentPropertyList(this);
+            fragmentProperties = new FragmentPropertyListImpl(this);
         }
         return fragmentProperties;
     }
@@ -1080,10 +1080,10 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
     {
         // notify page manager of fragment insert so that fragment
         // properties can be inserted as part of the insert operation
-        DatabasePageManager pageManager = getPageManager();
+        PageManager pageManager = getPageManager();
         if (pageManager != null)
         {
-            pageManager.updateFragmentPropertyList(this, PageManager.ALL_PROPERTY_SCOPE, fragmentProperties);
+            pageManager.getFragmentPropertyManager().updateFragmentPropertyList(this, PageManager.ALL_PROPERTY_SCOPE, fragmentProperties);
             fragmentProperties = null;
         }
     }
@@ -1102,10 +1102,10 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
     {
         // notify page manager of fragment update so that fragment
         // properties can be updated as part of the update operation
-        DatabasePageManager pageManager = getPageManager();
+        PageManager pageManager = getPageManager();
         if (pageManager != null)
         {
-            pageManager.updateFragmentPropertyList(this, PageManager.ALL_PROPERTY_SCOPE, fragmentProperties);
+            pageManager.getFragmentPropertyManager().updateFragmentPropertyList(this, PageManager.ALL_PROPERTY_SCOPE, fragmentProperties);
             fragmentProperties = null;
         }
     }
@@ -1117,10 +1117,10 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
     {
         // notify page manager of fragment delete so that fragment
         // properties can be removed as part of the remove operation
-        DatabasePageManager pageManager = getPageManager();
+        PageManager pageManager = getPageManager();
         if (pageManager != null)
         {
-            pageManager.removeFragmentPropertyList(this, fragmentProperties);
+            pageManager.getFragmentPropertyManager().removeFragmentPropertyList(this, fragmentProperties);
             fragmentProperties = null;
         }
     }

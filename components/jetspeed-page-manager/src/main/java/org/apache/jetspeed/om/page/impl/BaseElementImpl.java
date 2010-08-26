@@ -32,7 +32,7 @@ import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.BaseElement;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
-import org.apache.jetspeed.page.impl.DatabasePageManager;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.JSSubject;
@@ -56,7 +56,7 @@ public abstract class BaseElementImpl implements BaseElement
 
     private boolean constraintsEnabled;
     private boolean permissionsEnabled;
-    private DatabasePageManager pageManager;
+    private PageManager pageManager;
     protected static PermissionFactory pf;
     
     public static void setPermissionsFactory(PermissionFactory pf)
@@ -114,7 +114,7 @@ public abstract class BaseElementImpl implements BaseElement
      *
      * @param pageManager page manager that manages this folder instance
      */
-    public void setPageManager(DatabasePageManager pageManager)
+    public void setPageManager(PageManager pageManager)
     {
         this.pageManager = pageManager;
     }
@@ -124,11 +124,11 @@ public abstract class BaseElementImpl implements BaseElement
      * 
      * @return page manager instance
      */
-    public DatabasePageManager getPageManager()
+    public PageManager getPageManager()
     {
         if (pageManager == null)
         {
-            pageManager = (DatabasePageManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.page.PageManager");
+            pageManager = (PageManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.page.PageManager");
         }        
         return pageManager;
     }     

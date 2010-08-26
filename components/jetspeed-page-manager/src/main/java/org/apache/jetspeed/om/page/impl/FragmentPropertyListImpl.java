@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.FragmentProperty;
+import org.apache.jetspeed.page.FragmentPropertyList;
 
 /**
  * FragmentPropertyList
@@ -29,14 +31,14 @@ import org.apache.jetspeed.om.page.FragmentProperty;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class FragmentPropertyList extends AbstractList
+public class FragmentPropertyListImpl extends AbstractList implements FragmentPropertyList
 {
     private BaseFragmentElementImpl fragment;
 
     private List properties;
     private List removedProperties;
 
-    public FragmentPropertyList(BaseFragmentElementImpl fragment)
+    public FragmentPropertyListImpl(BaseFragmentElementImpl fragment)
     {
         super();
         this.properties = new ArrayList();
@@ -46,6 +48,9 @@ public class FragmentPropertyList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
+    /* (non-Javadoc)
+	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#add(int, java.lang.Object)
+	 */
     public synchronized void add(int index, Object element)
     {
         // implement for modifiable AbstractList:
@@ -55,7 +60,7 @@ public class FragmentPropertyList extends AbstractList
             throw new IllegalArgumentException("Property name and value must be set.");
         }
         // find existing matching property
-        FragmentPropertyImpl addMatch = getMatchingProperty(add);
+        FragmentProperty addMatch = getMatchingProperty(add);
         if (addMatch != null)
         {
             // modify existing property
@@ -73,6 +78,9 @@ public class FragmentPropertyList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
+    /* (non-Javadoc)
+	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#get(int)
+	 */
     public synchronized Object get(int index)
     {
         // implement for modifiable AbstractList
@@ -82,6 +90,9 @@ public class FragmentPropertyList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
+    /* (non-Javadoc)
+	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#remove(int)
+	 */
     public synchronized Object remove(int index)
     {
         // implement for modifiable AbstractList:
@@ -93,6 +104,9 @@ public class FragmentPropertyList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
+    /* (non-Javadoc)
+	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#set(int, java.lang.Object)
+	 */
     public synchronized Object set(int index, Object element)
     {
         // implement for modifiable AbstractList:
@@ -102,7 +116,7 @@ public class FragmentPropertyList extends AbstractList
             throw new IllegalArgumentException("Property name and value must be set.");
         }
         // find existing matching property
-        FragmentPropertyImpl setMatch = getMatchingProperty(set);
+        FragmentProperty setMatch = getMatchingProperty(set);
         if (setMatch != null)
         {
             // modify existing property
@@ -127,49 +141,43 @@ public class FragmentPropertyList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#size()
      */
+    /* (non-Javadoc)
+	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#size()
+	 */
     public synchronized int size()
     {
         // implement for modifiable AbstractList
         return properties.size();
     }
     
-    /**
-     * Get fragment property list owner.
-     * 
-     * @return fragment owner
-     */
-    public BaseFragmentElementImpl getFragmentImpl()
+    /* (non-Javadoc)
+	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#getFragmentImpl()
+	 */
+    public BaseFragmentElement getFragmentElement()
     {
         return fragment;
     }
     
-    /**
-     * Get underlying fragment properties list.
-     * 
-     * @return fragment property list
-     */
+    /* (non-Javadoc)
+	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#getProperties()
+	 */
     public List getProperties()
     {
         return properties;
     }
     
-    /**
-     * Get underlying removed fragment properties list.
-     * 
-     * @return removed fragment property list
-     */
+    /* (non-Javadoc)
+	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#getRemovedProperties()
+	 */
     public List getRemovedProperties()
     {
         return removedProperties;
     }
     
-    /**
-     * Find matching property.
-     * 
-     * @param match match property
-     * @return matching property
-     */
-    public synchronized FragmentPropertyImpl getMatchingProperty(FragmentProperty match)
+    /* (non-Javadoc)
+	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#getMatchingProperty(org.apache.jetspeed.om.page.FragmentProperty)
+	 */
+    public synchronized FragmentProperty getMatchingProperty(FragmentProperty match)
     {
         Iterator matchIter = properties.iterator();
         while (matchIter.hasNext())
@@ -183,9 +191,9 @@ public class FragmentPropertyList extends AbstractList
         return null;
     }
     
-    /**
-     * Clear all transient properties.
-     */
+    /* (non-Javadoc)
+	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#clearProperties()
+	 */
     public synchronized void clearProperties()
     {
         properties.clear();
