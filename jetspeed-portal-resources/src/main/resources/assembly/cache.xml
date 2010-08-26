@@ -51,13 +51,26 @@
         </constructor-arg>
     </bean>
     
-    <!-- Factory bean used to instantiate a EHCache with the specified name (and corresponding
-        configuration in cacheManager.xml -->
-    <bean id="ehPortletContentCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <!--
+      Abstract Factory bean used to make a reference to the existing EHCache with the specified name 
+      or instantiate a new EHCache when the cache hasn't been defined in ehcache.xml.
+      All the properties except of cacheManager are applied only when a new EHCache is instantiated.
+    -->
+    <bean id="ehCacheParent" abstract="true" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
+        <property name="cacheManager" ref="cacheManager" />
+        <property name="maxElementsInMemory" value="500" />
+        <property name="maxElementsOnDisk" value="1000" />
+        <property name="eternal" value="false" />
+        <property name="overflowToDisk" value="false" />
+        <property name="timeToLive" value="120" />
+        <property name="timeToIdle" value="120" />
+        <property name="diskPersistent" value="false" />
+        <property name="diskExpiryThreadIntervalSeconds" value="120" />
+    </bean>
+    
+    <bean id="ehPortletContentCache" parent="ehCacheParent">
+        <meta key="j2:cat" value="default or cache" />
         <property name="cacheName" value="portletContentCache" />
     </bean>
     
@@ -95,11 +108,8 @@
         </constructor-arg>
     </bean>
     
-    <bean id="ehDecorationContentCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehDecorationContentCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
         <property name="cacheName" value="decorationContentCache" />
     </bean>
     
@@ -116,11 +126,8 @@
         </constructor-arg>
     </bean>
     
-    <bean id="ehDecorationConfigurationCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehDecorationConfigurationCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
         <property name="cacheName" value="decorationConfigurationCache" />
     </bean>
     
@@ -131,11 +138,8 @@
         </constructor-arg>
     </bean>
     
-    <bean id="ehPreferencesCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehPreferencesCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
         <property name="cacheName" value="preferencesCache" />
     </bean>
     
@@ -146,27 +150,18 @@
         </constructor-arg>
     </bean>
     
-    <bean id="ehPortletApplicationOidCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehPortletApplicationOidCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
         <property name="cacheName" value="portletApplicationOidCache" />
     </bean>
     
-    <bean id="ehPortletApplicationNameCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehPortletApplicationNameCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
         <property name="cacheName" value="portletApplicationNameCache" />
     </bean>
     
-    <bean id="ehDesktopContentCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehDesktopContentCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
         <property name="cacheName" value="desktopContentCache" />
     </bean>
     
@@ -191,19 +186,13 @@
         </constructor-arg>
     </bean>
     
-    <bean id="ehPortletDefinitionOidCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehPortletDefinitionOidCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
         <property name="cacheName" value="portletDefinitionOidCache" />
     </bean>
     
-    <bean id="ehPortletDefinitionNameCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehPortletDefinitionNameCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
         <property name="cacheName" value="portletDefinitionNameCache" />
     </bean>
     
@@ -225,11 +214,8 @@
     <!--  Active Authentication Cache: only use with Active Authentication -->
     <!-- Factory bean used to instantiate a EHCache with the specified name (and corresponding
         configuration in cacheManager.xml -->
-    <bean id="ehActiveAuthenticationCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehActiveAuthenticationCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
         <property name="cacheName" value="activeAuthenticationCache" />
     </bean>
     
@@ -240,11 +226,8 @@
         </constructor-arg>
     </bean>
     
-    <bean id="ehInternalPageFileCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehInternalPageFileCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
         <property name="cacheName" value="pageFileCache" />
     </bean>
     
@@ -255,11 +238,8 @@
         </constructor-arg>
     </bean>
     
-    <bean id="ehInternalImportPageFileCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehInternalImportPageFileCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache" />
-        <property name="cacheManager">
-            <ref local="cacheManager" />
-        </property>
         <property name="cacheName" value="importPageFileCache" />
     </bean>
     
@@ -271,39 +251,33 @@
     </bean>
     
     <!-- Page Manager Caches -->
-    <bean id="ehPageManagerOidCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehPageManagerOidCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache"/>
-        <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="pageManagerOidCache"/>
     </bean>
     
-    <bean id="ehPageManagerPathCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehPageManagerPathCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache"/>
-        <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="pageManagerPathCache"/>
     </bean>
     
-    <bean id="ehPageManagerPropertiesCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehPageManagerPropertiesCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache"/>
-        <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="pageManagerPropertiesCache"/>
     </bean>
 
-    <bean id="ehPageManagerPropertiesPathCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehPageManagerPropertiesPathCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache"/>
-        <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="pageManagerPropertiesPathCache"/>
     </bean>
 
-    <bean id="ehPageManagerPrincipalPropertiesCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehPageManagerPrincipalPropertiesCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache"/>
-        <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="pageManagerPrincipalPropertiesCache"/>
     </bean>
 
-    <bean id="ehPageManagerPrincipalPropertiesPathCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="ehPageManagerPrincipalPropertiesPathCache" parent="ehCacheParent">
         <meta key="j2:cat" value="default or cache"/>
-        <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="pageManagerPrincipalPropertiesPathCache"/>
     </bean>
 
