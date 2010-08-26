@@ -223,8 +223,9 @@ public class DatabasePageManagerCache implements ObjectCache
                             Set index = (Set)propertiesCacheIndexMap.get(path);
                             if (index != null)
                             {
-                                // remove all indexed fragment keys
-                                Iterator fragmentKeyIter = index.iterator();
+                                // remove all indexed fragment keys, (copy first since "quiet" removes
+                                // from fragment property caches will side effect this set while iterating)
+                                Iterator fragmentKeyIter = (new ArrayList(index)).iterator();
                                 while (fragmentKeyIter.hasNext())
                                 {
                                     String fragmentKey = (String)fragmentKeyIter.next();
@@ -235,7 +236,7 @@ public class DatabasePageManagerCache implements ObjectCache
                                     {
                                         clearPrincipalPropertiesCache(fragmentId);
                                     }
-                                    // remove fragment property cache
+                                    // ensure removed from fragment property cache
                                     DatabasePageManagerCache.propertiesCache.removeQuiet(fragmentKey);
                                     DatabasePageManagerCache.propertiesPathCache.removeQuiet(fragmentKey);
                                 }
@@ -341,7 +342,7 @@ public class DatabasePageManagerCache implements ObjectCache
                         }
                     }                    
                 }
-                else if (fragmentKeyOrPath != null)
+                else if (fragmentKeyOrPath == null)
                 {
                     // remove all cache keys from properties cache index
                     synchronized (DatabasePageManagerCache.class)
