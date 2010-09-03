@@ -625,7 +625,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
             throws InvalidCriteriaException
     {
         AggregateStatistics as = new AggregateStatisticsImpl();
-        String query;
+        String query1;
         String query2;
 
         String tableName;
@@ -660,7 +660,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
         if (!PortalStatistics.QUERY_TYPE_USER.equals(queryType))
         {
-            query = "select count(*) as itemcount , MIN(ELAPSED_TIME) as amin ,AVG(ELAPSED_TIME) as aavg ,MAX(ELAPSED_TIME) as amax from "
+            query1 = "select count(*) as itemcount , MIN(ELAPSED_TIME) as amin ,AVG(ELAPSED_TIME) as aavg ,MAX(ELAPSED_TIME) as amax from "
                     + tableName + " where time_stamp > ? and time_stamp < ?";
             query2 = "select count(*) as itemcount ,"
                     + groupColumn
@@ -670,7 +670,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                     + groupColumn + "  order by " + orderColumn + " " + ascDesc;
         } else
         {
-            query = "select count(*) as itemcount , MIN(ELAPSED_TIME) as amin,AVG(ELAPSED_TIME) as aavg ,MAX(ELAPSED_TIME) as amax from "
+            query1 = "select count(*) as itemcount , MIN(ELAPSED_TIME) as amin,AVG(ELAPSED_TIME) as aavg ,MAX(ELAPSED_TIME) as amax from "
                     + tableName
                     + " where time_stamp > ? and time_stamp < ? and status = 2";
             query2 = "select count(*) as itemcount ,"
@@ -681,14 +681,20 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                     + " where time_stamp > ? and time_stamp < ? and status = 2 group by "
                     + groupColumn + "  order by " + orderColumn + " " + ascDesc;
         }
+        
         Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        
         try
         {
             con = ds.getConnection();
-            PreparedStatement pstmt = con.prepareStatement(query);
+            
+            // query 1
+            pstmt = con.prepareStatement(query1);
             pstmt.setTimestamp(1, new Timestamp(start.getTime()));
             pstmt.setTimestamp(2, new Timestamp(end.getTime()));
-            ResultSet rs = pstmt.executeQuery();
+            rs = pstmt.executeQuery();
             float denominator = 1.0f;
             if (PortalStatistics.QUERY_TYPE_USER.equals(queryType))
             {
@@ -702,12 +708,18 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                 as.setMinProcessingTime(rs.getFloat("amin") / denominator);
                 as.setAvgProcessingTime(rs.getFloat("aavg") / denominator);
                 as.setMaxProcessingTime(rs.getFloat("amax") / denominator);
-
             }
-            PreparedStatement pstmt2 = con.prepareStatement(query2);
-            pstmt2.setTimestamp(1, new Timestamp(start.getTime()));
-            pstmt2.setTimestamp(2, new Timestamp(end.getTime()));
-            ResultSet rs2 = pstmt2.executeQuery();
+            
+            rs.close();
+            rs = null;
+            pstmt.close();
+            pstmt = null;
+            
+            // query 2
+            pstmt = con.prepareStatement(query2);
+            pstmt.setTimestamp(1, new Timestamp(start.getTime()));
+            pstmt.setTimestamp(2, new Timestamp(end.getTime()));
+            rs = pstmt.executeQuery();
 
             int rowCount = 0;
             int totalRows = 5;
@@ -724,11 +736,11 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
                 totalRows = temp;
             }
             
-            while ((rs2.next()) && (rowCount < totalRows))
+            while ((rs.next()) && (rowCount < totalRows))
             {
                 Map row = new HashMap();
-                row.put("count", "" + rs2.getInt("itemcount"));
-                String col = rs2.getString(groupColumn);
+                row.put("count", "" + rs.getInt("itemcount"));
+                String col = rs.getString(groupColumn);
                 int maxColLen = 35;
                 if (col != null)
                 {
@@ -741,11 +753,11 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
                 row.put("groupColumn", col);
                 row.put("min", ""
-                        + floatFormatter(rs2.getFloat("amin") / denominator));
+                        + floatFormatter(rs.getFloat("amin") / denominator));
                 row.put("avg", ""
-                        + floatFormatter(rs2.getFloat("aavg") / denominator));
+                        + floatFormatter(rs.getFloat("aavg") / denominator));
                 row.put("max", ""
-                        + floatFormatter(rs2.getFloat("amax") / denominator));
+                        + floatFormatter(rs.getFloat("amax") / denominator));
                 as.addRow(row);
                 rowCount++;
             }
@@ -757,16 +769,36 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
         }
         finally 
         {
-            try 
+            if(rs != null) 
             {
-                if(con != null) 
+                try 
+                {
+                    rs.close();
+                }
+                catch (Exception ignore) 
+                {
+                }
+            }
+            if(pstmt != null) 
+            {
+                try 
+                {
+                    pstmt.close();
+                }
+                catch (Exception ignore) 
+                {
+                }
+            }
+            if(con != null) 
+            {
+                try 
                 {
                     con.close();
                 }
-            } 
-            catch (SQLException e) 
-            {
-                logger.error("error releasing the connection",e);
+                catch (Exception e) 
+                {
+                    logger.error("error releasing the connection",e);
+                }
             }
         }
 

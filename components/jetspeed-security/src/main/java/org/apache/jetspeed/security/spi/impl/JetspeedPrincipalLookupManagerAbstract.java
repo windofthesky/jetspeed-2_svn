@@ -65,8 +65,11 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 
 		int numberOfRecords = 0;
 		ArrayList<JetspeedPrincipal> results = new ArrayList<JetspeedPrincipal>();
+		
+        Connection conn = null;
 		PreparedStatement pstmt = null;
-		Connection conn = null;
+		ResultSet rs = null;
+		
 		try {
 			conn = PersistenceBrokerFactory.defaultPersistenceBroker().serviceConnectionManager().getConnection();
 
@@ -74,7 +77,7 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 			// pstmt = conn.prepareStatement(sqlStr,
 			// ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			pstmt.setFetchSize((int) (queryContext.getOffset() + queryContext.getLength()));
-			ResultSet rs = pstmt.executeQuery();
+			rs = pstmt.executeQuery();
 			boolean hasRecords = rs.next();
 
 			if (hasRecords) {
@@ -97,7 +100,11 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 						break;
 					}
 				}
+				
 				rs.close();
+                rs = null;
+                pstmt.close();
+                pstmt = null;
 
 				// get the total number of results effected by the query
 				int fromPos = baseSqlStr.toUpperCase().indexOf(" FROM ");
@@ -109,12 +116,12 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 				if (orderPos >= 0) {
 					baseSqlStr = baseSqlStr.substring(0, orderPos);
 				}
+
 				pstmt = conn.prepareStatement(baseSqlStr);
 				rs = pstmt.executeQuery();
 				while (rs.next()) {
 					numberOfRecords += rs.getInt(1);
 				}
-				rs.close();
 			}
 		} catch (SQLException e) {
 			log.error("Error reading principal.", e);
@@ -123,13 +130,37 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 		} catch (LookupException e) {
 			log.error("Error reading principal.", e);
 		} finally {
-			try {
-				if (conn != null && !conn.isClosed()) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-				log.error("Error closing connection.", e);
-			}
+            if(rs != null) 
+            {
+                try 
+                {
+                    rs.close();
+                }
+                catch (Exception ignore) 
+                {
+                }
+            }
+            if(pstmt != null) 
+            {
+                try 
+                {
+                    pstmt.close();
+                }
+                catch (Exception ignore) 
+                {
+                }
+            }
+            if(conn != null) 
+            {
+                try 
+                {
+                    conn.close();
+                }
+                catch (Exception e) 
+                {
+                    log.error("error releasing the connection",e);
+                }
+            }
 		}
 		return new JetspeedPrincipalResultList(results, numberOfRecords);
 	}
