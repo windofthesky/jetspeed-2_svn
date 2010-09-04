@@ -25,7 +25,7 @@ import java.net.UnknownHostException;
  * 
  * @author <a href="mailto:chris@bluesunrise.com">Chris Schaefer </a>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
- * @version $Id: $
+ * @version $Id$
  */
 public interface UserStats extends Serializable
 {
@@ -43,4 +43,6 @@ public interface UserStats extends Serializable
     public InetAddress getInetAddress();
     
     public void setInetAddressFromIp(String ip) throws UnknownHostException;
+
+    public String getIpAddress();
 }

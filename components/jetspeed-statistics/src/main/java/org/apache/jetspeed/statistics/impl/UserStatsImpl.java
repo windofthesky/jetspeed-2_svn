@@ -30,12 +30,13 @@ import org.apache.jetspeed.statistics.UserStats;
  */
 public class UserStatsImpl implements UserStats
 {
+    private static final long serialVersionUID = 1L;
 
     private String username;
 
     private int numberOfSessions;
     
-    private InetAddress inetAddress;
+    private String ipAddress;
 
     /*
      * (non-Javadoc)
@@ -79,26 +80,38 @@ public class UserStatsImpl implements UserStats
         this.username = username;
 
     }
+    
+    public String getIpAddress()
+    {
+        return ipAddress;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.statistics.UserStats#getInetAddress()
 	 */
 	public InetAddress getInetAddress() {
-		return inetAddress;
+		try
+        {
+            return InetAddress.getByName(ipAddress);
+        }
+        catch (UnknownHostException e)
+        {
+        }
+        return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.statistics.UserStats#setInetAddress(java.net.InetAddress)
 	 */
 	public void setInetAddress(InetAddress inetAddress) {
-		this.inetAddress = inetAddress;
+		this.ipAddress = inetAddress.getHostAddress();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.apache.jetspeed.statistics.UserStats#setInetAddressFromIp(java.lang.String)
 	 */
-	public void setInetAddressFromIp(String ip) throws UnknownHostException {
-		this.inetAddress = InetAddress.getByName(ip);		
+	public void setInetAddressFromIp(String ipAddress) throws UnknownHostException {
+		this.ipAddress = ipAddress;
 	}
 
 	/**
@@ -113,6 +126,6 @@ public class UserStatsImpl implements UserStats
 			return false;
 		
 		UserStats userstat = (UserStats)obj;
-		return this.inetAddress.equals(userstat.getInetAddress()) && this.username.equals(userstat.getUsername());
+		return this.ipAddress.equals(userstat.getIpAddress()) && this.username.equals(userstat.getUsername());
 	}
 }

@@ -209,7 +209,7 @@ public class GetUserListAction
         						singleUserMap.put(USERNAME, userStat.getUsername());
                                 singleUserMap.put(SESSIONS, new Integer(userStat.getNumberOfSessions()));
         						singleUserMap.put(STATUS, ONLINE);
-        						singleUserMap.put(IPADDRESS, userStat.getInetAddress().getHostAddress());
+        						singleUserMap.put(IPADDRESS, userStat.getIpAddress());
         						if(includeUserInfo)
         						{
         							singleUserMap.put(USERINFO, getUserInfo(userStat.getUsername()));
