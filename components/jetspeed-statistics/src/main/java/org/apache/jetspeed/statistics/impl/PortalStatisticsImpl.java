@@ -39,8 +39,6 @@ import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.statistics.AggregateStatistics;
@@ -48,7 +46,8 @@ import org.apache.jetspeed.statistics.InvalidCriteriaException;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.jetspeed.statistics.StatisticsQueryCriteria;
 import org.apache.jetspeed.statistics.UserStats;
-import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -59,8 +58,7 @@ import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor </a>
  * @version $Id$
  */
-public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
-        PortalStatistics
+public class PortalStatisticsImpl implements PortalStatistics
 {
     /* CLF logger */
     protected final static Logger logger = LoggerFactory.getLogger(PortalStatisticsImpl.class);
@@ -116,6 +114,8 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
     /* date formatter */
     protected SimpleDateFormat formatter = null;
+    
+    private boolean loggingDisabled;
 
     /**
      * <p>
@@ -133,6 +133,7 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
 
         this.logToCLF = logToCLF;
         this.logToDatabase = logToDatabase;
+        this.loggingDisabled = (!logToCLF && !logToDatabase);
         this.maxRecordToFlush_Portlet = maxRecordToFlush_Portal;
         this.maxRecordToFlush_User = maxRecordToFlush_User;
         this.maxRecordToFlush_Page = maxRecordToFlush_Page;
@@ -158,7 +159,9 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     public void logPortletAccess(RequestContext request, String portletName,
             String statusCode, long msElapsedTime)
     {
-
+        if (loggingDisabled)
+            return;
+        
         try
         {
             HttpServletRequest req = request.getRequest();
@@ -304,6 +307,9 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     public void logPageAccess(RequestContext request, String statusCode,
             long msElapsedTime)
     {
+        if (loggingDisabled)
+            return;
+
         try
         {
             HttpServletRequest req = request.getRequest();
@@ -345,6 +351,9 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
     public void logUserLogout(String ipAddress, String userName,
             long msSessionLength)
     {
+        if (loggingDisabled)
+            return;
+
         try
         {
 
@@ -417,6 +426,9 @@ public class PortalStatisticsImpl extends PersistenceBrokerDaoSupport implements
      */
     public void logUserLogin(RequestContext request, long msElapsedLoginTime)
     {
+        if (loggingDisabled)
+            return;
+
         try
         {
             HttpServletRequest req = request.getRequest();
