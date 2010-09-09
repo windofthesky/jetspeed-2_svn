@@ -125,6 +125,7 @@ public class ConcurrentContainerRequestResponseUnwrapper implements ContainerReq
             }
             
             enhancer = new Enhancer();
+            enhancer.setClassLoader(getClass().getClassLoader());
             enhancer.setSuperclass(proxySuperClass);
             enhancer.setStrategy(new UndeclaredThrowableStrategy(UndeclaredThrowableException.class));
             enhancer.setInterceptDuringConstruction(false);
