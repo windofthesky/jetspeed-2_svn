@@ -92,6 +92,7 @@ limitations under the License.
         <constructor-arg index="0"><ref bean="javax.servlet.ServletConfig" /></constructor-arg>
         <constructor-arg index="1"><ref bean="PortalContext" /></constructor-arg>
         <constructor-arg index="2"><ref bean="portletFactory" /></constructor-arg>
+        <constructor-arg index="3"><ref bean="ContainerRequestResponseUnwrapper" /></constructor-arg>
     </bean>
 
     <bean id="org.apache.pluto.services.RequestDispatcherService"
