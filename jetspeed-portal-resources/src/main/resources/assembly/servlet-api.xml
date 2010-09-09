@@ -34,5 +34,17 @@
     <meta key="j2:cat" value="default" />
   </bean>
   
+  <!-- Use the following when the underlying request of the platform doesn't support concurrent modification on attributes. -->
+  <!--
+  <bean id="ContainerRequestResponseUnwrapper"
+    class="org.apache.jetspeed.container.invoker.ConcurrentContainerRequestResponseUnwrapper">
+    <meta key="j2:cat" value="default" />
+    <property name="attributableProperties">
+      <list>
+        <value>webAppDispatcherContext</value>
+      </list>
+    </property>
+  </bean>
+  -->
   
 </beans>
