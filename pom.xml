@@ -313,7 +313,6 @@
     <xalan.version>2.4.1</xalan.version>
     <xerces.version>2.8.1</xerces.version>
     <xml-apis.version>2.0.2</xml-apis.version>
-    <asm.version>2.2</asm.version>
     <ccpp.version>1.0</ccpp.version>
     <geronimo-commonj_1.1_spec.version>1.0</geronimo-commonj_1.1_spec.version>
     <tyrex.version>1.0.1</tyrex.version>
@@ -625,19 +624,15 @@
           </exclusion>
         </exclusions>
       </dependency>
-
-      <!-- Spring Framework -->
+      
+      <!-- CGLIB -->
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib</artifactId>
         <version>${cglib.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
+      
+      <!-- Spring Framework -->
       <dependency>
         <groupId>aopalliance</groupId>
         <artifactId>aopalliance</artifactId>
@@ -1376,18 +1371,6 @@
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
         <version>${ant.version}</version>
-      </dependency>
-
-      <!-- ASM -->
-      <dependency>
-        <groupId>asm</groupId>
-        <artifactId>asm</artifactId>
-        <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>asm</groupId>
-        <artifactId>asm-attrs</artifactId>
-        <version>${asm.version}</version>
       </dependency>
 
       <!-- geronimo-commonj_1.1_spec -->

@@ -144,14 +144,6 @@
       <artifactId>jaxen</artifactId>
     </dependency>
     <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm-attrs</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-commonj_1.1_spec</artifactId>
       <scope>provided</scope>
@@ -159,6 +151,10 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
     </dependency>
     <!-- for spring-core we require JCL -->
     <dependency>
