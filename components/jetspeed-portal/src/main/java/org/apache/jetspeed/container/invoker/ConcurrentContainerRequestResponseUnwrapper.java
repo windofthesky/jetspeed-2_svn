@@ -16,6 +16,9 @@
  */
 package org.apache.jetspeed.container.invoker;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -91,6 +94,27 @@ public class ConcurrentContainerRequestResponseUnwrapper implements ContainerReq
             request = ((HttpServletRequestWrapper) request).getRequest();
         }
         
+        if (proxySuperClass == null)
+        {
+            proxySuperClass = request.getClass();
+        }
+        
+        if (proxyConstructorArgTypes == null)
+        {
+            Constructor<?> constructor = findAccessibleConstructor(proxySuperClass);
+            proxyConstructorArgTypes = constructor.getParameterTypes();
+            
+            if (proxyConstructorArgTypes == null)
+            {
+                proxyConstructorArgTypes = new Class<?>[0];
+            }
+        }
+        
+        if (proxyConstructorArgs == null)
+        {
+            proxyConstructorArgs = new Object[proxyConstructorArgTypes.length];
+        }
+        
         if (enhancer == null)
         {
             ConcurrentRequestMethodInterceptor interceptor = new ConcurrentRequestMethodInterceptor(request);
@@ -101,7 +125,7 @@ public class ConcurrentContainerRequestResponseUnwrapper implements ContainerReq
             }
             
             enhancer = new Enhancer();
-            enhancer.setSuperclass(proxySuperClass != null ? proxySuperClass : request.getClass());
+            enhancer.setSuperclass(proxySuperClass);
             enhancer.setStrategy(new UndeclaredThrowableStrategy(UndeclaredThrowableException.class));
             enhancer.setInterceptDuringConstruction(false);
             enhancer.setCallback(interceptor);
@@ -127,5 +151,45 @@ public class ConcurrentContainerRequestResponseUnwrapper implements ContainerReq
         }
         
         return containerResponse;
+    }
+    
+    private Constructor<?> findAccessibleConstructor(Class<?> clazz)
+    {
+        Constructor<?> constructor = null;
+        
+        try
+        {
+            Constructor<?> defaultConstructor = clazz.getDeclaredConstructor(new Class<?>[0]);
+            
+            if (Modifier.PUBLIC == (Modifier.PUBLIC & defaultConstructor.getModifiers()))
+            {
+                constructor = defaultConstructor;
+            }
+        }
+        catch (Throwable ignore)
+        {
+        }
+        
+        if (constructor == null)
+        {
+            try
+            {
+                Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+                
+                for (Constructor<?> c : constructors)
+                {
+                    if (Modifier.PUBLIC == (Modifier.PUBLIC & c.getModifiers()))
+                    {
+                        constructor = c;
+                        break;
+                    }
+                }
+            }
+            catch (Throwable ignore)
+            {
+            }
+        }
+        
+        return constructor;
     }
 }

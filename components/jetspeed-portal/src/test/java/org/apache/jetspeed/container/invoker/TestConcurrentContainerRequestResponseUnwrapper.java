@@ -16,14 +16,9 @@
  */
 package org.apache.jetspeed.container.invoker;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import junit.framework.TestCase;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.UndeclaredThrowableException;
-import net.sf.cglib.transform.impl.UndeclaredThrowableStrategy;
+
+import com.mockrunner.mock.web.MockHttpServletRequest;
 
 /**
  * TestConcurrentContainerRequestResponseUnwrapper
@@ -31,35 +26,29 @@ import net.sf.cglib.transform.impl.UndeclaredThrowableStrategy;
  */
 public class TestConcurrentContainerRequestResponseUnwrapper extends TestCase 
 {
-    private Enhancer enhancer;
-    private ConcurrentRequest concurrentRequest;
+    private ContainerRequestResponseUnwrapper unwrapper;
 
     public void setUp() throws Exception
     {
         super.setUp();
         
-        concurrentRequest = new ConcurrentRequest(null);
+        ConcurrentContainerRequestResponseUnwrapper unwrapperImpl = new ConcurrentContainerRequestResponseUnwrapper();
+        unwrapperImpl.setAttributableProperties(new String [] { "dispatcherContext" });
         
-        ConcurrentRequestMethodInterceptor interceptor = new ConcurrentRequestMethodInterceptor(concurrentRequest);
-        interceptor.setAttributableProperties(new String [] { "dispatcherContext" });
-        
-        enhancer = new Enhancer();
-        enhancer.setSuperclass(ConcurrentRequest.class);
-        enhancer.setStrategy(new UndeclaredThrowableStrategy(UndeclaredThrowableException.class));
-        enhancer.setInterceptDuringConstruction(false);
-        enhancer.setCallback(interceptor);
-        
-        concurrentRequest = (ConcurrentRequest) enhancer.create(new Class[] { ConcurrentRequest.class }, new Object[] { null });
+        unwrapper = unwrapperImpl;
     }
 
     public void testThreadSafety() throws Exception
     {
+        MockConcurrentRequest containerConcurrentRequest = new MockConcurrentRequest(null);
+        MockConcurrentRequest adjustedConcurrentRequest = (MockConcurrentRequest) unwrapper.unwrapContainerRequest(containerConcurrentRequest);
+        
         int workerCount = 40;
         Worker[] workers = new Worker[workerCount];
         
         for (int i = 0; i < workerCount; i++)
         {
-            workers[i] = new Worker("Worker-" + i, concurrentRequest, "Portlet-" + i, new Object());
+            workers[i] = new Worker("Worker-" + i, adjustedConcurrentRequest, "Portlet-" + i, new Object());
         }
         
         for (int i = 0; i < workerCount; i++)
@@ -85,13 +74,13 @@ public class TestConcurrentContainerRequestResponseUnwrapper extends TestCase
 
     private static class Worker extends Thread
     {
-        private final ConcurrentRequest concurrentRequest;
+        private final MockConcurrentRequest concurrentRequest;
         private final String orginalPortletName;
         private String currentPortletName;
         private final Object originalWebAppDispatcherContext;
         private Object currentWebAppDispatcherContext;
 
-        private Worker(String name, final ConcurrentRequest concurrentRequest, final String orginalPortletName, final Object originalWebAppDispatcherContext)
+        private Worker(String name, final MockConcurrentRequest concurrentRequest, final String orginalPortletName, final Object originalWebAppDispatcherContext)
         {
             super(name);
             this.concurrentRequest = concurrentRequest;
@@ -137,24 +126,13 @@ public class TestConcurrentContainerRequestResponseUnwrapper extends TestCase
         }
     }
     
-    public static class ConcurrentRequest
+    public static class MockConcurrentRequest extends MockHttpServletRequest
     {
-        private Map<String, Object> attributes;
         private Object dispatcherContext;
         
-        public ConcurrentRequest(ConcurrentRequest parent)
+        public MockConcurrentRequest(MockConcurrentRequest parent)
         {
-            this.attributes = Collections.synchronizedMap(new HashMap<String, Object>());
-        }
-        
-        public void setAttribute(String s, Object obj)
-        {
-            attributes.put(s, obj);
-        }
-        
-        public Object getAttribute(String s)
-        {
-            return attributes.get(s);
+            super();
         }
         
         public void setDispatcherContext(Object dispatcherContext)
