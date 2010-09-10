@@ -32,7 +32,6 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.FragmentDefinition;
-import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.PageManager;

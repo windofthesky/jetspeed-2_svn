@@ -40,6 +40,7 @@ import org.apache.jetspeed.om.page.proxy.LinkProxy;
 import org.apache.jetspeed.om.page.proxy.PageProxy;
 import org.apache.jetspeed.om.page.proxy.PageTemplateProxy;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -88,14 +89,14 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     protected static final Method GET_TITLE_METHOD = reflectMethod(Folder.class, "getTitle", null);
 
     /**
-     * defaultFolder - default proxy delegate folder instance
+     * defaultFolderReference - default proxy delegate folder instance reference
      */
-    private Folder defaultFolder;
+    private FolderWeakReference defaultFolderReference;
 
     /**
-     * titledFolder - titled proxy delegate folder instance
+     * titledFolderReference - titled proxy delegate folder instance reference
      */
-    private Folder titledFolder;
+    private FolderWeakReference titledFolderReference;
 
     /**
      * forceReservedVisible - flag used to suppress child reserved/hidden folder visibility checks
@@ -173,17 +174,17 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     private boolean linksAggregated;
 
     /**
-     * SearchFolder - data object used hold concrete search folder and
-     *                related search path profile locator name pairs
+     * SearchFolder - data object used hold concrete search folder reference
+     *                and related search path profile locator name pairs
      */
     private class SearchFolder
     {
-        public Folder folder;
+        public FolderWeakReference folderReference;
         public String locatorName;
 
-        public SearchFolder(Folder folder, String locatorName)
+        public SearchFolder(FolderWeakReference folderReference, String locatorName)
         {
-            this.folder = folder;
+            this.folderReference = folderReference;
             this.locatorName = locatorName;
         }
     }
@@ -196,16 +197,16 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
 
     /**
      * InheritanceFolder - data object used hold aggregated concrete search
-     *                     folders and view path to folder 
+     *                     folder references and view path to folder 
      */
     private class InheritanceFolder
     {
-        public Folder folder;
+        public FolderWeakReference folderReference;
         public String path;
 
-        public InheritanceFolder(Folder folder, String path)
+        public InheritanceFolder(FolderWeakReference folderReference, String path)
         {
-            this.folder = folder;
+            this.folderReference = folderReference;
             this.path = path;
         }
     }
@@ -244,8 +245,8 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     private FolderProxy(SearchPathsSiteView view, String locatorName, Folder parentFolder, Folder folder, boolean forceReservedVisible)
     {
         super(view, locatorName, parentFolder, folder.getName(), folder.isHidden());
-        this.defaultFolder = selectDefaultFromAggregateFolders(folder);
-        this.titledFolder = selectTitledFromAggregateFolders(this.defaultFolder);
+        this.defaultFolderReference = selectDefaultFromAggregateFolders(folder);
+        this.titledFolderReference = selectTitledFromAggregateFolders(this.defaultFolderReference);
         this.forceReservedVisible = forceReservedVisible;
     }
     
@@ -385,7 +386,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         try
         {
             // attempt to invoke method on delegate Folder instance
-            return m.invoke(defaultFolder, args);
+            return m.invoke(defaultFolderReference.getFolder(), args);
         }
         catch (InvocationTargetException ite)
         {
@@ -531,7 +532,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         {
             return Folder.PATH_SEPARATOR;
         }
-        return defaultFolder.getName();
+        return defaultFolderReference.getFolder().getName();
     }
 
     /**
@@ -730,7 +731,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     public GenericMetadata getMetadata()
     {
         // return titled concrete folder metadata
-        return titledFolder.getMetadata();
+        return titledFolderReference.getFolder().getMetadata();
     }
 
     /**
@@ -741,7 +742,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     public String getTitle()
     {
         // return titled concrete folder title
-        return titledFolder.getTitle();
+        return titledFolderReference.getFolder().getTitle();
     }
 
     /**
@@ -752,7 +753,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     public String getShortTitle()
     {
         // return titled concrete folder short title
-        return titledFolder.getShortTitle();
+        return titledFolderReference.getFolder().getShortTitle();
     }
 
     /**
@@ -764,7 +765,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     public String getTitle(Locale locale)
     {
         // return titled concrete folder title
-        return titledFolder.getTitle(locale);
+        return titledFolderReference.getFolder().getTitle(locale);
     }
 
     /**
@@ -776,7 +777,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
     public String getShortTitle(Locale locale)
     {
         // return titled concrete folder short title
-        return titledFolder.getShortTitle(locale);
+        return titledFolderReference.getFolder().getShortTitle(locale);
     }
 
     /**
@@ -786,7 +787,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      */
     public Folder getDefaultFolder()
     {
-        return defaultFolder;
+        return defaultFolderReference.getFolder();
     }
     
     /**
@@ -809,7 +810,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             {
                 // test access against child in search folder
                 SearchFolder searchFolder = (SearchFolder)foldersIter.next();
-                Folder folder = searchFolder.folder;
+                Folder folder = searchFolder.folderReference.getFolder();
                 // ignore all folder access exceptions, (throws SecurityException on failed check access)
                 try
                 {
@@ -847,7 +848,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             {
                 // test access against child in search folder
                 SearchFolder searchFolder = (SearchFolder)foldersIter.next();
-                Folder folder = searchFolder.folder;
+                Folder folder = searchFolder.folderReference.getFolder();
                 // ignore all folder access exceptions, (throws SecurityException on failed check access)
                 try
                 {
@@ -904,7 +905,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                 // get menu definitions from inheritance folders and
                 // merge into aggregate menu definition locators
                 InheritanceFolder inheritanceFolder = (InheritanceFolder)inheritanceFoldersIter.next();
-                Folder folder = inheritanceFolder.folder;
+                Folder folder = inheritanceFolder.folderReference.getFolder();
                 String path = inheritanceFolder.path;
                 mergeMenuDefinitionLocators(folder.getMenuDefinitions(), folder, path, false);
             }
@@ -924,20 +925,20 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      *                                     
      *
      * @param defaultFolder default concrete folder
-     * @return selected concrete folder
+     * @return selected concrete folder reference
      */
-    private Folder selectDefaultFromAggregateFolders(Folder defaultFolder)
+    private FolderWeakReference selectDefaultFromAggregateFolders(Folder defaultFolder)
     {
         // select most specific folder, (i.e. first) along
         // search paths ordered most to least specific
         try
         {
-            return ((SearchFolder)getSearchFolders().get(0)).folder;
+            return ((SearchFolder)getSearchFolders().get(0)).folderReference;
         }
         catch (FolderNotFoundException fnfe)
         {
         }
-        return defaultFolder;
+        return new FolderWeakReference(getView().getPageManager(), defaultFolder);
     }
 
     /**
@@ -945,10 +946,10 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      *                                    folder with a title to use in site view at
      *                                    this proxy folder view path
      *
-     * @param defaultFolder default concrete folder
-     * @return selected concrete folder
+     * @param defaultFolder default concrete folder reference
+     * @return selected concrete folder reference
      */
-    private Folder selectTitledFromAggregateFolders(Folder defaultFolder)
+    private FolderWeakReference selectTitledFromAggregateFolders(FolderWeakReference defaultFolder)
     {
         // select most specific folder along search paths
         // with a specified title, short title, or metadata
@@ -957,7 +958,8 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             Iterator foldersIter = getSearchFolders().iterator();
             while (foldersIter.hasNext())
             {
-                Folder folder = ((SearchFolder)foldersIter.next()).folder;
+                FolderWeakReference folderReference = ((SearchFolder)foldersIter.next()).folderReference;
+                Folder folder = folderReference.getFolder();
                 String name = folder.getName();
                 String title = folder.getTitle();
                 String shortTitle = folder.getShortTitle();
@@ -966,7 +968,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                     ((shortTitle != null) && !shortTitle.equalsIgnoreCase(name)) ||
                     ((folderMetadata != null) && (folderMetadata.getFields() != null) && !folderMetadata.getFields().isEmpty()))
                 {
-                    return folder;
+                    return folderReference;
                 }
             }
         }
@@ -996,7 +998,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             while (foldersIter.hasNext())
             {
                 // get folder default page name or look for fallback default name
-                Folder folder = ((SearchFolder)foldersIter.next()).folder;
+                Folder folder = ((SearchFolder)foldersIter.next()).folderReference.getFolder();
                 String defaultPageName = folder.getDefaultPage();
                 if (defaultPageName != null)
                 {
@@ -1097,7 +1099,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             {
                 // aggregate folders
                 SearchFolder searchFolder = (SearchFolder)foldersIter.next();
-                Folder folder = searchFolder.folder;
+                Folder folder = searchFolder.folderReference.getFolder();
                 String locatorName = searchFolder.locatorName;
 
                 // create and save proxies for concrete children
@@ -1253,10 +1255,11 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                 // search folders list
                 try
                 {
-                    Folder folder = getView().getPageManager().getFolder(path);
+                    PageManager pageManager = getView().getPageManager();
+                    Folder folder = pageManager.getFolder(path);
                     if (folder != null)
                     {
-                        searchFolders.add(new SearchFolder(folder, searchPath.getLocatorName()));
+                        searchFolders.add(new SearchFolder(new FolderWeakReference(pageManager, folder), searchPath.getLocatorName()));
                     }
                 }
                 catch (NodeException ne)
@@ -1313,7 +1316,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                 Iterator foldersIter = searchFolders.iterator();
                 while (foldersIter.hasNext())
                 {
-                    inheritanceFolders.add(new InheritanceFolder(((SearchFolder)foldersIter.next()).folder, folder.getPath()));
+                    inheritanceFolders.add(new InheritanceFolder(((SearchFolder)foldersIter.next()).folderReference, folder.getPath()));
                 }
 
                 // get super/parent search paths

@@ -57,6 +57,7 @@ public abstract class BaseElementImpl implements BaseElement
     private boolean constraintsEnabled;
     private boolean permissionsEnabled;
     private PageManager pageManager;
+    private volatile boolean stale;
     protected static PermissionFactory pf;
     
     public static void setPermissionsFactory(PermissionFactory pf)
@@ -133,6 +134,16 @@ public abstract class BaseElementImpl implements BaseElement
         return pageManager;
     }     
 
+    /**
+     * Set stale status of this object.
+     * 
+     * @param stale stale flag status
+     */
+    public void setStale(boolean stale)
+    {
+        this.stale = stale;
+    }
+    
     /**
      * grantViewActionAccess
      *
@@ -546,5 +557,13 @@ public abstract class BaseElementImpl implements BaseElement
     public void setShortTitle(String shortTitle)
     {
         this.shortTitle = shortTitle;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.apache.jetspeed.om.page.BaseElement#isStale()
+     */
+    public boolean isStale()
+    {
+        return stale;
     }
 }

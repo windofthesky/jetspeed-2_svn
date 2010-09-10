@@ -342,7 +342,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
-           memoryStoreEvictionPolicy="LFU"
+           memoryStoreEvictionPolicy="LRU"
             />
 
     <cache name="preferencesCache"
@@ -352,7 +352,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
-           memoryStoreEvictionPolicy="LFU">
+           memoryStoreEvictionPolicy="LRU">
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
                 properties="replicateAsynchronously=true, replicatePuts=false,
@@ -368,7 +368,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
-           memoryStoreEvictionPolicy="LFU">
+           memoryStoreEvictionPolicy="LRU">
    </cache>
 
    <cache name="portletApplicationNameCache"
@@ -378,7 +378,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
-           memoryStoreEvictionPolicy="LFU">
+           memoryStoreEvictionPolicy="LRU">
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
                 properties="replicateAsynchronously=true, replicatePuts=false,
@@ -393,7 +393,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
-           memoryStoreEvictionPolicy="LFU">
+           memoryStoreEvictionPolicy="LRU">
             </cache>
 
    <cache name="portletDefinitionNameCache"
@@ -403,7 +403,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
-           memoryStoreEvictionPolicy="LFU">
+           memoryStoreEvictionPolicy="LRU">
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
                 properties="replicateAsynchronously=true, replicatePuts=false,
@@ -419,7 +419,7 @@
           overflowToDisk="false"
           timeToIdleSeconds="3600"
           timeToLiveSeconds="3600"
-          memoryStoreEvictionPolicy="LFU">
+          memoryStoreEvictionPolicy="LRU">
    </cache>
 
    <cache name="desktopContentCache"
@@ -429,7 +429,7 @@
           overflowToDisk="false"
           timeToIdleSeconds="3600"
           timeToLiveSeconds="3600"
-          memoryStoreEvictionPolicy="LFU">
+          memoryStoreEvictionPolicy="LRU">
    </cache>
    
     <!--
@@ -491,7 +491,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="30"
            timeToLiveSeconds="30"
-           memoryStoreEvictionPolicy="LFU"
+           memoryStoreEvictionPolicy="LRU"
             />
    
     <cache name="decorationContentCache"
@@ -501,7 +501,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="28800"
            timeToLiveSeconds="28800"
-           memoryStoreEvictionPolicy="LFU"
+           memoryStoreEvictionPolicy="LRU"
             />
 
     <!--
@@ -514,7 +514,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="0"
            timeToLiveSeconds="0"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LRU"/>
 
     <cache name="importPageFileCache"
            maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxfiles}"
@@ -522,7 +522,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="0"
            timeToLiveSeconds="0"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LRU"/>
     
     <cache name="pageManagerOidCache"
            maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxelements}"
@@ -530,7 +530,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
            timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LRU"/>
 
     <cache name="pageManagerPathCache"
            maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxelements}"
@@ -538,7 +538,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
            timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
-           memoryStoreEvictionPolicy="LFU">
+           memoryStoreEvictionPolicy="LRU">
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
                                    properties="replicateAsynchronously=true,
                                                replicatePuts=false,
@@ -553,7 +553,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
            timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LRU"/>
 
     <cache name="pageManagerPropertiesPathCache"
            maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxelements}"
@@ -561,7 +561,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
            timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
-           memoryStoreEvictionPolicy="LFU">
+           memoryStoreEvictionPolicy="LRU">
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
                                    properties="replicateAsynchronously=true,
                                                replicatePuts=false,
@@ -576,7 +576,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
            timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LRU"/>
 
     <cache name="pageManagerPrincipalPropertiesPathCache"
            maxElementsInMemory="${org.apache.jetspeed.ehcache.pagemanager.maxelements}"
@@ -584,7 +584,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
            timeToLiveSeconds="${org.apache.jetspeed.ehcache.pagemanager.element.ttl}"
-           memoryStoreEvictionPolicy="LFU">
+           memoryStoreEvictionPolicy="LRU">
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
                                    properties="replicateAsynchronously=true,
                                                replicatePuts=false,

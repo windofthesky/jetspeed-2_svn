@@ -61,4 +61,15 @@ public interface BaseElement extends SecuredResource
      * @param title the new title
      */
     void setShortTitle(String title);
+
+    /**
+     * Returns whether this object is stale and should be
+     * refreshed from the page manager. This flag need only
+     * be checked against page manager elements that are
+     * cached externally outside the scope of a single
+     * request, (e.g. cached in a session).
+     * 
+     * @return stale status flag
+     */
+    boolean isStale();
 }

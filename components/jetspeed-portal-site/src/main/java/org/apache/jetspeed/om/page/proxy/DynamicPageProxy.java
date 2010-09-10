@@ -42,9 +42,9 @@ public class DynamicPageProxy extends NodeProxy implements InvocationHandler
     protected static final Method GET_MENU_DEFINITIONS_METHOD = reflectMethod(DynamicPage.class, "getMenuDefinitions", null);
 
     /**
-     * dynamicPage - proxy delegate dynamic page instance
+     * dynamicPageReference - proxy delegate dynamic page instance reference
      */
-    private DynamicPage dynamicPage;
+    private DynamicPageWeakReference dynamicPageReference;
 
     /**
      * newInstance - creates a new proxy instance that implements the DynamicPage interface
@@ -72,7 +72,7 @@ public class DynamicPageProxy extends NodeProxy implements InvocationHandler
     private DynamicPageProxy(SearchPathsSiteView view, String locatorName, Folder parentFolder, DynamicPage dynamicPage)
     {
         super(view, locatorName, parentFolder, dynamicPage.getName(), dynamicPage.isHidden());
-        this.dynamicPage = dynamicPage;
+        this.dynamicPageReference = new DynamicPageWeakReference(view.getPageManager(), dynamicPage);
     }
     
     /**
@@ -130,7 +130,7 @@ public class DynamicPageProxy extends NodeProxy implements InvocationHandler
         try
         {
             // attempt to invoke method on delegate DynamicPage instance
-            return m.invoke(dynamicPage, args);
+            return m.invoke(dynamicPageReference.getDynamicPage(), args);
         }
         catch (InvocationTargetException ite)
         {
@@ -145,7 +145,7 @@ public class DynamicPageProxy extends NodeProxy implements InvocationHandler
      */
     public DynamicPage getDynamicPage()
     {
-        return dynamicPage;
+        return dynamicPageReference.getDynamicPage();
     }
 
     /**
@@ -160,6 +160,7 @@ public class DynamicPageProxy extends NodeProxy implements InvocationHandler
         // folder menu definitions include standard menu definition
         // locator defaults
         FolderProxy parentFolderProxy = FolderProxy.getFolderProxy(getParent());
+        DynamicPage dynamicPage = dynamicPageReference.getDynamicPage();
         mergeMenuDefinitionLocators(dynamicPage.getMenuDefinitions(), dynamicPage, parentFolderProxy.getPath(), true);
         mergeMenuDefinitionLocators(parentFolderProxy.getMenuDefinitionLocators());
     }

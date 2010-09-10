@@ -36,9 +36,9 @@ import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 public class LinkProxy extends NodeProxy implements InvocationHandler
 {
     /**
-     * link - proxy delegate link instance
+     * linkReference - proxy delegate link instance reference
      */
-    private Link link;
+    private LinkWeakReference linkReference;
 
     /**
      * newInstance - creates a new proxy instance that implements the Link interface
@@ -66,7 +66,7 @@ public class LinkProxy extends NodeProxy implements InvocationHandler
     private LinkProxy(SearchPathsSiteView view, String locatorName, Folder parentFolder, Link link)
     {
         super(view, locatorName, parentFolder, link.getName(), link.isHidden());
-        this.link = link;
+        this.linkReference = new LinkWeakReference(view.getPageManager(), link);
     }
     
     /**
@@ -116,7 +116,7 @@ public class LinkProxy extends NodeProxy implements InvocationHandler
         try
         {
             // attempt to invoke method on delegate Link instance
-            return m.invoke(link, args);
+            return m.invoke(linkReference.getLink(), args);
         }
         catch (InvocationTargetException ite)
         {
@@ -131,6 +131,6 @@ public class LinkProxy extends NodeProxy implements InvocationHandler
      */
     public Link getLink()
     {
-        return link;
+        return linkReference.getLink();
     }
 }

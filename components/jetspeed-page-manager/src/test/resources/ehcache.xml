@@ -38,7 +38,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="150"
            timeToLiveSeconds="150"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LRU"/>
 
     <cache name="pageManagerPathCache"
            maxElementsInMemory="128"
@@ -46,7 +46,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="150"
            timeToLiveSeconds="150"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LRU"/>
 
     <cache name="pageManagerPropertiesCache"
            maxElementsInMemory="128"
@@ -54,7 +54,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="150"
            timeToLiveSeconds="150"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LRU"/>
 
     <cache name="pageManagerPropertiesPathCache"
            maxElementsInMemory="128"
@@ -62,7 +62,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="150"
            timeToLiveSeconds="150"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LRU"/>
 
     <cache name="pageManagerPrincipalPropertiesCache"
            maxElementsInMemory="128"
@@ -70,7 +70,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="150"
            timeToLiveSeconds="150"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LRU"/>
 
     <cache name="pageManagerPrincipalPropertiesPathCache"
            maxElementsInMemory="128"
@@ -78,7 +78,7 @@
            overflowToDisk="false"
            timeToIdleSeconds="150"
            timeToLiveSeconds="150"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LRU"/>
 
     <cache name="pageFileCache"
            maxElementsInMemory="100"
@@ -86,6 +86,6 @@
            overflowToDisk="false"
            timeToIdleSeconds="0"
            timeToLiveSeconds="0"
-           memoryStoreEvictionPolicy="LFU"/>
+           memoryStoreEvictionPolicy="LRU"/>
 
 </ehcache>

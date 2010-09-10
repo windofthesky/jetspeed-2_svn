@@ -329,7 +329,44 @@ public class PortalAdministrationImpl implements PortalAdministration
                             {
                                 innerUser.getSecurityAttributes().getAttribute(User.JETSPEED_USER_SUBSITE_ATTRIBUTE, true).setStringValue(innerUserFolderPath);
                                 userManager.updateUser(innerUser);
-                            }                                         
+                            }
+                            // ensure user folder parents are created
+                            Folder makeFolder = innerPageManager.getFolder("/");
+                            for (;;)
+                            {
+                                String path = makeFolder.getPath();
+                                if (!path.endsWith("/"))
+                                {
+                                    path += "/";
+                                }
+                                if (innerUserFolderPath.startsWith(path))
+                                {
+                                    String makeFolderName = innerUserFolderPath.substring(path.length());
+                                    int endFolderNameIndex = makeFolderName.indexOf('/');
+                                    if (endFolderNameIndex != -1)
+                                    {
+                                        makeFolderName = makeFolderName.substring(0, endFolderNameIndex);
+                                        String makeFolderPath = path+makeFolderName;
+                                        if (!innerPageManager.folderExists(makeFolderPath))
+                                        {
+                                            makeFolder = innerPageManager.newFolder(makeFolderPath);
+                                            innerPageManager.updateFolder(makeFolder);
+                                        }
+                                        else
+                                        {
+                                            makeFolder = innerPageManager.getFolder(makeFolderPath);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    throw new FolderNotFoundException("Cannot make parent folders for user folder: "+innerUserFolderPath);
+                                }
+                            }
                             // create user's home folder                        
                             // deep copy from the default folder template tree, creating a deep-copy of the template
                             // in the new user's folder tree

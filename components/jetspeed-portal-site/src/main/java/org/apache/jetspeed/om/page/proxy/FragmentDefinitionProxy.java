@@ -36,9 +36,9 @@ import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 public class FragmentDefinitionProxy extends NodeProxy implements InvocationHandler
 {
     /**
-     * fragmentDefinition - proxy delegate fragment definition instance
+     * fragmentDefinitionReference - proxy delegate fragment definition instance reference
      */
-    private FragmentDefinition fragmentDefinition;
+    private FragmentDefinitionWeakReference fragmentDefinitionReference;
 
     /**
      * newInstance - creates a new proxy instance that implements the FragmentDefinition interface
@@ -66,7 +66,7 @@ public class FragmentDefinitionProxy extends NodeProxy implements InvocationHand
     private FragmentDefinitionProxy(SearchPathsSiteView view, String locatorName, Folder parentFolder, FragmentDefinition fragmentDefinition)
     {
         super(view, locatorName, parentFolder, fragmentDefinition.getName(), false);
-        this.fragmentDefinition = fragmentDefinition;
+        this.fragmentDefinitionReference = new FragmentDefinitionWeakReference(view.getPageManager(), fragmentDefinition);
     }
     
     /**
@@ -119,7 +119,7 @@ public class FragmentDefinitionProxy extends NodeProxy implements InvocationHand
         try
         {
             // attempt to invoke method on delegate FragmentDefinition instance
-            return m.invoke(fragmentDefinition, args);
+            return m.invoke(fragmentDefinitionReference.getFragmentDefinition(), args);
         }
         catch (InvocationTargetException ite)
         {
@@ -134,6 +134,6 @@ public class FragmentDefinitionProxy extends NodeProxy implements InvocationHand
      */
     public FragmentDefinition getFragmentDefinition()
     {
-        return fragmentDefinition;
+        return fragmentDefinitionReference.getFragmentDefinition();
     }
 }

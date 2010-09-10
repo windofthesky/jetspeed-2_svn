@@ -39,6 +39,7 @@ import org.apache.ojb.broker.core.proxy.ProxyHelper;
  */
 public abstract class NodeImpl extends BaseElementImpl implements Node
 {
+    private Integer parentId;
     private Node parent;
     private boolean hidden;
     private Collection metadataFields;
@@ -373,6 +374,18 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     {
         // return path
         return path;
+    }
+
+    /**
+     * getParentIdentity
+     * 
+     * Access the parent identity saved to facilitate cache management.
+     * 
+     * @return parent identity or null if not available
+     */
+    public Integer getParentIdentity()
+    {
+        return parentId;
     }
 
     /* (non-Javadoc)

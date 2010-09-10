@@ -58,6 +58,7 @@ public class DatabasePageManagerCache implements ObjectCache
     
     private static JetspeedCache oidCache;
     private static JetspeedCache pathCache;
+    private static Map pathToOidMap;
     private static JetspeedCache propertiesCache;
     private static JetspeedCache propertiesPathCache;
     private static JetspeedCache principalPropertiesCache;
@@ -84,6 +85,7 @@ public class DatabasePageManagerCache implements ObjectCache
         // initialize
         DatabasePageManagerCache.oidCache = oidCache;
         DatabasePageManagerCache.pathCache = pathCache;
+        DatabasePageManagerCache.pathToOidMap = new HashMap();
         DatabasePageManagerCache.propertiesCache = propertiesCache;
         DatabasePageManagerCache.propertiesPathCache = propertiesPathCache;
         DatabasePageManagerCache.principalPropertiesCache = principalPropertiesCache;
@@ -103,6 +105,7 @@ public class DatabasePageManagerCache implements ObjectCache
             public void notifyElementAdded(JetspeedCache cache, boolean local, Object key, Object element)
             {
                 NodeImpl node = (NodeImpl)element;
+                pathToOidMap.put(node.getPath(), (Identity)key);
                 // infuse node with page manager configuration
                 // or the page manager itself and add to the
                 // paths cache
@@ -141,6 +144,10 @@ public class DatabasePageManagerCache implements ObjectCache
             public void notifyElementRemoved(JetspeedCache cache, boolean local, Object key, Object element)
             {
                 NodeImpl node = (NodeImpl)element;
+                pathToOidMap.remove(node.getPath());
+                // set stale flag since this object will now be orphaned
+                // and should be be refetched from the page manager
+                node.setStale(true);
                 // reset internal FolderImpl caches
                 if (node instanceof FolderImpl)
                 {
@@ -196,7 +203,7 @@ public class DatabasePageManagerCache implements ObjectCache
                         if (oid != null)
                         {
                             // get object cached by oid
-                            NodeImpl node = (NodeImpl)cacheLookup(oid);
+                            NodeImpl node = cacheLookup(oid, false);
                             // reset internal FolderImpl caches
                             if (node instanceof FolderImpl)
                             {
@@ -205,14 +212,14 @@ public class DatabasePageManagerCache implements ObjectCache
                             // notify page manager of update
                             DatabasePageManagerCache.pageManager.notifyUpdatedNode(node);
                             // remove from cache
-                            DatabasePageManagerCache.oidCache.removeQuiet(oid);
+                            DatabasePageManagerCache.oidCache.remove(oid);
                         }
                         if (path != null)
                         {
                             // lookup parent object cached by path and oid
                             int pathLastSeparatorIndex = path.lastIndexOf(Folder.PATH_SEPARATOR);
                             String parentPath = ((pathLastSeparatorIndex > 0) ? path.substring(0, pathLastSeparatorIndex) : Folder.PATH_SEPARATOR);
-                            NodeImpl parentNode = cacheLookup(parentPath);
+                            NodeImpl parentNode = cacheLookup(parentPath, false);
                             // reset internal FolderImpl caches in case element removed
                             if (parentNode instanceof FolderImpl)
                             {
@@ -539,21 +546,33 @@ public class DatabasePageManagerCache implements ObjectCache
     }
 
     /**
-     * Lookup object instances by unique path.
+     * Lookup node instances by unique path and consider 
+     * cache access application read hit.
      *
      * @param path node unique path
      * @return cached node
      */
     public synchronized static NodeImpl cacheLookup(String path)
     {
+        return cacheLookup(path, true);
+    }
+
+    /**
+     * Lookup node instances by unique path.
+     *
+     * @param path node unique path
+     * @param cacheRead application cache read hit
+     * @return cached node
+     */
+    private synchronized static NodeImpl cacheLookup(String path, boolean cacheRead)
+    {
         if (path != null)
         {
             // return valid object cached by path and oid
-            CacheElement pathElement = pathCache.get(path);
-            if (pathElement != null)
+            Identity oid = (Identity)pathToOidMap.get(path);
+            if (oid != null)
             {
-                DatabasePageManagerCacheObject cacheObject = (DatabasePageManagerCacheObject)pathElement.getContent();
-                return (NodeImpl)cacheLookup(cacheObject.getId());
+                return cacheLookup(oid, cacheRead);
             }
         }
         return null;
@@ -573,42 +592,38 @@ public class DatabasePageManagerCache implements ObjectCache
     }
 
     /**
-     * Add object to cache and cache instances by unique path;
+     * Add node to cache and cache instances by unique path;
      * infuse nodes loaded by OJB with page manager configuration.
      *
      * @param oid object/node identity
      * @param obj object/node to cache
      */
-    public synchronized static void cacheAdd(Identity oid, Object obj)
+    private synchronized static void cacheAdd(Identity oid, NodeImpl node)
     {
-        if (obj instanceof NodeImpl)
-        {
-            NodeImpl node = (NodeImpl)obj;
-            String path = node.getPath();
+        String path = node.getPath();
 
-            // add node to caches; note that removes force notification
-            // of update to distributed caches
-            oidCache.remove(oid);
-            boolean removed = pathCache.remove(path);
-            CacheElement pathElement = pathCache.createElement(path, new DatabasePageManagerCacheObject(oid, path));
+        // add node to caches; note that removes force notification
+        // of update to distributed caches
+        oidCache.remove(oid);
+        boolean removed = pathCache.remove(path);
+        CacheElement pathElement = pathCache.createElement(path, new DatabasePageManagerCacheObject(oid, path));
+        pathCache.put(pathElement);
+        // if a remove was not successful from the path cache, update
+        // notification to distributed peers was not performed;
+        // for updates of objects evicted from the cache or newly
+        // created ones, this is problematic: remove and put into
+        // path cache a second time to force
+        if (!removed && updatePathsList.contains(path))
+        {
+            pathCache.remove(path);
             pathCache.put(pathElement);
-            // if a remove was not successful from the path cache, update
-            // notification to distributed peers was not performed;
-            // for updates of objects evicted from the cache or newly
-            // created ones, this is problematic: remove and put into
-            // path cache a second time to force
-            if (!removed && updatePathsList.contains(path))
-            {
-                pathCache.remove(path);
-                pathCache.put(pathElement);
-            }
-            // add node to local oid cache by key after removes from
-            // distributed path cache since those removes will remove
-            // from local oid cache in notifications, (despite the
-            // 'local' listener registration)
-            CacheElement element = oidCache.createElement(oid, node);
-            oidCache.put(element);
         }
+        // add node to local oid cache by key after removes from
+        // distributed path cache since those removes will remove
+        // from local oid cache in notifications, (despite the
+        // 'local' listener registration)
+        CacheElement element = oidCache.createElement(oid, node);
+        oidCache.put(element);
     }
 
     /**
@@ -627,6 +642,8 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public synchronized static void cacheClear()
     {
+        // clear localally managed mappings
+        pathToOidMap.clear();
         // remove all items from oid and properties caches
         // individually to ensure notifications are run to
         // detach elements; do not invoke JetspeedCache.clear()
@@ -667,12 +684,13 @@ public class DatabasePageManagerCache implements ObjectCache
     }
 
     /**
-     * Lookup objects by identity.
+     * Lookup node by identity.
      *
-     * @param oid object identity
-     * @return cached object
+     * @param oid node identity
+     * @param cacheRead application cache read hit
+     * @return cached node
      */
-    public synchronized static Object cacheLookup(Identity oid)
+    private synchronized static NodeImpl cacheLookup(Identity oid, boolean cacheRead)
     {
         if (oid != null)
         {
@@ -680,7 +698,45 @@ public class DatabasePageManagerCache implements ObjectCache
             CacheElement element = oidCache.get(oid);
             if (element != null)
             {
-                return element.getContent();
+                NodeImpl node = (NodeImpl)element.getContent();
+
+                // if cache access is considered an application
+                // read hit, ping elements in oid and path caches
+                // related to retrieved node to prevent them from
+                // being LRU reaped from the cache and limit
+                // cache churn, heap bloat, and graph calving
+                if (cacheRead)
+                {
+                    // ping node path cache element
+                    String path = node.getPath();
+                    pathCache.get(path);
+                    // iterate up cached parent folder hierarchy
+                    Integer parentIdentity = node.getParentIdentity();
+                    while (parentIdentity != null)
+                    {
+                        // access parent node by oid from cache and ping
+                        // parent oid cache element in the process
+                        Identity parentOid = new Identity(FolderImpl.class, FolderImpl.class, new Object[]{new Integer(parentIdentity)});
+                        CacheElement parentElement = oidCache.get(parentOid);
+                        if (parentElement != null)
+                        {
+                            // ping parent node path cache element
+                            NodeImpl parentNode = (NodeImpl)parentElement.getContent();
+                            String parentPath = parentNode.getPath();
+                            pathCache.get(parentPath);
+                            // get parent identity if available
+                            parentIdentity = parentNode.getParentIdentity();
+                        }
+                        else
+                        {
+                            // parent folder no longer in cache, will reload in
+                            // cache when parent folder is subsequently accessed
+                            break;
+                        }
+                    }
+                }
+                
+                return node;
             }
         }
         return null;
@@ -696,7 +752,7 @@ public class DatabasePageManagerCache implements ObjectCache
         // remove from cache by oid
         if (oid != null)
         {
-            NodeImpl node = (NodeImpl)cacheLookup(oid);
+            NodeImpl node = cacheLookup(oid, false);
             if (node != null)
             {
                 String path = node.getPath();
@@ -728,13 +784,19 @@ public class DatabasePageManagerCache implements ObjectCache
         // remove from cache by path
         if (path != null)
         {
+            // remove from oid cache
+            Identity oid = (Identity)pathToOidMap.get(path);
+            if (oid != null)
+            {
+                oidCache.remove(oid);
+            }
+            // remove from path cache
             CacheElement pathElement = pathCache.get(path);
             if (pathElement != null)
             {
                 DatabasePageManagerCacheObject cacheObject = (DatabasePageManagerCacheObject)pathElement.getContent();
                 // remove from caches; note that removes are
                 // propagated to distributed caches
-                oidCache.remove(cacheObject.getId());
                 pathCache.remove(path);
             }
             else
@@ -759,7 +821,7 @@ public class DatabasePageManagerCache implements ObjectCache
         Iterator resetIter = oidCache.getKeys().iterator();
         while (resetIter.hasNext())
         {
-            NodeImpl node = (NodeImpl)cacheLookup((Identity)resetIter.next());
+            NodeImpl node = cacheLookup((Identity)resetIter.next(), false);
             if (node != null)
             {
             	node.resetCachedSecurityConstraints();
@@ -1030,7 +1092,10 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public void cache(Identity oid, Object obj)
     {
-        cacheAdd(oid, obj);
+        if (obj instanceof NodeImpl)
+        {
+            cacheAdd(oid, (NodeImpl)obj);
+        }
     }
 
     /* (non-Javadoc)
@@ -1046,7 +1111,7 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public Object lookup(Identity oid)
     {
-        return cacheLookup(oid);
+        return cacheLookup(oid, true);
     }
 
     /* (non-Javadoc)
@@ -1070,7 +1135,7 @@ public class DatabasePageManagerCache implements ObjectCache
         while (dumpIter.hasNext())
         {
             Identity oid = (Identity)dumpIter.next();
-            NodeImpl node = (NodeImpl)cacheLookup(oid);
+            NodeImpl node = cacheLookup(oid, false);
             dump.append("node="+node.getPath()+", oid="+oid+EOL);
         }
         dump.append("--------------------------");

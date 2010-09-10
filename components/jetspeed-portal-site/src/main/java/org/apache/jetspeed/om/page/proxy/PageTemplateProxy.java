@@ -42,9 +42,9 @@ public class PageTemplateProxy extends NodeProxy implements InvocationHandler
     protected static final Method GET_MENU_DEFINITIONS_METHOD = reflectMethod(PageTemplate.class, "getMenuDefinitions", null);
 
     /**
-     * pageTemplate - proxy delegate page template instance
+     * pageTemplateReference - proxy delegate page template instance reference
      */
-    private PageTemplate pageTemplate;
+    private PageTemplateWeakReference pageTemplateReference;
 
     /**
      * newInstance - creates a new proxy instance that implements the Page interface
@@ -72,7 +72,7 @@ public class PageTemplateProxy extends NodeProxy implements InvocationHandler
     private PageTemplateProxy(SearchPathsSiteView view, String locatorName, Folder parentFolder, PageTemplate pageTemplate)
     {
         super(view, locatorName, parentFolder, pageTemplate.getName(), false);
-        this.pageTemplate = pageTemplate;
+        this.pageTemplateReference = new PageTemplateWeakReference(view.getPageManager(), pageTemplate);
     }
     
     /**
@@ -130,7 +130,7 @@ public class PageTemplateProxy extends NodeProxy implements InvocationHandler
         try
         {
             // attempt to invoke method on delegate PageTemplate instance
-            return m.invoke(pageTemplate, args);
+            return m.invoke(pageTemplateReference.getPageTemplate(), args);
         }
         catch (InvocationTargetException ite)
         {
@@ -145,7 +145,7 @@ public class PageTemplateProxy extends NodeProxy implements InvocationHandler
      */
     public PageTemplate getPageTemplate()
     {
-        return pageTemplate;
+        return pageTemplateReference.getPageTemplate();
     }
 
     /**
@@ -156,6 +156,7 @@ public class PageTemplateProxy extends NodeProxy implements InvocationHandler
     {
         // merge only page template menu definition locators by name
         FolderProxy parentFolderProxy = FolderProxy.getFolderProxy(getParent());
+        PageTemplate pageTemplate = pageTemplateReference.getPageTemplate();
         mergeMenuDefinitionLocators(pageTemplate.getMenuDefinitions(), pageTemplate, parentFolderProxy.getPath(), false);
     }
 }

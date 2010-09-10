@@ -42,9 +42,9 @@ public class PageProxy extends NodeProxy implements InvocationHandler
     protected static final Method GET_MENU_DEFINITIONS_METHOD = reflectMethod(Page.class, "getMenuDefinitions", null);
 
     /**
-     * page - proxy delegate page instance
+     * pageReference - proxy delegate page instance reference
      */
-    private Page page;
+    private PageWeakReference pageReference;
 
     /**
      * newInstance - creates a new proxy instance that implements the Page interface
@@ -72,7 +72,7 @@ public class PageProxy extends NodeProxy implements InvocationHandler
     private PageProxy(SearchPathsSiteView view, String locatorName, Folder parentFolder, Page page)
     {
         super(view, locatorName, parentFolder, page.getName(), page.isHidden());
-        this.page = page;
+        this.pageReference = new PageWeakReference(view.getPageManager(), page);
     }
     
     /**
@@ -130,7 +130,7 @@ public class PageProxy extends NodeProxy implements InvocationHandler
         try
         {
             // attempt to invoke method on delegate Page instance
-            return m.invoke(page, args);
+            return m.invoke(pageReference.getPage(), args);
         }
         catch (InvocationTargetException ite)
         {
@@ -145,7 +145,7 @@ public class PageProxy extends NodeProxy implements InvocationHandler
      */
     public Page getPage()
     {
-        return page;
+        return pageReference.getPage();
     }
 
     /**
@@ -160,6 +160,7 @@ public class PageProxy extends NodeProxy implements InvocationHandler
         // folder menu definitions include standard menu definition
         // locator defaults
         FolderProxy parentFolderProxy = FolderProxy.getFolderProxy(getParent());
+        Page page = pageReference.getPage();
         mergeMenuDefinitionLocators(page.getMenuDefinitions(), page, parentFolderProxy.getPath(), true);
         mergeMenuDefinitionLocators(parentFolderProxy.getMenuDefinitionLocators());
     }

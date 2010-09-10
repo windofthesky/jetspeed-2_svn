@@ -23,6 +23,8 @@ import java.net.URL;
 import java.util.Map;
 import java.util.HashMap;
 
+import net.sf.ehcache.Cache;
+
 import org.springframework.core.io.AbstractResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -118,6 +120,16 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
     {
         synchronized (EhCacheConfigResource.class)
         {
+            // set global EhCache properties configuration
+            //
+            // Use "classic" LRU implementation based on java's LinkedHashMap
+            // with accessOrder mode enabled. Do not remove this setting casually
+            // without verifying proper cache operation under load. EhCache
+            // supplied LRU and LFU modes in 1.7.2 do not fare as well under load
+            // and result in objects not remaining in the cache for long enough
+            // intervals, especially after being forcibly expired out of the cache.
+            System.setProperty(Cache.NET_SF_EHCACHE_USE_CLASSIC_LRU, "true");
+            
             // copy specified configuration settings
             if (configuration != null)
             {

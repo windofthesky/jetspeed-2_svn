@@ -145,6 +145,19 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
 
     /**
      * <p>
+     * isStale
+     * </p>
+     *
+     * @see org.apache.jetspeed.om.page.BaseElement#isStale()
+     */
+    public boolean isStale()
+    {
+        // file based PSML instances never considered stale
+        return false;
+    }
+
+    /**
+     * <p>
      * getConstraintsEnabled
      * </p>
      *
