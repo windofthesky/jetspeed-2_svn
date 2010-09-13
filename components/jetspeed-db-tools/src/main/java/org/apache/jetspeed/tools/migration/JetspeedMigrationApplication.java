@@ -41,6 +41,14 @@ public class JetspeedMigrationApplication
 {
     private static final Logger log = LoggerFactory.getLogger(JetspeedMigrationApplication.class);
     
+    private static final int ALL_MIGRATION_PHASE = 0;
+    private static final int CREATE_SCHEMA_MIGRATION_PHASE = 1;
+    private static final int DATA_MIGRATION_PHASE = 2;
+    private static final int CONSTRAINTS_SCHEMA_MIGRATION_PHASE = 3;
+
+    private static final int DEFAULT_ROWS_MIGRATED_PER_COMMIT = 500;
+    private static final int DEFAULT_MIGRATION_PHASE = ALL_MIGRATION_PHASE;
+    
     private String sourceDBUsername;
     private String sourceDBPassword;
     private String sourceJDBCUrl;
@@ -49,11 +57,16 @@ public class JetspeedMigrationApplication
     private String dbPassword;
     private String jdbcUrl;
     private String jdbcDriverClass;
+    private int rowsMigratedPerCommit;
     private File dropSchemaSQLScriptFile;
     private File createSchemaSQLScriptFile;
+    private int migrationPhase;
     private DBCPDatasourceComponent sourceDataSourceFactory;
     private DBCPDatasourceComponent targetDataSourceFactory;
+    private DBCPDatasourceComponent targetTxnDataSourceFactory;
     private JetspeedMigration [] migrations;
+    private int rowsCheckpointCommitted;
+    private int rowsMigrated;
     
     /**
      * Construct application instance using arguments.
@@ -62,9 +75,16 @@ public class JetspeedMigrationApplication
      */
     public JetspeedMigrationApplication(String[] args)
     {
+        this.rowsMigratedPerCommit = DEFAULT_ROWS_MIGRATED_PER_COMMIT;
+        this.migrationPhase = DEFAULT_MIGRATION_PHASE;
+        
         for (String arg : args)
         {
-            if (arg.startsWith("-source-db-username="))
+            if (arg.startsWith("-migration-phase="))
+            {
+                this.migrationPhase = Integer.parseInt(arg.substring(17));
+            }
+            else if (arg.startsWith("-source-db-username="))
             {
                 this.sourceDBUsername = arg.substring(20);
             }
@@ -96,6 +116,10 @@ public class JetspeedMigrationApplication
             {
                 this.jdbcDriverClass = arg.substring(19);
             }
+            else if (arg.startsWith("-rows-migrated-per-commit="))
+            {
+                this.rowsMigratedPerCommit = Integer.parseInt(arg.substring(26));
+            }
             else if (arg.startsWith("-drop-schema-sql="))
             {
                 this.dropSchemaSQLScriptFile = new File(arg.substring(17));
@@ -114,19 +138,28 @@ public class JetspeedMigrationApplication
             }
         }
         
-        if (this.sourceDBUsername == null)
+        if ((this.migrationPhase != ALL_MIGRATION_PHASE) && (this.migrationPhase != CREATE_SCHEMA_MIGRATION_PHASE) &&
+            (this.migrationPhase != DATA_MIGRATION_PHASE) && (this.migrationPhase != CONSTRAINTS_SCHEMA_MIGRATION_PHASE))
+        {
+            throw new RuntimeException("Invalid -migration-phase argument");
+        }
+        if ((this.sourceDBUsername == null) && ((this.migrationPhase == ALL_MIGRATION_PHASE) ||
+                                                (this.migrationPhase == DATA_MIGRATION_PHASE)))
         {
             throw new RuntimeException("Missing -source-db-username argument");
         }
-        if (this.sourceDBPassword == null)
+        if ((this.sourceDBPassword == null) && ((this.migrationPhase == ALL_MIGRATION_PHASE) ||
+                                                (this.migrationPhase == DATA_MIGRATION_PHASE)))
         {
             throw new RuntimeException("Missing -source-db-password argument");
         }
-        if (this.sourceJDBCUrl == null)
+        if ((this.sourceJDBCUrl == null) && ((this.migrationPhase == ALL_MIGRATION_PHASE) ||
+                                             (this.migrationPhase == DATA_MIGRATION_PHASE)))
         {
             throw new RuntimeException("Missing -source-jdbc-url argument");
         }
-        if (this.sourceJDBCDriverClass == null)
+        if ((this.sourceJDBCDriverClass == null) && ((this.migrationPhase == ALL_MIGRATION_PHASE) ||
+                                                     (this.migrationPhase == DATA_MIGRATION_PHASE)))
         {
             throw new RuntimeException("Missing -source-jdbc-driver-class argument");
         }
@@ -146,32 +179,42 @@ public class JetspeedMigrationApplication
         {
             throw new RuntimeException("Missing -jdbc-driver-class argument");
         }
-        if (this.dropSchemaSQLScriptFile == null)
+        if ((this.dropSchemaSQLScriptFile == null) && ((this.migrationPhase == ALL_MIGRATION_PHASE) ||
+                                                       (this.migrationPhase == CREATE_SCHEMA_MIGRATION_PHASE)))
         {
-            throw new RuntimeException("Missing -drop-schema-sql argument");
+            throw new RuntimeException("Missing -drop-schema-sql argument required for phase");
         }
-        if (this.createSchemaSQLScriptFile == null)
+        if ((this.createSchemaSQLScriptFile == null) && ((this.migrationPhase == ALL_MIGRATION_PHASE) ||
+                                                         (this.migrationPhase == CREATE_SCHEMA_MIGRATION_PHASE) ||
+                                                         (this.migrationPhase == CONSTRAINTS_SCHEMA_MIGRATION_PHASE)))
         {
-            throw new RuntimeException("Missing -create-schema-sql argument");
+            throw new RuntimeException("Missing -create-schema-sql argument required for phase");
         }
-        
-        if (this.jdbcUrl.equals(this.sourceJDBCUrl))
-        {
-            throw new RuntimeException("Source and target JDBC databases must be different: "+this.jdbcUrl);
-        }
-        
-        this.sourceJDBCUrl = validateJDBCUrlOptions(this.sourceJDBCUrl, this.sourceJDBCDriverClass);
-        sourceDataSourceFactory = new DBCPDatasourceComponent(this.sourceDBUsername, this.sourceDBPassword, this.sourceJDBCDriverClass, this.sourceJDBCUrl, 2, 0, GenericObjectPool.WHEN_EXHAUSTED_GROW, true);
+
         this.jdbcUrl = validateJDBCUrlOptions(this.jdbcUrl, this.jdbcDriverClass);
-        targetDataSourceFactory = new DBCPDatasourceComponent(this.dbUsername, this.dbPassword, this.jdbcDriverClass, this.jdbcUrl, 2, 0, GenericObjectPool.WHEN_EXHAUSTED_GROW, true);
+        this.sourceJDBCUrl = validateJDBCUrlOptions(this.sourceJDBCUrl, this.sourceJDBCDriverClass);
+        if ((this.migrationPhase == ALL_MIGRATION_PHASE) || (this.migrationPhase == DATA_MIGRATION_PHASE))
+        {
+            if (this.jdbcUrl.equals(this.sourceJDBCUrl))
+            {
+                throw new RuntimeException("Source and target JDBC databases must be different: "+this.jdbcUrl);
+            }
         
-        migrations = new JetspeedMigration[]{new JetspeedCapabilitiesMigration(),
-                                             new JetspeedStatisticsMigration(),
-                                             new JetspeedDBPageManagerMigration(),
-                                             new JetspeedProfilerMigration(),
-                                             new JetspeedRegistryMigration(),
-                                             new JetspeedSecurityMigration(),
-                                             new JetspeedSSOSecurityMigration()};
+            this.sourceDataSourceFactory = new DBCPDatasourceComponent(this.sourceDBUsername, this.sourceDBPassword, this.sourceJDBCDriverClass, this.sourceJDBCUrl, 2, 0, GenericObjectPool.WHEN_EXHAUSTED_GROW, true);
+            this.targetTxnDataSourceFactory = new DBCPDatasourceComponent(this.dbUsername, this.dbPassword, this.jdbcDriverClass, this.jdbcUrl, 2, 0, GenericObjectPool.WHEN_EXHAUSTED_GROW, false);
+        }
+        if ((this.migrationPhase == ALL_MIGRATION_PHASE) || (this.migrationPhase == CREATE_SCHEMA_MIGRATION_PHASE) || (this.migrationPhase == CONSTRAINTS_SCHEMA_MIGRATION_PHASE))
+        {
+            this.targetDataSourceFactory = new DBCPDatasourceComponent(this.dbUsername, this.dbPassword, this.jdbcDriverClass, this.jdbcUrl, 2, 0, GenericObjectPool.WHEN_EXHAUSTED_GROW, true);
+        }
+        
+        this.migrations = new JetspeedMigration[]{new JetspeedCapabilitiesMigration(),
+                                                  new JetspeedStatisticsMigration(),
+                                                  new JetspeedDBPageManagerMigration(),
+                                                  new JetspeedProfilerMigration(),
+                                                  new JetspeedRegistryMigration(),
+                                                  new JetspeedSecurityMigration(),
+                                                  new JetspeedSSOSecurityMigration()};
     }
     
     /**
@@ -183,12 +226,15 @@ public class JetspeedMigrationApplication
      */
     private String validateJDBCUrlOptions(String jdbcUrl, String jdbcDriverClass)
     {
-        // add cursor fetch option for mysql, (assumes server and connector 5.0.3+)
-        if (jdbcUrl.startsWith("jdbc:mysql://") && jdbcDriverClass.startsWith("com.mysql.jdbc."))
+        if ((jdbcUrl != null) && (jdbcDriverClass != null))
         {
-            if (!jdbcUrl.contains("useCursorFetch="))
+            // add cursor fetch option for mysql, (assumes server and connector 5.0.3+)
+            if (jdbcUrl.startsWith("jdbc:mysql://") && jdbcDriverClass.startsWith("com.mysql.jdbc."))
             {
-                jdbcUrl += (jdbcUrl.contains("?") ? "&" : "?")+"useCursorFetch=true";
+                if (!jdbcUrl.contains("useCursorFetch="))
+                {
+                    jdbcUrl += (jdbcUrl.contains("?") ? "&" : "?")+"useCursorFetch=true";
+                }
             }
         }
         
@@ -204,61 +250,164 @@ public class JetspeedMigrationApplication
      */
     public void run() throws IOException, SQLException
     {
-        // start data source pools
-        sourceDataSourceFactory.start();
-        targetDataSourceFactory.start();
-        DataSource sourceDataSource = sourceDataSourceFactory.getDatasource();
-        DataSource targetDataSource = targetDataSourceFactory.getDatasource();
+        rowsCheckpointCommitted = 0;
+        rowsMigrated = 0;
         
-        // open connections
-        Connection sourceConnection = sourceDataSource.getConnection();
-        Connection targetConnection = targetDataSource.getConnection();
-        
-        // clean target database
-        log.info("Clean target database...");
-        executeSQLScript(targetConnection, dropSchemaSQLScriptFile, true);
-        // create tables and indices in target database
-        log.info("Initialize target database schema tables and indices...");
-        executeSQLScript(targetConnection, createSchemaSQLScriptFile, false, "^\\s*create\\s+(?:table|index|unique\\s+index)\\s", true);
+        // setup data source pools and connections
+        Connection targetConnection = null;
+        Connection targetTxnConnection = null;
+        Connection sourceConnection = null;
+        switch (migrationPhase)
+        {
+            case ALL_MIGRATION_PHASE:
+            case CREATE_SCHEMA_MIGRATION_PHASE:
+            case CONSTRAINTS_SCHEMA_MIGRATION_PHASE:
+            {
+                targetDataSourceFactory.start();
+                DataSource targetDataSource = targetDataSourceFactory.getDatasource();
+                targetConnection = targetDataSource.getConnection();
+            }
+            break;
+        }
+        switch (migrationPhase)
+        {
+            case ALL_MIGRATION_PHASE:
+            case DATA_MIGRATION_PHASE:
+            {
+                targetTxnDataSourceFactory.start();
+                DataSource targetTxnDataSource = targetTxnDataSourceFactory.getDatasource();
+                targetTxnConnection = targetTxnDataSource.getConnection();
+                sourceDataSourceFactory.start();
+                DataSource sourceDataSource = sourceDataSourceFactory.getDatasource();
+                sourceConnection = sourceDataSource.getConnection();
+            }
+            break;
+        }
 
-        // determine and validate schema version
-        int sourceVersion = JetspeedMigration.JETSPEED_SCHEMA_VERSION_UNKNOWN;
-        for (JetspeedMigration migration : migrations)
+        // clean target database
+        switch (migrationPhase)
         {
-            sourceVersion = migration.detectSourceVersion(sourceConnection, sourceVersion);
+            case ALL_MIGRATION_PHASE:
+            case CREATE_SCHEMA_MIGRATION_PHASE:
+            {
+                log.info("Clean target database...");
+                executeSQLScript(targetConnection, dropSchemaSQLScriptFile, true);
+                // create tables and indices in target database
+                log.info("Initialize target database schema tables and indices...");
+                executeSQLScript(targetConnection, createSchemaSQLScriptFile, false, "^\\s*create\\s+(?:table|index|unique\\s+index)\\s", true);
+            }
+            break;
         }
-        for (JetspeedMigration migration : migrations)
-        {
-            sourceVersion = migration.detectSourceVersion(sourceConnection, sourceVersion);
-        }
-        log.info("Detected source schema version: "+sourceVersion);
 
         // migrate data from source to target database
-        for (JetspeedMigration migration : migrations)
+        switch (migrationPhase)
         {
-            log.info("Migrating "+migration.getName()+" data...");
-            JetspeedMigrationResult result = migration.migrate(sourceConnection, sourceVersion, targetConnection);
-            if (result.getDroppedRows() == 0)
+            case ALL_MIGRATION_PHASE:
+            case DATA_MIGRATION_PHASE:
             {
-                log.info("Migrated "+result.getMigratedRows()+" "+migration.getName()+" data rows.");
+                // determine and validate schema version
+                int sourceVersion = JetspeedMigration.JETSPEED_SCHEMA_VERSION_UNKNOWN;
+                for (JetspeedMigration migration : migrations)
+                {
+                    sourceVersion = migration.detectSourceVersion(sourceConnection, sourceVersion);
+                }
+                for (JetspeedMigration migration : migrations)
+                {
+                    sourceVersion = migration.detectSourceVersion(sourceConnection, sourceVersion);
+                }
+                log.info("Detected source schema version: "+sourceVersion);
+
+                // migrate data from source to target database
+                JetspeedMigrationListener migrationListener = new JetspeedMigrationListener()
+                {
+                    /* (non-Javadoc)
+                     * @see org.apache.jetspeed.tools.migration.JetspeedMigrationListener#rowMigrated(java.sql.Connection)
+                     */
+                    public void rowMigrated(Connection targetTxnConnection) throws SQLException
+                    {
+                        rowsMigrated++;
+                        // periodically checkpoint commit target connection based
+                        // on rowsMigratedPerCommit configuration
+                        if (rowsMigrated > rowsCheckpointCommitted)
+                        {
+                            if ((rowsMigratedPerCommit > 0) && ((rowsMigrated-rowsCheckpointCommitted) >= rowsMigratedPerCommit))
+                            {
+                                targetTxnConnection.commit();
+                                rowsCheckpointCommitted = rowsMigrated;
+                                log.info("Checkpoint commit of "+rowsCheckpointCommitted+" total data rows.");
+                            }
+                        }
+                    }
+
+                    /* (non-Javadoc)
+                     * @see org.apache.jetspeed.tools.migration.JetspeedMigrationListener#rowDropped(java.sql.Connection)
+                     */
+                    public void rowDropped(Connection targetTxnConnection)
+                    {
+                    }
+                };
+                for (JetspeedMigration migration : migrations)
+                {
+                    // invoke migrate for each migration
+                    log.info("Migrating "+migration.getName()+" data...");
+                    JetspeedMigrationResult result = migration.migrate(sourceConnection, sourceVersion, targetTxnConnection, migrationListener);
+                    if (result.getDroppedRows() == 0)
+                    {
+                        log.info("Migrated "+result.getMigratedRows()+" "+migration.getName()+" data rows.");
+                    }
+                    else
+                    {
+                        log.info("Migrated "+result.getMigratedRows()+" "+migration.getName()+" data rows, ("+result.getDroppedRows()+" dropped).");
+                    }
+                    // checkpoint commit target connection
+                    if (rowsMigrated > rowsCheckpointCommitted)
+                    {
+                        targetTxnConnection.commit();
+                        rowsCheckpointCommitted = rowsMigrated;
+                        log.info("Checkpoint commit of "+rowsCheckpointCommitted+" total data rows.");
+                    }
+                }
             }
-            else
-            {
-                log.info("Migrated "+result.getMigratedRows()+" "+migration.getName()+" data rows, ("+result.getDroppedRows()+" dropped).");
-            }
-        }
+            break;
+        }            
 
         // add constraints and remaining schema to target database
-        log.info("Setup target database schema constraints...");
-        executeSQLScript(targetConnection, createSchemaSQLScriptFile, false, "^\\s*create\\s+(?:table|index|unique\\s+index)\\s", false);
+        switch (migrationPhase)
+        {
+            case ALL_MIGRATION_PHASE:
+            case CONSTRAINTS_SCHEMA_MIGRATION_PHASE:
+            {
+                log.info("Setup target database schema constraints...");
+                executeSQLScript(targetConnection, createSchemaSQLScriptFile, false, "^\\s*create\\s+(?:table|index|unique\\s+index)\\s", false);
+            }
+            break;
+        }
 
-        // close connections
-        sourceConnection.close();
-        targetConnection.close();
-
-        // stop data source pools
-        sourceDataSourceFactory.stop();
-        targetDataSourceFactory.stop();
+        // close connections and stop data source pools
+        switch (migrationPhase)
+        {
+            case ALL_MIGRATION_PHASE:
+            case DATA_MIGRATION_PHASE:
+            {
+                sourceConnection.close();
+                sourceDataSourceFactory.stop();
+                targetTxnConnection.commit();
+                targetTxnConnection.close();
+                targetTxnDataSourceFactory.stop();
+            }
+            break;
+        }
+        switch (migrationPhase)
+        {
+            case ALL_MIGRATION_PHASE:
+            case CREATE_SCHEMA_MIGRATION_PHASE:
+            case CONSTRAINTS_SCHEMA_MIGRATION_PHASE:
+            {
+                targetConnection.close();
+                targetDataSourceFactory.stop();
+            }
+            break;
+        }
     }
     
     /**

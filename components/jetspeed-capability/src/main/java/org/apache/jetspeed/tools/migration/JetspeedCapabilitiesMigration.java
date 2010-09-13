@@ -48,9 +48,9 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection)
+     * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection, org.apache.jetspeed.tools.migration.JetspeedMigrationListener)
      */
-    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection) throws SQLException
+    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection, JetspeedMigrationListener migrationListener) throws SQLException
     {
         int rowsMigrated = 0;
         
@@ -68,6 +68,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
             mediaTypeInsertStatement.setString(5, mediaTypeResultSet.getString(5));
             mediaTypeInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         mediaTypeResultSet.close();
         mediaTypeQueryStatement.close();
@@ -90,6 +91,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
             clientInsertStatement.setInt(8, clientResultSet.getInt(8));
             clientInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         clientResultSet.close();
         clientQueryStatement.close();
@@ -106,6 +108,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
             mimeTypeInsertStatement.setString(2, mimeTypeResultSet.getString(2));
             mimeTypeInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         mimeTypeResultSet.close();
         mimeTypeQueryStatement.close();
@@ -122,6 +125,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
             capabilityInsertStatement.setString(2, capabilityResultSet.getString(2));
             capabilityInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);            
         }
         capabilityResultSet.close();
         capabilityQueryStatement.close();
@@ -138,6 +142,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
             clientToCapabilityInsertStatement.setInt(2, clientToCapabilityResultSet.getInt(2));
             clientToCapabilityInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         clientToCapabilityResultSet.close();
         clientToCapabilityQueryStatement.close();
@@ -154,6 +159,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
             clientToMimeTypeInsertStatement.setInt(2, clientToMimeTypeResultSet.getInt(2));
             clientToMimeTypeInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         clientToMimeTypeResultSet.close();
         clientToMimeTypeQueryStatement.close();
@@ -170,6 +176,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
             mediaTypeToCapabilityInsertStatement.setInt(2, mediaTypeToCapabilityResultSet.getInt(2));
             mediaTypeToCapabilityInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         mediaTypeToCapabilityResultSet.close();
         mediaTypeToCapabilityQueryStatement.close();
@@ -186,6 +193,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
             mediaTypeToMimeTypeInsertStatement.setInt(2, mediaTypeToMimeTypeResultSet.getInt(2));
             mediaTypeToMimeTypeInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         mediaTypeToMimeTypeResultSet.close();
         mediaTypeToMimeTypeQueryStatement.close();
@@ -204,6 +212,7 @@ public class JetspeedCapabilitiesMigration implements JetspeedMigration
             ojbInsertStatement.setInt(5, ojbResultSet.getInt(5));
             ojbInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         ojbResultSet.close();
         ojbQueryStatement.close();

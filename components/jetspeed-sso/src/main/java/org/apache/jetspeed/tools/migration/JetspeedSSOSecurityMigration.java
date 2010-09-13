@@ -58,9 +58,9 @@ public class JetspeedSSOSecurityMigration implements JetspeedMigration
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection)
+     * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection, org.apache.jetspeed.tools.migration.JetspeedMigrationListener)
      */
-    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection) throws SQLException
+    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection, JetspeedMigrationListener migrationListener) throws SQLException
     {
         int rowsMigrated = 0;
         
@@ -105,6 +105,7 @@ public class JetspeedSSOSecurityMigration implements JetspeedMigration
                     ssoSiteInsertStatement.setInt(11, domainId);
                     ssoSiteInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 domainQueryStatement.close();
             }
@@ -128,6 +129,7 @@ public class JetspeedSSOSecurityMigration implements JetspeedMigration
                     ssoSiteInsertStatement.setInt(11, ssoSiteResultSet.getInt(11));
                     ssoSiteInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -149,6 +151,7 @@ public class JetspeedSSOSecurityMigration implements JetspeedMigration
             ojbInsertStatement.setInt(5, ojbResultSet.getInt(5));
             ojbInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         ojbResultSet.close();
         ojbQueryStatement.close();

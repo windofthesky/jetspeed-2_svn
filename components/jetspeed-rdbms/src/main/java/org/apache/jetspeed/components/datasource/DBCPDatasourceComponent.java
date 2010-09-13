@@ -69,6 +69,8 @@ public class DBCPDatasourceComponent implements DatasourceComponent
     
     private byte whenExhausted;
     
+    private boolean autoCommit;
+    
     private PoolableConnectionFactory dsConnectionFactory;
     /**
      * 
@@ -118,6 +120,7 @@ public class DBCPDatasourceComponent implements DatasourceComponent
 		this.connectURI = connectURI;
 		this.maxActive = maxActive;
 		this.maxWait = maxWait;
+		this.autoCommit = autoCommit;
     }
 
     /**
@@ -161,7 +164,7 @@ public class DBCPDatasourceComponent implements DatasourceComponent
             
             ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, user, password);
             
-            dsConnectionFactory = new PoolableConnectionFactory(connectionFactory, connectionPool, null, null, false, true);
+            dsConnectionFactory = new PoolableConnectionFactory(connectionFactory, connectionPool, null, null, false, autoCommit);
             
             dataSource = new PoolingDataSource(connectionPool);            
             

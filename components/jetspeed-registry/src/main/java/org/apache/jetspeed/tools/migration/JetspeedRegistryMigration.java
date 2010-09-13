@@ -66,9 +66,9 @@ public class JetspeedRegistryMigration implements JetspeedMigration
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection)
+     * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection, org.apache.jetspeed.tools.migration.JetspeedMigrationListener)
      */
-    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection) throws SQLException
+    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection, JetspeedMigrationListener migrationListener) throws SQLException
     {
         List<LocalizedDescription> localizedDescriptions = new ArrayList<LocalizedDescription>();
         int rowsMigrated = 0;
@@ -106,6 +106,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     portletDefinitionInsertStatement.setNull(9, Types.VARCHAR);
                     portletDefinitionInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -126,6 +127,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     portletDefinitionInsertStatement.setString(9, portletDefinitionResultSet.getString(9));
                     portletDefinitionInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -174,6 +176,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     portletApplicationInsertStatement.setNull(10, Types.VARCHAR);
                     portletApplicationInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                     
                     int applicationId = portletApplicationResultSet.getInt(1);
                     String description = portletApplicationResultSet.getString(7);
@@ -203,6 +206,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     portletApplicationInsertStatement.setString(10, portletApplicationResultSet.getString(10));
                     portletApplicationInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -225,6 +229,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             portletApplicationMetadataInsertStatement.setString(5, portletApplicationMetadataResultSet.getString(5));
             portletApplicationMetadataInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         portletApplicationMetadataResultSet.close();
         portletApplicationMetadataQueryStatement.close();
@@ -244,6 +249,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             portletDefinitionMetadataInsertStatement.setString(5, portletDefinitionMetadataResultSet.getString(5));
             portletDefinitionMetadataInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         portletDefinitionMetadataResultSet.close();
         portletDefinitionMetadataQueryStatement.close();
@@ -271,6 +277,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     languageInsertStatement.setString(7, languageResultSet.getString(6));
                     languageInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -289,6 +296,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     languageInsertStatement.setString(7, languageResultSet.getString(7));
                     languageInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -317,6 +325,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     portletSupportsInsertStatement.setNull(5, Types.VARCHAR);
                     portletSupportsInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -333,6 +342,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     portletSupportsInsertStatement.setString(5, portletSupportsResultSet.getString(5));
                     portletSupportsInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -361,6 +371,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     parameterInsertStatement.setString(5, parameterResultSet.getString(5));
                     parameterInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -377,6 +388,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     parameterInsertStatement.setString(5, parameterResultSet.getString(5));
                     parameterInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -470,10 +482,12 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                             portletPreferenceInsertStatement.setShort(8, readOnly);
                             portletPreferenceInsertStatement.executeUpdate();
                             rowsMigrated++;                            
+                            migrationListener.rowMigrated(targetConnection);
                         }
                         else
                         {
                             rowsDropped++;
+                            migrationListener.rowDropped(targetConnection);
                         }
                     }
                 }
@@ -497,6 +511,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     portletPreferenceInsertStatement.setShort(8, portletPreferenceResultSet.getShort(8));
                     portletPreferenceInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -533,10 +548,12 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                         portletPreferenceValueInsertStatement.setString(4, portletPreferenceValueResultSet.getString(4));
                         portletPreferenceValueInsertStatement.executeUpdate();
                         rowsMigrated++;
+                        migrationListener.rowMigrated(targetConnection);
                     }
                     else
                     {
                         rowsDropped++;
+                        migrationListener.rowDropped(targetConnection);
                     }
                 }
                 portletPreferenceIdQueryStatement.close();
@@ -554,6 +571,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     portletPreferenceValueInsertStatement.setString(4, portletPreferenceValueResultSet.getString(4));
                     portletPreferenceValueInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -575,6 +593,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             securityRoleReferenceInsertStatement.setString(4, securityRoleReferenceResultSet.getString(4));
             securityRoleReferenceInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         securityRoleReferenceResultSet.close();
         securityRoleReferenceQueryStatement.close();
@@ -624,6 +643,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                         securityRoleInsertStatement.setString(3, securityRoleResultSet.getString(3));
                         securityRoleInsertStatement.executeUpdate();
                         rowsMigrated++;
+                        migrationListener.rowMigrated(targetConnection);
 
                         int securityRoleId = securityRoleResultSet.getInt(1);
                         String description = securityRoleResultSet.getString(4);
@@ -635,6 +655,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     else
                     {
                         rowsDropped++;
+                        migrationListener.rowDropped(targetConnection);
                     }
                 }
                 applicationQueryStatement.close();
@@ -652,6 +673,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     securityRoleInsertStatement.setString(3, securityRoleResultSet.getString(3));
                     securityRoleInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -673,6 +695,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             userAttributeRefInsertStatement.setString(4, userAttributeRefResultSet.getString(4));
             userAttributeRefInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         userAttributeRefResultSet.close();
         userAttributeRefQueryStatement.close();
@@ -696,6 +719,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     userAttributeInsertStatement.setString(3, userAttributeResultSet.getString(3));
                     userAttributeInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
 
                     int userAttributeId = userAttributeResultSet.getInt(1);
                     String description = userAttributeResultSet.getString(4);
@@ -717,6 +741,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     userAttributeInsertStatement.setString(3, userAttributeResultSet.getString(3));
                     userAttributeInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -737,6 +762,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             jetspeedServiceInsertStatement.setString(3, jetspeedServiceResultSet.getString(3));
             jetspeedServiceInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         jetspeedServiceResultSet.close();
         jetspeedServiceQueryStatement.close();
@@ -762,6 +788,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     customPortletModeInsertStatement.setShort(5, (short)1);
                     customPortletModeInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
 
                     int customPortletModeId = customPortletModeResultSet.getInt(1);
                     String description = customPortletModeResultSet.getString(5);
@@ -785,6 +812,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     customPortletModeInsertStatement.setShort(5, customPortletModeResultSet.getShort(5));
                     customPortletModeInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -812,6 +840,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     customWindowStateInsertStatement.setString(4, customWindowStateResultSet.getString(4));
                     customWindowStateInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
 
                     int customWindowStateId = customWindowStateResultSet.getInt(1);
                     String description = customWindowStateResultSet.getString(5);
@@ -834,6 +863,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     customWindowStateInsertStatement.setString(4, customWindowStateResultSet.getString(4));
                     customWindowStateInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -884,6 +914,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                         localizedDescriptionInsertStatement.setString(5, localizedDescriptionResultSet.getString(5));
                         localizedDescriptionInsertStatement.executeUpdate();
                         rowsMigrated++;
+                        migrationListener.rowMigrated(targetConnection);
                     }
                 }                
                 for (LocalizedDescription description : localizedDescriptions)
@@ -895,6 +926,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     localizedDescriptionInsertStatement.setString(5, DEFAULT_LOCALE_STRING);
                     localizedDescriptionInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -911,6 +943,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     localizedDescriptionInsertStatement.setString(5, localizedDescriptionResultSet.getString(5));
                     localizedDescriptionInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -947,6 +980,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                         localizedDisplayNameInsertStatement.setString(5, localizedDisplayNameResultSet.getString(5));
                         localizedDisplayNameInsertStatement.executeUpdate();
                         rowsMigrated++;
+                        migrationListener.rowMigrated(targetConnection);
                     }
                 }
             }
@@ -964,6 +998,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     localizedDisplayNameInsertStatement.setString(5, localizedDisplayNameResultSet.getString(5));
                     localizedDisplayNameInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -992,6 +1027,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     eventDefinitionInsertStatement.setString(6, eventDefinitionResultSet.getString(6));
                     eventDefinitionInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 eventDefinitionResultSet.close();
                 eventDefinitionQueryStatement.close();
@@ -1011,6 +1047,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     eventAliasInsertStatement.setString(5, eventAliasResultSet.getString(5));
                     eventAliasInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 eventAliasResultSet.close();
                 eventAliasQueryStatement.close();
@@ -1030,6 +1067,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     parameterAliasInsertStatement.setString(5, parameterAliasResultSet.getString(5));
                     parameterAliasInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 parameterAliasResultSet.close();
                 parameterAliasQueryStatement.close();
@@ -1049,6 +1087,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     publishingEventInsertStatement.setString(5, publishingEventResultSet.getString(5));
                     publishingEventInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 publishingEventResultSet.close();
                 publishingEventQueryStatement.close();
@@ -1068,6 +1107,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     processingEventInsertStatement.setString(5, processingEventResultSet.getString(5));
                     processingEventInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 processingEventResultSet.close();
                 processingEventQueryStatement.close();
@@ -1085,6 +1125,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     namedParameterInsertStatement.setString(3, namedParameterResultSet.getString(3));
                     namedParameterInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 namedParameterResultSet.close();
                 namedParameterQueryStatement.close();
@@ -1103,6 +1144,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     runtimeOptionInsertStatement.setString(4, runtimeOptionResultSet.getString(4));
                     runtimeOptionInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 runtimeOptionResultSet.close();
                 runtimeOptionQueryStatement.close();
@@ -1120,6 +1162,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     runtimeValueInsertStatement.setString(3, runtimeValueResultSet.getString(3));
                     runtimeValueInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 runtimeValueResultSet.close();
                 runtimeValueQueryStatement.close();
@@ -1140,6 +1183,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     publicParameterInsertStatement.setString(6, publicParameterResultSet.getString(6));
                     publicParameterInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 publicParameterResultSet.close();
                 publicParameterQueryStatement.close();
@@ -1158,6 +1202,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     portletFilterInsertStatement.setString(4, portletFilterResultSet.getString(4));
                     portletFilterInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 portletFilterResultSet.close();
                 portletFilterQueryStatement.close();
@@ -1175,6 +1220,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     filterLifecycleInsertStatement.setString(3, filterLifecycleResultSet.getString(3));
                     filterLifecycleInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 filterLifecycleResultSet.close();
                 filterLifecycleQueryStatement.close();
@@ -1192,6 +1238,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     filterMappingInsertStatement.setString(3, filterMappingResultSet.getString(3));
                     filterMappingInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 filterMappingResultSet.close();
                 filterMappingQueryStatement.close();
@@ -1209,6 +1256,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     filteredPortletInsertStatement.setString(3, filteredPortletResultSet.getString(3));
                     filteredPortletInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 filteredPortletResultSet.close();
                 filteredPortletQueryStatement.close();
@@ -1226,6 +1274,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     portletListenerInsertStatement.setString(3, portletListenerResultSet.getString(3));
                     portletListenerInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 portletListenerResultSet.close();
                 portletListenerQueryStatement.close();
@@ -1243,6 +1292,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     portletApplicationSecurityConstraintInsertStatement.setString(3, portletApplicationSecurityConstraintResultSet.getString(3));
                     portletApplicationSecurityConstraintInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 portletApplicationSecurityConstraintResultSet.close();
                 portletApplicationSecurityConstraintQueryStatement.close();
@@ -1260,6 +1310,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     securedPortletInsertStatement.setString(3, securedPortletResultSet.getString(3));
                     securedPortletInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 securedPortletResultSet.close();
                 securedPortletQueryStatement.close();
@@ -1278,6 +1329,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     localeEncodingMappingInsertStatement.setString(4, localeEncodingMappingResultSet.getString(4));
                     localeEncodingMappingInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 localeEncodingMappingResultSet.close();
                 localeEncodingMappingQueryStatement.close();
@@ -1318,6 +1370,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
             ojbInsertStatement.setInt(5, version);
             ojbInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         ojbResultSet.close();
         ojbQueryStatement.close();
@@ -1353,6 +1406,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                         ojbInsertStatement.setInt(5, ojbResultSet.getInt(5));
                         ojbInsertStatement.executeUpdate();
                         rowsMigrated++;
+                        migrationListener.rowMigrated(targetConnection);
                     }
                 }
                 ojbResultSet.close();
@@ -1370,6 +1424,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                     ojbInsertStatement.setInt(5, version);
                     ojbInsertStatement.executeUpdate();
                     rowsMigrated++;                    
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;

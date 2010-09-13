@@ -48,9 +48,9 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection)
+     * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection, org.apache.jetspeed.tools.migration.JetspeedMigrationListener)
      */
-    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection) throws SQLException
+    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection, JetspeedMigrationListener migrationListener) throws SQLException
     {
         int rowsMigrated = 0;
                 
@@ -81,6 +81,7 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
             Static.setNullableLong(portletStatisticsResultSet, 7, portletStatisticsInsertStatement);
             portletStatisticsInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         portletStatisticsResultSet.close();
         portletStatisticsQueryStatement.close();
@@ -101,6 +102,7 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
             Static.setNullableLong(pageStatisticsResultSet, 6, pageStatisticsInsertStatement);
             pageStatisticsInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         pageStatisticsResultSet.close();
         pageStatisticsQueryStatement.close();
@@ -120,6 +122,7 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
             Static.setNullableLong(userStatisticsResultSet, 5, userStatisticsInsertStatement);
             userStatisticsInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         userStatisticsResultSet.close();
         userStatisticsQueryStatement.close();
@@ -144,6 +147,7 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
             adminActivityInsertStatement.setString(10, adminActivityResultSet.getString(10));
             adminActivityInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         adminActivityResultSet.close();
         adminActivityQueryStatement.close();
@@ -167,6 +171,7 @@ public class JetspeedStatisticsMigration implements JetspeedMigration
             userActivityInsertStatement.setString(9, userActivityResultSet.getString(9));
             userActivityInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         userActivityResultSet.close();
         userActivityQueryStatement.close();

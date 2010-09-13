@@ -48,9 +48,9 @@ public class JetspeedProfilerMigration implements JetspeedMigration
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection)
+     * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection, org.apache.jetspeed.tools.migration.JetspeedMigrationListener)
      */
-    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection) throws SQLException
+    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection, JetspeedMigrationListener migrationListener) throws SQLException
     {
         int rowsMigrated = 0;
         
@@ -66,6 +66,7 @@ public class JetspeedProfilerMigration implements JetspeedMigration
             profilingRuleInsertStatement.setString(3, profilingRuleResultSet.getString(3));
             profilingRuleInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         profilingRuleResultSet.close();
         profilingRuleQueryStatement.close();
@@ -87,6 +88,7 @@ public class JetspeedProfilerMigration implements JetspeedMigration
             Static.setNullableInt(ruleCriterionResultSet, 7, ruleCriterionInsertStatement);
             ruleCriterionInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         ruleCriterionResultSet.close();
         ruleCriterionQueryStatement.close();
@@ -104,6 +106,7 @@ public class JetspeedProfilerMigration implements JetspeedMigration
             principalRuleAssocInsertStatement.setString(3, principalRuleAssocResultSet.getString(3));
             principalRuleAssocInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         principalRuleAssocResultSet.close();
         principalRuleAssocQueryStatement.close();
@@ -120,6 +123,7 @@ public class JetspeedProfilerMigration implements JetspeedMigration
             profilePageAssocInsertStatement.setString(2, profilePageAssocResultSet.getString(2));
             profilePageAssocInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         profilePageAssocResultSet.close();
         profilePageAssocQueryStatement.close();
@@ -138,6 +142,7 @@ public class JetspeedProfilerMigration implements JetspeedMigration
             ojbInsertStatement.setInt(5, ojbResultSet.getInt(5));
             ojbInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         ojbResultSet.close();
         ojbQueryStatement.close();

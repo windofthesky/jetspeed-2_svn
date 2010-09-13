@@ -68,9 +68,9 @@ public class JetspeedSecurityMigration implements JetspeedMigration
     }
 
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection)
+     * @see org.apache.jetspeed.tools.migration.JetspeedMigration#migrate(java.sql.Connection, int, java.sql.Connection, org.apache.jetspeed.tools.migration.JetspeedMigrationListener)
      */
-    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection) throws SQLException
+    public JetspeedMigrationResult migrate(Connection sourceConnection, int sourceVersion, Connection targetConnection, JetspeedMigrationListener migrationListener) throws SQLException
     {
         int rowsMigrated = 0;
         
@@ -92,6 +92,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                 securityDomainInsertStatement.setNull(5, Types.INTEGER);
                 securityDomainInsertStatement.executeUpdate();
                 rowsMigrated++;
+                migrationListener.rowMigrated(targetConnection);
 
                 securityDomainInsertStatement.setInt(1, DEFAULT_SECURITY_DOMAIN_ID);
                 securityDomainInsertStatement.setString(2, SecurityDomain.DEFAULT_NAME);
@@ -100,6 +101,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                 securityDomainInsertStatement.setNull(5, Types.INTEGER);
                 securityDomainInsertStatement.executeUpdate();
                 rowsMigrated++;
+                migrationListener.rowMigrated(targetConnection);
                 maxSecurityDomainId = DEFAULT_SECURITY_DOMAIN_ID;
                 
                 securityDomainResultSet = securityDomainQueryStatement.executeQuery("SELECT NAME FROM SSO_SITE");
@@ -112,6 +114,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     securityDomainInsertStatement.setInt(5, DEFAULT_SECURITY_DOMAIN_ID);
                     securityDomainInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -128,6 +131,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     Static.setNullableInt(securityDomainResultSet, 5, securityDomainInsertStatement);
                     securityDomainInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -215,6 +219,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                         securityPrincipalInsertStatement.setInt(10, domainId);
                         securityPrincipalInsertStatement.executeUpdate();
                         rowsMigrated++;
+                        migrationListener.rowMigrated(targetConnection);
                     }
                 }
                 domainQueryStatement.close();
@@ -239,6 +244,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     securityPrincipalInsertStatement.setInt(10, securityPrincipalResultSet.getInt(10));
                     securityPrincipalInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -302,6 +308,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                         securityAttributeInsertStatement.setString(4, securityAttributeResultSet.getString(4));
                         securityAttributeInsertStatement.executeUpdate();
                         rowsMigrated++;
+                        migrationListener.rowMigrated(targetConnection);
                         securityAttributeRowsMigrated = true;
                     }
                 }                
@@ -320,6 +327,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     securityAttributeInsertStatement.setString(4, securityAttributeResultSet.getString(4));
                     securityAttributeInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -345,6 +353,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     securityPrincipalAssocInsertStatement.setInt(3, securityPrincipalAssocResultSet.getInt(2));
                     securityPrincipalAssocInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 securityPrincipalAssocResultSet.close();
                 securityPrincipalAssocQueryStatement1.close();
@@ -359,6 +368,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     securityPrincipalAssocInsertStatement.setInt(3, securityPrincipalAssocResultSet.getInt(2));
                     securityPrincipalAssocInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 securityPrincipalAssocResultSet.close();
                 securityPrincipalAssocQueryStatement2.close();
@@ -373,6 +383,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     securityPrincipalAssocInsertStatement.setInt(3, securityPrincipalAssocResultSet.getInt(2));
                     securityPrincipalAssocInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 securityPrincipalAssocResultSet.close();
                 securityPrincipalAssocQueryStatement3.close();
@@ -407,6 +418,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     securityPrincipalAssocInsertStatement.setInt(3, principalId);
                     securityPrincipalAssocInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 principalQueryStatement.close();
                 ssoPrincipalResultSet.close();
@@ -426,6 +438,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     securityPrincipalAssocInsertStatement.setInt(3, securityPrincipalAssocResultSet.getInt(3));
                     securityPrincipalAssocInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 securityPrincipalAssocResultSet.close();
                 securityPrincipalAssocQueryStatement.close();
@@ -479,6 +492,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                         securityPermissionInsertStatement.setString(4, securityPermissionResultSet.getString(4));
                         securityPermissionInsertStatement.executeUpdate();
                         rowsMigrated++;
+                        migrationListener.rowMigrated(targetConnection);
                     }
                 }
             }
@@ -495,6 +509,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     securityPermissionInsertStatement.setString(4, securityPermissionResultSet.getString(4));
                     securityPermissionInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -514,6 +529,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
             principalPermissionInsertStatement.setInt(2, principalPermissionResultSet.getInt(2));
             principalPermissionInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         principalPermissionResultSet.close();
         principalPermissionQueryStatement.close();
@@ -572,6 +588,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     securityCredentialInsertStatement.setDate(16, securityCredentialResultSet.getDate(14));
                     securityCredentialInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
                 principalTypeQueryStatement.close();
             }
@@ -600,6 +617,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     securityCredentialInsertStatement.setDate(16, securityCredentialResultSet.getDate(16));
                     securityCredentialInsertStatement.executeUpdate();
                     rowsMigrated++;
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
@@ -621,6 +639,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
             ojbInsertStatement.setInt(5, ojbResultSet.getInt(5));
             ojbInsertStatement.executeUpdate();
             rowsMigrated++;
+            migrationListener.rowMigrated(targetConnection);
         }
         ojbResultSet.close();
         ojbQueryStatement.close();
@@ -651,6 +670,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                         ojbInsertStatement.setInt(5, ojbResultSet.getInt(5));
                         ojbInsertStatement.executeUpdate();
                         rowsMigrated++;
+                        migrationListener.rowMigrated(targetConnection);
                     }
                 }
                 ojbResultSet.close();
@@ -668,6 +688,7 @@ public class JetspeedSecurityMigration implements JetspeedMigration
                     ojbInsertStatement.setInt(5, version);
                     ojbInsertStatement.executeUpdate();
                     rowsMigrated++;                    
+                    migrationListener.rowMigrated(targetConnection);
                 }
             }
             break;
