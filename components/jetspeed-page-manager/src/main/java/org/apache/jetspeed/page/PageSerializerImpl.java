@@ -216,6 +216,9 @@ public class PageSerializerImpl implements PageSerializer
             context.logger.info((importing?"Import":"Export")+" skipped: "+context.folder+" not found.");
         }
         context.logger = null;
+        // cleanup page manager thread/request caches
+        src.cleanupRequestCache();
+        dest.cleanupRequestCache();
         return context;
     }
     

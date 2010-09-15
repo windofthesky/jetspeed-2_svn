@@ -202,6 +202,11 @@ public class EhCacheImpl implements JetspeedCache
         return false;
     }
    
+    public int getMaxSize()
+    {
+        return ehcache.getCacheConfiguration().getMaxElementsInMemory()+ehcache.getCacheConfiguration().getMaxElementsOnDisk();
+    }
+    
     // ------------------------------------------------------
     
     public Object clone() throws CloneNotSupportedException

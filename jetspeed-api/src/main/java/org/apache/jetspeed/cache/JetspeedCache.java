@@ -143,4 +143,11 @@ public interface JetspeedCache
      * @return distributed flag
      */
     boolean isDistributed();
+    
+    /**
+     * get the maximum size of the cache
+     *
+     * @return the maximum size of the cache
+     */
+    int getMaxSize();
 }

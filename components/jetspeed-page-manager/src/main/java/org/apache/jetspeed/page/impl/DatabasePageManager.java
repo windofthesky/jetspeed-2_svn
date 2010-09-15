@@ -16,12 +16,14 @@
  */
 package org.apache.jetspeed.page.impl;
 
+import java.lang.ref.WeakReference;
 import java.security.AccessController;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -133,6 +135,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 {
     private static Logger log = LoggerFactory.getLogger(DatabasePageManager.class);
     
+    private static final int MIN_THREAD_CACHE_SIZE = 16;
+
     private static ThreadLocal fragmentPropertyListsCache = new ThreadLocal();
     
     private static Map modelClasses = new HashMap();
@@ -170,7 +174,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     }
 
     private DelegatingPageManager delegator;
-    
+
+    private int maxThreadCacheSize;
+
     private PageManager pageManagerProxy;
 
     public DatabasePageManager(String repositoryPath, IdGenerator generator, boolean isPermissionsSecurity, boolean isConstraintsSecurity, JetspeedCache oidCache, JetspeedCache pathCache,
@@ -178,6 +184,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     {
         super(repositoryPath);
         delegator = new DelegatingPageManager(generator, isPermissionsSecurity, isConstraintsSecurity, modelClasses);
+        maxThreadCacheSize = Math.max(Math.max(Math.max(oidCache.getMaxSize()/10, propertiesCache.getMaxSize()/10), principalPropertiesCache.getMaxSize()/10), MIN_THREAD_CACHE_SIZE);
         DatabasePageManagerCache.cacheInit(oidCache, pathCache, propertiesCache, propertiesPathCache, principalPropertiesCache, principalPropertiesPathCache, this);
     }
 
@@ -2696,7 +2703,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         Principal userPrincipal = ((subject != null) ? SubjectHelper.getBestPrincipal(subject, User.class) : null);
         String fragmentListKey = getFragmentPropertyListKey(fragmentKey, userPrincipal);
         Map threadLocalCache = (Map)fragmentPropertyListsCache.get();
-        FragmentPropertyList list = ((threadLocalCache != null) ? (FragmentPropertyList)threadLocalCache.get(fragmentListKey) : null);
+        WeakReference listReference = ((threadLocalCache != null) ? (WeakReference)threadLocalCache.get(fragmentListKey) : null);
+        FragmentPropertyList list = ((listReference != null) ? (FragmentPropertyList)listReference.get() : null);
 
         // get and cache persistent list
         if (list == null)
@@ -2864,13 +2872,25 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 }
             }
 
-            // save fragment property list in thread local cache
+            // save fragment property list in thread local cache utilizing
+            // weak references to ensure threads locals for pooled threads
+            // are cleaned up when cleanupRequestCache() is not invoked,
+            // (typically batch processes accessing the PageManager).
             if (threadLocalCache == null)
             {
-                threadLocalCache = new HashMap();
+                // create bounded LRU cache per thread to limit footprint
+                // of long running or pooled threads, (typically batch
+                // processes accessing the PageManager).
+                threadLocalCache = new LinkedHashMap(MIN_THREAD_CACHE_SIZE, 0.75F, true)
+                {
+                    protected boolean removeEldestEntry(Map.Entry eldest)
+                    {
+                        return (size() > maxThreadCacheSize);
+                    }
+                };
                 fragmentPropertyListsCache.set(threadLocalCache);
             }
-            threadLocalCache.put(fragmentListKey, list);
+            threadLocalCache.put(fragmentListKey, new WeakReference(list));
         }
         return list;
     }
@@ -3109,7 +3129,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         Principal userPrincipal = ((subject != null) ? SubjectHelper.getBestPrincipal(subject, User.class) : null);
         String fragmentListKey = getFragmentPropertyListKey(fragmentKey, userPrincipal);
         Map threadLocalCache = (Map)fragmentPropertyListsCache.get();
-        FragmentPropertyList list = ((threadLocalCache != null) ? (FragmentPropertyList)threadLocalCache.get(fragmentListKey) : null);
+        WeakReference listReference = ((threadLocalCache != null) ? (WeakReference)threadLocalCache.get(fragmentListKey) : null);
+        FragmentPropertyList list = ((listReference != null) ? (FragmentPropertyList)listReference.get() : null);
 
         // remove cached persistent list
         if (list != null)
