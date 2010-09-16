@@ -462,10 +462,6 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                                 {
                                     readOnly = (Boolean.parseBoolean(readOnlyResultSet.getString(1)) ? (short)1 : (short)0);
                                 }
-                                else
-                                {
-                                    throw new SQLException("Unable to find read only preference value for preference: "+fullPath);
-                                }
                                 readOnlyResultSet.close();
                             }
                         }
