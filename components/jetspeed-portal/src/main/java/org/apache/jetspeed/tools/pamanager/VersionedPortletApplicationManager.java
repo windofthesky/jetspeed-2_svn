@@ -21,8 +21,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
@@ -34,6 +32,8 @@ import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -126,7 +126,11 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
                 String newVersion = getVersion(newPA);
                 System.out.print("Reg version is " + regVersion);
                 System.out.print(", New version is " + newVersion);
-                if (newVersion.compareTo(regVersion) > 0)
+                if (newVersion.equals("")) 
+                {
+                    System.out.println(" - New Version was NOT provided: registration not required ... " + contextName);                                    	
+                }
+                else if (newVersion.compareTo(regVersion) > 0)
                 {
                     System.out.println(" - **** New Version is greater: registration required... " + contextName);
                     regPA = registerPortletApplication(paWar, regPA, paType, paClassLoader, silent);                    
