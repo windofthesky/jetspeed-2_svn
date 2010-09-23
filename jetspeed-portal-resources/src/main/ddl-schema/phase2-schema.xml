@@ -151,6 +151,9 @@ limitations under the License.
         <index name="IX_FOLDER_MENU_1">
             <index-column name="PARENT_ID"/>
         </index>        
+        <index name="IX_FOLDER_MENU_2">
+            <index-column name="FOLDER_ID"/>
+        </index>        
         <index name="UN_FOLDER_MENU_1">
             <index-column name="FOLDER_ID"/>
             <index-column name="NAME"/>
@@ -290,11 +293,14 @@ limitations under the License.
         <foreign-key foreignTable="PAGE_MENU" name="FK_PAGE_MENU_1" onDelete="cascade">
             <reference foreign="MENU_ID" local="PARENT_ID"/>
         </foreign-key>
-        <foreign-key foreignTable="PAGE" name="PM_M_FK_PAGE_ID_PAGE" onDelete="cascade">
+        <foreign-key foreignTable="PAGE" name="FK_PAGE_MENU_2" onDelete="cascade">
             <reference foreign="PAGE_ID" local="PAGE_ID"/>
         </foreign-key>
         <index name="IX_PAGE_MENU_1">
             <index-column name="PARENT_ID"/>
+        </index>        
+        <index name="IX_PAGE_MENU_2">
+            <index-column name="PAGE_ID"/>
         </index>        
         <index name="UN_PAGE_MENU_1">
             <index-column name="PAGE_ID"/>
@@ -641,13 +647,16 @@ limitations under the License.
         <column name="NAME" required="true" size="80" type="VARCHAR"/>
         <column name="COLUMN_VALUE" size="128" type="VARCHAR"/>
         <column default="1" name="FALLBACK_TYPE" type="INTEGER"/>
+        <foreign-key foreignTable="PROFILING_RULE" name="FK_RULE_CRITERION_1" onDelete="cascade">
+            <reference foreign="RULE_ID" local="RULE_ID"/>
+        </foreign-key>
         <index name="IX_RULE_CRITERION_1">
+            <index-column name="RULE_ID"/>
+        </index>
+        <index name="IX_RULE_CRITERION_2">
             <index-column name="RULE_ID" />
             <index-column name="FALLBACK_ORDER" />
         </index>
-        <foreign-key foreignTable="PROFILING_RULE" name="FK_RULE_CRITERION_1" onDelete="cascade">
-            <reference foreign="RULE_ID" local="RULE_ID"/>
-        </foreign-key>           
     </table>
           
     <table name="PRINCIPAL_RULE_ASSOC">
@@ -657,12 +666,8 @@ limitations under the License.
     </table>
                 
     <table name="PROFILE_PAGE_ASSOC">
-        <column name="LOCATOR_HASH" required="true" size="40" type="VARCHAR"/>
-        <column name="PAGE_ID" required="true" size="80" type="VARCHAR"/>
-        <unique name="UN_PROFILE_PAGE_1">
-          <unique-column name="LOCATOR_HASH" />
-          <unique-column name="PAGE_ID" />
-        </unique>
+        <column name="LOCATOR_HASH" primaryKey="true" required="true" size="40" type="VARCHAR"/>
+        <column name="PAGE_ID" primaryKey="true" required="true" size="80" type="VARCHAR"/>
     </table>
     
     <table name="CLUBS">

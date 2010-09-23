@@ -55,7 +55,10 @@ limitations under the License.
         </unique>     
         <foreign-key foreignTable="SECURITY_DOMAIN" name="FK_SECURITY_DOMAIN_1" onDelete="cascade">
             <reference foreign="DOMAIN_ID" local="DOMAIN_ID"/>
-        </foreign-key>  
+        </foreign-key>
+        <index name="IX_SECURITY_DOMAIN_1">
+            <index-column name="DOMAIN_ID"/>
+        </index>
     </table>
 
    <!-- 
@@ -72,13 +75,15 @@ limitations under the License.
         <column name="PRINCIPAL_ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="ATTR_NAME" primaryKey="true" required="true" size="200" type="VARCHAR"/>
         <column name="ATTR_VALUE" size="1000" type="VARCHAR"/>
-    <index name="IX_NAME_LOOKUP">
-      <index-column name="ATTR_NAME"/>
-    </index>
+        <index name="IX_NAME_LOOKUP">
+            <index-column name="ATTR_NAME"/>
+        </index>
         <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_PRINCIPAL_ATTR" onDelete="cascade">
             <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
         </foreign-key>        
-    
+        <index name="IX_PRINCIPAL_ATTR">
+            <index-column name="PRINCIPAL_ID"/>
+        </index>
     </table>
 
     <!--
@@ -98,6 +103,12 @@ limitations under the License.
         <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_TO_PRINCIPAL_ASSOC" onDelete="cascade">
             <reference foreign="PRINCIPAL_ID" local="TO_PRINCIPAL_ID"/>
         </foreign-key>
+        <index name="IX_FROM_PRINCIPAL_ASSOC">
+            <index-column name="FROM_PRINCIPAL_ID"/>
+        </index>
+        <index name="IX_TO_PRINCIPAL_ASSOC">
+            <index-column name="TO_PRINCIPAL_ID"/>
+        </index>
     </table>
     
     <!--
@@ -127,6 +138,12 @@ limitations under the License.
         <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_PRINCIPAL_PERMISSION_2" onDelete="cascade">
             <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
         </foreign-key>
+        <index name="IX_PRINCIPAL_PERMISSION_1">
+            <index-column name="PERMISSION_ID"/>
+        </index>
+        <index name="IX_PRINCIPAL_PERMISSION_2">
+            <index-column name="PRINCIPAL_ID"/>
+        </index>
     </table>
         
     <!--
@@ -152,6 +169,9 @@ limitations under the License.
         <foreign-key foreignTable="SECURITY_PRINCIPAL" name="FK_SECURITY_CREDENTIAL_1" onDelete="cascade">
             <reference foreign="PRINCIPAL_ID" local="PRINCIPAL_ID"/>
         </foreign-key>
+        <index name="IX_SECURITY_CREDENTIAL_1">
+            <index-column name="PRINCIPAL_ID"/>
+        </index>
     </table>
 	
 
@@ -173,6 +193,9 @@ limitations under the License.
         <foreign-key foreignTable="SECURITY_DOMAIN" name="FK_SECURITY_DOMAIN_2" onDelete="cascade">
             <reference foreign="DOMAIN_ID" local="DOMAIN_ID"/>
         </foreign-key>  
+        <index name="IX_SECURITY_DOMAIN_2">
+            <index-column name="DOMAIN_ID"/>
+        </index>
         <unique name="UIX_SITE_NAME">
             <unique-column name="NAME" />
         </unique>   
@@ -192,7 +215,10 @@ limitations under the License.
         </unique>           
         <!--<foreign-key foreignTable="SECURITY_DOMAIN" name="FK_OWNER_DOMAIN_ID" onDelete="none">
             <reference foreign="DOMAIN_ID" local="OWNER_DOMAIN_ID"/>
-        </foreign-key>-->
+        </foreign-key>
+        <index name="IX_OWNER_DOMAIN_ID">
+            <index-column name="OWNER_DOMAIN_ID"/>
+        </index>-->
     </table>
     
          

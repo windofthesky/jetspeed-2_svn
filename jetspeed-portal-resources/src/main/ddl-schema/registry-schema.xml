@@ -20,6 +20,16 @@ limitations under the License.
 <database name="j2">
 
     <!--
+       Registry - this schema is not in normal form
+       and thus relies on OJB to perform propagated
+       delete and update operations: foreign keys and
+       foreign key indexes are not declared here as
+       a matter of consistency and because schema
+       level cascade operations cannot ensure data
+       consistency as is done elsewhere.
+    -->
+
+    <!--
        Create Portlet Definition Table
     -->
     <table name="PORTLET_DEFINITION">
@@ -62,9 +72,6 @@ limitations under the License.
         <column name="COLUMN_VALUE" required="true" type="LONGVARCHAR"/>
         <column name="NAME" required="true" size="100" type="VARCHAR"/>
         <column name="LOCALE_STRING" required="true" size="50" type="VARCHAR"/>
-        <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_PA_METADATA_FIELDS_1" onDelete="cascade">                        
-            <reference foreign="APPLICATION_ID" local="OBJECT_ID"/>            
-        </foreign-key>        
     </table>
     
     <!--
@@ -76,9 +83,6 @@ limitations under the License.
         <column name="COLUMN_VALUE" required="true" type="LONGVARCHAR"/>
         <column name="NAME" required="true" size="100" type="VARCHAR"/>
         <column name="LOCALE_STRING" required="true" size="50" type="VARCHAR"/>
-        <foreign-key foreignTable="PORTLET_DEFINITION" name="FK_PD_METADATA_FIELDS_1" onDelete="cascade">                        
-            <reference foreign="ID" local="OBJECT_ID"/>            
-        </foreign-key>                
     </table>
 
     <!--
@@ -137,44 +141,6 @@ limitations under the License.
     </table>
     -->
     
-   <!-- 
-      Preferences
-    -->    
-    <table name="PORTLET_PREFERENCE">
-        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="DTYPE" required="true" size="10" type="VARCHAR"/>
-        <column name="APPLICATION_NAME" required="true" size="80" type="VARCHAR"/>
-        <column name="PORTLET_NAME" required="true" size="80" type="VARCHAR"/>
-        <column name="ENTITY_ID" type="VARCHAR" size="80"/>
-        <column name="USER_NAME"  size="80" type="VARCHAR"/>
-        <column name="NAME" required="true" size="254" type="VARCHAR"/>
-        <column name="READONLY" required="true" type="BOOLEANINT"/>        
-        <unique name="UIX_PORTLET_PREFERENCE">
-          <unique-column name="DTYPE"/>
-          <unique-column name="APPLICATION_NAME"/>
-          <unique-column name="PORTLET_NAME"/>
-          <unique-column name="ENTITY_ID"/>
-          <unique-column name="USER_NAME"/>
-          <unique-column name="NAME"/>
-        </unique>        
-
-    </table>
-
-    <table name="PORTLET_PREFERENCE_VALUE">
-        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="PREF_ID" primaryKey="true" required="true" type="INTEGER"/>
-        <column name="IDX" primaryKey="true" required="true" type="SMALLINT"/>
-        <column name="PREF_VALUE" size="4000" type="VARCHAR"/>
-
-        <index name="IX_PREFS_PREF_ID">
-            <index-column name="PREF_ID"/>
-        </index>        
-        
-        <foreign-key foreignTable="PORTLET_PREFERENCE" name="FK_PORTLET_PREFERENCE" onDelete="cascade">
-            <reference foreign="ID" local="PREF_ID"/>
-        </foreign-key>             
-    </table>
-
     <!--
        Security Role Reference
     -->
@@ -192,9 +158,6 @@ limitations under the License.
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="APPLICATION_ID" required="true" type="INTEGER"/>  
         <column name="NAME" required="true" size="150" type="VARCHAR"/>
-        <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_SECURITY_ROLE_REF_1" onDelete="cascade">                        
-            <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>            
-        </foreign-key>
     </table> 
 
     <!--
@@ -205,9 +168,6 @@ limitations under the License.
         <column name="APPLICATION_ID" required="true" type="INTEGER"/>
         <column name="NAME" size="150" type="VARCHAR"/>
         <column name="NAME_LINK" size="150" type="VARCHAR"/>
-        <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_USER_ATTRIBUTE_REF_1" onDelete="cascade">
-            <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>
-        </foreign-key>                
     </table>
 
 	<!--
@@ -217,9 +177,6 @@ limitations under the License.
         <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
         <column name="APPLICATION_ID" required="true" type="INTEGER"/>
         <column name="NAME" size="150" type="VARCHAR"/>
-        <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_USER_ATTRIBUTE_1" onDelete="cascade">
-            <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>
-        </foreign-key>        
     </table>
 
 	<!--
@@ -263,9 +220,6 @@ limitations under the License.
         <column name="CUSTOM_NAME" required="true" size="150" type="VARCHAR"/>
         <column name="MAPPED_NAME" size="150" type="VARCHAR"/>
         <column name="PORTAL_MANAGED" required="true" type="BOOLEANINT"/>        
-        <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_CUSTOM_PORTLET_MODE_1" onDelete="cascade">
-            <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>
-        </foreign-key>        
     </table>
                          
     <!--
@@ -276,9 +230,6 @@ limitations under the License.
         <column name="APPLICATION_ID" required="true" type="INTEGER"/>
         <column name="CUSTOM_NAME" required="true" size="150" type="VARCHAR"/>
         <column name="MAPPED_NAME" size="150" type="VARCHAR"/>
-        <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_CUSTOM_WINDOW_STATE_1" onDelete="cascade">
-            <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>
-        </foreign-key>        
     </table>
 
     <table name="EVENT_DEFINITION">
@@ -288,9 +239,6 @@ limitations under the License.
         <column name="NAMESPACE" required="false" size="80" type="VARCHAR"/>
         <column name="PREFIX" required="false" size="20" type="VARCHAR"/>        
         <column name="VALUE_TYPE" required="false" size="255" type="VARCHAR"/>
-        <foreign-key foreignTable="PORTLET_APPLICATION" name="FK_EVENT_DEFINITION_1" onDelete="cascade">                        
-            <reference foreign="APPLICATION_ID" local="APPLICATION_ID"/>            
-        </foreign-key>    	
     </table>             
 
     <!-- 
@@ -448,4 +396,41 @@ limitations under the License.
         <column name="ENCODING" required="true" size="50" type="VARCHAR"/>
     </table> 
     
+   <!-- 
+      Preferences
+    -->    
+
+    <table name="PORTLET_PREFERENCE">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="DTYPE" required="true" size="10" type="VARCHAR"/>
+        <column name="APPLICATION_NAME" required="true" size="80" type="VARCHAR"/>
+        <column name="PORTLET_NAME" required="true" size="80" type="VARCHAR"/>
+        <column name="ENTITY_ID" type="VARCHAR" size="80"/>
+        <column name="USER_NAME"  size="80" type="VARCHAR"/>
+        <column name="NAME" required="true" size="254" type="VARCHAR"/>
+        <column name="READONLY" required="true" type="BOOLEANINT"/>        
+        <unique name="UIX_PORTLET_PREFERENCE">
+          <unique-column name="DTYPE"/>
+          <unique-column name="APPLICATION_NAME"/>
+          <unique-column name="PORTLET_NAME"/>
+          <unique-column name="ENTITY_ID"/>
+          <unique-column name="USER_NAME"/>
+          <unique-column name="NAME"/>
+        </unique>        
+
+    </table>
+
+    <table name="PORTLET_PREFERENCE_VALUE">
+        <column name="ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="PREF_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="IDX" primaryKey="true" required="true" type="SMALLINT"/>
+        <column name="PREF_VALUE" size="4000" type="VARCHAR"/>
+        <foreign-key foreignTable="PORTLET_PREFERENCE" name="FK_PORTLET_PREFERENCE" onDelete="cascade">
+            <reference foreign="ID" local="PREF_ID"/>
+        </foreign-key>             
+        <index name="IX_PORTLET_PREFERENCE">
+            <index-column name="PREF_ID"/>
+        </index>        
+    </table>
+
 </database>

@@ -72,13 +72,13 @@ limitations under the License.
     -->
     
     <table name="CLIENT_TO_CAPABILITY">
-        <column name="CLIENT_ID" required="true" type="INTEGER"/>
-        <column name="CAPABILITY_ID" required="true" type="INTEGER"/>
+        <column name="CLIENT_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="CAPABILITY_ID" primaryKey="true" required="true" type="INTEGER"/>
     </table>
     
     <table name="CLIENT_TO_MIMETYPE">
-        <column name="CLIENT_ID" required="true" type="INTEGER"/>
-        <column name="MIMETYPE_ID" required="true" type="INTEGER"/>
+        <column name="CLIENT_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="MIMETYPE_ID" primaryKey="true" required="true" type="INTEGER"/>
     </table>
     
     <!--
@@ -86,14 +86,20 @@ limitations under the License.
     -->
     
     <table name="MEDIATYPE_TO_CAPABILITY">
-        <column name="MEDIATYPE_ID" required="true" type="INTEGER"/>
-        <column name="CAPABILITY_ID" required="true" type="INTEGER"/>
+        <column name="MEDIATYPE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="CAPABILITY_ID" primaryKey="true" required="true" type="INTEGER"/>
     </table>
     
     <table name="MEDIATYPE_TO_MIMETYPE">
-        <column name="MEDIATYPE_ID" required="true" type="INTEGER"/>
-        <column name="MIMETYPE_ID" required="true" type="INTEGER"/>
+        <column name="MEDIATYPE_ID" primaryKey="true" required="true" type="INTEGER"/>
+        <column name="MIMETYPE_ID" primaryKey="true" required="true" type="INTEGER"/>
     </table>
+
+    <!--
+       Statistics - no primary keys declared: these
+       tables should not be replicated since they are
+       simply logging user activity
+    -->
 
 	<table name='PORTLET_STATISTICS'>
 		<column name='IPADDRESS' type='VARCHAR' size="80"/>
