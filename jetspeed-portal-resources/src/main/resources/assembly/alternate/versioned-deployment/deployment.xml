@@ -61,6 +61,11 @@
       see https://issues.apache.org/jira/browse/JS2-666
       <property name="maxRetriedStarts"><value>10</value></property>
     -->
+    <!-- optional read/write locked access to registry used by default to limit concurrent
+         PAM access to registry during registration, this property can be used to disable this
+         locking by setting value to "false":
+      <property name="lockRegistryAccess"><value>false</value></property>
+    -->
   </bean>
 
 </beans>

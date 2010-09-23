@@ -58,11 +58,11 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
 {
     private static final Logger    log = LoggerFactory.getLogger("deployment");
         
-    public VersionedPortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry, 
+    public VersionedPortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
             PermissionManager permissionManager, SearchEngine searchEngine,  RoleManager roleManager,
             List<String> permissionRoles, /* node manager, */ String appRoot, JetspeedDescriptorService descriptorService)
     {
-        super(portletFactory, registry, permissionManager, 
+        super(portletFactory, registry, permissionManager,
                 searchEngine, roleManager, permissionRoles, null, appRoot, descriptorService); 
                
     }
@@ -113,7 +113,17 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
                 //register = false;
             }
             
-            PortletApplication regPA = registry.getPortletApplication(contextName); 
+            PortletApplication regPA = null;
+            lockRegistry(RegistryLock.READ);
+            try
+            {
+                regPA = registry.getPortletApplication(contextName);
+            }
+            finally
+            {
+                unlockRegistry(RegistryLock.READ);                
+            }
+            
             PortletApplication newPA = paWar.createPortletApp();
             if (regPA == null)
             {

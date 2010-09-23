@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.jetspeed.cluster.NodeManager;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
@@ -56,6 +58,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
 
     protected PortletFactory             portletFactory;
     protected PortletRegistry            registry;
+    protected ReadWriteLock              registryLock;
     protected SearchEngine               searchEngine;
     protected RoleManager                roleManager;
     protected PermissionManager          permissionManager;
@@ -93,6 +96,9 @@ public class PortletApplicationManager implements PortletApplicationManagement
         this.nodeManager        = nodeManager;
         this.appRoot            = appRoot;
         this.descriptorService  = descriptorService;
+        
+        // utilize read/write locked access to registry by default
+        setLockRegistryAccess(true);
     }
     
     public void setPAMProxy(PortletApplicationManagement pamProxy)
@@ -274,7 +280,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         try
         {
             PortletApplication pa = null;
-            
+            lockRegistry(RegistryLock.READ);
             try
             {
                 pa = registry.getPortletApplication(paName);
@@ -283,7 +289,10 @@ public class PortletApplicationManager implements PortletApplicationManagement
             {
                 // ignore errors during portal shutdown
             }
-
+            finally
+            {
+                unlockRegistry(RegistryLock.READ);
+            }
             
             if (pa != null)
             {
@@ -376,7 +385,15 @@ public class PortletApplicationManager implements PortletApplicationManagement
         // register the portlet application
         try
         {
-            registry.registerPortletApplication(pa);
+            lockRegistry(RegistryLock.WRITE);
+            try
+            {
+                registry.registerPortletApplication(pa);
+            }
+            finally
+            {
+                unlockRegistry(RegistryLock.WRITE);                
+            }
             registered = true;
             log.info("Registered the portlet application " + paName);
 
@@ -493,7 +510,16 @@ public class PortletApplicationManager implements PortletApplicationManagement
             }
 
             // try to get the PA from database by context name
-            PortletApplication pa = registry.getPortletApplication(contextName);
+            PortletApplication pa = null;
+            lockRegistry(RegistryLock.READ);
+            try
+            {
+                pa = registry.getPortletApplication(contextName);
+            }
+            finally
+            {
+                unlockRegistry(RegistryLock.READ);                
+            }
 
             if (pa != null)
             {
@@ -689,7 +715,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
         throws RegistryException
     {
         PortletApplication pa = null;
-        
+        lockRegistry(RegistryLock.READ);
         try
         {
             pa = registry.getPortletApplication(contextName);
@@ -698,6 +724,11 @@ public class PortletApplicationManager implements PortletApplicationManagement
         {
             // ignore errors during portal shutdown
         }
+        finally
+        {
+            unlockRegistry(RegistryLock.READ);                
+        }
+        
         if  (pa != null && pa.getApplicationType() != paType) 
         {
             throw new RegistryException("Cannot stop portlet application "+contextName+": as Application Types don't match: " + pa.getApplicationType() + " != " + paType);
@@ -746,7 +777,16 @@ public class PortletApplicationManager implements PortletApplicationManagement
         updateSearchEngine(true,pa);
 
         // todo keep (User)Prefs?
-        registry.removeApplication(pa);
+        lockRegistry(RegistryLock.WRITE);
+        try
+        {
+            registry.removeApplication(pa);
+        }
+        finally
+        {
+            unlockRegistry(RegistryLock.WRITE);                
+        }
+        
         revokeDefaultPermissions(pa.getName());
     }
     
@@ -1130,4 +1170,66 @@ public class PortletApplicationManager implements PortletApplicationManagement
     {
         return maxRetriedStarts;
     }    
+
+    /**
+     * RegistryLock access type enumeration.
+     */
+    protected enum RegistryLock {READ, WRITE};
+    
+    /**
+     * Lock specified access to registry.
+     * 
+     * @param lockAccess lock access type
+     */
+    protected void lockRegistry(RegistryLock lockAccess)
+    {
+        if (registryLock != null)
+        {
+            switch (lockAccess)
+            {
+                case READ : registryLock.readLock().lock(); break;
+                case WRITE : registryLock.writeLock().lock(); break;
+            }
+        }
+    }
+
+    /**
+     * Unlock specified access to registry.
+     * 
+     * @param lockAccess lock access type
+     */
+    protected void unlockRegistry(RegistryLock lockAccess)
+    {
+        if (registryLock != null)
+        {
+            switch (lockAccess)
+            {
+                case READ : registryLock.readLock().unlock(); break;
+                case WRITE : registryLock.writeLock().unlock(); break;
+            }
+        }
+    }
+    
+    /**
+     * Get read/write lock registry access configuration.
+     * 
+     * @return lock registry access configuration.
+     */
+    public boolean getLockRegistryAccess()
+    {
+        return (registryLock != null);
+    }
+    
+    /**
+     * Set read/write lock registry access configuration.
+     * 
+     * @param lockRegistryAccess lock registry access configuration.
+     */
+    public void setLockRegistryAccess(boolean lockRegistryAccess)
+    {
+        if ((registryLock != null) != lockRegistryAccess)
+        {
+            registryLock = (lockRegistryAccess ? new ReentrantReadWriteLock(true) : null);
+        }
+    }
 }
