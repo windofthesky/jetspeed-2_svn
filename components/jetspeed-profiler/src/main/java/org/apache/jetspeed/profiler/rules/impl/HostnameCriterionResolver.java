@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +34,8 @@ import org.apache.jetspeed.request.RequestContext;
 public class HostnameCriterionResolver extends StandardResolver implements
         RuleCriterionResolver
 {
+    private static final long serialVersionUID = 1L;
+    
     private boolean useDotPrefix;
     private List<Rule> hostnameMappingRules;
     
@@ -90,15 +93,15 @@ public class HostnameCriterionResolver extends StandardResolver implements
         return serverName;
     }
 
-    public static class Rule
+    public static class Rule implements Serializable
     {
-        private String pattern;
+        private static final long serialVersionUID = 1L;
+        
         private String replacement;
         private Pattern compiledPattern;        
         
         public Rule(String pattern, String replacement)
         {
-            this.pattern = pattern;
             this.replacement = replacement;
             this.compiledPattern = Pattern.compile(pattern);
         }
@@ -106,10 +109,12 @@ public class HostnameCriterionResolver extends StandardResolver implements
         public String map(String hostname)
         {
             Matcher patternMatcher = compiledPattern.matcher(hostname);
+            
             if (patternMatcher.find())
             {
                 return patternMatcher.replaceAll(replacement);
             }
+            
             return hostname;
         }
     }
