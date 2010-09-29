@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jetspeed.om.preference.FragmentPreference;
@@ -59,7 +60,11 @@ public class ContentFragmentPreferenceImpl implements FragmentPreference
      */
     public List getValueList()
     {
-        return valueList;
+        if (this.valueList == null)
+        {
+            this.valueList = new ArrayList();            
+        }
+        return this.valueList;
     }
 
     /* (non-Javadoc)

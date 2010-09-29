@@ -1705,7 +1705,11 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
                     {
                         PortletPreference portletPreference = (PortletPreference)values;
                         preference.setReadOnly(portletPreference.isReadOnly());
-                        preference.getValueList().addAll(Arrays.asList(portletPreference.getValues()));
+                        String [] prefValues = portletPreference.getValues();
+                        if (prefValues != null)
+                        {
+                            preference.getValueList().addAll(Arrays.asList(prefValues));
+                        }
                     }
                     else
                     {

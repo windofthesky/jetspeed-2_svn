@@ -153,9 +153,13 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         {
             Preference p = preferences.addPreference(pref.getName());
             p.setReadOnly(pref.isReadOnly());
-            for (String s : pref.getValues())
+            String [] values = pref.getValues();
+            if (values != null) 
             {
-                p.addValue(s);
+                for (String s : values)
+                {
+                    p.addValue(s);
+                }
             }
         }
         return preferences;

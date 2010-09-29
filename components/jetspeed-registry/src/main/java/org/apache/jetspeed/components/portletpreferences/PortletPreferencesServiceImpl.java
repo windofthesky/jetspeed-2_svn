@@ -318,13 +318,17 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
                 dbPref.setName(preference.getName());
                 dbPref.setReadOnly(preference.isReadOnly());
                 short index = 0;
-                for (String value : preference.getValues())
+                String [] values = preference.getValues();
+                if (values != null)
                 {
-                    DatabasePreferenceValue dbValue = new DatabasePreferenceValue();
-                    dbValue.setIndex(index);
-                    dbValue.setValue(value);
-                    dbPref.getPreferenceValues().add(dbValue);                
-                    index++;
+                    for (String value : values)
+                    {
+                        DatabasePreferenceValue dbValue = new DatabasePreferenceValue();
+                        dbValue.setIndex(index);
+                        dbValue.setValue(value);
+                        dbPref.getPreferenceValues().add(dbValue);                
+                        index++;
+                    }
                 }
                 getPersistenceBrokerTemplate().store(dbPref);
             }
@@ -333,14 +337,18 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
                 dbPref.getPreferenceValues().clear();
                 PortletPreference preference = map.get(dbPref.getName());
                 short index = 0;
-                for (String value : preference.getValues())
+                String [] values = preference.getValues();
+                if (values != null)
                 {
-                    DatabasePreferenceValue dbValue = new DatabasePreferenceValue();
-                    dbValue.setIndex(index);
-                    dbValue.setValue(value);
-                    index++;
-                    dbPref.getPreferenceValues().add(dbValue);
-                }            
+                    for (String value : values)
+                    {
+                        DatabasePreferenceValue dbValue = new DatabasePreferenceValue();
+                        dbValue.setIndex(index);
+                        dbValue.setValue(value);
+                        index++;
+                        dbPref.getPreferenceValues().add(dbValue);
+                    }            
+                }
                 getPersistenceBrokerTemplate().store(dbPref);            
             }        
             // remove from cache to send distributed notification
@@ -820,13 +828,17 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             dbPref.setName(preference.getName());
             dbPref.setReadOnly(preference.isReadOnly());
             short index = 0;
-            for (String value : preference.getValues())
+            String [] values = preference.getValues();
+            if (values != null)
             {
-                DatabasePreferenceValue dbValue = new DatabasePreferenceValue();
-                dbValue.setIndex(index);
-                dbValue.setValue(value);
-                dbPref.getPreferenceValues().add(dbValue);
-                index++;
+                for (String value : values)
+                {
+                    DatabasePreferenceValue dbValue = new DatabasePreferenceValue();
+                    dbValue.setIndex(index);
+                    dbValue.setValue(value);
+                    dbPref.getPreferenceValues().add(dbValue);
+                    index++;
+                }
             }
             getPersistenceBrokerTemplate().store(dbPref);
         }

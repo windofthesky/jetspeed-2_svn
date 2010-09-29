@@ -1599,7 +1599,13 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
                 else if (values instanceof PortletPreference)
                 {
                     PortletPreference portletPreference = (PortletPreference)values;
-                    preference = new ContentFragmentPreferenceImpl(name, portletPreference.isReadOnly(), Arrays.asList(portletPreference.getValues()));
+                    List<String> prefValueList = null;
+                    String [] prefValues = portletPreference.getValues();
+                    if (prefValues != null)
+                    {
+                        prefValueList = Arrays.asList(prefValues);
+                    }
+                    preference = new ContentFragmentPreferenceImpl(name, portletPreference.isReadOnly(), prefValueList);
                 }
                 else
                 {
