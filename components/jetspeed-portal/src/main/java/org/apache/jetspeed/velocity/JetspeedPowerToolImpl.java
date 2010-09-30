@@ -50,6 +50,7 @@ import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
 import org.apache.jetspeed.request.RequestContext;
@@ -715,17 +716,27 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
             if (title == null)
             {
                 PortletWindow portletWindow = requestContext.getPortletWindow(f);
-            
+                
                 if (portletWindow != null)
                 {
-                    title = requestContext.getPreferedLanguage(portletWindow.getPortletDefinition()).getTitle();
+                    // When a portlet definition is not found from the registry,
+                    // portlet windows do not have portlet definition.
+                    // So, we have to check if the portlet definition is null or not. 
                     
-                    if (title == null)
+                    PortletDefinition portletDef = portletWindow.getPortletDefinition();
+                    
+                    if (portletDef != null)
                     {
-                        title = portletWindow.getPortletDefinition().getPortletName();
+                        title = requestContext.getPreferedLanguage(portletDef).getTitle();
+                        
+                        if (title == null)
+                        {
+                            title = portletDef.getPortletName();
+                        }
                     }
                 }
-                else
+                
+                if (title == null)
                 {
                     title = f.getName();
                     
