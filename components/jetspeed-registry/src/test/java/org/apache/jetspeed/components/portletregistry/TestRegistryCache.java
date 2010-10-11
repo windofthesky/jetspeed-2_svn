@@ -25,14 +25,16 @@ import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.engine.MockJetspeedEngine;
 import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.Language;
-import org.apache.jetspeed.om.portlet.Supports;
-import org.apache.jetspeed.om.portlet.UserAttribute;
-import org.apache.jetspeed.om.portlet.Preference;
-import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.Preference;
+import org.apache.jetspeed.om.portlet.Preferences;
+import org.apache.jetspeed.om.portlet.Supports;
+import org.apache.jetspeed.om.portlet.UserAttribute;
 import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
+import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
+import org.apache.ojb.broker.Identity;
 
 /**
  * <p>
@@ -91,6 +93,20 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
         PortletApplication o = (PortletApplication)portletRegistry.getPortletApplications().iterator().next();
         assertEquals(one, o);
         assertEquals(portletRegistry.getAllPortletDefinitions().iterator().next(), def);
+    }
+    
+    public void testCacheDirectly() {
+        assertNotNull(portletRegistry);
+        PortletDefinition def = portletRegistry.getPortletDefinitionByUniqueName("PA-001::Portlet-1");
+        assertNotNull(def);
+        
+        Identity testPortletDefOid = new Identity(PortletDefinitionImpl.class, PortletApplicationDefinitionImpl.class, new Object [] { "PA-001::Portlet-1" });
+        RegistryPortletCache.cacheAdd(testPortletDefOid, def);
+        assertNotNull(RegistryPortletCache.cacheLookup(testPortletDefOid));
+        assertEquals(def, RegistryPortletCache.cacheLookup(testPortletDefOid));
+        
+        RegistryPortletCache.cacheRemoveQuiet(def.getUniqueName(), null);
+        assertNull(RegistryPortletCache.cacheLookup(testPortletDefOid));
     }
     
     private void buildTestData() throws RegistryException, LockFailedException

@@ -148,10 +148,18 @@ public class RegistryPortletCache implements ObjectCache
         RegistryCacheObjectWrapper wrapper = w;
         if (wrapper == null)
         {
-            wrapper = (RegistryCacheObjectWrapper)nameCache.get(key);
-            if (wrapper == null)
-                return;
+            CacheElement cacheElement = nameCache.get(key);
+            if (cacheElement != null)
+            {
+                wrapper = (RegistryCacheObjectWrapper) cacheElement.getContent();
+            }
         }
+        
+        if (wrapper == null)
+        {
+            return;
+        }
+        
         Identity oid = wrapper.getId();
 
         PortletDefinition pd = (PortletDefinition)cacheLookup(oid);
