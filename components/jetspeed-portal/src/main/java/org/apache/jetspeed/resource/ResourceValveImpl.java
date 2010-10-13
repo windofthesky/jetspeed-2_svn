@@ -59,9 +59,9 @@ public class ResourceValveImpl extends AbstractValve
             {            
                 HttpServletRequest servletRequest = request.getRequest();
                 HttpServletResponse servletResponse = request.getResponse();
-                resourceWindow.setAttribute(PortalReservedParameters.PORTLET_CONTAINER_INVOKER_USE_FORWARD, Boolean.TRUE);
                 if (resourceWindow.getPortletDefinition().getApplication().getVersion().equals("1.0"))
                 {
+                    resourceWindow.setAttribute(PortalReservedParameters.PORTLET_CONTAINER_INVOKER_USE_FORWARD, Boolean.TRUE);
                     container.doRender(resourceWindow, servletRequest, servletResponse);
                 }
                 else
