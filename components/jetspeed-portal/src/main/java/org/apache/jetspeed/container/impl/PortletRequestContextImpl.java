@@ -281,8 +281,8 @@ public class PortletRequestContextImpl implements PortletRequestContext
     
     public Object getAttribute(String name)
     {
-        Object value = servletRequest.getAttribute(name);        
-        return value != null ? value : window.getAttribute(name);
+        Object value = window.getAttribute(name);        
+        return value != null ? value : servletRequest.getAttribute(name);
     }
 
     @SuppressWarnings("unchecked")

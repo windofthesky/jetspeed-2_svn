@@ -283,7 +283,7 @@
     <myfaces.version>1.1.5</myfaces.version>
     <ojb.version>1.0.3</ojb.version>
     <org.apache.derby.version>10.3.2.1</org.apache.derby.version>
-    <org.apache.pluto.version>2.0.2</org.apache.pluto.version>
+    <org.apache.pluto.version>2.0.3-SNAPSHOT</org.apache.pluto.version>
     <org.apache.portals.bridges.common.version>2.0</org.apache.portals.bridges.common.version>
     <org.apache.portals.bridges.frameworks.version>1.0.4</org.apache.portals.bridges.frameworks.version>
     <org.apache.portals.bridges.velocity.version>2.0</org.apache.portals.bridges.velocity.version>
