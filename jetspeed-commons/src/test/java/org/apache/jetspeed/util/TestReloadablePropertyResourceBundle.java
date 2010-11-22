@@ -36,7 +36,7 @@ public class TestReloadablePropertyResourceBundle extends TestCase
     public void setUp()
     {
         String baseName = TestReloadablePropertyResourceBundle.class.getName();
-        ResourceBundle internalBundle = ResourceBundle.getBundle(baseName, new Locale("en_US"));
+        ResourceBundle internalBundle = ResourceBundle.getBundle(baseName, new Locale("en","US"));
         assertTrue(internalBundle instanceof PropertyResourceBundle);
         bundle = new ReloadablePropertyResourceBundle((PropertyResourceBundle) internalBundle, baseName);
     }
