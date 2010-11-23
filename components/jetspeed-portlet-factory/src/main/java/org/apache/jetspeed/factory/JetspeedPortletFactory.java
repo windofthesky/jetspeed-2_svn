@@ -39,6 +39,7 @@ import javax.portlet.filter.PortletFilter;
 import javax.servlet.ServletContext;
 
 import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.components.portletregistry.RegistryEventListener;
 import org.apache.jetspeed.container.ContainerInfo;
 import org.apache.jetspeed.container.JetspeedPortletConfig;
 import org.apache.jetspeed.container.JetspeedPortletConfigImpl;
@@ -69,7 +70,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  * 
  */
-public class JetspeedPortletFactory implements PortletFactory
+public class JetspeedPortletFactory implements PortletFactory, RegistryEventListener
 {
     private static final Logger log = LoggerFactory.getLogger(JetspeedPortletFactory.class);
     
@@ -82,7 +83,8 @@ public class JetspeedPortletFactory implements PortletFactory
     private final Map<String, ClassLoader> classLoaderMap;
     private PortalContext portalContext;
     private RequestDispatcherService rdService;
-    private ServletContextProvider servletContextProvider;   
+    private ServletContextProvider servletContextProvider;
+    private Object cacheMutex = new Object();
 
     /**
      * Flag whether this factory will create proxy instances for actual portlet
@@ -166,7 +168,6 @@ public class JetspeedPortletFactory implements PortletFactory
         return resourceBundle;
     }
     
-    
     public void setPortalContext(PortalContext portalContext)
     {
         this.portalContext = portalContext;
@@ -218,212 +219,223 @@ public class JetspeedPortletFactory implements PortletFactory
         
         if (paCl != null)
         {
-            applicationResourceBundleCache.remove(paName);
-            portletsResourceBundleCache.remove(paName);
-            Map<String, PortletInstance> portletInstanceCache = this.portletCache.remove(paName);
-            Map<String, PortletFilterInstance> portletFilterInstanceCache = this.portletFilterCache.remove(paName);
-            
-            ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
-            
-            try
-            {
-                Thread.currentThread().setContextClassLoader(paCl);
-
-                if (portletInstanceCache != null && !portletInstanceCache.isEmpty())
+        	synchronized (cacheMutex)
+        	{
+                applicationResourceBundleCache.remove(paName);
+                portletsResourceBundleCache.remove(paName);
+                Map<String, PortletInstance> portletInstanceCache = this.portletCache.remove(paName);
+                Map<String, PortletFilterInstance> portletFilterInstanceCache = this.portletFilterCache.remove(paName);
+                
+                ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
+                
+                try
                 {
-                    synchronized (portletInstanceCache)
+                    Thread.currentThread().setContextClassLoader(paCl);
+
+                    if (portletInstanceCache != null && !portletInstanceCache.isEmpty())
                     {
-                        for (PortletInstance portlet : portletInstanceCache.values())
+                        synchronized (portletInstanceCache)
                         {
-                            try
+                            for (PortletInstance portlet : portletInstanceCache.values())
                             {
-                                portlet.destroy();
-                            }
-                            catch (Exception e)
-                            {
-                                String msg = "Exception occurred during destroying portlet " + portlet.getClass();
-                                log.error(msg, e);
+                                try
+                                {
+                                    portlet.destroy();
+                                }
+                                catch (Exception e)
+                                {
+                                    String msg = "Exception occurred during destroying portlet " + portlet.getClass();
+                                    log.error(msg, e);
+                                }
                             }
                         }
                     }
+                    
+                    if (portletFilterInstanceCache != null && !portletFilterInstanceCache.isEmpty())
+                    {
+                        synchronized (portletFilterInstanceCache)
+                        {
+                            for (PortletFilterInstance portletFilter : portletFilterInstanceCache.values())
+                            {
+                                try
+                                {
+                                    portletFilter.destroy();
+                                }
+                                catch (Exception e)
+                                {
+                                    String msg = "Exception occurred during destroying portlet " + portletFilter.getClass();
+                                    log.error(msg, e);
+                                }
+                            }
+                        }
+                    }
+                }
+                finally
+                {
+                    Thread.currentThread().setContextClassLoader(currentContextClassLoader);
                 }
                 
-                if (portletFilterInstanceCache != null && !portletFilterInstanceCache.isEmpty())
-                {
-                    synchronized (portletFilterInstanceCache)
-                    {
-                        for (PortletFilterInstance portletFilter : portletFilterInstanceCache.values())
-                        {
-                            try
-                            {
-                                portletFilter.destroy();
-                            }
-                            catch (Exception e)
-                            {
-                                String msg = "Exception occurred during destroying portlet " + portletFilter.getClass();
-                                log.error(msg, e);
-                            }
-                        }
-                    }
-                }
-            }
-            finally
-            {
-                Thread.currentThread().setContextClassLoader(currentContextClassLoader);
-            }
-            
-            this.validatorCache.remove(paName);
-            this.portletListenerCache.remove(paName);
+                this.validatorCache.remove(paName);
+                this.portletListenerCache.remove(paName);
+        	}
         }
     }
 
     public PreferencesValidator getPreferencesValidator(PortletDefinition pd)
     {
-        PreferencesValidator validator = null;
-        
-        try
-        {
-            String paName = pd.getApplication().getName();
-            String pdName = pd.getPortletName();
+    	synchronized (cacheMutex)
+    	{
+            PreferencesValidator validator = null;
             
-            Map<String, PreferencesValidator> instanceCache = this.validatorCache.get(paName);
-            validator = (instanceCache != null) ? instanceCache.get(pdName) : null;
-            
-            if (validator == null)
+            try
             {
-                String className = pd.getPreferenceValidatorClassname();
+                String paName = pd.getApplication().getName();
+                String pdName = pd.getPortletName();
                 
-                if (className != null)
+                Map<String, PreferencesValidator> instanceCache = this.validatorCache.get(paName);
+                validator = (instanceCache != null) ? instanceCache.get(pdName) : null;
+                
+                if (validator == null)
                 {
-                    ClassLoader paCl = classLoaderMap.get(paName);
-                    if (paCl == null) 
-                    { 
-                        throw new UnavailableException("Portlet Application " + paName + " not available");
-                    }
+                    String className = pd.getPreferenceValidatorClassname();
                     
-                    try
+                    if (className != null)
                     {
-                        Class<?> clazz = paCl.loadClass(className);
-                        validator = (PreferencesValidator) clazz.newInstance();
-                        
-                        if (instanceCache == null)
-                        {
-                            instanceCache = Collections.synchronizedMap(new HashMap<String, PreferencesValidator>());
-                            this.validatorCache.put(paName, instanceCache);
+                        ClassLoader paCl = classLoaderMap.get(paName);
+                        if (paCl == null) 
+                        { 
+                            throw new UnavailableException("Portlet Application " + paName + " not available");
                         }
                         
-                        instanceCache.put(pdName, validator);
-                    }
-                    catch (Exception e)
-                    {
-                        String msg = "Cannot create PreferencesValidator instance "+className+" for Portlet "+pdName;
-                        log.error(msg, e);
+                        try
+                        {
+                            Class<?> clazz = paCl.loadClass(className);
+                            validator = (PreferencesValidator) clazz.newInstance();
+                            
+                            if (instanceCache == null)
+                            {
+                                instanceCache = Collections.synchronizedMap(new HashMap<String, PreferencesValidator>());
+                                this.validatorCache.put(paName, instanceCache);
+                            }
+                            
+                            instanceCache.put(pdName, validator);
+                        }
+                        catch (Exception e)
+                        {
+                            String msg = "Cannot create PreferencesValidator instance "+className+" for Portlet "+pdName;
+                            log.error(msg, e);
+                        }
                     }
                 }
             }
-        }
-        catch (Exception e)
-        {
-            log.error(e.getMessage(),e);
-        }
-        
-        return validator;
+            catch (Exception e)
+            {
+                log.error(e.getMessage(),e);
+            }
+            
+            return validator;
+    	}
     }
     
     public ResourceBundle getResourceBundle(PortletApplication pa, Locale locale)
     {
-        ResourceBundle bundle = null;
-        
-        try
-        {
-            if (locale != null && pa.getResourceBundle() != null)
+    	synchronized (cacheMutex)
+    	{
+            ResourceBundle bundle = null;        
+            try
             {
-                String paName = pa.getName();
-                Map<Locale, ResourceBundle> bundleCache = applicationResourceBundleCache.get(paName);
-                if (bundleCache == null)
+                if (locale != null && pa.getResourceBundle() != null)
                 {
-                    bundleCache = Collections.synchronizedMap(new HashMap<Locale, ResourceBundle>());
-                    applicationResourceBundleCache.put(paName, bundleCache);
-                }
-                bundle = bundleCache.get(locale);
-                // check if the bundle doesn't contain the key (as a null value might be stored before)
-                if (!bundleCache.containsKey(locale) )
-                {
-                    ClassLoader paCl = classLoaderMap.get(paName);
-                    
-                    if (paCl == null) 
-                    { 
-                        throw new UnavailableException("Portlet Application " + paName + " not available");
+                    String paName = pa.getName();
+                    Map<Locale, ResourceBundle> bundleCache = applicationResourceBundleCache.get(paName);
+                    if (bundleCache == null)
+                    {
+                        bundleCache = Collections.synchronizedMap(new HashMap<Locale, ResourceBundle>());
+                        applicationResourceBundleCache.put(paName, bundleCache);
                     }
-                    bundle = loadResourceBundle(locale, pa.getResourceBundle(), paCl);
-                    // even if bundle isn't found, store a null value in the HashMap so we don't need to go
-                    // look for it again
-                    bundleCache.put(locale, bundle);
+                    bundle = bundleCache.get(locale);
+                    // check if the bundle doesn't contain the key (as a null value might be stored before)
+                    if (!bundleCache.containsKey(locale) )
+                    {
+                        ClassLoader paCl = classLoaderMap.get(paName);
+                        
+                        if (paCl == null) 
+                        { 
+                            throw new UnavailableException("Portlet Application " + paName + " not available");
+                        }
+                        bundle = loadResourceBundle(locale, pa.getResourceBundle(), paCl);
+                        // even if bundle isn't found, store a null value in the HashMap so we don't need to go
+                        // look for it again
+                        bundleCache.put(locale, bundle);
+                    }
                 }
             }
-        }
-        catch (Exception e)
-        {
-            log.error(e.getMessage(),e);
-        }
-        return bundle;
+            catch (Exception e)
+            {
+                log.error(e.getMessage(),e);
+            }
+            return bundle;
+    	}
     }
     
     public ResourceBundle getResourceBundle(PortletDefinition pd, Locale locale)
     {
-        ResourceBundle bundle = null;
-        
-        try
-        {
-            String paName = pd.getApplication().getName();
-            String pdName = pd.getPortletName();
+    	synchronized (cacheMutex)
+    	{
+            ResourceBundle bundle = null;
             
-            Map<String, Map<Locale, ResourceBundle>> portletResourceBundleCache = portletsResourceBundleCache.get(paName);
-            if (portletResourceBundleCache == null)
+            try
             {
-                portletsResourceBundleCache.put(paName, Collections.synchronizedMap(new HashMap<String, Map<Locale, ResourceBundle>>()));
-                portletResourceBundleCache = portletsResourceBundleCache.get(paName);
-            }
-            Map<Locale, ResourceBundle> bundleCache = portletResourceBundleCache.get(pdName);
-            if (bundleCache == null)
-            {
-                portletResourceBundleCache.put(pdName, Collections.synchronizedMap(new HashMap<Locale, ResourceBundle>()));
-                bundleCache = portletResourceBundleCache.get(pdName);
-            }
-            bundle = bundleCache.get(locale);
-            if (bundle == null)
-            {
-                Language l = pd.getLanguage(locale);
-                if (pd.getResourceBundle() == null)
+                String paName = pd.getApplication().getName();
+                String pdName = pd.getPortletName();
+                
+                Map<String, Map<Locale, ResourceBundle>> portletResourceBundleCache = portletsResourceBundleCache.get(paName);
+                if (portletResourceBundleCache == null)
                 {
-                    bundle = new InlinePortletResourceBundle(l.getTitle(), l.getShortTitle(), l.getKeywords());
+                    portletsResourceBundleCache.put(paName, Collections.synchronizedMap(new HashMap<String, Map<Locale, ResourceBundle>>()));
+                    portletResourceBundleCache = portletsResourceBundleCache.get(paName);
                 }
-                else
+                Map<Locale, ResourceBundle> bundleCache = portletResourceBundleCache.get(pdName);
+                if (bundleCache == null)
                 {
-                    ClassLoader paCl = classLoaderMap.get(paName);
-                    
-                    if (paCl == null) 
-                    { 
-                        throw new UnavailableException("Portlet Application " + paName + " not available");
-                    }
-                    ResourceBundle loadedBundle = loadResourceBundle(l.getLocale(), pd.getResourceBundle(), paCl);
-                    if (loadedBundle != null)
-                    {
-                        bundle = new InlinePortletResourceBundle(l.getTitle(), l.getShortTitle(), l.getKeywords(), loadedBundle);
-                    }
-                    else
+                    portletResourceBundleCache.put(pdName, Collections.synchronizedMap(new HashMap<Locale, ResourceBundle>()));
+                    bundleCache = portletResourceBundleCache.get(pdName);
+                }
+                bundle = bundleCache.get(locale);
+                if (bundle == null)
+                {
+                    Language l = pd.getLanguage(locale);
+                    if (pd.getResourceBundle() == null)
                     {
                         bundle = new InlinePortletResourceBundle(l.getTitle(), l.getShortTitle(), l.getKeywords());
                     }
+                    else
+                    {
+                        ClassLoader paCl = classLoaderMap.get(paName);
+                        
+                        if (paCl == null) 
+                        { 
+                            throw new UnavailableException("Portlet Application " + paName + " not available");
+                        }
+                        ResourceBundle loadedBundle = loadResourceBundle(l.getLocale(), pd.getResourceBundle(), paCl);
+                        if (loadedBundle != null)
+                        {
+                            bundle = new InlinePortletResourceBundle(l.getTitle(), l.getShortTitle(), l.getKeywords(), loadedBundle);
+                        }
+                        else
+                        {
+                            bundle = new InlinePortletResourceBundle(l.getTitle(), l.getShortTitle(), l.getKeywords());
+                        }
+                    }
+                    bundleCache.put(locale, bundle);
                 }
-                bundleCache.put(locale, bundle);
             }
-        }
-        catch (Exception e)
-        {
-            log.error(e.getMessage(),e);
-        }
-        return bundle;
+            catch (Exception e)
+            {
+                log.error(e.getMessage(),e);
+            }
+            return bundle;
+    	}
     }
 
     /**
@@ -451,141 +463,147 @@ public class JetspeedPortletFactory implements PortletFactory
      */
     public PortletInstance getPortletInstance(ServletContext servletContext, PortletDefinition pd, boolean proxyUsed) throws PortletException
     {
-        PortletInstance portlet = null;
-        PortletApplication pa = pd.getApplication();
-        String paName = pa.getName();
-        String pdName = pd.getPortletName();
-        
-        try
-        {
-            Map<String, PortletInstance> instanceCache = this.portletCache.get(paName);
+    	synchronized (cacheMutex)
+    	{
+            PortletInstance portlet = null;
+            PortletApplication pa = pd.getApplication();
+            String paName = pa.getName();
+            String pdName = pd.getPortletName();
             
-            if (instanceCache != null)
+            try
             {
-                portlet = instanceCache.get(pdName);
-            }
-            
-            // If the current cached portlet instance is a proxied object as it is not expected,
-            // recreate the portlet instance.
-            if (portlet != null && this.portletProxyUsed && !proxyUsed && portlet.isProxyInstance())
-            {
-                portlet = null;
-            }
-            
-            if (portlet == null)
-            {
-                ClassLoader paCl = classLoaderMap.get(paName);
+                Map<String, PortletInstance> instanceCache = this.portletCache.get(paName);
                 
-                if (paCl == null) 
-                { 
-                    throw new UnavailableException("Portlet Application " + paName + " not available");
+                if (instanceCache != null)
+                {
+                    portlet = instanceCache.get(pdName);
                 }
                 
-                ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
-                
-                try
+                // If the current cached portlet instance is a proxied object as it is not expected,
+                // recreate the portlet instance.
+                if (portlet != null && this.portletProxyUsed && !proxyUsed && portlet.isProxyInstance())
                 {
-                    Class<?> clazz = paCl.loadClass(pd.getPortletClass());
+                    portlet = null;
+                }
+                
+                if (portlet == null)
+                {
+                    ClassLoader paCl = classLoaderMap.get(paName);
+                    
+                    if (paCl == null) 
+                    { 
+                        throw new UnavailableException("Portlet Application " + paName + " not available");
+                    }
+                    
+                    ClassLoader currentContextClassLoader = Thread.currentThread().getContextClassLoader();
                     
                     try
                     {
-                        Thread.currentThread().setContextClassLoader(paCl);
-                        // wrap new Portlet inside PortletInstance which ensures
-                        // the destroy
-                        // method will wait for all its invocation threads to
-                        // complete
-                        // and thereby releasing all its ClassLoader locks as
-                        // needed for local portlets.
+                        Class<?> clazz = paCl.loadClass(pd.getPortletClass());
+                        
+                        try
+                        {
+                            Thread.currentThread().setContextClassLoader(paCl);
+                            // wrap new Portlet inside PortletInstance which ensures
+                            // the destroy
+                            // method will wait for all its invocation threads to
+                            // complete
+                            // and thereby releasing all its ClassLoader locks as
+                            // needed for local portlets.
 
-                        if (proxyUsed)
-                        {
-                            portlet = new JetspeedPortletProxyInstance(
-                                                                       pd.getPortletName(),
-                                                                       (Portlet) clazz.newInstance(),
-                                                                       this.autoSwitchEditDefaultsModeToEditMode,
-                                                                       this.autoSwitchConfigMode, this.customConfigModePortletUniqueName,
-                                                                       this.autoSwitchPreviewMode, this.customPreviewModePortletUniqueName
-                                                                       );
+                            if (proxyUsed)
+                            {
+                                portlet = new JetspeedPortletProxyInstance(
+                                                                           pd.getPortletName(),
+                                                                           (Portlet) clazz.newInstance(),
+                                                                           this.autoSwitchEditDefaultsModeToEditMode,
+                                                                           this.autoSwitchConfigMode, this.customConfigModePortletUniqueName,
+                                                                           this.autoSwitchPreviewMode, this.customPreviewModePortletUniqueName
+                                                                           );
+                            }
+                            else
+                            {
+                                portlet = new JetspeedPortletInstance(pdName, (Portlet)clazz.newInstance());
+                            }
                         }
-                        else
+                        finally
                         {
-                            portlet = new JetspeedPortletInstance(pdName, (Portlet)clazz.newInstance());
+                            Thread.currentThread().setContextClassLoader(currentContextClassLoader);
                         }
                     }
-                    finally
+                    catch (Exception e)
                     {
-                        Thread.currentThread().setContextClassLoader(currentContextClassLoader);
+                        String msg = "Cannot create Portlet instance " + pd.getPortletClass() + " for Portlet Application " + paName;                        
+                        log.error(msg, e);
+                        throw new UnavailableException(msg);
                     }
-                }
-                catch (Exception e)
-                {
-                    String msg = "Cannot create Portlet instance " + pd.getPortletClass() + " for Portlet Application " + paName;                        
-                    log.error(msg, e);
-                    throw new UnavailableException(msg);
-                }
-                
-                JetspeedPortletContext portletContext = new JetspeedPortletContextImpl(servletContext, 
-                                                                                       pa, 
-                                                                                       ContainerInfo.getInfo(), 
-                                                                                       portalContext.getConfiguration(),
-                                                                                       rdService,
-                                                                                       servletContextProvider
-                                                                                       );
-                JetspeedPortletConfig portletConfig = new JetspeedPortletConfigImpl(this, portletContext, pd); 
-                
-                try
-                {
+                    
+                    JetspeedPortletContext portletContext = new JetspeedPortletContextImpl(servletContext, 
+                                                                                           pa, 
+                                                                                           ContainerInfo.getInfo(), 
+                                                                                           portalContext.getConfiguration(),
+                                                                                           rdService,
+                                                                                           servletContextProvider
+                                                                                           );
+                    JetspeedPortletConfig portletConfig = new JetspeedPortletConfigImpl(this, portletContext, pd); 
+                    
                     try
                     {
-                        Thread.currentThread().setContextClassLoader(paCl);
-                        portlet.init(portletConfig);
+                        try
+                        {
+                            Thread.currentThread().setContextClassLoader(paCl);
+                            portlet.init(portletConfig);
+                        }
+                        finally
+                        {
+                            Thread.currentThread().setContextClassLoader(currentContextClassLoader);
+                        }
                     }
-                    finally
+                    catch (PortletException e1)
                     {
-                        Thread.currentThread().setContextClassLoader(currentContextClassLoader);
+                        log.error("Failed to initialize Portlet "+pd.getPortletClass()+" for Portlet Application "+paName, e1);
+                        throw e1;
                     }
+                    
+                    if (instanceCache == null)
+                    {
+                        instanceCache = Collections.synchronizedMap(new HashMap<String, PortletInstance>());
+                        this.portletCache.put(paName, instanceCache);
+                    }
+                    
+                    instanceCache.put(pdName, portlet);
                 }
-                catch (PortletException e1)
-                {
-                    log.error("Failed to initialize Portlet "+pd.getPortletClass()+" for Portlet Application "+paName, e1);
-                    throw e1;
-                }
-                
-                if (instanceCache == null)
-                {
-                    instanceCache = Collections.synchronizedMap(new HashMap<String, PortletInstance>());
-                    this.portletCache.put(paName, instanceCache);
-                }
-                
-                instanceCache.put(pdName, portlet);
             }
-        }
-        catch (PortletException pe)
-        {
-            throw pe;
-        }
-        catch (Throwable e)
-        {
-            log.error("PortletFactory: Failed to load portlet " + pd.getPortletClass(), e);
-            throw new UnavailableException("Failed to load portlet " + pd.getPortletClass() + ": " + e.toString());
-        }
-        
-        return portlet;
+            catch (PortletException pe)
+            {
+                throw pe;
+            }
+            catch (Throwable e)
+            {
+                log.error("PortletFactory: Failed to load portlet " + pd.getPortletClass(), e);
+                throw new UnavailableException("Failed to load portlet " + pd.getPortletClass() + ": " + e.toString());
+            }
+            
+            return portlet;
+    	}
     }
 
     public void updatePortletConfig(PortletDefinition pd)
     {
-        if (pd != null)
-        {
-            Map<String, PortletInstance> instanceCache = portletCache.get(pd.getApplication().getName());
-            PortletInstance instance = instanceCache != null ? instanceCache.get(pd.getPortletName()) : null;
-            
-            if (instance != null)
+    	synchronized (cacheMutex)
+    	{
+            if (pd != null)
             {
-                JetspeedPortletConfigImpl config = (JetspeedPortletConfigImpl) instance.getConfig();
-                config.setPortletDefinition(pd);
-            }                
-        }
+                Map<String, PortletInstance> instanceCache = portletCache.get(pd.getApplication().getName());
+                PortletInstance instance = instanceCache != null ? instanceCache.get(pd.getPortletName()) : null;
+                
+                if (instance != null)
+                {
+                    JetspeedPortletConfigImpl config = (JetspeedPortletConfigImpl) instance.getConfig();
+                    config.setPortletDefinition(pd);
+                }                
+            }
+    	}
     }
 
     public ClassLoader getPortletApplicationClassLoader(PortletApplication pa)
@@ -600,223 +618,186 @@ public class JetspeedPortletFactory implements PortletFactory
 
     public List<PortletURLGenerationListener> getPortletApplicationListeners(PortletApplication pa) throws PortletException
     {
-        String paName = pa.getName();
-        List<PortletURLGenerationListener> cacheListeners = this.portletListenerCache.get(paName);
-        
-        if (cacheListeners == null)
-        {
-            List<? extends Listener> paListenerList = pa.getListeners();
+    	synchronized (cacheMutex)
+    	{
+            String paName = pa.getName();
+            List<PortletURLGenerationListener> cacheListeners = this.portletListenerCache.get(paName);
             
-            if (paListenerList != null)
+            if (cacheListeners == null)
             {
-                cacheListeners = new ArrayList<PortletURLGenerationListener>();
-                ClassLoader paCl = getPortletApplicationClassLoader(pa);
+                List<? extends Listener> paListenerList = pa.getListeners();
                 
-                if (paCl == null) 
-                { 
-                    throw new UnavailableException("Portlet Application " + paName + " not available");
-                }
-                
-                for (Listener listener : paListenerList)
+                if (paListenerList != null)
                 {
-                    try
-                    {
-                        Class<? extends Object> clazz = paCl.loadClass(listener.getListenerClass());
-                        PortletURLGenerationListener listenerInstance = (PortletURLGenerationListener) clazz.newInstance();
-                        cacheListeners.add(listenerInstance);
+                    cacheListeners = new ArrayList<PortletURLGenerationListener>();
+                    ClassLoader paCl = getPortletApplicationClassLoader(pa);
+                    
+                    if (paCl == null) 
+                    { 
+                        throw new UnavailableException("Portlet Application " + paName + " not available");
                     }
-                    catch (ClassNotFoundException e)
+                    
+                    for (Listener listener : paListenerList)
                     {
-                        String message = "The listener class isn't found: " + listener.getListenerClass();
-                        log.error(message);
+                        try
+                        {
+                            Class<? extends Object> clazz = paCl.loadClass(listener.getListenerClass());
+                            PortletURLGenerationListener listenerInstance = (PortletURLGenerationListener) clazz.newInstance();
+                            cacheListeners.add(listenerInstance);
+                        }
+                        catch (ClassNotFoundException e)
+                        {
+                            String message = "The listener class isn't found: " + listener.getListenerClass();
+                            log.error(message);
+                        }
+                        catch (InstantiationException e)
+                        {
+                            String message = "The listener class instantiation fail: " + listener.getListenerClass();
+                            log.error(message);
+                        }
+                        catch (IllegalAccessException e)
+                        {
+                            String message = "IllegalAccessException on the listener class: " + listener.getListenerClass();
+                            log.error(message);
+                        }
                     }
-                    catch (InstantiationException e)
-                    {
-                        String message = "The listener class instantiation fail: " + listener.getListenerClass();
-                        log.error(message);
-                    }
-                    catch (IllegalAccessException e)
-                    {
-                        String message = "IllegalAccessException on the listener class: " + listener.getListenerClass();
-                        log.error(message);
-                    }
+                    
+                    this.portletListenerCache.put(paName, cacheListeners);
                 }
-                
-                this.portletListenerCache.put(paName, cacheListeners);
             }
-        }
-        
-        if (cacheListeners != null)
-        {
-            return Collections.unmodifiableList(cacheListeners);
-        }
-        else
-        {
-            return Collections.emptyList();
-        }
+            
+            if (cacheListeners != null)
+            {
+                return Collections.unmodifiableList(cacheListeners);
+            }
+            else
+            {
+                return Collections.emptyList();
+            }
+    	}
     }
     
     public PortletFilterInstance getPortletFilterInstance(PortletApplication pa, String filterName) throws PortletException
     {
-        String paName = pa.getName();
-        PortletFilterInstance filterInstance = null;
-        
-        Map<String, PortletFilterInstance> cacheFilters = this.portletFilterCache.get(paName);
-        
-        if (cacheFilters != null) 
-        {
-            filterInstance = cacheFilters.get(filterName);
-        }
-        
-        if (filterInstance == null)
-        {
-            Filter filter = pa.getFilter(filterName);
+    	synchronized (cacheMutex)
+    	{
+            String paName = pa.getName();
+            PortletFilterInstance filterInstance = null;
             
-            if (filter != null)
+            Map<String, PortletFilterInstance> cacheFilters = this.portletFilterCache.get(paName);
+            
+            if (cacheFilters != null) 
             {
-                ClassLoader paCl = classLoaderMap.get(paName);
-                
-                if (paCl == null) 
-                { 
-                    throw new UnavailableException("Portlet Application " + paName + " not available");
-                }
-                
-                try
-                {
-                    Class<? extends Object> clazz = paCl.loadClass(filter.getFilterClass());
-                    PortletFilter portletFilter = (PortletFilter) clazz.newInstance();
-                    filterInstance = new JetspeedPortletFilterInstance(filter, portletFilter);
-                }
-                catch (ClassNotFoundException e)
-                {
-                    String message = "The filter class isn't found: " + filter.getFilterClass();
-                    log.error(message);
-                    throw new UnavailableException(message);
-                }
-                catch (InstantiationException e)
-                {
-                    String message = "The filter class instantiation fail: " + filter.getFilterClass();
-                    log.error(message);
-                    throw new UnavailableException(message);
-                }
-                catch (IllegalAccessException e)
-                {
-                    String message = "IllegalAccessException on the filter class: " + filter.getFilterClass();
-                    log.error(message);
-                    throw new UnavailableException(message);
-                }
-                
-                if (cacheFilters == null)
-                {
-                    cacheFilters = Collections.synchronizedMap(new HashMap<String, PortletFilterInstance>());
-                    this.portletFilterCache.put(paName, cacheFilters);
-                }
-
-                cacheFilters.put(filterName, filterInstance);
+                filterInstance = cacheFilters.get(filterName);
             }
-        }
-        
-        return filterInstance;
+            
+            if (filterInstance == null)
+            {
+                Filter filter = pa.getFilter(filterName);
+                
+                if (filter != null)
+                {
+                    ClassLoader paCl = classLoaderMap.get(paName);
+                    
+                    if (paCl == null) 
+                    { 
+                        throw new UnavailableException("Portlet Application " + paName + " not available");
+                    }
+                    
+                    try
+                    {
+                        Class<? extends Object> clazz = paCl.loadClass(filter.getFilterClass());
+                        PortletFilter portletFilter = (PortletFilter) clazz.newInstance();
+                        filterInstance = new JetspeedPortletFilterInstance(filter, portletFilter);
+                    }
+                    catch (ClassNotFoundException e)
+                    {
+                        String message = "The filter class isn't found: " + filter.getFilterClass();
+                        log.error(message);
+                        throw new UnavailableException(message);
+                    }
+                    catch (InstantiationException e)
+                    {
+                        String message = "The filter class instantiation fail: " + filter.getFilterClass();
+                        log.error(message);
+                        throw new UnavailableException(message);
+                    }
+                    catch (IllegalAccessException e)
+                    {
+                        String message = "IllegalAccessException on the filter class: " + filter.getFilterClass();
+                        log.error(message);
+                        throw new UnavailableException(message);
+                    }
+                    
+                    if (cacheFilters == null)
+                    {
+                        cacheFilters = Collections.synchronizedMap(new HashMap<String, PortletFilterInstance>());
+                        this.portletFilterCache.put(paName, cacheFilters);
+                    }
+
+                    cacheFilters.put(filterName, filterInstance);
+                }
+            }
+            
+            return filterInstance;
+    	}
     }
 
     public boolean hasRenderHelperMethod(PortletDefinition pd, PortletMode mode)
     {
-        PortletInstance portletInstance = null;
-        String paName = pd.getApplication().getName();
-        String pdName = pd.getPortletName();
-        
-        Map<String, PortletInstance> instanceCache = this.portletCache.get(paName);
-        
-        if (instanceCache != null)
-        {
-            portletInstance = instanceCache.get(pdName);
-        }
-        
-        if (portletInstance != null)
-        {
-            return portletInstance.hasRenderHelperMethod(mode);
-        }
-        else
-        {
-            ClassLoader paCl = classLoaderMap.get(paName);
+    	synchronized (cacheMutex)
+    	{
+            PortletInstance portletInstance = null;
+            String paName = pd.getApplication().getName();
+            String pdName = pd.getPortletName();
             
-            if (paCl != null) 
+            Map<String, PortletInstance> instanceCache = this.portletCache.get(paName);
+            
+            if (instanceCache != null)
             {
-                try
-                {
-                    Class<?> portletClazz = paCl.loadClass(pd.getPortletClass());
-                    
-                    if (GenericPortlet.class.isAssignableFrom(portletClazz))
-                    {
-                        Method helperMethod = GenericPortletUtils.getRenderModeHelperMethod((Class<? extends GenericPortlet>) portletClazz, mode);
-                        
-                        if (helperMethod != null)
-                        {
-                            return true;
-                        }
-                    }
-                }
-                catch (ClassNotFoundException e)
-                {
-                }
+                portletInstance = instanceCache.get(pdName);
             }
             
-            return false;
-        }
+            if (portletInstance != null)
+            {
+                return portletInstance.hasRenderHelperMethod(mode);
+            }
+            else
+            {
+                ClassLoader paCl = classLoaderMap.get(paName);
+                
+                if (paCl != null) 
+                {
+                    try
+                    {
+                        Class<?> portletClazz = paCl.loadClass(pd.getPortletClass());
+                        
+                        if (GenericPortlet.class.isAssignableFrom(portletClazz))
+                        {
+                            Method helperMethod = GenericPortletUtils.getRenderModeHelperMethod((Class<? extends GenericPortlet>) portletClazz, mode);
+                            
+                            if (helperMethod != null)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    catch (ClassNotFoundException e)
+                    {
+                    }
+                }
+                
+                return false;
+            }
+    	}
     }
 
     public void reloadResourceBundles(PortletApplication pa) throws PortletException
     {
-        String paName = pa.getName();
-        Map<Locale, ResourceBundle> bundleCache = applicationResourceBundleCache.get(paName);
-        
-        if (bundleCache != null)
-        {
-            List<Locale> locales = null;
-            
-            synchronized (bundleCache)
-            {
-                locales = new ArrayList<Locale>(bundleCache.keySet());
-            }
-            
-            for (Locale locale : locales)
-            {
-                ResourceBundle bundle = bundleCache.get(locale);
-                
-                if (bundle != null)
-                {
-                    if (bundle instanceof InlinePortletResourceBundle)
-                    {
-                        bundle = ((InlinePortletResourceBundle) bundle).getParent();
-                    }
-                    
-                    if (bundle instanceof ReloadablePropertyResourceBundle)
-                    {
-                        try
-                        {
-                            ((ReloadablePropertyResourceBundle) bundle).reload(getPortletApplicationClassLoader(pa));
-                        }
-                        catch (IOException e)
-                        {
-                            log.error("Failed to reload resource bundle of " + paName + " for locale, " + locale, e);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public void reloadResourceBundles(PortletDefinition pd) throws PortletException
-    {
-        PortletApplication pa = pd.getApplication();
-        String paName = pa.getName();
-        String pdName = pd.getPortletName();
-        
-        Map<String, Map<Locale, ResourceBundle>> portletResourceBundleCache = portletsResourceBundleCache.get(paName);
-        
-        if (portletResourceBundleCache != null)
-        {
-            Map<Locale, ResourceBundle> bundleCache = portletResourceBundleCache.get(pdName);
+    	synchronized (cacheMutex)
+    	{
+            String paName = pa.getName();
+            Map<Locale, ResourceBundle> bundleCache = applicationResourceBundleCache.get(paName);
             
             if (bundleCache != null)
             {
@@ -834,7 +815,7 @@ public class JetspeedPortletFactory implements PortletFactory
                     if (bundle != null)
                     {
                         if (bundle instanceof InlinePortletResourceBundle)
-                        {
+                        {                    	
                             bundle = ((InlinePortletResourceBundle) bundle).getParent();
                         }
                         
@@ -846,13 +827,108 @@ public class JetspeedPortletFactory implements PortletFactory
                             }
                             catch (IOException e)
                             {
-                                log.error("Failed to reload resource bundle of " + paName + "::" + pdName + " for locale, " + locale, e);
+                                log.error("Failed to reload resource bundle of " + paName + " for locale, " + locale, e);
                             }
                         }
                     }
                 }
             }
-        }
+    	}
     }
-    
+
+    public void reloadResourceBundles(PortletDefinition pd) throws PortletException
+    {
+    	synchronized (cacheMutex)
+    	{
+            PortletApplication pa = pd.getApplication();
+            String paName = pa.getName();
+            String pdName = pd.getPortletName();
+            
+            Map<String, Map<Locale, ResourceBundle>> portletResourceBundleCache = portletsResourceBundleCache.get(paName);
+            
+            if (portletResourceBundleCache != null)
+            {
+                Map<Locale, ResourceBundle> bundleCache = portletResourceBundleCache.get(pdName);
+                
+                if (bundleCache != null)
+                {
+                    List<Locale> locales = null;
+                    
+                    synchronized (bundleCache)
+                    {
+                        locales = new ArrayList<Locale>(bundleCache.keySet());
+                    }
+                    
+                    for (Locale locale : locales)
+                    {
+                        ResourceBundle bundle = bundleCache.get(locale);
+                        
+                        if (bundle != null)
+                        {
+                            if (bundle instanceof InlinePortletResourceBundle)
+                            {
+                                bundle = ((InlinePortletResourceBundle) bundle).getParent();
+                            }
+                            
+                            if (bundle != null && bundle instanceof ReloadablePropertyResourceBundle)
+                            {
+                                try
+                                {
+                                    ((ReloadablePropertyResourceBundle) bundle).reload(getPortletApplicationClassLoader(pa));
+                                }
+                                catch (IOException e)
+                                {
+                                    log.error("Failed to reload resource bundle of " + paName + "::" + pdName + " for locale, " + locale, e);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    	}
+    }
+
+	public void applicationUpdated(PortletApplication pa)
+	{
+		// do nothing for now: formost application updates are already triggered/triggering unregister/register of a pa
+	}
+
+	public void applicationRemoved(PortletApplication pa)
+	{
+		applicationUpdated(pa);
+	}
+
+	public void portletUpdated(PortletDefinition pd) {
+		synchronized (cacheMutex)
+		{
+            if (pd != null)
+            {
+            	String paName = pd.getApplication().getName();
+            	String pdName = pd.getPortletName();
+            	
+            	// clear PreferenceValidator cache
+                Map<String, PreferencesValidator> pvCache = validatorCache.get(paName);
+                if (pvCache != null)
+                {
+                	pvCache.remove(pdName);
+                }
+                
+                // clear Portlet ResourceBundle cache
+                Map<String, Map<Locale, ResourceBundle>> portletResourceBundleCache = portletsResourceBundleCache.get(paName);
+                
+                if (portletResourceBundleCache != null)
+                {
+                	portletResourceBundleCache.remove(pdName);
+                }
+            	
+                // update PortletInstance PortletConfig instance (maybe should kill/destroy PortletInstance ?)
+                updatePortletConfig(pd);
+            }
+		}
+	}
+
+	public void portletRemoved(PortletDefinition pd) 
+	{
+		portletUpdated(pd);
+	}
 }

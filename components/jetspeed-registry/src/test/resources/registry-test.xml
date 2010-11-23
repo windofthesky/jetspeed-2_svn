@@ -70,6 +70,15 @@
         </property>
     </bean>
 
+  <!-- register JetspeedPortletFactory as RegistryEventLister on the PortletRegistry -->
+  <bean id="registerPortletFactoryPortletRegistyEventListener" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject"><ref bean="portletRegistryImpl"/></property>
+    <property name="targetMethod"><value>addRegistryListener</value></property>
+    <property name="arguments">
+      <list><ref bean="portletFactory"/></list>
+    </property>
+  </bean>
+
   <!-- Portlet Preferences Implementation -->
   <bean id="org.apache.pluto.services.PreferencesService" name="PortletPreferencesProviderImpl"
         class="org.apache.jetspeed.components.portletpreferences.PortletPreferencesServiceImpl"
