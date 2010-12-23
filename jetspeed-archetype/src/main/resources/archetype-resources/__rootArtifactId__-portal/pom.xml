@@ -166,7 +166,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-          <warName>${dollar}{pom.artifactId}</warName>
+          <warName>${dollar}{project.artifactId}</warName>
           <overlays>
             <overlay>
               <id>jetspeed</id>

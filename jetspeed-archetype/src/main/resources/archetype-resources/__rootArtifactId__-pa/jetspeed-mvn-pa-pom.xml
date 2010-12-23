@@ -66,7 +66,7 @@
                   <deployments>
                     <!-- portlet app -->
                     <deployment>
-                      <artifact>${dollar}{pom.groupId}:${parentArtifactId}-pa:war</artifact>
+                      <artifact>${dollar}{project.groupId}:${parentArtifactId}-pa:war</artifact>
                       <infuse>true</infuse>
                       <expand>true</expand>
                       <delete>./${parentArtifactId}-pa.war</delete>
@@ -80,7 +80,7 @@
               <dependency>
                 <groupId>${groupId}</groupId>
                 <artifactId>${parentArtifactId}-pa</artifactId>
-                <version>${dollar}{pom.version}</version>
+                <version>${dollar}{project.version}</version>
                 <type>war</type>
               </dependency>
 

@@ -112,9 +112,9 @@
                   <seed>
                     <categories>serializer</categories>
                     <filterPropertiesFileName>
-                      ${dollar}{project.build.directory}/${parentArtifactId}-portal-${dollar}{pom.version}/WEB-INF/conf/spring-filter.properties
+                      ${dollar}{project.build.directory}/${parentArtifactId}-portal-${dollar}{project.version}/WEB-INF/conf/spring-filter.properties
                     </filterPropertiesFileName>
-                    <applicationRootPath>${dollar}{project.build.directory}/${parentArtifactId}-portal-${dollar}{pom.version}</applicationRootPath>
+                    <applicationRootPath>${dollar}{project.build.directory}/${parentArtifactId}-portal-${dollar}{project.version}</applicationRootPath>
                     <files>
                       <file>${dollar}{basedir}/src/sql/min/j2-seed.xml</file>
                     </files>
@@ -247,7 +247,7 @@
                     </deployment>
                     <!-- ${parentArtifactId} portal expanded -->
                     <deployment>
-                      <artifact>${dollar}{pom.groupId}:${parentArtifactId}-portal:war</artifact>
+                      <artifact>${dollar}{project.groupId}:${parentArtifactId}-portal:war</artifact>
                       <expand>true</expand>
                       <targetName>${dollar}{org.apache.jetspeed.portal.context.name}</targetName>
                       <delete>./${dollar}{org.apache.jetspeed.portal.context.name}.war</delete>
@@ -285,9 +285,9 @@
 
             <dependencies>
               <dependency>
-                <groupId>${dollar}{pom.groupId}</groupId>
+                <groupId>${dollar}{project.groupId}</groupId>
                 <artifactId>${parentArtifactId}-portal</artifactId>
-                <version>${dollar}{pom.version}</version>
+                <version>${dollar}{project.version}</version>
                 <type>war</type>
               </dependency>
               <dependency>
