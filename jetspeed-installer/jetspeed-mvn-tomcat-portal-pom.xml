@@ -41,7 +41,7 @@
     <tomcat.version.major>6</tomcat.version.major>
     <tomcat.version.minor>6.0.18</tomcat.version.minor>
     <tomcat.name>apache-tomcat-${tomcat.version.minor}</tomcat.name>
-    <org.apache.portals.jetspeed.version>${pom.version}</org.apache.portals.jetspeed.version>
+    <org.apache.portals.jetspeed.version>${project.version}</org.apache.portals.jetspeed.version>
     <org.apache.jetspeed.portal.context.name>jetspeed</org.apache.jetspeed.portal.context.name>
     <org.apache.jetspeed.portal.home>${project.build.directory}/${tomcat.name}</org.apache.jetspeed.portal.home>
   </properties>
@@ -287,7 +287,7 @@
               <dependency>
                 <groupId>org.apache.portals.jetspeed-2</groupId>
                 <artifactId>jetspeed-demo</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
                 <type>war</type>
               </dependency>
               <!-- j2-admin portal applications -->

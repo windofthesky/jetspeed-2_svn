@@ -56,15 +56,11 @@
 
     <!-- Build Dependencies -->
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
-      <artifactId>jetspeed-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-commons</artifactId>
     </dependency>
     <dependency>
@@ -73,7 +69,7 @@
       <version>${org.apache.portals.bridges.common.version}</version>
     </dependency>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-cm</artifactId>
       <exclusions>
         <exclusion>
@@ -159,9 +155,9 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>jetspeed-unpack-maven-plugin</artifactId>
-        <version>${pom.version}</version>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <id>unpack-test-resources</id>
@@ -196,9 +192,9 @@
         </executions>
         <dependencies>
           <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>jetspeed-portal-resources</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
           </dependency>
         </dependencies>
       </plugin>

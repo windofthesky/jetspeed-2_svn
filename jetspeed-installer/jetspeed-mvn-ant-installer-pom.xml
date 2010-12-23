@@ -41,7 +41,7 @@
     <dependency>
       <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-ant-tasks</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <type>jar</type>
     </dependency>
   </dependencies>

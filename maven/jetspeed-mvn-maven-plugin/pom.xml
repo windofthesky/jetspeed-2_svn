@@ -37,7 +37,7 @@
   
   <dependencies>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-maven-utils</artifactId>
     </dependency>
     <dependency>

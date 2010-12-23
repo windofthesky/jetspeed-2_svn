@@ -41,12 +41,12 @@
 
     <!-- Build Dependencies -->
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-commons</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -73,19 +73,19 @@
       <artifactId>geronimo-activation_1.1_spec</artifactId>
     </dependency>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-rdbms</artifactId>
     </dependency>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-portlet-factory</artifactId>
     </dependency>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-search</artifactId>
     </dependency>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-serializer</artifactId>
     </dependency>
     <dependency>
@@ -95,12 +95,12 @@
 
     <!-- Test Dependencies -->
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-file-cache</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-page-layout</artifactId>
       <scope>test</scope>
     </dependency>
@@ -166,9 +166,9 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>jetspeed-unpack-maven-plugin</artifactId>
-        <version>${pom.version}</version>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <id>unpack-test-resources</id>
@@ -195,9 +195,9 @@
         </executions>
         <dependencies>
           <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>jetspeed-portal-resources</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
           </dependency>
         </dependencies>
       </plugin>

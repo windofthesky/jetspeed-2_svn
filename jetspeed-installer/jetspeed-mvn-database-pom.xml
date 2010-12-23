@@ -38,7 +38,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <org.apache.portals.jetspeed.version>${pom.version}</org.apache.portals.jetspeed.version>
+    <org.apache.portals.jetspeed.version>${project.version}</org.apache.portals.jetspeed.version>
     <org.apache.jetspeed.portal.context.name>jetspeed</org.apache.jetspeed.portal.context.name>
   </properties>
 
@@ -91,15 +91,15 @@
           <artifactId>pluto-container-api</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>${pom.groupId}</groupId>
+          <groupId>${project.groupId}</groupId>
           <artifactId>jetspeed-api</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>${pom.groupId}</groupId>
+          <groupId>${project.groupId}</groupId>
           <artifactId>jetspeed-commons</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>${pom.groupId}</groupId>
+          <groupId>${project.groupId}</groupId>
           <artifactId>jetspeed-cm</artifactId>
         </exclusion>
         <exclusion>
@@ -229,7 +229,7 @@
                   </resource>
                   <resource>
                     <path>seed</path>
-                    <destination>database/resources</destination>
+                    <destination>database/resources/seed</destination>
                   </resource>
                   <resource>
                     <path>ddl</path>

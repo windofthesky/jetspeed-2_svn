@@ -40,7 +40,7 @@
       <plugin>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>jetspeed-mvn-maven-plugin</artifactId>
-        <version>${pom.version}</version>
+        <version>${project.version}</version>
         <configuration>
           <targets combine.children="append">
             <target>

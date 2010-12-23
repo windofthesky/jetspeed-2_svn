@@ -41,7 +41,7 @@
 
         <!-- Build Dependencies -->
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>jetspeed-api</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -131,11 +131,6 @@
         <dependency>
             <groupId>ojb</groupId>
             <artifactId>db-ojb</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>oro</groupId>
-            <artifactId>oro</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

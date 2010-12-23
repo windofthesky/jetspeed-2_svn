@@ -40,9 +40,9 @@
 
     <plugins>
       <plugin>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>jetspeed-db-maven-plugin</artifactId>
-        <version>${pom.version}</version>
+        <version>${project.version}</version>
         <configuration>
           <connection>
             <username>${org.apache.jetspeed.@database.type@.database.user}</username>
@@ -96,7 +96,7 @@
           <dependency>
             <groupId>${groupId}</groupId>
             <artifactId>jetspeed-portal-resources</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
           </dependency>
           <dependency>
             <groupId>${org.apache.jetspeed.@database.type@.jdbc.driver.groupId}</groupId>

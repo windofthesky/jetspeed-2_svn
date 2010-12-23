@@ -67,16 +67,16 @@
               <goal>process</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/${build.finalName}</outputDirectory>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
               <attached>false</attached>
             </configuration>
           </execution>
         </executions>
       </plugin>
       <plugin>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>jetspeed-unpack-maven-plugin</artifactId>
-        <version>${pom.version}</version>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <id>unpack-dojo</id>
@@ -112,7 +112,7 @@
             <phase>process-resources</phase>
             <configuration>
               <unpack>
-                <artifact>${groupId}:jetspeed-portal-resources:jar</artifact>
+                <artifact>${project.groupId}:jetspeed-portal-resources:jar</artifact>
                 <targetDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF</targetDirectory>
                 <resources>
                   <resource>
@@ -134,9 +134,9 @@
         </executions>
         <dependencies>
           <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>jetspeed-portal-resources</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
           </dependency>
         </dependencies>
       </plugin>

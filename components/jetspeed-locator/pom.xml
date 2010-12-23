@@ -43,7 +43,7 @@
 
         <!-- Build Dependencies -->
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>jetspeed-api</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -54,7 +54,7 @@
         
         <!-- Test Dependencies -->
         <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>jetspeed-cm</artifactId>
             <scope>test</scope>
         </dependency>

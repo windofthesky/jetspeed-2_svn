@@ -45,6 +45,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-ear-plugin</artifactId>
+        <version>2.4.2</version>
         <configuration>
           <archive>
             <manifest>
@@ -54,12 +55,12 @@
           <modules>
             <!-- skinny wars: must be explicitly repackaged in build.xml invoked below -->
             <webModule>
-              <groupId>${pom.groupId}</groupId>
+              <groupId>${project.groupId}</groupId>
               <artifactId>jetspeed-demo</artifactId>
               <contextRoot>/jetspeed</contextRoot>
             </webModule>                       
             <webModule>
-              <groupId>${pom.groupId}</groupId>
+              <groupId>${project.groupId}</groupId>
               <artifactId>j2-admin</artifactId>
               <contextRoot>/j2-admin</contextRoot>
             </webModule>
@@ -71,12 +72,12 @@
               <bundleDir>/lib</bundleDir>
             </jarModule>
             <jarModule>
-              <groupId>${pom.groupId}</groupId>
+              <groupId>${project.groupId}</groupId>
               <artifactId>jetspeed-api</artifactId>
               <bundleDir>/lib</bundleDir>
             </jarModule>
             <jarModule>
-              <groupId>${pom.groupId}</groupId>
+              <groupId>${project.groupId}</groupId>
               <artifactId>jetspeed-commons</artifactId>
               <bundleDir>/lib</bundleDir>
             </jarModule>
@@ -115,7 +116,7 @@
                 <ant target="ear-min-package" dir="${basedir}" inheritAll="true">
                   <property name="basedir" value="${basedir}"/>
                   <property name="configureDBPM" value="${configureDBPM}"/>
-                  <property name="pom.version" value="${pom.version}"/>
+                  <property name="pom.version" value="${project.version}"/>
                   <property name="project.build.directory" value="${project.build.directory}"/>
                   <property name="project.build.finalName" value="${project.build.finalName}"/>
                 </ant>

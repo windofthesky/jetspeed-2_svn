@@ -29,15 +29,15 @@
 
     <!-- configure jetspeed-demo portal application for Websphere -->
     <mkdir dir="${project.build.directory}/package-skinny-wars/websphere"/>
-    <unzip src="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" dest="${project.build.directory}/package-skinny-wars/websphere"/>
+    <unzip src="${project.build.directory}/package-skinny-wars/jetspeed-demo-${project.version}.war" dest="${project.build.directory}/package-skinny-wars/websphere"/>
     <!-- configure using conditional tasks -->
     <antcall target="configurePSML" inheritall="true"/>
     <antcall target="configureWEBXML" inheritall="true"/>
     <antcall target="configureDBPM" inheritall="true"/>
     <antcall target="configureAssembly" inheritall="true"/>
     <!-- reassemble jetspeed-demo portal application -->
-    <delete file="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war"/>
-    <zip destfile="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" basedir="${project.build.directory}/package-skinny-wars/websphere"/>
+    <delete file="${project.build.directory}/package-skinny-wars/jetspeed-demo-${project.version}.war"/>
+    <zip destfile="${project.build.directory}/package-skinny-wars/jetspeed-demo-${project.version}.war" basedir="${project.build.directory}/package-skinny-wars/websphere"/>
     <delete dir="${project.build.directory}/package-skinny-wars/websphere"/>
     
     <!-- 
@@ -46,15 +46,15 @@
          Workaround is extracting the jaxb-api-2.1.jar from the Jetspeed Portal war and move it to the shared jars within the ear.
       -->
     <mkdir dir="${project.build.directory}/package-skinny-wars/tmp"/>
-    <unzip src="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" dest="${project.build.directory}/package-skinny-wars/lib">
+    <unzip src="${project.build.directory}/package-skinny-wars/jetspeed-demo-${project.version}.war" dest="${project.build.directory}/package-skinny-wars/lib">
       <patternset>
         <include name="WEB-INF/lib/jaxb-api-*.jar"/>
       </patternset>
       <mapper type="flatten"/>
     </unzip>
-    <move file="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" todir="${project.build.directory}/package-skinny-wars/tmp"/>
-    <zip destfile="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war">
-      <zipfileset src="${project.build.directory}/package-skinny-wars/tmp/jetspeed-demo-${pom.version}.war">
+    <move file="${project.build.directory}/package-skinny-wars/jetspeed-demo-${project.version}.war" todir="${project.build.directory}/package-skinny-wars/tmp"/>
+    <zip destfile="${project.build.directory}/package-skinny-wars/jetspeed-demo-${project.version}.war">
+      <zipfileset src="${project.build.directory}/package-skinny-wars/tmp/jetspeed-demo-${project.version}.war">
         <exclude name="WEB-INF/lib/jaxb-api-*.jar"/>
       </zipfileset>
     </zip>                
@@ -71,12 +71,12 @@
       </path>
     </pathconvert>
     <!-- set skinny wars classpath -->
-    <jar destfile="${project.build.directory}/package-skinny-wars/jetspeed-demo-${pom.version}.war" update="true">
+    <jar destfile="${project.build.directory}/package-skinny-wars/jetspeed-demo-${project.version}.war" update="true">
       <manifest>
         <attribute name="Class-Path" value="${war.manifest.classpath}"/>
       </manifest>
     </jar>
-    <jar destfile="${project.build.directory}/package-skinny-wars/j2-admin-${pom.version}.war" update="true">
+    <jar destfile="${project.build.directory}/package-skinny-wars/j2-admin-${project.version}.war" update="true">
       <manifest>
         <attribute name="Class-Path" value="${war.manifest.classpath}"/>
       </manifest>

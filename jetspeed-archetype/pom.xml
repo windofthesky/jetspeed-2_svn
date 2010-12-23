@@ -34,14 +34,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed-portal-resources</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>${pom.groupId}</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>jetspeed</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <type>war</type>
     </dependency>
   </dependencies>
@@ -62,9 +62,9 @@
       </plugin>
 
       <plugin>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>jetspeed-unpack-maven-plugin</artifactId>
-        <version>${pom.version}</version>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <id>unpack-archetype-seed-resources</id>
@@ -74,7 +74,7 @@
             <phase>generate-resources</phase>
             <configuration>
               <unpack>
-                <artifact>${pom.groupId}:jetspeed-portal-resources:jar</artifact>
+                <artifact>${project.groupId}:jetspeed-portal-resources:jar</artifact>
                 <targetDirectory>${project.build.outputDirectory}</targetDirectory>
                 <resources>
                   <resource>
@@ -95,17 +95,17 @@
         </executions>
         <dependencies>
           <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>jetspeed-portal-resources</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
           </dependency>
         </dependencies>
       </plugin>
 
       <plugin>
-        <groupId>${pom.groupId}</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>jetspeed-unpack-war-maven-plugin</artifactId>
-        <version>${pom.version}</version>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <id>unpack-archetype-page-resources</id>
@@ -115,7 +115,7 @@
             <phase>generate-resources</phase>
             <configuration>
               <unpack>
-                <artifact>${pom.groupId}:jetspeed:war</artifact>
+                <artifact>${project.groupId}:jetspeed:war</artifact>
                 <targetDirectory>${project.build.outputDirectory}</targetDirectory>
                 <resources>
                   <resource>
@@ -131,9 +131,9 @@
         </executions>
         <dependencies>
           <dependency>
-            <groupId>${pom.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>jetspeed</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <type>war</type>
           </dependency>
         </dependencies>

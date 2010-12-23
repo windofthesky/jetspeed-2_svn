@@ -82,7 +82,7 @@
               <goal>process</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/${build.finalName}</outputDirectory>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
               <attached>false</attached>
             </configuration>
           </execution>
