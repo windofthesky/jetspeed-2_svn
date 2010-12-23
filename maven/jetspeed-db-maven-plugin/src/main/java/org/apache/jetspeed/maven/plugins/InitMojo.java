@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.maven.plugins;
 
-import java.util.Set;
+import java.util.ArrayList;
 
 import org.apache.jetspeed.maven.utils.Artifacts;
 import org.apache.jetspeed.maven.utils.DbConnection;
@@ -75,10 +75,10 @@ public class InitMojo extends AbstractMojo
      */
     private boolean skip;
     
-    /** @parameter expression="${plugin.introducedDependencyArtifacts}"
+    /** @parameter expression="${plugin.artifacts}"
      *  @readonly
      **/
-    private Set pluginDependencyArtifacts;
+    private ArrayList pluginArtifacts;
     private Artifacts artifacts;
     
     /** The Maven project.
@@ -96,7 +96,7 @@ public class InitMojo extends AbstractMojo
             return;
         }
         
-        artifacts = new Artifacts(pluginDependencyArtifacts);
+        artifacts = new Artifacts(pluginArtifacts);
         
         if (unpack != null)
         {

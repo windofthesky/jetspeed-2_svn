@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.maven.mojo;
 
-import java.util.Set;
+import java.util.ArrayList;
 
 import org.apache.jetspeed.maven.utils.Artifacts;
 import org.apache.jetspeed.maven.utils.UnpackResources;
@@ -47,7 +47,7 @@ public abstract class AbstractUnpackMojo extends AbstractMojo
             return;
         }
 
-        artifacts = new Artifacts(getPluginDependencyArtifacts());
+        artifacts = new Artifacts(getPluginArtifacts());
         
         if (getUnpack() != null)
         {
@@ -57,7 +57,7 @@ public abstract class AbstractUnpackMojo extends AbstractMojo
     
     protected abstract boolean isSkip();
     
-    protected abstract Set getPluginDependencyArtifacts();
+    protected abstract ArrayList getPluginArtifacts();
     
     protected abstract UnpackResources getUnpack();
     

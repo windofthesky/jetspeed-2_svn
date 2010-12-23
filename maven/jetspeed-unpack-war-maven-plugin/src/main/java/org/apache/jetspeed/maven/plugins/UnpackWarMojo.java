@@ -16,7 +16,7 @@
  */
 package org.apache.jetspeed.maven.plugins;
 
-import java.util.Set;
+import java.util.ArrayList;
 
 import org.apache.jetspeed.maven.utils.UnpackResources;
 import org.apache.jetspeed.maven.mojo.AbstractUnpackMojo;
@@ -47,10 +47,10 @@ public class UnpackWarMojo extends AbstractUnpackMojo
      */
     private UnpackResources unpack;
     
-    /** @parameter expression="${plugin.introducedDependencyArtifacts}"
+    /** @parameter expression="${plugin.artifacts}"
      *  @readonly
      **/
-    private Set pluginDependencyArtifacts;
+    private ArrayList pluginArtifacts;
     
     /** The Maven project.
      * @parameter expression="${project}"
@@ -64,9 +64,9 @@ public class UnpackWarMojo extends AbstractUnpackMojo
         return skip;
     }
     
-    protected Set getPluginDependencyArtifacts()
+    protected ArrayList getPluginArtifacts()
     {
-        return pluginDependencyArtifacts;
+        return pluginArtifacts;
     }
     
     protected UnpackResources getUnpack()

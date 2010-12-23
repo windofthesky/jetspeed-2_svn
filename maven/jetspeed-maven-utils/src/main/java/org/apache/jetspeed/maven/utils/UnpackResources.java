@@ -342,7 +342,7 @@ public class UnpackResources
         }
         else if ((artifact == null && file == null) || (artifact != null && file != null))
         {
-            throw new MojoExecutionException("Either specify artifact or file");
+            throw new MojoExecutionException("Either specify artifact or file: artifacts.size="+artifacts.size());
         }
         else if (artifact != null)
         {

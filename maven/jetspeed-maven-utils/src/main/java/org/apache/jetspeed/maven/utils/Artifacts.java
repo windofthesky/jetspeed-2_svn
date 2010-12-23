@@ -16,9 +16,9 @@
  */
 package org.apache.jetspeed.maven.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 
@@ -30,7 +30,7 @@ public class Artifacts
 {
     private HashMap artifactsMap = new HashMap();
     
-    public Artifacts(Set artifacts)
+    public Artifacts(ArrayList artifacts)
     {
         if (artifacts != null)
         {

@@ -104,6 +104,7 @@
             <configuration>
               <skip>${skipTests}</skip>
               <unpack>
+                <artifact>${project.groupId}:jetspeed-portal-resources:jar</artifact>
                 <targetDirectory>${project.build.testOutputDirectory}</targetDirectory>
                 <resources>
                   <resource>

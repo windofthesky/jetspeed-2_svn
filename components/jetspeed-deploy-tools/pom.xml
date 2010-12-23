@@ -61,6 +61,7 @@
             <phase>process-resources</phase>
             <configuration>
               <unpack>
+                <artifact>${project.groupId}:jetspeed-portal-resources:jar</artifact>
                 <targetDirectory>${project.build.directory}/classes/org/apache/jetspeed/tools/deploy</targetDirectory>
                 <resources>
                   <resource>

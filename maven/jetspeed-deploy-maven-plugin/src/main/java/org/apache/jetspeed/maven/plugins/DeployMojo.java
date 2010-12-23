@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -157,8 +156,8 @@ public class DeployMojo extends AbstractMojo
      */
     private Map destinations;
 
-    /** @parameter expression="${plugin.introducedDependencyArtifacts}" */
-    private Set pluginDependencyArtifacts;
+    /** @parameter expression="${plugin.artifacts}" */
+    private ArrayList pluginArtifacts;
     
     /**
      * @parameter
@@ -193,7 +192,7 @@ public class DeployMojo extends AbstractMojo
         File portalDeployDir = new File(targetBaseDir,(String)destMap.get("deploy"));                
         File localPortalDeployDir = new File(targetBaseDir, (String)destMap.get("local"));                
         
-        artifacts = new Artifacts(pluginDependencyArtifacts);
+        artifacts = new Artifacts(pluginArtifacts);
         
         boolean infusion = false;
         
