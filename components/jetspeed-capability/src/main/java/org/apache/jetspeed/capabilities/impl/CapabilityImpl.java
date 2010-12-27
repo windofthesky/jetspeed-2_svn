@@ -26,82 +26,71 @@ import org.apache.jetspeed.capabilities.Capability;
  * @version $Id$
  */
 
-public class CapabilityImpl implements Capability
-{
+public class CapabilityImpl implements Capability {
     private int capabilityId;
     private String name;
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.registry.Capability#setCapabilityId(int)
      */
-    public void setCapabilityId(int id)
-    {
+    public void setCapabilityId(int id) {
         this.capabilityId = id;
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.registry.Capability#getCapabilityId()
      */
-    public int getCapabilityId()
-    {
+    public int getCapabilityId() {
         return this.capabilityId;
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.registry.Capability#setName(java.lang.String)
      */
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.registry.Capability#getName()
      */
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
-    
-    
+
+
     /**
      * Implements the hashCode calculation so two different objects with the content return the same hashcode....
      */
-    public int hashCode()
-    {
-    	return name.hashCode();
+    public int hashCode() {
+        return name.hashCode();
     }
 
     /**
-     * Implements the equals operation so that 2 elements are equal if
-     * all their member values are equal.
+     * Implements the equals operation so that 2 elements are equal if all their member values are equal.
      *
-     *      
      * @param object to compare this one with
      * @return true if both objects represent the same (logical) content
      */
-    public boolean equals(Object object)
-    {
-    	if (!(object instanceof Capability))
-    	{
-    		return false;
-    	}
-    	if (this == object)
-    		return true;
+    public boolean equals(Object object) {
+        if (!(object instanceof Capability)) {
+            return false;
+        }
+        if (this == object) {
+            return true;
+        }
 //    	 Don't check the ID - id is only set through OJB so this would not recognize equality correctly 
-    	/*     	if (this.capabilityId != ((Capability)object).getCapabilityId())
-    		return false;
-    	 */
-    	String oName = ((Capability)object).getName();
-    	if (
-    			(oName == null) && (name == null)
-    			||
-    			(oName == name)
-    			||
-    			((oName != null) && (oName.equals(name)))
-    		)
-    		return true;
-    	return false;	
-    }
+        /*     	if (this.capabilityId != ((Capability)object).getCapabilityId())
+              return false;
+           */
+        String oName = ((Capability) object).getName();
 
+        if (oName != null && name != null) {
+            return oName.equals(name);
+        } else if (oName == null && name == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

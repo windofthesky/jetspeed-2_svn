@@ -37,7 +37,7 @@ import org.apache.jetspeed.capabilities.MimeType;
  */
 class CapabilityMapImpl implements CapabilityMap
 {
-    private static final Logger log =
+    private static Logger log =
         LoggerFactory.getLogger(JetspeedCapabilities.class);
     
     // Members
@@ -112,12 +112,12 @@ class CapabilityMapImpl implements CapabilityMap
         log.error("Could not find preferred Mime Type for " + prefMimeTypeId);        
 
         // Should never reach this point. A preferred value needs to be set
-        return null; // TODO: NEVER RETURN NULL
+        return null;
     }
 
     /**
           * Sets the preferred MediaType for this CapabilityMap
-          * @param MediaTypeEntry 
+          * @param type
         */
     public void setPreferredMediaType(MediaType type)
     {
@@ -228,7 +228,7 @@ class CapabilityMapImpl implements CapabilityMap
         Iterator mediatypes = mediaTypeMap.values().iterator();
         while (mediatypes.hasNext())
         {
-            if (((MediaType) mediatypes.next()).getName() == media)
+            if (((MediaType) mediatypes.next()).getName().equals(media))
             {
                 return true;
             }

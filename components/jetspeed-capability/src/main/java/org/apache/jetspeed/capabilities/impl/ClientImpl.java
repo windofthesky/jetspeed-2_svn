@@ -31,8 +31,7 @@ import java.util.Collection;
  * @author <a href="mailto:roger.ruttimann@earthlink.net">Roger Ruttimann</a>
  * @version $Id$
  */
-public class ClientImpl implements Client, java.io.Serializable
-{
+public class ClientImpl implements Client, java.io.Serializable {
     private String userAgentPattern = "";
     private String manufacturer = "";
     private String model = "";
@@ -45,255 +44,204 @@ public class ClientImpl implements Client, java.io.Serializable
     private int clientId;
     private int evalOrder = 0;
 
-    public ClientImpl()
-    {
+    public ClientImpl() {
     }
 
     /**
-     * Implements the equals operation so that 2 elements are equal if
-     * all their member values are equal.
+     * Implements the equals operation so that 2 elements are equal if all their member values are equal.
      */
-    public boolean equals(Object object)
-    {
-        if (object == this)
-        	return true;
+    public boolean equals(Object object) {
 
-        if (object == null)
-        {
+        if (!(object instanceof Client)) {
             return false;
         }
-        
+
         ClientImpl obj = (ClientImpl) object;
 
-        if (name != null)
-        {
-            if (!name.equals(obj.name))
-            {
+        if (name != null) {
+            if (!name.equals(obj.name)) {
                 return false;
             }
-        } else
-        {
-            if (obj.name != null)
-            {
-                return false;
-            }
-        }
-     
-        if (userAgentPattern != null)
-        {
-            if (!userAgentPattern.equals(obj.userAgentPattern))
-            {
-                return false;
-            }
-        } else
-        {
-            if (obj.userAgentPattern != null)
-            {
+        } else {
+            if (obj.name != null) {
                 return false;
             }
         }
 
-        if (manufacturer != null)
-        {
-            if (!manufacturer.equals(obj.manufacturer))
-            {
+        if (userAgentPattern != null) {
+            if (!userAgentPattern.equals(obj.userAgentPattern)) {
                 return false;
             }
-        } else
-        {
-            if (obj.manufacturer != null)
-            {
+        } else {
+            if (obj.userAgentPattern != null) {
                 return false;
             }
         }
 
-        if (model != null)
-        {
-            if (!model.equals(obj.model))
-            {
+        if (manufacturer != null) {
+            if (!manufacturer.equals(obj.manufacturer)) {
                 return false;
             }
-        } else
-        {
-            if (obj.model != null)
-            {
+        } else {
+            if (obj.manufacturer != null) {
                 return false;
             }
         }
 
-        if (version != null)
-        {
-            if (!version.equals(obj.version))
-            {
+        if (model != null) {
+            if (!model.equals(obj.model)) {
                 return false;
             }
-        } else
-        {
-            if (obj.version != null)
-            {
-                return false;
-            }
-        }
-        if (mimetypes != null)
-        {
-        	if (!CollectionUtils.isEqualCollection(mimetypes, obj.mimetypes))
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (obj.mimetypes != null)
-            {
+        } else {
+            if (obj.model != null) {
                 return false;
             }
         }
 
-         if (capabilities != null)
-        {
-	       if (!(CollectionUtils.isEqualCollection(capabilities,obj.capabilities )))
-	            return false;
-	    }
-        else
-        {
-            if (obj.capabilities != null)
-            {
+        if (version != null) {
+            if (!version.equals(obj.version)) {
+                return false;
+            }
+        } else {
+            if (obj.version != null) {
+                return false;
+            }
+        }
+        if (mimetypes != null) {
+            if (!CollectionUtils.isEqualCollection(mimetypes, obj.mimetypes)) {
+                return false;
+            }
+        } else {
+            if (obj.mimetypes != null) {
+                return false;
+            }
+        }
+
+        if (capabilities != null) {
+            if (!(CollectionUtils.isEqualCollection(capabilities, obj.capabilities))) {
+                return false;
+            }
+        } else {
+            if (obj.capabilities != null) {
                 return false;
             }
         }
         return true;
     }
 
-    public String getUserAgentPattern()
-    {
+    public String getUserAgentPattern() {
         return userAgentPattern;
     }
 
-    public void setUserAgentPattern(String userAgentPattern)
-    {
+    public void setUserAgentPattern(String userAgentPattern) {
         this.userAgentPattern = userAgentPattern;
     }
 
-    public String getManufacturer()
-    {
+    public String getManufacturer() {
         return manufacturer;
     }
 
-    public void setManufacturer(String name)
-    {
+    public void setManufacturer(String name) {
         manufacturer = name;
     }
 
-    public String getModel()
-    {
+    public String getModel() {
         return model;
     }
 
-    public void setModel(String name)
-    {
+    public void setModel(String name) {
         model = name;
     }
 
-    public String getVersion()
-    {
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion(String name)
-    {
+    public void setVersion(String name) {
         version = name;
     }
 
-    public Collection getMimetypes()
-    {
-        if(this.mimetypes == null)
-        {
+    public Collection getMimetypes() {
+        if (this.mimetypes == null) {
             this.mimetypes = new ArrayList();
         }
         return mimetypes;
     }
 
-    public void setMimetypes(Collection mimetypes)
-    {
+    public void setMimetypes(Collection mimetypes) {
         this.mimetypes = mimetypes;
     }
 
-    public Collection getCapabilities()
-    {
-        if(capabilities == null)
-        {
+    public Collection getCapabilities() {
+        if (capabilities == null) {
             capabilities = new ArrayList();
         }
         return capabilities;
     }
 
-    public void setCapabilities(Collection capabilities)
-    {
+    public void setCapabilities(Collection capabilities) {
         this.capabilities = capabilities;
     }
 
     /**
      * Set Client ID -- Assigns the Client ID
+     *
      * @param id
      */
-    public void setClientId(int id)
-    {
+    public void setClientId(int id) {
         this.clientId = id;
     }
 
     /**
      * Get Client ID
+     *
      * @return Client ID
      */
-    public int getClientId()
-    {
+    public int getClientId() {
         return this.clientId;
     }
+
     /**
      * @return
      */
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     /**
      * @param string
      */
-    public void setName(String string)
-    {
+    public void setName(String string) {
         name = string;
     }
 
     /**
      * @return Preferred MimeType ID for Client
      */
-    public int getPreferredMimeTypeId()
-    {
+    public int getPreferredMimeTypeId() {
         return this.preferredMimeTypeId;
     }
 
     /**
      * Set preferred Mimetype ID for Client
+     *
      * @param mimeTypeId MimeTypeId
      */
-    public void setPreferredMimeTypeId(int mimeTypeId)
-    {
+    public void setPreferredMimeTypeId(int mimeTypeId) {
         this.preferredMimeTypeId = mimeTypeId;
     }
 
     /**
      * @return Returns the evalOrder.
      */
-    public int getEvalOrder()
-    {
+    public int getEvalOrder() {
         return evalOrder;
     }
+
     /**
      * @param evalOrder The evalOrder to set.
      */
-    public void setEvalOrder(int evalOrder)
-    {
+    public void setEvalOrder(int evalOrder) {
         this.evalOrder = evalOrder;
     }
 }

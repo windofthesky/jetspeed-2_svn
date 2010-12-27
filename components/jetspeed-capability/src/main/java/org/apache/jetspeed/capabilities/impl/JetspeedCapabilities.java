@@ -101,7 +101,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      *     services.profiler.principalRule.impl = the pluggable Principal Rule impl
      *     services.profiler.profilingRule.impl = the pluggable Profiling Rule impl
      *      
-     * @param persistenceStore  The persistence persistenceStore 
+     * @param repositoryPath  The repositoryPath
      * @param properties  Properties for this component described above
      * @deprecated As of release 2.1, property-based class references replaced
      *             by container managed bean factory

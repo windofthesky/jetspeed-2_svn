@@ -84,22 +84,20 @@ public class MimeTypeImpl implements MimeType
     	{
     		return false;
     	}
-    	if (this == object)
+    	if (this.equals(object))
     		return true;
 // Don't check the ID - id is only set through OJB so this would not recognize equality correctly 
 /*    	if (mimeTypeId != ((MimeType)object).getMimetypeId())
     		return false;
 */
     	String oName = ((MimeType)object).getName();
-    	if (
-    			(oName == null) && (name == null)
-    			||
-    			(oName == name)
-    			||
-    			((oName != null) && (oName.equals(name)))
-    		)
-    		return true;
-    	return false;	
+        if (oName != null && name != null) {
+            return oName.equals(name);
+        } else if (oName == null && name == null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

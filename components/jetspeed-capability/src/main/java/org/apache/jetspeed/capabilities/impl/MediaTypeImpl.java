@@ -46,31 +46,16 @@ public class MediaTypeImpl
     public MediaTypeImpl()
     {}
 
-    public MediaTypeImpl(long id,
-                              String name,
-                              int _hidden,
-                              String mimeType,
-                              String title,
-                              String description,
-                              String image,
-                               String role)
-    {
-         this.mimetypes.add(mimeType);
-    }
-
     /**
      * Implements the equals operation so that 2 elements are equal if
      * all their member values are equal.
      */
     public boolean equals(Object object)
     {
-        if (this == object)
-        	return true;
-        if (object==null)
-            return false;
-        
-        MediaTypeImpl obj = (MediaTypeImpl)object;
+        if (!(object instanceof MediaType))
+        	return false;
 
+        MediaTypeImpl obj = (MediaTypeImpl)object;
 
         if (this.name!=null)
         {
