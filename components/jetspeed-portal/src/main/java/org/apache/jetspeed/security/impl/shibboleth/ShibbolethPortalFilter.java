@@ -130,7 +130,7 @@ public class ShibbolethPortalFilter implements Filter
 					audit.logUserActivity(username, request.getRemoteAddr(), AuditActivity.AUTHENTICATION_SUCCESS, "ShibbolethFilter");
 					PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
 							cm.getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");
-					if (authenticationConfiguration.isCreateNewSessionOnLogin())
+					if (authenticationConfiguration.isCreateNewSessionOnLogin() && httpSession != null && !httpSession.isNew())
 					{
 						request.getSession().invalidate();
 					}
