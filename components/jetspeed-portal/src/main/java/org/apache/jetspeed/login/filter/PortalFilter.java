@@ -36,6 +36,7 @@ import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.audit.AuditActivity;
 import org.apache.jetspeed.cache.UserContentCacheManager;
 import org.apache.jetspeed.components.ComponentManager;
+import org.apache.jetspeed.container.session.PortalSessionValidationFilter;
 import org.apache.jetspeed.login.LoginConstants;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.AuthenticatedUserImpl;
@@ -65,6 +66,7 @@ public class PortalFilter implements Filter
             HttpServletRequest request = (HttpServletRequest)sRequest;
             String username = request.getParameter(LoginConstants.USERNAME);
             String password = request.getParameter(LoginConstants.PASSWORD);            
+            HttpSession httpSession = PortalSessionValidationFilter.getValidSession(request);
             if (username != null)
             {
                 ComponentManager cm = Jetspeed.getComponentManager();

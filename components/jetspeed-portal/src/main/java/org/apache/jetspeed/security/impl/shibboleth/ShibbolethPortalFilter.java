@@ -35,6 +35,7 @@ import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
 import org.apache.jetspeed.audit.AuditActivity;
 import org.apache.jetspeed.cache.UserContentCacheManager;
 import org.apache.jetspeed.components.ComponentManager;
+import org.apache.jetspeed.container.session.PortalSessionValidationFilter;
 import org.apache.jetspeed.login.LoginConstants;
 import org.apache.jetspeed.login.filter.PortalRequestWrapper;
 import org.apache.jetspeed.security.AuthenticationProvider;
@@ -60,6 +61,7 @@ public class ShibbolethPortalFilter implements Filter
 		if (sRequest instanceof HttpServletRequest)
 		{
 			HttpServletRequest request = (HttpServletRequest) sRequest;
+            HttpSession httpSession = PortalSessionValidationFilter.getValidSession(request);
 			if (userNameHeader == null)
 			{
 				synchronized (sem)
