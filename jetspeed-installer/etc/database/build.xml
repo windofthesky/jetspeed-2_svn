@@ -371,7 +371,7 @@
         <java classname="org.apache.jetspeed.tools.db.serializer.JetspeedSerializerApplicationImpl" fork="yes" failonerror="yes">
             <classpath refid="installationClasspath"/>
             <syspropertyset refid="installationProps"/>
-            <arg line="-I &quot;${basedir}/resources/${_seedDataFile}&quot; 
+            <arg line="-I &quot;${basedir}/resources/seed/${_seedDataFile}&quot; 
               -a &quot;${basedir}/../webapps/${portalName}&quot;
               -c &quot;serializer&quot;
               -p &quot;${jetspeedWebInfDir}/conf/spring-filter.properties&quot;" />
