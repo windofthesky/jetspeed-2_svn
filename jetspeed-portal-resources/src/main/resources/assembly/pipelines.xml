@@ -815,7 +815,7 @@
     </constructor-arg>
   </bean>
   
-  <bean id='pipeline-map' class='java.util.HashMap'>
+  <bean id='pipeline-map' class='java.util.LinkedHashMap'>
     <meta key="j2:cat" value="default" />
     <constructor-arg>
       <map>
@@ -851,6 +851,11 @@
         </entry>
       </map>
     </constructor-arg>
+  </bean>
+  
+  <bean id="pipeline-mapper" class="org.apache.jetspeed.pipeline.JetspeedPipelineMapper">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg ref="pipeline-map" />
   </bean>
 
   <bean id="debugValve" class="org.apache.jetspeed.pipeline.valve.impl.DebugValveImpl">
