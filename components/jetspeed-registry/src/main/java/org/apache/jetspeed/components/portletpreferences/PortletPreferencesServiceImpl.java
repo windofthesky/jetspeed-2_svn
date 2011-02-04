@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -67,7 +68,12 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     protected static final String DISCRIMINATOR_USER = "user";
     protected static final String KEY_SEPARATOR = ":";
     protected static final String EMPTY_VALUE = "_";
-    
+    protected static final String DTYPE = "dtype";
+    protected static final String APPLICATION_NAME = "applicationName";
+    protected static final String PORTLET_NAME = "portletName";
+    protected static final String ENTITY_ID = "entityId";
+    protected static final String USER_NAME = "userName";
+
     private PortletFactory portletFactory;
 
     /**
@@ -180,9 +186,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     /**
      * Jetspeed: PortletPreferencesProvider
      * 
-     * @param appName
-     * @param portletName
-     * @param entityId
+     * @param window
      * @param userName
      * @return
      * @throws PortletContainerException
@@ -203,11 +207,11 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         // not found in cache, lookup in database
         JetspeedPreferencesMap map = new JetspeedPreferencesMap(); 
         Criteria c = new Criteria();
-        c.addEqualTo("dtype", DISCRIMINATOR_USER);
-        c.addEqualTo("applicationName", appName);
-        c.addEqualTo("portletName", portletName);
-        c.addEqualTo("entityId", entityId);
-        c.addEqualTo("userName", userName);
+        c.addEqualTo(DTYPE, DISCRIMINATOR_USER);
+        c.addEqualTo(APPLICATION_NAME, appName);
+        c.addEqualTo(PORTLET_NAME, portletName);
+        c.addEqualTo(ENTITY_ID, entityId);
+        c.addEqualTo(USER_NAME, userName);
         QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
         Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
         while (preferences.hasNext())
@@ -267,11 +271,11 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             String entityId = window.getPortletEntityId();        
             // always read in to get a fresh copy for merge
             Criteria c = new Criteria();
-            c.addEqualTo("dtype", DISCRIMINATOR_USER);
-            c.addEqualTo("applicationName", appName);
-            c.addEqualTo("portletName", portletName);
-            c.addEqualTo("entityId", entityId);
-            c.addEqualTo("userName", userName);
+            c.addEqualTo(DTYPE, DISCRIMINATOR_USER);
+            c.addEqualTo(APPLICATION_NAME, appName);
+            c.addEqualTo(PORTLET_NAME, portletName);
+            c.addEqualTo(ENTITY_ID, entityId);
+            c.addEqualTo(USER_NAME, userName);
             QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
             Map<String, DatabasePreference> mergeMap = new HashMap<String, DatabasePreference>();
             List<DatabasePreference> deletes = new LinkedList<DatabasePreference>();
@@ -392,14 +396,14 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     {
         JetspeedPreferencesMap map = new JetspeedPreferencesMap();
         Criteria c = new Criteria();
-        c.addEqualTo("dtype", DISCRIMINATOR_PORTLET);
-        c.addEqualTo("applicationName", portletApplicationName);
+        c.addEqualTo(DTYPE, DISCRIMINATOR_PORTLET);
+        c.addEqualTo(APPLICATION_NAME, portletApplicationName);
         
         String previousPortletName = "";
         QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
-        query.addOrderByAscending("dtype");
-        query.addOrderByAscending("applicationName");
-        query.addOrderByAscending("portletName");        
+        query.addOrderByAscending(DTYPE);
+        query.addOrderByAscending(APPLICATION_NAME);
+        query.addOrderByAscending(PORTLET_NAME);
         Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
         while (preferences.hasNext())
         {
@@ -422,14 +426,14 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     {
         JetspeedPreferencesMap map = new JetspeedPreferencesMap();
         Criteria c = new Criteria();
-        c.addEqualTo("dtype", DISCRIMINATOR_USER);        
+        c.addEqualTo(DTYPE, DISCRIMINATOR_USER);
         String previousKey = "";
         QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
-        query.addOrderByAscending("dtype");
-        query.addOrderByAscending("applicationName");
-        query.addOrderByAscending("portletName");        
-        query.addOrderByAscending("entityId");        
-        query.addOrderByAscending("userName");                        
+        query.addOrderByAscending(DTYPE);
+        query.addOrderByAscending(APPLICATION_NAME);
+        query.addOrderByAscending(PORTLET_NAME);
+        query.addOrderByAscending(ENTITY_ID);
+        query.addOrderByAscending(USER_NAME);
         Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
         while (preferences.hasNext())
         {
@@ -494,11 +498,11 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         String preferenceName = preference.getName();
         
         Criteria c = new Criteria();
-        c.addEqualTo("dtype", DISCRIMINATOR_PORTLET);
-        c.addEqualTo("applicationName", appName);
-        c.addEqualTo("portletName", portletName);
-        c.addEqualTo("entityId", EMPTY_VALUE);
-        c.addEqualTo("userName", EMPTY_VALUE);
+        c.addEqualTo(DTYPE, DISCRIMINATOR_PORTLET);
+        c.addEqualTo(APPLICATION_NAME, appName);
+        c.addEqualTo(PORTLET_NAME, portletName);
+        c.addEqualTo(ENTITY_ID, EMPTY_VALUE);
+        c.addEqualTo(USER_NAME, EMPTY_VALUE);
         c.addEqualTo("name", preferenceName);
         QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
         DatabasePreference dbPref = (DatabasePreference) getPersistenceBrokerTemplate().getObjectByQuery(query);
@@ -594,9 +598,9 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     public void removeDefaults(org.apache.jetspeed.om.portlet.PortletDefinition pd)
     {
         Criteria c = new Criteria();
-        c.addEqualTo("dtype", DISCRIMINATOR_PORTLET);
-        c.addEqualTo("applicationName", pd.getApplication().getName());
-        c.addEqualTo("portletName", pd.getPortletName());                
+        c.addEqualTo(DTYPE, DISCRIMINATOR_PORTLET);
+        c.addEqualTo(APPLICATION_NAME, pd.getApplication().getName());
+        c.addEqualTo(PORTLET_NAME, pd.getPortletName());
         QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
         getPersistenceBrokerTemplate().deleteByQuery(query);
         String defaultsCacheKey = getPortletPreferenceKey(pd.getApplication().getName(), pd.getPortletName());            
@@ -606,9 +610,9 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     public void removeDefaults(org.apache.jetspeed.om.portlet.PortletDefinition pd, String preferenceName)
     {
         Criteria c = new Criteria();
-        c.addEqualTo("dtype", DISCRIMINATOR_PORTLET);
-        c.addEqualTo("applicationName", pd.getApplication().getName());
-        c.addEqualTo("portletName", pd.getPortletName());
+        c.addEqualTo(DTYPE, DISCRIMINATOR_PORTLET);
+        c.addEqualTo(APPLICATION_NAME, pd.getApplication().getName());
+        c.addEqualTo(PORTLET_NAME, pd.getPortletName());
         c.addEqualTo("name", preferenceName);
         QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
         getPersistenceBrokerTemplate().deleteByQuery(query);
@@ -625,8 +629,8 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     public void removeDefaults(PortletApplication app)
     {
         Criteria c = new Criteria();
-        c.addEqualTo("dtype", DISCRIMINATOR_PORTLET);
-        c.addEqualTo("applicationName", app.getName());
+        c.addEqualTo(DTYPE, DISCRIMINATOR_PORTLET);
+        c.addEqualTo(APPLICATION_NAME, app.getName());
         QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
         getPersistenceBrokerTemplate().deleteByQuery(query);
         for (PortletDefinition pd : app.getPortlets())
@@ -656,15 +660,24 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
             // not found in cache, lookup in database
             JetspeedPreferencesMap map = new JetspeedPreferencesMap(); 
             Criteria c = new Criteria();
-            c.addEqualTo("dtype", DISCRIMINATOR_PORTLET);
-            c.addEqualTo("applicationName", appName);
-            c.addEqualTo("portletName", portletName);                
+            c.addEqualTo(DTYPE, DISCRIMINATOR_PORTLET);
+            c.addEqualTo(APPLICATION_NAME, appName);
+            c.addEqualTo(PORTLET_NAME, portletName);
             QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
-            Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
-            while (preferences.hasNext())
+            Collection<DatabasePreference> preferenceList = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            for(DatabasePreference preference : preferenceList)
             {
-                DatabasePreference preference = preferences.next();
-                map.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues(), preference.isReadOnly()));
+                if(!EMPTY_VALUE.equals(preference.getEntityId()))
+                {
+                   map.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues(), preference.isReadOnly()));
+                }
+            }
+            for(DatabasePreference preference : preferenceList)
+            {
+                if(EMPTY_VALUE.equals(preference.getEntityId()))
+                {
+                    map.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues(), preference.isReadOnly()));
+                }
             }
             preferenceCache.put(preferenceCache.createElement(defaultsCacheKey, map));
             defaultsMap = map;
@@ -678,12 +691,12 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         String appName = portletdefinition.getApplication().getName();
         String portletName = portletdefinition.getPortletName();
         Criteria c = new Criteria();
-        c.addEqualTo("dtype", DISCRIMINATOR_USER);
-        c.addEqualTo("applicationName", appName);
-        c.addEqualTo("portletName", portletName);
-        c.addNotEqualTo("entityId", EMPTY_VALUE);
+        c.addEqualTo(DTYPE, DISCRIMINATOR_USER);
+        c.addEqualTo(APPLICATION_NAME, appName);
+        c.addEqualTo(PORTLET_NAME, portletName);
+        c.addNotEqualTo(ENTITY_ID, EMPTY_VALUE);
         ReportQueryByCriteria query = QueryFactory.newReportQuery(DatabasePreference.class, c);
-        query.setAttributes(new String[] { "entityId", "id" });
+        query.setAttributes(new String[] {ENTITY_ID, "id" });
         Iterator<Object[]> ObjectwindowsId = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query);
         while (ObjectwindowsId.hasNext())
         {
@@ -708,11 +721,11 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         else
         {
             Criteria c = new Criteria();
-            c.addEqualTo("dtype", DISCRIMINATOR_USER);
-            c.addEqualTo("applicationName", appName);
-            c.addEqualTo("portletName", portletName);
-            c.addEqualTo("userName", userName);
-            c.addEqualTo("entityId", windowId);
+            c.addEqualTo(DTYPE, DISCRIMINATOR_USER);
+            c.addEqualTo(APPLICATION_NAME, appName);
+            c.addEqualTo(PORTLET_NAME, portletName);
+            c.addEqualTo(USER_NAME, userName);
+            c.addEqualTo(ENTITY_ID, windowId);
             QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
             Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
             while (preferences.hasNext())
@@ -731,13 +744,13 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         String appName = portletdefinition.getApplication().getName();
         String portletName = portletdefinition.getPortletName();
         Criteria c = new Criteria();
-        c.addEqualTo("dtype", DISCRIMINATOR_USER);
-        c.addEqualTo("applicationName", appName);
-        c.addEqualTo("portletName", portletName);
-        c.addEqualTo("entityId", windowId);
-        c.addNotEqualTo("userName", EMPTY_VALUE);
+        c.addEqualTo(DTYPE, DISCRIMINATOR_USER);
+        c.addEqualTo(APPLICATION_NAME, appName);
+        c.addEqualTo(PORTLET_NAME, portletName);
+        c.addEqualTo(ENTITY_ID, windowId);
+        c.addNotEqualTo(USER_NAME, EMPTY_VALUE);
         ReportQueryByCriteria query = QueryFactory.newReportQuery(DatabasePreference.class, c);
-        query.setAttributes(new String[] { "userName", "id" });
+        query.setAttributes(new String[] {USER_NAME, "id" });
         query.setDistinct(true);
         Iterator<Object[]> userObjects = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query);
         while (userObjects.hasNext())
@@ -780,9 +793,9 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     {
         // always read in to get a fresh copy for merge
         Criteria c = new Criteria();
-        c.addEqualTo("dtype", DISCRIMINATOR_PORTLET);
-        c.addEqualTo("applicationName", appName);
-        c.addEqualTo("portletName", portletName);         
+        c.addEqualTo(DTYPE, DISCRIMINATOR_PORTLET);
+        c.addEqualTo(APPLICATION_NAME, appName);
+        c.addEqualTo(PORTLET_NAME, portletName);
         QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
         Map<String, DatabasePreference> mergeMap = new HashMap<String, DatabasePreference>();
         List<DatabasePreference> deletes = new LinkedList<DatabasePreference>();
