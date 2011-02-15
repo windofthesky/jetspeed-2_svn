@@ -54,8 +54,8 @@ public class XXSUrlAttackFilter implements Filter
 
     private boolean isInvalid(String value)
     {
-        return (value != null && (value.indexOf('<') != -1 || value.indexOf('>') != -1 || value.indexOf("%3e") != -1
-                || value.indexOf("%3c") != -1 || value.indexOf("%3E") != -1 || value.indexOf("%3E") != -1));
+        return (value != null && (value.indexOf('<') != -1 || value.indexOf('>') != -1 || value.indexOf("%3C") != -1
+                || value.indexOf("%3c") != -1 || value.indexOf("%3E") != -1 || value.indexOf("%3e") != -1));
     }
 
     public void destroy()
