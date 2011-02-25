@@ -34,7 +34,25 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
  */
 public interface PortletRegistry
 {
+    /**
+     * Retrieves all portlet definitions for this deployment
+     * including both clones and portlet definitions
+     * @return a collection of portlet definitions from all portlet apps
+     */
+    Collection<PortletDefinition> getAllDefinitions();
+
+    /**
+     * Retrieve all portlet definitions system wide
+     * The collection does not include clones
+     * @return a collection of portlet definitions from all portlet apps
+     */
     Collection<PortletDefinition> getAllPortletDefinitions();
+
+    /**
+     * Retrieve all clone definitions system wide 
+     * @return a collection of portlet definitions from all portlet apps
+     */
+    Collection<PortletDefinition> getAllCloneDefinitions();
 
     /**
      * Retrieves a PortletApplication by it's unique name.  We use
@@ -153,11 +171,31 @@ public interface PortletRegistry
     void removeRegistryEventListener(RegistryEventListener listener);
 
     /**
-     * Given a portlet definition, create a clone of it, with a new name
-     * @param source the portlet definition to be cloned
-     * @param newPortletName the unique name of the new portlet definition
+     * Create a portlet instance
+     *
+     * @param source create an instance from this given portlet definition
+     * @param newPortletName a unique portlet name
      * @throws FailedToStorePortletDefinitionException
      */
-    void clonePortletDefinition(PortletDefinition source, String newPortletName) throws FailedToStorePortletDefinitionException;
-    
+    PortletDefinition clonePortletDefinition(PortletDefinition source, String newPortletName) throws FailedToStorePortletDefinitionException;
+
+    /**
+     * Restores all orphaned clones to a re-registered portlet application
+     * @param pa
+     * @return
+     * @throws RegistryException
+     */
+    public int restoreClones(PortletApplication pa)
+            throws RegistryException;
+
+
+    /**
+     * Remove all clones from a given portlet application
+     * 
+     * @param pa the portlet application
+     * @throws RegistryException
+     */
+    void removeAllClones(PortletApplication pa)
+            throws RegistryException;
+
 }

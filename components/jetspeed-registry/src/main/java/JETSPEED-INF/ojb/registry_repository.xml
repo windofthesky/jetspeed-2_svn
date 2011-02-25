@@ -191,6 +191,12 @@
 
       >
          <inverse-foreignkey field-ref="appId"/>
+         <query-customizer class="org.apache.jetspeed.util.ojb.PortletCloneQueryCustomizer">
+            <attribute
+              attribute-name="isClone"
+              attribute-value="false"
+            />
+         </query-customizer>
       </collection-descriptor>
 
       <collection-descriptor
@@ -366,6 +372,23 @@
          <inverse-foreignkey field-ref="applicationId"/>
       </collection-descriptor>
 
+      <collection-descriptor
+         name="clones"
+         element-class-ref="org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"
+         auto-delete="false"
+         auto-update = "true"
+         auto-retrieve = "true"
+
+      >
+         <inverse-foreignkey field-ref="appId"/>
+         <query-customizer class="org.apache.jetspeed.util.ojb.PortletCloneQueryCustomizer">
+            <attribute
+              attribute-name="isClone"
+              attribute-value="true"
+            />
+         </query-customizer>
+      </collection-descriptor>
+
    </class-descriptor>
 
 <!--
@@ -417,7 +440,12 @@
          column="CACHE_SCOPE"
          jdbc-type="VARCHAR"
       />
-
+      <field-descriptor
+          name="cloneParent"
+          column="CLONE_PARENT"
+          jdbc-type="VARCHAR"
+          nullable="true"
+      />
       <field-descriptor
          name="resourceBundle"
          column="RESOURCE_BUNDLE"

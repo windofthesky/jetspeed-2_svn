@@ -77,10 +77,14 @@ public class RegistryPortletCache implements ObjectCache
     public synchronized static void cacheAdd(Identity oid, Object obj)
     {
         oidCache.remove(oid);
+        PortletDefinition pd = (PortletDefinition)obj;
+        if (pd.getApplication() == null)
+        {
+            return;
+        }
         CacheElement entry = new EhCacheElementImpl(oid, obj);
         oidCache.put(entry);
         
-        PortletDefinition pd = (PortletDefinition)obj;
         DistributedCacheObject wrapper = new RegistryCacheObjectWrapper(oid, pd.getUniqueName());
         nameCache.remove(pd.getUniqueName());
         CacheElement nameEntry = nameCache.createElement(pd.getUniqueName(), wrapper);

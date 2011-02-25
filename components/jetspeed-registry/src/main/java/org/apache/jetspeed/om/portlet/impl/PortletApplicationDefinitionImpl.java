@@ -41,6 +41,7 @@ import org.apache.jetspeed.om.portlet.EventDefinition;
 import org.apache.jetspeed.om.portlet.Filter;
 import org.apache.jetspeed.om.portlet.FilterMapping;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.JetspeedServiceReference;
 import org.apache.jetspeed.om.portlet.Listener;
 import org.apache.jetspeed.om.portlet.LocaleEncodingMapping;
@@ -96,6 +97,7 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
     private List<DisplayName> displayNames;
     private List<SecurityRole> roles;
     private List<PortletDefinition> portlets;
+    private List<PortletDefinition> clones;
     private List<EventDefinition> eventDefinitions;
     private List<PublicRenderParameter> publicRenderParameters;
     private List<CustomPortletMode> customPortletModes;
@@ -359,6 +361,18 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         return null;
     }
 
+    public PortletDefinition getClone(String cloneName)
+    {
+        for (PortletDefinition clone : getClones())
+        {
+            if (clone.getPortletName().equals(cloneName))
+            {
+                return clone;
+            }
+        }
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     public List<PortletDefinition> getPortlets()
     {
@@ -368,6 +382,17 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         }
         return portlets;
     }
+
+    @SuppressWarnings("unchecked")
+    public List<PortletDefinition> getClones()
+    {
+        if (clones == null)
+        {
+            clones = CollectionUtils.createList();
+        }
+        return clones;
+    }
+
 
     public PortletDefinition addPortlet(String name)
     {
@@ -380,6 +405,19 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         portlet.setApplication(this);
         getPortlets().add(portlet);
         return portlet;
+    }
+
+    public PortletDefinition addClone(String name)
+    {
+        if (getClone(name) != null)
+        {
+            throw new IllegalArgumentException("Portlet/Clone with name: "+name+" already defined");
+        }
+        PortletDefinitionImpl clone = new PortletDefinitionImpl(this.getName());
+        clone.setPortletName(name);
+        clone.setApplication(this);       
+        getClones().add(clone);
+        return clone;
     }
 
     @SuppressWarnings("unchecked")
@@ -981,6 +1019,11 @@ public class PortletApplicationDefinitionImpl implements PortletApplication, Ser
         {
             ((Support)pd).postLoad(this);
         }
+        for (PortletDefinition clone : clones)
+        {
+            ((Support)clone).postLoad(this);
+        }
+
     }
 
     /// PersistenceBrokerAware interface implementation

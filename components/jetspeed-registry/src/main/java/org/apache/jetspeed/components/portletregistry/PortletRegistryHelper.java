@@ -71,4 +71,10 @@ public class PortletRegistryHelper
         return split;
     }
 
+    public static String makeUniqueName(String appName, String portletName)
+    {
+        return appName + PersistenceBrokerPortletRegistry.PORTLET_UNIQUE_NAME_SEPARATOR + portletName;
+    }
+
+
 }

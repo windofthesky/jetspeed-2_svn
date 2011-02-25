@@ -46,29 +46,40 @@
         </constructor-arg>        
         <constructor-arg index="5">
             <ref bean="PortletPreferencesProviderImpl" />
-        </constructor-arg>    
+        </constructor-arg>
     </bean>
 
     <bean id="org.apache.jetspeed.request.RequestContextComponent" class="org.apache.jetspeed.request.MockRequestContextComponent"/>
-    
-    <bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry" name="portletRegistry" parent="baseTransactionProxy">
-        <property name="proxyInterfaces">
-            <value>org.apache.jetspeed.components.portletregistry.PortletRegistry</value>
-        </property>
 
-        <property name="target">
-            <ref bean="portletRegistryImpl" />
-        </property>
-        <property name="transactionAttributes">
-            <props>
-                <prop key="register*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
-                <prop key="remove*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
-                <prop key="update*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
-                <prop key="save*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
-                <prop key="*">PROPAGATION_SUPPORTS</prop>
-            </props>
-        </property>
-    </bean>
+
+  <bean id="org.apache.jetspeed.components.portletregistry.PortletRegistry" name="portletRegistry"
+    parent="baseTransactionProxy">
+    <property name="proxyInterfaces">
+      <value>org.apache.jetspeed.components.portletregistry.PortletRegistry</value>
+    </property>
+
+    <property name="target">
+      <ref bean="portletRegistryImpl" />
+    </property>
+    <property name="transactionAttributes">
+      <props>
+        <prop key="register*">
+          PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException
+        </prop>
+        <prop key="remove*">
+          PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException
+        </prop>
+        <prop key="update*">
+          PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException
+        </prop>
+        <prop key="save*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+        <prop key="clone*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+        <prop key="restore*">PROPAGATION_REQUIRED,-org.apache.jetspeed.components.portletregistry.RegistryException</prop>
+        <prop key="*">PROPAGATION_SUPPORTS</prop>
+      </props>
+    </property>
+  </bean>
+
 
   <!-- register JetspeedPortletFactory as RegistryEventLister on the PortletRegistry -->
   <bean id="registerPortletFactoryPortletRegistyEventListener" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

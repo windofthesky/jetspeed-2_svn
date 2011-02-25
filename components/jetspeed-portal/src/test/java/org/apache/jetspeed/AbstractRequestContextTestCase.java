@@ -42,6 +42,7 @@ public class AbstractRequestContextTestCase extends TransactionCacheEnabledSprin
         confList.add("jetspeed-properties.xml");
         confList.add("page-manager.xml");
         confList.add("registry.xml");
+        confList.add("search.xml");
         confList.add("JETSPEED-INF/spring/RequestDispatcherService.xml");        
         confList.add("rc2.xml");
         confList.add("static-bean-references.xml");
@@ -51,7 +52,7 @@ public class AbstractRequestContextTestCase extends TransactionCacheEnabledSprin
         confList.add("security-atn.xml");
         confList.add("security-spi-atn.xml");
         confList.add("security-atz.xml");
-        confList.add("JETSPEED-INF/spring/JetspeedPrincipalManagerProviderOverride.xml");        
+        confList.add("JETSPEED-INF/spring/JetspeedPrincipalManagerProviderOverride.xml");
         return confList.toArray(new String[confList.size()]);
     }
 

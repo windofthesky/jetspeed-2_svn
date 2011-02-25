@@ -107,11 +107,13 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
                 for (PortletApplication pa : registry.getPortletApplications())
                 {
                     List<PortletDefinition> portlets = pa.getPortlets();
+                    List<PortletDefinition> clones = pa.getClones();
                     if (searchEngine != null)
                     {
-                        List<Object> list = new ArrayList<Object>(portlets.size() + 1);
+                        List<Object> list = new ArrayList<Object>(portlets.size() + clones.size() + 1);
                         list.add(pa);
                         list.addAll(portlets);
+                        list.addAll(clones);
                         searchEngine.remove(list);
                     }
                     registry.removeApplication(pa);

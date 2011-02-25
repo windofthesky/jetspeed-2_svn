@@ -41,7 +41,8 @@ limitations under the License.
         <column name="RESOURCE_BUNDLE" size="255" type="VARCHAR"/>
         <column name="PREFERENCE_VALIDATOR" size="255" type="VARCHAR"/>
         <column name="SECURITY_REF" size="40" type="VARCHAR"/>      
-        <column name="CACHE_SCOPE" size="30" type="VARCHAR"/>  
+        <column name="CACHE_SCOPE" size="30" type="VARCHAR"/>
+        <column name="CLONE_PARENT" required="fals" size="80" type="VARCHAR"/>
     </table>
 
     <!--

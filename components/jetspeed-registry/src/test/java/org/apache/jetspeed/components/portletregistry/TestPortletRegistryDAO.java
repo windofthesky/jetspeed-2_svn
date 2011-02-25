@@ -133,7 +133,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         final String appName = "App_1";
         final String sourcePortletName = "Portlet 1";
         final String clonedPortletName = "ClonedPortlet 1";
-        
+
         PortletApplication app = portletRegistry.getPortletApplication(appName);
         assertNotNull("Portlet application, " + appName + ", is not found.", app);
         
@@ -148,9 +148,12 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         {
             Collection<LocalizedField> sourceFields = sourcePortlet.getMetadata().getFields();
             portletRegistry.clonePortletDefinition(sourcePortlet, clonedPortletName);
-            clonedPortlet = app.getPortlet(clonedPortletName);
+            clonedPortlet = app.getClone(clonedPortletName);
             assertNotNull("Cloned portlet is not found after invoking cloning method.", clonedPortlet);
 
+            assertTrue("Portlet should've been a clone", clonedPortlet.isClone());
+            assertEquals("Portlet clone parent not matching parent app", clonedPortlet.getCloneParent(), app.getName());
+            
             Collection<LocalizedField> clonedFields = clonedPortlet.getMetadata().getFields();
             
             assertEquals("The metadata fields count is not equals.", sourceFields.size(), clonedFields.size());
@@ -179,9 +182,51 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         {
             if (clonedPortlet != null)
             {
-                app.getPortlets().remove(clonedPortlet);
+                List<PortletDefinition> clones = app.getClones();
+                assertEquals("count of clones off", 1, clones.size());
+                clones.remove(clonedPortlet);
                 portletRegistry.updatePortletApplication(app);
+                PortletApplication testApp = portletRegistry.getPortletApplication("App_1");
+                clones = testApp.getClones();
+                assertEquals("count of clones should be zero", 0, clones.size());
             }
+        }
+        // test restoring clones
+        try
+        {
+            createApplicationAndPortlet("cloneTest", "/cloneTest", "SourcePortlet", "Title Source Portlet", false);
+            PortletApplication testApp = portletRegistry.getPortletApplication("cloneTest");
+            assertNotNull("test app is null", testApp);
+            assertEquals("test App name not what expected", "cloneTest", testApp.getName());
+            PortletDefinition srcPortlet = testApp.getPortlet("SourcePortlet");
+            assertNotNull("src portlet is null", srcPortlet);
+            assertEquals("src portlet title is not what expected", "Title Source Portlet", srcPortlet.getPortletInfo().getTitle() );
+
+            PortletDefinition myClone = portletRegistry.clonePortletDefinition(srcPortlet, "restorePortlet");
+            assertNotNull("myClone portlet is null", myClone);
+            assertEquals("myClone portlet name is not what expected", myClone.getPortletName(), "restorePortlet");
+            assertEquals("expecting one clone ", 1,  testApp.getClones().size());
+
+            portletRegistry.removeApplication(testApp);
+            testApp = portletRegistry.getPortletApplication("cloneTest");
+            assertNull("test app should be null", testApp);
+
+            createApplicationAndPortlet("cloneTest", "/cloneTest", "SourcePortlet", "Title Source Portlet", false);
+            PortletApplication recreated = portletRegistry.getPortletApplication("cloneTest");
+            assertNotNull("recreated test app is null", recreated);
+            int count = portletRegistry.restoreClones(recreated);
+            assertEquals("Expected to restore one clone", 1, count);
+            PortletDefinition cpd = recreated.getClone("restorePortlet");
+            assertEquals("Expected clone to be named 'restorePortlet' ", cpd.getPortletName(), "restorePortlet");
+        }
+        finally
+        {
+            PortletApplication cleanup = portletRegistry.getPortletApplication("cloneTest");
+            assertNotNull("cleanup app is null", cleanup);
+            assertEquals("expecting one clone ", 1, cleanup.getClones().size());
+            portletRegistry.removeAllClones(cleanup);
+            assertEquals("expecting zero clones ", 0, cleanup.getClones().size());
+            portletRegistry.removeApplication(cleanup);
         }
     }
     
@@ -245,6 +290,12 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
      */
     private void buildTestData() throws RegistryException, LockFailedException
     {
+        createApplicationAndPortlet("App_1", "/app1", "Portlet 1", "Portlet 1", true);
+    }
+
+    private void createApplicationAndPortlet(String appName, String appContextPath, String portletName, String title, boolean create20Data)
+            throws RegistryException, LockFailedException
+    {
         String lang = Locale.getDefault().toString();
         
         // start clean
@@ -257,8 +308,8 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         // Create an Application and a Web app
 
         PortletApplicationDefinitionImpl app = new PortletApplicationDefinitionImpl();
-        app.setName("App_1");
-        app.setContextPath("/app1");
+        app.setName(appName);
+        app.setContextPath(appContextPath);
 
         app.addDescription(Locale.FRENCH.toString()).setDescription("Description: Le fromage est dans mon pantalon!");
         app.addDisplayName(Locale.FRENCH.toString()).setDisplayName("Display Name: Le fromage est dans mon pantalon!");
@@ -274,7 +325,7 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         
         addDublinCore(app.getMetadata());
 
-        PortletDefinition portlet = app.addPortlet("Portlet 1");
+        PortletDefinition portlet = app.addPortlet(portletName);
         portlet.setPortletClass("org.apache.Portlet");
         portlet.addDescription(lang).setDescription("Portlet description.");
         portlet.addDisplayName(lang).setDisplayName("Portlet display Name.");
@@ -291,8 +342,8 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         pref.addValue("value 2");
         
         Language language = portlet.addLanguage(Locale.getDefault());
-        language.setTitle("Portlet 1");
-        language.setShortTitle("Portlet 1");
+        language.setTitle(title);
+        language.setShortTitle(title);
 
         Supports supports = portlet.addSupports("html/text");
         supports.addPortletMode(MODE_EDIT);
@@ -302,12 +353,15 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
         supports = portlet.addSupports("wml");
         supports.addPortletMode(MODE_HELP);
         supports.addPortletMode(MODE_VIEW);
-        
-        build20TestData(app, portlet);
+
+        if (create20Data)
+        {
+            build20TestData(app, portlet);
+        }
         portletRegistry.updatePortletApplication(app);        
     }
      
-    
+
     protected void verifyData(boolean afterUpdates) throws Exception
     {
         PortletApplication app;

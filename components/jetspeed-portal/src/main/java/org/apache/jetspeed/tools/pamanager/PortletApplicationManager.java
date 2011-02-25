@@ -750,11 +750,12 @@ public class PortletApplicationManager implements PortletApplicationManagement
         if (searchEngine != null)
         {
             List<PortletDefinition> portletDefList = pa.getPortlets();
-            List<Object> list = new ArrayList<Object>(portletDefList.size() + 1);
-            
+            List<PortletDefinition> cloneDefList = pa.getClones();
+            List<Object> list = new ArrayList<Object>(portletDefList.size() + cloneDefList.size() + 1);
             if (remove)
             {
                 list.addAll(portletDefList);
+                list.addAll(cloneDefList);
                 list.add(pa);
                 searchEngine.remove(list);
                 log.info("Un-Registered the portlet application in the search engine... " + pa.getName());
@@ -763,6 +764,7 @@ public class PortletApplicationManager implements PortletApplicationManagement
             {
                 list.add(pa);
                 list.addAll(portletDefList);
+                list.addAll(cloneDefList);
                 searchEngine.add(list);
                 log.info("Registered the portlet application in the search engine... " + pa.getName());
             }

@@ -139,8 +139,11 @@ public interface PortletApplication extends PortletApplicationDefinition, Serial
     public GenericMetadata getMetadata();
 
     PortletDefinition getPortlet(String name);
+    PortletDefinition getClone(String name);
     List<PortletDefinition> getPortlets();
+    List<PortletDefinition> getClones();
     PortletDefinition addPortlet(String name);
+    PortletDefinition addClone(String name);
 
     List<EventDefinition> getEventDefinitions();
     EventDefinition addEventDefinition(String name);

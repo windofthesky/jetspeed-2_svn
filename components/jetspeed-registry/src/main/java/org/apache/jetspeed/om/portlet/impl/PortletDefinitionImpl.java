@@ -73,7 +73,8 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
     protected String preferenceValidatorClassname;
     private Integer expirationCache;
     private String cacheScope;
-
+    private String cloneParent = null;
+    
     /** Metadata property */    
     private Collection<LocalizedField> metadataFields = null;
 
@@ -98,6 +99,11 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
 
     public PortletDefinitionImpl()
     {
+    }
+
+    public PortletDefinitionImpl(String cloneParent)
+    {
+        this.cloneParent = cloneParent;
     }
 
     public PortletApplication getApplication()
@@ -757,4 +763,13 @@ public class PortletDefinitionImpl implements PortletDefinition, Serializable, S
         return this.addSupportedPublishingEvent(qname);
     }
 
+    public boolean isClone()
+    {
+        return (cloneParent != null);
+    }
+
+    public String getCloneParent()
+    {
+        return this.cloneParent;
+    }
 }

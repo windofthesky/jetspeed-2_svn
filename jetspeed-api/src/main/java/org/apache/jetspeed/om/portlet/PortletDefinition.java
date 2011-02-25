@@ -19,7 +19,6 @@ package org.apache.jetspeed.om.portlet;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 import javax.xml.namespace.QName;
 
@@ -33,6 +32,7 @@ import javax.xml.namespace.QName;
  */
 public interface PortletDefinition extends org.apache.pluto.container.om.portlet.PortletDefinition, Serializable
 {
+    final String CLONE_PARENT_INIT_PARAM = "cloneParentPortlet";
     PortletApplication getApplication();
     InitParam getInitParam(String paramName);
     List<InitParam> getInitParams();
@@ -171,4 +171,18 @@ public interface PortletDefinition extends org.apache.pluto.container.om.portlet
      * @return true only if the internal identities are the same
      */
     boolean isSameIdentity(PortletDefinition other);
+
+    /**
+     * Determine if this portlet defintion is a clon
+     */
+    boolean isClone();
+
+    /**
+      * returns the parent portlet definition name from which this
+      * portlet clone was cloned from. If not defined, returns null
+     *
+      * @return the parent application name or null if not a clone
+      */
+     String getCloneParent();
 }
+ 
