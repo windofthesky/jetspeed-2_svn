@@ -233,7 +233,7 @@
 
     <!-- Project Dependency Version Properties -->
     <aopalliance.version>1.0</aopalliance.version>
-    <castor.version>1.1.1-xml</castor.version>
+    <castor.version>1.1.1</castor.version>
     <cglib.version>2.1_3</cglib.version>
     <commons-beanutils.version>1.8.0</commons-beanutils.version>
     <commons-betwixt.version>0.8</commons-betwixt.version>
@@ -1171,9 +1171,44 @@
 
       <!-- XML -->
       <dependency>
-        <groupId>castor</groupId>
+        <groupId>org.codehaus.castor</groupId>
         <artifactId>castor</artifactId>
         <version>${castor.version}</version>
+        <exclusions>
+          <!-- we only use/need the XML handling: excluding all other, non-test, dependencies -->
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-full</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>oro</groupId>
+            <artifactId>oro</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>jakarta-regexp</groupId>
+            <artifactId>jakarta-regexp</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>ldapsdk</groupId>
+            <artifactId>ldapsdk</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xerces</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>xml-apis</groupId>
