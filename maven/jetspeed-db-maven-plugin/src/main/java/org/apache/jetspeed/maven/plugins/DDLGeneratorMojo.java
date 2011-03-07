@@ -23,12 +23,14 @@ import java.io.StringWriter;
 
 import org.apache.ddlutils.Platform;
 import org.apache.ddlutils.PlatformFactory;
-import org.apache.ddlutils.io.DatabaseIO;
 import org.apache.ddlutils.model.Database;
 import org.apache.ddlutils.model.Table;
 import org.apache.ddlutils.platform.CreationParameters;
+import org.apache.ddlutils.platform.EnhancedSqlBuilder;
+import org.apache.ddlutils.platform.SqlBuilder;
 import org.apache.ddlutils.platform.oracle.Oracle8Platform;
 import org.apache.ddlutils.task.TableSpecificParameter;
+import org.apache.jetspeed.maven.plugins.db.ddlutils.io.DatabaseIO;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -147,11 +149,14 @@ public class DDLGeneratorMojo extends AbstractMojo
                     {
                         StringWriter stringWriter = new StringWriter();
                         platform.getSqlBuilder().setWriter(stringWriter);
-                        platform.getSqlBuilder().createTables(model, params, false);
+                        // use cglib enhanced wrapper for SqlBuilder to allow overriding ddlutils 1.0 behavior at runtime for 
+                        // https://issues.apache.org/jira/browse/DDLUTILS-75 which is fixed in ddlutils 1.1 but hasn't been released yet.
+                        SqlBuilder sqlBuilder = new EnhancedSqlBuilder(platform.getSqlBuilder());
+                        sqlBuilder.createTables(model, params, false);
                         int createSchemaLength = stringWriter.getBuffer().length();
                         writeOutput(new File(outputDir,"create-schema.sql"),stringWriter.toString());
                         stringWriter.getBuffer().setLength(0);
-                        platform.getSqlBuilder().createTables(model, params, true);
+                        sqlBuilder.createTables(model, params, true);
                         stringWriter.getBuffer().setLength(stringWriter.getBuffer().length()-createSchemaLength);
                         writeOutput(new File(outputDir,"drop-schema.sql"), stringWriter.toString());
                     }
@@ -233,7 +238,7 @@ public class DDLGeneratorMojo extends AbstractMojo
 
     protected Database readModel(File[] files) throws MojoExecutionException
     {
-        DatabaseIO reader = new DatabaseIO();
+    	DatabaseIO reader = new DatabaseIO();
         Database   model  = null;
 
         reader.setValidateXml(validateXml);
