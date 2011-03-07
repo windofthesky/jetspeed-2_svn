@@ -60,7 +60,7 @@
             <phase>process-resources</phase>
             <configuration>
               <unpack>
-                <artifact>${groupId}:jetspeed-portal-resources:jar</artifact>
+                <artifact>${project.groupId}:jetspeed-portal-resources:jar</artifact>
                 <resources>
                   <resource>
                     <path>ddl</path>
@@ -94,7 +94,7 @@
         </executions>
         <dependencies>
           <dependency>
-            <groupId>${groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>jetspeed-portal-resources</artifactId>
             <version>${project.version}</version>
           </dependency>
