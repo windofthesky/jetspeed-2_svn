@@ -192,14 +192,6 @@
     </developer>
   </developers>
 
-  <repositories>
-    <repository>
-      <id>com.bluesunrise.m2</id>
-      <name>Maven2 BlueSunrise</name>
-      <url>http://www.bluesunrise.com/maven2</url>
-    </repository>
-  </repositories>
-  
   <!-- Properties -->
   <properties>
 
