@@ -1469,8 +1469,8 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>com.google.step2</groupId>
-        <artifactId>step2-common</artifactId>
+        <groupId>org.apache.portals.jetspeed-2</groupId>
+        <artifactId>com-google-step2-common</artifactId>
         <version>${step2.version}</version>
         <exclusions>
           <exclusion>
@@ -2063,6 +2063,7 @@
         <module>maven</module>
         <module>jetspeed-portal-resources</module>
         <module>jetspeed-commons</module>
+        <module>openid-step2</module>
         <module>components</module>
         <module>jetspeed-ant-tasks</module>
         <module>applications</module>
@@ -2093,6 +2094,7 @@
         <module>maven</module>
         <module>jetspeed-portal-resources</module>
         <module>jetspeed-commons</module>
+        <module>openid-step2</module>
         <module>components</module>
         <module>jetspeed-ant-tasks</module>
         <module>applications</module>

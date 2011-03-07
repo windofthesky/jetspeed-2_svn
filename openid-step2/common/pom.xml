@@ -23,13 +23,12 @@
   <name>STEP2 Common</name>
 
   <parent>
-    <artifactId>step2-parent</artifactId>
-    <groupId>com.google.step2</groupId>
+    <artifactId>com-google-step2-parent</artifactId>
+    <groupId>org.apache.portals.jetspeed-2</groupId>
     <version>0</version>
   </parent>
 
-  <groupId>com.google.step2</groupId>
-  <artifactId>step2-common</artifactId>
+  <artifactId>com-google-step2-common</artifactId>
   <version>0</version>
   <packaging>jar</packaging>
 

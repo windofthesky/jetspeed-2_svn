@@ -22,8 +22,12 @@
 
   <name>STEP2 Project</name>
 
-  <groupId>com.google.step2</groupId>
-  <artifactId>step2-parent</artifactId>
+  <parent>
+      <groupId>org.apache.portals.jetspeed-2</groupId>
+      <artifactId>jetspeed-2</artifactId>
+      <version>2.2.2-SNAPSHOT</version>
+  </parent>
+  <artifactId>com-google-step2-parent</artifactId>
   <version>0</version>
   <packaging>pom</packaging>
 
