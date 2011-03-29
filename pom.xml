@@ -264,7 +264,8 @@
     
     <jdom.version>1.1</jdom.version>
     <log4j.version>1.2.14</log4j.version>
-    <lucene.version>3.0.2</lucene.version>
+    <lucene.version>2.9.3</lucene.version>
+    <solr.version>1.4.1</solr.version>
     <myfaces.version>1.1.5</myfaces.version>
     <ojb.version>1.0.3</ojb.version>
     <org.apache.derby.version>10.3.2.1</org.apache.derby.version>
@@ -780,6 +781,19 @@
         <artifactId>lucene-core</artifactId>
         <version>${lucene.version}</version>
       </dependency>
+      
+      <dependency>
+        <artifactId>solr-solrj</artifactId>
+        <groupId>org.apache.solr</groupId>
+        <version>${solr.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.apache.solr</groupId>
+        <artifactId>solr-core</artifactId>
+        <version>${solr.version}</version>
+      </dependency>
+      
       <dependency>
         <groupId>oro</groupId>
         <artifactId>oro</artifactId>

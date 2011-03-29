@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.search;
+package org.apache.jetspeed.search.lucene;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,6 +24,11 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.commons.collections.MultiHashMap;
+import org.apache.jetspeed.search.AbstractObjectHandler;
+import org.apache.jetspeed.search.BaseParsedObject;
+import org.apache.jetspeed.search.ParsedObject;
+import org.apache.jetspeed.search.SearchEngine;
+import org.apache.jetspeed.search.SearchResults;
 import org.apache.jetspeed.search.handlers.HandlerFactoryImpl;
 import org.apache.jetspeed.search.lucene.SearchEngineImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
@@ -78,7 +83,7 @@ public class TestPortletRegistrySearch extends JetspeedTestCase
         mapping.put("java.util.HashMap", MapObjectHandler.class.getName());
         HandlerFactoryImpl hfi = new HandlerFactoryImpl(mapping);
         directory = new RAMDirectory();
-        analyzer = new StandardAnalyzer(Version.LUCENE_30);
+        analyzer = new StandardAnalyzer(Version.LUCENE_29);
         searchEngine = new SearchEngineImpl(directory, analyzer, true, hfi);
     }
     

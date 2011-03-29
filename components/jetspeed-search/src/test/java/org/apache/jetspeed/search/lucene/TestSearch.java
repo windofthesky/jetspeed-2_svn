@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.search;
+package org.apache.jetspeed.search.lucene;
 
 import java.io.File;
 import java.net.URL;
@@ -24,6 +24,9 @@ import java.util.Iterator;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.jetspeed.search.ParsedObject;
+import org.apache.jetspeed.search.SearchEngine;
+import org.apache.jetspeed.search.SearchResults;
 import org.apache.jetspeed.search.handlers.HandlerFactoryImpl;
 import org.apache.jetspeed.search.lucene.SearchEngineImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
@@ -56,7 +59,7 @@ public class TestSearch extends JetspeedTestCase
         super(name);
         
         try {
-            jetspeedHomePage = getClass().getResource("jetspeed-1.txt");
+            jetspeedHomePage = getClass().getResource("/org/apache/jetspeed/search/jetspeed-1.txt");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,7 +67,7 @@ public class TestSearch extends JetspeedTestCase
         indexRoot = new File(getBaseDir()+INDEX_DIRECTORY);
         
         directory = new RAMDirectory();
-        analyzer = new StandardAnalyzer(Version.LUCENE_30);
+        analyzer = new StandardAnalyzer(Version.LUCENE_29);
     }
     
     /**
@@ -118,8 +121,8 @@ public class TestSearch extends JetspeedTestCase
     {
         assertNotNull("Created URL to Jetspeed Home Page",  jetspeedHomePage);
         assertTrue("Adding to index", searchEngine.add(jetspeedHomePage));
-        assertTrue("Adding to index", searchEngine.add(getClass().getResource("supporting.txt")));
-        assertTrue("Adding to index", searchEngine.add(getClass().getResource("portals.txt")));
+        assertTrue("Adding to index", searchEngine.add(getClass().getResource("/org/apache/jetspeed/search/supporting.txt")));
+        assertTrue("Adding to index", searchEngine.add(getClass().getResource("/org/apache/jetspeed/search/portals.txt")));
     }
     
     /**

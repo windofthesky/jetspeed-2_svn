@@ -120,7 +120,7 @@ public class SearchEngineImpl implements SearchEngine
         
         if (analyzer == null) 
         {
-            analyzer = new StandardAnalyzer(Version.LUCENE_30);
+            analyzer = new StandardAnalyzer(Version.LUCENE_29);
         }
         
         this.optimizeAfterUpdate = optimzeAfterUpdate;
@@ -320,7 +320,7 @@ public class SearchEngineImpl implements SearchEngine
             indexReader = IndexReader.open(directory);
             searcher = new IndexSearcher(indexReader);
             
-            QueryParser queryParser = new QueryParser(Version.LUCENE_30, defaultFieldName, analyzer);
+            QueryParser queryParser = new QueryParser(Version.LUCENE_29, defaultFieldName, analyzer);
             Query query = queryParser.parse(queryString);
             TopDocs topDocs = searcher.search(query, topHitsCount);
             
@@ -546,8 +546,9 @@ public class SearchEngineImpl implements SearchEngine
                 addFieldsToDocument(doc, fields, TEXT);
                 
                 List<String> syntheticField = new ArrayList<String>();
-                for (Fieldable fieldable : doc.getFields())
+                for (Object obj : doc.getFields())
                 {
+                    Fieldable fieldable = (Fieldable) obj;
                     String value = fieldable.stringValue();
                     if (value != null)
                     {
