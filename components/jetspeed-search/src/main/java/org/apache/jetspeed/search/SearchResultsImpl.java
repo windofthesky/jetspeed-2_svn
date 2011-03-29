@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.search.lucene;
+package org.apache.jetspeed.search;
 
 import java.util.Iterator;
 import java.util.List;

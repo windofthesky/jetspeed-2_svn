@@ -36,6 +36,7 @@ import org.apache.jetspeed.search.ObjectHandler;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.search.SearchResults;
+import org.apache.jetspeed.search.SearchResultsImpl;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
