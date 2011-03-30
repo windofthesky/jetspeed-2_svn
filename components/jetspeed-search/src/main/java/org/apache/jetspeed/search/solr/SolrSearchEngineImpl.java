@@ -40,6 +40,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
@@ -116,16 +117,33 @@ public class SolrSearchEngineImpl implements SearchEngine
 
                 if (parsedObject.getKey() != null)
                 {
-                    String queryString = new StringBuilder(40).append(ParsedObject.FIELDNAME_KEY).append(':').append(parsedObject.getKey()).toString();
-                    // Remove the document from search index
-                    UpdateResponse rsp = server.deleteByQuery(queryString);
-                    deleteCount += rsp.getResponse().size();
+                    String queryString = new StringBuilder(40).append(ParsedObject.FIELDNAME_KEY).append(':').append(ClientUtils.escapeQueryChars(parsedObject.getKey())).toString();
+                    
+                    SolrQuery query = new SolrQuery();
+                    query.setQuery(queryString);
+                    QueryResponse qrsp = server.query(query);
+                    int count = qrsp.getResults().size();
+                    
+                    if (count > 0)
+                    {
+                        // Remove the document from search index
+                        UpdateResponse rsp = server.deleteByQuery(queryString);
+                        
+                        if (rsp.getStatus() < 300) 
+                        {
+                            deleteCount += count;
+                        }
+                    }
                 }
             }
             
-            if (deleteCount > 0 && optimizeAfterUpdate)
+            if (deleteCount > 0)
             {
-                server.optimize();
+                server.commit();
+                
+                if (optimizeAfterUpdate) {
+                    server.optimize();
+                }
             }
         }
         catch (Exception e)
@@ -317,13 +335,18 @@ public class SolrSearchEngineImpl implements SearchEngine
                 if (parsedObject.getKey() != null)
                 {
                     SolrQuery query = new SolrQuery();
-                    String queryString = new StringBuilder(40).append(ParsedObject.FIELDNAME_KEY).append(':').append(key).toString();
-                    query.setQuery(ParsedObject.FIELDNAME_KEY + ":" + key);
-                    QueryResponse rsp = server.query(query);
+                    String queryString = new StringBuilder(40).append(ParsedObject.FIELDNAME_KEY).append(':').append(ClientUtils.escapeQueryChars(key)).toString();
+                    query.setQuery(queryString);
+                    QueryResponse qrsp = server.query(query);
                     
-                    if (rsp.getResults().size() > 0)
+                    if (!qrsp.getResults().isEmpty())
                     {
-                        server.deleteByQuery(queryString);
+                        UpdateResponse ursp = server.deleteByQuery(queryString);
+                        
+                        if (ursp.getStatus() < 300)
+                        {
+                            server.commit();
+                        }
                     }
                 }
                 
@@ -406,18 +429,20 @@ public class SolrSearchEngineImpl implements SearchEngine
                 docs.add(doc);
             }
             
-            if (objects.size() > 0 && optimizeAfterUpdate)
+            if (objects.size() > 0)
             {
                 server.add(docs);
                 server.commit();
                 
-                try
-                {
-                    server.optimize();
-                }
-                catch (IOException e)
-                {
-                    log.error("Error while trying to optimize index.", e);
+                if (optimizeAfterUpdate) {
+                    try
+                    {
+                        server.optimize();
+                    }
+                    catch (IOException e)
+                    {
+                        log.error("Error while trying to optimize index.", e);
+                    }
                 }
             }
         }

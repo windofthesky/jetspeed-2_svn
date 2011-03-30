@@ -42,6 +42,7 @@ import org.apache.solr.core.CoreContainer;
  */
 public class TestSolrPortletRegistrySearch extends JetspeedTestCase
 {
+    private CoreContainer coreContainer;
     private SolrServer server;
     private SearchEngine searchEngine;
     
@@ -79,11 +80,19 @@ public class TestSolrPortletRegistrySearch extends JetspeedTestCase
         mapping.put("java.util.HashMap", MapObjectHandler.class.getName());
         HandlerFactoryImpl hfi = new HandlerFactoryImpl(mapping);
         
-        File targetDir = new File("target/test-classes");
-        System.setProperty("solr.solr.home", targetDir.getCanonicalPath());
-        CoreContainer.Initializer initializer = new CoreContainer.Initializer();
-        CoreContainer coreContainer = initializer.initialize();
-        server = new EmbeddedSolrServer(coreContainer, "");
+        File solrFile = new File(getClass().getResource("/solr-test-home/solr.xml").toURI());
+        File homeDir = solrFile.getParentFile();
+        File dataDir = new File(homeDir, "data");
+        String homeDirPath = homeDir.getCanonicalPath();
+        String dataDirPath = dataDir.getCanonicalPath();
+        System.setProperty("solr.solr.home", homeDirPath);
+        System.setProperty("solr.data.dir", dataDirPath);
+        coreContainer = new CoreContainer();
+        coreContainer.load(homeDirPath, solrFile);
+        
+        server = new EmbeddedSolrServer(coreContainer, "js");
+        server.deleteByQuery("*:*");
+        server.commit();
 
         searchEngine = new SolrSearchEngineImpl(server, true, hfi);
     }
@@ -91,6 +100,7 @@ public class TestSolrPortletRegistrySearch extends JetspeedTestCase
     protected void tearDown() throws Exception
     {
         super.tearDown();
+        coreContainer.shutdown();
     }
     
     public void testSimpleSearch()
@@ -200,7 +210,6 @@ public class TestSolrPortletRegistrySearch extends JetspeedTestCase
         assertEquals(3, searchResults.size());
 
         String query = ParsedObject.FIELDNAME_TYPE + ":\"" + ParsedObject.OBJECT_TYPE_PORTLET_APPLICATION + "\" AND ( demo )";
-        
         searchResults = searchEngine.search(query);
         assertEquals(1, searchResults.size());
         
