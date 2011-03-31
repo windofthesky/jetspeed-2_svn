@@ -405,7 +405,7 @@ public class SolrSearchEngineImpl implements SearchEngine
                         doc.addField(ParsedObject.FIELDNAME_KEYWORDS, keyword, 1.0f);
                     }
                 }
-    
+                
                 Map keywords = parsedObject.getKeywordsMap();
                 addFieldsToDocument(doc, keywords);
                 
