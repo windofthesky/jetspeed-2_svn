@@ -210,49 +210,49 @@ public class SolrSearchEngineImpl implements SearchEngine
                 
                 addFieldsToParsedObject(doc, result);
                 
-                Object type = doc.getFieldValue(ParsedObject.FIELDNAME_TYPE);
+                Object type = doc.getFirstValue(ParsedObject.FIELDNAME_TYPE);
                 if(type != null)
                 {
                     result.setType(type.toString());
                 }
                 
-                Object key = doc.getFieldValue(ParsedObject.FIELDNAME_KEY);
+                Object key = doc.getFirstValue(ParsedObject.FIELDNAME_KEY);
                 if(key != null)
                 {
                     result.setKey(key.toString());
                 }
                 
-                Object description = doc.getFieldValue(ParsedObject.FIELDNAME_DESCRIPTION);
+                Object description = doc.getFirstValue(ParsedObject.FIELDNAME_DESCRIPTION);
                 if(description != null)
                 {
                     result.setDescription(description.toString());
                 }
                 
-                Object title = doc.getFieldValue(ParsedObject.FIELDNAME_TITLE);
+                Object title = doc.getFirstValue(ParsedObject.FIELDNAME_TITLE);
                 if(title != null)
                 {
                     result.setTitle(title.toString());
                 }
                 
-                Object content = doc.getFieldValue(ParsedObject.FIELDNAME_CONTENT);
+                Object content = doc.getFirstValue(ParsedObject.FIELDNAME_CONTENT);
                 if(content != null)
                 {
                     result.setContent(content.toString());
                 }
                 
-                Object language = doc.getFieldValue(ParsedObject.FIELDNAME_LANGUAGE);
+                Object language = doc.getFirstValue(ParsedObject.FIELDNAME_LANGUAGE);
                 if (language != null)
                 {
                     result.setLanguage(language.toString());
                 }
                 
-                Object classname = doc.getFieldValue(ParsedObject.FIELDNAME_CLASSNAME);
+                Object classname = doc.getFirstValue(ParsedObject.FIELDNAME_CLASSNAME);
                 if (classname != null)
                 {
                     result.setClassName(classname.toString());
                 }
                 
-                Object url = doc.getFieldValue(ParsedObject.FIELDNAME_URL);
+                Object url = doc.getFirstValue(ParsedObject.FIELDNAME_URL);
                 if (url != null)
                 {
                     result.setURL(new URL(url.toString()));
@@ -498,7 +498,7 @@ public class SolrSearchEngineImpl implements SearchEngine
             MultiMap multiFields = new MultiValueMap();
             HashMap fieldMap = new HashMap();
             
-            Object classNameField = doc.getFieldValue(ParsedObject.FIELDNAME_CLASSNAME);
+            Object classNameField = doc.getFirstValue(ParsedObject.FIELDNAME_CLASSNAME);
             
             if(classNameField != null)
             {
