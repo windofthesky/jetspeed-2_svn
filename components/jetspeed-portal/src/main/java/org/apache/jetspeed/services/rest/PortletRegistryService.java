@@ -244,7 +244,7 @@ public class PortletRegistryService
         {
             if (StringUtils.isBlank(applicationName) && StringUtils.isBlank(definitionName))
             {
-                Collection<PortletDefinition> pds = filterPortletDefinitionsBySecurityAccess(portletRegistry.getAllPortletDefinitions(), JetspeedActions.MASK_VIEW, servletRequest);
+                Collection<PortletDefinition> pds = filterPortletDefinitionsBySecurityAccess(portletRegistry.getAllDefinitions(), JetspeedActions.MASK_VIEW, servletRequest);
                 pdBeans.setTotalSize(pds.size());
                 
                 for (PortletDefinition pd : (Collection<PortletDefinition>) PaginationUtils.subCollection(pds, beginIndex, maxResults))
@@ -271,6 +271,11 @@ public class PortletRegistryService
                     else
                     {
                         PortletDefinition pd = pa.getPortlet(definitionName);
+                        
+                        if (pd == null)
+                        {
+                            pd = pa.getClone(definitionName);
+                        }
                         
                         if (pd != null && securityAccessController.checkPortletAccess(pd, JetspeedActions.MASK_VIEW))
                         {

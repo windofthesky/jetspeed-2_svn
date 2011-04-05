@@ -572,7 +572,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
     public List getLayouts( RequestContext request )
     {
         List list = new LinkedList();
-        Iterator portlets = registry.getAllPortletDefinitions().iterator();
+        Iterator portlets = registry.getAllDefinitions().iterator();
         while ( portlets.hasNext() )
         {
             PortletDefinition portlet = (PortletDefinition)portlets.next();

@@ -129,7 +129,7 @@ public class GetPortletsAction
         Locale locale = requestContext.getLocale();
         
         if (filter == null)
-            portlets = registry.getAllPortletDefinitions().iterator();
+            portlets = registry.getAllDefinitions().iterator();
         else
             portlets = searchEngine.search(filter).getResults().iterator();
         

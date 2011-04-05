@@ -92,7 +92,7 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
         assertEquals(def, two.getPortlets().iterator().next());
         PortletApplication o = (PortletApplication)portletRegistry.getPortletApplications().iterator().next();
         assertEquals(one, o);
-        assertEquals(portletRegistry.getAllPortletDefinitions().iterator().next(), def);
+        assertEquals(portletRegistry.getAllDefinitions().iterator().next(), def);
     }
     
     public void testCacheDirectly() {
