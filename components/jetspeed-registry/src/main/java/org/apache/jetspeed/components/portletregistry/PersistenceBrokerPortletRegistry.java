@@ -430,7 +430,14 @@ public class PersistenceBrokerPortletRegistry
                 copyDesc.setDescription(desc.getDescription());
             }
         }
-        InitParam parentPortlet = copy.addInitParam(PortletDefinition.CLONE_PARENT_INIT_PARAM);
+        
+        InitParam parentPortlet = copy.getInitParam(PortletDefinition.CLONE_PARENT_INIT_PARAM);
+        
+        if (parentPortlet == null)
+        {
+            parentPortlet = copy.addInitParam(PortletDefinition.CLONE_PARENT_INIT_PARAM);
+        }
+        
         parentPortlet.setParamValue(source.getPortletName());
 
         for (EventDefinitionReference eventDefRef : source.getSupportedProcessingEvents())
