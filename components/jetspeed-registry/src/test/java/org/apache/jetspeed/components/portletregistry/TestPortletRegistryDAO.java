@@ -207,6 +207,11 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
             assertEquals("myClone portlet name is not what expected", myClone.getPortletName(), "restorePortlet");
             assertEquals("expecting one clone ", 1,  testApp.getClones().size());
 
+            PortletDefinition myClone2 = portletRegistry.clonePortletDefinition(srcPortlet, "restorePortlet2");
+            assertNotNull("myClone2 portlet is null", myClone2);
+            assertEquals("myClone2 portlet name is not what expected", myClone2.getPortletName(), "restorePortlet2");
+            assertEquals("expecting two clones ", 2,  testApp.getClones().size());
+            
             portletRegistry.removeApplication(testApp);
             testApp = portletRegistry.getPortletApplication("cloneTest");
             assertNull("test app should be null", testApp);
@@ -215,14 +220,18 @@ public class TestPortletRegistryDAO extends DatasourceEnabledSpringTestCase
             PortletApplication recreated = portletRegistry.getPortletApplication("cloneTest");
             assertNotNull("recreated test app is null", recreated);
             int count = portletRegistry.restoreClones(recreated);
-            assertEquals("Expected to restore one clone", 1, count);
+            assertEquals("Expected to restore one clone", 2, count);
             PortletDefinition cpd = recreated.getClone("restorePortlet");
             assertEquals("Expected clone to be named 'restorePortlet' ", cpd.getPortletName(), "restorePortlet");
+            PortletDefinition cpd2 = recreated.getClone("restorePortlet2");
+            assertEquals("Expected clone to be named 'restorePortlet2' ", cpd2.getPortletName(), "restorePortlet2");
         }
         finally
         {
             PortletApplication cleanup = portletRegistry.getPortletApplication("cloneTest");
             assertNotNull("cleanup app is null", cleanup);
+            assertEquals("expecting one clone ", 2, cleanup.getClones().size());
+            portletRegistry.removeClone(cleanup.getClone("restorePortlet"));
             assertEquals("expecting one clone ", 1, cleanup.getClones().size());
             portletRegistry.removeAllClones(cleanup);
             assertEquals("expecting zero clones ", 0, cleanup.getClones().size());

@@ -569,6 +569,20 @@ public class PersistenceBrokerPortletRegistry
         return count;
     }
 
+    public void removeClone(PortletDefinition clone)
+            throws RegistryException
+    {
+        if (!clone.isClone())
+        {
+            throw new IllegalArgumentException("The portlet is not a cloned one: " + clone.getUniqueName());
+        }
+        
+        PortletApplication pa = clone.getApplication();
+        getPersistenceBrokerTemplate().delete(clone);
+        pa.getClones().remove(clone);
+        this.updatePortletApplication(pa);
+    }
+    
     public void removeAllClones(PortletApplication pa)
             throws RegistryException
     {

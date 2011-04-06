@@ -190,6 +190,15 @@ public interface PortletRegistry
 
 
     /**
+     * Remove a clone from a given portlet definition
+     * 
+     * @param clone the portlet definition
+     * @throws RegistryException
+     */
+    void removeClone(PortletDefinition clone)
+            throws RegistryException;
+    
+    /**
      * Remove all clones from a given portlet application
      * 
      * @param pa the portlet application
