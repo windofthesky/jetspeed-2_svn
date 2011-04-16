@@ -26,8 +26,8 @@ import java.util.Stack;
 
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
-import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.Fragment;
 
 /**
@@ -287,8 +287,8 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
         {
             stack.push(getRootFragment());
         }
-
-        BaseFragmentElement f = (BaseFragmentElement) stack.pop();
+        
+        BaseFragmentElement f = (stack.isEmpty() ? null : (BaseFragmentElement) stack.pop());
 
         while (f != null)
         {
@@ -308,14 +308,7 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
                 }
             }
 
-            if (stack.size() > 0)
-            {
-                f = (BaseFragmentElement) stack.pop();
-            }
-            else
-            {
-                f = null;
-            }
+            f = (stack.isEmpty() ? null : (BaseFragmentElement) stack.pop());
         }
 
         return fragments;
