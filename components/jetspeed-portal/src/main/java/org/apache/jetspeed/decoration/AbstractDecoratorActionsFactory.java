@@ -20,23 +20,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
-import org.apache.jetspeed.container.PortletWindow;
 
 public abstract class AbstractDecoratorActionsFactory implements DecoratorActionsFactory
 {
-    private static ThreadLocal actionResourcesMap = new ThreadLocal();
+    private static ThreadLocal<Map<String, Object>> actionResourcesMap = new ThreadLocal<Map<String, Object>>();
     private boolean editMaximizesOption = false;
     private boolean configMaximizesOption = false;
     private boolean editDefaultsMaximizesOption = false;
@@ -166,13 +168,25 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
                 || (template.getState() != null && !template.getState().equals(
                         template.getCustomState()));
 
-        HashMap resourcesMap = (HashMap)actionResourcesMap.get();
         ResourceBundle bundle = DecoratorAction.getResourceBundle(rc.getLocale());
+        Map<String, Object> resourcesMap = actionResourcesMap.get();
+        
+        // It seems better to not use threadLocal variable or to have an abstraction, but
+        // let's just check if the current cache in the thread has the same locale for now.
+        if (resourcesMap != null)
+        {
+            ResourceBundle cachedBundle = (ResourceBundle) resourcesMap.get(DecoratorAction.RESOURCE_BUNDLE);
+            if (!bundle.getLocale().equals(cachedBundle.getLocale())) 
+            {
+                resourcesMap = null;
+            }
+        }
+        
         String localizedName = null;
         
         if (resourcesMap == null)
         {
-            resourcesMap = new HashMap();
+            resourcesMap = new HashMap<String, Object>();
             actionResourcesMap.set(resourcesMap);
             resourcesMap.put(DecoratorAction.RESOURCE_BUNDLE, bundle);
             localizedName = DecoratorAction.getResourceString(bundle, actionName, actionName);
