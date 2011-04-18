@@ -19,8 +19,10 @@ package org.apache.jetspeed.search.solr;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +60,21 @@ public class SolrSearchEngineImpl implements SearchEngine
     private SolrServer server;
     private boolean optimizeAfterUpdate = true;
     private HandlerFactory handlerFactory;
+    private Set<String> searchableMetadataFieldNames = 
+        new HashSet<String>(Arrays.asList(
+                                          "ID", 
+                                          "url", 
+                                          "portlet", 
+                                          "portlet_application",
+                                          "subject",
+                                          "creator",
+                                          "publisher",
+                                          "title",
+                                          "fieldname.title",
+                                          "contributor",
+                                          "description",
+                                          "fieldname.description"
+                                          ));
     
     public SolrSearchEngineImpl(SolrServer server, boolean optimzeAfterUpdate, HandlerFactory handlerFactory)
     {
@@ -66,6 +83,16 @@ public class SolrSearchEngineImpl implements SearchEngine
         this.handlerFactory = handlerFactory;
     }
     
+    public Set<String> getSearchableMetadataFieldNames()
+    {
+        return searchableMetadataFieldNames;
+    }
+
+    public void setSearchableMetadataFieldNames(Set<String> searchableMetadataFieldNames)
+    {
+        this.searchableMetadataFieldNames = searchableMetadataFieldNames;
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#add(java.lang.Object)
      */
@@ -463,8 +490,14 @@ public class SolrSearchEngineImpl implements SearchEngine
             while(keyIter.hasNext())
             {
                 Object key = keyIter.next();
+                
                 if(key != null)
                 {
+                    if (!searchableMetadataFieldNames.contains(key))
+                    {
+                        continue;
+                    }
+                    
                     Object values = fields.get(key);
                     if(values != null)
                     {
