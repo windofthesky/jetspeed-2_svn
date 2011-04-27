@@ -1712,7 +1712,7 @@
               <target>
                 <id>test</id>
                 <dir>.</dir>
-                <goals>test</goals>
+                <goals>package</goals>
                 <profiles>test</profiles>
                 <properties>
                   <test>${test}</test>
