@@ -27,7 +27,7 @@ import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 
 /**
  * @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>
- * @version $Id:
+ * @version $Id$
  */
 public class JetspeedPrincipalLdapStorageManager implements JetspeedPrincipalStorageManager
 {
@@ -42,10 +42,13 @@ public class JetspeedPrincipalLdapStorageManager implements JetspeedPrincipalSto
 
     public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations) throws SecurityException
     {
-        EntityFactory entityFactory = ldapEntityManager.getEntityFactory(principal.getType().getName());
-        if (!SynchronizationStateAccess.isSynchronizing())
+        if (!SynchronizationStateAccess.isSynchronizing() && !ldapEntityManager.isReadOnly())
         {
-            ldapEntityManager.addEntity(entityFactory.createEntity(principal));
+            EntityFactory entityFactory = ldapEntityManager.getEntityFactory(principal.getType().getName());
+            if (entityFactory.isCreateAllowed())
+            {
+                ldapEntityManager.addEntity(entityFactory.createEntity(principal));
+            }
         }
         delegateJpsm.addPrincipal(principal, associations);
     }
@@ -57,20 +60,26 @@ public class JetspeedPrincipalLdapStorageManager implements JetspeedPrincipalSto
 
     public void removePrincipal(JetspeedPrincipal principal) throws SecurityException
     {
-        EntityFactory entityFactory = ldapEntityManager.getEntityFactory(principal.getType().getName());
-        if (!SynchronizationStateAccess.isSynchronizing())
+        if (!SynchronizationStateAccess.isSynchronizing() && !ldapEntityManager.isReadOnly())
         {
-            ldapEntityManager.removeEntity(entityFactory.createEntity(principal));
+            EntityFactory entityFactory = ldapEntityManager.getEntityFactory(principal.getType().getName());
+            if (entityFactory.isRemoveAllowed())
+            {
+                ldapEntityManager.removeEntity(entityFactory.createEntity(principal));
+            }
         }
         delegateJpsm.removePrincipal(principal);
     }
 
     public void updatePrincipal(JetspeedPrincipal principal) throws SecurityException
     {
-        EntityFactory entityFactory = ldapEntityManager.getEntityFactory(principal.getType().getName());
-        if (!SynchronizationStateAccess.isSynchronizing())
+        if (!SynchronizationStateAccess.isSynchronizing() && !ldapEntityManager.isReadOnly())
         {
-            ldapEntityManager.updateEntity(entityFactory.createEntity(principal));
+            EntityFactory entityFactory = ldapEntityManager.getEntityFactory(principal.getType().getName());
+            if (entityFactory.isUpdateAllowed())
+            {
+                ldapEntityManager.updateEntity(entityFactory.createEntity(principal));
+            }
         }
         delegateJpsm.updatePrincipal(principal);
     }

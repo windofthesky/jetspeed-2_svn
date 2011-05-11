@@ -27,4 +27,8 @@ public interface SecurityEntityRelationType
     String getToEntityType();
 
     String getRelationType();
+
+    boolean isCreateAllowed();
+    
+    boolean isRemoveAllowed();
 }

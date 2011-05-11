@@ -28,6 +28,8 @@ import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
  */
 public interface SecurityEntityManager
 {
+    boolean isReadOnly();
+    
     Set<String> getSupportedEntityTypes();
 
     Set<SecurityEntityRelationType> getSupportedEntityRelationTypes();

@@ -41,6 +41,9 @@ public class StubEntityRelationDAO implements EntityRelationDAO
         public Entity createEntity(JetspeedPrincipal principal) {return null; }
         public String getEntityType() { return null; }
         public Entity loadEntity(Object entity) { return (Entity)entity; }
+        public boolean isCreateAllowed() { return true; }
+        public boolean isRemoveAllowed() { return true; }
+        public boolean isUpdateAllowed() { return true; }
     };
     
     private Map<Entity,Collection<Entity>> fromTo = new HashMap<Entity,Collection<Entity>>();

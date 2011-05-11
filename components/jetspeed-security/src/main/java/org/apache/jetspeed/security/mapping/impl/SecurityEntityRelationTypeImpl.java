@@ -27,6 +27,8 @@ public class SecurityEntityRelationTypeImpl implements SecurityEntityRelationTyp
     private final String fromEntityType;
     private final String toEntityType;
     private final String relationType;
+    private final boolean createAllowed;
+    private final boolean removeAllowed;
     private final int hashCode;
 
     public SecurityEntityRelationTypeImpl(SecurityEntityRelationType src)
@@ -36,12 +38,19 @@ public class SecurityEntityRelationTypeImpl implements SecurityEntityRelationTyp
     
     public SecurityEntityRelationTypeImpl(String relationType, String sourceEntityType, String targetEntityType)
     {
+        this(relationType, sourceEntityType, targetEntityType, true, true);
+    }
+
+    public SecurityEntityRelationTypeImpl(String relationType, String sourceEntityType, String targetEntityType, boolean createAllowed, boolean removeAllowed)
+    {
         this.relationType = relationType;
         this.fromEntityType = sourceEntityType;
         this.toEntityType = targetEntityType;
+        this.createAllowed = createAllowed;
+        this.removeAllowed = removeAllowed;
         this.hashCode = relationType.hashCode() + sourceEntityType.hashCode() + targetEntityType.hashCode();
     }
-
+    
     @Override
     public int hashCode()
     {
@@ -72,5 +81,15 @@ public class SecurityEntityRelationTypeImpl implements SecurityEntityRelationTyp
     public String getRelationType()
     {
         return relationType;
+    }
+
+    public boolean isCreateAllowed()
+    {
+        return createAllowed;
+    }
+    
+    public boolean isRemoveAllowed()
+    {
+        return removeAllowed;
     }
 }

@@ -48,7 +48,10 @@ import org.springframework.ldap.support.LdapUtils;
  */
 public class EntityFactoryImpl implements EntityFactory
 {
-    LDAPEntityDAOConfiguration searchConfiguration;
+    private LDAPEntityDAOConfiguration searchConfiguration;
+    private boolean createAllowed = true;
+    private boolean updateAllowed = true;
+    private boolean removeAllowed = true;
 
     public EntityFactoryImpl(LDAPEntityDAOConfiguration searchConfiguration)
     {
@@ -58,6 +61,36 @@ public class EntityFactoryImpl implements EntityFactory
     public String getEntityType()
     {
         return searchConfiguration.getEntityType();
+    }
+
+    public boolean isCreateAllowed()
+    {
+        return createAllowed;
+    }
+
+    public void setCreateAllowed(boolean createAllowed)
+    {
+        this.createAllowed = createAllowed;
+    }
+
+    public boolean isUpdateAllowed()
+    {
+        return updateAllowed;
+    }
+
+    public void setUpdateAllowed(boolean updateAllowed)
+    {
+        this.updateAllowed = updateAllowed;
+    }
+
+    public boolean isRemoveAllowed()
+    {
+        return removeAllowed;
+    }
+
+    public void setRemoveAllowed(boolean removeAllowed)
+    {
+        this.removeAllowed = removeAllowed;
     }
 
     protected EntityImpl internalCreateEntity(String entityId, String internalId, Set<Attribute> attributes)

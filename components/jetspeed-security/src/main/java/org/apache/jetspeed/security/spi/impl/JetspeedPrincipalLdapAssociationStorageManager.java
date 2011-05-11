@@ -24,7 +24,7 @@ import org.apache.jetspeed.security.spi.JetspeedPrincipalAssociationStorageManag
 
 /**
  * @author <a href="mailto:vkumar@apache.org">Vivek Kumar</a>
- * @version $Id:
+ * @version $Id$
  */
 public class JetspeedPrincipalLdapAssociationStorageManager implements JetspeedPrincipalAssociationStorageManager
 {
@@ -43,10 +43,10 @@ public class JetspeedPrincipalLdapAssociationStorageManager implements JetspeedP
 
     public void addAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws SecurityException
     {
-        if (!SynchronizationStateAccess.isSynchronizing())
+        if (!SynchronizationStateAccess.isSynchronizing() && !ldapEntityManager.isReadOnly())
         {
             SecurityEntityRelationType relationType = ldapEntityManager.getSupportedEntityRelationType(associationName, from.getType().getName(), to.getType().getName());
-            if (relationType != null)
+            if (relationType != null && relationType.isCreateAllowed())
             {
                 ldapEntityManager.addRelation(from.getName(), to.getName(), relationType);
             }
@@ -56,10 +56,10 @@ public class JetspeedPrincipalLdapAssociationStorageManager implements JetspeedP
 
     public void removeAssociation(JetspeedPrincipal from, JetspeedPrincipal to, String associationName) throws SecurityException
     {
-        if (!SynchronizationStateAccess.isSynchronizing())
+        if (!SynchronizationStateAccess.isSynchronizing() && !ldapEntityManager.isReadOnly())
         {
             SecurityEntityRelationType relationType = ldapEntityManager.getSupportedEntityRelationType(associationName, from.getType().getName(), to.getType().getName());
-            if (relationType != null)
+            if (relationType != null && relationType.isRemoveAllowed())
             {
                 ldapEntityManager.removeRelation(from.getName(), to.getName(), relationType);
             }

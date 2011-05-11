@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.security.mapping.ldap.dao;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +36,8 @@ import org.apache.jetspeed.security.mapping.model.SecurityEntityRelationType;
  */
 public class DefaultLDAPEntityManager implements SecurityEntityManager
 {
+    private boolean readOnly;
+    
     // entity type DAOs
     private Map<String, EntityDAO>                             entityDAOs = new HashMap<String, EntityDAO>();
     private Map<SecurityEntityRelationType, EntityRelationDAO> entityRelationDAOs = new HashMap<SecurityEntityRelationType, EntityRelationDAO>();
@@ -44,6 +45,13 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
     
     public DefaultLDAPEntityManager(List<EntityDAO> entityDAOs, List<EntityRelationDAO> entityRelationDAOs)
     {
+        this(entityDAOs, entityRelationDAOs, false);
+    }
+    
+    public DefaultLDAPEntityManager(List<EntityDAO> entityDAOs, List<EntityRelationDAO> entityRelationDAOs, boolean readOnly)
+    {
+        this.readOnly = readOnly;
+        
         for (EntityDAO entityDAO: entityDAOs)
         {
             this.entityDAOs.put(entityDAO.getEntityType(), entityDAO);
@@ -65,6 +73,11 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
                 this.entityRelationTypes.get(relationType.getToEntityType()).add(relationType);
             }
         }
+    }
+    
+    public boolean isReadOnly()
+    {
+        return readOnly;
     }
     
     public SecurityEntityRelationType getSupportedEntityRelationType(String relationType, String fromEntityType, String toEntityType)
@@ -92,9 +105,18 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
     {
         return entityDAOs.get(entity.getType());
     }
-
+    
+    private void checkReadOnly(String methodName) throws SecurityException
+    {
+        if (readOnly)
+        {
+            throw new SecurityException(SecurityException.UNEXPECTED.create("DefaultLDAPEntityManager", methodName, "ReadOnly LDAP"));
+        }
+    }
+    
     public void addRelation(String fromEntityId, String toEntityId, SecurityEntityRelationType relationType) throws SecurityException
     {
+        checkReadOnly("addRelation");
         EntityRelationDAO dao = entityRelationDAOs.get(relationType instanceof SecurityEntityRelationTypeImpl ? relationType : new SecurityEntityRelationTypeImpl(relationType));
         if (dao != null)
         {
@@ -104,6 +126,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
     
     public void removeRelation(String fromEntityId, String toEntityId, SecurityEntityRelationType relationType) throws SecurityException
     {
+        checkReadOnly("removeRelation");
         EntityRelationDAO dao = entityRelationDAOs.get(relationType instanceof SecurityEntityRelationTypeImpl ? relationType : new SecurityEntityRelationTypeImpl(relationType));
         if (dao != null)
         {
@@ -160,6 +183,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
 
     public void updateEntity(Entity entity) throws SecurityException
     {
+        checkReadOnly("updateEntity");
         EntityDAO dao = getDAOForEntity(entity);
         if (dao != null)
         {
@@ -169,6 +193,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
 
     public void removeEntity(Entity entity) throws SecurityException
     {
+        checkReadOnly("removeEntity");
         EntityDAO dao = getDAOForEntity(entity);
         if (dao != null)
         {
@@ -178,6 +203,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
 
     public void addEntity(Entity entity) throws SecurityException
     {
+        checkReadOnly("addEntity");
         EntityDAO dao = getDAOForEntity(entity);
         if (dao != null)
         {
@@ -187,6 +213,7 @@ public class DefaultLDAPEntityManager implements SecurityEntityManager
 
     public void addEntity(Entity entity, Entity parentEntity) throws SecurityException
     {
+        checkReadOnly("addEntity");
         EntityDAO parentEntityDao = getDAOForEntity(parentEntity);
         EntityDAO dao = getDAOForEntity(entity);
         Entity liveParentEntity = null;

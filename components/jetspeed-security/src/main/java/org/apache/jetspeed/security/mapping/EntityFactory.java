@@ -33,4 +33,10 @@ public interface EntityFactory
     Entity createEntity(JetspeedPrincipal principal);
 
     Entity loadEntity(Object providerContext);
+
+    boolean isCreateAllowed();
+    
+    boolean isRemoveAllowed();
+    
+    boolean isUpdateAllowed();
 }
