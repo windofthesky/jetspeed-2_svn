@@ -23,6 +23,7 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.naming.ldap.LdapContext;
 
 import org.apache.jetspeed.security.mapping.SearchResultCallbackHandler;
 import org.springframework.ldap.control.PagedResultsCookie;
@@ -143,6 +144,9 @@ public class PagedSearchExecutor implements SearchExecutor, NameClassPairCallbac
             {
                 try
                 {
+                    // Make sure the Paging RequestControls are cleared again!
+                    LdapContext ldapContext = (LdapContext)ctx;
+                    ldapContext.setRequestControls(null);
                     processor.postProcess(ctx);
                 }
                 catch (NamingException e)
