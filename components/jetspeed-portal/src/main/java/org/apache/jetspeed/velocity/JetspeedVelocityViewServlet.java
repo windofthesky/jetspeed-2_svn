@@ -51,6 +51,7 @@ import org.apache.jetspeed.locator.TemplateLocatorException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.ServletRequestThreadLocalCleanupCallback;
 import org.apache.portals.bridges.velocity.BridgesVelocityViewServlet;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
@@ -176,7 +177,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
         // initialize velocity engine cache validation interval
         cacheValidationInterval = getLongInitParameter(config, CACHE_VALIDATION_INTERVAL_PARAMETER, DEFAULT_CACHE_VALIDATION_INTERVAL);
     }
-
+    
     /**
      * overriding VelocityViewServlet initialization of global Velocity to properly provide our own velocity.properties
      * so to prevent an ERROR logging for not finding the default global VM_global_library.vm (which isn't available).
@@ -244,6 +245,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             throw new IllegalStateException("JetspeedVelocityViewServlet unable to handle request because there is no RequestContext in "+
                    "the HttpServletRequest.");
         }
+        new ServletRequestThreadLocalCleanupCallback(handlingRequestContext);
         
         // hook up eventHandlers to the context, specifically our own IgnoringNullSetEventHandling
         eventCartridge.attachToContext(ctx);
@@ -256,7 +258,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             ctx.put("JS2RequestContext", requestContext);
             
             // setup TLS for Context propagation
-            handlingRequestContext.set(ctx);            
+            handlingRequestContext.set(ctx);    
             return super.handleRequest(request, response, ctx);            
         }
         // configure velocity context
