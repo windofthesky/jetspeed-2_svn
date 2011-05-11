@@ -48,10 +48,13 @@ import org.apache.jetspeed.security.spi.JetspeedSecuritySynchronizer;
  */
 public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySynchronizer
 {
-    private static final Logger logger = LoggerFactory.getLogger(DefaultJetspeedSecuritySynchronizer.class);
+    protected static final Logger logger = LoggerFactory.getLogger(JetspeedSecuritySynchronizer.class);
+    protected static final Logger feedbackLogger = LoggerFactory.getLogger(DefaultJetspeedSecuritySynchronizer.class);
     
-    JetspeedPrincipalManagerProvider principalManagerProvider;
-    SecurityEntityManager securityEntityManager;
+    protected JetspeedPrincipalManagerProvider principalManagerProvider;
+    protected SecurityEntityManager securityEntityManager;
+    protected boolean abortOnError = true;
+    protected int feedbackAfterSyncCount = 500;
 
     /**
      * @param principalManagerProvider
@@ -62,24 +65,27 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         this.principalManagerProvider = principalManagerProvider;
         this.securityEntityManager = securityEntityManager;
     }
+    
+    public void setAbortOnError(boolean abort)
+    {
+        this.abortOnError = abort;
+    }
+    
+    public void setFeedbackAfterSyncCount(int count)
+    {
+        this.feedbackAfterSyncCount = count;
+    }
 
     public synchronized void synchronizeAll() throws SecurityException
     {
         setSynchronizing(true);
         try
         {
-            if (logger.isDebugEnabled())
-            {
-                logger.debug("Synchronizing all entities");
-            }
+            feedbackLogger.info("Synchronizing all entities");
             final Map<String,Set<String>> processing = new HashMap<String,Set<String>>();
             final Map<String,Map<String,String>> processed = new HashMap<String,Map<String,String>>(); 
-            for (String type : securityEntityManager.getSupportedEntityTypes())
+            for (final String type : securityEntityManager.getSupportedEntityTypes())
             {
-                if (logger.isDebugEnabled())
-                {
-                    logger.debug("Synchronizing all "+type+" entities");
-                }
                 BaseEntitySearchResultHandler handler = new BaseEntitySearchResultHandler()
                 {
                     @Override
@@ -87,6 +93,10 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                     {
                         try
                         {
+                            if (feedbackAfterSyncCount > 0 && index % feedbackAfterSyncCount == 0)
+                            {
+                                feedbackLogger.info("Synchronizing {}s - processed: {}", type, index);
+                            }
                             synchronizeEntity(entity, processing, processed);
                         }
                         catch (SecurityException e)
@@ -97,12 +107,16 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                         return true;
                     }
                 };
+                feedbackLogger.info("Synchronizing all {}s", type);
                 securityEntityManager.getAllEntities(type,handler);
                 if (handler.getFeedback() != null)
                 {
+                    feedbackLogger.error("Synchronizing {}s aborted. Processed: {}", type, handler.getSize());
                     throw (SecurityException)handler.getFeedback();
                 }
+                feedbackLogger.info("Synchronizing {}s done. Processed: {}", type, handler.getSize());
             }
+            feedbackLogger.info("Synchronizing all entities done.");
         }
         finally
         {
@@ -110,7 +124,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
     }
 
-    public synchronized void synchronizePrincipalsByType(String type) throws SecurityException
+    public synchronized void synchronizePrincipalsByType(final String type) throws SecurityException
     {
         setSynchronizing(true);
         try
@@ -124,21 +138,35 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                 {
                     try
                     {
+                        if (feedbackAfterSyncCount > 0 && index % feedbackAfterSyncCount == 0)
+                        {
+                            feedbackLogger.info("Synchronizing {}s - processed: {}", type, index);
+                        }
                         synchronizeEntity(entity, processing, processed);
                     }
                     catch (SecurityException e)
                     {
-                        setFeedback(e);
-                        return false;
+                        if (abortOnError)
+                        {
+                            feedbackLogger.error("Failed to synchronize {}: {}", type, entity.getInternalId());
+                            setFeedback(e);
+                            return false;
+                        }
+                        feedbackLogger.warn("Failed to synchronize {}: {}", type, entity.getInternalId());
+                        logger.error("Failed to synchronize "+type+": "+entity, e);
+                        return true;
                     }
                     return true;
                 }
             };
+            feedbackLogger.info("Synchronizing {}s", type);
             securityEntityManager.getAllEntities(type, handler);
             if (handler.getFeedback() != null)
             {
+                feedbackLogger.error("Synchronizing {}s aborted. Processed: {}", type, handler.getSize());
                 throw (SecurityException)handler.getFeedback();
             }
+            feedbackLogger.info("Synchronizing {}s done. Processed: {}", type, handler.getSize());
         }
         finally
         {
@@ -151,10 +179,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         setSynchronizing(true);
         try
         {
-            if (logger.isDebugEnabled())
-            {
-                logger.debug("Synchronizing UserPrincipal("+name+")");
-            }
+            feedbackLogger.debug("Synchronizing UserPrincipal({})", name);
             Entity userEntity = securityEntityManager.getEntity(JetspeedPrincipalType.USER, name);
             if (userEntity != null)
             {
@@ -184,10 +209,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
             String principalName = processed.get(entity.getType()).get(entity.getId());
             return principalName != null ? getJetspeedPrincipal(entity.getType(),principalName) : null;
         }
-        if (logger.isDebugEnabled())
-        {
-            logger.debug("Synchronizing entity "+entity.getType()+" id: "+entity.getId());
-        }
+        feedbackLogger.debug("Synchronizing entity {} id: {}",entity.getType(),entity.getId());
         // synchronize and collect Entity from relations first
         Set<JetspeedPrincipalAssociationReference> toAssociations = synchronizeEntityFromRelations(entity, processing, processed);
         // create or update entity itself including all its from associations
@@ -287,7 +309,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
         else if (!principal.isMapped())
         {
-            logger.debug("Found "+principal.getType().getName()+" principal: "+principal.getName()+" is not mapped therefore not synchronized!");
+            feedbackLogger.warn("Found {} principal: {} is not mapped therefore not synchronized!", principal.getType().getName(),principal.getName());
             return null;
         }
         else
@@ -328,10 +350,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                         SecurityAttribute principalAttr = principalAttrs.getAttribute(attrDef.getMappedName());
                         if (principalAttr != null)
                         {
-                            if (logger.isDebugEnabled())
-                            {
-                                logger.debug("Removing attribute "+principalAttr.getName()+" for principal "+principal.getName()+".");
-                            }
+                            feedbackLogger.debug("Removing attribute {} for principal {}", principalAttr.getName(), principal.getName());
                             principalAttrs.removeAttribute(principalAttr.getName());
                             updated = true;
                         }
@@ -340,9 +359,10 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                 else if (syncAll)
                 {
                     SecurityAttribute principalAttr = principalAttrs.getAttribute(attrDef.getMappedName(), true);
-                    if (logger.isDebugEnabled())
+                    if (feedbackLogger.isDebugEnabled())
                     {
-                        logger.debug("Adding attribute "+principalAttr.getName()+" for principal "+principal.getName()+". Value: "+attr.getValue());
+                        feedbackLogger.debug("Adding attribute {} for principal {}. Value: {}", 
+                                             new String[] {principalAttr.getName(), principal.getName(), attr.getValue()});
                     }
                     principalAttr.setStringValue(attr.getValue());
                     updated = true;
@@ -352,9 +372,10 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
                     SecurityAttribute principalAttr = principalAttrs.getAttribute(attrDef.getMappedName(), true);
                     if (!StringUtils.equals(principalAttr.getStringValue(), attr.getValue()))
                     {
-                        if (logger.isDebugEnabled())
+                        if (feedbackLogger.isDebugEnabled())
                         {
-                            logger.debug("Updating attribute "+principalAttr.getName()+" for principal "+principal.getName()+". Old value: "+(principalAttr.getStringValue())+" new value: "+attr.getValue());
+                            feedbackLogger.debug("Attribute attribute {} for principal {}. Old value: {}, new value: {}", 
+                                                 new String[] {principalAttr.getName(), principal.getName(), (principalAttr.getStringValue()), attr.getValue()});
                         }
                         principalAttr.setStringValue(attr.getValue());
                         updated = true;
@@ -364,16 +385,10 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         }
         if (updated)
         {
-            if (logger.isDebugEnabled())
-            {
-                logger.debug("Storing attribute changes for principal "+principal.getName());
-            }
+            feedbackLogger.debug("Storing attribute changes for principal {}", principal.getName());
             principalManager.updatePrincipal(principal);
         }
-        if (logger.isDebugEnabled())
-        {
-            logger.debug("Synchronized entity "+entity.getType()+" id: "+entity.getId()+" mapped attributes");
-        }
+        feedbackLogger.debug("Synchronized entity {} id: {} mapped attributes", entity.getType(), entity.getId());
         return principal;
     }
 
@@ -387,7 +402,7 @@ public class DefaultJetspeedSecuritySynchronizer implements JetspeedSecuritySync
         throw new SecurityException(SecurityException.UNKNOWN_PRINCIPAL_TYPE.create(principalType));
     }
 
-    private void setSynchronizing(boolean sync)
+    protected void setSynchronizing(boolean sync)
     {
         SynchronizationStateAccess.setSynchronizing(sync ? Boolean.TRUE : Boolean.FALSE);
     }
