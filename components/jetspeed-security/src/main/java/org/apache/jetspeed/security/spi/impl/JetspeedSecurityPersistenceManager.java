@@ -85,7 +85,7 @@ public class JetspeedSecurityPersistenceManager
     
     private JetspeedPrincipalLookupManagerFactory jpplf = null;
     
-    private static class ManagedListByQueryCallback implements PersistenceBrokerCallback
+    protected static class ManagedListByQueryCallback implements PersistenceBrokerCallback
     {
         private Query query;
         
