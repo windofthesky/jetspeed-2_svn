@@ -36,6 +36,7 @@ import org.apache.jetspeed.security.mapping.model.AttributeDef;
 import org.apache.jetspeed.security.mapping.model.Entity;
 import org.apache.jetspeed.security.mapping.model.impl.AttributeImpl;
 import org.apache.jetspeed.security.mapping.model.impl.EntityImpl;
+import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapRdn;
@@ -125,66 +126,76 @@ public class EntityFactoryImpl implements EntityFactory
     
     public Entity loadEntity(Object providerContext)
     {
-        DirContextOperations ctx = (DirContextOperations)((SearchResult)(providerContext)).getObject();
-        String entityId = null;
         Entity entity = null;
-        String dn = ctx.getNameInNamespace();
-        Set<Attribute> attributes = new HashSet<Attribute>();
-        Attributes attrs = ctx.getAttributes();
-        for (AttributeDef attrDef : searchConfiguration.getEntityAttributeDefinitionsMap().values())
+        DirContextOperations ctx = null;
+        
+        if (providerContext instanceof SearchResult)
         {
-            List<String> values = null;
-            values = getStringAttributes(attrs, attrDef.getName(), attrDef.requiresDnDefaultValue());
-            if (values != null)
+            ctx = (DirContextOperations) ((SearchResult) (providerContext)).getObject();
+        }
+        else if (providerContext instanceof DirContextAdapter)
+        {
+            ctx = (DirContextOperations) providerContext;
+        }
+        if (ctx != null)
+        {
+            String entityId = null;
+            String dn = ctx.getNameInNamespace();
+            Set<Attribute> attributes = new HashSet<Attribute>();
+            Attributes attrs = ctx.getAttributes();
+            for (AttributeDef attrDef : searchConfiguration.getEntityAttributeDefinitionsMap().values())
             {
-                Attribute a = new AttributeImpl(attrDef);
-                if (attrDef.isMultiValue())
+                List<String> values = null;
+                values = getStringAttributes(attrs, attrDef.getName(), attrDef.requiresDnDefaultValue());
+                if (values != null)
                 {
-                    // remove the dummy value for required fields when present.
-                    if (attrDef.isRequired())
+                    Attribute a = new AttributeImpl(attrDef);
+                    if (attrDef.isMultiValue())
                     {
-                        String defaultValue = attrDef.requiresDnDefaultValue() ? dn : attrDef.getRequiredDefaultValue();
-                        values.remove(defaultValue);
+                        // remove the dummy value for required fields when present.
+                        if (attrDef.isRequired())
+                        {
+                            String defaultValue = attrDef.requiresDnDefaultValue() ? dn : attrDef.getRequiredDefaultValue();
+                            values.remove(defaultValue);
+                        }
+                        if (values.size() != 0)
+                        {
+                            a.setValues(values);
+                        }
+                        else
+                        {
+                            attributes.add(a);
+                        }
                     }
-                        
-                    if (values.size() != 0)
-                    {
-                        a.setValues(values);
-                    }
-                        
                     else
                     {
-                        attributes.add(a);
-                    }                        
+                        String value = values.get(0);
+                        if (attrDef.isEntityIdAttribute())
+                        {
+                            entityId = value;
+                        }
+                        a.setValue(value);
+                    }
+                    attributes.add(a);
+                }
+            }
+            if (entityId == null)
+            {
+                DistinguishedName name = new DistinguishedName(dn);
+                LdapRdn rdn = name.getLdapRdn(name.size() - 1);
+                if (rdn.getKey().equals(searchConfiguration.getLdapIdAttribute()))
+                {
+                    entityId = rdn.getValue();
                 }
                 else
                 {
-                    String value = values.get(0);
-                    if (attrDef.isEntityIdAttribute())
-                    {
-                        entityId = value;
-                    }
-                    a.setValue(value);
+                    // TODO: throw exception???
+                    return null;
                 }
-                attributes.add(a);
             }
+            entity = internalCreateEntity(entityId, dn, attributes);
+            entity.setLive(true);
         }
-        if (entityId == null)
-        {
-            DistinguishedName name = new DistinguishedName(dn);            
-            LdapRdn rdn = name.getLdapRdn(name.size()-1);
-            if (rdn.getKey().equals(searchConfiguration.getLdapIdAttribute()))
-            {
-                entityId = rdn.getValue();
-            }
-            else
-            {
-                // TODO: throw exception???
-                return null;
-            }
-        }
-        entity = internalCreateEntity(entityId, dn, attributes);
-        entity.setLive(true);
         return entity;
     }
 }
