@@ -34,6 +34,7 @@ import org.apache.jetspeed.security.spi.JetspeedPermissionStorageManager;
 import org.apache.jetspeed.security.spi.PersistentJetspeedPermission;
 import org.apache.jetspeed.security.spi.impl.BaseJetspeedPermission;
 import org.apache.jetspeed.security.spi.impl.JetspeedPermissionFactory;
+import org.apache.jetspeed.util.ServletRequestThreadLocalCleanupCallback;
 
 /**
  * @version $Id$
@@ -63,6 +64,7 @@ public class PermissionManagerImpl implements PermissionManager
         {
             map = new HashMap<Long,Permissions>();
             permissionsCache.set(map);
+            new ServletRequestThreadLocalCleanupCallback(permissionsCache);            
         }
         return map;
     }
