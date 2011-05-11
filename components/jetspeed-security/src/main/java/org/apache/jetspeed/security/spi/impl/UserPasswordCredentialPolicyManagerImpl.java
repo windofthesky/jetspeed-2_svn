@@ -173,7 +173,13 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
                 }
                 if (validator != null)
                 {
-                    validator.validate(credential.getNewPassword());
+                    if (!authenticated)
+                    {
+                        // Note: authenticated is also forced set to true during synchronization like from Ldap
+                        // this might means the initial password isn't valid, but needs to be accepted anyway
+                        // but will be forced to be changed after first login.
+                        validator.validate(credential.getNewPassword());
+                    }
                 }
                 newPassword = credential.getNewPassword();
                 if (encoder != null)
