@@ -20,6 +20,7 @@ limitations under the License.
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Set" %>
+<%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ page import="org.apache.jetspeed.JetspeedActions" %>
 <%@ page import="org.apache.jetspeed.ui.Jetui" %>
 <%@ page import="org.apache.jetspeed.ui.Toolbar" %>
@@ -91,7 +92,7 @@ limitations under the License.
   String inheritDecorationName = null;
   if (inheritDec) {
     inheritDecorationName = request.getParameter("_inheritdeco");
-    if (inheritDecorationName != null) {
+    if (!StringUtils.isEmpty(inheritDecorationName)) {
       pageDec = inheritDecorationName;
     }
   }
