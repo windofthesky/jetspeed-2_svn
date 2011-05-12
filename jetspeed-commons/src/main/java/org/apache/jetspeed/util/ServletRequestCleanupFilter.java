@@ -47,14 +47,9 @@ public class ServletRequestCleanupFilter implements Filter
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException
     {
-        ServletRequestCleanupService.setCleaner(this);
-        if (filterChain != null)
+        if (request instanceof HttpServletRequest && response instanceof HttpServletResponse)
         {
-            filterChain.doFilter(request, response);
-        }
-        if (request instanceof HttpServletRequest)
-        {
-            ServletRequestCleanupService.cleanup(this, context, (HttpServletRequest)request, (HttpServletResponse)response);
+            ServletRequestCleanupService.doFilter(context, (HttpServletRequest)request, (HttpServletResponse)response, filterChain);
         }
     }
 }

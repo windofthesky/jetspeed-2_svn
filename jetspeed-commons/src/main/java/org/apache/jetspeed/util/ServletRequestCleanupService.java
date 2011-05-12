@@ -16,10 +16,13 @@
  */
 package org.apache.jetspeed.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,73 +32,104 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ServletRequestCleanupService
 {
-    private static ThreadLocal<List<ServletRequestCleanupCallback>> cleanups = new ThreadLocal<List<ServletRequestCleanupCallback>>();
-    private static ThreadLocal<Object> firstCleaner = new ThreadLocal<Object>();
-    
-    private static List<ServletRequestCleanupCallback> getCleanups(boolean create)
+    private static ThreadLocal<List<ServletRequestCleanupCallback>> callbacks = new ThreadLocal<List<ServletRequestCleanupCallback>>();
+
+    private static List<ServletRequestCleanupCallback> getCallbacks(boolean create)
     {
-        List<ServletRequestCleanupCallback> list = cleanups.get();
+        List<ServletRequestCleanupCallback> list = callbacks.get();
         if (list == null && create)
         {
             list = new ArrayList<ServletRequestCleanupCallback>();
-            cleanups.set(list);
+            callbacks.set(list);
         }
         return list;
     }
     
-    public static void setCleaner(Object cleaner)
-    {
-        if (cleaner == null)
-        {
-            throw new IllegalArgumentException("Cleaner may not be null");
-        }
-        if (firstCleaner.get() == null)
-        {
-            firstCleaner.set(cleaner);
-        }
-    }
-        
     public static void addCleanupCallback(ServletRequestCleanupCallback callback)
     {
-        if (firstCleaner.get() == null)
-        {
+        List<ServletRequestCleanupCallback> callbacks = getCallbacks(false);
+        if (callbacks == null)
+        {            
+            callbacks = getCallbacks(true);
             try
             {
                 throw new RuntimeException();
             }
             catch (RuntimeException jre)
             {
-                // log missing cleaner and stacktrace for addCleanupCallback call
+                // log error being called outside filter chain and the stacktrace for this addCleanupCallback call
                 JetspeedLoggerUtil.getSharedLogger(ServletRequestCleanupService.class)
-                    .error("No request cleaner set for ServletRequestCleanupService: cleanup callback ignored", jre);
-                return;
+                    .error("Registring cleanup callback before ServletRequestCleanupService invoked from filter chain.", jre);
             }
         }
-        getCleanups(true).add(callback);
+        callbacks.add(callback);
     }
     
-    public static void cleanup(Object cleaner, ServletContext context, HttpServletRequest request, HttpServletResponse response)
+    /**
+     * Servlet Filter doFilter delegate method which will execute registered ServletRequestCleanupCallbacks
+     * after the filterChain, if any.
+     * <p>
+     * Note: the delegating Servlet Filter(s) MUST <b>only</b> be configured for handling REQUEST dispatching (which is the default),
+     * so only a single doFilter call will be executed for a single request.
+     * @param context
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws IOException
+     * @throws ServletException
+     */
+    static void doFilter(ServletContext context, HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        throws IOException, ServletException
     {
-        if (cleaner != null && cleaner.equals(firstCleaner.get()))
+        List<ServletRequestCleanupCallback> callbacks = getCallbacks(true);
+        Throwable filterException = null;
+        try
         {
-            List<ServletRequestCleanupCallback> list = getCleanups(false);
-            if (list != null)
+            if (filterChain != null)
             {
-                for (ServletRequestCleanupCallback callback : cleanups.get())
-                {
-                    try
-                    {
-                        callback.cleanup(context, request, response);
-                    }
-                    catch (Exception e)
-                    {
-                        JetspeedLoggerUtil.getSharedLogger(ServletRequestCleanupService.class)
-                            .error("Request cleanup operation failed", e);
-                    }
-                }
-                cleanups.remove();
+                filterChain.doFilter(request, response);
             }
-            firstCleaner.remove();
+        }
+        catch (Throwable tf)
+        {
+            filterException = tf;
+            tf.fillInStackTrace();
+        }        
+        for (ServletRequestCleanupCallback callback : callbacks)
+        {
+            try
+            {
+                callback.cleanup(context, request, response);
+            }
+            catch (Throwable tc)
+            {
+                try
+                {
+                    JetspeedLoggerUtil.getSharedLogger(ServletRequestCleanupService.class)
+                        .error("Cleanup callback execution failed", tc);
+                }
+                catch (Throwable tl)
+                {
+                    // ignore
+                }
+            }
+        }
+        ServletRequestCleanupService.callbacks.remove();
+        if (filterException != null)
+        {
+            if (filterException instanceof ServletException)
+            {
+                throw (ServletException)filterException;
+            }
+            if (filterException instanceof IOException)
+            {
+                throw (IOException)filterException;
+            }
+            if (filterException instanceof RuntimeException)
+            {
+                throw (RuntimeException)filterException;
+            }
+            throw new RuntimeException(filterException);
         }
     }
 }
