@@ -27,6 +27,9 @@ package org.apache.jetspeed.security;
  */
 
 import javax.security.auth.*;
+
+import org.apache.jetspeed.util.ServletRequestThreadLocalCleanupCallback;
+
 import java.security.AccessControlContext;
 import java.security.PrivilegedActionException;
 
@@ -37,12 +40,17 @@ public class JSSubject implements java.io.Serializable
 
     private static final long serialVersionUID = -8308522755600156057L;
 
-    static ThreadLocal threadLocal = 
-        new ThreadLocal();
+    static ThreadLocal threadLocal = new ThreadLocal();
     
     
-    
-    
+    private static void setSubject(Subject subject)
+    {
+        if (threadLocal.get() == null && subject != null)
+        {
+            new ServletRequestThreadLocalCleanupCallback(threadLocal);
+        }
+        threadLocal.set(subject);
+    }
 
     /**
      * Get the <code>Subject</code> associated with the provided
@@ -103,7 +111,7 @@ public class JSSubject implements java.io.Serializable
     	Subject subject = subject1;
     	if (subject == null)
     		subject = JSSubject.getSubject(null);
-    	threadLocal.set(subject);
+    	setSubject(subject);
     	return Subject.doAs(subject,action);	
     }
 
@@ -139,7 +147,7 @@ public class JSSubject implements java.io.Serializable
     	Subject subject = subject1;
     	if (subject == null)
     		subject = JSSubject.getSubject(null);
-    	threadLocal.set(subject);
+    	setSubject(subject);
     	if (subject != null)
     		return Subject.doAs(subject,action);
     	else
@@ -174,7 +182,7 @@ public class JSSubject implements java.io.Serializable
     	Subject subject = subject1;
     	if (subject == null)
     		subject = JSSubject.getSubject(acc);
-    	threadLocal.set(subject);
+    	setSubject(subject);
     	if (subject != null)
     		return Subject.doAsPrivileged(subject,action,acc);
     	else
@@ -218,7 +226,7 @@ public class JSSubject implements java.io.Serializable
     	Subject s = subject;
     	if (s == null)
     		s = JSSubject.getSubject(acc);
-    	threadLocal.set(s);
+    	setSubject(s);
     	if (s != null)
     		return Subject.doAsPrivileged(s,action,acc);
     	else
