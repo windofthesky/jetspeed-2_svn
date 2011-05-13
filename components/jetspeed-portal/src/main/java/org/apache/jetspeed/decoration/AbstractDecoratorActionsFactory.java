@@ -35,6 +35,7 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
+import org.apache.jetspeed.util.ServletRequestThreadLocalCleanupCallback;
 
 public abstract class AbstractDecoratorActionsFactory implements DecoratorActionsFactory
 {
@@ -188,6 +189,7 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
         {
             resourcesMap = new HashMap<String, Object>();
             actionResourcesMap.set(resourcesMap);
+            new ServletRequestThreadLocalCleanupCallback(actionResourcesMap);
             resourcesMap.put(DecoratorAction.RESOURCE_BUNDLE, bundle);
             localizedName = DecoratorAction.getResourceString(bundle, actionName, actionName);
             resourcesMap.put(actionName,localizedName);
