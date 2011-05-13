@@ -63,7 +63,7 @@ public class JaxrsServiceValve extends AbstractValve
         {
             try
             {
-                MethodUtils.invokeStaticMethod(busFactoryClass, "setThreadDefaultBus",  new Object [] { null });
+                MethodUtils.invokeStaticMethod(busFactoryClass, "setThreadDefaultBus",  new Object [] { null }, new Class[] {bus.getClass()});
             }
             catch (Exception ignore)
             {
@@ -106,7 +106,7 @@ public class JaxrsServiceValve extends AbstractValve
         {
             try
             {
-                MethodUtils.invokeStaticMethod(busFactoryClass, "setThreadDefaultBus",  new Object [] { null });
+                MethodUtils.invokeStaticMethod(busFactoryClass, "setThreadDefaultBus",  new Object [] { null }, new Class[] {bus.getClass()});
             }
             catch (Exception ignore)
             {
