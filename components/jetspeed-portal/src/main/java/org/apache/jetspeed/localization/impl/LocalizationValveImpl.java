@@ -167,8 +167,15 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
         request.getRequest().getSession().setAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE, locale);
         CurrentLocale.set(locale);
         // Pass control to the next Valve in the Pipeline
-        context.invokeNext(request);
-
+        try
+        {
+            context.invokeNext(request);
+        }
+        finally
+        {
+            // ensure clearing of ThreadLocal state after request
+            CurrentLocale.set(null);
+        }
     }
 
     public String toString()
