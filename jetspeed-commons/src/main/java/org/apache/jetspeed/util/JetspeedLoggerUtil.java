@@ -42,6 +42,16 @@ public class JetspeedLoggerUtil
      */
     public static final String DEFAULT_LOGGER_FACTORY_METHOD = "getLogger";
     
+    /**
+     * LocationAwareLogger SLF4J SPI Interface FQN
+     */
+    public static final String LOCATION_AWARE_LOGGER_FQN = "org.slf4j.spi.LocationAwareLogger";
+
+    /**
+     * SLF4J MessageFormatter FQN
+     */
+    public static final String MESSAGE_FORMATTER_FQN = "org.slf4j.helpers.MessageFormatter";
+    
     private static JetspeedLogger noopLogger = new NOOPJetspeedLogger();
     
     private JetspeedLoggerUtil()
@@ -69,7 +79,9 @@ public class JetspeedLoggerUtil
             
             if (logger != null)
             {
-                return new DelegatingByReflectionJetspeedLogger(logger);
+            	Class<?> locationAwareLoggerClazz = Thread.currentThread().getContextClassLoader().loadClass(LOCATION_AWARE_LOGGER_FQN);
+            	Class<?> messageFormatterClazz = Thread.currentThread().getContextClassLoader().loadClass(MESSAGE_FORMATTER_FQN);
+                return new DelegatingByReflectionJetspeedLogger(logger, locationAwareLoggerClazz.isAssignableFrom(logger.getClass()), locationAwareLoggerClazz, messageFormatterClazz);
             }
         }
         catch (Exception e)
@@ -101,7 +113,9 @@ public class JetspeedLoggerUtil
             
             if (logger != null)
             {
-                return new DelegatingByReflectionJetspeedLogger(logger);
+            	Class<?> locationAwareLoggerClazz = Thread.currentThread().getContextClassLoader().loadClass(LOCATION_AWARE_LOGGER_FQN);
+            	Class<?> messageFormatterClazz = Thread.currentThread().getContextClassLoader().loadClass(MESSAGE_FORMATTER_FQN);
+                return new DelegatingByReflectionJetspeedLogger(logger, locationAwareLoggerClazz.isAssignableFrom(logger.getClass()), locationAwareLoggerClazz, messageFormatterClazz);
             }
         }
         catch (Exception e)
@@ -191,13 +205,40 @@ public class JetspeedLoggerUtil
     {
         private static final long serialVersionUID = 1L;
         
+        private final static String FQCN = DelegatingByReflectionJetspeedLogger.class.getName();
+        
+        /* See org.slf4j.spi.LocationAwareLogger for the following log level constants */
+        private final static int DEBUG_INT = 10;
+        private final static int INFO_INT = 20;
+        private final static int WARN_INT = 30;
+        private final static int ERROR_INT = 40;
+        
         private Class<?> targetClazz;
         private Object targetLogger;
+        private boolean locationAware;
+        private Method logcationAwareLoggerLogMethod;
+        private Class<?> formatterClazz;
+        private Method arrayFormatMethod;
         
-        public DelegatingByReflectionJetspeedLogger(Object targetLogger)
+        public DelegatingByReflectionJetspeedLogger(Object targetLogger, boolean locationAware, Class<?> locationAwareLoggerClazz, Class<?> formatterClazz)
         {
             this.targetLogger = targetLogger;
             this.targetClazz = targetLogger.getClass();
+            this.locationAware = locationAware;
+            
+            if (locationAware)
+            {
+            	for (Method method : locationAwareLoggerClazz.getMethods())
+            	{
+            		if ("log".equals(method.getName()) && method.getParameterTypes().length == 5)
+            		{
+            			logcationAwareLoggerLogMethod = method;
+            			break;
+            		}
+            	}
+            }
+            
+            this.formatterClazz = formatterClazz;
         }
         
         public boolean isDebugEnabled()
@@ -222,102 +263,254 @@ public class JetspeedLoggerUtil
         
         public void debug(String msg)
         {
-            invokeLoggerMethod("debug", new Class [] { String.class }, msg);
+        	if (locationAware)
+        	{
+        		invokeLocationAwareLoggerMethod(DEBUG_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("debug", new Class [] { String.class }, msg);
+        	}
         }
 
         public void debug(String format, Object arg)
         {
-            invokeLoggerMethod("debug", new Class [] { String.class, Object.class }, format, arg);
+        	if (locationAware)
+        	{
+        		String msg = arrayFormat(format, new Object [] { arg });
+        		invokeLocationAwareLoggerMethod(DEBUG_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("debug", new Class [] { String.class, Object.class }, format, arg);
+        	}
         }
 
         public void debug(String format, Object arg1, Object arg2)
         {
-            invokeLoggerMethod("debug", new Class [] { String.class, Object.class, Object.class }, format, arg1, arg2);
+        	if (locationAware)
+        	{
+        		String msg = arrayFormat(format, new Object [] { arg1, arg2 });
+        		invokeLocationAwareLoggerMethod(DEBUG_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("debug", new Class [] { String.class, Object.class, Object.class }, format, arg1, arg2);
+        	}
         }
 
         public void debug(String format, Object[] argArray)
         {
-            invokeLoggerMethod("debug", new Class [] { String.class, Object [].class }, format, argArray);
+        	if (locationAware)
+        	{
+        		String msg = arrayFormat(format, argArray);
+        		invokeLocationAwareLoggerMethod(DEBUG_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("debug", new Class [] { String.class, Object [].class }, format, argArray);
+        	}
         }
 
         public void debug(String msg, Throwable t)
         {
-            invokeLoggerMethod("debug", new Class [] { String.class, Throwable.class }, msg, t);
+        	if (locationAware)
+        	{
+        		invokeLocationAwareLoggerMethod(DEBUG_INT, msg, t);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("debug", new Class [] { String.class, Throwable.class }, msg, t);
+        	}
         }
 
         public void info(String msg)
         {
-            invokeLoggerMethod("info", new Class [] { String.class }, msg);
+        	if (locationAware)
+        	{
+        		invokeLocationAwareLoggerMethod(INFO_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("info", new Class [] { String.class }, msg);
+        	}
         }
 
         public void info(String format, Object arg)
         {
-            invokeLoggerMethod("info", new Class [] { String.class, Object.class }, format, arg);
+        	if (locationAware)
+        	{
+        		String msg = arrayFormat(format, new Object [] { arg });
+        		invokeLocationAwareLoggerMethod(INFO_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("info", new Class [] { String.class, Object.class }, format, arg);
+        	}
         }
 
         public void info(String format, Object arg1, Object arg2)
         {
-            invokeLoggerMethod("info", new Class [] { String.class, Object.class, Object.class }, format, arg1, arg2);
+        	if (locationAware)
+        	{
+        		String msg = arrayFormat(format, new Object [] { arg1, arg2 });
+        		invokeLocationAwareLoggerMethod(INFO_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("info", new Class [] { String.class, Object.class, Object.class }, format, arg1, arg2);
+        	}
         }
 
         public void info(String format, Object[] argArray)
         {
-            invokeLoggerMethod("info", new Class [] { String.class, Object [].class }, format, argArray);
+        	if (locationAware)
+        	{
+        		String msg = arrayFormat(format, argArray);
+        		invokeLocationAwareLoggerMethod(INFO_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("info", new Class [] { String.class, Object [].class }, format, argArray);
+        	}
         }
 
         public void info(String msg, Throwable t)
         {
-            invokeLoggerMethod("info", new Class [] { String.class, Throwable.class }, msg, t);
+        	if (locationAware)
+        	{
+        		invokeLocationAwareLoggerMethod(INFO_INT, msg, t);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("info", new Class [] { String.class, Throwable.class }, msg, t);
+        	}
         }
         
         public void warn(String msg)
         {
-            invokeLoggerMethod("warn", new Class [] { String.class }, msg);
+        	if (locationAware)
+        	{
+        		invokeLocationAwareLoggerMethod(WARN_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("warn", new Class [] { String.class }, msg);
+        	}
         }
 
         public void warn(String format, Object arg)
         {
-            invokeLoggerMethod("warn", new Class [] { String.class, Object.class }, format, arg);
+        	if (locationAware)
+        	{
+        		String msg = arrayFormat(format, new Object [] { arg });
+        		invokeLocationAwareLoggerMethod(WARN_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("warn", new Class [] { String.class, Object.class }, format, arg);
+        	}
         }
 
         public void warn(String format, Object arg1, Object arg2)
         {
-            invokeLoggerMethod("warn", new Class [] { String.class, Object.class, Object.class }, format, arg1, arg2);
+        	if (locationAware)
+        	{
+        		String msg = arrayFormat(format, new Object [] { arg1, arg2 });
+        		invokeLocationAwareLoggerMethod(WARN_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("warn", new Class [] { String.class, Object.class, Object.class }, format, arg1, arg2);
+        	}
         }
 
         public void warn(String format, Object[] argArray)
         {
-            invokeLoggerMethod("warn", new Class [] { String.class, Object [].class }, format, argArray);
+        	if (locationAware)
+        	{
+        		String msg = arrayFormat(format, argArray);
+        		invokeLocationAwareLoggerMethod(WARN_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("warn", new Class [] { String.class, Object [].class }, format, argArray);
+        	}
         }
 
         public void warn(String msg, Throwable t)
         {
-            invokeLoggerMethod("warn", new Class [] { String.class, Throwable.class }, msg, t);
+        	if (locationAware)
+        	{
+        		invokeLocationAwareLoggerMethod(WARN_INT, msg, t);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("warn", new Class [] { String.class, Throwable.class }, msg, t);
+        	}
         }
         
         public void error(String msg)
         {
-            invokeLoggerMethod("error", new Class [] { String.class }, msg);
+        	if (locationAware)
+        	{
+        		invokeLocationAwareLoggerMethod(ERROR_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("error", new Class [] { String.class }, msg);
+        	}
         }
 
         public void error(String format, Object arg)
         {
-            invokeLoggerMethod("error", new Class [] { String.class, Object.class }, format, arg);
+        	if (locationAware)
+        	{
+        		String msg = arrayFormat(format, new Object [] { arg });
+        		invokeLocationAwareLoggerMethod(ERROR_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("error", new Class [] { String.class, Object.class }, format, arg);
+        	}
         }
 
         public void error(String format, Object arg1, Object arg2)
         {
-            invokeLoggerMethod("error", new Class [] { String.class, Object.class, Object.class }, format, arg1, arg2);
+        	if (locationAware)
+        	{
+        		String msg = arrayFormat(format, new Object [] { arg1, arg2 });
+        		invokeLocationAwareLoggerMethod(ERROR_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("error", new Class [] { String.class, Object.class, Object.class }, format, arg1, arg2);
+        	}
         }
 
         public void error(String format, Object[] argArray)
         {
-            invokeLoggerMethod("error", new Class [] { String.class, Object [].class }, format, argArray);
+        	if (locationAware)
+        	{
+        		String msg = arrayFormat(format, argArray);
+        		invokeLocationAwareLoggerMethod(ERROR_INT, msg, null);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("error", new Class [] { String.class, Object [].class }, format, argArray);
+        	}
         }
 
         public void error(String msg, Throwable t)
         {
-            invokeLoggerMethod("error", new Class [] { String.class, Throwable.class }, msg, t);
+        	if (locationAware)
+        	{
+        		invokeLocationAwareLoggerMethod(ERROR_INT, msg, t);
+        	}
+        	else
+        	{
+        		invokeLoggerMethod("error", new Class [] { String.class, Throwable.class }, msg, t);
+        	}
         }
         
         private Object invokeLoggerMethod(String methodName, Class<?> [] argTypes, Object ... args)
@@ -333,6 +526,34 @@ public class JetspeedLoggerUtil
             }
         }
         
+        private Object invokeLocationAwareLoggerMethod(int level, String msg, Throwable th)
+        {
+            try
+            {
+            	return logcationAwareLoggerLogMethod.invoke(targetLogger, new Object [] { null, FQCN, level, msg, th });
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException("Failed to invoke location aware logger's log method on " + targetLogger + ". " + e);
+            }
+        }
+        
+        private String arrayFormat(String format, Object [] objectArray) 
+        {
+            try
+            {
+	        	if (arrayFormatMethod == null)
+	        	{
+	        		arrayFormatMethod = formatterClazz.getMethod("arrayFormat", String.class, Object [].class);
+	        	}
+	        	
+	        	return (String) arrayFormatMethod.invoke(formatterClazz, format, objectArray);
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException("Failed to invoke arrayFormat method on " + formatterClazz + ". " + e);
+            }
+        }
     };
     
     private static class NOOPJetspeedLogger implements JetspeedLogger, Serializable
