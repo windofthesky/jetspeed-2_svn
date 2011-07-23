@@ -216,9 +216,11 @@ public class JetspeedLoggerUtil
         private Class<?> targetClazz;
         private Object targetLogger;
         private boolean locationAware;
-        private Method logcationAwareLoggerLogMethod;
+        private Method locationAwareLoggerLogMethod;
+        private int locationAwareLoggerLogMethodArgsCount;
         private Class<?> formatterClazz;
         private Method arrayFormatMethod;
+        private Method formattingTupleGetMessageMethod;
         
         public DelegatingByReflectionJetspeedLogger(Object targetLogger, boolean locationAware, Class<?> locationAwareLoggerClazz, Class<?> formatterClazz)
         {
@@ -230,10 +232,15 @@ public class JetspeedLoggerUtil
             {
             	for (Method method : locationAwareLoggerClazz.getMethods())
             	{
-            		if ("log".equals(method.getName()) && method.getParameterTypes().length == 5)
+            		if ("log".equals(method.getName()))
             		{
-            			logcationAwareLoggerLogMethod = method;
-            			break;
+            			int argsCount = method.getParameterTypes().length;
+                        if (argsCount == 6 || argsCount == 5) // slf4j-1.6.x when 6, slf4j-1.5.x when 5 
+                        { 
+                        	locationAwareLoggerLogMethod = method;
+	            			locationAwareLoggerLogMethodArgsCount = argsCount;
+	            			break;
+                        }
             		}
             	}
             }
@@ -265,7 +272,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		invokeLocationAwareLoggerMethod(DEBUG_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(DEBUG_INT, msg, null, null);
         	}
         	else
         	{
@@ -277,8 +284,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		String msg = arrayFormat(format, new Object [] { arg });
-        		invokeLocationAwareLoggerMethod(DEBUG_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(DEBUG_INT, format, new Object [] { arg }, null);
         	}
         	else
         	{
@@ -290,8 +296,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		String msg = arrayFormat(format, new Object [] { arg1, arg2 });
-        		invokeLocationAwareLoggerMethod(DEBUG_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(DEBUG_INT, format, new Object [] { arg1, arg2 }, null);
         	}
         	else
         	{
@@ -303,8 +308,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		String msg = arrayFormat(format, argArray);
-        		invokeLocationAwareLoggerMethod(DEBUG_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(DEBUG_INT, format, argArray, null);
         	}
         	else
         	{
@@ -316,7 +320,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		invokeLocationAwareLoggerMethod(DEBUG_INT, msg, t);
+        		invokeLocationAwareLoggerMethod(DEBUG_INT, msg, null, t);
         	}
         	else
         	{
@@ -328,7 +332,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		invokeLocationAwareLoggerMethod(INFO_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(INFO_INT, msg, null, null);
         	}
         	else
         	{
@@ -340,8 +344,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		String msg = arrayFormat(format, new Object [] { arg });
-        		invokeLocationAwareLoggerMethod(INFO_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(INFO_INT, format, new Object [] { arg }, null);
         	}
         	else
         	{
@@ -353,8 +356,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		String msg = arrayFormat(format, new Object [] { arg1, arg2 });
-        		invokeLocationAwareLoggerMethod(INFO_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(INFO_INT, format, new Object [] { arg1, arg2 }, null);
         	}
         	else
         	{
@@ -366,8 +368,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		String msg = arrayFormat(format, argArray);
-        		invokeLocationAwareLoggerMethod(INFO_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(INFO_INT, format, argArray, null);
         	}
         	else
         	{
@@ -379,7 +380,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		invokeLocationAwareLoggerMethod(INFO_INT, msg, t);
+        		invokeLocationAwareLoggerMethod(INFO_INT, msg, null, t);
         	}
         	else
         	{
@@ -391,7 +392,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		invokeLocationAwareLoggerMethod(WARN_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(WARN_INT, msg, null, null);
         	}
         	else
         	{
@@ -403,8 +404,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		String msg = arrayFormat(format, new Object [] { arg });
-        		invokeLocationAwareLoggerMethod(WARN_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(WARN_INT, format, new Object [] { arg }, null);
         	}
         	else
         	{
@@ -416,8 +416,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		String msg = arrayFormat(format, new Object [] { arg1, arg2 });
-        		invokeLocationAwareLoggerMethod(WARN_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(WARN_INT, format, new Object [] { arg1, arg2 }, null);
         	}
         	else
         	{
@@ -429,8 +428,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		String msg = arrayFormat(format, argArray);
-        		invokeLocationAwareLoggerMethod(WARN_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(WARN_INT, format, argArray, null);
         	}
         	else
         	{
@@ -442,7 +440,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		invokeLocationAwareLoggerMethod(WARN_INT, msg, t);
+        		invokeLocationAwareLoggerMethod(WARN_INT, msg, null, t);
         	}
         	else
         	{
@@ -454,7 +452,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		invokeLocationAwareLoggerMethod(ERROR_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(ERROR_INT, msg, null, null);
         	}
         	else
         	{
@@ -466,8 +464,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		String msg = arrayFormat(format, new Object [] { arg });
-        		invokeLocationAwareLoggerMethod(ERROR_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(ERROR_INT, format, new Object [] { arg }, null);
         	}
         	else
         	{
@@ -479,8 +476,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		String msg = arrayFormat(format, new Object [] { arg1, arg2 });
-        		invokeLocationAwareLoggerMethod(ERROR_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(ERROR_INT, format, new Object [] { arg1, arg2 }, null);
         	}
         	else
         	{
@@ -492,8 +488,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		String msg = arrayFormat(format, argArray);
-        		invokeLocationAwareLoggerMethod(ERROR_INT, msg, null);
+        		invokeLocationAwareLoggerMethod(ERROR_INT, format, argArray, null);
         	}
         	else
         	{
@@ -505,7 +500,7 @@ public class JetspeedLoggerUtil
         {
         	if (locationAware)
         	{
-        		invokeLocationAwareLoggerMethod(ERROR_INT, msg, t);
+        		invokeLocationAwareLoggerMethod(ERROR_INT, msg, null, t);
         	}
         	else
         	{
@@ -526,11 +521,23 @@ public class JetspeedLoggerUtil
             }
         }
         
-        private Object invokeLocationAwareLoggerMethod(int level, String msg, Throwable th)
+        private Object invokeLocationAwareLoggerMethod(int level, String format, Object[] argArray, Throwable t)
         {
             try
             {
-            	return logcationAwareLoggerLogMethod.invoke(targetLogger, new Object [] { null, FQCN, level, msg, th });
+                String msg = null;
+                
+                if (argArray == null || argArray.length == 0) {
+                    msg = format;
+                } else {
+                    msg = arrayFormat(format, argArray);
+                }
+                
+                if (locationAwareLoggerLogMethodArgsCount == 6) {
+                    return locationAwareLoggerLogMethod.invoke(targetLogger, null, FQCN, level, msg, null, t);
+                } else {
+                    return locationAwareLoggerLogMethod.invoke(targetLogger, null, FQCN, level, msg, t);
+                }
             }
             catch (Exception e)
             {
@@ -547,7 +554,18 @@ public class JetspeedLoggerUtil
 	        		arrayFormatMethod = formatterClazz.getMethod("arrayFormat", String.class, Object [].class);
 	        	}
 	        	
-	        	return (String) arrayFormatMethod.invoke(formatterClazz, format, objectArray);
+	        	Object ret = arrayFormatMethod.invoke(formatterClazz, format, objectArray);
+	        	
+	        	if (ret == null) {
+	        		return null;
+	        	} else if (ret instanceof String) {
+	        		return (String) ret;
+	        	} else {
+	        		if (formattingTupleGetMessageMethod == null) {
+	        			formattingTupleGetMessageMethod = ret.getClass().getMethod("getMessage", null);
+	        		}
+	        		return (String) formattingTupleGetMessageMethod.invoke(ret, null);
+	        	}
             }
             catch (Exception e)
             {
