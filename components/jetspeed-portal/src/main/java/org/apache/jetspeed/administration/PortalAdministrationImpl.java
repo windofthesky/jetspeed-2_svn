@@ -472,8 +472,13 @@ public class PortalAdministrationImpl implements PortalAdministration
         msg.setSubject(subject);
         msg.setTo(to);
         msg.setText(text);
+        
+        ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+        
         try
         {
+        	// JS2-1256: Needs to set context classloader to null to let geronimo-javamail find provider class properly.
+        	Thread.currentThread().setContextClassLoader(null);
             mailSender.send(msg);
         } 
         catch (MailException ex)
@@ -481,6 +486,10 @@ public class PortalAdministrationImpl implements PortalAdministration
             throw new AdministrationEmailException(
                     "Failed to send forgotten password email to user with email address because "+ex.getMessage(), ex
                             ); //+ user.getEmail());
+        }
+        finally
+        {
+        	Thread.currentThread().setContextClassLoader(currentCL);
         }
     }
     

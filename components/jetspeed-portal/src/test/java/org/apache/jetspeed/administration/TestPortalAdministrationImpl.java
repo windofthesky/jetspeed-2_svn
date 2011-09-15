@@ -17,6 +17,8 @@
 package org.apache.jetspeed.administration;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -49,6 +51,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 public class TestPortalAdministrationImpl extends  TestCase
 {
     private String smtpHost;
+    private String adminEmail = "admin@localhost";
+    private String userEmail = "user@localhost";
     
     public static void main(String args[])
     {
@@ -59,11 +63,25 @@ public class TestPortalAdministrationImpl extends  TestCase
     {
         super.setUp();
         
-        // If the following sys property is provided (e.g. '-DTestPortalAdministrationImpl.smtp.host=localhost')
+        // If the following sys properties are provided (e.g. '-DTestPortalAdministrationImpl.smtp.host=localhost -DTestPortalAdministrationImpl.user.email=jdoe@localhost')
         // and if the destination smtp server is provided, then
-        // this test case will send message to the target server.
+        // this test case will send message to the recipient and the target server.
         // Otherwise, by default, this test case uses a mock object. 
-        smtpHost = System.getProperty("TestPortalAdministrationImpl.smtp.host");
+        
+        String prop = System.getProperty("TestPortalAdministrationImpl.smtp.host");
+        if (prop != null) {
+        	smtpHost = prop;
+        }
+        
+        prop = System.getProperty("TestPortalAdministrationImpl.admin.email");
+        if (prop != null) {
+        	adminEmail = prop;
+        }
+        
+        prop = System.getProperty("TestPortalAdministrationImpl.user.email");
+        if (prop != null) {
+        	userEmail = prop;
+        }
     }
     
     public static Test suite()
@@ -97,7 +115,7 @@ public class TestPortalAdministrationImpl extends  TestCase
         }
         
         PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,javaMailSender,null);
-        pai.sendEmail("chris@bluesunrise.com","this is a unittest","david@bluesunrise.com","this is the content of the message");
+        pai.sendEmail(adminEmail,"this is a unittest",userEmail,"this is the content of the message");
         
         if (javaMailSender instanceof MockJavaMailSender)
         {
@@ -111,11 +129,11 @@ public class TestPortalAdministrationImpl extends  TestCase
             
             List<Address> froms = Arrays.asList(sentMessage.getFrom());
             assertEquals(1, froms.size());
-            assertEquals("chris@bluesunrise.com", ((InternetAddress) froms.get(0)).getAddress());
+            assertEquals(adminEmail, ((InternetAddress) froms.get(0)).getAddress());
             
             List<Address> tos = Arrays.asList(sentMessage.getRecipients(Message.RecipientType.TO));
             assertEquals(1, tos.size());
-            assertEquals("david@bluesunrise.com", ((InternetAddress) tos.get(0)).getAddress());
+            assertEquals(userEmail, ((InternetAddress) tos.get(0)).getAddress());
             
             assertEquals("this is a unittest", sentMessage.getSubject());
             
@@ -127,6 +145,31 @@ public class TestPortalAdministrationImpl extends  TestCase
             
             System.out.println("Mail message payload:\n\n" + payload + "\n");
         }
+    }
+    
+    public void testSendMailFromAnotherThread() throws Exception {
+    	final List<Exception> exceptions = new ArrayList<Exception>();
+    	
+    	Thread t = new Thread(new Runnable() {
+    		public void run() {
+    			ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    			try {
+    				Thread.currentThread().setContextClassLoader(new URLClassLoader(new URL[0]));
+    				testSendEmail();
+    			} catch (Exception e) {
+    				exceptions.add(e);
+    				throw new RuntimeException(e);
+    			} finally {
+    				Thread.currentThread().setContextClassLoader(cl);
+    			}
+    		}
+    	});
+    	t.start();
+    	t.join();
+    	
+    	if (!exceptions.isEmpty()) {
+    		fail("testSendMail was not successful when the service is invoked from another thread having a different context classloader. " + exceptions.get(0));
+    	}
     }
     
     // this needs too much init to test easily right now
