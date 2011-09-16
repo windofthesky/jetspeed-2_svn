@@ -58,7 +58,7 @@ public class DeployMojo extends AbstractMojo
     private static final String DEPLOY_FACTORY_CLASS_NAME = "org.apache.jetspeed.tools.deploy.JetspeedDeployFactory";
 
     /**
-     * Support only Tomcat 5.5.27+ or Tomcat 6.0.18+. The profile attribute is
+     * Support only Tomcat 6.0.33+. The profile attribute is
      * typically set in the plugin configurations using the following tags:
      *
      * <profile>tomcat${org.apache.jetspeed.catalina.version.major}</profile>
@@ -66,21 +66,18 @@ public class DeployMojo extends AbstractMojo
      * <profile>tomcat${tomcat.version.major}</profile>
      *
      * The supported values for the org.apache.jetspeed.catalina.version.major
-     * property are '5', '5.5', and '6'. If unset, the profile value will be
+     * property are '6' and '7'. If unset, the profile value will be
      * 'tomcat' or 'tomcatnull', which will imply the default tomcat support.
      *
-     * The supported values for the tomcat.version.major are '5' and '6'.
-     *
-     * Tomcat 6, ('tomcat6'), support is the default; Tomcat 5, ('tomcat5'), and
-     * Tomcat 5.5, ('tomcat5.5'), both map to Tomcat 5.5 which is the minimum
-     * Tomcat 5.X version currently supported.
+     * The supported values for the tomcat.version.major are '6' and '7'.
+     * 
+     * The current implementation makes no distinction between either version (anymore).
      */
     private static final String PROFILE_TOMCAT = "tomcat";
     private static final String PROFILE_TOMCAT_NULL = "tomcatnull";
-    private static final String PROFILE_TOMCAT5 = "tomcat5";
-    private static final String PROFILE_TOMCAT55 = "tomcat5.5";
     private static final String PROFILE_TOMCAT6 = "tomcat6";
-    private static final String DEFAULT_PROFILE = PROFILE_TOMCAT6; 
+    private static final String PROFILE_TOMCAT7 = "tomcat7";
+    private static final String DEFAULT_PROFILE = PROFILE_TOMCAT7; 
 
     public static class Deployment
     {
@@ -784,77 +781,38 @@ public class DeployMojo extends AbstractMojo
         {
             profile = DEFAULT_PROFILE;
         }
-        else if (profile.equals(PROFILE_TOMCAT55))
+    	else if (!(profile.equals(PROFILE_TOMCAT6) || profile.equals(PROFILE_TOMCAT7)))
         {
-            profile = PROFILE_TOMCAT5;
-        }
-    	else if (!(profile.equals(PROFILE_TOMCAT5) || profile.equals(PROFILE_TOMCAT6)))
-        {
-    		throw new MojoFailureException("Cannot handle profile '" + profile + "', use '" + PROFILE_TOMCAT5 + "' or '" + PROFILE_TOMCAT6 + "'");
+    		throw new MojoFailureException("Cannot handle profile '" + profile + "', use '" + PROFILE_TOMCAT6 + "' or '" + PROFILE_TOMCAT7 + "'");
     	}
 
-    	// configure destinations
-    	if (profile.equals(PROFILE_TOMCAT5))
+        if (!destMap.containsKey("system"))
         {
-	        if (!destMap.containsKey("system"))
-	        {
-	            destMap.put("system","common/endorsed");
-	        }
-	        if (!destMap.containsKey("lib"))
-	        {
-	            destMap.put("lib","shared/lib");
-	        }
-	        if (!destMap.containsKey("war"))
-	        {
-	            destMap.put("war", "webapps");
-	        }
-	        if (!destMap.containsKey("deploy"))
-	        {
-	            destMap.put("deploy", ((String)destMap.get("war"))+"/"+portalName+"/WEB-INF/deploy");
-	        }
-	        if (!destMap.containsKey("local"))
-	        {
-	            destMap.put("local", ((String)destMap.get("deploy"))+"/local");
-	        }
-            if (!destMap.containsKey("server-conf"))
-            {
-                destMap.put("server-conf", "conf");
-            }
-            if (!destMap.containsKey("server-lib"))
-            {
-                destMap.put("server-lib","server/lib");
-            }
-    	}
-    	else if (profile.equals(PROFILE_TOMCAT6))
+            destMap.put("system","lib");
+        }
+        if (!destMap.containsKey("lib"))
         {
-    		if (!destMap.containsKey("system"))
-            {
-                destMap.put("system","lib");
-            }
-            if (!destMap.containsKey("lib"))
-            {
-                destMap.put("lib","lib");
-            }
-            if (!destMap.containsKey("war"))
-            {
-                destMap.put("war", "webapps");
-            }
-            if (!destMap.containsKey("deploy"))
-            {
-                destMap.put("deploy", ((String)destMap.get("war"))+"/"+portalName+"/WEB-INF/deploy");
-            }
-            if (!destMap.containsKey("local"))
-            {
-                destMap.put("local", ((String)destMap.get("deploy"))+"/local");
-            }
-            if (!destMap.containsKey("server-conf"))
-            {
-                destMap.put("server-conf", "conf");
-            }
-            if (!destMap.containsKey("server-lib"))
-            {
-                destMap.put("server-lib", "lib");
-            }
-    	}
+            destMap.put("lib","lib");
+        }
+        if (!destMap.containsKey("war"))
+        {
+            destMap.put("war", "webapps");
+        }
+        if (!destMap.containsKey("deploy"))
+        {
+            destMap.put("deploy", ((String)destMap.get("war"))+"/"+portalName+"/WEB-INF/deploy");
+        }
+        if (!destMap.containsKey("local"))
+        {
+            destMap.put("local", ((String)destMap.get("deploy"))+"/local");
+        }
+        if (!destMap.containsKey("server-conf"))
+        {
+            destMap.put("server-conf", "conf");
+        }
+        if (!destMap.containsKey("server-lib"))
+        {
+            destMap.put("server-lib", "lib");
+        }
     }
 }	

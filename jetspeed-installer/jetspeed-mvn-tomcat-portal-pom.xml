@@ -38,8 +38,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tomcat.version.major>6</tomcat.version.major>
-    <tomcat.version.minor>6.0.18</tomcat.version.minor>
+    <tomcat.version.major>7</tomcat.version.major>
+    <tomcat.version.minor>7.0.21</tomcat.version.minor>
     <tomcat.name>apache-tomcat-${tomcat.version.minor}</tomcat.name>
     <org.apache.portals.jetspeed.version>${project.version}</org.apache.portals.jetspeed.version>
     <org.apache.jetspeed.portal.context.name>jetspeed</org.apache.jetspeed.portal.context.name>
@@ -77,10 +77,7 @@
                       overwrite="false"/>
 
                     <delete file="${org.apache.jetspeed.portal.home}/NOTICE"/>
-                    <delete file="${org.apache.jetspeed.portal.home}/bin/catalina.bat"/>
-                    <delete file="${org.apache.jetspeed.portal.home}/bin/catalina.sh"/>
                     <delete file="${org.apache.jetspeed.portal.home}/conf/context.xml"/>
-                    <delete file="${org.apache.jetspeed.portal.home}/conf/server.xml"/>
                     <delete file="${org.apache.jetspeed.portal.home}/conf/tomcat-users.xml"/>
                     <delete dir="${org.apache.jetspeed.portal.home}/webapps/examples"/>
                     <delete dir="${org.apache.jetspeed.portal.home}/webapps/docs"/>
@@ -191,11 +188,6 @@
                       <file>${project.build.directory}/resources/tomcat/context.xml</file>
                       <destination>context</destination>
                     </deployment>
-                    <!-- Tomcat server conf override -->
-                    <deployment>
-                      <file>${project.build.directory}/../etc/tomcat/conf/server.xml</file>
-                      <destination>server-conf</destination>
-                    </deployment>                    
                     <!-- admin portlet application -->
                     <deployment>
                       <artifact>org.apache.portals.jetspeed-2:j2-admin:war</artifact>

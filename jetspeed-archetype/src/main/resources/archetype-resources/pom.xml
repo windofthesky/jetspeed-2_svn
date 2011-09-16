@@ -43,14 +43,6 @@
     <org.apache.jetspeed.server.home>/opt/apache-tomcat-5.5.27/</org.apache.jetspeed.server.home>
   </properties>
 
-  <repositories>
-    <repository>
-      <id>bluesunrise</id>
-      <name>BlueSunrise Maven 2 Repository</name>
-      <url>http://bluesunrise.com/maven2</url>
-    </repository>
-  </repositories>
-
   <dependencyManagement>
     <dependencies>
       <dependency>

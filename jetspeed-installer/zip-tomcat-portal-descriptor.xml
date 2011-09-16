@@ -32,10 +32,6 @@
     </fileSet>
     <fileSet>
       <directory>etc/tomcat</directory>
-      <excludes>
-        <!-- already copied *and* rewritten during deploy processing -->
-        <exclude>conf/server.xml</exclude>
-      </excludes>
       <outputDirectory>/</outputDirectory>
     </fileSet>
   </fileSets>
