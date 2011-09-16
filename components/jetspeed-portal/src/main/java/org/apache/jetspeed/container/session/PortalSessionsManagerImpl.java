@@ -203,12 +203,12 @@ public class PortalSessionsManagerImpl implements PortalSessionsManager
             PortalSessionRegistry psr = portalSessionsRegistry.get(portalSession.getId());
             if (psr == null)
             {
-                // yet unexplained condition: the HttpSessionListener on the portal application *should* have registered the session!!!
-                // Alas, it has been reported to happen...
-                // Now trying to do some recovering here
+                // On Tomcat 7, by default after authentication it will change the session.getId() without notifying anything...
+                // On Tomcat 6 this at least still lead to a SessionCreated event, but for Tomcat 7 we only can check for a similar condition
+                // and then just emulate as if it happened. 
                 PortalSessionMonitor psm = (PortalSessionMonitor)portalSession.getAttribute(PortalSessionMonitor.SESSION_KEY);
                 // the psm better be null here, otherwise something really is corrupt or not playing by the listeners contracts
-                if ( psm == null )
+                if ( psm == null || portalSessionsRegistry.containsKey(psm.getSessionId()) )
                 {
                     portalSessionCreated(portalSession);
                 }
