@@ -77,7 +77,7 @@ public class DeployMojo extends AbstractMojo
     private static final String PROFILE_TOMCAT_NULL = "tomcatnull";
     private static final String PROFILE_TOMCAT6 = "tomcat6";
     private static final String PROFILE_TOMCAT7 = "tomcat7";
-    private static final String DEFAULT_PROFILE = PROFILE_TOMCAT7; 
+    private static final String DEFAULT_PROFILE = PROFILE_TOMCAT6; 
 
     public static class Deployment
     {

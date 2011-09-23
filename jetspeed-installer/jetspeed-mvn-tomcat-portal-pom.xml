@@ -38,8 +38,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tomcat.version.major>7</tomcat.version.major>
-    <tomcat.version.minor>7.0.21</tomcat.version.minor>
+    <tomcat.version.major>6</tomcat.version.major>
+    <tomcat.version.minor>6.0.33</tomcat.version.minor>
     <tomcat.name>apache-tomcat-${tomcat.version.minor}</tomcat.name>
     <org.apache.portals.jetspeed.version>${project.version}</org.apache.portals.jetspeed.version>
     <org.apache.jetspeed.portal.context.name>jetspeed</org.apache.jetspeed.portal.context.name>
