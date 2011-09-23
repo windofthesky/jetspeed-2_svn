@@ -64,6 +64,12 @@ public class JetspeedContextRewriter
                     }
                 }
                 
+                // Security measurement: restrict/reduce deployment of non-privileged Tomcat applications only
+                if (root.hasAttribute("privileged"))
+                {
+                    root.setAttribute("privileged", "false");
+                }
+                
                 if (root.hasAttribute("docBase"))
                 {
                     // set Context docBase

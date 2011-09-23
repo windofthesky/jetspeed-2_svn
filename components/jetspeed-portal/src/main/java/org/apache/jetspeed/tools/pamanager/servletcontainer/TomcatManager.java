@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TomcatManager implements ApplicationServerManager
 {
-    private static final String DEFAULT_MANAGER_APP_PATH = "/manager";
+    private static final String DEFAULT_MANAGER_SCRIPT_PATH = "/manager";
     protected static final Logger log = LoggerFactory.getLogger("deployment");
 
     private String hostUrl;
@@ -56,11 +56,10 @@ public class TomcatManager implements ApplicationServerManager
     private String password;
     
     
-    private String managerAppPath = DEFAULT_MANAGER_APP_PATH;
-    private String stopPath = managerAppPath + "/stop";
-    private String startPath = managerAppPath + "/start";
-    private String deployPath = managerAppPath + "/deploy";
-    private String undeployPath = managerAppPath + "/undeploy";
+    private String stopPath;
+    private String startPath;
+    private String deployPath;
+    private String undeployPath;
     private HttpClient client;
 
     private HttpMethod start;
@@ -73,6 +72,15 @@ public class TomcatManager implements ApplicationServerManager
 
     public TomcatManager(String hostName, int hostPort, String userName, String password) throws IOException
     {
+        this (hostName, hostPort, userName, password, DEFAULT_MANAGER_SCRIPT_PATH);
+    }
+    
+    public TomcatManager(String hostName, int hostPort, String userName, String password, String managerScriptPath) throws IOException
+    {
+        this.stopPath = managerScriptPath + "/stop";
+        this.startPath = managerScriptPath + "/start";
+        this.deployPath = managerScriptPath + "/deploy";
+        this.undeployPath = managerScriptPath + "/undeploy";
         this.hostUrl = hostName;
         this.hostPort = hostPort;
         this.userName = userName;

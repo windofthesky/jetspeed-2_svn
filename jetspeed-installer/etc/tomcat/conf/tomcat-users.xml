@@ -23,9 +23,20 @@
   <user username="both" password="tomcat" roles="tomcat,role1"/>
   <user username="role1" password="tomcat" roles="role1"/>
 -->
-  <role rolename="tomcat"/>
-  <role rolename="manager"/>
-  <role rolename="admin"/>
-  <user name="tomcat" password="tomcat" roles="tomcat" />  
-  <user username="j2deployer" password="j2deployer" roles="admin,manager,tomcat"/>
+<!-- Jetspeed:
+    
+  To allow the Jetspeed PortletApplicationManager portlet access to the
+  Tomcat manager to start, stop and undeploy portlet applications, a
+  user with role "manager-script" needs to be defined, as well as
+  configuring this user and its password in 
+  $CATALINA_BASE/webapps/jetspeed/WEB-INF/conf/jetspeed.properties
+  or more preferred the sibling /override.properties file:
+  
+    application.server.manager.name=<manager user>
+    application.server.manager.password=<manager password>
+    
+  and here in tomcat-users.xml:
+  
+  <user username=<manager user> password=<manager password> roles="manager-script"/> 
+-->
 </tomcat-users>

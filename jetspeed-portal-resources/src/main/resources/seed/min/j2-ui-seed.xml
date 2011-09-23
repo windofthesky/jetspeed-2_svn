@@ -295,7 +295,7 @@
 	<Groups/>
 	<Users>
 		<User name="admin">
-			<credentials password="admin" enabled="TRUE" requiresUpdate="FALSE"/>
+			<credentials password="admin" enabled="TRUE" requiresUpdate="TRUE"/>
 			<roles>user,admin</roles>
 			<groups></groups>
 			<preferences>
