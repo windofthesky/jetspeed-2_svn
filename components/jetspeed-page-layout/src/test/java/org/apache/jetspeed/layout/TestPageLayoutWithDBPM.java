@@ -20,12 +20,12 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * TestPageLayout
+ * TestPageLayoutWithDBPM
  *
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class TestPageLayout extends AbstractTestPageLayout
+public class TestPageLayoutWithDBPM extends AbstractTestPageLayout
 {
     /**
      * Start the tests.
@@ -34,7 +34,7 @@ public class TestPageLayout extends AbstractTestPageLayout
      */
     public static void main(String args[])
     {
-        junit.awtui.TestRunner.main(new String[] {TestPageLayout.class.getName()});
+        junit.awtui.TestRunner.main(new String[] {TestPageLayoutWithDBPM.class.getName()});
     }
 
     /**
@@ -45,7 +45,7 @@ public class TestPageLayout extends AbstractTestPageLayout
     public static Test suite()
     {
         // All methods starting with "test" will be executed in the test suite.
-        return new TestSuite(TestPageLayout.class);
+        return new TestSuite(TestPageLayoutWithDBPM.class);
     }
 
     /**
@@ -55,7 +55,7 @@ public class TestPageLayout extends AbstractTestPageLayout
      */
     protected String[] getConfigurations()
     {
-        return new String[] {"/JETSPEED-INF/spring/test-spring.xml", "cache-test.xml"};
+        return new String[] {"/JETSPEED-INF/spring/test-spring-dbpm.xml", "cache-test.xml"};
     }
     
     protected String getBeanDefinitionFilterCategories()
