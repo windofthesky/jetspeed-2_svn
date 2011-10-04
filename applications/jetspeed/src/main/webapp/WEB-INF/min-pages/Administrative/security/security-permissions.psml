@@ -24,7 +24,4 @@ limitations under the License.
   <fragment id="m-security-policy-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="m-security-policy-2" type="portlet" name="j2-admin::SecurityPermissionsPortlet" />
   </fragment>
-  <security-constraints>
-    <security-constraints-ref>admin</security-constraints-ref>
-  </security-constraints>
 </page>
