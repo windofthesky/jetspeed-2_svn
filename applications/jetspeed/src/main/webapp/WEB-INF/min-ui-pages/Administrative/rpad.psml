@@ -26,5 +26,7 @@ limitations under the License.
       <property name="column" value="0" layout="OneColumn"/>
     </fragment>
   </fragment>
-
+  <security-constraints>
+    <security-constraints-ref>admin</security-constraints-ref>
+  </security-constraints>
 </page>

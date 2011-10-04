@@ -24,5 +24,7 @@ limitations under the License.
   <fragment id="export-layout-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
     <fragment id="export-2" type="portlet" name="j2-admin::PortalDataSerializer"/>
   </fragment>
-
+  <security-constraints>
+    <security-constraints-ref>admin</security-constraints-ref>
+  </security-constraints>
 </page>

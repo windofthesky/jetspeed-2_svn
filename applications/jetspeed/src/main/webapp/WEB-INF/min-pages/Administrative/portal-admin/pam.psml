@@ -43,4 +43,7 @@ limitations under the License.
       <property layout="TwoColumns" name="column" value="1" />
     </fragment>
   </fragment>
+  <security-constraints>
+    <security-constraints-ref>admin</security-constraints-ref>
+  </security-constraints>
 </page>

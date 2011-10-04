@@ -28,6 +28,9 @@ limitations under the License.
     <fragment id="admin-db-1010" type="portlet" name="j2-admin::PortalDataSerializer">
       <property name="row" value="0" />
       <property name="column" value="1" />
+      <security-constraints>
+        <security-constraints-ref>admin</security-constraints-ref>
+      </security-constraints>
     </fragment>
    </fragment>
 </page>
