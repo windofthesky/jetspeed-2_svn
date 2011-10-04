@@ -66,6 +66,8 @@
         <filter token="jdbc.url" value="${jdbc.url}" />
         <filter token="jdbc.driver.class" value="${jdbc.driver.class}" />
         <filter token="dbImportPsml" value="${dbImportPsml}" />
+        <filter token="installation.type" value="${installationType}" />
+        <filter token="installation.ui" value="${pipelineType}" />
       </filterset>
     </move>
 

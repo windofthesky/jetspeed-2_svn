@@ -345,26 +345,26 @@
         <echo>Seeding the database</echo>
         <condition property="_seedDataFile" value="j2-ui-seed.xml">
           <and>
-            <equals arg1="${installationType}" arg2="demo" />
-            <equals arg1="${pipelineType}" arg2="jetui" />
+            <equals arg1="${installation.type}" arg2="demo" />
+            <equals arg1="${installation.ui}" arg2="jetui" />
           </and>
         </condition>
         <condition property="_seedDataFile" value="j2-seed.xml">
           <and>
-            <equals arg1="${installationType}" arg2="demo" />
-            <equals arg1="${pipelineType}" arg2="classic" />
+            <equals arg1="${installation.type}" arg2="demo" />
+            <equals arg1="${installation.ui}" arg2="classic" />
           </and>
         </condition>
         <condition property="_seedDataFile" value="min/j2-ui-seed.xml">
           <and>
-            <equals arg1="${installationType}" arg2="minimal" />
-            <equals arg1="${pipelineType}" arg2="jetui" />
+            <equals arg1="${installation.type}" arg2="minimal" />
+            <equals arg1="${installation.ui}" arg2="jetui" />
           </and>
         </condition>
         <condition property="_seedDataFile" value="min/j2-seed.xml">
           <and>
-            <equals arg1="${installationType}" arg2="minimal" />
-            <equals arg1="${pipelineType}" arg2="classic" />
+            <equals arg1="${installation.type}" arg2="minimal" />
+            <equals arg1="${installation.ui}" arg2="classic" />
           </and>
         </condition>
         <echo>Importing: ${_seedDataFile}</echo>

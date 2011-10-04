@@ -26,3 +26,5 @@ jdbc.driver.class=@jdbc.driver.class@
 
 ; boolean flag (true/false) indicating if psml is to be imported in the database or will be read from file system
 dbImportPsml = @dbImportPsml@
+installation.type = @installation.type@
+installation.ui = @installation.ui@
