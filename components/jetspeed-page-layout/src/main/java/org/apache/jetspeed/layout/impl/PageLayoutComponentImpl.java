@@ -27,13 +27,10 @@ import java.util.Map;
 
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.layout.PageLayoutComponent;
-import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.PageNotFoundException;
-import org.apache.jetspeed.page.PageNotRemovedException;
-import org.apache.jetspeed.page.PageNotUpdatedException;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.BasePageElement;
@@ -44,7 +41,6 @@ import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.FragmentReference;
-import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageFragment;
 import org.apache.jetspeed.om.page.PageTemplate;
@@ -57,9 +53,12 @@ import org.apache.jetspeed.om.page.impl.ContentSecurityConstraint;
 import org.apache.jetspeed.om.page.impl.ContentSecurityConstraints;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.preference.FragmentPreference;
+import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.PageNotFoundException;
+import org.apache.jetspeed.page.PageNotRemovedException;
+import org.apache.jetspeed.page.PageNotUpdatedException;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.pluto.container.PortletPreference;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1925,8 +1924,13 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
 
             // update fragment preferences and page in page manager.
             
-            // Initializing security constraints by setting null first to reset it after aggregating into fragmentConstraintsConstraints..
-            fragment.setSecurityConstraints(null);
+            // Initializing security constraints by setting empty one first to reset it after aggregating into fragmentConstraintsConstraints..
+            // 
+            //TODO: JS2-1259: BaseElementImpl doesn't consider null input; DBPM based security constraints update needs to be more tested.
+            //      For now, set an empty one instead of null to avoid this problem as well as possible side effects.
+            //
+            //fragment.setSecurityConstraints(null);
+            fragment.setSecurityConstraints(fragment.newSecurityConstraints());
             
             if ((constraints != null) && !constraints.isEmpty())
             {
