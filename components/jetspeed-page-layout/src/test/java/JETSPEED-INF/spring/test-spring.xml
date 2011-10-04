@@ -24,6 +24,7 @@ limitations under the License.
   <!-- IDGenerator -->
   <bean id="IdGenerator" 
   	   class="org.apache.jetspeed.idgenerator.JetspeedIdGenerator" init-method="start" destroy-method="stop" >
+  	   <meta key="j2:cat" value="xmlPageManager" />
   	   <!-- ID Start value -->
   	   <constructor-arg index="0"><value>65536</value></constructor-arg>
   	   <!-- ID Prefix -->
@@ -37,6 +38,7 @@ limitations under the License.
   	   class="org.apache.jetspeed.cache.file.FileCache" 
   	   init-method="startFileScanner"
   	   destroy-method="stopFileScanner">
+       <meta key="j2:cat" value="xmlPageManager" />
   	   <!-- Scan rate for changes in cached files on the file system -->
   	   <constructor-arg index="0"><value>10</value></constructor-arg>
   	   <!-- Cache size -->
@@ -46,6 +48,7 @@ limitations under the License.
   <!-- DocumentHandlerFactory -->
   <bean id="PsmlDocumentHandler"
        class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <meta key="j2:cat" value="xmlPageManager" />
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>.psml</value></constructor-arg>
@@ -56,6 +59,7 @@ limitations under the License.
   
   <bean id="TpsmlDocumentHandler"
        class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <meta key="j2:cat" value="xmlPageManager" />
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>.tpsml</value></constructor-arg>
@@ -66,6 +70,7 @@ limitations under the License.
   
   <bean id="DpsmlDocumentHandler"
        class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <meta key="j2:cat" value="xmlPageManager" />
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>.dpsml</value></constructor-arg>
@@ -76,6 +81,7 @@ limitations under the License.
   
   <bean id="FpsmlDocumentHandler"
        class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <meta key="j2:cat" value="xmlPageManager" />
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>.fpsml</value></constructor-arg>
@@ -86,6 +92,7 @@ limitations under the License.
   
   <bean id="LinkDocumentHandler"       
        class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <meta key="j2:cat" value="xmlPageManager" />
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>.link</value></constructor-arg>
@@ -96,6 +103,7 @@ limitations under the License.
   
   <bean id="FolderMetaDataDocumentHandler"         
        class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <meta key="j2:cat" value="xmlPageManager" />
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>folder.metadata</value></constructor-arg>
@@ -106,6 +114,7 @@ limitations under the License.
   
   <bean id="PageSecurityDocumentHandler"       
        class="org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler" >         
+       <meta key="j2:cat" value="xmlPageManager" />
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><value>/JETSPEED-INF/castor/page-mapping.xml</value></constructor-arg>
        <constructor-arg index="2"><value>page.security</value></constructor-arg>
@@ -116,6 +125,7 @@ limitations under the License.
   
   <bean id="DocumentHandlerFactory"        
        class="org.apache.jetspeed.page.document.psml.DocumentHandlerFactoryImpl" >      
+       <meta key="j2:cat" value="xmlPageManager" />
         <constructor-arg>
         <map>
           <entry key=".psml">
@@ -146,6 +156,7 @@ limitations under the License.
   <!-- FolderHandler -->
   <bean id="FolderHandler"         
        class="org.apache.jetspeed.page.document.psml.FileSystemFolderHandler" >         
+       <meta key="j2:cat" value="xmlPageManager" />
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><value>${applicationRoot}/WEB-INF/pages</value></constructor-arg>
        <constructor-arg index="2"><ref bean="DocumentHandlerFactory"/></constructor-arg>
@@ -156,6 +167,7 @@ limitations under the License.
   <bean id="org.apache.jetspeed.page.PageManager" 
        name="pageManager"
        class="org.apache.jetspeed.page.psml.CastorXmlPageManager" init-method="init" destroy-method="destroy">         
+       <meta key="j2:cat" value="xmlPageManager" />
        <constructor-arg index="0"><ref bean="IdGenerator"/></constructor-arg>
        <constructor-arg index="1"><ref bean="DocumentHandlerFactory"/></constructor-arg>
        <constructor-arg index="2"><ref bean="FolderHandler"/></constructor-arg>
@@ -170,6 +182,7 @@ limitations under the License.
   <bean id="org.apache.jetspeed.layout.PageLayoutComponent"
        name="pageLayout"
        class="org.apache.jetspeed.layout.impl.PageLayoutComponentImpl">
+       <meta key="j2:cat" value="xmlPageManager" />
        <constructor-arg index="0"><ref bean="org.apache.jetspeed.page.PageManager" /></constructor-arg>
        <constructor-arg index="1"><value>jetspeed-layouts::VelocityOneColumn</value></constructor-arg>
   </bean>

@@ -161,7 +161,7 @@ public class TestPageLayout extends AbstractSpringTestCase
     
     protected String getBeanDefinitionFilterCategories()
     {
-        return "default";
+        return "default,xmlPageManager";
     }
 
     /**
