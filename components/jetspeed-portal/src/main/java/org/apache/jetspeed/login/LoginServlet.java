@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.jetspeed.administration.PortalConfigurationConstants;
+import org.apache.jetspeed.om.folder.Folder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
@@ -53,9 +55,9 @@ public class LoginServlet extends HttpServlet
         {
             String destination = (String) session
                     .getAttribute(LoginConstants.DESTINATION);
-            if (destination == null)
-                    destination = request.getContextPath() + "/";
-
+            if (destination == null) {
+                destination = request.getContextPath() + "/";
+            }
             response.sendRedirect(response.encodeURL(destination));
         }
 
@@ -67,6 +69,20 @@ public class LoginServlet extends HttpServlet
             RequestContext context = null;
             try
             {
+                String jetuiMode = Jetspeed.getConfiguration().getString(PortalConfigurationConstants.JETUI_CUSTOMIZATION_METHOD, PortalConfigurationConstants.JETUI_CUSTOMIZATION_SERVER);
+                boolean redirectHomeSpace = Jetspeed.getConfiguration().getBoolean(PortalConfigurationConstants.JETUI_REDIRECT_HOME_SPACE, true);
+                if (redirectHomeSpace && jetuiMode.equals(PortalConfigurationConstants.JETUI_CUSTOMIZATION_AJAX)) {
+                    String destination = (String)session.getAttribute(LoginConstants.DESTINATION);
+                    if (destination == null) destination = "/";
+                    String username = (String)session.getAttribute(LoginConstants.USERNAME);
+                    if (username != null) {
+
+                        if (!destination.endsWith("/"))
+                            destination += "/";
+                        destination += (Folder.RESERVED_USER_FOLDER_NAME + "/" + username);
+                        session.setAttribute(LoginConstants.DESTINATION, destination);
+                    }
+                }
                 contextComponent = (RequestContextComponent) Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
                 context = contextComponent.create(request, response, getServletConfig());
                 engine.service(context);

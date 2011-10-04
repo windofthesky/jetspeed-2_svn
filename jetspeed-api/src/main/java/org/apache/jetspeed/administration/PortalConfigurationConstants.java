@@ -92,7 +92,8 @@ public interface PortalConfigurationConstants
     static final String JETUI_DRAG_YAHOO = "yahoo";
     static final String JETUI_STYLE_PORTLET = "jetui.style.portlet";
     static final String JETUI_STYLE_LAYOUT = "jetui.style.layout";
-    static final String JETUI_STYLE_DRAG_HANDLE = "jetui.style.drag.handle";  
+    static final String JETUI_STYLE_DRAG_HANDLE = "jetui.style.drag.handle";
+    static final String JETUI_REDIRECT_HOME_SPACE = "jetui.redirect.home.space";
     
     /** Portlet Modes, Window States: return string arrays **/
     static final String SUPPORTED_WINDOW_STATES = "supported.windowstate";
