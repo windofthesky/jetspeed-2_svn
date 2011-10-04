@@ -47,7 +47,10 @@ import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.impl.TransientJetspeedPrincipal;
 
 /**
- * TestPageLayout
+ * AbstractTestPageLayout
+ * <P>
+ * Intended to contain the common tests for both CastoXmlPageManager-based test and DatabasePageManager-based test. 
+ * </P>
  *
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
