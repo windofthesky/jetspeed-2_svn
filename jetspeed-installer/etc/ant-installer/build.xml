@@ -77,6 +77,22 @@
 
   <target name="installPortal">
 
+    <echo>Setting up default index redirect url</echo>  	
+    <condition property="_indexRedirectTo" value="portal">
+        <equals arg1="${pipelineType}" arg2="classic" />
+    </condition>
+    <condition property="_indexRedirectTo" value="ui">
+        <equals arg1="${pipelineType}" arg2="jetui" />
+    </condition>
+    <move file="${installDir}/webapps/jetspeed/index.jsp" 
+        tofile="${installDir}/webapps/jetspeed/index.jsp.unfiltered"/>
+    <move file="${installDir}/webapps/jetspeed/index.jsp.unfiltered" 
+        tofile="${installDir}/webapps/jetspeed/index.jsp"
+        overwrite="true">
+       <filterset begintoken="encodeRedirectURL(&quot;" endtoken="/&quot;))">
+         <filter token="portal" value="encodeRedirectURL(&quot;${_indexRedirectTo}/&quot;))" />
+       </filterset>
+    </move>
     <echo>Moving pages out of jetspeed webapp</echo>
     <condition property="_installPagesDirName" value="ui-pages">
       <and>
