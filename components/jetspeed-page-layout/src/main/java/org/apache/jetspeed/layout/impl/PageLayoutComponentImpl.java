@@ -1923,8 +1923,11 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
             // check for edit permission
             fragment.checkAccess(JetspeedActions.EDIT);            
 
-            // update fragment preferences and page in page manager
-            fragment.setSecurityConstraints(constraints);
+            // update fragment preferences and page in page manager.
+            
+            // Initializing security constraints by setting null first to reset it after aggregating into fragmentConstraintsConstraints..
+            fragment.setSecurityConstraints(null);
+            
             if ((constraints != null) && !constraints.isEmpty())
             {
                 SecurityConstraints fragmentConstraints = fragment.newSecurityConstraints();

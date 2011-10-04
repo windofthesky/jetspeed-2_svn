@@ -602,6 +602,21 @@ public class TestPageLayout extends AbstractSpringTestCase
             throw exception;
         }
     }
+    
+    public void testUpdateSecurityConstraints() throws Exception {
+        assertNotNull(pageManager);
+        assertNotNull(pageLayout);
+
+        Page page = pageManager.getPage("/page.psml");
+        assertNotNull(page);
+        ContentPage pageContentPage = pageLayout.newContentPage(page, pageManager.getPageTemplate("/template.tpsml"), Collections.emptyMap());
+        assertNotNull(pageContentPage);
+        ContentFragment contentFrag = pageContentPage.getFragmentByFragmentId("fake-portlet");
+        assertNotNull(contentFrag);
+        
+        pageLayout.updateSecurityConstraints(contentFrag, null);
+        assertNull(contentFrag.getSecurityConstraints());
+    }
 
     public static abstract class AbstractTestPrincipal extends TransientJetspeedPrincipal
     {
