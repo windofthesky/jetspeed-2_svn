@@ -238,11 +238,30 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 
 	public void removeUser(String username) throws SecurityException
 	{
+        if (username != null && username.equals(getAnonymousUser()))
+        {
+            throw new SecurityException(SecurityException.ANONYMOUS_USER_PROTECTED.create(username));
+        }
 		JetspeedPrincipal user;
 		
 		user = getUser(username);
 		super.removePrincipal(user);
 	}
+	
+	public void removePrincipal(String principalName) throws SecurityException
+	{
+	    removeUser(principalName);
+	}
+
+    public void removePrincipal(JetspeedPrincipal principal) throws SecurityException
+    {
+        validatePrincipal(principal);
+        if (principal.getName().equals(getAnonymousUser()))
+        {
+            throw new SecurityException(SecurityException.ANONYMOUS_USER_PROTECTED.create(principal.getName()));
+        }
+        super.removePrincipal(principal);
+    }
 
 	public void storePasswordCredential(PasswordCredential credential) throws SecurityException
 	{
