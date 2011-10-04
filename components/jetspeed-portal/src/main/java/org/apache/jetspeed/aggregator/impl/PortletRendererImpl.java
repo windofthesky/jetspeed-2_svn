@@ -18,6 +18,7 @@ package org.apache.jetspeed.aggregator.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.portlet.PortletMode;
@@ -223,7 +224,8 @@ public class PortletRendererImpl implements PortletRenderer
             long timeoutMetadata = this.getTimeoutOnJob(portletDefinition);
             portletTracking.setExpiration(portletWindow, timeoutMetadata);            
             
-            if (checkSecurityConstraints && !checkSecurityConstraint(portletDefinition, fragment))
+            if ((checkSecurityConstraints || this.enforceSecurityConstraint(portletDefinition)) && 
+                !checkSecurityConstraint(portletDefinition, fragment))
             {
                 throw new PortletAccessDeniedException("Access Denied.");
             }
@@ -403,6 +405,21 @@ public class PortletRendererImpl implements PortletRenderer
         {
             rJob.setTimeout(this.portletTracking.getDefaultPortletTimeout());
         }        
+    }
+    
+    protected boolean enforceSecurityConstraint(PortletDefinition portlet)
+    {
+        Collection c = portlet.getMetadata().getFields("render-time.security-constraints");
+        if (c != null) 
+        {
+            Iterator it = c.iterator();
+            if (it.hasNext()) 
+            {
+                LocalizedField field = (LocalizedField) it.next();
+                return Boolean.parseBoolean(field.getValue());
+            }
+        }
+        return false;
     }
     
     protected boolean checkSecurityConstraint(PortletDefinition portlet, ContentFragment fragment)
