@@ -161,6 +161,7 @@
                   <property name="org.apache.portals.applications.apa-rss.version" value="${org.apache.portals.applications.apa-rss.version}"/>
                   <property name="org.apache.portals.applications.apa-webcontent.version" value="${org.apache.portals.applications.apa-webcontent.version}"/>
                   <property name="pom.version" value="${project.version}"/>
+                  <property name="project.version" value="${project.version}"/>
                   <property name="project.build.directory" value="${project.build.directory}"/>
                   <property name="project.build.finalName" value="${project.build.finalName}"/>
                 </ant>

@@ -117,6 +117,7 @@
                   <property name="basedir" value="${basedir}"/>
                   <property name="configureDBPM" value="${configureDBPM}"/>
                   <property name="pom.version" value="${project.version}"/>
+                  <property name="project.version" value="${project.version}"/>
                   <property name="project.build.directory" value="${project.build.directory}"/>
                   <property name="project.build.finalName" value="${project.build.finalName}"/>
                 </ant>
