@@ -25,10 +25,10 @@
   <parent>
       <groupId>org.apache.portals.jetspeed-2</groupId>
       <artifactId>jetspeed-2</artifactId>
-      <version>2.2.2-SNAPSHOT</version>
+      <version>2.2.2</version>
   </parent>
   <artifactId>com-google-step2-parent</artifactId>
-  <version>2.2.2-SNAPSHOT</version>
+  <version>2.2.2</version>
   <packaging>pom</packaging>
 
   <prerequisites>
@@ -88,8 +88,8 @@
   </scm>
   -->
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk/openid-step2</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk/openid-step2</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/portal/trunk/openid-step2</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/portals/jetspeed-2/portal/tags/JETSPEED-RELEASE-2.2.2/openid-step2</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/portals/jetspeed-2/portal/tags/JETSPEED-RELEASE-2.2.2/openid-step2</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/portals/jetspeed-2/portal/tags/JETSPEED-RELEASE-2.2.2/openid-step2</url>
   </scm>
 </project>
