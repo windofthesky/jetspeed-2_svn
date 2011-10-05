@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-; Jetspeed Enterprise Portal 2.2.3-SHAPSHOT Database setup configuration
+; Jetspeed Enterprise Portal 2.2.3-SNAPSHOT Database setup configuration
 
 ; db.type supported values: db2, derby, mssql, mysql, oracle, postgresql, sapdb
 db.type=@db.type@

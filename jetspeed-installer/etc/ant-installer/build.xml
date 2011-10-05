@@ -36,7 +36,7 @@
       <fileset dir="${installDir}" includes="**/*"/>
     </delete>
 
-    <echo>Installing Jetspeed-2.2.3-SHAPSHOT Enterprise Portal</echo>
+    <echo>Installing Jetspeed-2.2.3-SNAPSHOT Enterprise Portal</echo>
     <unzip src="${antinstaller.jar}" dest="${installDir}">
       <patternset>
         <include name="tomcat-portal.zip" />
