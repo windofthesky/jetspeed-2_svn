@@ -32,7 +32,7 @@
 
   <properties>
     <org.apache.portals.jetspeed.version>2.2.2-SNAPSHOT</org.apache.portals.jetspeed.version>
-    <org.apache.pluto.version>2.0.3-SNAPSHOT</org.apache.pluto.version>
+    <org.apache.pluto.version>2.0.3</org.apache.pluto.version>
     <org.apache.portals.applications.apa-logging.version>1.0</org.apache.portals.applications.apa-logging.version>
     <ccpp.version>1.0</ccpp.version>
     <org.apache.portals.bridges.common.version>2.0</org.apache.portals.bridges.common.version>
@@ -40,7 +40,7 @@
     <portals.portlet2-api-spec.version>1.0</portals.portlet2-api-spec.version>
     <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
     <portal.context.name>${artifactId}</portal.context.name>
-    <org.apache.jetspeed.server.home>/opt/apache-tomcat-5.5.27/</org.apache.jetspeed.server.home>
+    <org.apache.jetspeed.server.home>/opt/apache-tomcat-6.0.33/</org.apache.jetspeed.server.home>
   </properties>
 
   <dependencyManagement>
