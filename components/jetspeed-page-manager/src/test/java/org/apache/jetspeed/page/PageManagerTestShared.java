@@ -16,34 +16,11 @@
  */
 package org.apache.jetspeed.page;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.security.CodeSource;
-import java.security.Permission;
-import java.security.PermissionCollection;
-import java.security.Permissions;
-import java.security.Policy;
-import java.security.Principal;
-import java.security.PrivilegedAction;
-import java.security.ProtectionDomain;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.security.auth.Subject;
-
 import junit.framework.TestCase;
-
 import net.sf.ehcache.CacheManager;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.file.FileCache;
+import org.apache.jetspeed.cache.impl.EhCacheImpl;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
 import org.apache.jetspeed.om.common.SecurityConstraint;
@@ -73,11 +50,11 @@ import org.apache.jetspeed.page.document.psml.CastorFileSystemDocumentHandler;
 import org.apache.jetspeed.page.document.psml.DocumentHandlerFactoryImpl;
 import org.apache.jetspeed.page.document.psml.FileSystemFolderHandler;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
+import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.JetspeedPermission;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
-import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.PermissionFactory;
 import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.security.Role;
@@ -89,7 +66,27 @@ import org.apache.jetspeed.security.spi.impl.FolderPermission;
 import org.apache.jetspeed.security.spi.impl.FragmentPermission;
 import org.apache.jetspeed.security.spi.impl.JetspeedPermissionFactory;
 import org.apache.jetspeed.security.spi.impl.PagePermission;
-import org.apache.jetspeed.cache.impl.EhCacheImpl;
+
+import javax.security.auth.Subject;
+import java.io.File;
+import java.io.FileFilter;
+import java.security.CodeSource;
+import java.security.Permission;
+import java.security.PermissionCollection;
+import java.security.Permissions;
+import java.security.Policy;
+import java.security.Principal;
+import java.security.PrivilegedAction;
+import java.security.ProtectionDomain;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * PageManagerTestShared
@@ -243,8 +240,8 @@ public interface PageManagerTestShared
         /**
          * testSecurePageManager
          *
-         * @param test case
-         * @param page manager
+         * @param test test case
+         * @param pageManager page manager
          */
         static void testSecurePageManager(final TestCase test, final PageManager pageManager) throws Exception
         {
@@ -717,6 +714,449 @@ public interface PageManagerTestShared
             if (cleanup != null)
             {
                 throw cleanup;
+            }
+        }
+
+        /**
+         * testSecurityConstraintsRefExpressions
+         *
+         * @param test test case
+         * @param pageManager page manager
+         */
+        static void testSecurityConstraintsRefExpressions(final TestCase test, final PageManager pageManager) throws Exception
+        {
+            // reset page manager cache
+            pageManager.reset();
+
+            // setup test subjects
+            Set principals = new PrincipalsSet();
+            principals.add(new TestUser("admin"));
+            Subject adminSubject = new Subject(true, principals, new HashSet(), new HashSet());
+
+            principals = new PrincipalsSet();
+            principals.add(new TestUser("user-with-admin"));
+            principals.add(new TestRole("admin"));
+            Subject userWithAdminSubject = new Subject(true, principals, new HashSet(), new HashSet());
+
+            principals = new PrincipalsSet();
+            principals.add(new TestUser("user"));
+            Subject userSubject = new Subject(true, principals, new HashSet(), new HashSet());
+
+            principals = new PrincipalsSet();
+            principals.add(new TestUser("test-group-user"));
+            principals.add(new TestGroup("test-group"));
+            Subject testGroupUserSubject = new Subject(true, principals, new HashSet(), new HashSet());
+
+            principals = new PrincipalsSet();
+            principals.add(new TestUser("test-role-user"));
+            principals.add(new TestRole("test-role"));
+            Subject testRoleUserSubject = new Subject(true, principals, new HashSet(), new HashSet());
+
+            principals = new PrincipalsSet();
+            principals.add(new TestUser("test-group-role-user"));
+            principals.add(new TestGroup("test-group"));
+            principals.add(new TestRole("test-role"));
+            Subject testGroupRoleUserSubject = new Subject(true, principals, new HashSet(), new HashSet());
+
+            // setup test as admin
+            Exception setup = (Exception) JSSubject.doAsPrivileged(adminSubject, new PrivilegedAction()
+            {
+                public Object run()
+                {
+                    try
+                    {
+                        // reset page manager to initial state
+                        try
+                        {
+                            Folder removeRootFolder = pageManager.getFolder("/");
+                            pageManager.removeFolder(removeRootFolder);
+                            pageManager.reset();
+                        }
+                        catch (FolderNotFoundException e)
+                        {
+                        }
+
+                        // create test documents and folders
+                        Folder folder = pageManager.newFolder("/");
+                        SecurityConstraints constraints = pageManager.newSecurityConstraints();
+                        constraints.setOwner("admin");
+                        List constraintsRefs = new ArrayList(1);
+                        constraintsRefs.add("public-view");
+                        constraints.setSecurityConstraintsRefs(constraintsRefs);
+                        folder.setSecurityConstraints(constraints);
+                        pageManager.updateFolder(folder);
+
+                        PageSecurity pageSecurity = pageManager.newPageSecurity();
+                        List constraintsDefs = new ArrayList(5);
+                        SecurityConstraintsDef constraintsDef = pageManager.newSecurityConstraintsDef();
+                        constraintsDef.setName("public-view");
+                        List defConstraints = new ArrayList(1);
+                        SecurityConstraint defConstraint = pageManager.newPageSecuritySecurityConstraint();
+                        defConstraint.setUsers(Shared.makeListFromCSV("*"));
+                        defConstraint.setPermissions(Shared.makeListFromCSV("view"));
+                        defConstraints.add(defConstraint);
+                        constraintsDef.setSecurityConstraints(defConstraints);
+                        constraintsDefs.add(constraintsDef);
+                        constraintsDef = pageManager.newSecurityConstraintsDef();
+                        constraintsDef.setName("test-group");
+                        defConstraints = new ArrayList(1);
+                        defConstraint = pageManager.newPageSecuritySecurityConstraint();
+                        defConstraint.setGroups(Shared.makeListFromCSV("test-group"));
+                        defConstraint.setPermissions(Shared.makeListFromCSV("view"));
+                        defConstraints.add(defConstraint);
+                        constraintsDef.setSecurityConstraints(defConstraints);
+                        constraintsDefs.add(constraintsDef);
+                        constraintsDef = pageManager.newSecurityConstraintsDef();
+                        constraintsDef.setName("test-role");
+                        defConstraints = new ArrayList(1);
+                        defConstraint = pageManager.newPageSecuritySecurityConstraint();
+                        defConstraint.setRoles(Shared.makeListFromCSV("test-role"));
+                        defConstraint.setPermissions(Shared.makeListFromCSV("view"));
+                        defConstraints.add(defConstraint);
+                        constraintsDef.setSecurityConstraints(defConstraints);
+                        constraintsDefs.add(constraintsDef);
+                        constraintsDef = pageManager.newSecurityConstraintsDef();
+                        constraintsDef.setName("admin-role");
+                        defConstraints = new ArrayList(1);
+                        defConstraint = pageManager.newPageSecuritySecurityConstraint();
+                        defConstraint.setRoles(Shared.makeListFromCSV("admin"));
+                        defConstraint.setPermissions(Shared.makeListFromCSV("view,edit"));
+                        defConstraints.add(defConstraint);
+                        constraintsDef.setSecurityConstraints(defConstraints);
+                        constraintsDefs.add(constraintsDef);
+                        constraintsDef = pageManager.newSecurityConstraintsDef();
+                        constraintsDef.setName("admin-user");
+                        defConstraints = new ArrayList(1);
+                        defConstraint = pageManager.newPageSecuritySecurityConstraint();
+                        defConstraint.setUsers(Shared.makeListFromCSV("admin"));
+                        defConstraint.setPermissions(Shared.makeListFromCSV("view,edit"));
+                        defConstraints.add(defConstraint);
+                        constraintsDef.setSecurityConstraints(defConstraints);
+                        constraintsDefs.add(constraintsDef);
+                        pageSecurity.setSecurityConstraintsDefs(constraintsDefs);
+                        List globalConstraintsRefs = new ArrayList(1);
+                        globalConstraintsRefs.add("admin-role or admin-user");
+                        pageSecurity.setGlobalSecurityConstraintsRefs(globalConstraintsRefs);
+                        pageManager.updatePageSecurity(pageSecurity);
+
+                        Page page = pageManager.newPage("/default-page.psml");
+                        constraints = pageManager.newSecurityConstraints();
+                        constraints.setOwner("admin");
+                        constraintsRefs = new ArrayList(1);
+                        constraintsRefs.add("public-view");
+                        constraints.setSecurityConstraintsRefs(constraintsRefs);
+                        page.setSecurityConstraints(constraints);
+                        pageManager.updatePage(page);
+
+                        page = pageManager.newPage("/or-page.psml");
+                        constraints = pageManager.newSecurityConstraints();
+                        constraints.setOwner("admin");
+                        List inlineConstraints = new ArrayList(1);
+                        SecurityConstraint constraint = pageManager.newPageSecurityConstraint();
+                        constraint.setUsers(Shared.makeListFromCSV("user"));
+                        constraint.setPermissions(Shared.makeListFromCSV("view"));
+                        inlineConstraints.add(constraint);
+                        constraints.setSecurityConstraints(inlineConstraints);
+                        constraintsRefs = new ArrayList(1);
+                        constraintsRefs.add("test-group || test-role");
+                        constraints.setSecurityConstraintsRefs(constraintsRefs);
+                        page.setSecurityConstraints(constraints);
+                        pageManager.updatePage(page);
+
+                        page = pageManager.newPage("/and-page.psml");
+                        constraints = pageManager.newSecurityConstraints();
+                        constraints.setOwner("admin");
+                        constraintsRefs = new ArrayList(1);
+                        constraintsRefs.add("test-group and test-role");
+                        constraints.setSecurityConstraintsRefs(constraintsRefs);
+                        page.setSecurityConstraints(constraints);
+                        pageManager.updatePage(page);
+
+                        page = pageManager.newPage("/not-page.psml");
+                        constraints = pageManager.newSecurityConstraints();
+                        constraints.setOwner("admin");
+                        constraintsRefs = new ArrayList(1);
+                        constraintsRefs.add("not test-role");
+                        constraints.setSecurityConstraintsRefs(constraintsRefs);
+                        page.setSecurityConstraints(constraints);
+                        pageManager.updatePage(page);
+
+                        page = pageManager.newPage("/and-not-page.psml");
+                        constraints = pageManager.newSecurityConstraints();
+                        constraints.setOwner("admin");
+                        constraintsRefs = new ArrayList(1);
+                        constraintsRefs.add("public-view and not test-group");
+                        constraints.setSecurityConstraintsRefs(constraintsRefs);
+                        page.setSecurityConstraints(constraints);
+                        pageManager.updatePage(page);
+
+                        page = pageManager.newPage("/paren-page.psml");
+                        constraints = pageManager.newSecurityConstraints();
+                        constraints.setOwner("admin");
+                        constraintsRefs = new ArrayList(1);
+                        constraintsRefs.add("((test-group||test-role)&&!admin-role)");
+                        constraints.setSecurityConstraintsRefs(constraintsRefs);
+                        page.setSecurityConstraints(constraints);
+                        pageManager.updatePage(page);
+
+                        return null;
+                    }
+                    catch (Exception e)
+                    {
+                        return e;
+                    }
+                    finally
+                    {
+                        JSSubject.clearSubject();
+                    }
+                }
+            }, null);
+            if (setup != null)
+            {
+                throw setup;
+            }
+
+            // reset page manager
+            pageManager.reset();
+
+            // test as admin
+            Exception adminAccess = (Exception) JSSubject.doAsPrivileged(adminSubject, new PrivilegedAction()
+            {
+                public Object run()
+                {
+                    try
+                    {
+                        assertPageAccessGranted(pageManager, "/default-page.psml");
+                        assertPageAccessGranted(pageManager, "/or-page.psml");
+                        assertPageAccessGranted(pageManager, "/and-page.psml");
+                        assertPageAccessGranted(pageManager, "/not-page.psml");
+                        assertPageAccessGranted(pageManager, "/and-not-page.psml");
+                        assertPageAccessGranted(pageManager, "/paren-page.psml");
+                        return null;
+                    }
+                    catch (Exception e)
+                    {
+                        return e;
+                    }
+                    finally
+                    {
+                        JSSubject.clearSubject();
+                    }
+                }
+            }, null);
+            if (adminAccess != null)
+            {
+                throw adminAccess;
+            }
+
+            // test as user with admin
+            Exception userWithAdminAccess = (Exception) JSSubject.doAsPrivileged(userWithAdminSubject, new PrivilegedAction()
+            {
+                public Object run()
+                {
+                    try
+                    {
+                        assertPageAccessGranted(pageManager, "/default-page.psml");
+                        assertPageAccessGranted(pageManager, "/or-page.psml");
+                        assertPageAccessGranted(pageManager, "/and-page.psml");
+                        assertPageAccessGranted(pageManager, "/not-page.psml");
+                        assertPageAccessGranted(pageManager, "/and-not-page.psml");
+                        assertPageAccessGranted(pageManager, "/paren-page.psml");
+                        return null;
+                    }
+                    catch (Exception e)
+                    {
+                        return e;
+                    }
+                    finally
+                    {
+                        JSSubject.clearSubject();
+                    }
+                }
+            }, null);
+            if (userWithAdminAccess != null)
+            {
+                throw userWithAdminAccess;
+            }
+
+            // test as user
+            Exception userAccess = (Exception) JSSubject.doAsPrivileged(userSubject, new PrivilegedAction()
+            {
+                public Object run()
+                {
+                    try
+                    {
+                        assertPageAccessGranted(pageManager, "/default-page.psml");
+                        assertPageAccessGranted(pageManager, "/or-page.psml");
+                        assertPageAccessDenied(pageManager, "/and-page.psml");
+                        assertPageAccessGranted(pageManager, "/not-page.psml");
+                        assertPageAccessGranted(pageManager, "/and-not-page.psml");
+                        assertPageAccessDenied(pageManager, "/paren-page.psml");
+                        return null;
+                    }
+                    catch (Exception e)
+                    {
+                        return e;
+                    }
+                    finally
+                    {
+                        JSSubject.clearSubject();
+                    }
+                }
+            }, null);
+            if (userAccess != null)
+            {
+                throw userAccess;
+            }
+
+            // test as test group user
+            Exception testGroupUserAccess = (Exception) JSSubject.doAsPrivileged(testGroupUserSubject, new PrivilegedAction()
+            {
+                public Object run()
+                {
+                    try
+                    {
+                        assertPageAccessGranted(pageManager, "/default-page.psml");
+                        assertPageAccessGranted(pageManager, "/or-page.psml");
+                        assertPageAccessDenied(pageManager, "/and-page.psml");
+                        assertPageAccessGranted(pageManager, "/not-page.psml");
+                        assertPageAccessDenied(pageManager, "/and-not-page.psml");
+                        assertPageAccessGranted(pageManager, "/paren-page.psml");
+                        return null;
+                    }
+                    catch (Exception e)
+                    {
+                        return e;
+                    }
+                    finally
+                    {
+                        JSSubject.clearSubject();
+                    }
+                }
+            }, null);
+            if (testGroupUserAccess != null)
+            {
+                throw testGroupUserAccess;
+            }
+
+            // test as test role user
+            Exception testRoleUserAccess = (Exception) JSSubject.doAsPrivileged(testRoleUserSubject, new PrivilegedAction()
+            {
+                public Object run()
+                {
+                    try
+                    {
+                        assertPageAccessGranted(pageManager, "/default-page.psml");
+                        assertPageAccessGranted(pageManager, "/or-page.psml");
+                        assertPageAccessDenied(pageManager, "/and-page.psml");
+                        assertPageAccessDenied(pageManager, "/not-page.psml");
+                        assertPageAccessGranted(pageManager, "/and-not-page.psml");
+                        assertPageAccessGranted(pageManager, "/paren-page.psml");
+                        return null;
+                    }
+                    catch (Exception e)
+                    {
+                        return e;
+                    }
+                    finally
+                    {
+                        JSSubject.clearSubject();
+                    }
+                }
+            }, null);
+            if (testRoleUserAccess != null)
+            {
+                throw testRoleUserAccess;
+            }
+
+            // test as test group role user
+            Exception testGroupRoleUserAccess = (Exception) JSSubject.doAsPrivileged(testGroupRoleUserSubject, new PrivilegedAction()
+            {
+                public Object run()
+                {
+                    try
+                    {
+                        assertPageAccessGranted(pageManager, "/default-page.psml");
+                        assertPageAccessGranted(pageManager, "/or-page.psml");
+                        assertPageAccessGranted(pageManager, "/and-page.psml");
+                        assertPageAccessDenied(pageManager, "/not-page.psml");
+                        assertPageAccessDenied(pageManager, "/and-not-page.psml");
+                        assertPageAccessGranted(pageManager, "/paren-page.psml");
+                        return null;
+                    }
+                    catch (Exception e)
+                    {
+                        return e;
+                    }
+                    finally
+                    {
+                        JSSubject.clearSubject();
+                    }
+                }
+            }, null);
+            if (testGroupRoleUserAccess != null)
+            {
+                throw testGroupRoleUserAccess;
+            }
+
+            // cleanup test as admin user
+            Exception cleanup = (Exception)JSSubject.doAsPrivileged(adminSubject, new PrivilegedAction()
+            {
+                public Object run()
+                {
+                    try
+                    {
+                        // cleanup by removing root folder
+                        try
+                        {
+                            Folder remove = pageManager.getFolder("/");
+                            TestCase.assertEquals("/", remove.getPath());
+                            pageManager.removeFolder(remove);
+                        }
+                        catch (FolderNotFoundException e)
+                        {
+                            TestCase.assertTrue("Folder / NOT FOUND", false);
+                        }
+
+                        return null;
+                    }
+                    catch (Exception e)
+                    {
+                        return e;
+                    }
+                    finally
+                    {
+                        JSSubject.clearSubject();
+                    }
+                }
+            }, null);
+            if (cleanup != null)
+            {
+                throw cleanup;
+            }
+        }
+
+        static void assertPageAccessGranted(PageManager pageManager, String path) throws Exception
+        {
+            try
+            {
+                pageManager.getPage(path);
+            }
+            catch (SecurityException se)
+            {
+                TestCase.fail("Page "+path+" access denied");
+            }
+        }
+
+        static void assertPageAccessDenied(PageManager pageManager, String path) throws Exception
+        {
+            try
+            {
+                pageManager.getPage(path);
+                TestCase.fail("Page "+path+" access granted");
+            }
+            catch (SecurityException se)
+            {
             }
         }
     }

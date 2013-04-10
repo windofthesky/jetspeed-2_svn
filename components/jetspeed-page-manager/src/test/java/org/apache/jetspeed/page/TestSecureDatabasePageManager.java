@@ -49,6 +49,17 @@ public class TestSecureDatabasePageManager extends DatasourceEnabledSpringTestCa
     public void testSecurePageManager() throws Exception
     {
         // utilize standard secure page manager test
-        Shared.testSecurePageManager(this, (PageManager)scm.getComponent("pageManager"));
+        PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+        Shared.testSecurePageManager(this, pageManager);
+    }
+
+    public void testSecurityConstraintsRefExpressions() throws Exception
+    {
+        PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+        if (pageManager.getConstraintsEnabled())
+        {
+            // utilize standard secure page manager test
+            Shared.testSecurityConstraintsRefExpressions(this, pageManager);
+        }
     }
 }
