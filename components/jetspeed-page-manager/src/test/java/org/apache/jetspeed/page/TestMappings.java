@@ -38,7 +38,6 @@ public class TestMappings extends TestCase
                 "JETSPEED-INF/castor/page-mapping.xml")));
 
         // 2. Unmarshal the data
-        System.setProperty("org.xml.sax.driver", "org.apache.xerces.parsers.SAXParser");
         Unmarshaller unmar = new Unmarshaller(mapping);
         Fragment fragment = (Fragment) unmar.unmarshal(new InputSource(getClass().getClassLoader().getResourceAsStream(
                 "fragment-test.xml")));

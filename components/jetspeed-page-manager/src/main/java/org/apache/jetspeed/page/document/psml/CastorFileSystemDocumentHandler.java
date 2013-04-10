@@ -126,13 +126,7 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
         this.format = new OutputFormat("    ", true, PSML_DOCUMENT_ENCODING);
         this.format.setXHTML(true);
         this.format.setExpandEmptyElements(false);
-
-        String javaVersion = System.getProperty("java.version");
-        if ((javaVersion.startsWith("1.3.") || javaVersion.startsWith("1.4.")) && (System.getProperty("org.xml.sax.driver") == null))
-        {
-            System.setProperty("org.xml.sax.driver", "org.apache.xerces.parsers.SAXParser");
-            log.info("SAX driver configured: "+System.getProperty("org.xml.sax.driver"));
-        }        
+        
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser = factory.newSAXParser();
         
