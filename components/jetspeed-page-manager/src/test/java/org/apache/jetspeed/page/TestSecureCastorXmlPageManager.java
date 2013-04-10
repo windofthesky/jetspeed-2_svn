@@ -93,4 +93,13 @@ public class TestSecureCastorXmlPageManager extends JetspeedTestCase implements 
         // utilize standard secure page manager test
         Shared.testSecurePageManager(this, pageManager);
     }
+
+    public void testSecurityConstraintsRefExpressions() throws Exception
+    {
+        if (pageManager.getConstraintsEnabled())
+        {
+            // utilize standard secure page manager test
+            Shared.testSecurityConstraintsRefExpressions(this, pageManager);
+        }
+    }
 }
