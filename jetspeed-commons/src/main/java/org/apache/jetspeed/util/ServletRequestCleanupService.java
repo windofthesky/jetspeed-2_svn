@@ -26,6 +26,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jetspeed.aggregator.RenderingJob;
+
 /**
  * @version $Id$
  *
@@ -44,12 +46,12 @@ public class ServletRequestCleanupService
         }
         return list;
     }
-    
+
     public static void addCleanupCallback(ServletRequestCleanupCallback callback)
     {
         List<ServletRequestCleanupCallback> callbacks = getCallbacks(false);
         if (callbacks == null)
-        {            
+        {
             callbacks = getCallbacks(true);
             try
             {
@@ -64,7 +66,61 @@ public class ServletRequestCleanupService
         }
         callbacks.add(callback);
     }
-    
+
+    public static void executeNestedRenderJob(RenderingJob job)
+    {
+        if (getCallbacks(false) == null)
+        {
+            List<ServletRequestCleanupCallback> callbacks = getCallbacks(true);
+            Throwable jobException = null;
+
+            try
+            {
+                job.execute();
+            }
+            catch (Throwable t)
+            {
+                jobException = t;
+                t.fillInStackTrace();
+            }
+
+            for (ServletRequestCleanupCallback callback : callbacks)
+            {
+                try
+                {
+                    callback.cleanup(job.getWindow().getPortletRequestContext().getServletContext(), job.getRequest(), job.getResponse());
+                }
+                catch (Throwable tc)
+                {
+                    try
+                    {
+                        JetspeedLoggerUtil.getSharedLogger(ServletRequestCleanupService.class).error("Cleanup callback execution failed", tc);
+                    }
+                    catch (Throwable tl)
+                    {
+                        // ignore
+                    }
+                }
+            }
+
+            ServletRequestCleanupService.callbacks.remove();
+
+            if (jobException != null)
+            {
+                if (jobException instanceof RuntimeException)
+                {
+                    throw (RuntimeException) jobException;
+                }
+
+                throw new RuntimeException(jobException);
+            }
+        }
+        else
+        {
+            job.execute();
+        }
+    }
+
     /**
      * Servlet Filter doFilter delegate method which will execute registered ServletRequestCleanupCallbacks
      * after the filterChain, if any.
@@ -94,7 +150,7 @@ public class ServletRequestCleanupService
         {
             filterException = tf;
             tf.fillInStackTrace();
-        }        
+        }
         for (ServletRequestCleanupCallback callback : callbacks)
         {
             try

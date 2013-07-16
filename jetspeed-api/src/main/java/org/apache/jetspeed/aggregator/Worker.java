@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ import java.security.AccessControlContext;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public interface Worker 
+public interface Worker
 {
      int getJobCount();
 
@@ -40,14 +40,19 @@ public interface Worker
      * stop after processing its current job.
      */
      void setRunning(boolean status);
-     
+
     /**
      * Sets the moitor of this worker
      */
      void setMonitor(WorkerMonitor monitor);
-     
+
     /**
      * Sets the job to execute in security context
+     *
+     * @deprecated Use only {@link #setJob(Runnable)} because AccessControlContext must not be directly accessed by
+     * a worker thread. Instead AccessControlContext must be accessed directly by the job implementation in order
+     * to use the AccessControlContext instance safely regardless of the physical worker thread implementation
+     * (e.g, WorkerImpl or container managed thread by commonj worker monitor).
      */
      void setJob(Runnable job, AccessControlContext context);
 
@@ -60,6 +65,6 @@ public interface Worker
      * Retrieves the job to execute
      */
      Runnable getJob();
-     
+
      void start();
 }

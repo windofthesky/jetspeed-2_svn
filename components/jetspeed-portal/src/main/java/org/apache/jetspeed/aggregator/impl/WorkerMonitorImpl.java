@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,21 +20,20 @@ package org.apache.jetspeed.aggregator.impl;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
-import java.util.LinkedList;
-import java.util.Collections;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.WorkerMonitor;
-import org.apache.jetspeed.aggregator.PortletContent;
-import org.apache.jetspeed.util.Queue;
-import org.apache.jetspeed.util.FIFOQueue;
-
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.PortletWindowID;
+import org.apache.jetspeed.util.FIFOQueue;
+import org.apache.jetspeed.util.Queue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The WorkerMonitor is responsible for dispatching jobs to workers
@@ -49,7 +48,10 @@ import org.apache.jetspeed.container.PortletWindowID;
  */
 public class WorkerMonitorImpl implements WorkerMonitor
 {
-    public static final String ACCESS_CONTROL_CONTEXT_WORKER_ATTR = AccessControlContext.class.getName();
+    /**
+     * @deprecated Use {@link RenderingJob#ACCESS_CONTROL_CONTEXT_WORKER_ATTR} instead.
+     */
+    public static final String ACCESS_CONTROL_CONTEXT_WORKER_ATTR = RenderingJob.ACCESS_CONTROL_CONTEXT_WORKER_ATTR;
 
     public WorkerMonitorImpl(int minWorkers, int maxWorkers, int spareWorkers, int maxJobsPerWorker)
     {
@@ -58,7 +60,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
         this.spareWorkers = spareWorkers;
         this.maxJobsPerWorker = maxJobsPerWorker;
     }
-    
+
     /** Commons logging */
     protected final static Logger log = LoggerFactory.getLogger(WorkerMonitorImpl.class);
 
@@ -67,7 +69,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
 
     /** Count of running jobs **/
     protected int runningJobs = 0;
-    
+
     /** Minimum number of wokers to create */
     protected int minWorkers = 5;
 
@@ -107,14 +109,14 @@ public class WorkerMonitorImpl implements WorkerMonitor
     public void stop()
     {
         synchronized (workers)
-        {        
+        {
             for (WorkerImpl worker : new ArrayList<WorkerImpl>(workers))
             {
                 worker.interrupt();
             }
         }
         synchronized (workersMonitored)
-        {        
+        {
             for (WorkerImpl worker : new ArrayList<WorkerImpl>(workersMonitored))
             {
                 worker.interrupt();
@@ -189,8 +191,8 @@ public class WorkerMonitorImpl implements WorkerMonitor
         WorkerImpl worker = this.getWorker();
 
         AccessControlContext context = AccessController.getContext();
-        job.setWorkerAttribute(ACCESS_CONTROL_CONTEXT_WORKER_ATTR, context);
-        
+        job.setWorkerAttribute(RenderingJob.ACCESS_CONTROL_CONTEXT_WORKER_ATTR, context);
+
         if (worker==null)
         {
             queue.push(job);
@@ -201,7 +203,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
             {
                 synchronized (worker)
                 {
-                    worker.setJob(job, context);
+                    worker.setJob(job);
 
                     if (job.getTimeout() > 0)
                     {
@@ -218,22 +220,22 @@ public class WorkerMonitorImpl implements WorkerMonitor
             }
         }
     }
-    
+
     /**
-     * Wait for all rendering jobs in the collection to finish successfully or otherwise. 
+     * Wait for all rendering jobs in the collection to finish successfully or otherwise.
      * @param renderingJobs the Collection of rendering job objects to wait for.
      */
     public void waitForRenderingJobs(List<RenderingJob> renderingJobs)
     {
-        try 
+        try
         {
             for (RenderingJob job : renderingJobs)
             {
                 PortletContent portletContent = job.getPortletContent();
-                
-                synchronized (portletContent) 
+
+                synchronized (portletContent)
                 {
-                    if (!portletContent.isComplete()) 
+                    if (!portletContent.isComplete())
                     {
                         portletContent.wait();
                     }
@@ -267,20 +269,19 @@ public class WorkerMonitorImpl implements WorkerMonitor
         synchronized (worker)
         {
             RenderingJob job = null;
-            
+
             if (worker.getJobCount() < this.maxJobsPerWorker)
             {
                 job = (RenderingJob) queue.pop();
-                
+
                 if (job != null)
                 {
-                    AccessControlContext context = (AccessControlContext) job.getWorkerAttribute(ACCESS_CONTROL_CONTEXT_WORKER_ATTR);
-                    worker.setJob(job, context);
+                    worker.setJob(job);
                     runningJobs--;
                     return;
                 }
             }
-            
+
             worker.setJob(null);
             worker.resetJobCount();
             runningJobs--;
@@ -301,7 +302,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
     {
         return queue.size();
     }
-    
+
     /**
      * Returns a snapshot of the available jobs
      * @return available jobs
@@ -310,17 +311,17 @@ public class WorkerMonitorImpl implements WorkerMonitor
     {
         return workers.size();
     }
-    
+
     public int getRunningJobsCount()
     {
         return this.tg.activeCount();
     }
-    
+
     class RenderingJobTimeoutMonitor extends Thread
     {
         long interval = 1000;
         boolean shouldRun = true;
-        
+
         RenderingJobTimeoutMonitor(long interval)
         {
             super("RenderingJobTimeoutMonitor");
@@ -333,7 +334,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
         }
         /**
          * Thread.stop() is deprecated.
-         * This method achieves the same by setting the run varaible "shouldRun" to false and interrupting the Thread, 
+         * This method achieves the same by setting the run varaible "shouldRun" to false and interrupting the Thread,
          * effectively causing the thread to shutdown correctly.
          *
          */
@@ -342,25 +343,25 @@ public class WorkerMonitorImpl implements WorkerMonitor
         	shouldRun = false;
         	this.interrupt();
         }
-        
+
         public void run()
         {
             while (shouldRun)
             {
-                try 
+                try
                 {
-                    // Because a timeout worker can be removed 
+                    // Because a timeout worker can be removed
                     // in the workersMonitored collection during iterating,
                     // copy timeout workers in the following collection to kill later.
 
                     List<WorkerImpl> timeoutWorkers = new ArrayList<WorkerImpl>();
 
-                    synchronized (workersMonitored) 
+                    synchronized (workersMonitored)
                     {
                         for (WorkerImpl worker : workersMonitored)
                         {
                             RenderingJob job = (RenderingJob) worker.getJob();
-                            
+
                             if ((null != job) && (job.isTimeout()))
                             {
                                 timeoutWorkers.add(worker);
@@ -379,21 +380,21 @@ public class WorkerMonitorImpl implements WorkerMonitor
                             killJob(worker, job);
                         }
                     }
-                } 
-                catch (Exception e) 
+                }
+                catch (Exception e)
                 {
                     log.error("Exception during job monitoring.", e);
                 }
-               
-                try 
+
+                try
                 {
-                    synchronized (this) 
+                    synchronized (this)
                     {
                         wait(this.interval);
                     }
-                }   
-                catch (InterruptedException e) 
-                {   
+                }
+                catch (InterruptedException e)
+                {
                 }
             }
         }
@@ -410,7 +411,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
                 }
 
                 PortletContent content = job.getPortletContent();
-                
+
                 synchronized (content)
                 {
                     if (!content.isComplete())
@@ -419,7 +420,7 @@ public class WorkerMonitorImpl implements WorkerMonitor
                         content.wait();
                     }
                 }
-                
+
             } catch (Exception e)
             {
                 log.error("Exceptiong during job killing.", e);

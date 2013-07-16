@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,13 +16,15 @@
  */
 package org.apache.jetspeed.aggregator;
 
+import java.security.AccessControlContext;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.request.RequestContext;
 
 /**
  * Worker thread processes jobs and notify its WorkerMonitor when completed.
@@ -34,11 +36,17 @@ import org.apache.jetspeed.container.PortletWindow;
  */
 public interface RenderingJob extends Runnable
 {
+
+    /**
+     * Worker attribute name of AccessControlContext object in the current request processing context.
+     */
+    String ACCESS_CONTROL_CONTEXT_WORKER_ATTR = AccessControlContext.class.getName();
+
     void execute();
-    
+
     PortletRenderer getRenderer();
-    
-    PortletWindow getWindow(); 
+
+    PortletWindow getWindow();
 
     PortletContent getPortletContent();
 
@@ -47,7 +55,7 @@ public interface RenderingJob extends Runnable
     long getTimeout();
 
     boolean isTimeout();
-    
+
     PortletDefinition getPortletDefinition();
 
     HttpServletRequest getRequest();
@@ -61,9 +69,9 @@ public interface RenderingJob extends Runnable
     int getExpirationCache();
 
     void setWorkerAttribute(String name, Object value);
-    
+
     Object getWorkerAttribute(String name);
-    
+
     void removeWorkerAttribute(String name);
 }
 

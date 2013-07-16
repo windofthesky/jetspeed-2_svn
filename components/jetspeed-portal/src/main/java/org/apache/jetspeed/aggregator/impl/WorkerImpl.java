@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,16 +18,12 @@
 package org.apache.jetspeed.aggregator.impl;
 
 import java.security.AccessControlContext;
-import java.security.PrivilegedAction;
 
-import javax.security.auth.Subject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.aggregator.RenderingJob;
 import org.apache.jetspeed.aggregator.Worker;
 import org.apache.jetspeed.aggregator.WorkerMonitor;
-import org.apache.jetspeed.security.JSSubject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Worker thread processes jobs and notify its WorkerMonitor when completed.
@@ -53,7 +49,11 @@ public class WorkerImpl extends Thread implements Worker
     /** Job to process */
     Runnable job = null;
 
-    /** Context to process job within */
+    /**
+     * Context to process job within
+     *
+     * @deprecated AccessControlContext must not be directly accessed by a worker thread.
+     */
     private AccessControlContext context = null;
 
     /** Monitor for this Worker */
@@ -109,6 +109,11 @@ public class WorkerImpl extends Thread implements Worker
 
     /**
      * Sets the job to execute in security context
+     *
+     * @deprecated Use only {@link #setJob(Runnable)} because AccessControlContext must not be directly accessed by
+     * a worker thread. Instead AccessControlContext must be accessed directly by the job implementation in order
+     * to use the AccessControlContext instance safely regardless of the physical worker thread implementation
+     * (e.g, WorkerImpl or container managed thread by commonj worker monitor).
      */
     public void setJob(Runnable job, AccessControlContext context)
     {
@@ -162,39 +167,14 @@ public class WorkerImpl extends Thread implements Worker
             if (this.job != null)
             {
                 log.debug("Processing job for window :" + ((RenderingJob)job).getWindow().getId());
-                Subject subject = null;
-                if (this.context != null)
+
+                try
                 {
-                    subject = JSSubject.getSubject(this.context);
+                    this.job.run();
                 }
-                if (subject != null)
+                catch (Throwable t)
                 {
-                    JSSubject.doAsPrivileged(subject, new PrivilegedAction<Object>()
-                        {
-                            public Object run()
-                            {
-                                try 
-                                {
-                                    WorkerImpl.this.job.run();
-                                }
-                                catch (Throwable t)
-                                {                        
-                                    log.error("Thread error", t);
-                                }
-                                return null;                    
-                            }
-                        }, this.context);
-                }
-                else
-                {
-                    try
-                    {
-                        this.job.run();
-                    }
-                    catch (Throwable t)
-                    {
-                        log.error("Thread error", t);
-                    }
+                    log.error("Thread error", t);
                 }
             }
 
@@ -210,5 +190,5 @@ public class WorkerImpl extends Thread implements Worker
     	this.running = false;
     	super.interrupt();
     }
-    
+
 }
