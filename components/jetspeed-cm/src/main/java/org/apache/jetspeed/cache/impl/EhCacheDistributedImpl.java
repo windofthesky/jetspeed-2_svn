@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -135,7 +135,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 		return ehcache.removeQuiet(key);
 
 	}
-	
+
     public void clear()
     {
         // invoke removeAll with local flag set
@@ -155,7 +155,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
         else
             remoteListeners.add(listener);
     }
-    
+
     public void removeEventListener(JetspeedCacheEventListener listener, boolean local)
     {
         if (local)
@@ -163,7 +163,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
         else
             remoteListeners.remove(listener);
     }
-    
+
 	public void evictContentForUser(RequestContext context)
 	{
 		return;
@@ -178,7 +178,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 	{
 		return null;
 	}
-	
+
    public void dispose()
     {
 		if (refList != null)
@@ -187,14 +187,14 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 			refList = null;
 			temp.clear();
 		}
-		else 
+		else
 			return;
 		if (this.ehcache != null)
 		{
 			ehcache = null;
 		}
     }
-	
+
     protected void notifyListeners(boolean local, int action, Object key, Object value)
     {
         List listeners = (local?localListeners:remoteListeners);
@@ -226,9 +226,9 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
             {
                 e.printStackTrace();
             }
-        }       
+        }
     }
-   
+
 	public void notifyElement( Ehcache cache, boolean local,Element arg1, int action)
 	{
 		if (cache != this.ehcache)
@@ -245,7 +245,7 @@ public class EhCacheDistributedImpl extends EhCacheImpl implements JetspeedCache
 				if (action < 0)
 					refList.remove(arg1.getKey());
 				else if (action == CacheElement.ActionAdded)
-					refList.put(arg1.getKey(), arg1);
+					refList.put(arg1.getKey(), new EhCacheDistributedElementImpl(arg1));
 				e.notifyChange(action);
 	            notifyListeners(local, action, arg1.getKey(), arg1.getObjectValue());
 			}
