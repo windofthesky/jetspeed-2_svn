@@ -16,13 +16,17 @@
  */
 package org.apache.jetspeed.cluster;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -37,14 +41,17 @@ import org.springframework.beans.factory.BeanFactoryAware;
  */
 public class NodeManagerImpl implements NodeManager,BeanFactoryAware
 {
-	protected final static Logger log = LoggerFactory.getLogger(NodeManagerImpl.class);
+
+    protected final static Logger log = LoggerFactory.getLogger(NodeManagerImpl.class);
+
+    private static final String NODES_SERIALIZED_FILE_NAME = "nodeInfo.ser";
 
     /**
      * added support for bean factory to create profile rules
      */
     private BeanFactory beanFactory;
 
-    private HashMap<String, NodeInformation> nodes = null;
+    private Map<String, NodeInformation> nodes = new HashMap<String, NodeInformation>();
     private File rootIndexDir = null;
 
     /** the default criterion bean name */
@@ -57,7 +64,7 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
         rootIndexDir = new File(indexRoot);
         this.nodeInformationBean = nodeInformationBean;
 
-        if (!(rootIndexDir.exists()))
+        if (!rootIndexDir.isDirectory())
         {
             rootIndexDir.mkdirs();
         }
@@ -68,37 +75,65 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
 
     protected void save()
     {
+        File nodesFile = new File(rootIndexDir, NODES_SERIALIZED_FILE_NAME);
+
+        FileOutputStream fos = null;
+        BufferedOutputStream bos = null;
+        ObjectOutputStream oos = null;
+
         try
         {
-            FileOutputStream fout = new FileOutputStream(rootIndexDir.getAbsolutePath() + "/nodeInfo.ser");
-            ObjectOutputStream oos = new ObjectOutputStream(fout);
+            fos = new FileOutputStream(nodesFile);
+            bos = new BufferedOutputStream(fos);
+            oos = new ObjectOutputStream(bos);
+
             oos.writeObject(nodes);
-            oos.close();
         }
         catch (Exception e)
         {
-            log.error("Failed to write nodes data file to  " + rootIndexDir.getAbsolutePath() + "/nodeInfo.ser" + " - error : " + e.getLocalizedMessage());
-            e.printStackTrace();
+            log.error("Failed to write nodes data to " + nodesFile, e);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(oos);
+            IOUtils.closeQuietly(bos);
+            IOUtils.closeQuietly(fos);
         }
     }
 
     @SuppressWarnings("unchecked")
     protected void load()
     {
-        File data = new File(rootIndexDir.getAbsolutePath() + "/nodeInfo.ser");
+        File nodesFile = new File(rootIndexDir, NODES_SERIALIZED_FILE_NAME);
 
-        if (data.exists())
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+        ObjectInputStream ois = null;
+
+        if (nodesFile.isFile())
         {
-            try
-            {
-                FileInputStream fin = new FileInputStream(data.getAbsolutePath());
-                ObjectInputStream ois = new ObjectInputStream(fin);
-                nodes = (HashMap<String, NodeInformation>) ois.readObject();
-                ois.close();
-            }
-            catch (Exception e)
-            {
-                log.error("Failed to read nodes data file from " + data.getAbsolutePath() + " - error : " + e.getLocalizedMessage());
+            // In order to avoid EOFException, check whether or not the file is empty before reading.
+            if (nodesFile.length() > 0) {
+                try
+                {
+                    fis = new FileInputStream(nodesFile);
+                    bis = new BufferedInputStream(fis);
+                    ois = new ObjectInputStream(bis);
+
+                    nodes = (HashMap<String, NodeInformation>) ois.readObject();
+                }
+                catch (Exception e)
+                {
+                    log.error("Failed to read nodes data from " + nodesFile, e);
+                    nodes = new HashMap<String, NodeInformation>();
+                }
+                finally
+                {
+                    IOUtils.closeQuietly(ois);
+                    IOUtils.closeQuietly(bis);
+                    IOUtils.closeQuietly(fis);
+                }
+            } else {
                 nodes = new HashMap<String, NodeInformation>();
             }
         }
@@ -106,17 +141,15 @@ public class NodeManagerImpl implements NodeManager,BeanFactoryAware
         {
             try
             {
-                data.createNewFile();
+                nodesFile.createNewFile();
             }
             catch (Exception e)
             {
-                log.error("Failed to create new nodes data file error : " + e.getLocalizedMessage());
-                e.printStackTrace();
+                log.error("Failed to create new nodes data file.", e);
             }
+
             nodes = new HashMap<String, NodeInformation>();
         }
-        // NodeInformationImpl temp = new NodeInformationImpl();
-        // temp.setContextName("tttt");
     }
 
     public synchronized int checkNode(Long revision, String contextName)
