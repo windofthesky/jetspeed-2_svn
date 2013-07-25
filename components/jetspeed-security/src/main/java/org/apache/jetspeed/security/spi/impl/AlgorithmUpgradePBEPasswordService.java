@@ -16,16 +16,17 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import org.apache.jetspeed.security.AlgorithmUpgradePasswordEncodingService;
 import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.PasswordCredential;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.AlgorithmUpgradeCredentialPasswordEncoder;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * <p>
@@ -66,7 +67,10 @@ public class AlgorithmUpgradePBEPasswordService extends PBEPasswordService imple
         }
         else
         {
-            return encode(credential.getUserName(), credential.getNewPassword());
+            // 2013-07-25: DST: while debugging this problem, it appears credential.getNewPassword is always null,
+            // while clearTextPassword had the correct password to encode with new algorithm
+            // see: https://issues.apache.org/jira/browse/JS2-1286
+            return encode(credential.getUserName(), clearTextPassword); // credential.getNewPassword());
         }
     }
 
