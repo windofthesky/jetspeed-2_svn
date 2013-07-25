@@ -16,11 +16,11 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.apache.jetspeed.profiler.rules.ProfileResolvers;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Profile Resolvers 
@@ -30,7 +30,7 @@ import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
  */
 public class ProfileResolversImpl implements ProfileResolvers, Serializable
 {
-    private Map resolvers;
+    private Map<String, RuleCriterionResolver> resolvers;
     
     public ProfileResolversImpl(Map resolvers)
     {
@@ -39,13 +39,13 @@ public class ProfileResolversImpl implements ProfileResolvers, Serializable
     
     public RuleCriterionResolver get(String resolverName)
     {
-        return (RuleCriterionResolver)resolvers.get(resolverName);
+        return resolvers.get(resolverName);
     }
     
     /**
      * return the map of resolver
      */
-    public Map getResolvers()
+    public Map<String, RuleCriterionResolver> getResolvers()
     {
     	return resolvers;
     }

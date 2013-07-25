@@ -16,22 +16,7 @@
  */
 package org.apache.jetspeed.profiler;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import javax.security.auth.Subject;
-import javax.servlet.http.HttpServletRequest;
-
 import junit.framework.Test;
-
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
@@ -51,6 +36,19 @@ import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.security.spi.SecurityDomainAccessManager;
 import org.apache.jetspeed.security.spi.SecurityDomainStorageManager;
 import org.apache.jetspeed.serializer.JetspeedSerializer;
+
+import javax.security.auth.Subject;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.Principal;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * TestProfiler
@@ -208,11 +206,11 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         // make sure rule is set correctly
         ProfilingRule rule = profiler.getRule("user-role-fallback");
         assertNotNull("rule is null ", rule);
-        Iterator c = rule.getRuleCriteria().iterator();
+        Iterator<RuleCriterion> iterator = rule.getRuleCriteria().iterator();
         int ix = 0;
-        while (c.hasNext())
+        while (iterator.hasNext())
         {
-            RuleCriterion rc = (RuleCriterion)c.next();
+            RuleCriterion rc = iterator.next();
             assertTrue("criterion type check " + rc.getType(), rc.getType().equals(URF_CRITERIA[ix]));
             System.out.println(rc.getType());
             ix++;
@@ -239,11 +237,11 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         // make sure rule is set correctly
         ProfilingRule rule = profiler.getRule("user-rolecombo-fallback");
         assertNotNull("rule is null ", rule);
-        Iterator c = rule.getRuleCriteria().iterator();
+        Iterator<RuleCriterion> iterator = rule.getRuleCriteria().iterator();
         int ix = 0;
-        while (c.hasNext())
+        while (iterator.hasNext())
         {
-            RuleCriterion rc = (RuleCriterion)c.next();
+            RuleCriterion rc = iterator.next();
             assertTrue("criterion type check " + rc.getType(), rc.getType().equals(URCF_CRITERIA[ix]));
             System.out.println(rc.getType());
             ix++;
@@ -263,9 +261,9 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     
     protected Subject createSubject()
     {
-        Set principals = new PrincipalsSet();
-        Set publicCredentials = new HashSet();
-        Set privateCredentials = new HashSet();
+        PrincipalsSet principals = new PrincipalsSet();
+        Set<Principal> publicCredentials = new HashSet<Principal>();
+        Set<Principal> privateCredentials = new HashSet<Principal>();
         
         principals.add(new UserImpl("david"));
         principals.add(new RoleImpl("ATP"));
@@ -278,9 +276,9 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
 
     protected Subject createSubject2()
     {
-        Set principals = new PrincipalsSet();
-        Set publicCredentials = new HashSet();
-        Set privateCredentials = new HashSet();
+        PrincipalsSet principals = new PrincipalsSet();
+        Set<Principal> publicCredentials = new HashSet<Principal>();
+        Set<Principal> privateCredentials = new HashSet<Principal>();
 
         principals.add(new UserImpl("david"));
         principals.add(new RoleImpl("ATP"));
@@ -300,10 +298,10 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         assertNotNull("profiler service is null", profiler);
 
         // Test Default Rule
-        ProfilingRule rule = profiler.getDefaultRule();
-        assertNotNull("Default profiling rule is null", rule);
-        assertTrue("default rule unexpected, = " + rule.getId(), rule.getId().equals(DEFAULT_RULE));
-        assertTrue("default rule class not mapped", rule instanceof StandardProfilingRule);
+        ProfilingRule defaultRule = profiler.getDefaultRule();
+        assertNotNull("Default profiling rule is null", defaultRule);
+        assertTrue("default rule unexpected, = " + defaultRule.getId(), defaultRule.getId().equals(DEFAULT_RULE));
+        assertTrue("default rule class not mapped", defaultRule instanceof StandardProfilingRule);
 
         // Test anonymous principal-rule
         ProfilingRule anonRule = profiler.getRuleForPrincipal(new UserImpl("anon"),
@@ -314,10 +312,8 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         // Test Retrieving All Rules
         int standardCount = 0;
         int fallbackCount = 0;
-        Iterator rules = profiler.getRules().iterator();
-        while (rules.hasNext())
+        for (ProfilingRule rule : profiler.getRules())
         {
-            rule = (ProfilingRule) rules.next();
             if (rule.getId().equals(DEFAULT_RULE))
             {
                 assertTrue("standard rule class not mapped", rule instanceof StandardProfilingRule);
@@ -344,13 +340,11 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
 
     private void checkStandardCriteria(ProfilingRule rule)
     {
-        Collection criteriaCollection = rule.getRuleCriteria();
+        Collection<RuleCriterion> criteriaCollection = rule.getRuleCriteria();
         assertNotNull("Criteria is null", criteriaCollection);
-        Iterator criteria = criteriaCollection.iterator();
         int count = 0;
-        while (criteria.hasNext())
+        for (RuleCriterion criterion : criteriaCollection)
         {
-            RuleCriterion criterion = (RuleCriterion) criteria.next();
             assertNotNull("criteria type ", criterion.getType());
             System.out.println("criteria name = " + criterion.getName());
             switch (count)
@@ -386,20 +380,17 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
             count++;
         }
     }
-    
+
 
 
     private void checkFallbackCriteria(ProfilingRule rule)
     {
-        Collection criteriaCollection = rule.getRuleCriteria();
+        Collection<RuleCriterion> criteriaCollection = rule.getRuleCriteria();
         assertNotNull("Criteria is null", criteriaCollection);
-        Iterator criteria = criteriaCollection.iterator();
         int count = 0;
-        while (criteria.hasNext())
+        for (RuleCriterion criterion : criteriaCollection)
         {
-            RuleCriterion criterion = (RuleCriterion) criteria.next();
             assertNotNull("fallback criteria type", criterion.getType());
-
             switch (count)
             {
             case 0:
@@ -454,11 +445,11 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
                 .equals("page:default-other:user:anon:mediatype:HTML:language:en:country:US"));
 
         // test fallback
-        Iterator fallback = locator.iterator();
+        Iterator<ProfileLocatorProperty[]> fallback = locator.iterator();
         int count = 0;
         while (fallback.hasNext())
         {
-            ProfileLocatorProperty[] locatorProperties = (ProfileLocatorProperty[]) fallback.next();
+            ProfileLocatorProperty[] locatorProperties = fallback.next();
             assertTrue("locatorProperties is not null", (locatorProperties != null));
             String locatorPath = locator.getLocatorPath(locatorProperties);
             switch (count)
@@ -493,7 +484,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         count = 0;
         while (fallback.hasNext())
         {
-            ProfileLocatorProperty[] locatorProperties = (ProfileLocatorProperty[]) fallback.next();
+            ProfileLocatorProperty[] locatorProperties = fallback.next();
             assertTrue("locatorProperties is not null", (locatorProperties != null));
             String locatorPath = locator.getLocatorPath(locatorProperties);
             assertTrue("locatorPath: " + locatorPath, locatorPath.equals("page:test"));
@@ -757,20 +748,18 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         // Test Retrieving All Rules
         int standardCount = 0;
         int fallbackCount = 0;
-        Iterator rules = profiler.getRules().iterator();
-        while (rules.hasNext())
+        for (ProfilingRule profilingRule : profiler.getRules())
         {
-            rule = (ProfilingRule) rules.next();
-            if (rule.getId().equals(ruleId1))
+            if (profilingRule.getId().equals(ruleId1))
             {
-                assertTrue("standard rule class not mapped", rule instanceof StandardProfilingRule);
-                checkStandardCriteria(rule);
+                assertTrue("standard rule class not mapped", profilingRule instanceof StandardProfilingRule);
+                checkStandardCriteria(profilingRule);
                 standardCount++;
             }
-            else if (rule.getId().equals(ruleId2))
+            else if (profilingRule.getId().equals(ruleId2))
             {
-                assertTrue("role fallback rule class not mapped", rule instanceof RoleFallbackProfilingRule);
-                checkFallbackCriteria(rule);
+                assertTrue("role fallback rule class not mapped", profilingRule instanceof RoleFallbackProfilingRule);
+                checkFallbackCriteria(profilingRule);
                 fallbackCount++;
             }
             else

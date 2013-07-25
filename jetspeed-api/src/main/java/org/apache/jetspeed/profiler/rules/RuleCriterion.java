@@ -46,7 +46,7 @@ public interface RuleCriterion extends Serializable
      * Rule types determine which type of request property, parameter or attribute
      * to look at when building a profiling locator.
      *  
-     * @param The request type associated with this criterion.
+     * @param type The request type associated with this criterion.
      */    
     void setType(String type);
 
@@ -95,7 +95,7 @@ public interface RuleCriterion extends Serializable
      *   FALLBACK_STOP - evaluate this criterion and if it fails stop evaluation criteria for this rule
      *   FALLBACK_LOOP - evaluate this criterion and if it fails continue evaluating
      * 
-     * @param The fallback type for this criterion, should be a valid value as shown above.
+     * @param order The fallback type for this criterion, should be a valid value as shown above.
      */    
     void setFallbackType(int order);
     
@@ -113,7 +113,7 @@ public interface RuleCriterion extends Serializable
      * This name is used to lookup the value of the request parameter, attribute, or 
      * property when building a profile locator.
      *  
-     * @param The name of the request parameter, attribute or property.
+     * @param name The name of the request parameter, attribute or property.
      */        
     void setName(String name);
 
@@ -128,7 +128,7 @@ public interface RuleCriterion extends Serializable
     /**
      * Sets the value of the parameter, attribute or property in the portal request.
      *  
-     * @param The value of the request parameter, attribute or property.
+     * @param value The value of the request parameter, attribute or property.
      */        
     void setValue(String value);
 
@@ -142,7 +142,7 @@ public interface RuleCriterion extends Serializable
     /**
      * Sets the unique rule identifier for the associated owner rule 
      * 
-     * @param id The rule's unique identifier
+     * @param ruleId The rule's unique identifier
      */    
     void setRuleId(String ruleId);
     

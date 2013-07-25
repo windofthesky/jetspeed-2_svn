@@ -16,10 +16,6 @@
  */
 package org.apache.jetspeed.profiler.impl;
 
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
@@ -31,6 +27,10 @@ import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.request.RequestContext;
+
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * ProfilerValveImpl
@@ -96,14 +96,14 @@ public class ProfilerValveImpl extends AbstractPageValveImpl
     protected void setRequestPage(RequestContext request, String requestPath, Principal requestUserPrincipal) throws NodeNotFoundException, ProfilerException
     {
         // get request specific profile locators if required
-        Map locators = null;
+        Map<String,ProfileLocator> locators = null;
         String locatorName = (String)request.getAttribute(PROFILE_LOCATOR_REQUEST_ATTR_KEY);
         if ( locatorName != null )
         {
             ProfileLocator locator = profiler.getProfile(request,locatorName);
             if ( locator != null )
             {
-                locators = new HashMap();
+                locators = new HashMap<String,ProfileLocator>();
                 locators.put(ProfileLocator.PAGE_LOCATOR, locator);
             }
         }

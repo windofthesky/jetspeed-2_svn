@@ -16,10 +16,9 @@
  */
 package org.apache.jetspeed.profiler;
 
-import java.util.Iterator;
-
-import org.apache.jetspeed.profiler.ProfileLocatorProperty;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
+
+import java.util.Iterator;
 
 /**
  * <p>Profile Locators are used to locate profiled portal resources such as
@@ -69,7 +68,7 @@ public interface ProfileLocator
      *  
      * @return an iterator over the profile locator properties
      */
-    Iterator iterator();    
+    Iterator<ProfileLocatorProperty []> iterator();
         
     /**
      * Add a property based on a @link org.apache.jetspeed.profiler.rules.RuleCriterion

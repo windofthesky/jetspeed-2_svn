@@ -16,12 +16,6 @@
  */
 package org.apache.jetspeed.portalsite.view;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.proxy.FolderProxy;
@@ -42,6 +36,12 @@ import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfileLocatorProperty;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 /**
  * This class defines a logical view of site content using
@@ -484,7 +484,7 @@ public class SearchPathsSiteView extends AbstractSiteView
         // generate the proper search paths
         List locatorSearchPaths = new ArrayList(8);
         int addLocatorSearchPathsAt = 0;
-        Iterator locatorIter = locator.iterator();
+        Iterator<ProfileLocatorProperty []> locatorIter = locator.iterator();
         while (locatorIter.hasNext())
         {
             // initialize path construction variables
@@ -502,7 +502,7 @@ public class SearchPathsSiteView extends AbstractSiteView
             int skipProfileLocatorIterations = -1;
 
             // form locator properties into a complete path
-            ProfileLocatorProperty [] properties = (ProfileLocatorProperty []) locatorIter.next();
+            ProfileLocatorProperty [] properties = locatorIter.next();
             for (int i = 0; (i < properties.length); i++)
             {
                 if (properties[i].isNavigation())

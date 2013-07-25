@@ -30,5 +30,5 @@ public interface ProfileResolvers
     /**
      * return the map of resolver
      */
-    Map getResolvers();
+    Map<String,RuleCriterionResolver> getResolvers();
 }

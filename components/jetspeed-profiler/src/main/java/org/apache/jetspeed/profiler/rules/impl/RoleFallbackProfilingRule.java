@@ -16,11 +16,6 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
-import java.util.Iterator;
-import java.util.StringTokenizer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.FallbackCriterionResolver;
@@ -29,6 +24,11 @@ import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.StringTokenizer;
 
 /**
  * RoleFallbackProfilingRule
@@ -68,7 +68,7 @@ public class RoleFallbackProfilingRule
         Iterator<RuleCriterion> criteria = this.getRuleCriteria().iterator();
         while (criteria.hasNext())
         {
-            RuleCriterion criterion = (RuleCriterion)criteria.next();
+            RuleCriterion criterion = criteria.next();
             if (criterion.getType() == null)
             {
                 log.warn("Invalid criterion provided - type null on rule " + this);
@@ -121,7 +121,7 @@ public class RoleFallbackProfilingRule
         criteria = this.getRuleCriteria().iterator();
         while (criteria.hasNext())
         {
-            RuleCriterion criterion = (RuleCriterion)criteria.next();
+            RuleCriterion criterion = criteria.next();
             if (criterion.getType() == null)
             {
                 log.warn("Invalid criterion provided - name or type null on rule " + this);

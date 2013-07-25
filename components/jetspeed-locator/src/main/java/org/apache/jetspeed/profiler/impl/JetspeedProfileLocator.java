@@ -16,16 +16,12 @@
  */
 package org.apache.jetspeed.profiler.impl;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.StringTokenizer;
-
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfileLocatorProperty;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
+
+import java.util.*;
 
 /**
  * ProfileLocatorImpl
@@ -69,7 +65,7 @@ public class JetspeedProfileLocator implements ProfileLocatorControl
         this.requestServerName = requestServerName;
     }
 
-    public Iterator iterator()
+    public Iterator<ProfileLocatorProperty []> iterator()
     {    
         return new ProfileFallbackIterator(this);
     }

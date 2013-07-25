@@ -16,10 +16,6 @@
  */
 package org.apache.jetspeed.profiler.rules.impl;
 
-import java.util.Iterator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfileResolvers;
@@ -27,6 +23,10 @@ import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.profiler.rules.RuleCriterionResolver;
 import org.apache.jetspeed.request.RequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
 
 /**
  * StandardProfilingRule applies the standard Jetspeed-1 profiling rules.
@@ -62,10 +62,10 @@ public class StandardProfilingRule
         int count = 0;
         
         // first pass, build the key
-        Iterator criteria = this.getRuleCriteria().iterator();
+        Iterator<RuleCriterion> criteria = this.getRuleCriteria().iterator();
         while (criteria.hasNext())
         {
-            RuleCriterion criterion = (RuleCriterion)criteria.next();
+            RuleCriterion criterion = criteria.next();
             if (criterion.getType() == null)
             {
                 log.warn("Invalid criterion provided - type null on rule " + this);
@@ -101,7 +101,7 @@ public class StandardProfilingRule
         criteria = this.getRuleCriteria().iterator();
         while (criteria.hasNext())
         {
-            RuleCriterion criterion = (RuleCriterion)criteria.next();
+            RuleCriterion criterion = criteria.next();
             if (criterion.getType() == null)
             {
                 log.warn("Invalid criterion provided - type null on rule " + this);

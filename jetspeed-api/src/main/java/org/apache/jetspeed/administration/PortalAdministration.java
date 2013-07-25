@@ -16,15 +16,14 @@
  */
 package org.apache.jetspeed.administration;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import org.apache.jetspeed.security.User;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-
-import org.apache.jetspeed.security.User;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * PortalAdministration
@@ -60,13 +59,13 @@ public interface PortalAdministration
      *                   if subsite not specified
      * @since 2.1.2              
      */
-    public void registerUser(
+     void registerUser(
             String userName, 
             String password, 
-            List roles, 
-            List groups, 
-            Map userInfo, 
-            Map rules, 
+            List<String> roles,
+            List<String> groups,
+            Map<String,String> userInfo,
+            Map<String,String> rules,
             String folderTemplate,
             String subsite,
             Locale locale,
@@ -75,20 +74,20 @@ public interface PortalAdministration
 
     void registerUser(String userName, 
                       String password, 
-                      List roles, 
-                      List groups,
-                      Map userInfo,                       
-                      Map rules,
+                      List<String> roles,
+                      List<String> groups,
+                      Map<String,String> userInfo,
+                      Map<String,String> rules,
                       String template,
                       String subsiteFolder)
         throws RegistrationException;
 
     void registerUser(String userName, 
             String password, 
-            List roles, 
-            List groups,
-            Map userInfo,                       
-            Map rules,
+            List<String> roles,
+            List<String> groups,
+            Map<String,String> userInfo,
+            Map<String,String> rules,
             String template)
         throws RegistrationException;
 
@@ -110,18 +109,19 @@ public interface PortalAdministration
     
     /**
      * Helper to send an email to a recipient
-     * 
-     * @param recipient the email address of the recipient
+     *
+     * @param portletConfig portlet configuration
+     * @param emailAddress the email address of the recipient
      * @param localizedSubject the subject of the email as a localized string
-     * @param message the email message content
+     * @param templatePath path to templates
      * @parm userAttributes map of user attributes
      * @throws AdministrationEmailException
      */
-    public void sendEmail(PortletConfig portletConfig,
+     void sendEmail(PortletConfig portletConfig,
                           String emailAddress, 
                           String localizedSubject, 
                           String templatePath,
-                          Map userAttributes)
+                          Map<String,String> userAttributes)
         throws AdministrationEmailException;
     
     /**
@@ -133,7 +133,7 @@ public interface PortalAdministration
      * @param text the message text
      * @throws AdministrationEmailException
      */
-    public void sendEmail(String from, String subject, String to, String text) throws AdministrationEmailException;    
+     void sendEmail(String from, String subject, String to, String text) throws AdministrationEmailException;
     
     /**
      * Lookup a user given an email address
@@ -142,8 +142,8 @@ public interface PortalAdministration
      * @return a Jetspeed <code>User</code>, or throw exception if not found
      * @throws AdministrationEmailException
      */
-    public User lookupUserFromEmail(String email)
-    throws AdministrationEmailException;
+     User lookupUserFromEmail(String email)
+        throws AdministrationEmailException;
     
     /**
      * Provide a common way to get portal URLs
@@ -168,33 +168,34 @@ public interface PortalAdministration
      * @param guid    The ID which is passed throughte URL to the user
      * @return
      */
-    public Map getNewLoginInfo(String guid);
+     Map<String,String> getNewLoginInfo(String guid);
+
     /**
      * @param guid    the ID which is passed through the URL to the user.. 
      * @param info    a Map, info from which will be used to reset the password
      *                the password in this case is NOT encrypted, but this should probably
      *                change if this information is stored on disk... ie a database
      */
-    public void putNewLoginInfo(String guid, Map info);
+     void putNewLoginInfo(String guid, Map<String,String> info);
     
     /**
      * @param guid    the ID which will be removed from the storage when the info is no longer valid
      */
-    public void removeNewLoginInfo(String guid);
+     void removeNewLoginInfo(String guid);
     
     /**
      * Returns true if the current request user principal's name is the name of the portal admin user.
      * @param request
      * @return
      */
-    public boolean isAdminUser(PortletRequest request);
+    boolean isAdminUser(PortletRequest request);
     
     /**
      * Returns true if the current request user principal is in the portal admin role.
      * @param request
      * @return
      */
-    public boolean isUserInAdminRole(PortletRequest request);
+    boolean isUserInAdminRole(PortletRequest request);
     
     /**
      * Returns PSML user folder path for specified user by
@@ -206,7 +207,7 @@ public interface PortalAdministration
      * @param serverName server name, (required for subsite profiling rules)
      * @return PSML user folder path
      */
-    public String getUserFolderPath(String userName, Locale locale, String serverName);
+    String getUserFolderPath(String userName, Locale locale, String serverName);
 
     /**
      * Returns PSML base folder path for specified user by
@@ -218,5 +219,5 @@ public interface PortalAdministration
      * @param serverName server name, (required for subsite profiling rules)
      * @return PSML base folder path
      */
-    public String getBaseFolderPath(String userName, Locale locale, String serverName);
+    String getBaseFolderPath(String userName, Locale locale, String serverName);
 }

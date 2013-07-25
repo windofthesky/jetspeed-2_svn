@@ -611,10 +611,10 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         // property that will force the request path if
         // non-null; otherwise default to locator request path
         String requestPath = locator.getRequestPath();
-        Iterator locatorIter = locator.iterator();
+        Iterator<ProfileLocatorProperty []> locatorIter = locator.iterator();
         if (locatorIter.hasNext())
         {
-            ProfileLocatorProperty [] properties = (ProfileLocatorProperty []) locatorIter.next();
+            ProfileLocatorProperty [] properties = locatorIter.next();
             for (int i = 0; (i < properties.length); i++)
             {
                 if (!properties[i].isControl() && !properties[i].isNavigation())
@@ -1654,8 +1654,8 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
             // compare locators using the most specific,
             // (i.e. first), locator properties array
             // returned by the locator iterator
-            ProfileLocatorProperty [] properties0 = (ProfileLocatorProperty [])locator0.iterator().next();
-            ProfileLocatorProperty [] properties1 = (ProfileLocatorProperty [])locator1.iterator().next();
+            ProfileLocatorProperty [] properties0 = locator0.iterator().next();
+            ProfileLocatorProperty [] properties1 = locator1.iterator().next();
             if ((properties0 != null) || (properties1 != null))
             {
                 if ((properties0 == null) || (properties1 == null) || (properties0.length != properties1.length))
@@ -1713,7 +1713,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         // returned by the locator iterator and return
         // first valued property that is not a control
         // or navigation type
-        ProfileLocatorProperty [] properties = (ProfileLocatorProperty [])locator.iterator().next();
+        ProfileLocatorProperty [] properties = locator.iterator().next();
         for (int i = 0, limit = properties.length; (i < limit); i++)
         {
             if (!properties[i].isControl() && !properties[i].isNavigation() && (properties[i].getValue() != null))

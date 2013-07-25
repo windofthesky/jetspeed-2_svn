@@ -16,32 +16,19 @@
 */
 package org.apache.jetspeed.administration;
 
-import java.io.ByteArrayOutputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.URLName;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.apache.jetspeed.aggregator.TestWorkerMonitor;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.ByteArrayOutputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
 
 /**
  * TestPortalAdministrationImpl
@@ -178,9 +165,9 @@ public class TestPortalAdministrationImpl extends  TestCase
         PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,null,null);
         String user = "user"+(Math.abs(new Date().getTime()));
         String password = "password";
-        List emptyList = new ArrayList();
-        Map emptyMap = new HashMap();
-        Map userAttributes = new HashMap();
+        List<String> emptyList = new ArrayList<String>();
+        Map<String,String> emptyMap = new HashMap<String,String>();
+        Map<String,String> userAttributes = new HashMap<String,String>();
         String emailTemplate = "";
         pai.registerUser(user, 
                 password, 

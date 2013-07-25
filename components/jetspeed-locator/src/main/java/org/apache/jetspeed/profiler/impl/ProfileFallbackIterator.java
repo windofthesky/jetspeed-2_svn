@@ -16,11 +16,11 @@
  */
 package org.apache.jetspeed.profiler.impl;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.jetspeed.profiler.ProfileLocatorProperty;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * ProfileFallbackIterator
@@ -28,7 +28,7 @@ import org.apache.jetspeed.profiler.rules.RuleCriterion;
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class ProfileFallbackIterator implements Iterator
+public class ProfileFallbackIterator implements Iterator<ProfileLocatorProperty []>
 {
     private ProfileLocatorControl locator;
     private int last = 0;
@@ -82,7 +82,7 @@ public class ProfileFallbackIterator implements Iterator
     /* (non-Javadoc)
      * @see java.util.Iterator#next()
      */
-    public Object next()
+    public ProfileLocatorProperty [] next()
     {
         ProfileLocatorProperty [] properties = null;
 

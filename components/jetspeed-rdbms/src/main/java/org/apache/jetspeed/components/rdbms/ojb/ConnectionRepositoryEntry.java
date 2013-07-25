@@ -16,20 +16,7 @@
  */
 package org.apache.jetspeed.components.rdbms.ojb;
 
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Map;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
 import org.apache.commons.dbcp.BasicDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.ojb.broker.PBKey;
 import org.apache.ojb.broker.accesslayer.ConnectionFactoryDBCPImpl;
 import org.apache.ojb.broker.accesslayer.ConnectionFactoryManagedImpl;
@@ -40,8 +27,21 @@ import org.apache.ojb.broker.metadata.JdbcConnectionDescriptor;
 import org.apache.ojb.broker.metadata.JdbcMetadataUtils;
 import org.apache.ojb.broker.metadata.MetadataManager;
 import org.apache.ojb.broker.util.ClassHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.Map;
 
 /**
  * A JavaBean that configures an entry in OJB's ConnectionRepository
@@ -238,7 +238,6 @@ public class ConnectionRepositoryEntry
     }
 
     /**
-     * @see setJetspeedEngineScoped
      * @return Returns if Jetspeed engine's ENC is used for JNDI lookups.
      */
     public boolean isJetspeedEngineScoped() 
@@ -408,7 +407,7 @@ public class ConnectionRepositoryEntry
      * a minimal DataSource implementation that satisfies the requirements
      * of JdbcMetadataUtil.
      */
-    private class MinimalDataSource implements DataSource 
+    public class MinimalDataSource implements DataSource
     {
         private JdbcConnectionDescriptor jcd = null;
         
@@ -420,18 +419,22 @@ public class ConnectionRepositoryEntry
             this.jcd = jcd;
         }
 
+        public java.util.logging.Logger getParentLogger()
+                throws SQLFeatureNotSupportedException
+        {
+            return null;
+        }
+
         public boolean isWrapperFor(Class<?> iface) throws SQLException
         {
-            return false;
-            // #ifdef JDBC4 return getConnection().isWrapperFor(iface);
+            return getConnection().isWrapperFor(iface);
         }
 
         public <T> T unwrap(Class<T> iface) throws SQLException
         {
-            throw new SQLException("PoolingDataSource is not a wrapper.");
-            //#ifdef JDBC4 return getConnection().unwrap(iface);
+            return getConnection().unwrap(iface);
         }
-        
+
         /* (non-Javadoc)
          * @see javax.sql.DataSource#getConnection()
          */
@@ -492,8 +495,9 @@ public class ConnectionRepositoryEntry
          */
         public void setLogWriter(PrintWriter out) throws SQLException {
         }
+
     }
-	
+
 	public Connection getConnection() throws SQLException {
 		if(externalDs != null)
 		{

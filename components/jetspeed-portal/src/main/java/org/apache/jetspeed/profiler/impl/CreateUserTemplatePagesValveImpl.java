@@ -24,9 +24,7 @@ import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.portalsite.PortalSite;
 import org.apache.jetspeed.profiler.Profiler;
-import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +56,7 @@ public class CreateUserTemplatePagesValveImpl extends ProfilerValveImpl
      * @param portalSite portal site component reference
      * @param pageLayoutComponent page layout component reference
      * @param requestFallback flag to enable root folder fallback
-     * @param useHistory flag to enable selection of last visited folder page
+     * @param useHistoryPageManager flag to enable selection of last visited folder page
      * @param pageManager pageManagerComponent reference
      */
     public CreateUserTemplatePagesValveImpl(Profiler profiler, PortalSite portalSite, PageLayoutComponent pageLayoutComponent,

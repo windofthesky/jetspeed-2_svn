@@ -16,14 +16,14 @@
  */
 package org.apache.jetspeed.profiler;
 
-import java.security.Principal;
-import java.util.Collection;
-import java.util.Map;
-
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.request.RequestContext;
+
+import java.security.Principal;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * ProfilerService
@@ -101,13 +101,12 @@ public interface Profiler
      * 
      * @param principal
      *            Lookup the profiling rule based on this principal.
+     * @param rule
+     *            rule used to find profiles for this user
      * @param locatorName
      *            the unique name of a locator for this principal/rule/locator
-     * @param The
-     *            rule used to find profiles for this user
      */
-    void setRuleForPrincipal(Principal principal, ProfilingRule rule,
-            String locatorName);
+    void setRuleForPrincipal(Principal principal, ProfilingRule rule, String locatorName);
 
     /**
      * Lookup the portal's default profiling rule.
@@ -117,9 +116,11 @@ public interface Profiler
     ProfilingRule getDefaultRule();
 
     /**
-     * @return
+     * Retrieves all profiling rules
+     *
+     * @return a collection of all rules
      */
-    Collection getRules();
+    Collection<ProfilingRule> getRules();
 
     /**
      * Given a rule id, get the rule
@@ -147,7 +148,7 @@ public interface Profiler
      *            The given principal.
      * @return collection of PrincipalRules
      */
-    Collection getRulesForPrincipal(Principal principal);
+    Collection<PrincipalRule> getRulesForPrincipal(Principal principal);
 
     /**
      * Gets all supported locators for a principal.
@@ -157,7 +158,7 @@ public interface Profiler
      * @return
      * @throws ProfilerException
      */
-    Map getProfileLocators(RequestContext context, Principal principal)
+    Map<String,ProfileLocator> getProfileLocators(RequestContext context, Principal principal)
             throws ProfilerException;
 
     /**
@@ -171,7 +172,7 @@ public interface Profiler
      * @return
      * @throws ProfilerException
      */
-    Map getDefaultProfileLocators(RequestContext context)
+    Map<String,ProfileLocator> getDefaultProfileLocators(RequestContext context)
             throws ProfilerException;
 
     /*

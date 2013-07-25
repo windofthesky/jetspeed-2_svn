@@ -40,7 +40,7 @@ public class CreatePageValveImpl extends AbstractValve implements Valve
     /**
      * CreatePageValveImpl - constructor
      *
-     * @param securityBehavior the behavior to create new page for new user
+     * @param behavior the behavior to create new page for new user
      */
     public CreatePageValveImpl(PortletActionSecurityBehavior behavior)
     {

@@ -16,13 +16,6 @@
  */
 package org.apache.jetspeed.serializer;
 
-import java.security.Principal;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.slf4j.Logger;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.ProfilerException;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
@@ -31,6 +24,7 @@ import org.apache.jetspeed.profiler.rules.RuleCriterion;
 import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+import org.apache.jetspeed.serializer.objects.JSPrincipal;
 import org.apache.jetspeed.serializer.objects.JSPrincipalRule;
 import org.apache.jetspeed.serializer.objects.JSPrincipalRules;
 import org.apache.jetspeed.serializer.objects.JSProfilingRule;
@@ -38,8 +32,14 @@ import org.apache.jetspeed.serializer.objects.JSProfilingRules;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterion;
 import org.apache.jetspeed.serializer.objects.JSRuleCriterions;
 import org.apache.jetspeed.serializer.objects.JSSnapshot;
-import org.apache.jetspeed.serializer.objects.JSPrincipal;
 import org.apache.jetspeed.serializer.objects.JSUser;
+import org.slf4j.Logger;
+
+import java.security.Principal;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * JetspeedProfilerSerializer - Profiler component serializer
@@ -86,17 +86,15 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
                 String anonymousUser = userManager.getAnonymousUser();
                 for (User _user : userManager.getUsers(""))    
                 {
-                    Collection col = pm.getRulesForPrincipal(_user);
-                    Iterator _itCol = col.iterator();
-                    while (_itCol.hasNext())
+                    for (PrincipalRule rule : pm.getRulesForPrincipal(_user))
                     {
-                        pm.deletePrincipalRule((PrincipalRule)_itCol.next());
+                        pm.deletePrincipalRule(rule);
                     }
                 }
-                Iterator _itRules = pm.getRules().iterator();
+                Iterator<ProfilingRule> _itRules = pm.getRules().iterator();
                 while ( _itRules.hasNext() )
                 {
-                    pm.deleteProfilingRule((ProfilingRule)_itRules.next());
+                    pm.deleteProfilingRule(_itRules.next());
                 }                
             }
             catch (Exception e)
@@ -306,7 +304,7 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
             RuleCriterion c = recreateRuleCriterion(profiler, (JSRuleCriterion) _it.next(), rule);
             if (c != null)
             {
-                Collection cHelp = rule.getRuleCriteria();
+                Collection<RuleCriterion> cHelp = rule.getRuleCriteria();
                 if (!(existing && (cHelp.contains(c))))
                 {
                     cHelp.add(c);
@@ -339,7 +337,7 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
                     "Standard Rule", e.getMessage() }));
         }
 
-        Iterator list = null;
+        Iterator<ProfilingRule> list = null;
         try
         {
             list = pm.getRules().iterator();
@@ -353,7 +351,7 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
         {
             try
             {
-                ProfilingRule p = (ProfilingRule) list.next();
+                ProfilingRule p = list.next();
                 if (!(rulesMap.containsKey(p.getId())))
                 {
                     JSProfilingRule rule = createProfilingRule(p, (standardRuleClass == p.getClass()));
@@ -387,7 +385,7 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
                 
                 if (principal != null)
                 {
-                    for (PrincipalRule p1 : (Collection<PrincipalRule>) pm.getRulesForPrincipal(principal))
+                    for (PrincipalRule p1 : pm.getRulesForPrincipal(principal))
                     {
                         JSPrincipalRule pr = new JSPrincipalRule(p1.getLocatorName(), p1.getProfilingRule().getId());
                         _user.getRules().add(pr);
@@ -411,11 +409,7 @@ public class JetspeedProfilerSerializer extends AbstractJetspeedComponentSeriali
         rule.setDescription(p.getTitle());
         rule.setId(p.getId());
 
-        Collection col = p.getRuleCriteria();
-        Iterator keys = col.iterator();
-        while (keys.hasNext())
-        {
-            RuleCriterion rc = (RuleCriterion) keys.next();
+        for (RuleCriterion rc : p.getRuleCriteria()) {
             rule.getCriterions().add(new JSRuleCriterion(rc));
         }
         return rule;
