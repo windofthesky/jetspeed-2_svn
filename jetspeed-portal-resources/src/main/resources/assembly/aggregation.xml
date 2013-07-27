@@ -31,6 +31,7 @@
     <constructor-arg index="1">
       <value>${portal.core.aggregator.portlet.service.limit}</value>
     </constructor-arg>
+    <constructor-arg index="2"><ref bean="portletTrackingCache"/></constructor-arg>
   </bean>
 
 

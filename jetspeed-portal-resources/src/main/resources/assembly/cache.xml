@@ -317,5 +317,17 @@
         <constructor-arg><ref bean="decorationContentCache"/></constructor-arg>
         <constructor-arg><ref bean="ContentCacheKeyGenerator"/></constructor-arg>
     </bean>
-    
+
+    <bean id="ehPortletTrackingCache" parent="ehCacheParent">
+        <meta key="j2:cat" value="default or cache" />
+        <property name="cacheName" value="portletTrackingCache" />
+    </bean>
+
+    <bean id="portletTrackingCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+        <meta key="j2:cat" value="default or cache" />
+        <constructor-arg>
+            <ref bean="ehPortletTrackingCache" />
+        </constructor-arg>
+    </bean>
+
 </beans>

@@ -408,7 +408,15 @@
           timeToLiveSeconds="3600"
           memoryStoreEvictionPolicy="LRU">
    </cache>
-   
+
+    <cache name="portletTrackingCache"
+           maxElementsInMemory="1000"
+           eternal="true"
+           overflowToDisk="false"
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="0"
+           memoryStoreEvictionPolicy="LRU"/>
+
     <!--
     Sample distributed cache named sampleDistributedCache1.
     This cache replicates using defaults.

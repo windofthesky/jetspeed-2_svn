@@ -162,6 +162,8 @@
         </property>
         <property name="cacheName" value="desktopContentCache" />
     </bean>
+
+
     
     <bean id="portletApplicationOidCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
         <meta key="j2:cat" value="default or cache" />
@@ -329,5 +331,35 @@
         <meta key="j2:cat" value="default or cache"/>
         <constructor-arg><ref bean="ehPageManagerPrincipalPropertiesPathCache"/></constructor-arg>
     </bean>
-    
+
+    <!--
+      Abstract Factory bean used to make a reference to the existing EHCache with the specified name
+      or instantiate a new EHCache when the cache hasn't been defined in ehcache.xml.
+      All the properties except of cacheManager are applied only when a new EHCache is instantiated.
+    -->
+    <bean id="ehCacheParent" abstract="true" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <meta key="j2:cat" value="default or cache" />
+        <property name="cacheManager" ref="cacheManager" />
+        <property name="maxElementsInMemory" value="500" />
+        <property name="maxElementsOnDisk" value="1000" />
+        <property name="eternal" value="false" />
+        <property name="overflowToDisk" value="false" />
+        <property name="timeToLive" value="120" />
+        <property name="timeToIdle" value="120" />
+        <property name="diskPersistent" value="false" />
+        <property name="diskExpiryThreadIntervalSeconds" value="120" />
+    </bean>
+
+    <bean id="ehPortletTrackingCache" parent="ehCacheParent">
+        <meta key="j2:cat" value="default or cache" />
+        <property name="cacheName" value="portletTrackingCache" />
+    </bean>
+
+    <bean id="portletTrackingCache" class="org.apache.jetspeed.cache.impl.EhCacheImpl">
+        <meta key="j2:cat" value="default or cache" />
+        <constructor-arg>
+            <ref bean="ehPortletTrackingCache" />
+        </constructor-arg>
+    </bean>
+
 </beans>

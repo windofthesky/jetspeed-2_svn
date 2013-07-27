@@ -16,20 +16,22 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.aggregator.PortletTrackingInfo;
 import org.apache.jetspeed.aggregator.PortletTrackingManager;
 import org.apache.jetspeed.aggregator.RenderTrackable;
+import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Tracks out of service status for portlets
@@ -39,7 +41,16 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
  */
 public class PortletTrackingManagerImpl implements PortletTrackingManager
 {
-    protected Map outOfService = Collections.synchronizedMap(new HashMap());
+    /**
+     * The out of service cache. This cache is keyed off of full portlet name <tt>portletApp::portletName</tt> which
+     * holds as its element a list of windows id strings
+     */
+    protected final JetspeedCache trackingCache;
+
+    /**
+     * Holds failed window ids and their failure counts
+     */
+    protected Map<String,Integer> trackingCounts = new HashMap<String,Integer>();
 
     /**
      * when rendering a portlet, the default timeout period in milliseconds
@@ -54,10 +65,11 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
      */
     protected int outOfServiceLimit;
     
-    public PortletTrackingManagerImpl(long defaultPortletTimeout, int outOfServiceLimit)
+    public PortletTrackingManagerImpl(long defaultPortletTimeout, int outOfServiceLimit, JetspeedCache trackingCache)
     {
         this.defaultPortletTimeout = defaultPortletTimeout;
         this.outOfServiceLimit = outOfServiceLimit;
+        this.trackingCache = trackingCache;
     }
     
     public long getDefaultPortletTimeout()
@@ -67,6 +79,10 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
 
     public boolean exceededTimeout(long renderTime, PortletWindow window)
     {
+        if (!isEnabled()) {
+            return false;
+        }
+
         RenderTrackable trackInfo = (RenderTrackable)window;
         long defaultTimeout = this.getDefaultPortletTimeout();
         if (trackInfo.getExpiration() > 0)
@@ -82,12 +98,29 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
     
     public boolean isOutOfService(PortletWindow window)
     {
+        if (!isEnabled()) {
+            return false;
+        }
+
         RenderTrackable trackable = (RenderTrackable)window;
-        if (trackable.getRenderTimeoutCount() > this.outOfServiceLimit)
+        if (trackable.getRenderTimeoutCount() >= this.outOfServiceLimit)
         {
             return true;
         }
-        
+
+        CacheElement element = trackingCache.get(window.getPortletDefinition().getUniqueName());
+        if (element != null) {
+            List<String> windows = (List<String>)element.getContent();
+            if (windows.contains(window.getWindowId()))
+                return true;
+        }
+
+        Integer count = trackingCounts.get(window.getWindowId());
+        if (count != null && count >= this.outOfServiceLimit) {
+            takeOutOfService(window);
+            return true;
+        }
+
         PortletDefinition def = window.getPortletDefinition();
         Collection<LocalizedField> fields = def.getMetadata().getFields(PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_OUT_OF_SERVICE);
         
@@ -95,6 +128,7 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
         {
             if (BooleanUtils.toBoolean(fields.iterator().next().getValue()))
             {
+                addToCache(window);
                 return true;
             }
         }
@@ -109,13 +143,29 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
     
     public void incrementRenderTimeoutCount(PortletWindow window)
     {
+        if (!isEnabled()) {
+            return;
+        }
         RenderTrackable trackable = (RenderTrackable)window;
-        trackable.incrementRenderTimeoutCount();       
+        trackable.incrementRenderTimeoutCount();
+        Integer count = trackingCounts.get(window.getWindowId());
+        if (count == null) {
+            trackingCounts.put(window.getWindowId(), 1);
+        }
+        else {
+            count = count + 1;
+            trackingCounts.put(window.getWindowId(), count);
+        }
     }
    
     public void success(PortletWindow window)
     {
+        if (!isEnabled()) {
+            return ;
+        }
         RenderTrackable trackable = (RenderTrackable)window;
+        removeFromCache(window);
+        trackingCounts.remove(window.getWindowId());
         trackable.success();
     }
     
@@ -128,31 +178,90 @@ public class PortletTrackingManagerImpl implements PortletTrackingManager
     public void takeOutOfService(PortletWindow window)
     {
         RenderTrackable trackable = (RenderTrackable)window;
+        addToCache(window);
+        trackingCounts.remove(window.getWindowId());
         trackable.setRenderTimeoutCount((int)this.defaultPortletTimeout + 1);
     }
     
     public void putIntoService(PortletWindow window)
     {
         RenderTrackable trackable = (RenderTrackable)window;
+        removeFromCache(window);
+        trackingCounts.remove(window.getWindowId());
         trackable.setRenderTimeoutCount(0);        
     }
     
-    public void putIntoService(List fullPortletNames)
+    public void putIntoService(List<String> fullPortletNames)
     {
-        // TODO
+        for (String fullName : fullPortletNames) {
+            trackingCache.remove(fullName);
+        }
     }
     
-    public List getOutOfServiceList(String fullPortletName)
+    public PortletTrackingInfo getOutOfServiceList(String fullPortletName)
     {
-        List outs = new ArrayList();
-        // TODO
-        return outs;
+        CacheElement element = trackingCache.get(fullPortletName);
+        if (element != null) {
+            List<String> windows = (List<String>)element.getContent();
+            return new PortletTrackingInfo(fullPortletName, windows);
+        }
+        else {
+            List<String> windows = new ArrayList<String>();
+            return new PortletTrackingInfo(fullPortletName, windows);
+        }
     }
     
-    public List getOutOfServiceList()
+    public List<PortletTrackingInfo> getOutOfServiceList()
     {
-        List outs = new ArrayList();
-        // TODO
-        return outs;
+        List<PortletTrackingInfo> result = new ArrayList<PortletTrackingInfo>();
+        List<String> keys = trackingCache.getKeys();
+        for (String fullName : keys) {
+            CacheElement element = trackingCache.get(fullName);
+            if (element != null) {
+                List<String> windows = (List<String>) element.getContent();
+                result.add(new PortletTrackingInfo(fullName, windows));
+            }
+        }
+        return result;
+    }
+
+    protected boolean addToCache(PortletWindow window) {
+        String fullName = window.getPortletDefinition().getUniqueName();
+        CacheElement cachedElement = trackingCache.get(fullName);
+        if (cachedElement == null) {
+            List<String> windowIds = new ArrayList<String>();
+            windowIds.add(window.getWindowId());
+            cachedElement = trackingCache.createElement(fullName, windowIds);
+            trackingCache.put(cachedElement);
+            return true;
+        }
+        else {
+            List<String> windowIds = (List<String>)cachedElement.getContent();
+            if (!windowIds.contains(window.getWindowId())) {
+                windowIds.add(window.getWindowId());
+                trackingCache.put(cachedElement);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean removeFromCache(PortletWindow window) {
+        String fullName = window.getPortletDefinition().getUniqueName();
+        CacheElement cachedElement = trackingCache.get(fullName);
+        if (cachedElement == null) {
+            return false;
+        }
+        List<String> windowIds = (List<String>)cachedElement.getContent();
+        if (!windowIds.contains(window.getWindowId())) {
+            windowIds.remove(window.getWindowId());
+            trackingCache.put(cachedElement);
+            return true;
+        }
+        return false;
+    }
+
+    public  boolean isEnabled() {
+        return defaultPortletTimeout > 0;
     }
 }

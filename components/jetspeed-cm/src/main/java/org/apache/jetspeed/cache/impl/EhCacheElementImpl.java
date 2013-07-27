@@ -16,11 +16,10 @@
  */
 package org.apache.jetspeed.cache.impl;
 
-import java.io.Serializable;
-
 import net.sf.ehcache.Element;
-
 import org.apache.jetspeed.cache.CacheElement;
+
+import java.io.Serializable;
 
 public class EhCacheElementImpl implements CacheElement
 {
