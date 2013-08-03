@@ -64,7 +64,7 @@ public class ProfileLocatorPropertyImpl implements ProfileLocatorProperty
     }
 
     /**
-     * @param string
+     * @param value
      */
     public void setValue(String value)
     {

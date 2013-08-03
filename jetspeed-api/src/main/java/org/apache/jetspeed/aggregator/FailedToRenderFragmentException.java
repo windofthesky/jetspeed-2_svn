@@ -19,40 +19,32 @@ package org.apache.jetspeed.aggregator;
 import org.apache.jetspeed.exception.JetspeedException;
 
 /**
- * <p>
- * FailedToRenderFragmentException
- * </p>
- * <p>
+ * Failed to Render Fragment exceptions denote error cases where a particular fragment failed to render during
+ * content aggregation process.
  *
- * </p>
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
- *
  */
-public class FailedToRenderFragmentException extends JetspeedException
-{
+public class FailedToRenderFragmentException extends JetspeedException {
 
     /**
-     * 
+     *
      */
-    public FailedToRenderFragmentException()
-    {
+    public FailedToRenderFragmentException() {
         super();
     }
 
     /**
      * @param message
      */
-    public FailedToRenderFragmentException( String message )
-    {
+    public FailedToRenderFragmentException(String message) {
         super(message);
     }
 
     /**
      * @param nested
      */
-    public FailedToRenderFragmentException( Throwable nested )
-    {
+    public FailedToRenderFragmentException(Throwable nested) {
         super(nested);
     }
 
@@ -60,8 +52,7 @@ public class FailedToRenderFragmentException extends JetspeedException
      * @param msg
      * @param nested
      */
-    public FailedToRenderFragmentException( String msg, Throwable nested )
-    {
+    public FailedToRenderFragmentException(String msg, Throwable nested) {
         super(msg, nested);
     }
 

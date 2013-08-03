@@ -20,33 +20,145 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Portal Configuration
- * 
- * Retrieve basic data types from the jetspeed.properties configuration
- * This is a subset of Commons Configuration functionality
- * Not the best solution wrappering commons configuration, but it does continue 
- * with the requirements of interface-driven development and zero dependencies in API
- * 
+ * Retrieves configuration settings for all basic data types from the read only portal configuration. This configuration
+ * is usually a set of read only property files such as jetspeed.properties and override.properties.
+ *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @since 2.1.2
  * @version $Id: $
  */
 public interface PortalConfiguration
 {
+    /**
+     * Retrieve a portal configuration setting
+     *
+     * @param key the name of the portal configuration setting
+     * @return the boolean representation of this setting
+     */
     boolean getBoolean(String key);
-    boolean getBoolean(String key, boolean defaultValue);    
+
+    /**
+     * Retrieve a portal configuration setting
+     *
+     * @param key the name of the portal configuration setting
+     * @param defaultValue if the property is not found, use this default value
+     * @return the boolean representation of this setting
+     */
+    boolean getBoolean(String key, boolean defaultValue);
+
+    /**
+     * Retrieve a portal configuration setting
+     *
+     * @param key the name of the portal configuration setting
+     * @return the string representation of this setting
+     */
     String getString(String key);
-    String getString(String key, String defaultValue);    
+
+    /**
+     * Retrieve a portal configuration setting
+     *
+     * @param key the name of the portal configuration setting
+     * @param defaultValue if the property is not found, use this default value
+     * @return the string representation of this setting
+     */
+    String getString(String key, String defaultValue);
+
+    /**
+     * Retrieve a portal configuration setting
+     *
+     * @param key the name of the portal configuration setting
+     * @return the double representation of this setting
+     */
     double getDouble(String key);
-    double getDouble(String key, double defaultValue);        
+
+    /**
+     * Retrieve a portal configuration setting
+     *
+     * @param key the name of the portal configuration setting
+     * @param defaultValue if the property is not found, use this default value
+     * @return the double representation of this setting
+     */
+    double getDouble(String key, double defaultValue);
+
+    /**
+     * Retrieve a portal configuration setting
+     *
+     * @param key the name of the portal configuration setting
+     * @return the float representation of this setting
+     */
     float getFloat(String key);
-    float getFloat(String key, float defaultValue);        
+
+    /**
+     * Retrieve a portal configuration setting
+     *
+     * @param key the name of the portal configuration setting
+     * @param defaultValue if the property is not found, use this default value
+     * @return the float representation of this setting
+     */
+    float getFloat(String key, float defaultValue);
+
+    /**
+     * Retrieve a portal configuration setting
+     *
+     * @param key the name of the portal configuration setting
+     * @return the integer representation of this setting
+     */
     int getInt(String key);
-    int getInt(String key, int defaultValue);        
-    List getList(String key);    
+
+    /**
+     * Retrieve a portal configuration setting
+     *
+     * @param key the name of the portal configuration setting
+     * @param defaultValue if the property is not found, use this default value
+     * @return the integer representation of this setting
+     */
+    int getInt(String key, int defaultValue);
+
+    /**
+     * Retrieve a list of multivalued portal configuration settings
+     *
+     * @param key the name of the portal configuration setting
+     * @return the list of multivalued values for this setting
+     */
+    List getList(String key);
+
+    /**
+     * Retrieve a portal configuration setting
+     *
+     * @param key the name of the portal configuration setting
+     * @return the long representation of this setting
+     */
     long getLong(String key);
-    long getLong(String key, long defaultValue);        
+
+    /**
+     * Retrieve a portal configuration setting
+     *
+     * @param key the name of the portal configuration setting
+     * @param defaultValue if the property is not found, use this default value
+     * @return the long representation of this setting
+     */
+    long getLong(String key, long defaultValue);
+
+    /**
+     * Retrieve the multivalued string array of portal configuration setting for a given key
+     *
+     * @param key the name of the portal configuration setting
+     * @return the string array multiple values for this setting key
+     */
     String[] getStringArray(String key);
-    Iterator getKeys();
+
+    /**
+     * Retrieve an iterator over the keys of all portal configuration settings
+     *
+     * @return an {@link java.util.Iterator} over the keys for all configuration settings
+     */
+    Iterator<String> getKeys();
+
+    /**
+     * Set a non-persisted (runtime only) configuration setting value for a given key
+     *
+     * @param key the name of the portal configuration setting
+     * @param value the new value to override the existing value for this setting
+     */
     void setString(String key, String value);
 }

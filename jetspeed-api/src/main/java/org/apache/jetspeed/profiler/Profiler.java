@@ -26,62 +26,99 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * ProfilerService
- * Jetspeed-2 Profiler service. 
- * Locates portal resources given a set of request parameters, properties, and attributes
- * The Profiler is invoked during the request processing pipeline.
- * It requires that the request context is already populated with the portal request and response,
- * and capability and user information. The request context parameters, properties and attributes
- * make up the profile criterion which the profiler uses to locate portal resources:
- *   1. page
- *   2. navigations
- *   3. document lists
- * 
- * In all cases, a fallback algorithm should be applied to fallback
- * to default portal resources.
+ * The Jetspeed Profiler is a portal resource location rule-based engine. The profiler locates the following kinds of portal resources:
+ * <ul>
+ *    <li>PSML pages</li>
+ *    <li>Folders</li>
+ *    <li>Menus</li>
+ *    <li>Links</li>
+ * </ul>
+ * When a request is received by the portal, the profiler will compute a normalized instruction set, known as a
+ * profile locator {@link ProfileLocator}.
+ * The locator is then added to the request context {@link RequestContext}, from which subsequent components
+ * on the Jetspeed pipeline, most notably the Page Manager {@link org.apache.jetspeed.page.PageManager} and
+ * Portal Site {@link org.apache.jetspeed.portalsite.PortalSite} components, can take the profile locator
+ * and use it to find a requested  resource. For example, the Page Manager uses the locator to find a page or folder.
+ * The Portal Site component uses the locator build the options on a menu. The profile locator is
+ * the output from the profiler. The input is a normalized set of runtime parameters and state. The profiler input is
+ * defined in profiling rules {@link ProfilingRule}, and can be made of any Java class
+ * available on the pipeline. Jetspeed comes with quite a few predefined rules for taking
+ * criteria {@link RuleCriterion} {@link org.apache.jetspeed.profiler.rules.RuleCriterionResolver} from request parameters,
+ * HTTP headers, security information, language and session attributes.
+ * The profiler is invoked during the request processing pipeline {@link org.apache.jetspeed.pipeline.Pipeline}
+ * in the profiler valve {@link org.apache.jetspeed.pipeline.valve.Valve}.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
 public interface Profiler
 {
-    
-    
     /**
-     *  Get the Profile object using the request parameters.
+     *  Retrieve a profile locator {@link ProfileLocator} for the given runtime parameters represented in the request
+     *  context and for the locatorName. Commonly used locator names are:
+     *  <ul>
+     *      <li>To locate a page - {@link ProfileLocator#PAGE_LOCATOR}</li>
+     *      <li>To locate a security redirect page - {@link ProfileLocator#SECURITY_LOCATOR}</li>
+     *  </ul>
      *
-     * @param context The request context
-     * @param locatorName The name of the profile locator to find i.e. "page", "docset", ...
-     * @return a new Profile Locator object or null if failed to find a appropriate locator.
+     * The algorithm for this method looks up a {@link ProfilingRule} for
+     * the current user on the request context and for the locator name. That rule is then applied to return a
+     * normalized profile. The profile locator holds the normalized set of rules that are used further in the
+     * pipeline to locate the resource to be retrieved and rendered.
+     * @see ProfilingRule#apply(org.apache.jetspeed.request.RequestContext, Profiler)
+     *
+     * @param context the request context holding runtime request parameters to be normalized
+     * @param locatorName the commonly known name of the profile locator such as {@link ProfileLocator#PAGE_LOCATOR}
+     * @return a new ProfileLocator object or null if failed to find a appropriate locator.
+     * @throws ProfilerException
      */
     ProfileLocator getProfile(RequestContext context, String locatorName) throws ProfilerException;
-    
+
     /**
-     * 
-     * <p>
-     * getDefaultProfile
-     * </p>
-     * Intstead of using the princpal found within the request, the DEFAULT_RULE_PRINCIPAL is used.
+     *  Retrieve the default profile locator {@link ProfileLocator} for the given runtime parameters represented in the request
+     *  context and for the locatorName. Differs from {@link #getProfile} in that instead of using the user principal
+     *  found within the request context's subject, a default, global principal is used.
      *
-     * @param context The request context
-     * @param locatorName The name of the profile locator to find i.e. "page", "docset", ...
-     * @return a new Profile Locator object or null if failed to find a appropriate locator.
+     *  Commonly used locator names are:
+     *  <ul>
+     *      <li>To locate a page - {@link ProfileLocator#PAGE_LOCATOR}</li>
+     *      <li>To locate a security redirect page - {@link ProfileLocator#SECURITY_LOCATOR}</li>
+     *  </ul>
+     *
+     * The algorithm for this method looks up a {@link ProfilingRule} for
+     * the default principal and for the locator name. That rule is then applied to return a
+     * normalized profile. The profile locator holds the normalized set of rules that are used further in the
+     * pipeline to locate the resource to be retrieved and rendered.
+     * @see ProfilingRule#apply(org.apache.jetspeed.request.RequestContext, Profiler)
+     *
+     * @param context the request context holding runtime request parameters to be normalized
+     * @param locatorName the commonly known name of the profile locator such as {@link ProfileLocator#PAGE_LOCATOR}
+     * @return a new  object or null if failed to find a appropriate locator.
+     * @throws ProfilerException
      */
     ProfileLocator getDefaultProfile(RequestContext context, String locatorName) throws ProfilerException;
 
     /**
-     *  Get the Profile object using the request parameters and the rule.
+     *  Retrieve a profile locator {@link ProfileLocator} for the given runtime parameters represented in the request
+     *  context and for the provided {@link ProfilingRule}.
+     * <p>
+     * The algorithm for this method takes the {@link ProfilingRule} directly and applies that rule
+     * to return a normalized profile. The profile locator holds the normalized set of rules that are used further in the
+     * pipeline to locate the resource to be retrieved and rendered.
+     * @see ProfilingRule#apply(org.apache.jetspeed.request.RequestContext, Profiler)
      *
-     * @param context The request context
-     * @return a new Profile Locator object or null if failed to find a appropriate locator.
-     */        
+     * @param context The request context  holding runtime request parameters to be normalized
+     * @param rule The ProfilingRule to apply and find a {@link ProfileLocator}
+     * @return a new ProfileLocator object or null if failed to find a appropriate locator.
+     * @throws ProfilerException
+     */
     ProfileLocator getProfile(RequestContext context, ProfilingRule rule) throws ProfilerException;        
     
     /**
       * Creates a new ProfileLocator object that can be managed by
       * the current Profiler implementation
       *
-      * @param context The request context
+      * @param context The request context containing runtime parameters to determine which locator to create
       * @return A new ProfileLocator object
       */
     ProfileLocator createLocator(RequestContext context);
@@ -89,7 +126,7 @@ public interface Profiler
     /**
      * For a given principal, lookup the associated profiling rule to that principal name.
      * 
-     * @param principal Lookup the profiling rule based on this principal. 
+     * @param principal Lookup the profiling rule based on this principal
      * @param locatorName the unique name of a locator for this principal/rule/locator 
      * @return The rule found or null if not found
      */
@@ -97,8 +134,7 @@ public interface Profiler
 
     /**
      * For a given principal, associate a profiling rule to that principal name.
-     * TODO: this API should be secured and require admin role
-     * 
+     *
      * @param principal
      *            Lookup the profiling rule based on this principal.
      * @param rule
@@ -126,7 +162,7 @@ public interface Profiler
      * Given a rule id, get the rule
      * 
      * @param id
-     * @return the rule
+     * @return the rule associated the given id
      */
     ProfilingRule getRule(String id);
 
@@ -144,32 +180,27 @@ public interface Profiler
      * For a given principal, find all supported locators and return a
      * collection of principal rules.
      * 
-     * @param principal
-     *            The given principal.
+     * @param principal The given principal such as a user principal
      * @return collection of PrincipalRules
      */
     Collection<PrincipalRule> getRulesForPrincipal(Principal principal);
 
     /**
-     * Gets all supported locators for a principal.
+     * Retrieves a map of all supported locators for a principal, mapping locator name to profile locator
      * 
-     * @param context
-     * @param principal
-     * @return
+     * @param context the request context  holding runtime request parameters to be normalized
+     * @param principal the given principal such a User Principal
+     * @return a map of locator names mapping to profile locators
      * @throws ProfilerException
      */
     Map<String,ProfileLocator> getProfileLocators(RequestContext context, Principal principal)
             throws ProfilerException;
 
     /**
-     * 
-     * <p>
-     * getDefaultProfileLocators
-     * </p>
-     * Gets all the supported locators for the DEFAULT_RULE_PRINCIPAL
-     * 
-     * @param context
-     * @return
+     * Retrieves a map of all default locators, mapping locator name to profile locator
+     *
+     * @param context the request context  holding runtime request parameters to be normalized
+     * @return a map of locator names mapping to profile locators
      * @throws ProfilerException
      */
     Map<String,ProfileLocator> getDefaultProfileLocators(RequestContext context)
@@ -177,58 +208,65 @@ public interface Profiler
 
     /*
      * Persist a profiling rule to the persistent store.
-     * 
+     *
+     * @param rule the profiling rule to be persisted
+     * @throws ProfilerException
      */
     void storeProfilingRule(ProfilingRule rule) throws ProfilerException;
 
     /*
      * Deletes a profiling rule from the persistent store.
-     * 
+     *
+     * @param rule the profiling rule to be deleted
+     * @throws ProfilerException
      */
     void deleteProfilingRule(ProfilingRule rule) throws ProfilerException;
 
     /*
      * Persist a principal rule to the persistent store.
-     * 
+     *
+     * @param rule the principal rule to be deleted
+     * @throws ProfilerException
      */
     void storePrincipalRule(PrincipalRule rule) throws ProfilerException;
 
     /*
      * Deletes a principal rule from the persistent store.
-     * 
+     *
+     * @param rule the principal rule to be deleted
+     * @throws ProfilerException
      */
     void deletePrincipalRule(PrincipalRule rule) throws ProfilerException;
 
     /**
-     * Factory for Profiling Rule. The boolean argument specifies whether to
+     * Factory for creating Profiling Rules. The boolean argument specifies whether to
      * obtain a new instance of a standard profiling rule or of a fallback rule.
      * 
      * @param standard
      *            true if standard rule is requested, false if fallback
      * @return New instance of a (standard or fallback) Profiling Rule
      * @throws ClassNotFoundException
-     *             if the beanfactory couldn't instantiate the bean
+     *             if the bean factory couldn't instantiate the bean
      */
     public ProfilingRule createProfilingRule(boolean standard)
             throws ClassNotFoundException;
 
     /**
      * Factory for PrincipalRule, the container to connect profiling rule and
-     * (user) prinicpal
-     * <p>
+     * (user) principals
+     *
      * Replaces the previous Class.forName and .instantiate logic with the
      * Spring based factory.
      * 
      * @return New instance of a principal rule
      * @throws ClassNotFoundException
-     *             if the beanfactory couldn't instantiate the bean
+     *             if the bean factory couldn't instantiate the bean
      */
     public PrincipalRule createPrincipalRule() throws ClassNotFoundException;
 
     /**
-     * Factory for Rule Criterion
-     * <p>
-     * 
+     * Factory for creating Rule Criterion
+     *
      * @return New instance of a rule criterion
      * @throws ClassNotFoundException
      *             if the beanfactory couldn't instantiate the bean
@@ -239,8 +277,9 @@ public interface Profiler
     
     /**
      * Resets the default rule for this portal
+     *
      * @param defaultRule
-     *            The default rule to set.
+     *            The name of the rule to set as default
      */
     public void setDefaultRule(String defaultRule);
 

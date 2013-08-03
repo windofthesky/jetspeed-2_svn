@@ -16,16 +16,6 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PortletAccessDeniedException;
@@ -48,6 +38,15 @@ import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.pluto.container.PortletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * <h4>PortletRendererService <br />
@@ -301,8 +300,9 @@ public class PortletRendererImpl implements PortletRenderer
     /**
      * Retrieve cached content, if content retrieved successfully return true, if no content found return false
      * @param requestContext
-     * @param fragment
      * @param portletWindow
+     * @param expiration
+     * @param portletDefinition
      * @return true when content found, otherwise false
      */
     protected boolean retrieveCachedContent(RequestContext requestContext, 

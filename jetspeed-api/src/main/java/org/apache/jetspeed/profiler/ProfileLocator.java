@@ -138,9 +138,9 @@ public interface ProfileLocator
     void createFromLocatorPath(String path);
     
     /**
-     * <p>Profiles can be converted to a normalized <i>Profile Locator Path</i>
+     * Profiles can be converted to a normalized <i>Profile Locator Path</i>
      * The format of the path is name/value pairs of all property, separated by a <i>path separator</i>.
-     * An example locator path:</p>
+     * An example locator path:
      * 
      *      <pre>:page:default.psml:artist:joni-mitchell:song:cary</pre>
      * 
@@ -149,8 +149,8 @@ public interface ProfileLocator
     String getLocatorPath();
         
     /**
-     * <p>Normalize profile properties obtained from profile locator iterators
-     * into a <i>Profile Locator Path</i>.</p>
+     * Normalize profile properties obtained from profile locator iterators
+     * into a <i>Profile Locator Path</i>.
      * 
      * @param properties The array of profile properties.
      * @return The normalized path for properties.
@@ -165,19 +165,19 @@ public interface ProfileLocator
     String toString();
     
     /**
-     * <p>Locators are intended to be sufficient to locate managed pages, so the request
+     * Locators are intended to be sufficient to locate managed pages, so the request
      * path must be generally available in the event it is not otherwise captured in a
-     * rule criterion.</p>
+     * rule criterion.
      * 
-     * @return The request path.
+     * @return The request path
      */
     String getRequestPath();
     
     /**
-     * <p>Retain the request server name to support additional page location mapping
-     * not part of the profiler rule criterion.</p>
+     * Retain the request server name to support additional page location mapping
+     * not part of the profiler rule criterion.
      * 
-     * @return The request server name.
+     * @return The request server name
      */
     String getRequestServerName();
 }

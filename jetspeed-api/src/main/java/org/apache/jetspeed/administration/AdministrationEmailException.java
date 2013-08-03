@@ -37,9 +37,9 @@ public class AdministrationEmailException extends JetspeedException
         super(keyedMessage, nested);
     }
 
-    public AdministrationEmailException(KeyedMessage typedMessage)
+    public AdministrationEmailException(KeyedMessage keyedMessage)
     {
-        super(typedMessage);
+        super(keyedMessage);
     }
 
     public AdministrationEmailException(String msg, Throwable nested)

@@ -25,12 +25,11 @@ package org.apache.jetspeed.aggregator;
 import org.apache.jetspeed.exception.JetspeedException;
 
 /**
- * <p>
- * UnknownPortletDefinitionException
- * </p>
- * 
+ * When rendering, a portlet may not be found, and the aggregator will throw this exception.
+ *
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
+ * @deprecated
  *
  */
 public class UnknownPortletDefinitionException extends JetspeedException

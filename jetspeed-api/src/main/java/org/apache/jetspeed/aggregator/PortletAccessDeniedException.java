@@ -25,10 +25,9 @@ package org.apache.jetspeed.aggregator;
 import org.apache.jetspeed.exception.JetspeedException;
 
 /**
- * <p>
- * NoPortletAccessException
- * </p>
- * 
+ * Represents an exception when trying to render a portlet, but the current user did not have sufficient security
+ * access privileges to render the portlet. Thus an access denied exception is thrown.
+ *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  *

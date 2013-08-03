@@ -17,9 +17,9 @@
 package org.apache.jetspeed.administration;
 
 /**
- * PortalConfiguration portal configuration contants
- * TODO: integrate Configuration with JMX 
- * 
+ * Portal Configuration constants to read only portal global settings. These constants are the keys in the portal
+ * configuration store jetspeed.properties and override.properties.
+ *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */

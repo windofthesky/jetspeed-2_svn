@@ -28,11 +28,12 @@ import java.util.Map;
 /**
  * PortalAdministration
  * 
- * Aggregate portal administration functions:
- *  - Emails
- *  - Registration
- *  - Password Generation
- * 
+ * Aggregate portal administration functions are controlled with this service. Administrative services include:
+ * <ul>
+ *  <li>- Emails delivery services</li>
+ *  <li>- User Registration services and options</li>
+ *  <li>- Password Generation services</li>
+ * </ul>
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
@@ -57,7 +58,8 @@ public interface PortalAdministration
      *               if subsite not specified
      * @param serverName Server name used to compute new user folder path
      *                   if subsite not specified
-     * @since 2.1.2              
+     * @throws RegistrationException
+     * @since 2.1.2
      */
      void registerUser(
             String userName, 
@@ -72,6 +74,23 @@ public interface PortalAdministration
             String serverName)
         throws RegistrationException;
 
+    /**
+     * Registers and creates a new user, assigning userInfo, roles, groups,
+     * profiling rules and a folder template. If any values are null, defaults
+     * are used from the system wide configuration.
+     *
+     * @param userName Unique user principal identifier
+     * @param password Password for this user
+     * @param roles A list of roles to assign to this user
+     * @param groups A list of groups to assign to this user
+     * @param userInfo Portlet API User Information Attributes name value pairs (PLT.D)
+     * @param rules A map of name value pairs of profiling rules.
+     *              Well known rules names are 'page' and 'menu'
+     * @param template The full PSML path name of a folder to be deep
+     *               copied as the new user's set of folders, pages, links
+     * @param subsiteFolder The subsite folder to place the new user in
+     * @throws RegistrationException
+     */
     void registerUser(String userName, 
                       String password, 
                       List<String> roles,
@@ -82,6 +101,22 @@ public interface PortalAdministration
                       String subsiteFolder)
         throws RegistrationException;
 
+    /**
+     * Registers and creates a new user, assigning userInfo, roles, groups,
+     * profiling rules and a folder template. If any values are null, defaults
+     * are used from the system wide configuration.
+     *
+     * @param userName Unique user principal identifier
+     * @param password Password for this user
+     * @param roles A list of roles to assign to this user
+     * @param groups A list of groups to assign to this user
+     * @param userInfo Portlet API User Information Attributes name value pairs (PLT.D)
+     * @param rules A map of name value pairs of profiling rules.
+     *              Well known rules names are 'page' and 'menu'
+     * @param template The full PSML path name of a folder to be deep
+     *               copied as the new user's set of folders, pages, links
+     * @throws RegistrationException
+     */
     void registerUser(String userName, 
             String password, 
             List<String> roles,
@@ -94,38 +129,42 @@ public interface PortalAdministration
     /**
      * Register a new user using all default values
      * 
-     * @param userName
-     * @param password
+     * @param userName Unique user principal identifier
+     * @param password Password for this user
+     * @throws RegistrationException
      */
     void registerUser(String userName, String password)
         throws RegistrationException;
     
     /**
-     * Generate a unique password
+     * Generate a unique password following the credential policy of the Password Generator service
      * 
-     * @return unique password
+     * @return the unique password
      */
     String generatePassword();
     
     /**
-     * Helper to send an email to a recipient
+     * Using the portal's email configuration settings, sends an email to a mail recipient. Does a mail merge using
+     * the <code>userAttributes</code> parameter for merged values, merging into the mail body from
+     * the configured email <code>template</code>
      *
      * @param portletConfig portlet configuration
      * @param emailAddress the email address of the recipient
      * @param localizedSubject the subject of the email as a localized string
-     * @param templatePath path to templates
-     * @parm userAttributes map of user attributes
+     * @param template portal relative path to the template used to do the mail merge
+     * @param userAttributes map of user attributes to substitute into template
      * @throws AdministrationEmailException
      */
      void sendEmail(PortletConfig portletConfig,
                           String emailAddress, 
                           String localizedSubject, 
-                          String templatePath,
+                          String template,
                           Map<String,String> userAttributes)
         throws AdministrationEmailException;
     
     /**
-     * Helper to send an email to a recipient without the portal default sender, and without mail merge
+     * Using the portal's email configuration, sends a simple email to a mail recipient. Does not do a mail merge,
+     * simply sends the <code>text</code> parameter as the mail body.
      * 
      * @param from the email address of the sender
      * @param subject the subject of the email
@@ -136,26 +175,26 @@ public interface PortalAdministration
      void sendEmail(String from, String subject, String to, String text) throws AdministrationEmailException;
     
     /**
-     * Lookup a user given an email address
+     * Lookup a Jetspeed user, given an email address
      * 
      * @param email Given email address
-     * @return a Jetspeed <code>User</code>, or throw exception if not found
+     * @return a Jetspeed User or throw exception if not found
      * @throws AdministrationEmailException
      */
      User lookupUserFromEmail(String email)
         throws AdministrationEmailException;
     
     /**
-     * Provide a common way to get portal URLs
-     * Necessary for generating return URLs for features such as 
-     * forgotten password. The URL generated will be a combination
-     * of the Jetspeed base URL plus the path parameter appended 
+     * Provides a common way to generating portal URLs.
+     * Generates return URLs for features such as forgotten password. The URL generated will be a combination
+     * of the Jetspeed base URL plus the path parameter appended.  For example, the following idiom
+     * <pre>
      * Example:
      *  base URL = http://www.apache.org/jetspeed/portal
      *      path = /system/forgotten-password.psml
      *  Returns: 
      *     http://www.apache.org/jetspeed/portal/system/forgotten-password.psml
-     *     
+     * </pre>
      * @param request The portlet request.
      * @param response The portlet response, used to encode the path
      * @param path The relative path to a portal resource
@@ -165,59 +204,78 @@ public interface PortalAdministration
     
     
     /**
-     * @param guid    The ID which is passed throughte URL to the user
-     * @return
+     * Administrative portlets, like the forgotten password admin, need to track login information such as
+     * temporary links to recovery temporary passwords. This method takes a <code>GUID</code> and looks up
+     * the application specific login information associated with that GUID. This information is normally
+     * temporary and may have a short-lived lifespan.
+     *
+     * @param guid the temporary identifier to associate with the login information
+     * @return the new login information associated with the <code>guid</code>
      */
      Map<String,String> getNewLoginInfo(String guid);
 
     /**
-     * @param guid    the ID which is passed through the URL to the user.. 
-     * @param info    a Map, info from which will be used to reset the password
-     *                the password in this case is NOT encrypted, but this should probably
-     *                change if this information is stored on disk... ie a database
+     * Administrative portlets, like the forgotten password admin, need to track login information such as
+     * temporary links to recovery temporary passwords. This method takes a <code>GUID</code> and stores the
+     * the provided application specific login information associated with that GUID. This information is normally
+     * temporary and may have a short-lived lifespan.
+     *
+     * @param guid    the temporary identifier to associate with the login information
+     * @param info    a <code>Map</code> of login information specific to application
      */
      void putNewLoginInfo(String guid, Map<String,String> info);
     
     /**
-     * @param guid    the ID which will be removed from the storage when the info is no longer valid
+     * Administrative portlets, like the forgotten password admin, need to track login information such as
+     * temporary links to recovery temporary passwords. This method takes a <code>GUID</code> and removes
+     * application specific login information associated with that GUID. This information is normally
+     * temporary and may have a short-lived lifespan.
+     *
+     * @param guid the temporary identifier to associate with the login information
      */
      void removeNewLoginInfo(String guid);
     
     /**
-     * Returns true if the current request user principal's name is the name of the portal admin user.
-     * @param request
-     * @return
+     * Returns true if the current request is made by the special portal admin user.
+     *
+     * @see PortalConfigurationConstants#USERS_DEFAULT_ADMIN
+     * @param request the PortletRequest to check the user principal on
+     * @return <tt>true</tt> if this request is made by the portal admin user
      */
     boolean isAdminUser(PortletRequest request);
     
     /**
-     * Returns true if the current request user principal is in the portal admin role.
-     * @param request
-     * @return
+     * Returns true if the current request user principal is made by a user in the portal admin role
+     *
+     * @see PortalConfigurationConstants#ROLES_DEFAULT_ADMIN
+     * @param request the PortletRequest to check the user principal on
+     * @return <tt>true</tt> if this request is made by a user with the portal admin role
      */
     boolean isUserInAdminRole(PortletRequest request);
     
     /**
-     * Returns PSML user folder path for specified user by
-     * running full profiler and portal site rules.
+     * Returns a PSML path to the root user folder for the specified user by
+     * running the full profiler and portal site rules.
      * 
-     * @param userName existing portal user name
+     * @param userName the portal user name
      * @param locale optional locale, (defaults to system locale, for language
      *               profiling rules)
      * @param serverName server name, (required for subsite profiling rules)
-     * @return PSML user folder path
+     * @return a normalized PSML user folder path
+     * @deprecated
      */
     String getUserFolderPath(String userName, Locale locale, String serverName);
 
     /**
-     * Returns PSML base folder path for specified user by
-     * running full profiler and portal site rules.
+     * Returns a PSML path to the base user folder for the specified user by
+     * running the full profiler and portal site rules.
      * 
      * @param userName existing portal user name
      * @param locale optional locale, (defaults to system locale, for language
      *               profiling rules)
      * @param serverName server name, (required for subsite profiling rules)
-     * @return PSML base folder path
+     * @return a normalized PSML user folder path
+     * @deprecated
      */
     String getBaseFolderPath(String userName, Locale locale, String serverName);
 }

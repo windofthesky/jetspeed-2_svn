@@ -19,52 +19,72 @@ package org.apache.jetspeed.aggregator;
 import java.security.AccessControlContext;
 
 /**
- * Worker thread processes jobs and notify its WorkerMonitor when completed.
+ * A Worker represents a single thread in the parallel aggregation engine.
+ * These worker threads process {@link RenderingJob} and notify its WorkerMonitor when completed.
  * When no work is available, the worker simply sets itself in a waiting mode
- * pending reactivation by the WorkerMonitor
+ * pending reactivation by the WorkerMonitor.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $
  */
-public interface Worker
-{
-     int getJobCount();
+public interface Worker {
+    /**
+     * Return the count of jobs this worker is processing
+     *
+     * @return the count of jobs
+     */
+    int getJobCount();
 
     /**
      * Reset the processed job counter
+     *
      */
-     void resetJobCount();
+    void resetJobCount();
 
     /**
      * Sets the running status of this Worker. If set to false, the Worker will
      * stop after processing its current job.
+     *
+     * @param status set to <tt>true</tt> to set this worker to running, false to turn off running
      */
-     void setRunning(boolean status);
+    void setRunning(boolean status);
 
     /**
-     * Sets the moitor of this worker
+     * Sets the WorkMonitor for this worker
+     *
+     * @param monitor the WorkerMonitor who is monitoring this worker
      */
-     void setMonitor(WorkerMonitor monitor);
+    void setMonitor(WorkerMonitor monitor);
 
     /**
      * Sets the job to execute in security context
      *
+     * @param job the job to run
+     * @context the security context
      * @deprecated Use only {@link #setJob(Runnable)} because AccessControlContext must not be directly accessed by
-     * a worker thread. Instead AccessControlContext must be accessed directly by the job implementation in order
-     * to use the AccessControlContext instance safely regardless of the physical worker thread implementation
-     * (e.g, WorkerImpl or container managed thread by commonj worker monitor).
+     *             a worker thread. Instead AccessControlContext must be accessed directly by the job implementation in order
+     *             to use the AccessControlContext instance safely regardless of the physical worker thread implementation
+     *             (e.g, WorkerImpl or container managed thread by commonj worker monitor).
      */
-     void setJob(Runnable job, AccessControlContext context);
+    void setJob(Runnable job, AccessControlContext context);
 
     /**
      * Sets the job to execute
+     *
+     * @param job the job to execute for this worker
      */
-     void setJob(Runnable job);
+    void setJob(Runnable job);
 
     /**
-     * Retrieves the job to execute
+     * Retrieves the job to execute for this worker
+     *
+     * @return the job executing
      */
-     Runnable getJob();
+    Runnable getJob();
 
-     void start();
+    /**
+     * Start executing the job on this worker thread
+     *
+     */
+    void start();
 }

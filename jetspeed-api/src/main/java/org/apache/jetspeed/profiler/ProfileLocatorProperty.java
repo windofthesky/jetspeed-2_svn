@@ -17,7 +17,11 @@
 package org.apache.jetspeed.profiler;
 
 /**
- * ProfileLocatorElement
+ * Profile locator properties represent the individual path elements in a {@link ProfileLocator}
+ * An example locator path with locator properties as each name value segment pairs in the path:
+ *
+ *      <pre>page:default.psml:artist:al-stewart:song:on-the-border</pre>
+ *      <pre>path:/sports/football/nfl/chiefs:language:en</pre>
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
@@ -33,50 +37,68 @@ public interface ProfileLocatorProperty
     
     /**
      * Sets the value of the locator property.
+     *
      * @param value The value of the property.
      */
     void setValue(String value);
 
-
     /**
      * Returns the fallback type of the property.
-     * see 
-     * 
-     * @return
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterion#FALLBACK_CONTINUE
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterion#FALLBACK_LOOP
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterion#FALLBACK_STOP
+     *
+     * @return the fallback type of the property
      */
     int getFallbackType();
 
     /**
-     * @return
-     */
-    String getName();
-
-    /**
-     * @return
-     */
-    String getType();
-
-    /**
-     * @param i
+     * Returns the fallback type of the property.
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterion#FALLBACK_CONTINUE
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterion#FALLBACK_LOOP
+     * @see org.apache.jetspeed.profiler.rules.RuleCriterion#FALLBACK_STOP
+     *
+     * @param type the fallback type of the property
      */
     void setFallbackType(int type);
 
     /**
-     * @param string
+     * The name of the locator property
+     *
+     * @return the name of the locator property
      */
-    void setName(String string);
-    
-    /**
-     * @param string
-     */
-    void setType(String type);    
+    String getName();
 
     /**
-     * @return control classification flag
+     * The name of the locator property
+     *
+     * @param string the name of the locator property
+     */
+    void setName(String string);
+
+    /**
+     * @return
+     * @deprecated
+     */
+    String getType();
+
+    /**
+     *
+     * @param type
+     * @deprecated
+     */
+    void setType(String type);
+
+    /**
+     * Determines if this locator property is a control
+     *
+     * @return control classification flag, is it a control
      */
     boolean isControl();
     
     /**
+     * Determines if this locator property is a navigation
+     *
      * @return true if a property is a navigation
      */
     boolean isNavigation();

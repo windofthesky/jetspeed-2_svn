@@ -17,9 +17,17 @@
 package org.apache.jetspeed.administration;
 
 /**
+ * Pluggable password generator service for auto-creating passwords in Jetspeed Administration. A simple password
+ * generator is provided by Jetspeed. This service can be wired in through Spring and replaced by your own algorithm.
+ *
  * @version $Id$
  */
 public interface PasswordGenerator
 {
+    /**
+     * Call this method to generate a new password following the credential policy of the Password Generator service
+     *
+     * @return a newly generated password
+     */
     String generatePassword();
 }

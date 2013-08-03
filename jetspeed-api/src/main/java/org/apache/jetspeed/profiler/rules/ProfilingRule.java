@@ -16,11 +16,12 @@
  */
 package org.apache.jetspeed.profiler.rules;
 
-import java.io.Serializable;
-import java.util.Collection;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.request.RequestContext;
+
+import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * A ProfilingRule defines a list of criteria used when evaluating a request
@@ -73,20 +74,20 @@ public interface ProfilingRule extends Serializable
     public final static String STANDARD_ROLE_FALLBACK = "roles";
 
     /**
-     * Given a criterion name, look up a value resolver
+     * Given a criterion name, look up a resolver
      * 
      * @param name The name of the criterion
-     * @return
+     * @return the resolver if found, otherwise null
      */
     RuleCriterionResolver getResolver(String name);    
     
     /**
      * Applying the profiling rule generates a generic profile locator.
      * With this locator we can then locate a profiling resource.
-     * 
-     * @param context
-     * @param service
-     * @return
+     *
+     * @param context the request context holding runtime request parameters to be normalized
+     * @param service the profiler service to be called back
+     * @return the generated profiler locator for this context
      */
     ProfileLocator apply(RequestContext context, Profiler service);
     
@@ -95,7 +96,7 @@ public interface ProfilingRule extends Serializable
      * Each criteria consists of a normalized property/attribute/parameter 
      * associated with a request type.
      * 
-     * @return a sorted map of rule criteria.
+     * @return a sorted map of rule criteria
      */         
     Collection<RuleCriterion> getRuleCriteria();
                      
@@ -129,7 +130,7 @@ public interface ProfilingRule extends Serializable
     
     /**
      * Get the implementing classname of this rule from the database.
-     * The class must exist in the hiearchy and in fact refers to itself when instantiated.
+     * The class must exist in the hierarchy and in fact refers to itself when instantiated.
      * 
      * @return The classname of this instance.
      */
@@ -137,13 +138,24 @@ public interface ProfilingRule extends Serializable
     
     /**
      * Sets the implementing classname of this rule from the database.
-     * The class must exist in the hiearchy and in fact refers to itself when instantiated.
+     * The class must exist in the hierarchy and in fact refers to itself when instantiated.
      * 
      * @param classname The classname of this instance.
      */
     void setClassname(String classname);
-    
+
+    /**
+     * Returns the mapping of resolver names to criterion resolvers for building profiling rules
+     *
+     * @return the mapping of resolver names to criterion resolvers
+     */
     ProfileResolvers getResolvers();
+
+    /**
+     * Sets the mapping of resolver names to criterion resolvers for building profiling rules
+     *
+     * @param resolvers the mapping of resolver names to criterion resolvers
+     */
     void setResolvers(ProfileResolvers resolvers);
                            
 }

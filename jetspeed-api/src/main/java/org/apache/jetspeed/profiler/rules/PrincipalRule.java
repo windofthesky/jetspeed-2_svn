@@ -66,8 +66,7 @@ public interface PrincipalRule extends Serializable
      * @param name The name of the locator in this association.
      */        
     void setLocatorName(String name);
-    
-        
+
     /**
      * Gets the profiling rule associated with the principal name 
      * 

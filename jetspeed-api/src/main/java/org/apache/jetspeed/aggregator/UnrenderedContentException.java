@@ -19,15 +19,11 @@ package org.apache.jetspeed.aggregator;
 import org.apache.jetspeed.exception.JetspeedException;
 
 /**
- * <p>
- * UnrenderedContentException
- * </p>
- * <p>
- *  This excpetion is raised when trying to access portlet content that did not render correctly or not at all.
- * </p>
+ *  This exception is raised when trying to access portlet content that did not render correctly or not at all.
+ *
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @version $Id$
- *
+ * @deprecated
  */
 public class UnrenderedContentException extends JetspeedException
 {

@@ -16,20 +16,21 @@
 */
 package org.apache.jetspeed.aggregator;
 
-import java.io.PrintWriter;
-import java.util.List;
-
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-
 import org.apache.jetspeed.cache.ContentCacheKey;
 import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.util.KeyValue;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+import java.io.PrintWriter;
+import java.util.List;
+
 /**
- * <p>
- * PortletContent
- * </p>
+ * Portlet content is a container holding the generated content of a fragment (portlet). It is used by the aggregation
+ * engine to abstract access to rendered content per portlet. Content is represented as strings. This interface
+ * also supports multi-threaded aggregation, and can be checked to determine if the generation of content has completed.
+ * Content can also be cached. Expiration values are represented in this interface.
+ *
  * @author <a href="mailto:weaver@apache.org">Scott T. Weaver</a>
  * @author <a href="mailto:taylor@apache.org">David S. Taylor</a>  
  * @version $Id$
@@ -40,87 +41,91 @@ public interface PortletContent
     /**
      * Retrieve the actual content of a portlet as a string
      * 
-     * @return
+     * @return the content of a given fragment (portlet)
      */
     String getContent();
     
     /** 
-     * Has the renderer completed rendering the content?
+     * Has the renderer completed rendering the content? Used by the multi-threaded (parallel) rendering engine.
      * 
-     * @return
+     * @return <tt>true</tt> if the rendering of this fragment's content has completed.
      */
     boolean isComplete();
     
     /**
-     * Notify that this content is completed.
+     * Notifies that this content is completed.
      *
      */
     void complete();
     
     /**
      * Get a writer to the content to stream content into this object
-     * @return
+     *
+     * @return a writer into this content's stream
      */
     PrintWriter getWriter();
     
     /**
      * Get the expiration setting for this content if it is cached.
-     * @return
+     *
+     * @return the expiration value in seconds
      */
     int getExpiration();
     
     /**
-     * Sets the expiration setting for this content.
+     * Sets the expiration setting for this content in seconds
      * 
-     * @param expiration
+     * @param expiration the expiration value in seconds
      */
     void setExpiration(int expiration);
     
     /**
      * Get the cache key used to cache this content
+     *
      * @since 2.1.2 
-     * @return
+     * @return the name of the cache key associated with this content
      */
     ContentCacheKey getCacheKey();
     
     /**
-     * Get the title of the portlet, used during caching
+     * Get the cached title of the portlet
      * 
-     * @return
+     * @return the title of the portlet
      */
     String getTitle();
     
     /**
      * Set the title of this portlet, used during caching
-     * @param title
+     *
+     * @param title the title of this portlet
      */
     void setTitle(String title);
     
     /**
-     * Gets the content type of this portlet content.
+     * Gets the MIME content type of this portlet content.
      * 
-     * @return
+     * @return the MIME content type
      */
     String getContentType();
     
     /**
-     * Sets the content type of this portlet content.
+     * Sets the MIME content type of this portlet content.
      * 
-     * @param contentType
+     * @param contentType the MIME content type
      */
     void setContentType(String contentType);
     
     /**
-     * Gets the portlet mode of this portlet content.
+     * Gets the portlet mode of the portlet instance associated with this portlet content.
      * 
-     * @return
+     * @return the portlet mode
      */
     PortletMode getPortletMode();
     
     /**
-     * Gets the window state of this portlet content.
+     * Gets the window state of the portlet instance associated with this portlet content.
      * 
-     * @return
+     * @return the window state
      */
     WindowState getWindowState();
     
@@ -136,8 +141,8 @@ public interface PortletContent
      * Meanwhile, the element should implement java.io.Serializable.
      * Otherwise it will throw a java.io.NotSerializableException.
      * 
-     * @param element
-     * @param keyHint
+     * @param element the header element to contribute to the page
+     * @param keyHint the key hint to generate the header element
      */
     void addHeadElement(HeadElement element, String keyHint);
     
@@ -145,12 +150,20 @@ public interface PortletContent
      * Retrieves header element key value pairs to be contributed to the page.
      * Because the insertion order might be important for web development, it should be list instead of map.
      * 
-     * @return
+     * @return list of key value pairs of head element names to HeadElements
      */
-    List<KeyValue<String, HeadElement>> getHeadElements(); 
-    
+    List<KeyValue<String, HeadElement>> getHeadElements();
+
+    /**
+     * Reset the buffer of this instance to empty. Also resets all state associated with this content.
+     *
+     */
     void reset();
-    
+
+    /**
+     * Reset the buffer of this instance to empty. Does not reset state associated with this content.
+     *
+     */
     void resetBuffer();
     
     /**

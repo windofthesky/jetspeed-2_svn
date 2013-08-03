@@ -19,16 +19,26 @@ package org.apache.jetspeed.profiler.rules;
 import java.util.Map;
 
 /**
- * Spring component to hold criterion resolvers for building profiling rules.
+ * Holds the mapping of resolver names to criterion resolvers for building profiling rules. This component is configured
+ * in the Jetspeed configuration
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: PrincipalRule.java 188415 2005-03-23 22:15:25Z ate $
  */
 public interface ProfileResolvers 
 {
-    RuleCriterionResolver get(String resolverName);
     /**
-     * return the map of resolver
+     * Lookup a resolver for a given resolver name
+     *
+     * @param resolverName the name of the resolver to lookup
+     * @return the found resolver or if not found, null
+     */
+    RuleCriterionResolver get(String resolverName);
+
+    /**
+     * Returns a representation of all resolvers and their associated names in a map
+     *
+     * @return the map of resolver names mapped to resolvers
      */
     Map<String,RuleCriterionResolver> getResolvers();
 }

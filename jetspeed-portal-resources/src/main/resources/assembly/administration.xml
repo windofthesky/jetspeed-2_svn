@@ -97,6 +97,9 @@
     <property name="passwordGenerator">
       <ref bean="org.apache.jetspeed.administration.PasswordGenerator"/>
     </property>
+    <property name="configuration">
+      <ref bean="PortalConfiguration" />
+    </property>
   </bean>
 
   <bean id="PortalAdministration" parent="baseTransactionProxy">

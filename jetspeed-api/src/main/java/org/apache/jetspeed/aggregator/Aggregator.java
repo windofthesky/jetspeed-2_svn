@@ -16,13 +16,14 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import java.io.IOException;
-
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.request.RequestContext;
 
+import java.io.IOException;
+
 /**
- * Basic aggregation interface
+ * Basic aggregation interface. The role of the aggregator service is to abstract the generation of web snippets, such
+ * as portlets, and build a response buffer into the provided request context.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
@@ -30,9 +31,10 @@ import org.apache.jetspeed.request.RequestContext;
 public interface Aggregator 
 {
     /**
-     * Builds the portlet set defined in the context into a portlet tree.
+     * Builds the portlet set defined in the context into a portlet tree. The response buffer is also
+     * set into the request context.
      *
-     * @return Unique Portlet Entity ID
+     * @param context the request context holding runtime request parameters to be normalized
      */
     public void build(RequestContext context)
         throws JetspeedException, IOException;

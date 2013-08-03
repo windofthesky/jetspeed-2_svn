@@ -16,19 +16,28 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import java.io.IOException;
-
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.request.RequestContext;
 
+import java.io.IOException;
+
 /**
- * Page aggregation handles pipeline requests for pages of portlets.
+ * Defines the interface for rendering content for a page. Page aggregation handles pipeline requests for rendering
+ * full pages of layouts and portlets.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
 public interface PageAggregator extends Aggregator 
 {
+    /**
+     * Defines the interface for rendering content for a page.
+     *
+     * @param rc the request context holding runtime request parameters to be normalized
+     * @param root the root fragment to start rendering from
+     * @throws JetspeedException
+     * @throws IOException
+     */
     void renderContent(RequestContext rc, ContentFragment root) throws JetspeedException, IOException;
 }

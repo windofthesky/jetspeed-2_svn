@@ -20,7 +20,7 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.i18n.KeyedMessage;
 
 /**
- * Registration-related exceptions
+ * Portal Administration Registration-related exceptions
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: $

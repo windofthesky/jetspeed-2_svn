@@ -16,10 +16,10 @@
  */
 package org.apache.jetspeed.administration;
 
+import org.apache.commons.configuration.Configuration;
+
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.configuration.Configuration;
 
 
 /**
@@ -82,7 +82,7 @@ public class PortalConfigurationImpl implements PortalConfiguration
         return configuration.getInt(key);        
     }
 
-    public List getList(String key)
+    public List<Object> getList(String key)
     {
         return configuration.getList(key);
     }

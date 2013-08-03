@@ -18,7 +18,15 @@ package org.apache.jetspeed.administration;
 
 
 /**
- * PortalAdministration
+ * Portal Authentication Configuration for advanced settings on authentication activities going beyond default behavior.
+ * Extended authentication behaviors include:
+ * <ul>
+ *     <li>Create new session upon logging on. The default behavior is to create a new session.</li>
+ *     <li>Hard limit on session expiration. Overrides Servlet API inactivity-based session expiration
+ *         with hard limit expiration (ignores inactivity)</li>
+ *     <li>Configure the hard limit timeout expiration redirect URL</li>
+ * </ul>
+ * These settings are configurable via the portal's spring configuration
  * 
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
@@ -28,44 +36,60 @@ package org.apache.jetspeed.administration;
 public interface PortalAuthenticationConfiguration
 {   
     /**
-     * Is the session hard limit expiration feature enabled
-     * @return
+     *  Determine if the hard session timeout limit setting {@link #getMaxSessionHardLimit()} is turned on or not
+     *  in portal configuration. Hard limits override the Servlet API inactivity-based session expiration
+     *  with hard limit expiration (ignores activity-based session invalidation)
+     *
+     *  This setting requires the {@link #isCreateNewSessionOnLogin()} setting being enabled.
+     *
+     * @return whether {@link #getMaxSessionHardLimit()} setting is enabled
      */
     public boolean isMaxSessionHardLimitEnabled();
     
     /**
-     * hard session timeout limit in seconds, regardless of (in)activity
-     * 
-     * @return
+     *  The max value in seconds for session invalidation. Hard limits expirations override the Servlet API inactivity-based
+     *  session expiration with hard limit expiration (ignores activity-based session invalidation)
+     *
+     *  This setting requires the {@link #isCreateNewSessionOnLogin()} setting being enabled.
+     *
+     * @return the max session hard limit expiration value in seconds
      */
     public int getMaxSessionHardLimit();
-    
-    
+
+
     /**
-     * Get the session hard limit in milliseconds
-     * 
-     * @return session hard limit in milliseconds
+     *  The max value in milliseconds for session invalidation. Hard limits expirations override the Servlet API inactivity-based
+     *  session expiration with hard limit expiration (ignores activity-based session invalidation)
+     *
+     *  This setting requires the {@link #isCreateNewSessionOnLogin()} setting being enabled.
+     *
+     * @return the max session hard limit expiration value in milliseconds
      */
     public long getMsMaxSessionHardLimit();
     
     /**
-     * redirect location for hard session expiration, must be used with Max Session Hard Limit turned on
+     * A redirect URL location for hard session expiration,
+     * must be used with Max Session Hard Limit turned on {@link #isMaxSessionHardLimitEnabled()}
+     * This location is usually a logout-related URL
      * 
-     * @return
+     * @return the configured portal-relative redirect URL location
      */
     public String getTimeoutRedirectLocation();
 
     /**
-     * redirect location for hard session expiration, must be used with Max Session Hard Limit turned on
+     * Override the configured portal-relative redirect URL location for hard session expiration,
+     * must be used with Max Session Hard Limit turned on {@link #isMaxSessionHardLimitEnabled()}
+     * This location is usually a logout-related URL
      *  
-     * @param timeoutRedirectLocation
+     * @param timeoutRedirectLocation the new timeout redirect URL
      */
     public void setTimeoutRedirectLocation(String timeoutRedirectLocation);
 
     /**
-     * Should we create new session upon authentication
+     * Retrieve portal configuration setting which determines whether to create new session upon authentication.
+     * The default behavior is to create a new session.
      * 
-     * @return
+     * @return the portal configuration setting determining whether to create new sessions on login
      */
     public boolean isCreateNewSessionOnLogin();
    

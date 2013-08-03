@@ -17,7 +17,7 @@
 package org.apache.jetspeed.aggregator;
 
 /**
- * Portlet aggregation handles pipeline requests for single portlets and entities.
+ * Defines the interface for rendering content for a single portlet.
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$

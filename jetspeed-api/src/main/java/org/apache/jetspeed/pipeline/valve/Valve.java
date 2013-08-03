@@ -28,7 +28,6 @@ import org.apache.jetspeed.pipeline.PipelineException;
  * @author <a href="mailto:david@bluesunrise.com">David Sean Taylor</a>
  * @version $Id: Valve.java 186726 2004-06-05 05:13:09Z taylor $
  *
- * @see org.apache.jetspeed.pipeline.JetspeedPipeline
  * @see org.apache.jetspeed.pipeline.Pipeline
  */
 public interface Valve

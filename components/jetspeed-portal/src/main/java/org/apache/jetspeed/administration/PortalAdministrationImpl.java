@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.administration;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.mockobjects.MockHttpServletRequest;
@@ -34,8 +32,14 @@ import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.*;
+import org.apache.jetspeed.security.GroupManager;
+import org.apache.jetspeed.security.JSSubject;
+import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.RoleManager;
+import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.SecurityException;
+import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserManager;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
@@ -51,7 +55,11 @@ import java.io.FileReader;
 import java.io.StringWriter;
 import java.security.Principal;
 import java.security.PrivilegedAction;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * PortalAdministrationImpl
@@ -71,7 +79,7 @@ public class PortalAdministrationImpl implements PortalAdministration {
     /**
      * administration services
      */
-    protected Configuration config;
+    protected PortalConfiguration configuration;
     protected UserManager userManager;
     protected RoleManager roleManager;
     protected GroupManager groupManager;
@@ -132,14 +140,20 @@ public class PortalAdministrationImpl implements PortalAdministration {
         }
     }
 
+    public PortalConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(PortalConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
     public void start() {
-        this.config = (Configuration) Jetspeed.getComponentManager().getComponent("portal_configuration");
+        this.defaultRoles = configuration.getList(PortalConfigurationConstants.REGISTRATION_ROLES_DEFAULT);
+        this.defaultGroups = configuration.getList(PortalConfigurationConstants.REGISTRATION_GROUPS_DEFAULT);
 
-        this.defaultRoles = config.getList(PortalConfigurationConstants.REGISTRATION_ROLES_DEFAULT);
-        this.defaultGroups = config.getList(PortalConfigurationConstants.REGISTRATION_GROUPS_DEFAULT);
-
-        String[] profileRuleNames = config.getStringArray(PortalConfigurationConstants.PROFILER_RULE_NAMES_DEFAULT);
-        String[] profileRuleValues = config.getStringArray(PortalConfigurationConstants.PROFILER_RULE_VALUES_DEFAULT);
+        String[] profileRuleNames = configuration.getStringArray(PortalConfigurationConstants.PROFILER_RULE_NAMES_DEFAULT);
+        String[] profileRuleValues = configuration.getStringArray(PortalConfigurationConstants.PROFILER_RULE_VALUES_DEFAULT);
         defaultRules = new HashMap<String, String>();
         if (profileRuleNames != null && profileRuleValues != null) {
             for (int ix = 0; ix < ((profileRuleNames.length < profileRuleValues.length) ? profileRuleNames.length : profileRuleValues.length); ix++) {
@@ -147,9 +161,9 @@ public class PortalAdministrationImpl implements PortalAdministration {
             }
         }
         this.folderTemplate =
-                config.getString(PortalConfigurationConstants.PSML_TEMPLATE_FOLDER);
-        this.adminUser = config.getString(PortalConfigurationConstants.USERS_DEFAULT_ADMIN);
-        this.adminRole = config.getString(PortalConfigurationConstants.ROLES_DEFAULT_ADMIN);
+                configuration.getString(PortalConfigurationConstants.PSML_TEMPLATE_FOLDER);
+        this.adminUser = configuration.getString(PortalConfigurationConstants.USERS_DEFAULT_ADMIN);
+        this.adminRole = configuration.getString(PortalConfigurationConstants.ROLES_DEFAULT_ADMIN);
     }
 
     /* (non-Javadoc)
@@ -373,7 +387,7 @@ public class PortalAdministrationImpl implements PortalAdministration {
                           Map<String, String> userAttributes)
             throws AdministrationEmailException {
 
-        String from = config.getString(PortalConfigurationConstants.EMAIL_SENDER);
+        String from = configuration.getString(PortalConfigurationConstants.EMAIL_SENDER);
         String subject = localizedSubject;
         String to = emailAddress;
         String text = mergeEmailTemplate(portletConfig, userAttributes, "map", localizedTemplatePath);
@@ -472,7 +486,7 @@ public class PortalAdministrationImpl implements PortalAdministration {
     }
 
 
-    Map<String, Map<String, String>> forgottenPasswordData = new HashMap<String, Map<String, String>>();
+    final Map<String, Map<String, String>> forgottenPasswordData = new HashMap<String, Map<String, String>>();
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.administration.PortalAdministration#getNewLoginInfo(java.lang.String)
@@ -507,11 +521,9 @@ public class PortalAdministrationImpl implements PortalAdministration {
         }
 
         Principal principal = request.getUserPrincipal();
-
-        if (principal != null) {
+        if (null != principal) {
             return adminUser.equals(principal.getName());
         }
-
         return false;
     }
 
@@ -519,7 +531,6 @@ public class PortalAdministrationImpl implements PortalAdministration {
         if (adminRole == null) {
             throw new IllegalStateException("PortalAdministration component is not started or misconfigured for the default admin role.");
         }
-
         return request.isUserInRole(adminRole);
     }
 
@@ -563,7 +574,7 @@ public class PortalAdministrationImpl implements PortalAdministration {
      * @throws Exception
      */
     private String invokeGetUserFolderPath(final User user, final Locale locale, final String serverName) throws Exception {
-        if (config.getString(PortalConfigurationConstants.JETUI_CUSTOMIZATION_METHOD).equals(PortalConfigurationConstants.JETUI_CUSTOMIZATION_AJAX)) {
+        if (configuration.getString(PortalConfigurationConstants.JETUI_CUSTOMIZATION_METHOD).equals(PortalConfigurationConstants.JETUI_CUSTOMIZATION_AJAX)) {
             return Folder.USER_FOLDER + user.getName();
         }
         Object doneAs = JSSubject.doAsPrivileged(userManager.getSubject(user), new PrivilegedAction() {
@@ -654,4 +665,5 @@ public class PortalAdministrationImpl implements PortalAdministration {
         PortalSiteSessionContext sessionContext = portalSite.newSessionContext();
         return sessionContext.newRequestContext(locators, user.getName());
     }
+
 }
