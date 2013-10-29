@@ -16,18 +16,17 @@
  */
 package org.apache.jetspeed.capabilities.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.jetspeed.capabilities.Capability;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.capabilities.Client;
-import org.apache.jetspeed.capabilities.Capability;
 import org.apache.jetspeed.capabilities.MediaType;
+import org.apache.jetspeed.capabilities.MimeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.apache.jetspeed.capabilities.MimeType;
 
 /**
  * Implementation for capabilityMap interface
@@ -41,11 +40,11 @@ class CapabilityMapImpl implements CapabilityMap
         LoggerFactory.getLogger(JetspeedCapabilities.class);
     
     // Members
-    private String useragent; // User agent for request
-    private Map mimeTypeMap = new HashMap(); // supported Mimetypes for Agent
-    private Map capabilityMap = new HashMap();
+    private String userAgent; // User agent for request
+    private Map<String,MimeType> mimeTypeMap = new HashMap<String,MimeType>(); // supported Mimetypes for Agent
+    private Map<String,Capability> capabilityMap = new HashMap<String,Capability>();
     // supported Capabilities for Agent
-    private Map mediaTypeMap = new HashMap(); // supported MediaTypes for Agent
+    private Map<String,MediaType> mediaTypeMap = new HashMap<String,MediaType>(); // supported MediaTypes for Agent
     private Client client; // client for Agent
     private MediaType preferredMediaType; // Preferred MediaType for client.
 
@@ -136,7 +135,7 @@ class CapabilityMapImpl implements CapabilityMap
      * Returns an ordered list of supported media-types, from most preferred
      * to least preferred
      */
-    public Iterator listMediaTypes()
+    public Iterator<MediaType> listMediaTypes()
     {
         return mediaTypeMap.values().iterator();
     }
@@ -146,7 +145,7 @@ class CapabilityMapImpl implements CapabilityMap
     */
     public String getAgent()
     {
-        return this.useragent;
+        return this.userAgent;
     }
 
     /**
@@ -154,7 +153,7 @@ class CapabilityMapImpl implements CapabilityMap
      */
     public void setAgent(String userAgent)
     {
-        this.useragent = userAgent;
+        this.userAgent = userAgent;
     }
 
     /**
@@ -193,7 +192,7 @@ class CapabilityMapImpl implements CapabilityMap
     /**
     Get the mime types that this CapabilityMap supports.
     */
-    public Iterator getMimeTypes()
+    public Iterator<MimeType> getMimeTypes()
     {
         return mimeTypeMap.values().iterator();
     }
@@ -203,10 +202,10 @@ class CapabilityMapImpl implements CapabilityMap
     */
     public boolean supportsMimeType(MimeType mimeType)
     {
-        Iterator mimetypes = mimeTypeMap.values().iterator();
+        Iterator<MimeType> mimetypes = mimeTypeMap.values().iterator();
         while (mimetypes.hasNext())
         {
-            if (((MimeType) mimetypes.next()).getName().equals(mimeType.getName()))
+            if (mimetypes.next().getName().equals(mimeType.getName()))
             {
                 return true;
             }
@@ -225,10 +224,10 @@ class CapabilityMapImpl implements CapabilityMap
      */
     public boolean supportsMediaType(String media)
     {
-        Iterator mediatypes = mediaTypeMap.values().iterator();
+        Iterator<MediaType> mediatypes = mediaTypeMap.values().iterator();
         while (mediatypes.hasNext())
         {
-            if (((MediaType) mediatypes.next()).getName().equals(media))
+            if (mediatypes.next().getName().equals(media))
             {
                 return true;
             }

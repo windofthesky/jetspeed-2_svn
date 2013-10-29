@@ -16,15 +16,7 @@
  */
 package org.apache.jetspeed.engine;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Map;
-
-import javax.servlet.ServletConfig;
-
 import org.apache.commons.configuration.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedPortalContext;
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -40,6 +32,13 @@ import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.ojb.broker.util.ClassHelper;
 import org.apache.pluto.container.PortletContainer;
 import org.apache.pluto.container.PortletContainerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletConfig;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Map;
 
 
 /**
@@ -93,11 +92,6 @@ public class JetspeedEngine implements Engine
      * Initializes the engine with a commons configuration, starting all early
      * initable services.
      * 
-     * @param configuration
-     *                  a commons <code>Configuration</code> set
-     * @param applicationRoot
-     *                  a <code>String</code> path to the application root for
-     *                  resources
      * @param
      * @throws JetspeedException
      *                   when the engine fails to initilialize
@@ -117,11 +111,11 @@ public class JetspeedEngine implements Engine
             
             //Start the ComponentManager
             componentManager.start();
-            pipelineMapper = (Map)componentManager.getComponent("pipeline-map");
-            ((PortletFactory)componentManager.getComponent("portletFactory")).setPortalContext(context);
+            pipelineMapper = componentManager.lookupComponent("pipeline-map");
+            componentManager.<PortletFactory>lookupComponent("portletFactory").setPortalContext(context);
             try
             {
-                statistics = (PortalStatistics)componentManager.getComponent("PortalStatistics");
+                statistics = componentManager.lookupComponent("PortalStatistics");
             }
             catch (Exception e)
             {
@@ -172,7 +166,7 @@ public class JetspeedEngine implements Engine
             
             if (componentManager.containsComponent(PortletContainer.class))
             {
-                container = (PortletContainer) componentManager.getComponent(PortletContainer.class);
+                container = componentManager.lookupComponent(PortletContainer.class);
             }
             
             if (container != null)
@@ -269,7 +263,7 @@ public class JetspeedEngine implements Engine
     
     public Pipeline getPipeline( String pipelineName )
     {
-        return (Pipeline) componentManager.getComponent(pipelineName);
+        return componentManager.lookupComponent(pipelineName);
     }
 
     public Pipeline getPipeline()
@@ -282,8 +276,7 @@ public class JetspeedEngine implements Engine
      */
     public RequestContext getCurrentRequestContext()
     {
-        RequestContextComponent contextComponent = (RequestContextComponent) getComponentManager()
-            .getComponent(RequestContextComponent.class);
+        RequestContextComponent contextComponent = getComponentManager().lookupComponent(RequestContextComponent.class);
         return contextComponent.getRequestContext();
     }
 

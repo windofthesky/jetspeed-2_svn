@@ -33,7 +33,8 @@ public interface NodeManager
 	/**
 	 * Returns the current "knowledge" about a given node (i.e. the portlet application).
 	 * If the contextName doesn't exist NODE_NEW is returned.
-	 * An revision requested newer than what is stored is indicated by NODE_OUTDATED. 
+	 * An revision requested newer than what is stored is indicated by NODE_OUTDATED.
+     *
 	 * @param revision
 	 * @param contextName
 	 * @return
@@ -56,7 +57,6 @@ public interface NodeManager
 
 	/**
 	 * Remove a node
-	 * @param id
 	 * @param contextName
 	 * @throws Exception
 	 */

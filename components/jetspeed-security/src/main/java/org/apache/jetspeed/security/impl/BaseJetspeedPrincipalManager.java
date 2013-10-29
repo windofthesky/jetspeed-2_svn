@@ -123,7 +123,7 @@ public abstract class BaseJetspeedPrincipalManager implements JetspeedPrincipalM
     {
     	if(jpmp==null)
     	{
-    		jpmp= (JetspeedPrincipalManagerProvider)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider");
+    		jpmp= Jetspeed.getComponentManager().lookupComponent("org.apache.jetspeed.security.spi.JetspeedPrincipalManagerProvider");
     	}
     	return jpmp;
     }

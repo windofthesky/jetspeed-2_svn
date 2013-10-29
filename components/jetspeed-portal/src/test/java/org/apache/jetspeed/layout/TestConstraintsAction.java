@@ -16,14 +16,11 @@
  */
 package org.apache.jetspeed.layout;
 
-import java.io.File;
-import java.security.PrivilegedAction;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.security.auth.Subject;
-
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockHttpSession;
+import com.mockrunner.mock.web.MockServletConfig;
+import com.mockrunner.mock.web.MockServletContext;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
@@ -45,11 +42,12 @@ import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.AbstractTestPrincipal;
 import org.jmock.Mock;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockHttpSession;
-import com.mockrunner.mock.web.MockServletConfig;
-import com.mockrunner.mock.web.MockServletContext;
+import javax.security.auth.Subject;
+import java.io.File;
+import java.security.PrivilegedAction;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Test Security Constraints Manipulation
@@ -94,8 +92,8 @@ public class TestConstraintsAction extends JetspeedTestCase
                 
         cm = new SpringComponentManager(null, bootConfigs, appConfigs, servletContent, getBaseDir());
         cm.start();
-        valve = (LayoutValve) cm.getComponent("layoutValve");
-        pageManager = (PageManager) cm.getComponent("pageManager");
+        valve = cm.lookupComponent("layoutValve");
+        pageManager = cm.lookupComponent("pageManager");
     }
 
     protected void tearDown() throws Exception

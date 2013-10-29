@@ -16,11 +16,11 @@
  */
 package org.apache.jetspeed.pipeline;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.ComponentManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -85,7 +85,7 @@ public class JetspeedPipelineMapper implements PipelineMapper
             return null;
         }
         
-        return (Pipeline) componentManager.getComponent(pipelineId);
+        return componentManager.lookupComponent(pipelineId);
     }
     
     public String getMappedPathByPipelineId(String pipelineId)

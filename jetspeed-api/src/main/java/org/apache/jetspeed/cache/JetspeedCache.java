@@ -16,9 +16,9 @@
  */
 package org.apache.jetspeed.cache;
 
-import java.util.List;
-
 import org.apache.jetspeed.request.RequestContext;
+
+import java.util.List;
 
 /**
  * <p>
@@ -99,7 +99,7 @@ public interface JetspeedCache
     /**
      * Evict all cached content for the given session identifier 
      * 
-     * @param sessionid unique session identifier
+     * @param sessionId unique session identifier
      */    
     void evictContentForSession(String sessionId);
     

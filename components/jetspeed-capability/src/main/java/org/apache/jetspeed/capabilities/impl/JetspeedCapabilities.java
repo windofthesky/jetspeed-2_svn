@@ -16,15 +16,6 @@
  */
 package org.apache.jetspeed.capabilities.impl;
 
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Properties;
-import java.util.Vector;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.capabilities.Capabilities;
 import org.apache.jetspeed.capabilities.CapabilitiesException;
 import org.apache.jetspeed.capabilities.Capability;
@@ -37,9 +28,18 @@ import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  * Jetspeed Capabilities
@@ -161,7 +161,6 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
     /**
      * @param userAgent Agent from the request
      * @throws UnableToBuildCapabilityMapException
-     * @see org.apache.jetspeed.services.capability.CapabilityService#getCapabilityMap(java.lang.String)
      */
     public CapabilityMap getCapabilityMap(String userAgent) throws UnableToBuildCapabilityMapException
     {        
@@ -316,10 +315,10 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
     /**
      * Returns the client which matches the given useragent string.
      *
-     * @param useragent     the useragent to match
+     * @param userAgent the user agent to match
      * @return the found client or null if the user-agent does not match any
      *  defined client
-     * @see org.apache.jetspeed.capabilities.CapabilityService#findClient(java.lang.String)
+     * @see Capabilities#findClient(String)
      */
 
     public Client findClient(String userAgent)
@@ -341,14 +340,9 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
             {
                 try
                 {
-                    // Java 1.4 has regular expressions build in
                     String exp = client.getUserAgentPattern();
-                    //RE r = new RE(client.getUserAgentPattern());
-                    //r.setMatchFlags(RE.MATCH_CASEINDEPENDENT);
-                    //if (r.match(userAgent))
                     if (userAgent.matches(exp))
                     {
-
                         if (log.isDebugEnabled())
                         {
                             log.debug(
@@ -357,7 +351,6 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
                                     + " matches "
                                     + client.getUserAgentPattern());
                         }
-
                         return client;
                     } else
                     {
@@ -388,7 +381,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
     /* 
      * @see org.apache.jetspeed.capabilities.CapabilityService#getClients()
      */
-    public Iterator getClients()
+    public Iterator<Client> getClients()
     {
         if (null == clients)
         {
@@ -413,7 +406,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
     /* 
      * @see org.apache.jetspeed.capabilities.CapabilityService#getMediaTypesForMimeTypes(java.util.Iterator)
      */
-    public Collection getMediaTypesForMimeTypes(Iterator mimetypes)
+    public Collection<MediaType> getMediaTypesForMimeTypes(Iterator mimetypes)
     {
         //Find the MediaType by matching the Mimetype
         
@@ -495,7 +488,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
 
     /**
      * getMediaTypeForMimeType
-     * @param mimeType to use for lookup
+     * @param mimeTypeName to use for lookup
      * @return MediaTypeEntry that matches the lookup in the MEDIATYPE_TO_MIMETYPE table
      */
     public MediaType getMediaTypeForMimeType(String mimeTypeName)
@@ -532,7 +525,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      * Obtain an iterator of all existing capabilities.
      * @return Returns an iterator for all existing Capabilities of type <code>Capability</code>
      */
-    public Iterator getCapabilities()
+    public Iterator<Capability> getCapabilities()
     {
     	QueryByCriteria query = null;
 		try
@@ -549,12 +542,12 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
         query.addOrderByAscending("name");
         return getPersistenceBrokerTemplate().getCollectionByQuery(query).iterator();        
     }
-    
+
     /**
      * Obtain an iterator of all existing mime types.
      * @return Returns an iterator for all existing Mime Types of type <code>MimeType</code>
      */
-    public Iterator getMimeTypes()
+    public Iterator<MimeType> getMimeTypes()
     {
 		try
 		{
@@ -575,7 +568,7 @@ public class JetspeedCapabilities extends InitablePersistenceBrokerDaoSupport im
      * Obtain an iterator of all existing media types.
      * @return Returns an iterator for all existing media types of type <code>MediaType</code>
      */
-    public Iterator getMediaTypes()
+    public Iterator<MediaType> getMediaTypes()
     {
 		try
 		{

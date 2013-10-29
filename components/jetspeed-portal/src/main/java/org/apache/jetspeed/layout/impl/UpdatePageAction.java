@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.Map;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
@@ -32,9 +30,10 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.request.RequestContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * Update Page action -- updates various parts of the PSML page
@@ -72,7 +71,7 @@ public class UpdatePageAction
         super(template, errorTemplate, pm, securityBehavior);
     }
     
-    public boolean run(RequestContext requestContext, Map resultMap)
+    public boolean run(RequestContext requestContext, Map<String,Object> resultMap)
             throws AJAXException
     {
         boolean success = true;
@@ -298,7 +297,7 @@ public class UpdatePageAction
         return success;
     }
     
-    protected int updatePortletDecorator(RequestContext requestContext, Map resultMap, BaseFragmentsElement page, String fragmentId, String portletDecorator)
+    protected int updatePortletDecorator(RequestContext requestContext, Map<String,Object> resultMap, BaseFragmentsElement page, String fragmentId, String portletDecorator)
     {
     	int count = 0;
     	BaseFragmentElement fragment = page.getFragmentById(fragmentId);
@@ -310,7 +309,7 @@ public class UpdatePageAction
     	return count;
     }
     
-    protected int updateFragment(RequestContext requestContext, Map resultMap, BaseFragmentsElement page, String fragmentId, String layout)
+    protected int updateFragment(RequestContext requestContext, Map<String,Object> resultMap, BaseFragmentsElement page, String fragmentId, String layout)
     {
         int count = 0;
         String sizes = getActionParameter(requestContext, SIZES);
@@ -344,7 +343,7 @@ public class UpdatePageAction
         return count;
     }
 
-    protected int addFragment(RequestContext requestContext, Map resultMap, BaseFragmentsElement page, String parentFragmentId, String layout)
+    protected int addFragment(RequestContext requestContext, Map<String,Object> resultMap, BaseFragmentsElement page, String parentFragmentId, String layout)
     {
         int count = 0;
         String sizes = getActionParameter(requestContext, SIZES);
@@ -367,7 +366,7 @@ public class UpdatePageAction
         return count;
     }
 
-    protected int removeFragment(RequestContext requestContext, Map resultMap, BaseFragmentsElement page, String fragmentId)
+    protected int removeFragment(RequestContext requestContext, Map<String,Object> resultMap, BaseFragmentsElement page, String fragmentId)
     {
         int count = 0;
         BaseFragmentElement fragment = page.getFragmentById(fragmentId);
@@ -379,7 +378,7 @@ public class UpdatePageAction
         return count;
     }    
         
-    protected int updateInformation(RequestContext requestContext, Map resultMap, Node node, String path)
+    protected int updateInformation(RequestContext requestContext, Map<String,Object> resultMap, Node node, String path)
     throws AJAXException    
     {
         int count = 0;

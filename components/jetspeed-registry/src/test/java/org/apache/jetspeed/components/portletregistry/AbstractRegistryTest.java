@@ -16,10 +16,6 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Locale;
-
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.engine.MockJetspeedEngine;
@@ -29,6 +25,9 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.impl.DublinCoreImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
+
+import java.util.Collection;
+import java.util.Locale;
 
 /**
  * @author scott
@@ -75,7 +74,7 @@ public abstract class AbstractRegistryTest extends DatasourceEnabledSpringTestCa
         super.setUp();
         mockEngine.setComponentManager(scm);
         Jetspeed.setEngine(mockEngine);
-        this.registry = (PortletRegistry) scm.getComponent("portletRegistry");
+        this.registry = scm.lookupComponent("portletRegistry");
 
         testPasses++;
     }

@@ -17,12 +17,12 @@
 package org.apache.jetspeed;
 
 
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.components.util.TransactionCacheEnabledSpringTestCase;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.components.util.TransactionCacheEnabledSpringTestCase;
 
 public class AbstractRequestContextTestCase extends TransactionCacheEnabledSpringTestCase
 {
@@ -31,7 +31,7 @@ public class AbstractRequestContextTestCase extends TransactionCacheEnabledSprin
     protected void setUp() throws Exception
     {       
         super.setUp();
-        portletRegistry = (PortletRegistry) scm.getComponent("portletRegistry");
+        portletRegistry = scm.lookupComponent("portletRegistry");
     }   
     
     protected String[] getConfigurations()

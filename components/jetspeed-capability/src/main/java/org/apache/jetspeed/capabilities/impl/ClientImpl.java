@@ -18,7 +18,9 @@
 package org.apache.jetspeed.capabilities.impl;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.jetspeed.capabilities.Capability;
 import org.apache.jetspeed.capabilities.Client;
+import org.apache.jetspeed.capabilities.MimeType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,8 +39,8 @@ public class ClientImpl implements Client, java.io.Serializable {
     private String model = "";
     private String version = "";
     private String name;
-    private Collection mimetypes;
-    private Collection capabilities;
+    private Collection<MimeType> mimetypes;
+    private Collection<Capability> capabilities;
     private int preferredMimeTypeId;
 
     private int clientId;
@@ -161,25 +163,25 @@ public class ClientImpl implements Client, java.io.Serializable {
         version = name;
     }
 
-    public Collection getMimetypes() {
+    public Collection<MimeType> getMimetypes() {
         if (this.mimetypes == null) {
             this.mimetypes = new ArrayList();
         }
         return mimetypes;
     }
 
-    public void setMimetypes(Collection mimetypes) {
+    public void setMimetypes(Collection<MimeType> mimetypes) {
         this.mimetypes = mimetypes;
     }
 
-    public Collection getCapabilities() {
+    public Collection<Capability> getCapabilities() {
         if (capabilities == null) {
             capabilities = new ArrayList();
         }
         return capabilities;
     }
 
-    public void setCapabilities(Collection capabilities) {
+    public void setCapabilities(Collection<Capability> capabilities) {
         this.capabilities = capabilities;
     }
 

@@ -39,13 +39,15 @@ public interface Capabilities
 
     /**
      * Obtain an iterator of all existing clients.
+     *
      * @return Returns an iterator for all existing Clients
      */
-    Iterator getClients();
+    Iterator<Client> getClients();
 
     /**
-     * Finds a client for a given userAgentPattern
-     * @param userAgent
+     * Finds a client for a given regex userAgentPattern
+     *
+     * @param userAgent the user agent regex pattern
      * @return Client that matches agent or null if no match is found
      *
      */
@@ -53,18 +55,17 @@ public interface Capabilities
 
     /**
      * Returns a collection of MediaTypes that matches the MimeTypes defined in the mimetype parameter
-     * @param Mimetype
      *
-     * @return Collection of Mediatypes that matches the mimetypes
+     * @param mimeTypes the collection of mime types to match
+     * @return a collection of media types that matches the mime types
      */
-    Collection getMediaTypesForMimeTypes(Iterator mimetypes);
+    Collection<MediaType> getMediaTypesForMimeTypes(Iterator<MimeType> mimeTypes);
 
     /**
      * Clears CapabilityMap cache
-     * TODO: Roger, why is this on the public interface. It seems to be impl specific 
+     *
      */
     void deleteCapabilityMapCache();
-
     /**
      * Given a media type string, look up the corresponding media type object.
      * 
@@ -75,6 +76,7 @@ public interface Capabilities
 
     /**
      * Given a Mimetype string lookup the corresponding media type object
+     *
      * @param mimeTypeName to use for lookup
      * @return MediaTypeEntry that matches the lookup in the MEDIATYPE_TO_MIMETYPE table
      */
@@ -95,6 +97,7 @@ public interface Capabilities
      * @return The found mime type object or if not found, null.
      */
     MimeType getMimeType(String mimeType);
+
     /**
      * Given a client name, look up the corresponding client object.
      * 
@@ -105,75 +108,28 @@ public interface Capabilities
 
     /**
      * Obtain an iterator of all existing capabilities.
+     *
      * @return Returns an iterator for all existing Capabilities of type <code>Capability</code>
      */
-    Iterator getCapabilities();
+    Iterator<Capability> getCapabilities();
     
     /**
      * Obtain an iterator of all existing mime types.
+     *
      * @return Returns an iterator for all existing Mime Types of type <code>MimeType</code>
      */
-    Iterator getMimeTypes();
+    Iterator<MimeType> getMimeTypes();
     
     /**
      * Obtain an iterator of all existing media types.
+     *
      * @return Returns an iterator for all existing media types of type <code>MediaType</code>
      */
-    Iterator getMediaTypes();
+    Iterator<MediaType> getMediaTypes();
 
-    
-    /**
-     * Obtain the name of the CapabilityBean reference 
-     * @return ref-id of the capability bean
-     */
-	public String getCapabilityBeanName();
-
-    /**
-     * Set the name of the CapabilityBean reference - used exclusively in IoC 
-     * @param capabilityBeanName The ref-id of the capability bean.
-     */
-	public void setCapabilityBeanName(String capabilityBeanName);
-
-
-    /**
-     * Obtain the name of the ClientBean reference 
-     * @return ref-id of the client bean
-     */
-	public String getClientBeanName();
-
-    /**
-     * Set the name of the ClientBean reference - used exclusively in IoC 
-     * @param clientBeanName The ref-id of the client bean.
-     */
-	public void setClientBeanName(String clientBeanName);
-
-    /**
-     * Obtain the name of the Media Type reference 
-     * @return ref-id of the media type bean
-     */
-	public String getMediaTypeBeanName();
-
-	   /**
-     * Set the name of the MediaType bean reference - used exclusively in IoC 
-     * @param mediaTypeBeanName The ref-id of the mediaType bean.
-     */
-	public void setMediaTypeBeanName(String mediaTypeBeanName);
-
-	  /**
-     * Obtain the name of the Mime Type reference 
-     * @return ref-id of the mime type bean
-     */
-	public String getMimeTypeBeanName();
-
-	/**
-     * Set the name of the MimeType bean reference - used exclusively in IoC 
-     * @param mimeTypeBeanName The ref-id of the mimeType bean.
-     */
-	public void setMimeTypeBeanName(String mimeTypeBeanName);
-		
-	
 	/**
      * Create a new capability in the system or return the existing one if already exists
+     *
      * @param capabilityName The string describing the capability
      * @return A new (or existing) capability
     */
@@ -182,6 +138,7 @@ public interface Capabilities
 
 	/**
      * Create a new mimetype in the system or return the existing one if already exists
+     *
      * @param mimeTypeName The string describing the mimeType
      * @return A new (or existing) MimeType
     */
@@ -189,6 +146,7 @@ public interface Capabilities
 
 	/**
      * Create a new mediaType in the system or return the existing one if already exists
+     *
      * @param mediaTypeName The string describing the mediaType
      * @return A new (or existing) MediaType
     */
@@ -196,25 +154,23 @@ public interface Capabilities
 
 	/**
      * Create a new client in the system or return the existing one if already exists
+     *
      * @param clientName The string describing the client
      * @return A new (or existing) client
     */
 	public Client createClient(String clientName)throws ClassNotFoundException;
 
-
-	
 	/**
      * Save media type to backend storage
      * 
-     * @param mediaType valid mediatype object
+     * @param mediaType a valid media type object
      */
     public void storeMediaType(MediaType mediaType) throws CapabilitiesException;
-    	//TODO: change CapabilitiesException to better indicate cause
- 
+
 	/**
-     * delete existing media type from backend storage
+     * Delete existing media type from backend storage
      * 
-     * @param mediaType valid mediatype object
+     * @param mediaType a valid media type object
      */
     public void deleteMediaType(MediaType mediaType)
             throws CapabilitiesException;
@@ -238,20 +194,18 @@ public interface Capabilities
 	/**
      * Save mime type to backend storage
      * 
-     * @param mimeType valid mimetype object
+     * @param mimeType valid mime type object
      */
     public void storeMimeType(MimeType mimeType) throws CapabilitiesException;
  
 	/**
      * delete existing mime type from backend storage
      * 
-     * @param mimeType valid mimetype object
+     * @param mimeType valid mime type object
      */
     public void deleteMimeType(MimeType mimeType)
             throws CapabilitiesException;
 
-
-	
 	/**
      * Save client to backend storage
      * 

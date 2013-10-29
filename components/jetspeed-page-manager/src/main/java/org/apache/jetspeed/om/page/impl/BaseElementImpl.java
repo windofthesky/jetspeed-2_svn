@@ -16,15 +16,6 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.security.AccessController;
-import java.security.Permission;
-import java.security.Principal;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.security.auth.Subject;
-
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.SecurityConstraint;
@@ -39,6 +30,14 @@ import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PermissionFactory;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.User;
+
+import javax.security.auth.Subject;
+import java.security.AccessController;
+import java.security.Permission;
+import java.security.Principal;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * BaseElementImpl
@@ -129,7 +128,7 @@ public abstract class BaseElementImpl implements BaseElement
     {
         if (pageManager == null)
         {
-            pageManager = (PageManager)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.page.PageManager");
+            pageManager = Jetspeed.getComponentManager().lookupComponent("org.apache.jetspeed.page.PageManager");
         }        
         return pageManager;
     }     

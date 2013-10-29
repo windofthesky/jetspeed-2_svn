@@ -16,9 +16,6 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import java.util.Iterator;
-import java.util.Locale;
-
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.persistence.store.LockFailedException;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
@@ -35,6 +32,9 @@ import org.apache.jetspeed.om.portlet.UserAttributeRef;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
 import org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl;
 import org.apache.ojb.broker.Identity;
+
+import java.util.Iterator;
+import java.util.Locale;
 
 /**
  * <p>
@@ -58,7 +58,7 @@ public class TestRegistryCache extends DatasourceEnabledSpringTestCase
         super.setUp();
         mockEngine.setComponentManager(scm);
         Jetspeed.setEngine(mockEngine);
-        this.portletRegistry = (PortletRegistry) scm.getComponent("portletRegistry");
+        this.portletRegistry = scm.lookupComponent("portletRegistry");
 
         buildTestData();
 

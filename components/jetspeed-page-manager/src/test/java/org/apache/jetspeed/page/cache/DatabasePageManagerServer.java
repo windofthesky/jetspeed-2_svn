@@ -16,15 +16,6 @@
  */
 package org.apache.jetspeed.page.cache;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.security.PrivilegedAction;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.security.auth.Subject;
-
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.jexl.Script;
@@ -36,9 +27,16 @@ import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.PageManagerTestShared;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PrincipalsSet;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.security.auth.Subject;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.security.PrivilegedAction;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * DatabasePageManagerServer
@@ -92,7 +90,7 @@ public class DatabasePageManagerServer
         scm.start();
 
         // access page manager
-        pageManager = (PageManager)scm.getComponent("pageManager");
+        pageManager = scm.lookupComponent("pageManager");
         
         // create jexl context
         jexlContext = JexlHelper.createContext();

@@ -16,16 +16,15 @@
  */
 package org.apache.jetspeed.login;
 
-import java.io.IOException;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.audit.AuditActivity;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.audit.AuditActivity;
+import java.io.IOException;
 
 /**
  * LoginErrorServlet
@@ -56,7 +55,7 @@ public class LoginErrorServlet extends HttpServlet
         session.setAttribute(LoginConstants.RETRYCOUNT, retryCount);
 
         String username = (String)session.getAttribute(LoginConstants.USERNAME);        
-        AuditActivity audit = (AuditActivity)Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.audit.AuditActivity");
+        AuditActivity audit = Jetspeed.getComponentManager().lookupComponent("org.apache.jetspeed.audit.AuditActivity");
         if (audit != null)
         {
             audit.logUserActivity(username, request.getRemoteAddr(), AuditActivity.AUTHENTICATION_FAILURE, "Active Authentication");

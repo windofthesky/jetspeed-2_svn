@@ -16,10 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
@@ -32,6 +28,10 @@ import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.request.RequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 
 /**
@@ -70,7 +70,7 @@ public class RemovePortletAction
         this.registry = registry;
     }
     
-    public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException
+    public boolean runBatch(RequestContext requestContext, Map<String,Object> resultMap) throws AJAXException
     {
         return runAction(requestContext, resultMap, true);
     }    
@@ -81,7 +81,7 @@ public class RemovePortletAction
         return runAction(requestContext, resultMap, false);
     }
     
-    public boolean runAction(RequestContext requestContext, Map resultMap, boolean batch)
+    public boolean runAction(RequestContext requestContext, Map<String,Object> resultMap, boolean batch)
     {
         boolean success = true;
         String status = "success";

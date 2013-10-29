@@ -36,11 +36,11 @@ public interface AjaxAction
      * This method runs an Ajax action.
      *  
      * @param requestContext The Jetspeed Request Context
-     * @param resultMap map of action parameters passed to the builder context
+     * @param resultMap map of action parameters (any object) passed to the builder context
      * @return success is true, failure is false
-     * @throws Exception
+     * @throws AJAXException
      */
-    public boolean run(RequestContext requestContext, Map resultMap) throws AJAXException;
+    public boolean run(RequestContext requestContext, Map<String,Object> resultMap) throws AJAXException;
 
     /**
      * Same as run method, but runs in batch mode, as a hint to the action
@@ -50,9 +50,9 @@ public interface AjaxAction
      * @param requestContext The Jetspeed Request Context
      * @param resultMap map of action parameters passed to the builder context
      * @return success is true, failure is false
-     * @throws Exception
+     * @throws AJAXException
      */    
-    public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException;
+    public boolean runBatch(RequestContext requestContext, Map<String,Object> resultMap) throws AJAXException;
     
     /**
      * Checks to see if the current subject has access to to execute this action.

@@ -16,13 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
@@ -35,6 +28,13 @@ import org.apache.jetspeed.security.JetspeedPrincipalType;
 import org.apache.jetspeed.security.PermissionManager;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.impl.TransientRole;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Security Permission action
@@ -67,7 +67,7 @@ public class SecurityPermissionAction
         this.pm = pm;
     }
     
-    public boolean run(RequestContext requestContext, Map resultMap)
+    public boolean run(RequestContext requestContext, Map<String,Object> resultMap)
             throws AJAXException
     {
         boolean success = true;
@@ -123,7 +123,7 @@ public class SecurityPermissionAction
         return success;
     }
     
-    protected int addPermission(RequestContext requestContext, Map resultMap)
+    protected int addPermission(RequestContext requestContext, Map<String,Object> resultMap)
     throws AJAXException
     {
         try
@@ -154,7 +154,7 @@ public class SecurityPermissionAction
         }        
     }
 
-    protected int updatePermission(RequestContext requestContext, Map resultMap)
+    protected int updatePermission(RequestContext requestContext, Map<String,Object> resultMap)
     throws AJAXException
     {
         try
@@ -210,7 +210,7 @@ public class SecurityPermissionAction
         return count;
     }
 
-    protected int removePermission(RequestContext requestContext, Map resultMap)
+    protected int removePermission(RequestContext requestContext, Map<String,Object> resultMap)
     throws AJAXException
     {
         try

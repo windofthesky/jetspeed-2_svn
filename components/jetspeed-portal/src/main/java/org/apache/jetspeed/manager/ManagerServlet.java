@@ -16,18 +16,6 @@
  */
 package org.apache.jetspeed.manager;
 
-import java.io.CharArrayWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUpload;
@@ -40,6 +28,17 @@ import org.apache.jetspeed.factory.PortletFactory;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManager;
 import org.apache.jetspeed.tools.pamanager.servletcontainer.ApplicationServerManagerResult;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.CharArrayWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * ManagerServlet ala Tomcat ManagerServlet 
@@ -68,10 +67,10 @@ public class ManagerServlet extends HttpServlet
     public void init() throws ServletException
     {
         super.init();
-        asm = (ApplicationServerManager) Jetspeed.getComponentManager().getComponent(ApplicationServerManager.class);
-        registry = (PortletRegistry) Jetspeed.getComponentManager().getComponent(PortletRegistry.class);
-        portletFactory = (PortletFactory) Jetspeed.getComponentManager().getComponent("portletFactory");
-        dm = (DeploymentManager) Jetspeed.getComponentManager().getComponent("deploymentManager");
+        asm = Jetspeed.getComponentManager().lookupComponent(ApplicationServerManager.class);
+        registry = Jetspeed.getComponentManager().lookupComponent(PortletRegistry.class);
+        portletFactory = Jetspeed.getComponentManager().lookupComponent("portletFactory");
+        dm =  Jetspeed.getComponentManager().lookupComponent("deploymentManager");
     }
 
     public void destroy()

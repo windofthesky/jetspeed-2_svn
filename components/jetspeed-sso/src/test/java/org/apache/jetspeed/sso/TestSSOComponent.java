@@ -17,20 +17,12 @@
 
 package org.apache.jetspeed.sso;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.security.auth.Subject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.apache.jetspeed.security.SecurityException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author   David Le Strat
@@ -70,7 +62,7 @@ public abstract class TestSSOComponent extends AbstractSecurityTestCase
 
         try
         {
-            ssoManager = (SSOManager) scm.getComponent("org.apache.jetspeed.sso.SSOManager");
+            ssoManager = scm.lookupComponent("org.apache.jetspeed.sso.SSOManager");
         }
         catch (Exception ex)
         {

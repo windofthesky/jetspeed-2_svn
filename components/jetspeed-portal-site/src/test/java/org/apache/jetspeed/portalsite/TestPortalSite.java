@@ -16,6 +16,28 @@
  */
 package org.apache.jetspeed.portalsite;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.apache.jetspeed.components.test.AbstractSpringTestCase;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.page.BaseConcretePageElement;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
+import org.apache.jetspeed.om.page.DynamicPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
+import org.apache.jetspeed.om.page.Link;
+import org.apache.jetspeed.om.page.Page;
+import org.apache.jetspeed.om.page.PageTemplate;
+import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.document.NodeNotFoundException;
+import org.apache.jetspeed.page.document.NodeSet;
+import org.apache.jetspeed.page.document.proxy.NodeProxy;
+import org.apache.jetspeed.portalsite.impl.MenuImpl;
+import org.apache.jetspeed.portalsite.view.PhysicalSiteView;
+import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
+import org.apache.jetspeed.profiler.ProfileLocator;
+import org.apache.jetspeed.profiler.impl.JetspeedProfileLocator;
+
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,29 +45,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.apache.jetspeed.components.test.AbstractSpringTestCase;
-import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.om.folder.MenuDefinition;
-import org.apache.jetspeed.om.page.BaseFragmentsElement;
-import org.apache.jetspeed.om.page.DynamicPage;
-import org.apache.jetspeed.om.page.FragmentDefinition;
-import org.apache.jetspeed.om.page.Link;
-import org.apache.jetspeed.om.page.BaseConcretePageElement;
-import org.apache.jetspeed.om.page.Page;
-import org.apache.jetspeed.om.page.PageTemplate;
-import org.apache.jetspeed.page.PageManager;
-import org.apache.jetspeed.page.document.NodeSet;
-import org.apache.jetspeed.page.document.NodeNotFoundException;
-import org.apache.jetspeed.page.document.proxy.NodeProxy;
-import org.apache.jetspeed.portalsite.impl.MenuImpl;
-import org.apache.jetspeed.portalsite.view.PhysicalSiteView;
-import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
-import org.apache.jetspeed.profiler.ProfileLocator;
-import org.apache.jetspeed.profiler.impl.JetspeedProfileLocator;
 
 /**
  * TestPortalSite
@@ -76,8 +75,8 @@ public class TestPortalSite extends AbstractSpringTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        this.pageManager = (PageManager) scm.getComponent("pageManager");
-        this.portalSite = (PortalSite) scm.getComponent("portalSite");
+        this.pageManager = scm.lookupComponent("pageManager");
+        this.portalSite = scm.lookupComponent("portalSite");
         this.defaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.ENGLISH);
     }

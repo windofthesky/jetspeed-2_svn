@@ -16,14 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -33,6 +25,14 @@ import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.request.RequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Abstract Site update action for folders, pages and links
@@ -68,10 +68,10 @@ public abstract class BaseSiteUpdateAction
         super(template, errorTemplate, pageManager, securityBehavior);        
     }
 
-    protected abstract int updateInformation(RequestContext requestContext, Map resultMap, Node node, String path)
+    protected abstract int updateInformation(RequestContext requestContext, Map<String,Object> resultMap, Node node, String path)
     throws AJAXException;
     
-    protected int insertMetadata(RequestContext requestContext, Map resultMap, Node node)
+    protected int insertMetadata(RequestContext requestContext, Map<String,Object> resultMap, Node node)
     throws AJAXException
     {
         String name = getActionParameter(requestContext, "name");
@@ -84,7 +84,7 @@ public abstract class BaseSiteUpdateAction
         return 1;
     }
 
-    protected int updateMetadata(RequestContext requestContext, Map resultMap, Node node)
+    protected int updateMetadata(RequestContext requestContext, Map<String,Object> resultMap, Node node)
     throws AJAXException
     {
         String name = getActionParameter(requestContext, "name");
@@ -121,7 +121,7 @@ public abstract class BaseSiteUpdateAction
         return 1;
     }
     
-    protected int removeMetadata(RequestContext requestContext, Map resultMap, Node node)
+    protected int removeMetadata(RequestContext requestContext, Map<String,Object> resultMap, Node node)
     throws AJAXException
     {
         String name = getActionParameter(requestContext, "name");
@@ -155,7 +155,7 @@ public abstract class BaseSiteUpdateAction
         return (found) ? 1 : 0;
     }
 
-    protected int insertSecurityReference(RequestContext requestContext, Map resultMap, Node node)
+    protected int insertSecurityReference(RequestContext requestContext, Map<String,Object> resultMap, Node node)
     throws AJAXException
     {
         String name = getActionParameter(requestContext, "name");
@@ -181,7 +181,7 @@ public abstract class BaseSiteUpdateAction
         return 1;        
     }
 
-    protected int updateSecurityReference(RequestContext requestContext, Map resultMap, Node node)
+    protected int updateSecurityReference(RequestContext requestContext, Map<String,Object> resultMap, Node node)
     throws AJAXException
     {
         String name = getActionParameter(requestContext, "name");
@@ -223,7 +223,7 @@ public abstract class BaseSiteUpdateAction
         return 1;
     }
     
-    protected int removeSecurityReference(RequestContext requestContext, Map resultMap, Node node)
+    protected int removeSecurityReference(RequestContext requestContext, Map<String,Object> resultMap, Node node)
     throws AJAXException
     {
         String name = getActionParameter(requestContext, "name");
@@ -248,7 +248,7 @@ public abstract class BaseSiteUpdateAction
         return 1;
     }
 
-    protected int removeSecurityDef(RequestContext requestContext, Map resultMap, Node node)
+    protected int removeSecurityDef(RequestContext requestContext, Map<String,Object> resultMap, Node node)
     throws AJAXException
     {
         String id = getActionParameter(requestContext, "id");

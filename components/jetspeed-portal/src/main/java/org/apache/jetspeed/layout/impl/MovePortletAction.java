@@ -16,9 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.Map;
-import java.util.Iterator;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
@@ -26,16 +23,17 @@ import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.layout.Coordinate;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.layout.PortletPlacementException;
 import org.apache.jetspeed.layout.PortletPlacementContext;
+import org.apache.jetspeed.layout.PortletPlacementException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.request.RequestContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * Move Portlet portlet placement action
@@ -131,18 +129,18 @@ public class MovePortletAction
         }
     }
 
-    public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException
+    public boolean runBatch(RequestContext requestContext, Map<String,Object> resultMap) throws AJAXException
     {
         return runAction(requestContext, resultMap, true);
     }    
     
-    public boolean run(RequestContext requestContext, Map resultMap)
+    public boolean run(RequestContext requestContext, Map<String,Object> resultMap)
             throws AJAXException
     {
         return runAction(requestContext, resultMap, false);
     }
         
-    protected boolean runAction( RequestContext requestContext, Map resultMap, boolean batch )  throws AJAXException
+    protected boolean runAction( RequestContext requestContext, Map<String,Object> resultMap, boolean batch )  throws AJAXException
     {
         boolean success = true;
         String status = "success";
@@ -173,10 +171,7 @@ public class MovePortletAction
                 {
                     // determine if layoutId parameter refers to the current layout fragment or to some other layout fragment
                     moveToLayoutFragment = currentLayoutFragment;
-                    Iterator layoutChildIter = moveToLayoutFragment.getFragments().iterator();
-                    while ( layoutChildIter.hasNext() )
-                    {
-                        ContentFragment childFrag = (ContentFragment)layoutChildIter.next();
+                    for (ContentFragment childFrag : moveToLayoutFragment.getFragments()) {
                         if ( childFrag != null )
                         {
                             if ( moveFragmentId.equals( childFrag.getId() ) )
@@ -460,7 +455,7 @@ public class MovePortletAction
 
     protected boolean moveToOtherLayoutFragment( RequestContext requestContext,
                                                  boolean batch,
-                                                 Map resultMap,
+                                                 Map<String,Object> resultMap,
                                                  String moveFragmentId,
                                                  ContentFragment moveToLayoutFragment,
                                                  ContentFragment removeFromLayoutFragment )
@@ -499,7 +494,7 @@ public class MovePortletAction
 
     protected boolean placeFragment( RequestContext requestContext,
                                      boolean batch,
-                                     Map resultMap,
+                                     Map<String,Object> resultMap,
                                      ContentFragment placeFragment,
                                      ContentFragment placeInLayoutFragment )
         throws PortletPlacementException, NodeException, AJAXException
@@ -542,7 +537,7 @@ public class MovePortletAction
         return a_oCoordinate;
     }
 
-    protected void putCartesianResult(Map resultMap, float value, float oldValue, String name, String oldName)
+    protected void putCartesianResult(Map<String,Object> resultMap, float value, float oldValue, String name, String oldName)
     {    
         if (value != -1F)
         {

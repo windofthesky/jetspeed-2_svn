@@ -16,21 +16,9 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jetspeed.AbstractRequestContextTestCase;
@@ -41,9 +29,20 @@ import org.apache.jetspeed.security.impl.SecurityDomainImpl;
 import org.apache.jetspeed.security.spi.SecurityDomainAccessManager;
 import org.apache.jetspeed.security.spi.SecurityDomainStorageManager;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class TestPortletApplicationManager extends AbstractRequestContextTestCase
 {
@@ -154,10 +153,10 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
 
         // setup test
         super.setUp();
-        portletApplicationManager = (PortletApplicationManagement)scm.getComponent("PAM");
+        portletApplicationManager = scm.lookupComponent("PAM");
         assertTrue(portletApplicationManager.isStarted());
-        Class<?> portletApplicationManagerClass = scm.getComponent("org.apache.jetspeed.tools.pamanager.PortletApplicationManager").getClass();
-        log.info("PortletApplicationManager class: "+portletApplicationManagerClass.getSimpleName());
+        Class<?> portletApplicationManagerClass = scm.lookupComponent("org.apache.jetspeed.tools.pamanager.PortletApplicationManager").getClass();
+        log.info("PortletApplicationManager class: " + portletApplicationManagerClass.getSimpleName());
         // unregister portlet application
         try
         {
@@ -168,15 +167,15 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
         }
         // create standard default security domain and user role as necessary
         // for portlet application permissions
-        SecurityDomainAccessManager domainAccessManager = (SecurityDomainAccessManager)scm.getComponent("org.apache.jetspeed.security.spi.SecurityDomainAccessManager");
+        SecurityDomainAccessManager domainAccessManager = scm.lookupComponent("org.apache.jetspeed.security.spi.SecurityDomainAccessManager");
         if (domainAccessManager.getDomainByName(SecurityDomain.DEFAULT_NAME) == null)
         {
-            SecurityDomainStorageManager domainStorageManager = (SecurityDomainStorageManager)scm.getComponent("org.apache.jetspeed.security.spi.SecurityDomainStorageManager");
+            SecurityDomainStorageManager domainStorageManager = scm.lookupComponent("org.apache.jetspeed.security.spi.SecurityDomainStorageManager");
             SecurityDomainImpl defaultSecurityDomain = new SecurityDomainImpl();
             defaultSecurityDomain.setName(SecurityDomain.DEFAULT_NAME);
             domainStorageManager.addDomain(defaultSecurityDomain);
         }
-        RoleManager roleManager = (RoleManager)scm.getComponent("org.apache.jetspeed.security.RoleManager");
+        RoleManager roleManager = scm.lookupComponent("org.apache.jetspeed.security.RoleManager");
         if (!roleManager.roleExists("user"))
         {
             roleManager.addRole("user");

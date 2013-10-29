@@ -17,18 +17,18 @@
 
 package org.apache.jetspeed.cache.file;
 
+import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.cache.JetspeedCacheEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.io.File;
-import java.io.FileNotFoundException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.jetspeed.cache.CacheElement;
-import org.apache.jetspeed.cache.JetspeedCache;
-import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 
 /**
  * FileCache keeps a cache of files up-to-date with a most simple eviction policy.
@@ -67,7 +67,6 @@ public class FileCache
      *
      * @param cache the physical cache implementation
      * @param scanRate how often in seconds to refresh and evict from the cache
-     * @param maxSize the maximum allowed size of the cache before eviction starts
      */
     public FileCache(JetspeedCache cache, long scanRate)
     {
@@ -154,8 +153,9 @@ public class FileCache
     /**
      * Puts a file entry in the file cache
      *
-     * @param path the full path name of the file
+     * @param key the full path name of the file
      * @param document the cached document
+     * @param rootFile the root file handle
      */
     public void put(String key, Object document, File rootFile)
             throws java.io.IOException

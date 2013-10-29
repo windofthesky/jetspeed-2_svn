@@ -16,19 +16,17 @@
  */
 package org.apache.jetspeed.security;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
+
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.Permission;
 import java.security.Policy;
 import java.security.PrivilegedAction;
-
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.apache.jetspeed.security.impl.PassiveCallbackHandler;
 
 /**
  * @author <a href="mailto:dlestrat@apache.org">David Le Strat</a>
@@ -205,7 +203,7 @@ public class TestRdbmsPolicy extends AbstractSecurityTestcase
     public void testPermissionWithSubjectInAccessControlContextAndDefaultPolicy()
     {
         System.out.println("\n\n\t\t[TestRdbmsPolicy] Test with default Policy enabled.");
-        AuthorizationProvider atzProvider = (AuthorizationProvider) scm.getComponent("org.apache.jetspeed.security.AuthorizationProvider");
+        AuthorizationProvider atzProvider = scm.lookupComponent("org.apache.jetspeed.security.AuthorizationProvider");
         atzProvider.useDefaultPolicy(true);
         testPermissionWithSubjectInAccessControlContext();
     }

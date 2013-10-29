@@ -16,6 +16,11 @@
  */
 package org.apache.jetspeed.audit;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.apache.jetspeed.audit.impl.ActivityBean;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,12 +29,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.apache.jetspeed.audit.impl.ActivityBean;
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 
 /**
  * Test Audit Activity
@@ -69,7 +68,7 @@ public class TestAuditActivity extends DatasourceEnabledSpringTestCase
     {
         super.setUp();
         
-        this.audit = (AuditActivity) scm.getComponent("org.apache.jetspeed.audit.AuditActivity");
+        this.audit = scm.lookupComponent("org.apache.jetspeed.audit.AuditActivity");
         assertNotNull("audit activity service not found ", this.audit);
     }
     

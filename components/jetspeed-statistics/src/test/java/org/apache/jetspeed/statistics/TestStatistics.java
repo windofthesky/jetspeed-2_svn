@@ -16,6 +16,18 @@
  */
 package org.apache.jetspeed.statistics;
 
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockHttpSession;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.mockobjects.request.MockRequestContext;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.statistics.impl.StatisticsQueryCriteriaImpl;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,20 +39,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
-import org.apache.jetspeed.mockobjects.request.MockRequestContext;
-import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.statistics.impl.StatisticsQueryCriteriaImpl;
-
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockHttpSession;
 
 /**
  * TestStatistics
@@ -72,7 +70,7 @@ public class TestStatistics extends DatasourceEnabledSpringTestCase
     {
         super.setUp();
         
-        this.statistics = (PortalStatistics) scm.getComponent("PortalStatistics");
+        this.statistics = scm.lookupComponent("PortalStatistics");
         assertNotNull("statistics not found ", statistics);
     }
 

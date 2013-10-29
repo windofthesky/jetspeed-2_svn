@@ -124,8 +124,8 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
         super.setUp();
         
         // Need to ensure required Security Domains are setup.
-        domainStorageManager = (SecurityDomainStorageManager) scm.getComponent(SecurityDomainStorageManager.class.getName());
-        domainAccessManager = (SecurityDomainAccessManager) scm.getComponent("org.apache.jetspeed.security.spi.SecurityDomainAccessManager");
+        domainStorageManager =  scm.lookupComponent(SecurityDomainStorageManager.class.getName());
+        domainAccessManager = scm.lookupComponent("org.apache.jetspeed.security.spi.SecurityDomainAccessManager");
 
         SecurityDomain domain = domainAccessManager.getDomainByName(SecurityDomain.SYSTEM_NAME); 
         if (domain == null){
@@ -142,10 +142,10 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
             domainStorageManager.addDomain(newDomain);
         }
         
-        this.profiler = (Profiler) scm.getComponent("profiler");
-        JetspeedProfilerImpl profilerImpl = (JetspeedProfilerImpl)scm.getComponent("profilerImpl");
+        this.profiler = scm.lookupComponent("profiler");
+        JetspeedProfilerImpl profilerImpl = scm.lookupComponent("profilerImpl");
         assertNotNull("profiler not found ", profiler);
-        ProfileResolvers resolvers = (ProfileResolvers)scm.getComponent("ProfileResolvers");
+        ProfileResolvers resolvers = scm.lookupComponent("ProfileResolvers");
         assertNotNull("resolvers not found ", resolvers);
         profilerImpl.setDefaultRule(JetspeedProfilerImpl.DEFAULT_RULE);
     }
@@ -185,7 +185,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     public void firstTestSetup() throws Exception
     {
         System.out.println("firstTestSetup");
-        JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("JetspeedSerializer");
+        JetspeedSerializer serializer = scm.lookupComponent("JetspeedSerializer");
         serializer.deleteData();
         serializer.importData(getBaseDir()+"target/test-classes/j2-seed.xml");
     }
@@ -193,7 +193,7 @@ public class TestProfiler extends DatasourceEnabledSpringTestCase
     public void lastTestTeardown() throws Exception
     {
         System.out.println("lastTestTeardown");
-        JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("JetspeedSerializer");
+        JetspeedSerializer serializer = scm.lookupComponent("JetspeedSerializer");
         serializer.deleteData();
     }
     

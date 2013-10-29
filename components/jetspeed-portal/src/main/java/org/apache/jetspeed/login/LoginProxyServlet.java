@@ -16,9 +16,12 @@
  */
 package org.apache.jetspeed.login;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
+import org.apache.jetspeed.security.activeauthentication.ActiveAuthenticationIdentityProvider;
+import org.apache.jetspeed.security.activeauthentication.IdentityToken;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -26,13 +29,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
-import org.apache.jetspeed.security.activeauthentication.ActiveAuthenticationIdentityProvider;
-import org.apache.jetspeed.security.activeauthentication.IdentityToken;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * LoginProxyServlet
@@ -108,13 +107,13 @@ public class LoginProxyServlet extends HttpServlet
         }
 
         Boolean portalFiltered = Boolean.valueOf((String)request.getAttribute(PortalReservedParameters.PORTAL_FILTER_ATTRIBUTE));
-        PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
-        Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");   
+        PortalAuthenticationConfiguration authenticationConfiguration =
+            Jetspeed.getComponentManager().lookupComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");
         if (!portalFiltered && authenticationConfiguration.isCreateNewSessionOnLogin())
         {
     
-            ActiveAuthenticationIdentityProvider identityProvider = (ActiveAuthenticationIdentityProvider) 
-                Jetspeed.getComponentManager().getComponent("org.apache.jetspeed.security.activeauthentication.ActiveAuthenticationIdentityProvider");
+            ActiveAuthenticationIdentityProvider identityProvider =
+                Jetspeed.getComponentManager().lookupComponent("org.apache.jetspeed.security.activeauthentication.ActiveAuthenticationIdentityProvider");
             IdentityToken token = identityProvider.createIdentityToken(username);
             saveState(session, token, identityProvider.getSessionAttributeNames());
             request.getSession().invalidate();

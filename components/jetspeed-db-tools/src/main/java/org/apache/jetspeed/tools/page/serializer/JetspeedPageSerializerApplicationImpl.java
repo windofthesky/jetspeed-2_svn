@@ -17,12 +17,6 @@
 
 package org.apache.jetspeed.tools.page.serializer;
 
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Properties;
-
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.util.Slf4JToolsLogger;
@@ -31,6 +25,12 @@ import org.apache.jetspeed.page.JetspeedPageSerializerApplication;
 import org.apache.jetspeed.page.PageSerializer;
 import org.apache.jetspeed.page.PageSerializer.Result;
 import org.apache.jetspeed.tools.ToolsLogger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Properties;
 
 /**
  * Commandline or standalone execution of JetspeedPageSerializer
@@ -183,7 +183,7 @@ public class JetspeedPageSerializerApplicationImpl implements JetspeedPageSerial
             scm = new SpringComponentManager(filter, bootConfig, appConfig, applicationRootPath, initProperties, true);
             scm.start();
             
-            PageSerializer serializer = (PageSerializer)scm.getComponent(PageSerializer.class.getName());
+            PageSerializer serializer = scm.lookupComponent(PageSerializer.class.getName());
             if (importing)
             {
                 result = serializer.importPages(logger, rootFolder);

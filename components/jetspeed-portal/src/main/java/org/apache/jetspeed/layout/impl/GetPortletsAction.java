@@ -16,17 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
@@ -41,6 +30,17 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.security.SecurityAccessController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Get Portlets retrieves the portlet list available to the current subject
@@ -82,7 +82,7 @@ public class GetPortletsAction
         this.securityAccessController = securityAccessController;
     }
 
-    public boolean run(RequestContext requestContext, Map resultMap)
+    public boolean run(RequestContext requestContext, Map<String,Object> resultMap)
     {
         boolean success = true;
         String status = "success";
@@ -122,10 +122,10 @@ public class GetPortletsAction
         return success;
 	}
     
-    public List retrievePortlets(RequestContext requestContext, String filter)
+    public List<PortletInfo> retrievePortlets(RequestContext requestContext, String filter)
     {
         Iterator portlets = null;
-        List list = new ArrayList();
+        List<PortletInfo> list = new ArrayList<PortletInfo>();
         Locale locale = requestContext.getLocale();
         
         if (filter == null)

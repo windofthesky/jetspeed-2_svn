@@ -16,22 +16,6 @@
  */
 package org.apache.jetspeed.engine;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.Properties;
-
-import javax.security.auth.Subject;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -59,6 +43,21 @@ import org.apache.jetspeed.services.PortletServices;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.security.auth.Subject;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
+import java.io.File;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.Properties;
 
 /**
  * Jetspeed Servlet entry point.
@@ -207,7 +206,7 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
                 Jetspeed.setEngine(engine);
                 engine.start();                
                 console.info("JetspeedServlet has successfuly started the Jetspeed Portal Engine....");
-                contextComponent = (RequestContextComponent) Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
+                contextComponent = Jetspeed.getComponentManager().lookupComponent(RequestContextComponent.class);
             }
             catch (Throwable e)
             {
@@ -227,8 +226,9 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
      * Initializes the services which need <code>RunData</code> to initialize
      * themselves (post startup).
      * 
-     * @param data
-     *            The first <code>GET</code> request.
+     * @param request The first <code>GET</code> request.
+     * @param response The first <code>GET</code> response.
+     *
      */
     public final void init( HttpServletRequest request, HttpServletResponse response )
     {
@@ -404,11 +404,11 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
             return;
         }        
         Principal subjectUserPrincipal = SubjectHelper.getPrincipal(subject, UserSubjectPrincipal.class);
-        PortalStatistics statistics = (PortalStatistics)engine.getComponentManager().getComponent("PortalStatistics");
+        PortalStatistics statistics = engine.getComponentManager().lookupComponent("PortalStatistics");
         long sessionLength = System.currentTimeMillis() - se.getSession().getCreationTime();
         String ipAddress = (String)se.getSession().getAttribute(SecurityValve.IP_ADDRESS);
         statistics.logUserLogout(ipAddress, subjectUserPrincipal.getName(), sessionLength);    
-        UserContentCacheManager userContentCacheManager = (UserContentCacheManager)engine.getComponentManager().getComponent("userContentCacheManager");
+        UserContentCacheManager userContentCacheManager = engine.getComponentManager().lookupComponent("userContentCacheManager");
         userContentCacheManager.evictUserContentCache(subjectUserPrincipal.getName(), se.getSession().getId());
     }
            
@@ -421,7 +421,7 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
      * @param req the original portal request
      * @param res the original portal response
      * @param context the context created for handling this request
-     * @param e the exception as occurred 
+     * @param t the exception as occurred
      * @throws IOException
      * @throws ServletException
      */

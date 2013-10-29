@@ -16,10 +16,10 @@
  */
 package org.apache.jetspeed.components.portletregistry;
 
-import java.util.Collection;
-
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+
+import java.util.Collection;
 
 /**
  * <p>
@@ -132,7 +132,7 @@ public interface PortletRegistry
     /**
      * Checks whether or not a portlet with this identity has all ready
      * been registered to the PortletApplication.
-     * @param portletIndentity portlet indetity to check for.
+     * @param portletName portlet identity to check for.
      * @param app PortletApplication to check .
      * @return boolean <code>true</code> if a portlet with this identity
      * is alreay registered, <code>false</code> if it has not.

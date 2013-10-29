@@ -16,9 +16,9 @@
  */
 package org.apache.jetspeed.ajax;
 
-import java.util.Map;
-
 import org.apache.jetspeed.request.RequestContext;
+
+import java.util.Map;
 
 /**
  * An Ajax request is made up of an action and builder phases.
@@ -27,8 +27,29 @@ import org.apache.jetspeed.request.RequestContext;
  *
  * @author <href a="mailto:taylor@apache.org">David Sean Taylor</a>
  */
-public interface AjaxRequestService 
-{
+public interface AjaxRequestService {
+    /**
+     * Entry point into processing an Ajax request
+     *
+     * @param requestContext the request context holding runtime request parameters to be normalized
+     * @throws AJAXException
+     */
     public void process(RequestContext requestContext) throws AJAXException;
-    public Map getActionMap();
+
+    /**
+     * Retrieve the map of configured actions. Actions are mapped from action names to
+     * actual {@link AjaxAction} implementations. Examples:
+     *
+     * {@code
+     * <entry key="moveleft">
+     *   <ref bean="AjaxMovePortletLeft" />
+     * </entry>
+     * <entry key="moveright">
+     *   <ref bean="AjaxMovePortletRight" />
+     * </entry>
+     * }
+     *
+     * @return the map of configured actions
+     */
+    public Map<String, AjaxAction> getActionMap();
 }

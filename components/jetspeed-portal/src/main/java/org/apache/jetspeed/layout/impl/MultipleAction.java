@@ -16,16 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -40,6 +30,16 @@ import org.apache.velocity.context.Context;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * 
@@ -98,7 +98,7 @@ public class MultipleAction extends BasePortletAction implements AjaxAction,
         actionMap.put("multiple", proxy);        
     }
     
-    public boolean run(RequestContext p_oRequestContext, Map p_oResultMap)
+    public boolean run(RequestContext p_oRequestContext, Map<String,Object> p_oResultMap)
             throws AJAXException
     {
         boolean a_bReturnSuccess = true;
@@ -249,7 +249,7 @@ public class MultipleAction extends BasePortletAction implements AjaxAction,
     }
 
     // Process the builder if provided
-    protected void processBuilder(AjaxBuilder p_oBuilder, Map p_oInputMap,
+    protected void processBuilder(AjaxBuilder p_oBuilder, Map<String,Object> p_oInputMap,
             RequestContext p_oRequestContext, boolean p_oActionSuccessFlag)
     {
         try
@@ -314,7 +314,7 @@ public class MultipleAction extends BasePortletAction implements AjaxAction,
     }
 
     public boolean buildContext(RequestContext p_oRequestContext,
-            Map p_oInputMap)
+            Map<String,Object> p_oInputMap)
     {
         boolean a_bResults = true;
 

@@ -16,25 +16,22 @@
  */
 package org.apache.jetspeed.sso;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.apache.jetspeed.security.Group;
+import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.PrincipalTypeManager;
+import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.impl.RoleImpl;
+import org.apache.jetspeed.sso.impl.SSOUserImpl;
+
+import javax.security.auth.Subject;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import javax.security.auth.Subject;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.apache.jetspeed.security.Group;
-import org.apache.jetspeed.security.JetspeedPrincipal;
-import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.PrincipalTypeManager;
-import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.impl.RoleImpl;
-import org.apache.jetspeed.sso.impl.SSOUserImpl;
 
 /**
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
@@ -491,7 +488,7 @@ X    void addUser(SSOSite site, JetspeedPrincipal localPrincipal, String ssoUser
 
         try
         {
-            ssoManager = (SSOManager) scm.getComponent("org.apache.jetspeed.sso.SSOManager");
+            ssoManager = scm.lookupComponent("org.apache.jetspeed.sso.SSOManager");
         }
         catch (Exception ex)
         {

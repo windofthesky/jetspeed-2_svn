@@ -16,20 +16,12 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.state.MutableNavigationalState;
 import org.apache.jetspeed.decoration.PageActionAccess;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
@@ -37,7 +29,14 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.PortletWindow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Changes the window state or portlet mode for a given portlet window
@@ -57,8 +56,8 @@ public class ChangePortletAction
 {
     protected static final Logger log = LoggerFactory.getLogger(ChangePortletAction.class);
     protected String action;
-    protected Map validWindowStates = new HashMap();
-    protected Map validPortletModes = new HashMap();
+    protected Map<String,String> validWindowStates = new HashMap();
+    protected Map<String,String> validPortletModes = new HashMap();
     
     public ChangePortletAction(String template, 
             String errorTemplate, 
@@ -105,7 +104,7 @@ public class ChangePortletAction
         }        
     }
 
-    public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException
+    public boolean runBatch(RequestContext requestContext, Map<String,Object> resultMap) throws AJAXException
     {
         return runAction(requestContext, resultMap, true);
     }    
@@ -116,7 +115,7 @@ public class ChangePortletAction
         return runAction(requestContext, resultMap, false);
     }
     
-    public boolean runAction(RequestContext requestContext, Map resultMap, boolean batch)
+    public boolean runAction(RequestContext requestContext, Map<String,Object> resultMap, boolean batch)
     {
         boolean success = true;
         String status = "success";

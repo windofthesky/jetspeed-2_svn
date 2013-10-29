@@ -43,7 +43,7 @@ public class TestCluster extends DatasourceEnabledSpringTestCase
     {
         super.setUp();
 
-        single = (NodeManager) scm.getComponent("org.apache.jetspeed.cluster.NodeManager");
+        single = scm.lookupComponent("org.apache.jetspeed.cluster.NodeManager");
     }
   
     public static Test suite()

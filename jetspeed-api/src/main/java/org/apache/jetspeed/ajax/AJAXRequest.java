@@ -16,17 +16,16 @@
  */
 package org.apache.jetspeed.ajax;
 
-import java.util.List;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Request used for AJAX services.
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
- *
+ * @deprecated
  */
 public interface AJAXRequest
 {

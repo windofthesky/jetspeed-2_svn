@@ -60,7 +60,7 @@ public interface CapabilityMap
     /**
      * Add MediaType to the MediaTypeMap
      *
-     * @param Mediatype to add
+     * @param mediatype to add
      */
     public void addMediaType(MediaType mediatype);
 
@@ -76,15 +76,17 @@ public interface CapabilityMap
 
     /**
      * Sets the preferred MediaType for this CapabilityMap
-     * @param MediaTypeEntry
+     * @param type
      */
     public void setPreferredMediaType(MediaType type);
 
     /**
      * Returns an ordered list of supported media-types, from most preferred
      * to least preferred
+     *
+     * @return an iterator over all media types
      */
-    public Iterator listMediaTypes();
+    public Iterator<MediaType> listMediaTypes();
 
     /**
      * @return Returns the user-agent string
@@ -99,13 +101,13 @@ public interface CapabilityMap
     public void setAgent(String userAgent);
 
     /**
-     * @param CApabilityID
+     * @param capabilityId
      * @return Returns true if the current agent has the specified capabilityID
      */
-    public boolean hasCapability(int cap);
+    public boolean hasCapability(int capabilityId);
 
     /**
-     * @param Capability
+     * @param capability
      * @return returns true if the current agent has the specified capability
      */
     public boolean hasCapability(String capability);
@@ -114,10 +116,10 @@ public interface CapabilityMap
      * Get the mime types that this CapabilityMap supports.
      * @return Returns an Iterator over the MimeType map
      */
-    public Iterator getMimeTypes();
+    public Iterator<MimeType> getMimeTypes();
 
     /**
-     * @param  MimeType
+     * @param  mimeType
      * @return Return true if this CapabilityMap supports the given MimeType
      */
     public boolean supportsMimeType(MimeType mimeType);

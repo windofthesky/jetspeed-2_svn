@@ -41,9 +41,8 @@ public interface SimpleRegistry
 	/**
 	 * Registers the entry.
 	 * 
-	 * @throws java.lang.IllegalAgrumentException in <code>entry</code> is null or
 	 * <code>entry.getId()</code> is null
-	 * @throws org.apache.jetspeed.cps.simpleregistry if this <code>entry</code> is 
+	 * @throws SimpleRegistryException if this <code>entry</code> is
 	 * already registered.
 	 * @param entry
 	 */
@@ -52,7 +51,6 @@ public interface SimpleRegistry
 	/**
 	 * De-registers the entry
 	 * @param entry
-	 * @throws java.lang.IllegalAgrumentException in <code>entry</code> is null or
 	 * <code>entry.getId()</code> is null
 	 */
 	public void deRegister(Entry entry);
@@ -63,14 +61,13 @@ public interface SimpleRegistry
 	 * 
 	 * @return boolean <code>true</code> is the <code>entry</code> is registered
 	 * otherwise <code>false</code>.
-	 * @throws java.lang.IllegalAgrumentException in <code>entry</code> is null or
 	 * <code>entry.getId()</code> is null
 	 */
 	public boolean isRegistered(Entry entry);
 	
 	/**
-	 * Provides a Cloolection of <code>org.apache.jetspeed.cps.simpleregistry.Entry</code>
-	 * objects that are currently registered to this registery
+	 * Provides a Collection of <code>org.apache.jetspeed.cps.simpleregistry.Entry</code>
+	 * objects that are currently registered to this registry
 	 * @return
 	 */	
 	public Collection getRegistry();

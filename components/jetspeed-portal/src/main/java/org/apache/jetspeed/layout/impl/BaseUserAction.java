@@ -16,12 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -29,6 +23,12 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.UserManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Abstract portlet placement action
@@ -75,13 +75,13 @@ public abstract class BaseUserAction
         this.userManager = userManager;
     }
 
-    public boolean buildContext(RequestContext requestContext, Map responseContext)
+    public boolean buildContext(RequestContext requestContext, Map<String,Object> responseContext)
     {
         return true;
     }
 
     public boolean buildErrorContext(RequestContext requestContext,
-            Map responseContext) 
+            Map<String,Object> responseContext)
     {
         responseContext.put(STATUS, "failure");
 
@@ -144,7 +144,7 @@ public abstract class BaseUserAction
         return null;
     }
     
-    public boolean runBatch(RequestContext requestContext, Map resultMap) throws AJAXException
+    public boolean runBatch(RequestContext requestContext, Map<String,Object> resultMap) throws AJAXException
     {
         return run(requestContext, resultMap);
     }

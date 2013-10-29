@@ -16,13 +16,6 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.jexl.Script;
@@ -34,6 +27,13 @@ import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.jndi.JetspeedTestJNDIComponent;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.util.DirectoryHelper;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * PortletApplicationManagerServer
@@ -107,7 +107,7 @@ public class PortletApplicationManagerServer
         scm.start();
 
         // access portal application manager
-        portletApplicationManager = (PortletApplicationManagement)scm.getComponent("PAM");
+        portletApplicationManager = scm.lookupComponent("PAM");
         
         // create jexl context
         jexlContext = JexlHelper.createContext();

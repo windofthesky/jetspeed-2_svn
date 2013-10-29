@@ -17,15 +17,14 @@
 
 package org.apache.jetspeed.capabilities;
 
+import junit.framework.Test;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.serializer.JetspeedSerializer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
-
-import junit.framework.Test;
-
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
-import org.apache.jetspeed.serializer.JetspeedSerializer;
 
 
 /**
@@ -41,7 +40,7 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        capabilities = (Capabilities) scm.getComponent("capabilities");
+        capabilities = scm.lookupComponent("capabilities");
     }
 
     public static Test suite()
@@ -51,14 +50,14 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
 
     public void firstTestSetup() throws Exception
     {
-        JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("serializer");
+        JetspeedSerializer serializer = scm.lookupComponent("serializer");
         serializer.deleteData();
         serializer.importData(getBaseDir()+"target/test-classes/j2-seed.xml");
     }
 
     public void lastTestTeardown() throws Exception
     {
-        JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent("serializer");
+        JetspeedSerializer serializer = scm.lookupComponent("serializer");
         serializer.deleteData();
     }
     
@@ -172,18 +171,16 @@ public class TestCapability extends DatasourceEnabledSpringTestCase
         System.out.println("Encoding = " + encoding);
         System.out.println("Supported MediaTypes");
         Iterator cmIterator = cm.listMediaTypes();
-
         while (cmIterator.hasNext())
         {
             System.out.println(((MediaType) cmIterator.next()).getName());
         }
 
         System.out.println("Supported MimeTypes");
-        Iterator mtIterator = cm.getMimeTypes();
-
+        Iterator<MimeType> mtIterator = cm.getMimeTypes();
         while (mtIterator.hasNext())
         {
-            System.out.println(((MimeType) mtIterator.next()).getName());
+            System.out.println(mtIterator.next().getName());
         }
     }
 

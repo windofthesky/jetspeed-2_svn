@@ -16,19 +16,18 @@
  */
 package org.apache.jetspeed.login;
 
-import java.io.IOException;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.audit.AuditActivity;
+import org.apache.jetspeed.cache.UserContentCacheManager;
+import org.apache.jetspeed.components.ComponentManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.audit.AuditActivity;
-import org.apache.jetspeed.cache.UserContentCacheManager;
-import org.apache.jetspeed.components.ComponentManager;
+import java.io.IOException;
 
 /**
  * LoginRedirectorServlet
@@ -58,9 +57,9 @@ public class LoginRedirectorServlet extends HttpServlet
         session.removeAttribute(PortalReservedParameters.PREFERED_LOCALE_ATTRIBUTE);
 
         ComponentManager cm = Jetspeed.getComponentManager();
-        UserContentCacheManager userContentCacheManager = (UserContentCacheManager)cm.getComponent("userContentCacheManager");
+        UserContentCacheManager userContentCacheManager = cm.lookupComponent("userContentCacheManager");
         userContentCacheManager.evictUserContentCache(username, session.getId());
-        AuditActivity audit = (AuditActivity)cm.getComponent("org.apache.jetspeed.audit.AuditActivity");
+        AuditActivity audit = cm.lookupComponent("org.apache.jetspeed.audit.AuditActivity");
         if (audit != null)
         {
             audit.logUserActivity(username, request.getRemoteAddr(), AuditActivity.AUTHENTICATION_SUCCESS, "Active Authentication");

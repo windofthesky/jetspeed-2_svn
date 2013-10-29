@@ -16,17 +16,6 @@
  */
 package org.apache.jetspeed.layout;
 
-import java.security.PrivilegedAction;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.security.auth.Subject;
-
 import org.apache.jetspeed.components.test.AbstractSpringTestCase;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.ContentFragment;
@@ -45,6 +34,16 @@ import org.apache.jetspeed.security.SecurityAttributeType;
 import org.apache.jetspeed.security.SecurityAttributeTypes;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.impl.TransientJetspeedPrincipal;
+
+import javax.security.auth.Subject;
+import java.security.PrivilegedAction;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * AbstractTestPageLayout
@@ -79,8 +78,8 @@ public abstract class AbstractTestPageLayout extends AbstractSpringTestCase
     {
         // setup components, subjects, and cleanup from previous run
         super.setUp();
-        pageManager = (PageManager) scm.getComponent("pageManager");
-        pageLayout = (PageLayoutComponent) scm.getComponent("pageLayout");
+        pageManager = scm.lookupComponent("pageManager");
+        pageLayout = scm.lookupComponent("pageLayout");
         Set principals = new PrincipalsSet();
         principals.add(new TestUser("user"));
         userSubject = new Subject(true, principals, new HashSet(), new HashSet());

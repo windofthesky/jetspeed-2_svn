@@ -16,13 +16,17 @@
  */
 package org.apache.jetspeed.portlet;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.HashSet;
-import java.util.List;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.container.JetspeedPortletConfig;
+import org.apache.jetspeed.factory.PortletFactory;
+import org.apache.jetspeed.factory.PortletInstance;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.om.portlet.Supports;
+import org.apache.jetspeed.util.BaseObjectProxy;
+import org.apache.jetspeed.util.GenericPortletUtils;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -38,18 +42,13 @@ import javax.portlet.UnavailableException;
 import javax.portlet.WindowState;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.container.JetspeedPortletConfig;
-import org.apache.jetspeed.factory.PortletFactory;
-import org.apache.jetspeed.factory.PortletInstance;
-import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.om.portlet.Supports;
-import org.apache.jetspeed.util.BaseObjectProxy;
-import org.apache.jetspeed.util.GenericPortletUtils;
+import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * PortletObjectProxy
@@ -350,9 +349,9 @@ public class PortletObjectProxy extends BaseObjectProxy
        
     private PortletInstance getPortletInstance(String portletUniqueName) throws PortletException
     {
-        PortletRegistry registry = (PortletRegistry) Jetspeed.getComponentManager().getComponent("portletRegistry");
-        PortletFactory portletFactory = (PortletFactory) Jetspeed.getComponentManager().getComponent("portletFactory");
-        ServletContext portalAppContext = ((ServletConfig) Jetspeed.getComponentManager().getComponent("ServletConfig")).getServletContext();
+        PortletRegistry registry =  Jetspeed.getComponentManager().lookupComponent("portletRegistry");
+        PortletFactory portletFactory = Jetspeed.getComponentManager().lookupComponent("portletFactory");
+        ServletContext portalAppContext = ((ServletConfig) Jetspeed.getComponentManager().lookupComponent("ServletConfig")).getServletContext();
         
         PortletDefinition portletDef = registry.getPortletDefinitionByUniqueName(portletUniqueName, true);
         PortletApplication portletApp = portletDef.getApplication();

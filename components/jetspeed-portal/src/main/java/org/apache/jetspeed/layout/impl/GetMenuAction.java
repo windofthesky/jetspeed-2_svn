@@ -16,11 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.Locale;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -30,6 +25,11 @@ import org.apache.jetspeed.portalsite.Menu;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.profiler.impl.ProfilerValveImpl;
 import org.apache.jetspeed.request.RequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Get menu action retrieves a menu defined for the addressed page.
@@ -52,7 +52,7 @@ public class GetMenuAction extends BasePortletAction
         super(template, errorTemplate, securityBehavior);
     }
 
-    public boolean run(RequestContext requestContext, Map resultMap)
+    public boolean run(RequestContext requestContext, Map<String,Object> resultMap)
     {
         boolean success = true;
         String status = "success";

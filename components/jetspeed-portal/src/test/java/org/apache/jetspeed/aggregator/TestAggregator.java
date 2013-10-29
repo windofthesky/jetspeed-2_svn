@@ -16,20 +16,12 @@
  */
 package org.apache.jetspeed.aggregator;
 
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.security.auth.Subject;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockHttpSession;
+import com.mockrunner.mock.web.MockServletConfig;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.Capabilities;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
@@ -47,15 +39,19 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.JetspeedSubjectFactory;
-import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockHttpSession;
-import com.mockrunner.mock.web.MockServletConfig;
+import javax.security.auth.Subject;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * <P>Test the aggregation service</P>
@@ -108,22 +104,21 @@ public class TestAggregator extends JetspeedTestCase
         engineHelper.setUp(getBaseDir());
         engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
 
-        pageAggregator = (PageAggregator) engine.getComponentManager().getComponent(PageAggregator.class);
-        asyncPageAggregator = 
-            (PageAggregator) engine.getComponentManager().getComponent("org.apache.jetspeed.aggregator.AsyncPageAggregator");
-        portletAggregator = (PortletAggregator) engine.getComponentManager().getComponent(PortletAggregator.class);
+        pageAggregator = engine.getComponentManager().lookupComponent(PageAggregator.class);
+        asyncPageAggregator =
+                engine.getComponentManager().lookupComponent("org.apache.jetspeed.aggregator.AsyncPageAggregator");
+        portletAggregator = engine.getComponentManager().lookupComponent(PortletAggregator.class);
         
-        profiler = (Profiler) engine.getComponentManager().getComponent(Profiler.class);
-        capabilities = (Capabilities) engine.getComponentManager().getComponent(Capabilities.class);
-        navComponent = 
-            (NavigationalStateComponent) engine.getComponentManager().getComponent(NavigationalStateComponent.class);
+        profiler = engine.getComponentManager().lookupComponent(Profiler.class);
+        capabilities = engine.getComponentManager().lookupComponent(Capabilities.class);
+        navComponent = engine.getComponentManager().lookupComponent(NavigationalStateComponent.class);
 
         servletConfig = engine.getServletConfig();
         servletContext = servletConfig.getServletContext();
 
-        portletRegistry = (PortletRegistry) engine.getComponentManager().getComponent("portletRegistry");
-        portletFactory = (PortletFactory) engine.getComponentManager().getComponent("portletFactory");
-        rcc = (RequestContextComponent) engine.getComponentManager().getComponent("org.apache.jetspeed.request.RequestContextComponent");
+        portletRegistry = engine.getComponentManager().lookupComponent("portletRegistry");
+        portletFactory = engine.getComponentManager().lookupComponent("portletFactory");
+        rcc = engine.getComponentManager().lookupComponent("org.apache.jetspeed.request.RequestContextComponent");
 
         File paRootDir = null;
         paRootDir = new File("../../layout-portlets/target/jetspeed-layout-portlets");
@@ -136,7 +131,7 @@ public class TestAggregator extends JetspeedTestCase
         initPA("j2-admin", "/j2-admin", paRootDir);
  
         // j2-admin portlet needs user manager component, but the followings does not effect..
-//        userManager = (UserManager) engine.getComponentManager().getComponent(UserManager.class);
+//        userManager = (UserManager) engine.getComponentManager().lookupComponent(UserManager.class);
 //        paContext.setAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT, userManager);
 //        assertEquals(userManager, paContext.getAttribute(CommonPortletServices.CPS_USER_MANAGER_COMPONENT));
     }
@@ -195,10 +190,10 @@ public class TestAggregator extends JetspeedTestCase
                 {
                     try {
                         PageManager pageManager = 
-                            (PageManager) engine.getComponentManager().getComponent(PageManager.class);
+                            engine.getComponentManager().lookupComponent(PageManager.class);
                         Page page = pageManager.getPage(testPage);
                         PageLayoutComponent pageLayoutComponent = 
-                            (PageLayoutComponent) engine.getComponentManager().getComponent(PageLayoutComponent.class);
+                            engine.getComponentManager().lookupComponent(PageLayoutComponent.class);
                         assertNotNull(page);
                         requestContext.setPage(pageLayoutComponent.newContentPage(page, null, null));
 

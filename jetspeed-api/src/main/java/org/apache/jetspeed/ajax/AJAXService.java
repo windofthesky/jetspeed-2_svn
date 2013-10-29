@@ -21,7 +21,7 @@ package org.apache.jetspeed.ajax;
  * a result object to converted into XML.
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
- *
+ * @deprecated
  */
 public interface AJAXService
 {

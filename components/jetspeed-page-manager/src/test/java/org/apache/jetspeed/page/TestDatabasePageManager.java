@@ -16,16 +16,7 @@
  */
 package org.apache.jetspeed.page;
 
-import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.security.auth.Subject;
-
+import junit.framework.Test;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -56,7 +47,14 @@ import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PrincipalsSet;
 
-import junit.framework.Test;
+import javax.security.auth.Subject;
+import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * TestPageXmlPersistence
@@ -130,7 +128,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         System.out.println("Running firstTestSetup");
         try
         {
-            PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+            PageManager pageManager = scm.lookupComponent("pageManager");
 
             Folder removeRootFolder = pageManager.getFolder("/");
             pageManager.removeFolder(removeRootFolder);
@@ -142,7 +140,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
     
     public void testCreates() throws Exception
     {
-        final PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+        final PageManager pageManager = scm.lookupComponent("pageManager");
         PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
         pageManager.addListener(pmel);
 
@@ -674,7 +672,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
 
     public void testGets() throws Exception
     {
-        PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+        PageManager pageManager = scm.lookupComponent("pageManager");
         PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
         pageManager.addListener(pmel);
         
@@ -1139,7 +1137,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
 
     public void testUpdates() throws Exception
     {
-        PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+        PageManager pageManager = scm.lookupComponent("pageManager");
         PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
         pageManager.addListener(pmel);
         
@@ -1243,7 +1241,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
 
     public void testRemoves() throws Exception
     {
-        PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+        PageManager pageManager = scm.lookupComponent("pageManager");
         PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
         pageManager.addListener(pmel);
         

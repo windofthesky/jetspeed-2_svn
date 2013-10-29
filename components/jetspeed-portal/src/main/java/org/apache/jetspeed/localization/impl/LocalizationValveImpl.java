@@ -16,14 +16,6 @@
  */
 package org.apache.jetspeed.localization.impl;
 
-import java.security.Principal;
-import java.util.Enumeration;
-import java.util.Locale;
-
-import javax.security.auth.Subject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.i18n.CurrentLocale;
@@ -38,6 +30,13 @@ import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.util.JetspeedLocale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.security.auth.Subject;
+import java.security.Principal;
+import java.util.Enumeration;
+import java.util.Locale;
 
 /**
  * LocalizationValveImpl
@@ -108,7 +107,7 @@ public class LocalizationValveImpl extends AbstractValve implements Localization
                 if (null != userPrincipal)
                 {
                     log.debug("Got user principal: " + userPrincipal.getName());
-                    UserManager userMgr = (UserManager) Jetspeed.getComponentManager().getComponent(UserManager.class);
+                    UserManager userMgr = Jetspeed.getComponentManager().lookupComponent(UserManager.class);
                     try
                     {
                         if (!userMgr.getAnonymousUser().equals(userPrincipal.getName())

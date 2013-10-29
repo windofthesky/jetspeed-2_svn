@@ -19,20 +19,45 @@ package org.apache.jetspeed.components;
 import java.util.Collection;
 
 /**
- * ContainerManagement
+ * ContainerManagement interfaces defines operations to lookup containers, list containers,
+ * and to manage the life cycle of the underlying Jetspeed IoC containers.
+ *
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id: ContainerManagement.java 225607 2005-07-27 20:25:36Z weaver $
  */
 public interface ContainerManagement
-{    
+{
+    /**
+     * Retrieve a Jetspeed IoC container by name
+     *
+     * @param containerName the name of the IoC container
+     * @return the IoC implementation facade
+     */
     Object getContainer(String containerName);
-    
+
+    /**
+     * Retrieve the root Jetspeed IoC container
+     *
+     * @return the root container
+     */
     Object getRootContainer();
-    
+
+
+    /**
+     * Retrieve all IoC containers configured in Jetspeed
+     *
+     * @return a list of containers. Needs to be cast to implementing container class
+     */
     Collection getContainers();
-    
+
+    /**
+     * Stop the Jetspeed IoC container
+     */
     void stop();
-    
+
+    /**
+     * Start the Jetspeed IoC container
+     */
     void start();   
 }

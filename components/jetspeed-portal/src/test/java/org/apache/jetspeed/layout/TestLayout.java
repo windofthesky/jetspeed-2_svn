@@ -16,8 +16,7 @@
  */
 package org.apache.jetspeed.layout;
 
-import java.io.File;
-
+import com.mockrunner.mock.web.MockServletConfig;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
@@ -27,7 +26,7 @@ import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.test.JetspeedTestCase;
 
-import com.mockrunner.mock.web.MockServletConfig;
+import java.io.File;
 
 /**
  * Test for Fragment placement
@@ -70,7 +69,7 @@ public class TestLayout extends JetspeedTestCase
                 
         cm = new SpringComponentManager(null, bootConfigs, appConfigs, servletContent, ".");
         cm.start();
-        valve = (LayoutValve) cm.getComponent("layoutValve");
+        valve = cm.lookupComponent("layoutValve");
     }
 
     protected void tearDown() throws Exception

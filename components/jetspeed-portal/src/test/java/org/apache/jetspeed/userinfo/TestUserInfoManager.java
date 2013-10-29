@@ -16,19 +16,8 @@
  */
 package org.apache.jetspeed.userinfo;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javax.portlet.PortletRequest;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.apache.jetspeed.AbstractRequestContextTestCase;
 import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
 import org.apache.jetspeed.descriptor.JetspeedDescriptorServiceImpl;
@@ -42,6 +31,15 @@ import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.security.impl.UserImpl;
 import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.pluto.container.impl.PortletAppDescriptorServiceImpl;
+
+import javax.portlet.PortletRequest;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -61,8 +59,8 @@ public class TestUserInfoManager extends AbstractRequestContextTestCase
     {
         super.setUp();
 
-        ums = (UserManager) scm.getComponent("org.apache.jetspeed.security.UserManager");
-        single = (UserInfoManager) scm.getComponent("org.apache.jetspeed.userinfo.MultiUserInfoManager");
+        ums = scm.lookupComponent("org.apache.jetspeed.security.UserManager");
+        single = scm.lookupComponent("org.apache.jetspeed.userinfo.MultiUserInfoManager");
     }
 
     public void tearDown() throws Exception

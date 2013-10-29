@@ -16,24 +16,23 @@
  */
 package org.apache.jetspeed.login;
 
-import java.io.IOException;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.administration.PortalConfigurationConstants;
+import org.apache.jetspeed.engine.Engine;
+import org.apache.jetspeed.exception.JetspeedException;
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.request.RequestContextComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.jetspeed.administration.PortalConfigurationConstants;
-import org.apache.jetspeed.om.folder.Folder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.engine.Engine;
-import org.apache.jetspeed.exception.JetspeedException;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.request.RequestContextComponent;
+import java.io.IOException;
 
 /**
  * LoginServlet
@@ -83,7 +82,7 @@ public class LoginServlet extends HttpServlet
                         session.setAttribute(LoginConstants.DESTINATION, destination);
                     }
                 }
-                contextComponent = (RequestContextComponent) Jetspeed.getComponentManager().getComponent(RequestContextComponent.class);
+                contextComponent = Jetspeed.getComponentManager().lookupComponent(RequestContextComponent.class);
                 context = contextComponent.create(request, response, getServletConfig());
                 engine.service(context);
             }            

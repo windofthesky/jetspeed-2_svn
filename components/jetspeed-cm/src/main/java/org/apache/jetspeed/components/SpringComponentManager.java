@@ -16,20 +16,19 @@
  */
 package org.apache.jetspeed.components;
 
+import org.apache.jetspeed.engine.JetspeedEngineConstants;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
+
+import javax.servlet.ServletContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.servlet.ServletContext;
-
-import org.apache.jetspeed.engine.JetspeedEngineConstants;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.web.context.WebApplicationContext;
 
 /**
  * <p>
@@ -47,9 +46,9 @@ public class SpringComponentManager implements ComponentManager
 
     private ConfigurableApplicationContext bootCtx;
 
-    protected ArrayList factories;
+    protected ArrayList<ApplicationContext> factories;
 
-    private Map preconfiguredBeans;
+    private Map<String, Object> preconfiguredBeans;
 
     private boolean started = false;
 
@@ -86,7 +85,7 @@ public class SpringComponentManager implements ComponentManager
         }
         appContext = new FilteringXmlWebApplicationContext(filter, appConfigs, initProperties, servletContext, bootCtx);
 
-        factories = new ArrayList();
+        factories = new ArrayList<ApplicationContext>();
         factories.add(appContext);
 
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appContext);
@@ -163,13 +162,16 @@ public class SpringComponentManager implements ComponentManager
     }
     
     /**
-     * <p>
-     * getComponent
-     * </p>
-     * 
+     * Lookup a Jetspeed Component in the IOC container, returning an un-casted instance of
+     * the component service. Deprecated. Use {@link SpringComponentManager#lookupComponent(String)}
+     *
      * @see org.apache.jetspeed.components.ComponentManagement#getComponent(java.lang.Object)
-     * @param componentName
-     * @return
+     * @param componentName can be either a String or a #{@link @java.lang.Class} If its a Class,
+     *                      the component name must match the toString representation of that class
+     * @deprecated in 2.2.3
+     * @see {@link SpringComponentManager#lookupComponent(String)} or
+     *      {@link SpringComponentManager#lookupComponent(Class)}
+     * @return the component instance of null if not found
      */
     public Object getComponent(Object componentName)
     {
@@ -286,7 +288,7 @@ public class SpringComponentManager implements ComponentManager
     {
         if (preconfiguredBeans == null)
         {
-            preconfiguredBeans = new HashMap();
+            preconfiguredBeans = new HashMap<String, Object>();
         }
         preconfiguredBeans.put(name, bean);
 
@@ -315,4 +317,31 @@ public class SpringComponentManager implements ComponentManager
         
         started = true;
     }
+
+    /**
+     * Lookup a Jetspeed Component in the IOC container, returning an automatically casted instance of
+     * the component service
+     *
+     * @param componentName the name of the component (bean) to lookup
+     * @param <T> the return type of the interface of the component
+     * @return the implementing component service for the given name
+     * @since 2.2.3
+     */
+    public <T> T lookupComponent(String componentName) {
+        return appContext == null ? null : (T) appContext.getBean(componentName);
+    }
+
+    /**
+     * Lookup a Jetspeed Component in the IOC container, returning an automatically casted instance of
+     * the component service
+     *
+     * @param componentClass the class of the component (bean) singleton to lookup
+     * @param <T> the return type of the interface of the component
+     * @return the implementing component service for the given name
+     * @since 2.2.3
+     */
+    public <T> T lookupComponent(Class componentClass) {
+        return appContext == null ? null : (T) appContext.getBean(componentClass.getName());
+    }
+
 }

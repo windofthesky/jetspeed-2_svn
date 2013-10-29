@@ -16,13 +16,13 @@
  */
 package org.apache.jetspeed.capabilities.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.jetspeed.capabilities.Capability;
 import org.apache.jetspeed.capabilities.MediaType;
 import org.apache.jetspeed.capabilities.MimeType;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Default bean like implementation of MediaTypeEntry interface
@@ -35,8 +35,8 @@ public class MediaTypeImpl
     implements MediaType
 {
     protected String characterSet;
-    private Collection capabilities;
-    private Collection mimetypes;
+    private Collection<Capability> capabilities;
+    private Collection<MimeType> mimetypes;
     private int mediatypeId;
     private String title;
     private String description;
@@ -164,23 +164,23 @@ public class MediaTypeImpl
     }
 
     
-    public Collection getCapabilities()
+    public Collection<Capability> getCapabilities()
     {
         return this.capabilities;
     }
 
-    public void setCapabilities(Collection capabilities)
+    public void setCapabilities(Collection<Capability> capabilities)
     {
         this.capabilities = capabilities;
     }
     
     
-    public Collection getMimetypes()
+    public Collection<MimeType> getMimetypes()
     {
         return this.mimetypes;
     }
     
-    public void setMimetypes(Collection mimetypes)
+    public void setMimetypes(Collection<MimeType> mimetypes)
     {
         this.mimetypes = mimetypes;
     }

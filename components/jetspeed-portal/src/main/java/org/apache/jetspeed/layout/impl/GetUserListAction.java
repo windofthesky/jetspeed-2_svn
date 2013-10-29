@@ -16,16 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
@@ -38,6 +28,16 @@ import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
 import org.apache.jetspeed.statistics.PortalStatistics;
 import org.apache.jetspeed.statistics.UserStats;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Returns the list of currently logged in users
@@ -109,7 +109,7 @@ public class GetUserListAction
     	this.protectionScope = protectionScope;
     }
     
-    public boolean run(RequestContext requestContext, Map resultMap)
+    public boolean run(RequestContext requestContext, Map<String,Object> resultMap)
             throws AJAXException
     {
         boolean success = true;
@@ -192,7 +192,7 @@ public class GetUserListAction
         		if(numberOfCurrentLoggedInUsers > 0)
         		{
 
-        			// Logged in users is a list of UserStats objects
+        			// Logged in users is a list of UserStats actions
         			Iterator usersIter = pstats.getListOfLoggedInUsers().iterator();
         			while(usersIter.hasNext())
         			{

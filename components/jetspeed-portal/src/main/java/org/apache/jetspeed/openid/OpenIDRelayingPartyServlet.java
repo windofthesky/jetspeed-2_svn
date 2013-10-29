@@ -16,23 +16,34 @@
  */
 package org.apache.jetspeed.openid;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-
-import javax.security.auth.Subject;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.google.step2.discovery.DefaultHostMetaFetcher;
+import com.google.step2.discovery.Discovery2;
+import com.google.step2.discovery.HostMetaFetcher;
+import com.google.step2.discovery.IdpIdentifier;
+import com.google.step2.discovery.LegacyXrdsResolver;
+import com.google.step2.discovery.ParallelHostMetaFetcher;
+import com.google.step2.discovery.SecureDiscoveryInformation;
+import com.google.step2.discovery.SecureUrlIdentifier;
+import com.google.step2.discovery.XrdDiscoveryResolver;
+import com.google.step2.http.DefaultHttpFetcher;
+import com.google.step2.xmlsimplesign.CachedCertPathValidator;
+import com.google.step2.xmlsimplesign.CertValidator;
+import com.google.step2.xmlsimplesign.DefaultCertValidator;
+import com.google.step2.xmlsimplesign.DefaultTrustRootsProvider;
+import com.google.step2.xmlsimplesign.TrustRootsProvider;
+import com.google.step2.xmlsimplesign.Verifier;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.administration.PortalAdministration;
+import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
+import org.apache.jetspeed.audit.AuditActivity;
+import org.apache.jetspeed.cache.UserContentCacheManager;
+import org.apache.jetspeed.components.ComponentManager;
+import org.apache.jetspeed.openid.step2.GoogleHostMetaFetcher;
+import org.apache.jetspeed.security.SecurityAttribute;
+import org.apache.jetspeed.security.SecurityAttributes;
+import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserManager;
 import org.openid4java.OpenIDException;
 import org.openid4java.consumer.ConsumerManager;
 import org.openid4java.consumer.VerificationResult;
@@ -52,40 +63,24 @@ import org.openid4java.message.ax.FetchResponse;
 import org.openid4java.message.sreg.SRegMessage;
 import org.openid4java.message.sreg.SRegRequest;
 import org.openid4java.message.sreg.SRegResponse;
-
-import org.apache.jetspeed.Jetspeed;
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.administration.PortalAdministration;
-import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
-import org.apache.jetspeed.audit.AuditActivity;
-import org.apache.jetspeed.cache.UserContentCacheManager;
-import org.apache.jetspeed.components.ComponentManager;
-import org.apache.jetspeed.openid.OpenIDRegistrationConfiguration;
-import org.apache.jetspeed.openid.step2.GoogleHostMetaFetcher;
-import org.apache.jetspeed.security.SecurityAttribute;
-import org.apache.jetspeed.security.SecurityAttributes;
-import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.UserManager;
-
-import com.google.step2.discovery.DefaultHostMetaFetcher;
-import com.google.step2.discovery.Discovery2;
-import com.google.step2.discovery.HostMetaFetcher;
-import com.google.step2.discovery.IdpIdentifier;
-import com.google.step2.discovery.LegacyXrdsResolver;
-import com.google.step2.discovery.ParallelHostMetaFetcher;
-import com.google.step2.discovery.SecureDiscoveryInformation;
-import com.google.step2.discovery.SecureUrlIdentifier;
-import com.google.step2.discovery.XrdDiscoveryResolver;
-import com.google.step2.http.DefaultHttpFetcher;
-import com.google.step2.xmlsimplesign.CachedCertPathValidator;
-import com.google.step2.xmlsimplesign.CertValidator;
-import com.google.step2.xmlsimplesign.DefaultCertValidator;
-import com.google.step2.xmlsimplesign.DefaultTrustRootsProvider;
-import com.google.step2.xmlsimplesign.TrustRootsProvider;
-import com.google.step2.xmlsimplesign.Verifier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.security.auth.Subject;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Serves OpenID Relaying Party metadata and accepts
@@ -177,11 +172,11 @@ public class OpenIDRelayingPartyServlet extends HttpServlet
         
         // configure portal components
         ComponentManager cm = Jetspeed.getComponentManager();
-        portalUserManager = (UserManager)cm.getComponent("org.apache.jetspeed.security.UserManager");
-        portalAdministration = (PortalAdministration)cm.getComponent("PortalAdministration");
-        portalAudit = (AuditActivity)cm.getComponent("org.apache.jetspeed.audit.AuditActivity");        
-        portalAuthenticationConfiguration = (PortalAuthenticationConfiguration)cm.getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");
-        portalUserContentCacheManager = (UserContentCacheManager)cm.getComponent("userContentCacheManager");
+        portalUserManager = cm.lookupComponent("org.apache.jetspeed.security.UserManager");
+        portalAdministration = cm.lookupComponent("PortalAdministration");
+        portalAudit = cm.lookupComponent("org.apache.jetspeed.audit.AuditActivity");
+        portalAuthenticationConfiguration = cm.lookupComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");
+        portalUserContentCacheManager = cm.lookupComponent("userContentCacheManager");
 
         // registration configuration parameters
         if (Boolean.parseBoolean(config.getInitParameter(OpenIDConstants.ENABLE_REGISTRATION_CONFIG_INIT_PARAM_NAME)))

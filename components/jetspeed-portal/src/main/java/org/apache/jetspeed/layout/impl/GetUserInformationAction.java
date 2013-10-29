@@ -16,23 +16,22 @@
  */
 package org.apache.jetspeed.layout.impl;
 
+import org.apache.jetspeed.ajax.AJAXException;
+import org.apache.jetspeed.ajax.AjaxAction;
+import org.apache.jetspeed.ajax.AjaxBuilder;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.security.Role;
+import org.apache.jetspeed.security.User;
+import org.apache.jetspeed.security.UserManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.security.auth.Subject;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.security.auth.Subject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.jetspeed.ajax.AJAXException;
-import org.apache.jetspeed.ajax.AjaxAction;
-import org.apache.jetspeed.ajax.AjaxBuilder;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.UserManager;
 
 /**
  * Retrieve user information of the current user
@@ -60,7 +59,7 @@ public class GetUserInformationAction
         super(template, errorTemplate, um, rolesSecurityBehavior);
     }
     
-    public boolean run(RequestContext requestContext, Map resultMap)
+    public boolean run(RequestContext requestContext, Map<String,Object> resultMap)
             throws AJAXException
     {
         boolean success = true;

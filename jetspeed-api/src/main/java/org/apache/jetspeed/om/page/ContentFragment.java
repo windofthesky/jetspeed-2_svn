@@ -16,14 +16,14 @@
 */
 package org.apache.jetspeed.om.page;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * ContentFragment is a read-only version of the {@link org.apache.jetspeed.om.page.Fragment}
@@ -405,7 +405,7 @@ public interface ContentFragment
      * 
      * @return ContentFragment list
      */
-    List getFragments();
+    List<ContentFragment> getFragments();
 
     /************** Fragment Reference **************/
     

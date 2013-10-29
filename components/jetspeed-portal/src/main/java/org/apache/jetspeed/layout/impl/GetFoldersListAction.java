@@ -16,10 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
@@ -27,6 +23,10 @@ import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * Get the immediate contents of a folder in Ajax Format 
@@ -52,7 +52,7 @@ public class GetFoldersListAction
         super(template, errorTemplate, pageManager, securityBehavior);        
     }
 
-    public boolean run(RequestContext requestContext, Map resultMap)
+    public boolean run(RequestContext requestContext, Map<String,Object> resultMap)
     {
         boolean success = true;
         String status = "success";

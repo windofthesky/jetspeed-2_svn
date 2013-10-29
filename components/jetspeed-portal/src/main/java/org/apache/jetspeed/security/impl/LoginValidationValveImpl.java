@@ -16,12 +16,6 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.login.LoginConstants;
 import org.apache.jetspeed.pipeline.PipelineException;
@@ -34,6 +28,12 @@ import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserCredential;
 import org.apache.jetspeed.security.UserManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * LoginValidationValve
@@ -102,7 +102,7 @@ public class LoginValidationValveImpl extends AbstractValve implements org.apach
                     String userName = (String)request.getSessionAttribute(LoginConstants.USERNAME);
                     if ( userName != null && !userName.equals(""))
                     {
-                        UserManager um = (UserManager)Jetspeed.getComponentManager().getComponent(UserManager.class);
+                        UserManager um = Jetspeed.getComponentManager().lookupComponent(UserManager.class);
                         if ( um != null )
                         {
                             User user = null;

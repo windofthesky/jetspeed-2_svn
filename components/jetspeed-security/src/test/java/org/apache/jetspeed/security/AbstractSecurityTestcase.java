@@ -16,27 +16,18 @@
  */
 package org.apache.jetspeed.security;
 
+import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
+import org.apache.jetspeed.security.impl.SecurityDomainImpl;
+import org.apache.jetspeed.security.spi.SecurityDomainAccessManager;
+import org.apache.jetspeed.security.spi.SecurityDomainStorageManager;
+
+import javax.security.auth.Subject;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.security.auth.Subject;
-
-import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
-import org.apache.jetspeed.security.GroupManager;
-import org.apache.jetspeed.security.JetspeedPermission;
-import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.PermissionManager;
-import org.apache.jetspeed.security.RoleManager;
-import org.apache.jetspeed.security.User;
-import org.apache.jetspeed.security.UserManager;
-import org.apache.jetspeed.security.SecurityException;
-import org.apache.jetspeed.security.impl.SecurityDomainImpl;
-import org.apache.jetspeed.security.spi.SecurityDomainAccessManager;
-import org.apache.jetspeed.security.spi.SecurityDomainStorageManager;
 
 /**
  * @author <a href="mailto:sweaver@einnovation.com">Scott T. Weaver </a>
@@ -69,15 +60,15 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase
 
         super.setUp();
 
-        ums = (UserManager) scm.getComponent("org.apache.jetspeed.security.UserManager");
-        gms = (GroupManager) scm.getComponent("org.apache.jetspeed.security.GroupManager");
-        rms = (RoleManager) scm.getComponent("org.apache.jetspeed.security.RoleManager");
+        ums = scm.lookupComponent("org.apache.jetspeed.security.UserManager");
+        gms = scm.lookupComponent("org.apache.jetspeed.security.GroupManager");
+        rms = scm.lookupComponent("org.apache.jetspeed.security.RoleManager");
                 
         // Authorization.
-        pms = (PermissionManager) scm.getComponent("org.apache.jetspeed.security.PermissionManager");
+        pms = scm.lookupComponent("org.apache.jetspeed.security.PermissionManager");
         
-        domainStorageManager = (SecurityDomainStorageManager) scm.getComponent(SecurityDomainStorageManager.class.getName());
-        domainAccessManager = (SecurityDomainAccessManager) scm.getComponent("org.apache.jetspeed.security.spi.SecurityDomainAccessManager");
+        domainStorageManager = scm.lookupComponent(SecurityDomainStorageManager.class.getName());
+        domainAccessManager = scm.lookupComponent("org.apache.jetspeed.security.spi.SecurityDomainAccessManager");
 
         // TODO: remove when default seed contains the default domain        
         SecurityDomain domain = domainAccessManager.getDomainByName(SecurityDomain.SYSTEM_NAME); 

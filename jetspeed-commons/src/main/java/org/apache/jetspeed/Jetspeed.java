@@ -16,13 +16,13 @@
  */
 package org.apache.jetspeed;
 
-import java.util.Locale;
-
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.engine.Engine;
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.request.RequestContext;
+
+import java.util.Locale;
 
 /**
  * Jetspeed environment
@@ -112,7 +112,7 @@ public class Jetspeed
     {
         ComponentManager manager = getComponentManager(); 
         if (manager != null)
-            return (PortalConfiguration)manager.getComponent("PortalConfiguration");
+            return manager.lookupComponent("PortalConfiguration");
         return null;        
     }
     

@@ -22,7 +22,7 @@ import java.util.Collection;
  * This entry describes all the properties that should be present in
  * a RegistryEntry describing a MediaType
  *
- * FIXME: we should add some additionnal attrbutes for separating 2 versions
+ * TODO:  add some additional attributes for separating 2 versions
  * of the same mime type
  *
  * @author <a href="mailto:raphael@apache.org">Rapha\u00ebl Luta</a>
@@ -55,13 +55,13 @@ public interface MediaType
      *
      * @return a collection of capabilities
      */
-    public Collection getCapabilities();
+    public Collection<Capability> getCapabilities();
 
     /**
      * Set the capabilities
-     * @param vector of capabilities
+     * @param capabilities of capabilities
      */
-    public void setCapabilities(Collection capabilities);
+    public void setCapabilities(Collection<Capability> capabilities);
 
     /**
     * Returns all supported mimetypes as <CODE>MimeTypeMap</CODE>.
@@ -69,15 +69,15 @@ public interface MediaType
     * order of importance.
     *
     * @return the MimeTypeMap
-    * @see MimeTypeMap
+    * @see MimeType
     */
-    public Collection getMimetypes();
+    public Collection<MimeType> getMimetypes();
 
     /**
      * Set mime types
      * @param mimetypes
      */
-    public void setMimetypes(Collection mimetypes);
+    public void setMimetypes(Collection<MimeType> mimetypes);
 
     /**
      * Removes the MimeType to the MimeType map 

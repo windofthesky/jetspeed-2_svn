@@ -113,15 +113,15 @@ public interface Client
      * order of importance.
      *
      * @return the MimeTypeMap
-     * @see MimeTypeMap
+     * @see MimeType
      */
-    public Collection getMimetypes();
+    public Collection<MimeType> getMimetypes();
 
     /**
      * Set MimeTypes
      * @param mimetypes
      */
-    public void setMimetypes(Collection mimetypes);
+    public void setMimetypes(Collection<MimeType> mimetypes);
 
     String getName();
     void setName(String name);
@@ -134,13 +134,13 @@ public interface Client
      * @return the CapabilityMap
      * @see CapabilityMap
      */
-    public Collection getCapabilities();
+    public Collection<Capability> getCapabilities();
 
     /**
      * Assigns a list of capabilities
      * @param capabilities
      */
-    public void setCapabilities(Collection capabilities);
+    public void setCapabilities(Collection<Capability> capabilities);
 
     /**
      * getPreferredMimeTypeId

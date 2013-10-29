@@ -767,7 +767,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
 
     public Object getComponent(String name)
     {
-        return Jetspeed.getComponentManager().getComponent(name);
+        return Jetspeed.getComponentManager().lookupComponent(name);
     }
 
     public String getAbsoluteUrl(String relativePath)

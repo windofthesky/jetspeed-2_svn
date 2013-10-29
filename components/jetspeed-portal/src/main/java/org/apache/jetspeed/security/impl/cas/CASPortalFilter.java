@@ -16,20 +16,6 @@
  */
 package org.apache.jetspeed.security.impl.cas;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.util.List;
-
-import javax.security.auth.Subject;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalAdministration;
@@ -44,6 +30,19 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+
+import javax.security.auth.Subject;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
 
 
 public class CASPortalFilter implements Filter
@@ -68,13 +67,13 @@ public class CASPortalFilter implements Filter
         {
             request = (HttpServletRequest)sRequest;
             ComponentManager cm = Jetspeed.getComponentManager();
-            UserManager userManager = (UserManager)cm.getComponent("org.apache.jetspeed.security.UserManager");
+            UserManager userManager = cm.lookupComponent("org.apache.jetspeed.security.UserManager");
             HttpSession session = request.getSession(true);
     		String userName = (String) session.getAttribute(CAS_FILTER_USER);	
     		System.out.println("user: " + userName); 
     		
-    		RoleManager roleManager = (RoleManager)cm.getComponent("org.apache.jetspeed.security.RoleManager");
-    		GroupManager groupManager = (GroupManager)cm.getComponent("org.apache.jetspeed.security.GroupManager");           
+    		RoleManager roleManager = cm.lookupComponent("org.apache.jetspeed.security.RoleManager");
+    		GroupManager groupManager = cm.lookupComponent("org.apache.jetspeed.security.GroupManager");
      		
     		User user = null;
     		try {
@@ -83,7 +82,7 @@ public class CASPortalFilter implements Filter
     		catch (SecurityException e) 
     		{
 				System.out.println("user: " + userName + " not in j2 db"); 
-				PortalAdministration portalAdministration = (PortalAdministration)cm.getComponent("PortalAdministration");
+				PortalAdministration portalAdministration = cm.lookupComponent("PortalAdministration");
 				try {
 					List roles = roleManager.getRoles("user");
 					List groups = groupManager.getGroups("");

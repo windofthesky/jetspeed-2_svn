@@ -137,7 +137,7 @@ public class JetspeedRequestContext implements RequestContext
             PortalRequestFactory prf = null;
             try
             {
-                prf = (PortalRequestFactory)Jetspeed.getComponentManager().getComponent(PortalRequestFactory.class);
+                prf = Jetspeed.getComponentManager().lookupComponent(PortalRequestFactory.class);
             }
             catch (Throwable t)
             {

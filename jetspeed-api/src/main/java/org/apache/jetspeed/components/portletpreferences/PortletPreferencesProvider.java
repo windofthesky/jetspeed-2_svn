@@ -16,17 +16,16 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.jetspeed.container.PortletWindow;
-import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.pluto.container.PortletPreference;
 import org.apache.pluto.container.PortletPreferencesService;
+
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -130,7 +129,6 @@ public interface PortletPreferencesProvider extends PortletPreferencesService
      * Store entity preferences contained in the map parameter for a given window
      * 
      * @param map
-     * @param page
      * @param window
      * @throws PreferencesException
      */

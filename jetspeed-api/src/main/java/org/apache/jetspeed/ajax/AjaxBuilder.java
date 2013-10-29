@@ -16,8 +16,9 @@
  */
 package org.apache.jetspeed.ajax;
 
-import java.util.Map;
 import org.apache.jetspeed.request.RequestContext;
+
+import java.util.Map;
 
 /**
  * An Ajax request is made up of an action and builder phases.
@@ -45,16 +46,16 @@ public interface AjaxBuilder
      * 
      * @param requestContext The Jetspeed Request Context
      * @param contextVars Context variables to be substituted into template
-     * @return true on success false onerror
+     * @return true on success false on error
      */
-    public boolean buildContext(RequestContext requestContext, Map contextVars);
+    public boolean buildContext(RequestContext requestContext, Map<String,Object> contextVars);
     
     /**
      * Build the error context template
      * 
      * @param requestContext The Jetspeed Request Context
      * @param contextVars Context variables to be substituted into template
-     * @return true on success false onerror
+     * @return true on success false on error
      */
-    public boolean buildErrorContext(RequestContext requestContext, Map contextVars);
+    public boolean buildErrorContext(RequestContext requestContext, Map<String,Object> contextVars);
 }

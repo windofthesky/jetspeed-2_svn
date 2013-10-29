@@ -16,27 +16,26 @@
  */
 package org.apache.jetspeed.ajax;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.Writer;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.layout.impl.Constants;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.tools.generic.EscapeTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 
@@ -66,12 +65,12 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
     /** Logger */
     protected Logger log = LoggerFactory.getLogger(AjaxRequestServiceImpl.class);
 
-    // Objects that are available to execution. These objects must
+    // Actions that are available to execution. These actions must
     // implement either the Action interface or the Builder interface
     // or both.
     // If the Action interface is implemented, then the run method is called
     // If the Build interface is implemented, then the build methods are called
-    protected Map objects;
+    protected Map<String,AjaxAction> actions;
 
     // Used to create the response XML
     protected VelocityEngine velocityEngine = null;
@@ -86,18 +85,18 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
     protected EscapeTool velocityEscTool = null;
     
     // Spring can be used to inject this information
-    public AjaxRequestServiceImpl(Map objects, VelocityEngine velocityEngine)
+    public AjaxRequestServiceImpl(Map<String,AjaxAction> objects, VelocityEngine velocityEngine)
     {
-        this.objects = objects;
+        this.actions = objects;
         this.velocityEngine = velocityEngine;
         this.velocityEscTool = new EscapeTool();
     }
 
     // Spring can be used to inject this information
-    public AjaxRequestServiceImpl(Map objects, VelocityEngine velocityEngine,
+    public AjaxRequestServiceImpl(Map<String,AjaxAction> objects, VelocityEngine velocityEngine,
             String urlParameterName)
     {
-        this.objects = objects;
+        this.actions = objects;
         this.velocityEngine = velocityEngine;
         this.urlParameterName = urlParameterName;
         this.velocityEscTool = new EscapeTool();
@@ -113,21 +112,15 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
             objectKey = defaultAction;
         }
         // Get the object associated with this key
-        Object object = objects.get(objectKey);
-        if (object != null)
+        AjaxAction action = actions.get(objectKey);
+        if (action != null)
         {
-            Map resultMap = new HashMap();
+            Map<String,Object> resultMap = new HashMap<String,Object>();
 
             boolean success = true;
             try
             {
-                // Check to see if this object implements the action
-                // interface
-                if (object instanceof AjaxAction)
-                {
-                    success = processAction((AjaxAction) object,
-                            requestContext, resultMap);
-                }
+                success = processAction(action, requestContext, resultMap);
             } catch (Exception e)
             {
                 success = false;
@@ -137,9 +130,9 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
             {
                 // Check to see if this object implements the builder
                 // interface
-                if (object instanceof AjaxBuilder)
+                if (action instanceof AjaxBuilder)
                 {
-                    processBuilder((AjaxBuilder) object, resultMap,
+                    processBuilder((AjaxBuilder) action, resultMap,
                             requestContext, success);
                 }
             } catch (Exception e)
@@ -159,14 +152,14 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
 
     // Process the action if provided
     protected boolean processAction(AjaxAction action,
-            RequestContext requestContext, Map resultMap)
+            RequestContext requestContext, Map<String,Object> resultMap)
             throws Exception
     {
         return action.run(requestContext, resultMap);
     }
 
     // Process the builder if provided
-    protected void processBuilder(AjaxBuilder builder, Map inputMap,
+    protected void processBuilder(AjaxBuilder builder, Map<String,Object> inputMap,
             RequestContext requestContext, boolean actionSuccessFlag)
     {
         // Response will always be text/xml
@@ -274,11 +267,11 @@ public class AjaxRequestServiceImpl implements AjaxRequestService
     }
     
     /**
-     * @return Returns the objects.
+     * @return Returns the actions.
      */
-    public Map getActionMap()
+    public Map<String,AjaxAction> getActionMap()
     {
-        return objects;
+        return actions;
     }
 
 }

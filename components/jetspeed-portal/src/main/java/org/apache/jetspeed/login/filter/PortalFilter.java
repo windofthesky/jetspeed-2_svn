@@ -16,19 +16,6 @@
  */
 package org.apache.jetspeed.login.filter;
 
-import java.io.IOException;
-import java.security.Principal;
-
-import javax.security.auth.Subject;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.administration.PortalAuthenticationConfiguration;
@@ -45,6 +32,18 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.jetspeed.security.UserManager;
+
+import javax.security.auth.Subject;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.security.Principal;
 
 public class PortalFilter implements Filter
 {
@@ -70,9 +69,9 @@ public class PortalFilter implements Filter
             if (username != null)
             {
                 ComponentManager cm = Jetspeed.getComponentManager();
-                UserManager userManager = (UserManager)cm.getComponent("org.apache.jetspeed.security.UserManager");
-                AuditActivity audit = (AuditActivity)cm.getComponent("org.apache.jetspeed.audit.AuditActivity");
-                AuthenticationProvider authProvider = (AuthenticationProvider)cm.getComponent("org.apache.jetspeed.security.AuthenticationProvider");
+                UserManager userManager = cm.lookupComponent("org.apache.jetspeed.security.UserManager");
+                AuditActivity audit = cm.lookupComponent("org.apache.jetspeed.audit.AuditActivity");
+                AuthenticationProvider authProvider = cm.lookupComponent("org.apache.jetspeed.security.AuthenticationProvider");
                 
                 // Commenting out for the using latest securty API's
                 //boolean success = userManager.authenticate(username, password);
@@ -89,15 +88,15 @@ public class PortalFilter implements Filter
                 if (authUser != null)
                 {
                     audit.logUserActivity(username, request.getRemoteAddr(), AuditActivity.AUTHENTICATION_SUCCESS, "PortalFilter");
-                    PortalAuthenticationConfiguration authenticationConfiguration = (PortalAuthenticationConfiguration)
-                        cm.getComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");
+                    PortalAuthenticationConfiguration authenticationConfiguration =
+                        cm.lookupComponent("org.apache.jetspeed.administration.PortalAuthenticationConfiguration");
                     if (authenticationConfiguration.isCreateNewSessionOnLogin() && httpSession != null && !httpSession.isNew())
                     {
                         request.getSession().invalidate();
                     }
                     else
                     {
-                        UserContentCacheManager userContentCacheManager = (UserContentCacheManager)cm.getComponent("userContentCacheManager");
+                        UserContentCacheManager userContentCacheManager = cm.lookupComponent("userContentCacheManager");
                         userContentCacheManager.evictUserContentCache(username, request.getSession().getId());
                     }
                     if (authUser.getUser() == null)

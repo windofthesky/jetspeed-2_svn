@@ -16,9 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
@@ -29,9 +26,11 @@ import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Add Portlet portlet placement action
@@ -86,7 +85,7 @@ public class AddPortletAction
         this.allowDuplicatePortlets = allowDuplicatePortlets;
     }
     
-    protected boolean runAction( RequestContext requestContext, Map resultMap, boolean batch ) throws AJAXException
+    protected boolean runAction( RequestContext requestContext, Map<String,Object> resultMap, boolean batch ) throws AJAXException
     {
         boolean success = true;
         String status = "success";
@@ -213,10 +212,10 @@ public class AddPortletAction
     protected void verifyPortletId(RequestContext requestContext, String portletId) throws Exception
     {
     	// Get the list of valid portlets from the getPortletAction
-    	List portletList = getPortletsAction.retrievePortlets(requestContext, null);
+    	List<PortletInfo> portletList = getPortletsAction.retrievePortlets(requestContext, null);
     	if(portletList != null) {
     		for(int i = 0; i < portletList.size(); i++) {
-    			PortletInfo portletInfo = (PortletInfo)portletList.get(i);
+    			PortletInfo portletInfo = portletList.get(i);
     			if(portletInfo != null) {
     				if(portletInfo.getName().equalsIgnoreCase(portletId)) {
     					// A match was found there is no need to continue
@@ -229,7 +228,7 @@ public class AddPortletAction
     	throw new Exception(portletId + " is not a valid portlet or not allowed for this user");
     }
     
-    protected void checkForDuplicatePortlet(RequestContext requestContext, Map resultMap, String portletId)
+    protected void checkForDuplicatePortlet(RequestContext requestContext, Map<String,Object> resultMap, String portletId)
     throws AJAXException
     {
     	// Look at each portlet currently on the page
@@ -252,11 +251,11 @@ public class AddPortletAction
 	    		return true;
 	    	} else {
 	    		// Process the child fragments if found
-	    		List childFragments = fragment.getFragments();
+	    		List<ContentFragment> childFragments = fragment.getFragments();
 	    		if(childFragments != null) {
 	    			for(int i = 0; i < childFragments.size(); i++) {
 	    				// Recursively call this method again to process the child fragments
-	    				if(isDuplicateFragment((ContentFragment)childFragments.get(i),portletId) == true) {
+	    				if(isDuplicateFragment(childFragments.get(i),portletId) == true) {
 	    					// No need to continue to loop if a duplicate was found
 	    					return true;
 	    				}

@@ -40,11 +40,11 @@ public class TestPortletPreferencesProvider extends
         super.setUp();
         mockEngine.setComponentManager(scm);
         Jetspeed.setEngine(mockEngine);
-        this.prefsProvider = (PortletPreferencesProvider) scm.getComponent("org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider");
-        PortletPreferencesProvider temp = (PortletPreferencesProvider) scm.getComponent("portletPreferencesProvider");
+        this.prefsProvider = scm.lookupComponent("org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider");
+        PortletPreferencesProvider temp = scm.lookupComponent("portletPreferencesProvider");
         System.out.println("temp = " + temp);
         System.out.println("prefs = " + prefsProvider);
-        this.registry = (PortletRegistry) scm.getComponent("portletRegistry");
+        this.registry = scm.lookupComponent("portletRegistry");
 
 //        teardownTestData();
 //        setupTestData();

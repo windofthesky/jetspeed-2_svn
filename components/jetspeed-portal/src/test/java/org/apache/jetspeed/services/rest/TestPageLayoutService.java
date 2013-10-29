@@ -16,14 +16,11 @@
  */
 package org.apache.jetspeed.services.rest;
 
-import java.io.File;
-import java.security.PrivilegedAction;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.security.auth.Subject;
-import javax.servlet.http.HttpServletRequest;
-
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockHttpSession;
+import com.mockrunner.mock.web.MockServletConfig;
+import com.mockrunner.mock.web.MockServletContext;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.SpringComponentManager;
@@ -55,11 +52,12 @@ import org.jmock.core.constraint.IsEqual;
 import org.jmock.core.matcher.InvokeAtLeastOnceMatcher;
 import org.jmock.core.stub.ReturnStub;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockHttpSession;
-import com.mockrunner.mock.web.MockServletConfig;
-import com.mockrunner.mock.web.MockServletContext;
+import javax.security.auth.Subject;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.security.PrivilegedAction;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Test Page Layout REST Service
@@ -110,10 +108,10 @@ public class TestPageLayoutService extends JetspeedTestCase
         cm = new SpringComponentManager(null, bootConfigs, appConfigs, servletContent, getBaseDir());
         cm.addComponent("javax.servlet.ServletConfig", servletConfig);
         cm.start();
-        valve = (LayoutValve) cm.getComponent("layoutValve");
-        pageManager = (PageManager) cm.getComponent("pageManager");
+        valve = cm.lookupComponent("layoutValve");
+        pageManager = cm.lookupComponent("pageManager");
         assertNotNull(pageManager);
-        layoutManager = (PageLayoutComponent)cm.getComponent("org.apache.jetspeed.layout.PageLayoutComponent");
+        layoutManager = cm.lookupComponent("org.apache.jetspeed.layout.PageLayoutComponent");
         assertNotNull(layoutManager);
 
         portletRegistry = createMockPortletRegistry();

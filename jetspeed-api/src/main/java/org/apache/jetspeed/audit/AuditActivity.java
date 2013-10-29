@@ -76,91 +76,103 @@ public interface AuditActivity
     public static final String CAT_ADMIN_REGISTRY_MAINTENANCE = "registry";    
     
     /**
-     * Enable or disable the service at runtime
+     * Enable or disable the auditing service at runtime.
      * 
-     * @param enabled
+     * @param enabled the new state, true for enabled, false for disabled
      */
     public void setEnabled(boolean enabled);
     
     /**
-     * Get the enabled state of this service
-     * @return
+     * Get the enabled state of the auditing service.
+     *
+     * @return the current state of audit service
      */
     public boolean getEnabled();
     
     /**
-     * Log user security-audit-related activity
-     * 
-     * @param username
-     * @param ipaddress
-     * @param activity
-     * @param description
+     * Log user activity that requires audit trails
+     *
+     * @param username the administrative user performing auditable activities
+     * @param ipaddress the ip address of the http request
+     * @param activity the type of activity, see constants defined in this interface
+     * @param description a general description or comment for this activity
      */
     public void logUserActivity(String username, String ipaddress, String activity, String description);
 
     /**
      * Log auditable activity by an administrator on behalf of another user
-     * 
-     * @param username
-     * @param ipaddress
-     * @param targetUser
-     * @param activity
-     * @param description
+     *
+     * @param adminUser the administrative user performing auditable activities
+     * @param ipaddress the ip address of the http request
+     * @param targetUser the user having activities logged by the adminUser
+     * @param activity the type of activity, see constants defined in this interface
+     * @param description a general description or comment for this activity
      */
-    public void logAdminUserActivity(String username, String ipaddress, String targetUser, String activity, String description);
+    public void logAdminUserActivity(String adminUser, String ipaddress, String targetUser, String activity, String description);
 
     /**
      * Log auditable activity by an administrator on credentials on behalf of a user
-     * 
-     * @param adminName
-     * @param ipaddress
-     * @param targetUser
-     * @param activity
-     * @param description
+     *
+     * @param username the administrative user performing auditable activities
+     * @param ipaddress the ip address of the http request
+     * @param targetUser the user having activities logged by the adminUser
+     * @param activity the type of activity, see constants defined in this interface
+     * @param description a general description or comment for this activity
      */
     public void logAdminCredentialActivity(String username, String ipaddress, String targetUser, String activity, String description);
-    
+
+    /**
+     * Log auditable activity by an administrator on authorization configuration on behalf of a user
+     *
+     * @param username the administrative user performing auditable activities
+     * @param ipaddress the ip address of the http request
+     * @param targetUser the user having activities logged by the adminUser
+     * @param activity the type of activity, see constants defined in this interface
+     * @param name the name of the resource being modified
+     * @param description a general description or comment for this activity
+     */
     public void logAdminAuthorizationActivity(String username, String ipaddress, String targetUser, String activity, String name, String description);
     
     /**
-     * Log auditable activity by an administrator on attributes on behalf of a user
-     * 
-     * @param username
-     * @param ipaddress
-     * @param targetUser
-     * @param activity
-     * @param name
-     * @param beforeValue
-     * @param afterValue
-     * @param description
+     * Log auditable activity by an administrator on user attributes on behalf of a user
+     *
+     * @param username the administrative user performing auditable activities
+     * @param ipaddress the ip address of the http request
+     * @param targetUser the user having activities logged by the adminUser
+     * @param activity the type of activity, see constants defined in this interface
+     * @param name the name of the resource being modified
+     * @param beforeValue the value of the attribute before changes were made
+     * @param afterValue the value of the attribute after changes were made
+     * @param description a general description or comment for this activity
      */
     public void logAdminAttributeActivity(String username, String ipaddress, String targetUser, String activity, String name, String beforeValue, String afterValue, String description);
 
     /**
-     * Log auditable activity by an administrator on attributes on behalf of a user
-     * 
-     * @param username
-     * @param ipaddress
-     * @param activity
-     * @param name
-     * @param beforeValue
-     * @param afterValue
-     * @param description
+     * Log auditable activity by an administrator on user attributes
+     *
+     * @param username the administrative user performing auditable activities
+     * @param ipaddress the ip address of the http request
+     * @param activity the type of activity, see constants defined in this interface
+     * @param name the name of the resource being modified
+     * @param beforeValue the value of the attribute before changes were made
+     * @param afterValue the value of the attribute after changes were made
+     * @param description a general description or comment for this activity
      */
     public void logUserAttributeActivity(String username, String ipaddress, String activity, String name, String beforeValue, String afterValue, String description);
 
     /**
      * Log auditable activity by an administrator on registry maintenance
      * 
-     * @param adminUser
-     * @param ipaddress
-     * @param activity
-     * @param description
+     * @param adminUser the administrative user performing auditable activities
+     * @param ipaddress the ip address of the http request
+     * @param activity the type of activity, see constants defined in this interface
+     * @param description a general description or comment for this activity
      */
     public void logAdminRegistryActivity(String adminUser, String ipaddress, String activity, String description);
     
     /**
-     * @return DataSource in use by the logger useful for writing decent tests
+     * @return DataSource in use by the logger
+     * @deprecated
      */
     public DataSource getDataSource();
     

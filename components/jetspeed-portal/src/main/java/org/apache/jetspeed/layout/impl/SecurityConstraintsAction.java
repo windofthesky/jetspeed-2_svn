@@ -16,17 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AJAXException;
 import org.apache.jetspeed.ajax.AjaxAction;
@@ -37,9 +26,19 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.request.RequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Security Permission action
@@ -74,7 +73,7 @@ public class SecurityConstraintsAction
         this(template, errorTemplate, pm, null); 
     }
     
-    public boolean run(RequestContext requestContext, Map resultMap)
+    public boolean run(RequestContext requestContext, Map<String,Object> resultMap)
             throws AJAXException
     {
     	System.out.println( "SecurityConstraintsAction run" );
@@ -134,7 +133,7 @@ public class SecurityConstraintsAction
         return success;
     }
     
-    protected int removeConstraintDefinition(RequestContext requestContext, Map resultMap)
+    protected int removeConstraintDefinition(RequestContext requestContext, Map<String,Object> resultMap)
     throws AJAXException
     {
         String name = getActionParameter(requestContext, "name");
@@ -161,7 +160,7 @@ public class SecurityConstraintsAction
         return 1;
     }
     
-    protected int updateConstraintDefinition(RequestContext requestContext, Map resultMap)
+    protected int updateConstraintDefinition(RequestContext requestContext, Map<String,Object> resultMap)
     throws AJAXException
     {
     	System.out.println( "SecurityConstraintsAction updateConstraintDefinition started" );
@@ -292,7 +291,7 @@ public class SecurityConstraintsAction
         return null;
     }
     
-    protected int removeGlobal(RequestContext requestContext, Map resultMap)
+    protected int removeGlobal(RequestContext requestContext, Map<String,Object> resultMap)
     throws AJAXException
     {
         int count = 0;
@@ -320,7 +319,7 @@ public class SecurityConstraintsAction
         return count;
     }
        
-    protected int addGlobal(RequestContext requestContext, Map resultMap)
+    protected int addGlobal(RequestContext requestContext, Map<String,Object> resultMap)
     throws AJAXException
     {
         int count = 0;

@@ -16,16 +16,16 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.ajax.AjaxAction;
 import org.apache.jetspeed.ajax.AjaxBuilder;
 import org.apache.jetspeed.decoration.DecorationFactory;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.request.RequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * Get Portal-wide themes lists 
@@ -53,7 +53,7 @@ public class GetThemesAction
         this.decorationFactory = decorationFactory;
     }
 
-    public boolean run( RequestContext requestContext, Map resultMap )
+    public boolean run( RequestContext requestContext, Map<String,Object> resultMap )
     {
         boolean success = true;
         String status = "success";

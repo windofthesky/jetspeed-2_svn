@@ -16,10 +16,6 @@
  */
 package org.apache.jetspeed.components.portletentity;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase;
@@ -28,12 +24,15 @@ import org.apache.jetspeed.engine.MockJetspeedEngine;
 import org.apache.jetspeed.om.page.impl.ContentFragmentImpl;
 import org.apache.jetspeed.om.portlet.InitParam;
 import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.Preferences;
-import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.om.portlet.impl.PortletApplicationDefinitionImpl;
-
 import org.apache.pluto.container.om.portlet.PortletApplicationDefinition;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * <p>
@@ -62,8 +61,8 @@ public class TestPortletEntityDAO extends DatasourceEnabledSpringTestCase
         super.setUp();
         mockEngine.setComponentManager(scm);
         Jetspeed.setEngine(mockEngine);
-        this.registry = (PortletRegistry) scm.getComponent("portletRegistry");
-        this.entityAccess = (PortletEntityAccessComponent) scm.getComponent("portletEntityAccess");
+        this.registry = scm.lookupComponent("portletRegistry");
+        this.entityAccess = scm.lookupComponent("portletEntityAccess");
 
         teardownTestData();
         setupTestData();

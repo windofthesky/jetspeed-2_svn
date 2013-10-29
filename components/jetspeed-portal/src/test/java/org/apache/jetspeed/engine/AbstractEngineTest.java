@@ -16,11 +16,11 @@
  */
 package org.apache.jetspeed.engine;
 
-import java.util.HashMap;
-
 import org.apache.jetspeed.components.ComponentManagement;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
+
+import java.util.HashMap;
 
 /**
  * <p>
@@ -84,8 +84,8 @@ public abstract class AbstractEngineTest extends JetspeedTestCase
         ComponentManagement cm = engine.getComponentManager();
         for (int i = 0; i < keys.length; i++)
         {
-            assertNotNull("Could not get component insatance " + keys[i], cm.getComponent(keys[i]));
-            System.out.println("Load componenet " + cm.getComponent(keys[i]).getClass() + " for key " + keys[i]);
+            assertNotNull("Could not get component instance " + keys[i], cm.getComponent(keys[i]));
+            System.out.println("Load component " + cm.getComponent(keys[i]).getClass() + " for key " + keys[i]);
         }
     }
 

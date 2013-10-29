@@ -160,7 +160,7 @@ public class JetspeedVelocityViewServlet extends BridgesVelocityViewServlet
             count++;
         
         }
-        decorationLocator = (TemplateLocator) cm.getComponent("DecorationLocator");
+        decorationLocator = cm.lookupComponent("DecorationLocator");
 
         // initialize thread safe velocity engine cache
         int cacheSize = (int) getLongInitParameter(config, CACHE_SIZE_PARAMETER, DEFAULT_CACHE_SIZE);

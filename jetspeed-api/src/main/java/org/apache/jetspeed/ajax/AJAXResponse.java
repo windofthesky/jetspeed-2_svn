@@ -21,7 +21,7 @@ package org.apache.jetspeed.ajax;
  * Response object used for AJAX services.
  * 
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
- *
+ * @deprecated
  */
 public interface AJAXResponse
 {

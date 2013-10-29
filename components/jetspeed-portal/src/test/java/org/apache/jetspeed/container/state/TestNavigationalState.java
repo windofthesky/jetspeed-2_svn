@@ -16,17 +16,10 @@
  */
 package org.apache.jetspeed.container.state;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-import javax.servlet.http.HttpServletRequest;
-
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpSession;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.cache.JetspeedContentCache;
 import org.apache.jetspeed.container.PortletWindow;
@@ -43,8 +36,12 @@ import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.testhelpers.SpringEngineHelper;
 import org.apache.jetspeed.window.MockPortletWindow;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpSession;
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * TestPortletContainer
@@ -89,9 +86,9 @@ public class TestNavigationalState extends JetspeedTestCase
         engineHelper = new SpringEngineHelper(context);
         engineHelper.setUp(getBaseDir());
         engine = (Engine) context.get(SpringEngineHelper.ENGINE_ATTR);
-        codec = (NavigationalStateCodec) engine.getComponentManager().getComponent("NavigationalStateCodec");
-        portalContext = (PortalContext) engine.getComponentManager().getComponent("PortalContext");  
-        cache = (JetspeedContentCache) engine.getComponentManager().getComponent("portletContentCache");
+        codec = engine.getComponentManager().lookupComponent("NavigationalStateCodec");
+        portalContext = engine.getComponentManager().lookupComponent("PortalContext");
+        cache = engine.getComponentManager().lookupComponent("portletContentCache");
     }
 
     public static Test suite()

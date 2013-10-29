@@ -16,13 +16,6 @@
  */
 package org.apache.jetspeed.tools.db.serializer;
 
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.administration.PortalConfigurationConstants;
@@ -35,6 +28,13 @@ import org.apache.jetspeed.serializer.SerializerException;
 import org.apache.jetspeed.tools.ToolsLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * Jetspeed Serializer Application
@@ -182,12 +182,12 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
             
             scm = new SpringComponentManager(filter, bootConfig, appConfig, applicationRootPath, initProperties, true);
             scm.start();
-            Configuration config = (Configuration)scm.getComponent("portal_configuration");
+            Configuration config = scm.lookupComponent("portal_configuration");
             if (config != null)
             {
             	new JetspeedActions(config.getStringArray(PortalConfigurationConstants.SUPPORTED_PORTLET_MODES), config.getStringArray(PortalConfigurationConstants.SUPPORTED_WINDOW_STATES));
             }
-            JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent(JetspeedSerializer.class.getName());
+            JetspeedSerializer serializer = scm.lookupComponent(JetspeedSerializer.class.getName());
             HashMap settings = new HashMap();
             settings.put(JetspeedSerializer.KEY_LOGGER, logger);
             if (seedFiles != null)
@@ -254,12 +254,12 @@ public class JetspeedSerializerApplicationImpl implements JetspeedSerializerAppl
             
             scm = new SpringComponentManager(filter, bootConfig, appConfig, applicationRootPath, true);
             scm.start();
-            Configuration config = (Configuration)scm.getComponent("portal_configuration");
+            Configuration config = scm.lookupComponent("portal_configuration");
             if (config != null)
             {
             	new JetspeedActions(config.getStringArray(PortalConfigurationConstants.SUPPORTED_PORTLET_MODES), config.getStringArray(PortalConfigurationConstants.SUPPORTED_WINDOW_STATES));
             }            
-            JetspeedSerializer serializer = (JetspeedSerializer)scm.getComponent(JetspeedSerializer.class.getName());
+            JetspeedSerializer serializer = scm.lookupComponent(JetspeedSerializer.class.getName());
             HashMap settings = new HashMap();
             settings.put(JetspeedSerializer.KEY_LOGGER, logger);
             if (exportFile != null)
