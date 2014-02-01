@@ -16,11 +16,10 @@
  */
 package org.apache.jetspeed.services.beans;
 
-import java.io.Serializable;
+import org.apache.jetspeed.decoration.DecoratorAction;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.jetspeed.decoration.DecoratorAction;
+import java.io.Serializable;
 
 /**
  * DecoratorActionBean

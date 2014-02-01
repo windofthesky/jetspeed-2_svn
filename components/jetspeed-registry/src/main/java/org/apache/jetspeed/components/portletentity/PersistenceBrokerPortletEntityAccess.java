@@ -16,18 +16,18 @@
  */
 package org.apache.jetspeed.components.portletentity;
 
-import java.rmi.server.UID;
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.container.PortletEntity;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
-import org.apache.jetspeed.container.PortletEntity;
 import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
+
+import java.rmi.server.UID;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * <p>
@@ -77,7 +77,6 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      * generateEntityFromFragment
      * </p>
      * 
-     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#generateEntityFromFragment(org.apache.jetspeed.om.page.Fragment)
      * @param fragment
      * @return @throws
      *         PortletEntityNotGeneratedException
@@ -117,10 +116,7 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      * generateEntityKey
      * </p>
      * 
-     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#generateEntityKey(org.apache.jetspeed.om.page.Fragment,
-     *      java.lang.String)
      * @param fragment
-     * @param principal
      * @return
      */
     public String generateEntityKey( ContentFragment fragment)
@@ -134,7 +130,6 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
      * getPortletEntities
      * </p>
      * 
-     * @see org.apache.jetspeed.components.portletentity.PortletEntityAccessComponent#getPortletEntities(org.apache.pluto.container.om.portlet.PortletDefinition)
      * @param portletDefinition
      * @return
      */
@@ -258,10 +253,10 @@ public class PersistenceBrokerPortletEntityAccess extends PersistenceBrokerDaoSu
 
     public void removePortletEntities( PortletDefinition portletDefinition ) throws PortletEntityNotDeletedException
     {
-        Iterator entities = getPortletEntities(portletDefinition).iterator();
+        Iterator<PortletEntity> entities = getPortletEntities(portletDefinition).iterator();
         while (entities.hasNext())
         {
-            PortletEntity entity = (PortletEntity) entities.next();
+            PortletEntity entity =  entities.next();
             removePortletEntity(entity);
         }
 

@@ -16,14 +16,13 @@
  */
 package org.apache.jetspeed.container.url;
 
-import java.util.Map;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.state.NavigationalState;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.jetspeed.container.state.NavigationalState;
-import org.apache.jetspeed.container.PortletWindow;
+import java.util.Map;
 
 /**
  * <p>
@@ -215,7 +214,6 @@ public interface PortalURL
      * @param mode the new PortletMode for the PortalWindow
      * @param state the new WindowState for the PortalWindow
      * @param action indicates if an actionURL or renderURL is created
-     * @param secure indicates if a secure url is required 
      * @return a new navigational state as String
      * @deprecated
      */
@@ -230,7 +228,6 @@ public interface PortalURL
      * @param mode the new PortletMode for the PortalWindow
      * @param state the new WindowState for the PortalWindow
      * @param urlType indicates if an actionURL, Resource or renderURL is to created
-     * @param secure indicates if a secure url is required 
      * @return a new navigational state as String
      * @deprecated
      */
@@ -251,7 +248,6 @@ public interface PortalURL
      * @param mode the new PortletMode for the PortalWindow
      * @param state the new WindowState for the PortalWindow
      * @param urlType indicates if an actionURL, Resource or renderURL is to created
-     * @param secure indicates if a secure url is required 
      * @return a new navigational state as String
      */
     String createNavigationalEncoding(PortletWindow window, Map<String, String[]> parameters, String actionScopeId, boolean actionScopeRendered,
@@ -265,8 +261,6 @@ public interface PortalURL
      * @param window the PortalWindow
      * @param mode the new PortletMode for the PortalWindow
      * @param state the new WindowState for the PortalWindow
-     * @param secure
-     * @param secure indicates if a secure url is required 
      * @return a new renderURL as String
      */    
     String createNavigationalEncoding(PortletWindow window, PortletMode mode, WindowState state);

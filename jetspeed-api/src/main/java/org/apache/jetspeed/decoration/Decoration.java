@@ -171,7 +171,7 @@ public interface Decoration
      * @return the list of <code>DecoratorAction</code>s to be displayed
      * within the portlet window.
      */
-    List getActions();
+    List<DecoratorAction> getActions();
     
     /**
      * Set the list of <code>DecoratorAction</code>s to be displayed
@@ -180,7 +180,7 @@ public interface Decoration
      * 
      * @param actions actions to displayed within this portlet window. 
      */
-    void setActions(List actions);
+    void setActions(List<DecoratorAction> actions);
     
     /**
      * Allows access to abritrary properties configured

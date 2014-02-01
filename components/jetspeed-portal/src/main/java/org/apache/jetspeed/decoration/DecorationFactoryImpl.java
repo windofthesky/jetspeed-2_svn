@@ -16,6 +16,22 @@
  */
 package org.apache.jetspeed.decoration;
 
+import org.apache.jetspeed.cache.CacheElement;
+import org.apache.jetspeed.cache.JetspeedCache;
+import org.apache.jetspeed.components.portletregistry.PortletRegistry;
+import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
+import org.apache.jetspeed.desktop.JetspeedDesktop;
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.portlet.PortletApplication;
+import org.apache.jetspeed.om.portlet.PortletDefinition;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.util.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -30,23 +46,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import javax.servlet.ServletContext;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.jetspeed.cache.CacheElement;
-import org.apache.jetspeed.cache.JetspeedCache;
-import org.apache.jetspeed.components.portletregistry.PortletRegistry;
-import org.apache.jetspeed.decoration.caches.SessionPathResolverCache;
-import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.portlet.PortletApplication;
-import org.apache.jetspeed.om.portlet.PortletDefinition;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.util.Path;
-import org.apache.jetspeed.desktop.JetspeedDesktop;
-import org.springframework.web.context.ServletContextAware;
 
 /**
  *
@@ -423,8 +422,8 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      * @param page Page this fragment belongs to.
      * @return Default decorator name.
      *
-     * @see Page
-     * @see Fragment
+     * @param page
+     * @param fragment
      */
     protected String getDefaultDecorationName(ContentFragment fragment, ContentPage page)
     {
@@ -501,7 +500,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      *
      * @return A list of page decorations of type <code>Decoration</code>
      */
-    public Set getPageDecorations( RequestContext request )
+    public Set<String> getPageDecorations( RequestContext request )
     {
         Set decorations = servletContext.getResourcePaths( decorationsPath.toString() + "/layout" );
         if( ! layoutDecorationsDir.equals( decorations ) )
@@ -518,7 +517,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      * 
      * @return A list of desktop skins of type <code>String</code>
      */        
-    public Set getDesktopPageDecorations( RequestContext request )
+    public Set<String> getDesktopPageDecorations( RequestContext request )
     {
         Set decorations = servletContext.getResourcePaths( decorationsPath.toString() + "/layout" );
         if( ! desktopLayoutDecorationsDir.equals( decorations ) )
@@ -535,7 +534,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      *
      * @return A list of portlet decorations of type <code>String</code>
      */
-    public Set getPortletDecorations( RequestContext request )
+    public Set<String> getPortletDecorations( RequestContext request )
     {
         Set decorations = servletContext.getResourcePaths( decorationsPath.toString() + "/portlet" );
         if( ! portletDecorationsDir.equals( decorations ) )
@@ -552,7 +551,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      *
      * @return A list of portlet decorations of type <code>String</code>
      */
-    public Set getDesktopPortletDecorations( RequestContext request )
+    public Set<String> getDesktopPortletDecorations( RequestContext request )
     {
         Set decorations = servletContext.getResourcePaths( decorationsPath.toString() + "/portlet" );
         if( ! desktopPortletDecorationsDir.equals( decorations ) )
@@ -569,7 +568,7 @@ public class DecorationFactoryImpl implements DecorationFactory, ServletContextA
      *
      * @return A list of layout portlets of type <code>PortletDefinitionComposite</code>
      */
-    public List getLayouts( RequestContext request )
+    public List<LayoutInfo> getLayouts( RequestContext request )
     {
         List list = new LinkedList();
         Iterator portlets = registry.getAllDefinitions().iterator();

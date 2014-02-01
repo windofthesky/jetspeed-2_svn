@@ -16,22 +16,6 @@
  */
 package org.apache.jetspeed.page.document.psml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
@@ -63,12 +47,27 @@ import org.exolab.castor.xml.SAX2EventProducer;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.xml.XMLClassDescriptorResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 /**
  * <p>
@@ -668,7 +667,7 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
      * @see org.apache.jetspeed.page.document.DocumentHandler#getDocument(java.lang.String,
      *      boolean)
      * @param name
-     * @param fromCahe
+     * @param fromCache
      *            Whether or not the Document should be pulled from the cache.
      * @return @throws
      *         DocumentNotFoundException

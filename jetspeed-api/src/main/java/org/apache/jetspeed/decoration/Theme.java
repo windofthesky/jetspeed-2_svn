@@ -16,12 +16,12 @@
  */
 package org.apache.jetspeed.decoration;
 
-import java.util.Collection;
-import java.util.Set;
-
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Theme provides a simple aggregation of all of the decorations
@@ -37,7 +37,7 @@ public interface Theme
      * @return Set of all of the stylesheets needed to properly
      * render of the decorations in this theme.
      */
-    Set getStyleSheets();
+    Set<String> getStyleSheets();
     
     /**
      * Returns a a Decoration for the requested fragment.
@@ -46,7 +46,6 @@ public interface Theme
      * @return Decoration for this fragment.
      * 
      * @see Decoration
-     * @see Fragment
      */
     Decoration getDecoration(ContentFragment fragment);
     
@@ -57,9 +56,8 @@ public interface Theme
      * @return unmodifiable list for portlet decoration names.
      * 
      * @see Decoration
-     * @see Fragment
      */
-    Collection getPortletDecorationNames();
+    Collection<String> getPortletDecorationNames();
     
     
     /**

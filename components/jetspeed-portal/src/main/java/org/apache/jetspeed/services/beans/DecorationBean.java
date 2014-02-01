@@ -16,18 +16,16 @@
  */
 package org.apache.jetspeed.services.beans;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.apache.jetspeed.decoration.Decoration;
+import org.apache.jetspeed.decoration.DecoratorAction;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.jetspeed.decoration.Decoration;
-import org.apache.jetspeed.decoration.DecoratorAction;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * DecorationBean
@@ -60,7 +58,7 @@ public class DecorationBean implements Serializable
         actionsOption = decoration.getActionsOption();
         actionBeans = new ArrayList<DecoratorActionBean>();
         
-        for (DecoratorAction action : (List<DecoratorAction>) decoration.getActions())
+        for (DecoratorAction action : decoration.getActions())
         {
             actionBeans.add(new DecoratorActionBean(action));
         }

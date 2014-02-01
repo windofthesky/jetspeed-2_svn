@@ -16,17 +16,6 @@
  */
 package org.apache.jetspeed.decoration;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.CacheElement;
@@ -50,6 +39,16 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Assigns decorations and page actions to all of the portlet Fragments within
@@ -482,12 +481,13 @@ public class DecorationValve extends AbstractValve implements Valve
      * <code>fragment</code> excluding the portlet's current mode.
      * 
      * @param requestContext RequestContext of the current portal request.
-     * @param pageActionAccess
-     * @param mode
-     * @param content
-     * @param portletName
      * @param window
-     * @param fragment
+     * @param supports
+     * @param mode
+     * @param state
+     * @param pageActionAccess     *
+     * @param decoration
+     * @param isAjaxRequest
      * @return <code>java.util.List</code> of modes excluding the current one.
      */
     protected List getPageModes(RequestContext requestContext, PortletWindow window, List<Supports> supports, 
@@ -507,7 +507,7 @@ public class DecorationValve extends AbstractValve implements Valve
                   ? portalURL.createNavigationalEncoding(window, PortletMode.VIEW, WindowState.NORMAL)                          
                   : portalURL.createPortletURL(window, PortletMode.VIEW, WindowState.NORMAL, portalURL.isSecure()).toString() );
                 String actionName = PortletMode.VIEW.toString();
-                pageModes.add(new DecoratorAction(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"),action,DecoratorActionTemplate.ACTION_TYPE_MODE));
+                pageModes.add(new DecoratorActionImpl(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"),action,DecoratorActionTemplate.ACTION_TYPE_MODE));
             }
             else if ( pageActionAccess.isEditAllowed() )
             {
@@ -521,7 +521,7 @@ public class DecorationValve extends AbstractValve implements Valve
                 String action = requestContext.getResponse().encodeURL( (isAjaxRequest)
                     ? portalURL.createNavigationalEncoding(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true)                                              
                     : portalURL.createPortletURL(window, parameters, PortletMode.VIEW, WindowState.NORMAL, true, portalURL.isSecure()).toString() );
-                pageModes.add(new DecoratorAction(targetMode, requestContext.getLocale(), decoration.getResource("images/" + targetMode + ".gif"), action,DecoratorActionTemplate.ACTION_TYPE_MODE));
+                pageModes.add(new DecoratorActionImpl(targetMode, requestContext.getLocale(), decoration.getResource("images/" + targetMode + ".gif"), action,DecoratorActionTemplate.ACTION_TYPE_MODE));
                 
                 if (supportsPortletMode(supports,PortletMode.HELP))
                 {
@@ -541,7 +541,7 @@ public class DecorationValve extends AbstractValve implements Valve
                             : portalURL.createPortletURL(window,PortletMode.HELP, WindowState.MAXIMIZED, portalURL.isSecure()).toString() );
                     }
                     String actionName = PortletMode.HELP.toString();
-                    pageModes.add(new DecoratorAction(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"), action,DecoratorActionTemplate.ACTION_TYPE_MODE));
+                    pageModes.add(new DecoratorActionImpl(actionName, requestContext.getLocale(), decoration.getResource("images/" + actionName + ".gif"), action,DecoratorActionTemplate.ACTION_TYPE_MODE));
                 }
             }
         }

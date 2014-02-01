@@ -44,7 +44,6 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
@@ -421,9 +420,10 @@ public class PortalAdministrationImpl implements PortalAdministration {
             // JS2-1256: Needs to set context classloader to null to let geronimo-javamail find provider class properly.
             Thread.currentThread().setContextClassLoader(null);
             mailSender.send(msg);
-        } catch (MailException ex) {
-            throw new AdministrationEmailException(
-                    "Failed to send forgotten password email to user with email address because " + ex.getMessage(), ex
+        } catch (Exception ex) {
+            String message = "Failed to send forgotten password email to user with email address because " + ex.getMessage();
+            log.error(message, ex);
+            throw new AdministrationEmailException(message, ex
             ); //+ user.getEmail());
         } finally {
             Thread.currentThread().setContextClassLoader(currentCL);

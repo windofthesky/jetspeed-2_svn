@@ -22,13 +22,12 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
- * DecoratorAction
+ * DecoratorActionImpl
  *
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class DecoratorAction implements Serializable
-{
+public class DecoratorActionImpl implements Serializable, DecoratorAction {
     public static final String RESOURCE_BUNDLE = "org.apache.jetspeed.decoration.resources.DecoratorActions";
 
     String actionName = null;
@@ -80,7 +79,7 @@ public class DecoratorAction implements Serializable
         return value;
     }
 
-    public DecoratorAction(String actionName, String name, String alt, Locale locale, String link, String action, boolean custom, String actionType)
+    public DecoratorActionImpl(String actionName, String name, String alt, Locale locale, String link, String action, boolean custom, String actionType)
     {
         ResourceBundle bundle = getBundle(RESOURCE_BUNDLE, locale);
         this.actionName = actionName;
@@ -92,7 +91,7 @@ public class DecoratorAction implements Serializable
         this.custom = custom;
     }
     
-    public DecoratorAction(String actionName, String name, String alt, String link, String action, boolean custom, String actionType)
+    public DecoratorActionImpl(String actionName, String name, String alt, String link, String action, boolean custom, String actionType)
     {
         this.actionName = actionName;
         this.actionType = actionType;
@@ -103,94 +102,110 @@ public class DecoratorAction implements Serializable
         this.custom = custom;
     }
     
-    public DecoratorAction(String name, Locale locale, String link, String action, boolean custom, String actionType)
+    public DecoratorActionImpl(String name, Locale locale, String link, String action, boolean custom, String actionType)
     {
         this(name,name,name,locale,link,action,custom,actionType);
     }
     
-    public DecoratorAction(String name, Locale locale, String link, String action, String actionType)
+    public DecoratorActionImpl(String name, Locale locale, String link, String action, String actionType)
     {
         this(name,name,name,locale,link,action,false,actionType);
     }
     
-    public DecoratorAction(String actionName, String name, String alt, String link, String actionType)
+    public DecoratorActionImpl(String actionName, String name, String alt, String link, String actionType)
     {
         this(actionName, name,alt,null,link,null,false,actionType);
     }
 
+    @Override
     public String getActionName()
     {
         return this.actionName;
     }
-    public void setActionName( String actionName )
+    @Override
+    public void setActionName(String actionName)
     {
         this.actionName = actionName;
     }
 
+    @Override
     public String getActionType()
     {
         return this.actionType;
     }
-    public void setActionType( String actionType )
+    @Override
+    public void setActionType(String actionType)
     {
         this.actionType = actionType;
     }
     
+    @Override
     public String getName()
     {
         return this.name;
     }
     
+    @Override
     public void setName(String name)
     {
         this.name = name;
     }
     
+    @Override
     public String getLink()
     {
         return this.link;
     }
     
+    @Override
     public void setLink(String link)
     {
         this.link = link;
     }
 
+    @Override
     public String getAlt()
     {
         return this.alt;
     }
     
+    @Override
     public void setAlt(String alt)
     {
         this.alt = alt;
     }
 
+    @Override
     public String getAction()
     {
         return this.action;
     }
     
+    @Override
     public void setAction(String action)
     {
         this.action = action;
     }
     
+    @Override
     public String getTarget()
     {
         return this.target;
     }
     
+    @Override
     public void setTarget(String target)
     {
         this.target = target;
     }
     
+    @Override
     public boolean isCustom()
     {
         return custom;
     }
 
+    @Override
     public void setCustom(boolean custom)
     {
         this.custom = custom;

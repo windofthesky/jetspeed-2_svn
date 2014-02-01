@@ -16,17 +16,6 @@
 */
 package org.apache.jetspeed.decoration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
@@ -36,6 +25,15 @@ import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.SecurityAccessController;
 import org.apache.jetspeed.util.ServletRequestThreadLocalCleanupCallback;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 public abstract class AbstractDecoratorActionsFactory implements DecoratorActionsFactory
 {
@@ -47,7 +45,6 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
     /**
      * When Edit is clicked, also maximize the window state
      * 
-     * @param editMaxOption
      */
     public AbstractDecoratorActionsFactory()
     {
@@ -169,14 +166,14 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
                 || (template.getState() != null && !template.getState().equals(
                         template.getCustomState()));
 
-        ResourceBundle bundle = DecoratorAction.getResourceBundle(rc.getLocale());
+        ResourceBundle bundle = DecoratorActionImpl.getResourceBundle(rc.getLocale());
         Map<String, Object> resourcesMap = actionResourcesMap.get();
         
         // It seems better to not use threadLocal variable or to have an abstraction, but
         // let's just check if the current cache in the thread has the same locale for now.
         if (resourcesMap != null)
         {
-            ResourceBundle cachedBundle = (ResourceBundle) resourcesMap.get(DecoratorAction.RESOURCE_BUNDLE);
+            ResourceBundle cachedBundle = (ResourceBundle) resourcesMap.get(DecoratorActionImpl.RESOURCE_BUNDLE);
             if (!bundle.getLocale().equals(cachedBundle.getLocale())) 
             {
                 resourcesMap = null;
@@ -190,8 +187,8 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
             resourcesMap = new HashMap<String, Object>();
             actionResourcesMap.set(resourcesMap);
             new ServletRequestThreadLocalCleanupCallback(actionResourcesMap);
-            resourcesMap.put(DecoratorAction.RESOURCE_BUNDLE, bundle);
-            localizedName = DecoratorAction.getResourceString(bundle, actionName, actionName);
+            resourcesMap.put(DecoratorActionImpl.RESOURCE_BUNDLE, bundle);
+            localizedName = DecoratorActionImpl.getResourceString(bundle, actionName, actionName);
             resourcesMap.put(actionName,localizedName);
         }
         else
@@ -199,11 +196,11 @@ public abstract class AbstractDecoratorActionsFactory implements DecoratorAction
             localizedName = (String)resourcesMap.get(actionName);
             if (localizedName == null)
             {
-                localizedName = DecoratorAction.getResourceString(bundle, actionName, actionName);
+                localizedName = DecoratorActionImpl.getResourceString(bundle, actionName, actionName);
                 resourcesMap.put(actionName,localizedName);
             }
         }
-        return new DecoratorAction(actionName, localizedName, localizedName, linkURL, actionURL, customAction, template.getActionType());
+        return new DecoratorActionImpl(actionName, localizedName, localizedName, linkURL, actionURL, customAction, template.getActionType());
     }
     
     //added for checkin the constraints on actions

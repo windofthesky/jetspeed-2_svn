@@ -16,6 +16,10 @@
  */
 package org.apache.jetspeed.decoration;
 
+import org.apache.jetspeed.om.page.ContentFragment;
+import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.request.RequestContext;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,10 +30,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.om.page.ContentFragment;
-import org.apache.jetspeed.request.RequestContext;
 
 /**
  * Default implementation of <code>org.apache.jetspeed.decoration.Theme</code>
@@ -43,10 +43,10 @@ public class PageTheme implements Theme, Serializable
     private transient ContentPage page;
     private transient DecorationFactory decorationFactory;
     private transient RequestContext requestContext;
-    private final Set styleSheets;
+    private final Set<String> styleSheets;
     private final LayoutDecoration layoutDecoration;
     private final Map fragmentDecorations;
-    private final Collection portletDecorationNames;
+    private final Collection<String> portletDecorationNames;
     private boolean invalidated = false;
         
     public PageTheme(ContentPage page, DecorationFactory decorationFactory, RequestContext requestContext)
@@ -58,30 +58,30 @@ public class PageTheme implements Theme, Serializable
         this.fragmentDecorations = new HashMap();
         
         boolean isDesktopEnabled = decorationFactory.isDesktopEnabled( requestContext );
-        HashMap portletDecorationNames = new HashMap();
-        this.layoutDecoration = (LayoutDecoration)setupFragmentDecorations( page.getRootFragment(), true, portletDecorationNames, isDesktopEnabled );
+        HashMap namesMap = new HashMap();
+        this.layoutDecoration = (LayoutDecoration)setupFragmentDecorations( page.getRootFragment(), true, namesMap, isDesktopEnabled );
         
         if ( isDesktopEnabled )
         {
             String defaultDesktopPortletDecoration = decorationFactory.getDefaultDesktopPortletDecoration();
             if ( defaultDesktopPortletDecoration != null && defaultDesktopPortletDecoration.length() > 0 )
             {
-                if ( portletDecorationNames.get( defaultDesktopPortletDecoration ) == null )
+                if ( namesMap.get( defaultDesktopPortletDecoration ) == null )
                 {
-                    portletDecorationNames.put( defaultDesktopPortletDecoration, defaultDesktopPortletDecoration );
+                    namesMap.put( defaultDesktopPortletDecoration, defaultDesktopPortletDecoration );
                 }
             }
         }
-        if (!portletDecorationNames.containsKey(this.layoutDecoration.getName()))
+        if (!namesMap.containsKey(this.layoutDecoration.getName()))
         {
-            portletDecorationNames.put(this.layoutDecoration.getName(), this.layoutDecoration.getName());
+            namesMap.put(this.layoutDecoration.getName(), this.layoutDecoration.getName());
             Decoration decoration = decorationFactory.getPortletDecoration(this.layoutDecoration.getName(), requestContext);
             if (decoration.getStyleSheet() != null)
                 this.styleSheets.add(decoration.getStyleSheet());
             if (decoration.getStyleSheetPortal() != null)
                 this.styleSheets.add(decoration.getStyleSheetPortal());            
         }
-        this.portletDecorationNames = Collections.unmodifiableCollection( new ArrayList( portletDecorationNames.keySet() ) );
+        this.portletDecorationNames = Collections.unmodifiableCollection( new ArrayList( namesMap.keySet() ) );
     }
 
     /**
@@ -146,7 +146,7 @@ public class PageTheme implements Theme, Serializable
         return decoration;
     }
 
-    public Set getStyleSheets()
+    public Set<String> getStyleSheets()
     {
         return styleSheets;
     }
@@ -156,7 +156,7 @@ public class PageTheme implements Theme, Serializable
         return (Decoration) fragmentDecorations.get( fragment.getId() );
     }
     
-    public Collection getPortletDecorationNames()
+    public Collection<String> getPortletDecorationNames()
     {
         return portletDecorationNames;    // is unmodifiable
     }

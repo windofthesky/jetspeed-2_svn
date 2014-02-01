@@ -16,12 +16,12 @@
  */
 package org.apache.jetspeed.decoration;
 
-import java.util.List;
-import java.util.Set;
-
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * Factory class used for locating Decorations and Themes for 
@@ -97,9 +97,9 @@ public interface DecorationFactory
      * empty Decoration will be created "in memory" and a message should be logged
      * informing the admin that non-existent decoration has been requested.
      * 
-     * @see Page
-     * @see Fragment
-     * @see RequestContext
+     * @param page
+     * @param fragment
+     * @param requestContext
      */
     Decoration getDecoration(ContentPage page, ContentFragment fragment, RequestContext requestContext);
     
@@ -132,35 +132,35 @@ public interface DecorationFactory
      * 
      * @return A list of page decorations of type <code>String</code>
      */
-    Set getPageDecorations(RequestContext request);
+    Set<String> getPageDecorations(RequestContext request);
 
     /**
      * Get the portal-wide list of portlet decorations.
      * 
      * @return A list of portlet decorations of type <code>String</code>
      */    
-    Set getPortletDecorations(RequestContext request);
+    Set<String> getPortletDecorations(RequestContext request);
     
     /**
      * Get the portal-wide list of available layouts.
      * 
      * @return A list of layout portlets of type <code>LayoutInfo</code>
      */    
-    List getLayouts(RequestContext request);
+    List<LayoutInfo> getLayouts(RequestContext request);
     
     /**
      * Get the portal-wide list of available desktop page decorations.
      * 
      * @return A list of desktop skins of type <code>String</code>
      */    
-    Set getDesktopPageDecorations(RequestContext request);
+    Set<String> getDesktopPageDecorations(RequestContext request);
     
     /**
      * Get the portal-wide list of desktop portlet decorations.
      * 
      * @return A list of desktop skins of type <code>String</code>
      */
-    Set getDesktopPortletDecorations(RequestContext request);
+    Set<String> getDesktopPortletDecorations(RequestContext request);
     
     /**
      * Get the path to the layout decorations directory.

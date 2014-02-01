@@ -69,8 +69,7 @@ public interface NodeInformation
 	/**
 	 * setter for last deploy date 
 	 * 
-	 * @param id
-	 */	
+	 */
 	public void setLastDeployDate(Date lastDeployDate);
 	
 	public String toString ();

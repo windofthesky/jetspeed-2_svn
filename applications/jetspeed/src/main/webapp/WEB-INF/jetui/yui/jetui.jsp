@@ -28,7 +28,6 @@ limitations under the License.
 <%@ page import="org.apache.jetspeed.om.page.ContentFragment" %>
 <%@ page import="org.apache.jetspeed.om.page.ContentPage" %>
 <%@ page import="org.apache.jetspeed.portlets.layout.ColumnLayout" %>
-<%@ page import="org.apache.jetspeed.decoration.DecoratorAction" %>
 <%@ page import="org.apache.jetspeed.PortalReservedParameters" %>
 <%@ page import="org.apache.jetspeed.administration.PortalConfiguration" %>
 <%@ page import="org.apache.jetspeed.administration.PortalConfigurationConstants" %>

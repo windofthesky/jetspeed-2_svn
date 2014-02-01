@@ -16,11 +16,11 @@
  */
 package org.apache.jetspeed.components.portletentity;
 
-import java.util.Collection;
-
-import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.container.PortletEntity;
+import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
+
+import java.util.Collection;
 
 /**
  * <p>
@@ -146,9 +146,9 @@ public interface PortletEntityAccessComponent
 	 * @param portletDefinition
 	 * @return
 	 */
-	Collection getPortletEntities(PortletDefinition portletDefinition);
+	Collection<PortletEntity> getPortletEntities(PortletDefinition portletDefinition);
     
-    Collection getPortletEntities( String portletUniqueName );
+    Collection<PortletEntity> getPortletEntities( String portletUniqueName );
 	
 	/**
 	 * 
