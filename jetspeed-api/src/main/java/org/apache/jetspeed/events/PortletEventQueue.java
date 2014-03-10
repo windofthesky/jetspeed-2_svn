@@ -16,9 +16,9 @@
  */
 package org.apache.jetspeed.events;
 
-import java.util.List;
-
 import org.apache.jetspeed.container.PortletWindow;
+
+import java.util.List;
 
 
 /**
@@ -27,6 +27,18 @@ import org.apache.jetspeed.container.PortletWindow;
  */
 public interface PortletEventQueue
 {
+    /**
+     * Publish a Portlet API Event internally in Jetspeed
+     *
+     * @param event
+     */
     void publishEvent(ProcessEvent event);
+
+    /**
+     * Remove an event from Portlet API queue
+     *
+     * @param window
+     * @return List of remaining events
+     */
     List<ProcessEvent> dequeueEvents(PortletWindow window);
 }

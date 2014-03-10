@@ -16,13 +16,14 @@
  */
 package org.apache.jetspeed.layout;
 
-import java.util.Map;
-
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.PageTemplate;
+
+import java.util.Map;
 
 /**
  * Page layout component interface.
@@ -196,7 +197,7 @@ public interface PageLayoutComponent
      *                            by page and/or page template
      * @return new content page
      */
-    ContentPage newContentPage(BaseFragmentsElement pageOrTemplate, PageTemplate pageTemplate, Map fragmentDefinitions);
+    ContentPage newContentPage(BaseFragmentsElement pageOrTemplate, PageTemplate pageTemplate, Map<String, FragmentDefinition> fragmentDefinitions);
     
     /**
      * Create a new sibling folder with specified configuration and
@@ -384,11 +385,14 @@ public interface PageLayoutComponent
      * Map of strings, string arrays, FragmentPreference or
      * PortletPreference. Existing preferences are removed and
      * replaced with the specified preferences.
-     * 
+     *
+     * preferences values are normally {@link org.apache.pluto.container.PortletPreference} but can also be String, String[], or
+     *      {@link org.apache.jetspeed.om.preference.FragmentPreference}
+     *
      * @param contentFragment content fragment context
      * @param preferences map of new preferences set.
      */
-    void updatePreferences(ContentFragment contentFragment, Map preferences);
+    void updatePreferences(ContentFragment contentFragment, Map<String, Object> preferences);
 
     /**
      * Update global fragment property.

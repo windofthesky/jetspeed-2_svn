@@ -16,24 +16,6 @@
  */
 package org.apache.jetspeed.velocity;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.security.Principal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletMode;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
-import javax.security.auth.Subject;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.jetspeed.Jetspeed;
@@ -62,6 +44,23 @@ import org.apache.jetspeed.util.Path;
 import org.apache.velocity.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletMode;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
+import javax.security.auth.Subject;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.security.Principal;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -697,7 +696,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
      * </p>
      * Returns the appropriate for the title based on locale prferences
      * 
-     * @param entity
+     * @param f
      * @return
      */
     public String getTitle(ContentFragment f)
@@ -831,7 +830,7 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
      * 
      * @param name
      *            to store the attribute under.
-     * @param obj
+     * @param object
      *            object to set.
      */
     protected void setAttribute(String name, Object object)

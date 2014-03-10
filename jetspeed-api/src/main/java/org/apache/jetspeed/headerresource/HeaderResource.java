@@ -16,9 +16,9 @@
  */
 package org.apache.jetspeed.headerresource;
 
-import java.util.Map;
-
 import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
+
+import java.util.Map;
 
 /**
  * HeaderResource has tags information to put them into &lt;head&gt; tag.
@@ -229,14 +229,14 @@ public interface HeaderResource
      * 
      * @return Map containing modifiable header configuration settings 
      */
-    public Map getHeaderDynamicConfiguration();
+    public Map<String, Object> getHeaderDynamicConfiguration();
     
     /**
      * Access complete header configuration settings
      * 
      * @return unmodifiable Map containing complete header configuration settings
      */
-    public Map getHeaderConfiguration();
+    public Map<String, Object> getHeaderConfiguration();
     
     /**
      * Is request for /desktop rather than /portal
@@ -368,7 +368,7 @@ public interface HeaderResource
      * @param attributes Tag's attributes
      * @param text Tag's content
      */
-    public void addHeaderInfo(String elementName, Map attributes, String text);
+    public void addHeaderInfo(String elementName, Map<String, String> attributes, String text);
 
     /**
      * Add text as-is to this instance.

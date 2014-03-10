@@ -572,7 +572,7 @@ public abstract class AbstractTestPageLayout extends AbstractSpringTestCase
 
         Page page = pageManager.getPage("/page.psml");
         assertNotNull(page);
-        ContentPage pageContentPage = pageLayout.newContentPage(page, pageManager.getPageTemplate("/template.tpsml"), Collections.emptyMap());
+        ContentPage pageContentPage = pageLayout.newContentPage(page, pageManager.getPageTemplate("/template.tpsml"), Collections.<String, FragmentDefinition>emptyMap());
         assertNotNull(pageContentPage);
         ContentFragment contentFrag = pageContentPage.getFragmentByFragmentId("fake-portlet");
         assertNotNull(contentFrag);

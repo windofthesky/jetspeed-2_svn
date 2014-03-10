@@ -41,7 +41,7 @@ public class HeaderResourceFactoryImpl implements HeaderResourceFactory
     {
         return new HeaderResourceImpl(requestContext);
     }
-    public HeaderResource getHeaderResource(RequestContext requestContext, BasePortalURL baseUrlAccess, boolean isDesktop, Map headerConfiguration )
+    public HeaderResource getHeaderResource(RequestContext requestContext, BasePortalURL baseUrlAccess, boolean isDesktop, Map<String, Object> headerConfiguration )
     {
         return new HeaderResourceImpl(requestContext, baseUrlAccess, isDesktop, headerConfiguration );
     }

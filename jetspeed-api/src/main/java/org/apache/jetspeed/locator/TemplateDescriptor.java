@@ -34,7 +34,7 @@ public interface TemplateDescriptor extends LocatorDescriptor
     /**
      * The absolute file system path to the template
      *  
-     * @param absolute path
+     * @param path the absolute path
      */    
     void setAbsolutePath(String path);
     

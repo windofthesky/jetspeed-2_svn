@@ -57,7 +57,7 @@ public interface SecurityConstraints
      *
      * @return security constraints list for resource
      */
-    List getSecurityConstraints();
+    List<SecurityConstraint> getSecurityConstraints();
     
     /**
      * <p>
@@ -66,7 +66,7 @@ public interface SecurityConstraints
      *
      * @param constraints security constraints for resource
      */
-    void setSecurityConstraints(List constraints);
+    void setSecurityConstraints(List<SecurityConstraint> constraints);
 
     /**
      * <p>
@@ -75,7 +75,7 @@ public interface SecurityConstraints
      *
      * @return security constraints references for resource
      */
-    List getSecurityConstraintsRefs();
+    List<String> getSecurityConstraintsRefs();
     
     /**
      * <p>
@@ -84,7 +84,7 @@ public interface SecurityConstraints
      *
      * @param constraintsRefs security constraints references for resource
      */
-    void setSecurityConstraintsRefs(List constraintsRefs);
+    void setSecurityConstraintsRefs(List<String> constraintsRefs);
 
     /**
      * <p>

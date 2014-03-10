@@ -16,15 +16,6 @@
  */
 package org.apache.jetspeed.layout.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Locale;
-import java.util.Map;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.common.SecurityConstraint;
@@ -61,6 +52,15 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.pluto.container.PortletPreference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Page layout component implementation.
@@ -658,7 +658,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
     /* (non-Javadoc)
      * @see org.apache.jetspeed.layout.PageLayoutComponent#newContentPage(org.apache.jetspeed.om.page.BaseFragmentsElement, org.apache.jetspeed.om.page.PageTemplate, java.util.Map)
      */
-    public ContentPage newContentPage(BaseFragmentsElement pageOrTemplate, PageTemplate pageTemplate, Map fragmentDefinitions)
+    public ContentPage newContentPage(BaseFragmentsElement pageOrTemplate, PageTemplate pageTemplate, Map<String, FragmentDefinition> fragmentDefinitions)
     {
         // generate content page
         BaseConcretePageElement concretePage = ((pageOrTemplate instanceof BaseConcretePageElement) ? (BaseConcretePageElement)pageOrTemplate : null);
@@ -1646,7 +1646,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
     /* (non-Javadoc)
      * @see org.apache.jetspeed.layout.PageLayoutComponent#updatePreferences(org.apache.jetspeed.om.page.ContentFragment, java.util.Map)
      */
-    public void updatePreferences(ContentFragment contentFragment, Map preferences)
+    public void updatePreferences(ContentFragment contentFragment, Map<String, Object> preferences)
     {
         log.debug("PageLayoutComponentImpl.updatePreferences() invoked");
         try
@@ -2367,7 +2367,6 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
      * @param pageOrTemplate PSML page or template
      * @param definition PSML fragment page, page template, or fragments definition
      * @param fragmentReference PSML fragment
-     * @param fragmentFragment referenced root PSML fragment from fragment definition
      * @return content fragment hierarchy or null if undefined
      */
     private ContentFragmentImpl newContentFragment(String parentId, BaseFragmentsElement pageOrTemplate, BaseFragmentsElement definition, FragmentReference fragmentReference)
@@ -2393,7 +2392,6 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
      * @param definition PSML fragment page, page template, or fragments definition
      * @param fragment PSML fragment
      * @param reference PSML fragment reference
-     * @param pageReference page fragment reference flag
      * @param template template fragment flag
      * @param locked locked fragment flag
      * @return content fragment hierarchy or null if undefined

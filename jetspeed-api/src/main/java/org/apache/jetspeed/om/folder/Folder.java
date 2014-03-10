@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.om.folder;
 
-import java.util.List;
-
 import org.apache.jetspeed.om.common.SecuredResource;
 import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.FragmentDefinition;
@@ -31,6 +29,8 @@ import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
+
+import java.util.List;
 
 /**
  * Folder
@@ -120,14 +120,14 @@ public interface Folder extends Node, SecuredResource
      *
      * @return list of ordered document names in folder
      */
-    List getDocumentOrder();
+    List<String> getDocumentOrder();
     
     /**
      * setDocumentOrder
      *
      * @param docIndexes list of ordered document names in folder
      */
-    void setDocumentOrder(List docIndexes);
+    void setDocumentOrder(List<String> docIndexes);
 
     /**
      * 
@@ -313,7 +313,6 @@ public interface Folder extends Node, SecuredResource
      * getPageSecurity
      * </p>
      *
-     * @param name
      * @return A PageSecurity referenced by this folder.
      * @throws DocumentNotFoundException if the document requested could not be found.
      * @throws NodeException
@@ -337,7 +336,7 @@ public interface Folder extends Node, SecuredResource
      *
      * @return definition list
      */
-    List getMenuDefinitions();
+    List<MenuDefinition> getMenuDefinitions();
 
     /**
      * newMenuDefinition - creates a new empty menu definition
@@ -379,7 +378,7 @@ public interface Folder extends Node, SecuredResource
      *
      * @param definitions definition list
      */
-    void setMenuDefinitions(List definitions);
+    void setMenuDefinitions(List<MenuDefinition> definitions);
     
     /**
      * Determines if a folder is a reserved folder.

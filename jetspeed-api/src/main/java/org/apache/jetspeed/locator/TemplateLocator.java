@@ -43,7 +43,7 @@ public interface TemplateLocator
      *      <code>portlet</code>
      *      <code>email</code>
      * 
-     * @param The type of locator to create
+     * @param type of locator to create
      * @return a general template locator of the given type
      * @throws TemplateLocatorException if factory exception or if not valid locator type
      */
@@ -61,11 +61,8 @@ public interface TemplateLocator
     LocatorDescriptor createFromString(String string)
         throws TemplateLocatorException;
         
-    /** 
-     * Query for a collection of templates given template locator criteria.
-     *
-     * @param locator The template locator criteria.
-     * @return The result list of {@link Template} objects matching the locator criteria.
+    /**
+     * @deprecated Do not use this method as it is not supported
      */
     public Iterator query(LocatorDescriptor locator);
 

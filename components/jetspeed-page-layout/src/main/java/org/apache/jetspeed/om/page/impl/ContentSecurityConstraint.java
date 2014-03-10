@@ -16,9 +16,9 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.List;
-
 import org.apache.jetspeed.om.common.SecurityConstraint;
+
+import java.util.List;
 
 /**
  * Content security constraint implementation.
@@ -29,10 +29,10 @@ import org.apache.jetspeed.om.common.SecurityConstraint;
 public class ContentSecurityConstraint implements SecurityConstraint
 {
     private boolean mutable;
-    private List groups;
-    private List permissions;
-    private List roles;
-    private List users;
+    private List<String> groups;
+    private List<String> permissions;
+    private List<String> roles;
+    private List<String> users;
 
     /**
      * Construct new security constraint implementation.
@@ -55,7 +55,7 @@ public class ContentSecurityConstraint implements SecurityConstraint
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecurityConstraint#getGroups()
      */
-    public List getGroups()
+    public List<String> getGroups()
     {
         return groups;
     }
@@ -63,7 +63,7 @@ public class ContentSecurityConstraint implements SecurityConstraint
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecurityConstraint#getPermissions()
      */
-    public List getPermissions()
+    public List<String> getPermissions()
     {
         return permissions;
     }
@@ -71,7 +71,7 @@ public class ContentSecurityConstraint implements SecurityConstraint
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecurityConstraint#getRoles()
      */
-    public List getRoles()
+    public List<String> getRoles()
     {
         return roles;
     }
@@ -79,7 +79,7 @@ public class ContentSecurityConstraint implements SecurityConstraint
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecurityConstraint#getUsers()
      */
-    public List getUsers()
+    public List<String> getUsers()
     {
         return users;
     }
@@ -87,7 +87,7 @@ public class ContentSecurityConstraint implements SecurityConstraint
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecurityConstraint#setGroups(java.util.List)
      */
-    public void setGroups(List groups)
+    public void setGroups(List<String> groups)
     {
         if (!mutable)
         {
@@ -99,7 +99,7 @@ public class ContentSecurityConstraint implements SecurityConstraint
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecurityConstraint#setPermissions(java.util.List)
      */
-    public void setPermissions(List permissions)
+    public void setPermissions(List<String> permissions)
     {
         if (!mutable)
         {
@@ -111,7 +111,7 @@ public class ContentSecurityConstraint implements SecurityConstraint
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecurityConstraint#setRoles(java.util.List)
      */
-    public void setRoles(List roles)
+    public void setRoles(List<String> roles)
     {
         if (!mutable)
         {

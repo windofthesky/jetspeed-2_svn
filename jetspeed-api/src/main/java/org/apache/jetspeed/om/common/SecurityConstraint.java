@@ -42,7 +42,7 @@ public interface SecurityConstraint
      *
      * @return constraint users list as List of String
      */
-    List getUsers();
+    List<String> getUsers();
     
     /**
      * <p>
@@ -51,7 +51,7 @@ public interface SecurityConstraint
      *
      * @param users constraint users list as List of String
      */
-    void setUsers(List users);
+    void setUsers(List<String> users);
     
     /**
      * <p>
@@ -60,7 +60,7 @@ public interface SecurityConstraint
      *
      * @return constraint roles list as List of String
      */
-    List getRoles();
+    List<String> getRoles();
     
     /**
      * <p>
@@ -69,7 +69,7 @@ public interface SecurityConstraint
      *
      * @param roles constraint roles list as List of String
      */
-    void setRoles(List roles);
+    void setRoles(List<String> roles);
     
     /**
      * <p>
@@ -78,7 +78,7 @@ public interface SecurityConstraint
      *
      * @return constraint groups list as List of String
      */
-    List getGroups();
+    List<String> getGroups();
     
     /**
      * <p>
@@ -87,7 +87,7 @@ public interface SecurityConstraint
      *
      * @param groups constraint groups list as List of String
      */
-    void setGroups(List groups);
+    void setGroups(List<String> groups);
     
     /**
      * <p>
@@ -96,7 +96,7 @@ public interface SecurityConstraint
      *
      * @return constraint permissions list as List of String
      */
-    List getPermissions();
+    List<String> getPermissions();
     
     /**
      * <p>
@@ -105,5 +105,5 @@ public interface SecurityConstraint
      *
      * @param permissions constraint permissions list as List of String
      */
-    void setPermissions(List permissions);
+    void setPermissions(List<String> permissions);
 }

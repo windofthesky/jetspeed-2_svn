@@ -16,11 +16,11 @@
  */
 package org.apache.jetspeed.om.folder;
 
+import org.apache.jetspeed.om.portlet.GenericMetadata;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
-
-import org.apache.jetspeed.om.portlet.GenericMetadata;
 
 /**
  * This interface describes the object used to define
@@ -61,7 +61,7 @@ public interface MenuDefinition extends Serializable
     /**
      * setOptions - set comma separated menu options if not specified as elements
      *
-     * @param option option paths specification
+     * @param options paths specification
      */
     void setOptions(String options);
 

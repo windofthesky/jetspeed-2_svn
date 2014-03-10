@@ -16,6 +16,16 @@
  */
 package org.apache.jetspeed.headerresource.impl;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.container.url.BasePortalURL;
+import org.apache.jetspeed.headerresource.HeaderResource;
+import org.apache.jetspeed.headerresource.HeaderResourceLib;
+import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
+import org.apache.jetspeed.request.RequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,16 +33,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.jetspeed.PortalReservedParameters;
-import org.apache.jetspeed.container.url.BasePortalURL;
-import org.apache.jetspeed.headerresource.HeaderResource;
-import org.apache.jetspeed.headerresource.HeaderResourceLib;
-import org.apache.jetspeed.portlet.HeaderPhaseSupportConstants;
-import org.apache.jetspeed.request.RequestContext;
 
 /**
  * Default implementation for HeaderResource
@@ -55,7 +55,7 @@ public class HeaderResourceImpl implements HeaderResource
     
     private boolean isDesktop;
     
-    private Map headerConfiguration;
+    private Map<String, Object> headerConfiguration;
     
 
     // ... mutable output tracking
@@ -81,7 +81,7 @@ public class HeaderResourceImpl implements HeaderResource
     {
         this.requestContext = context;
     }
-    public HeaderResourceImpl( RequestContext context, BasePortalURL baseUrlAccess, boolean isDesktop, Map headerConfiguration )
+    public HeaderResourceImpl( RequestContext context, BasePortalURL baseUrlAccess, boolean isDesktop, Map<String, Object> headerConfiguration )
     {
         this.requestContext = context;
         this.baseUrlAccess = baseUrlAccess;
@@ -684,7 +684,7 @@ public class HeaderResourceImpl implements HeaderResource
      * 
      * @return Map containing modifiable header configuration settings 
      */
-    public Map getHeaderDynamicConfiguration()
+    public Map<String, Object> getHeaderDynamicConfiguration()
     {
         if ( this.headerDynamicConfiguration == null )
         {
@@ -760,7 +760,7 @@ public class HeaderResourceImpl implements HeaderResource
      * 
      * @return unmodifiable Map containing complete header configuration settings
      */
-    public Map getHeaderConfiguration()
+    public Map<String, Object> getHeaderConfiguration()
     {
         return this.headerConfiguration;
     }
@@ -1078,7 +1078,7 @@ public class HeaderResourceImpl implements HeaderResource
      * @see org.apache.jetspeed.headerresource.impl.HeaderResource#addHeaderInfo(java.lang.String,
      *      java.util.Map,java.lang.String)
      */
-    public void addHeaderInfo(String elementName, Map attributes, String text)
+    public void addHeaderInfo(String elementName, Map<String, String> attributes, String text)
     {
         HeaderInfo headerInfo = new HeaderInfo(elementName, attributes, text);
         if (!containsHeaderInfo(headerInfo))

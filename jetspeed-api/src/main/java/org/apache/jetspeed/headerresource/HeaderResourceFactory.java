@@ -16,12 +16,11 @@
  */
 package org.apache.jetspeed.headerresource;
 
-import java.util.Map;
-
-import javax.portlet.PortletRequest;
-
 import org.apache.jetspeed.container.url.BasePortalURL;
 import org.apache.jetspeed.request.RequestContext;
+
+import javax.portlet.PortletRequest;
+import java.util.Map;
 
 /**
  * HeaderResourceFactory provides HeaderResource instance to manage tags, such
@@ -51,7 +50,8 @@ public interface HeaderResourceFactory
      * @param requestContext
      * @return
      */
-    public abstract HeaderResource getHeaderResource( RequestContext requestContext, BasePortalURL baseUrlAccess, boolean isDesktop, Map headerConfiguration );
+    public abstract HeaderResource getHeaderResource( RequestContext requestContext, BasePortalURL baseUrlAccess,
+                                                      boolean isDesktop, Map<String, Object> headerConfiguration );
 
     /**
      * Provides HeaderResource instance from PortletRequest.
