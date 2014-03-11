@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.om.folder;
 
-import java.io.Serializable;
-
 /**
  * This interface describes the object used to define
  * portal site menu excluded menu options.
@@ -25,7 +23,7 @@ import java.io.Serializable;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public interface MenuExcludeDefinition extends Serializable
+public interface MenuExcludeDefinition extends MenuDefinitionElement
 {
     /**
      * getName - get menu name with options to exclude

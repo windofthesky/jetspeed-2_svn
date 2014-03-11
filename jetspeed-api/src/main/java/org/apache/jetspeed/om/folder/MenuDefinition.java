@@ -18,7 +18,6 @@ package org.apache.jetspeed.om.folder;
 
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,7 +29,7 @@ import java.util.Locale;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public interface MenuDefinition extends Serializable
+public interface MenuDefinition extends MenuDefinitionElement
 {
     /**
      * ANY_PROFILE_LOCATOR - wildcard value for profile locator names
@@ -207,12 +206,12 @@ public interface MenuDefinition extends Serializable
      *
      * @return element list
      */
-    List getMenuElements();
+    List<MenuDefinitionElement> getMenuElements();
 
     /**
      * setMenuElements - set ordered list of menu options
      *
      * @param elements element list
      */
-    void setMenuElements(List elements);
+    void setMenuElements(List<MenuDefinitionElement> elements);
 }

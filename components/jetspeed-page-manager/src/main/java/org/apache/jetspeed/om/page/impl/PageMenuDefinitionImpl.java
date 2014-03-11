@@ -16,12 +16,13 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuDefinitionElement;
 import org.apache.jetspeed.om.folder.impl.BaseMenuDefinitionImpl;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * PageMenuDefinitionImpl
@@ -48,7 +49,7 @@ public class PageMenuDefinitionImpl extends BaseMenuDefinitionImpl implements Me
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.MenuDefinition#getMenuElements()
      */
-    public List getMenuElements()
+    public List<MenuDefinitionElement> getMenuElements()
     {
         // return mutable menu element list
         // by using list wrapper to manage

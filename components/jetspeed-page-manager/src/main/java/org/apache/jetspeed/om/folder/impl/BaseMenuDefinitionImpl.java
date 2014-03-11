@@ -16,10 +16,11 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
-import java.util.List;
-
 import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuDefinitionElement;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+
+import java.util.List;
 
 /**
  * BaseMenuDefinitionImpl
@@ -221,17 +222,17 @@ public abstract class BaseMenuDefinitionImpl extends BaseMenuDefinitionMetadata 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.MenuDefinition#getMenuElements()
      */
-    public abstract List getMenuElements();
+    public abstract List<MenuDefinitionElement> getMenuElements();
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.MenuDefinition#setMenuElements(java.util.List)
      */
-    public void setMenuElements(List elements)
+    public void setMenuElements(List<MenuDefinitionElement> elements)
     {
         // set menu elements by replacing
         // existing entries with new elements if
         // new collection is specified
-        List menuElements = getMenuElements();
+        List<MenuDefinitionElement> menuElements = getMenuElements();
         if (elements != menuElements)
         {
             // replace all menu elements

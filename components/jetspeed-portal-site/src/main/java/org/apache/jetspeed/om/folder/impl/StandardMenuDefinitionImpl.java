@@ -16,11 +16,12 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuDefinitionElement;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
+
 import java.util.List;
 import java.util.Locale;
-
-import org.apache.jetspeed.om.folder.MenuDefinition;
-import org.apache.jetspeed.om.portlet.GenericMetadata;
 
 /**
  * This abstract class implements the menu definition interface
@@ -73,7 +74,7 @@ public abstract class StandardMenuDefinitionImpl implements MenuDefinition
     /**
      * setOptions - set comma separated menu options if not specified as elements
      *
-     * @param option option paths specification
+     * @param options option paths specification
      */
     public void setOptions(String options)
     {
@@ -308,7 +309,7 @@ public abstract class StandardMenuDefinitionImpl implements MenuDefinition
      *
      * @return element list
      */
-    public List getMenuElements()
+    public List<MenuDefinitionElement> getMenuElements()
     {
         return null;
     }
@@ -318,7 +319,7 @@ public abstract class StandardMenuDefinitionImpl implements MenuDefinition
      *
      * @param elements element list
      */
-    public void setMenuElements(List elements)
+    public void setMenuElements(List<MenuDefinitionElement> elements)
     {
         throw new RuntimeException("StandardMenuDefinitionImpl instance immutable");
     }

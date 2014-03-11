@@ -16,12 +16,13 @@
  */
 package org.apache.jetspeed.om.folder.psml;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuDefinitionElement;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.jetspeed.om.folder.MenuDefinition;
 
 /**
  * This class implements the MenuDefinition
@@ -308,7 +309,7 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
      *
      * @return element list
      */
-    public List getMenuElements()
+    public List<MenuDefinitionElement> getMenuElements()
     {
         return menuElements;
     }
@@ -318,7 +319,7 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
      *
      * @param elements element list
      */
-    public void setMenuElements(List elements)
+    public void setMenuElements(List<MenuDefinitionElement> elements)
     {
         menuElements = elements;
     }
@@ -421,7 +422,6 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
         }
         else
         {
-            
             MenuDefinition definition = (MenuDefinition) obj;
             if (!StringUtils.equals(definition.getName(),name) || !StringUtils.equals(definition.getOptions(),options) || definition.getDepth() != depth ||
                 definition.isPaths() != paths || definition.isRegexp() != regexp || !StringUtils.equals(definition.getProfile(),profile) ||
