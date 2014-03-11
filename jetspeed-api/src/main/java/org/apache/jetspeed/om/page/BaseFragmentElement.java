@@ -17,6 +17,8 @@
 
 package org.apache.jetspeed.om.page;
 
+import org.apache.jetspeed.om.preference.FragmentPreference;
+
 import java.util.List;
 
 /**
@@ -339,14 +341,14 @@ public interface BaseFragmentElement extends BaseElement
      *
      * @return list of FragmentProperty instances
      */
-    List getProperties();
+    List<FragmentProperty> getProperties();
 
     /**
      * Set collection of fragment property objects
      * 
-     * @param preferences list of FragmentPreference objects
+     * @param properties list of FragmentPreference objects
      */
-    void setProperties(List properties);
+    void setProperties(List<FragmentProperty> properties);
 
     /**
      * Get layout row property.
@@ -578,12 +580,12 @@ public interface BaseFragmentElement extends BaseElement
      * 
      * @return list of FragmentPreference objects
      */
-    List getPreferences();
+    List<FragmentPreference> getPreferences();
 
     /**
      * Set collection of fragment preference objects
      * 
      * @param preferences list of FragmentPreference objects
      */
-    void setPreferences(List preferences);
+    void setPreferences(List<FragmentPreference> preferences);
 }

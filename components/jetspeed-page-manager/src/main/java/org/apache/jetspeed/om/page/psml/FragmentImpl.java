@@ -17,19 +17,19 @@
 
 package org.apache.jetspeed.om.page.psml;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
 import org.apache.jetspeed.om.page.Fragment;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * @version $Id$
@@ -70,7 +70,7 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
         return fragments;
     }
 
-    public List getFragments()
+    public List<BaseFragmentElement> getFragments()
     {
         // create and return mutable fragments collection
         // filtered by view access
@@ -357,16 +357,16 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
      *
      * Filter fragments list for view access.
      *
-     * @param nodes list containing fragments to check
+     * @param fragments list containing fragments to check
      * @return original list if all elements viewable, a filtered
      *         partial list, or null if all filtered for view access
      */
-    List filterFragmentsByAccess(List fragments)
+    List<BaseFragmentElement> filterFragmentsByAccess(List<BaseFragmentElement> fragments)
     {
         if ((fragments != null) && !fragments.isEmpty())
         {
             // check permissions and constraints, filter fragments as required
-            List filteredFragments = null;
+            List<BaseFragmentElement> filteredFragments = null;
             Iterator checkAccessIter = fragments.iterator();
             while (checkAccessIter.hasNext())
             {
@@ -390,7 +390,7 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
                     {
                         // not permitted, copy previously permitted fragments
                         // to new filteredFragments node set with same comparator
-                        filteredFragments = new ArrayList(fragments.size());
+                        filteredFragments = new ArrayList<BaseFragmentElement>(fragments.size());
                         Iterator copyIter = fragments.iterator();
                         while (copyIter.hasNext())
                         {

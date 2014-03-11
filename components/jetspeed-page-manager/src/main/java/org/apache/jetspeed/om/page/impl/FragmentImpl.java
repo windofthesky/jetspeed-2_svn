@@ -16,15 +16,16 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * FragmentImpl
@@ -266,7 +267,7 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getFragments()
      */
-    public List getFragments()
+    public List<BaseFragmentElement> getFragments()
     {
         // create and return mutable fragments collection
         // filtered by view access
@@ -307,17 +308,17 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
      *
      * Filter fragments list for view access.
      *
-     * @param nodes list containing fragments to check
+     * @param fragments list containing fragments to check
      * @param mutable make returned list mutable
      * @return original list if all elements viewable, a filtered
      *         partial list, or null if all filtered for view access
      */
-    List filterFragmentsByAccess(List fragments, boolean mutable)
+    List<BaseFragmentElement> filterFragmentsByAccess(List<BaseFragmentElement> fragments, boolean mutable)
     {
         if ((fragments != null) && !fragments.isEmpty())
         {
             // check permissions and constraints, filter fragments as required
-            List filteredFragments = null;
+            List<BaseFragmentElement> filteredFragments = null;
             Iterator checkAccessIter = fragments.iterator();
             while (checkAccessIter.hasNext())
             {
@@ -341,7 +342,7 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
                     {
                         // not permitted, copy previously permitted fragments
                         // to new filteredFragments node set with same comparator
-                        filteredFragments = DatabasePageManagerUtils.createList();
+                        filteredFragments = new ArrayList<BaseFragmentElement>(fragments.size());
                         Iterator copyIter = fragments.iterator();
                         while (copyIter.hasNext())
                         {

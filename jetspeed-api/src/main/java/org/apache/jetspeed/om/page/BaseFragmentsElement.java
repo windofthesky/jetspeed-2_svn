@@ -67,7 +67,7 @@ public interface BaseFragmentsElement extends Document
      * @param name the fragment name to look for
      * @return the list of found Fragment objects or null if not found
      */
-    List getFragmentsByName(String name);
+    List<BaseFragmentElement> getFragmentsByName(String name);
 
     /**
      * Retrieves the fragments contained within this page, with the
@@ -76,5 +76,5 @@ public interface BaseFragmentsElement extends Document
      * @param interfaceFilter the fragment interface to match or null for all
      * @return the list of found Fragment objects or null if not found
      */
-    List getFragmentsByInterface(Class interfaceFilter);
+    List<BaseFragmentElement> getFragmentsByInterface(Class interfaceFilter);
 }

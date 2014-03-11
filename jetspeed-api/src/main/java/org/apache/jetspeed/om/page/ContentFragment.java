@@ -21,6 +21,7 @@ import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.layout.PageLayoutComponent;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
+import org.apache.jetspeed.om.preference.FragmentPreference;
 
 import java.util.List;
 import java.util.Map;
@@ -278,7 +279,7 @@ public interface ContentFragment
      *
      * @return list of FragmentProperty instances
      */
-    List getProperties();
+    List<FragmentProperty> getProperties();
 
     /**
      * Get named property value map. Property values are returned
@@ -287,7 +288,7 @@ public interface ContentFragment
      *
      * @return map of fragment property values
      */
-    Map getPropertiesMap();
+    Map<String,String> getPropertiesMap();
 
     /**
      * Get layout row property.
@@ -367,7 +368,7 @@ public interface ContentFragment
      * 
      * @return list of FragmentPreference objects
      */
-    List getPreferences();    
+    List<FragmentPreference> getPreferences();
     
     /************** Fragment **************/
     
@@ -618,7 +619,7 @@ public interface ContentFragment
      * 
      * @param preferences map of new preferences set.
      */
-    void updatePreferences(Map preferences);
+    void updatePreferences(Map<String,?> preferences);
 
     /**
      * Update fragment property. The default, (Global), scope value

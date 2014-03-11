@@ -392,7 +392,7 @@ public interface PageLayoutComponent
      * @param contentFragment content fragment context
      * @param preferences map of new preferences set.
      */
-    void updatePreferences(ContentFragment contentFragment, Map<String, Object> preferences);
+    void updatePreferences(ContentFragment contentFragment, Map<String,?> preferences);
 
     /**
      * Update global fragment property.

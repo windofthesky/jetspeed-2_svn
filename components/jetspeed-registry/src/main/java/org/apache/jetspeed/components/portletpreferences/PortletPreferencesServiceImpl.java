@@ -16,20 +16,6 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Map.Entry;
-
-import javax.portlet.PortletRequest;
-import javax.portlet.PreferencesValidator;
-import javax.portlet.ValidatorException;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
@@ -50,6 +36,19 @@ import org.apache.pluto.container.PortletContainerException;
 import org.apache.pluto.container.PortletPreference;
 import org.apache.pluto.container.om.portlet.PortletDefinition;
 import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
+
+import javax.portlet.PortletRequest;
+import javax.portlet.PreferencesValidator;
+import javax.portlet.ValidatorException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * <p>
@@ -568,7 +567,6 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     /**
      * Jetspeed: PortletPreferencesProvider
      */        
-    @SuppressWarnings("unchecked")
     public void storeEntityPreferences(Map<String, PortletPreference> map, PortletWindow window)
             throws PreferencesException
     {

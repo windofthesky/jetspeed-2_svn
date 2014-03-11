@@ -41,7 +41,7 @@ public interface PageSecurity extends Document
      *
      * @return security constraints definitions of type SecurityConstraintsDef
      */
-    List getSecurityConstraintsDefs();
+    List<SecurityConstraintsDef> getSecurityConstraintsDefs();
     
     /**
      * <p>
@@ -57,9 +57,9 @@ public interface PageSecurity extends Document
      * setSecurityConstraintsDefs
      * </p>
      *
-     * @param defintions security constraints definitions
+     * @param definitions security constraints definitions
      */
-    void setSecurityConstraintsDefs(List definitions);
+    void setSecurityConstraintsDefs(List<SecurityConstraintsDef> definitions);
 
     /**
      * <p>
@@ -78,7 +78,7 @@ public interface PageSecurity extends Document
      *
      * @return global security constraints references of element type String
      */
-    List getGlobalSecurityConstraintsRefs();
+    List<String> getGlobalSecurityConstraintsRefs();
     
     /**
      * <p>
@@ -87,5 +87,5 @@ public interface PageSecurity extends Document
      *
      * @param constraintsRefs global security constraints references
      */
-    void setGlobalSecurityConstraintsRefs(List constraintsRefs);
+    void setGlobalSecurityConstraintsRefs(List<String> constraintsRefs);
 }

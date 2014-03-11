@@ -16,10 +16,11 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.List;
-
+import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+
+import java.util.List;
 
 /**
  * SecurityConstraintsDefImpl
@@ -71,7 +72,7 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.SecurityConstraintsDef#getSecurityConstraints()
      */
-    public List getSecurityConstraints()
+    public List<SecurityConstraint> getSecurityConstraints()
     {
         // return mutable constraint def list
         // by using list wrapper to manage apply order
@@ -85,12 +86,12 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.SecurityConstraintsDef#setSecurityConstraints(java.util.List)
      */
-    public void setSecurityConstraints(List constraints)
+    public void setSecurityConstraints(List<SecurityConstraint> constraints)
     {
         // set constraint defs by replacing existing
         // entries with new elements if new collection
         // is specified
-        List securityConstraintDefs = getSecurityConstraints();
+        List<SecurityConstraint> securityConstraintDefs = getSecurityConstraints();
         if (constraints != securityConstraintDefs)
         {
             // replace all constraints

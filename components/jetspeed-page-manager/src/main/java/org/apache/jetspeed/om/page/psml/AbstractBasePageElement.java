@@ -17,9 +17,6 @@
 
 package org.apache.jetspeed.om.page.psml;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
@@ -32,6 +29,9 @@ import org.apache.jetspeed.om.folder.psml.MenuIncludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.BasePageElement;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * AbstractBasePageElement
@@ -84,7 +84,7 @@ public abstract class AbstractBasePageElement extends AbstractBaseFragmentsEleme
      *
      * @return definition list
      */
-    public List getMenuDefinitions()
+    public List<MenuDefinition> getMenuDefinitions()
     {
         return menuDefinitions;
     }
@@ -144,7 +144,7 @@ public abstract class AbstractBasePageElement extends AbstractBaseFragmentsEleme
      *
      * @param definitions definition list
      */
-    public void setMenuDefinitions(List definitions)
+    public void setMenuDefinitions(List<MenuDefinition> definitions)
     {
         menuDefinitions = definitions;
     }

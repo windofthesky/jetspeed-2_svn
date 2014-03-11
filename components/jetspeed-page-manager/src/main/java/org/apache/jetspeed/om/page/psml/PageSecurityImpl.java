@@ -16,13 +16,13 @@
  */
 package org.apache.jetspeed.om.page.psml;
 
+import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.page.SecurityConstraintsDef;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.jetspeed.om.page.PageSecurity;
-import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 
 /**
  * <p>
@@ -64,7 +64,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
      * @see org.apache.jetspeed.om.page.PageSecurity#getSecurityConstraintsDefs()
      * @return
      */
-    public List getSecurityConstraintsDefs()
+    public List<SecurityConstraintsDef> getSecurityConstraintsDefs()
     {
         return constraintsDefsList;
     }
@@ -75,9 +75,9 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
      * </p>
      *
      * @see org.apache.jetspeed.om.page.PageSecurity#setSecurityConstraintsDefs(java.util.List)
-     * @param defintions
+     * @param definitions
      */
-    public void setSecurityConstraintsDefs(List definitions)
+    public void setSecurityConstraintsDefs(List<SecurityConstraintsDef> definitions)
     {
         constraintsDefsList = definitions;
         constraintsDefsMap = null;

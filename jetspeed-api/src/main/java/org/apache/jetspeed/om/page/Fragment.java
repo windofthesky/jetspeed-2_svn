@@ -94,7 +94,7 @@ public interface Fragment extends BaseFragmentElement, Serializable
      *
      * @return a collection containing BaseFragmentElement objects
      */
-    List getFragments();
+    List<BaseFragmentElement> getFragments();
     
     /**
      * Retrieves the fragment contained within this fragment, with the

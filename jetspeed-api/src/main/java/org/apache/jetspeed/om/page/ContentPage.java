@@ -16,12 +16,12 @@
 */
 package org.apache.jetspeed.om.page;
 
+import org.apache.jetspeed.layout.PageLayoutComponent;
+import org.apache.jetspeed.om.portlet.GenericMetadata;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import org.apache.jetspeed.layout.PageLayoutComponent;
-import org.apache.jetspeed.om.portlet.GenericMetadata;
 
 /**
  * ContentPage is a read-only version of the {@link org.apache.jetspeed.om.page.Page}
@@ -173,7 +173,7 @@ public interface ContentPage
      * @param name name of the ContentFragments we want to retrieve.
      * @return list of ContentFragment
      */
-    List getFragmentsByName(String name);
+    List<ContentFragment> getFragmentsByName(String name);
     
     /************** BaseConcretePageElement **************/
 
@@ -238,7 +238,7 @@ public interface ContentPage
      * 
      * @return persistent fragment definitions or null
      */
-    Map getFragmentDefinitions();
+    Map<String,FragmentDefinition> getFragmentDefinitions();
     
     /**
      * Returns the PageLayoutComponent that generated this ContentPage
@@ -271,7 +271,7 @@ public interface ContentPage
      * @param nonTemplate return only non-template matching fragments
      * @return list of matching content fragments
      */
-    List getFragmentsByName(String name, boolean nonTemplate);
+    List<ContentFragment> getFragmentsByName(String name, boolean nonTemplate);
     
     /**
      * Returns the root layout fragment which is not merged

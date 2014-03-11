@@ -17,16 +17,17 @@
 
 package org.apache.jetspeed.om.page.psml;
 
-import java.security.AccessController;
-import java.security.Permission;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
 import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.preference.FragmentPreference;
+
+import java.security.AccessController;
+import java.security.Permission;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * AbstractBaseFragmentElement
@@ -373,7 +374,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
     /**
      * @see org.apache.jetspeed.om.page.BaseFragmentElement#getProperties()
      */
-    public List getProperties()
+    public List<FragmentProperty> getProperties()
     {
         return new PropertiesList(PropertyImpl.filterFragmentProperties(propertyImpls), propertyImpls);
     }
@@ -381,11 +382,11 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
     /**
      * @see org.apache.jetspeed.om.page.BaseFragmentElement#setProperties(java.util.List)
      */
-    public void setProperties(List properties)
+    public void setProperties(List<FragmentProperty> properties)
     {
         // get and remove all filtered properties and replace
         // with new specified properties
-        List propertiesList = getProperties();
+        List<FragmentProperty> propertiesList = getProperties();
         propertiesList.clear();
         propertiesList.addAll(properties);
     } 
@@ -632,7 +633,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      * 
      * @see org.apache.jetspeed.om.page.BaseFragmentElement#getPreferences()
      */
-    public List getPreferences()
+    public List<FragmentPreference> getPreferences()
     {
         return preferences;
     }
@@ -645,7 +646,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      * @see org.apache.jetspeed.om.page.BaseFragmentElement#setPreferences(java.util.List)
      * @param preferences
      */
-    public void setPreferences(List preferences)
+    public void setPreferences(List<FragmentPreference> preferences)
     {
         if (preferences == null)
         {
@@ -667,7 +668,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
     /**
      * Set owning base fragments element.
      * 
-     * @param base fragments element
+     * @param baseFragmentsElement fragments element
      */
     void setBaseFragmentsElement(AbstractBaseFragmentsElement baseFragmentsElement)
     {
@@ -819,7 +820,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
     /**
      * Castor raw property member access.
      * 
-     * @param decorator property value
+     * @param skin property value
      */
     public void setSkinPropertyField(String skin)
     {

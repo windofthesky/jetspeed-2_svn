@@ -16,10 +16,10 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import org.apache.jetspeed.om.preference.FragmentPreference;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.jetspeed.om.preference.FragmentPreference;
 
 /**
  * Immutable content fragment preferences element implementation.
@@ -58,11 +58,11 @@ public class ContentFragmentPreferenceImpl implements FragmentPreference
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.preference.FragmentPreference#getValueList()
      */
-    public List getValueList()
+    public List<String> getValueList()
     {
         if (this.valueList == null)
         {
-            this.valueList = new ArrayList();            
+            this.valueList = new ArrayList();
         }
         return this.valueList;
     }
@@ -94,7 +94,7 @@ public class ContentFragmentPreferenceImpl implements FragmentPreference
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.preference.FragmentPreference#setValueList(java.util.List)
      */
-    public void setValueList(List values)
+    public void setValueList(List<String> values)
     {
         throw new UnsupportedOperationException("FragmentPreference.setValueList()");
     }

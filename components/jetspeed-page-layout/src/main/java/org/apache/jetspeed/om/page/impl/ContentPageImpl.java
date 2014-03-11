@@ -26,6 +26,7 @@ import org.apache.jetspeed.layout.impl.PageLayoutComponentUtils;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
 
@@ -41,7 +42,7 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     private String id;
     private BaseFragmentsElement pageOrTemplate;
     private PageTemplate pageTemplate;
-    private Map fragmentDefinitions;
+    private Map<String,FragmentDefinition> fragmentDefinitions;
 
     private ContentFragmentImpl rootContentFragment;
     private GenericMetadata metadata;
@@ -86,7 +87,7 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
      * @param pageTemplate PSML page template
      * @param fragmentDefinitions PSML fragment definitions
      */
-    public ContentPageImpl(PageLayoutComponent pageLayoutComponent, String id, BaseFragmentsElement pageOrTemplate, PageTemplate pageTemplate, Map fragmentDefinitions)
+    public ContentPageImpl(PageLayoutComponent pageLayoutComponent, String id, BaseFragmentsElement pageOrTemplate, PageTemplate pageTemplate, Map<String,FragmentDefinition> fragmentDefinitions)
     {
         this.pageLayoutComponent = pageLayoutComponent;
         this.id = id;
@@ -155,7 +156,7 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#getFragmentDefinitions()
      */
-    public Map getFragmentDefinitions()
+    public Map<String,FragmentDefinition> getFragmentDefinitions()
     {
         return fragmentDefinitions;
     }
@@ -187,7 +188,7 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#getFragmentsByName(java.lang.String)
      */
-    public List getFragmentsByName(String name)
+    public List<ContentFragment> getFragmentsByName(String name)
     {
         if (rootContentFragment != null)
         {
@@ -376,7 +377,7 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#getFragmentsByName(java.lang.String, boolean)
      */
-    public List getFragmentsByName(String name, boolean nonTemplate)
+    public List<ContentFragment> getFragmentsByName(String name, boolean nonTemplate)
     {
         if (rootContentFragment != null)
         {

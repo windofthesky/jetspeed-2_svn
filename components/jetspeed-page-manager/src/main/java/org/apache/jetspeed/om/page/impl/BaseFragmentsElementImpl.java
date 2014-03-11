@@ -16,10 +16,6 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
@@ -27,6 +23,10 @@ import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.page.document.impl.DocumentImpl;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * BaseFragmentsElementImpl
@@ -198,7 +198,7 @@ public abstract class BaseFragmentsElementImpl extends DocumentImpl implements B
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseFragmentsElement#getFragmentsByInterface(java.lang.Class)
      */
-    public List getFragmentsByInterface(Class interfaceFilter)
+    public List<BaseFragmentElement> getFragmentsByInterface(Class interfaceFilter)
     {
         // get fragments by interface and filter by access
         BaseFragmentElementImpl rootFragment = (BaseFragmentElementImpl)getRootFragment();
@@ -217,7 +217,7 @@ public abstract class BaseFragmentsElementImpl extends DocumentImpl implements B
                     // check access
                     rootFragment.checkAccess(JetspeedActions.VIEW);
                     // return immutable filtered fragment list
-                    List fragmentsList = new ArrayList();
+                    List<BaseFragmentElement> fragmentsList = new ArrayList<BaseFragmentElement>();
                     fragmentsList.add(rootFragment);
                     return fragmentsList;
                 }

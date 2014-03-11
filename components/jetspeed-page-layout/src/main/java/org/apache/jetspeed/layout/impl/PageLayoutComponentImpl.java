@@ -1646,7 +1646,7 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
     /* (non-Javadoc)
      * @see org.apache.jetspeed.layout.PageLayoutComponent#updatePreferences(org.apache.jetspeed.om.page.ContentFragment, java.util.Map)
      */
-    public void updatePreferences(ContentFragment contentFragment, Map<String, Object> preferences)
+    public void updatePreferences(ContentFragment contentFragment, Map<String,?> preferences)
     {
         log.debug("PageLayoutComponentImpl.updatePreferences() invoked");
         try

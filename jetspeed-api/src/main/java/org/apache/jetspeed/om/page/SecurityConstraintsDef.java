@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.om.page;
 
+import org.apache.jetspeed.om.common.SecurityConstraint;
+
 import java.util.List;
 
 /**
@@ -57,7 +59,7 @@ public interface SecurityConstraintsDef
      *
      * @return security constraints list for resource
      */
-    List getSecurityConstraints();
+    List<SecurityConstraint> getSecurityConstraints();
     
     /**
      * <p>
@@ -66,5 +68,5 @@ public interface SecurityConstraintsDef
      *
      * @param constraints security constraints for resource
      */
-    void setSecurityConstraints(List constraints);
+    void setSecurityConstraints(List<SecurityConstraint> constraints);
 }

@@ -16,16 +16,6 @@
  */
 package org.apache.jetspeed.portalsite.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Locale;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
@@ -43,6 +33,16 @@ import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.portalsite.menu.DefaultMenuDefinition;
 import org.apache.jetspeed.portalsite.menu.DefaultMenuOptionsDefinition;
 import org.apache.jetspeed.portalsite.view.AbstractSiteView;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class implements the portal-site menu elements
@@ -75,7 +75,6 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
     /**
      * MenuImpl - request/session context dependent constructor
      *
-     * @param view site view used to construct menu
      * @param definition menu definition
      * @param path menu definition path
      * @param context request context

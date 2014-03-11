@@ -17,18 +17,18 @@
 
 package org.apache.jetspeed.om.page.psml;
 
+import org.apache.jetspeed.idgenerator.IdGenerator;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
+import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
+import org.apache.jetspeed.om.page.BaseFragmentsElement;
+import org.apache.jetspeed.om.page.Fragment;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-
-import org.apache.jetspeed.idgenerator.IdGenerator;
-import org.apache.jetspeed.om.page.BaseFragmentElement;
-import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
-import org.apache.jetspeed.om.page.BaseFragmentsElement;
-import org.apache.jetspeed.om.page.Fragment;
 
 /**
  * AbstractBaseFragmentsElement
@@ -232,9 +232,9 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseFragmentsElement#getFragmentsByName(java.lang.String)
      */
-    public List getFragmentsByName( String name )
+    public List<BaseFragmentElement> getFragmentsByName( String name )
     {
-        List fragments = new ArrayList();
+        List<BaseFragmentElement> fragments = new ArrayList<BaseFragmentElement>();
 
         Stack stack = new Stack();
         if (getRootFragment() != null)
@@ -278,9 +278,9 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseFragmentsElement#getFragmentsByInterface(java.lang.Class)
      */
-    public List getFragmentsByInterface( Class interfaceFilter )
+    public List<BaseFragmentElement> getFragmentsByInterface( Class interfaceFilter )
     {
-        List fragments = new ArrayList();
+        List<BaseFragmentElement> fragments = new ArrayList<BaseFragmentElement>();
 
         Stack stack = new Stack();
         if (getRootFragment() != null)

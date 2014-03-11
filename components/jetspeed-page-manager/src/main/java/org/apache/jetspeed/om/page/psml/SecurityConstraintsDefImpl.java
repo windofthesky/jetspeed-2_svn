@@ -19,6 +19,7 @@ package org.apache.jetspeed.om.page.psml;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 
 /**
@@ -43,7 +44,7 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
      * getName
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecurityConstraintsDef#getName()
+     * @see org.apache.jetspeed.om.page.SecurityConstraintsDef#getName()
      * @return
      */
     public String getName()
@@ -56,7 +57,7 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
      * setName
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecurityConstraintsDef#setName(java.lang.String)
+     * @see org.apache.jetspeed.om.page.SecurityConstraintsDef#setName(java.lang.String)
      * @param name
      */
     public void setName(String name)
@@ -69,10 +70,10 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
      * getSecurityConstraints
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecurityConstraintsDef#getSecurityConstraints()
+     * @see org.apache.jetspeed.om.page.SecurityConstraintsDef#getSecurityConstraints()
      * @return
      */
-    public List getSecurityConstraints()
+    public List<SecurityConstraint> getSecurityConstraints()
     {
         return constraints;
     }
@@ -82,10 +83,10 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
      * setSecurityConstraint
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecurityConstraintsDef#setSecurityConstraints(java.util.List)
+     * @see org.apache.jetspeed.om.page.SecurityConstraintsDef#setSecurityConstraints(java.util.List)
      * @param constraints
      */
-    public void setSecurityConstraints(List constraints)
+    public void setSecurityConstraints(List<SecurityConstraint> constraints)
     {
         this.constraints = constraints;
     }

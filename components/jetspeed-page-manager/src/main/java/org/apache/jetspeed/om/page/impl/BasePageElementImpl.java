@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.List;
-
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
@@ -26,6 +24,8 @@ import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.page.BasePageElement;
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+
+import java.util.List;
 
 /**
  * BasePageElementImpl
@@ -131,7 +131,7 @@ public abstract class BasePageElementImpl extends BaseFragmentsElementImpl imple
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Page#getMenuDefinitions()
      */
-    public List getMenuDefinitions()
+    public List<MenuDefinition> getMenuDefinitions()
     {
         // return mutable menu definition list
         // by using list wrapper to manage
@@ -186,12 +186,12 @@ public abstract class BasePageElementImpl extends BaseFragmentsElementImpl imple
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Page#setMenuDefinitions(java.util.List)
      */
-    public void setMenuDefinitions(List definitions)
+    public void setMenuDefinitions(List<MenuDefinition> definitions)
     {
         // set menu definitions by replacing
         // existing entries with new elements if
         // new collection is specified
-        List menuDefinitions = getMenuDefinitions();
+        List<MenuDefinition> menuDefinitions = getMenuDefinitions();
         if (definitions != menuDefinitions)
         {
             // replace all menu definitions

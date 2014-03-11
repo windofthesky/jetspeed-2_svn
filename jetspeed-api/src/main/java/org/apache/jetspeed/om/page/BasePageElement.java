@@ -16,13 +16,13 @@
  */
 package org.apache.jetspeed.om.page;
 
-import java.util.List;
-
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
+
+import java.util.List;
 
 /**
  * This interface represents a generic page document used by Jetspeed
@@ -70,7 +70,7 @@ public interface BasePageElement extends BaseFragmentsElement
      *
      * @return definition list
      */
-    List getMenuDefinitions();
+    List<MenuDefinition> getMenuDefinitions();
 
     /**
      * newMenuDefinition - creates a new empty menu definition
@@ -112,5 +112,5 @@ public interface BasePageElement extends BaseFragmentsElement
      *
      * @param definitions definition list
      */
-    void setMenuDefinitions(List definitions);    
+    void setMenuDefinitions(List<MenuDefinition> definitions);
 }

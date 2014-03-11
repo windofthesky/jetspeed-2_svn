@@ -16,16 +16,16 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.page.document.impl.DocumentImpl;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * PageSecurityImpl
@@ -103,7 +103,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.PageSecurity#getSecurityConstraintsDefs()
      */
-    public List getSecurityConstraintsDefs()
+    public List<SecurityConstraintsDef> getSecurityConstraintsDefs()
     {
         // return mutable constraints defs list
         // by using list wrapper to manage
@@ -127,12 +127,12 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.PageSecurity#setSecurityConstraintsDefs(java.util.List)
      */
-    public void setSecurityConstraintsDefs(List definitions)
+    public void setSecurityConstraintsDefs(List<SecurityConstraintsDef> definitions)
     {
         // set constraints defs by replacing existing
         // entries with new elements if new collection
         // is specified
-        List securityConstraintsDefs = getSecurityConstraintsDefs();
+        List<SecurityConstraintsDef> securityConstraintsDefs = getSecurityConstraintsDefs();
         if (definitions != securityConstraintsDefs)
         {
             // replace all constraints definitions
@@ -178,7 +178,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.PageSecurity#getGlobalSecurityConstraintsRefs()
      */
-    public List getGlobalSecurityConstraintsRefs()
+    public List<String> getGlobalSecurityConstraintsRefs()
     {
         // return mutable constraints refs list
         // by using list wrapper to manage apply
@@ -193,12 +193,12 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.PageSecurity#setGlobalSecurityConstraintsRefs(java.util.List)
      */
-    public void setGlobalSecurityConstraintsRefs(List constraintsRefs)
+    public void setGlobalSecurityConstraintsRefs(List<String> constraintsRefs)
     {
         // set constraints refs using ordered ref
         // names by replacing existing entries with
         // new elements if new collection is specified
-        List globalSecurityConstraintsRefs = getGlobalSecurityConstraintsRefs();
+        List<String> globalSecurityConstraintsRefs = getGlobalSecurityConstraintsRefs();
         if (constraintsRefs != globalSecurityConstraintsRefs)
         {
             // replace all constraints ref names

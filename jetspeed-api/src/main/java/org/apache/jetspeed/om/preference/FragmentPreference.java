@@ -59,12 +59,12 @@ public interface FragmentPreference
      *
      * @return list of String preference values
      */
-    List getValueList();
+    List<String> getValueList();
     
     /**
      * setValueList
      *
      * @param values list of String preference values
      */
-    void setValueList(List values);
+    void setValueList(List<String> values);
 }

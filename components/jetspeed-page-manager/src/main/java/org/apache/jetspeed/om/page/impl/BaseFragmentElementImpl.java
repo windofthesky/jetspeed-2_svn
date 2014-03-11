@@ -16,20 +16,21 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.security.AccessController;
-import java.security.Permission;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
 import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.PageSecurity;
+import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.FragmentPropertyList;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
+
+import java.security.AccessController;
+import java.security.Permission;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BaseFragmentElementImpl
@@ -773,7 +774,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseFragmentElement#getProperties()
      */
-    public List getProperties()
+    public List<FragmentProperty> getProperties()
     {
         // get properties for this fragment from page manager
         // if fragment is not newly constructed
@@ -798,12 +799,12 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseFragmentElement#setProperties(java.util.List)
      */
-    public void setProperties(List properties)
+    public void setProperties(List<FragmentProperty> properties)
     {
         // set properties by replacing existing
         // entries with new elements if new collection
         // is specified
-        List fragmentProperties = getProperties();
+        List<FragmentProperty> fragmentProperties = getProperties();
         if (properties != fragmentProperties)
         {
             // replace all preferences
@@ -1034,7 +1035,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseFragmentElement#getPreferences()
      */
-    public List getPreferences()
+    public List<FragmentPreference> getPreferences()
     {
         // return mutable preferences list
         // by using list wrapper to manage
@@ -1049,12 +1050,12 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseFragmentElement#setPreferences(java.util.List)
      */
-    public void setPreferences(List preferences)
+    public void setPreferences(List<FragmentPreference> preferences)
     {
         // set preferences by replacing existing
         // entries with new elements if new collection
         // is specified
-        List fragmentPreferences = getPreferences();
+        List<FragmentPreference> fragmentPreferences = getPreferences();
         if (preferences != fragmentPreferences)
         {
             // replace all preferences

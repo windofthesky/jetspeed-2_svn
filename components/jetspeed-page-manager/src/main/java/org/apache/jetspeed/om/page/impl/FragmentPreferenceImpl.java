@@ -16,10 +16,10 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.List;
-
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+
+import java.util.List;
 
 /**
  * FragmentPreferenceImpl
@@ -91,7 +91,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.preference.FragmentPreference#getValueList()
      */
-    public List getValueList()
+    public List<String> getValueList()
     {
         // return mutable preference value list
         // using list wrapper to manage value order
@@ -105,12 +105,12 @@ public class FragmentPreferenceImpl implements FragmentPreference
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.preference.FragmentPreference#setValueList(java.util.List)
      */
-    public void setValueList(List values)
+    public void setValueList(List<String> values)
     {
         // set preference values by replacing existing
         // entries with new elements if new collection
         // is specified
-        List preferenceValues = getValueList();
+        List<String> preferenceValues = getValueList();
         if (values != preferenceValues)
         {
             // replace all values

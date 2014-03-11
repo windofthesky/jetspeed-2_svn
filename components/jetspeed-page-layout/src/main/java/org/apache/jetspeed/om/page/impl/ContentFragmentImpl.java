@@ -16,15 +16,6 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.decoration.Decoration;
 import org.apache.jetspeed.layout.PageLayoutComponent;
@@ -38,9 +29,17 @@ import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.FragmentReference;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.pluto.container.PortletPreference;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Immutable content fragment implementation.
@@ -395,7 +394,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#getPreferences()
      */
-    public List getPreferences()
+    public List<FragmentPreference> getPreferences()
     {
         if (preferences == null)
         {
@@ -407,7 +406,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#getProperties()
      */
-    public List getProperties()
+    public List<FragmentProperty> getProperties()
     {
         if (properties == null)
         {
@@ -419,10 +418,10 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#getPropertiesMap()
      */
-    public Map getPropertiesMap()
+    public Map<String,String> getPropertiesMap()
     {
         // get property names
-        Set propertyNames = new HashSet();
+        Set<String> propertyNames = new HashSet<String>();
         Iterator propertiesIter = getProperties().iterator();
         while (propertiesIter.hasNext())
         {
@@ -431,7 +430,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
         }
         
         // construct and return properties map 
-        Map propertiesMap = new HashMap();
+        Map<String,String> propertiesMap = new HashMap<String,String>();
         Iterator propertyNamesIter = propertyNames.iterator();
         while (propertyNamesIter.hasNext())
         {
@@ -829,7 +828,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentFragment#updatePreferences(java.util.Map)
      */
-    public void updatePreferences(Map preferences)
+    public void updatePreferences(Map<String,?> preferences)
     {
         if (pageLayoutComponent != null)
         {
@@ -1006,7 +1005,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
      * Get content fragment and parent by id.
      * 
      * @param id content fragment id
-     * @param parent returned parent content fragment
+     * @param parentFragment returned parent content fragment
      * @return content fragment
      */
     public ContentFragmentImpl getFragmentById(String id, ContentFragmentImpl [] parentFragment)
@@ -1474,7 +1473,7 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     /**
      * Set property.
      * 
-     * @param name property name
+     * @param propName property name
      * @param scope property scope
      * @param scopeValue property scope value
      * @param value property value

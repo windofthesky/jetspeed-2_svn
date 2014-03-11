@@ -16,10 +16,10 @@
  */
 package org.apache.jetspeed.om.page.psml;
 
+import org.apache.jetspeed.om.preference.FragmentPreference;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.jetspeed.om.preference.FragmentPreference;
 
 /**
  * 
@@ -55,7 +55,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
         this.readOnly = readOnly;
     }
     
-    public List getValueList()
+    public List<String> getValueList()
     {
         if (this.values == null)
         {
@@ -64,7 +64,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
         return this.values;
     }
     
-    public void setValueList(List values)
+    public void setValueList(List<String> values)
     {
         this.values = values;
     }
