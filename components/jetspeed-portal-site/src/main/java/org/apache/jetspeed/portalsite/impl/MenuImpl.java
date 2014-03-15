@@ -62,7 +62,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * elements - ordered list of menu elements that
      *            make up this instantiated menu
      */
-    private List elements;
+    private List<MenuElement> elements;
 
     /**
      * elementRelative - flag that indicates whether any relative paths
@@ -809,7 +809,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
         if (copy.elements != null)
         {
             Iterator elementsIter = copy.elements.iterator();
-            copy.elements = new ArrayList(copy.elements.size());
+            copy.elements = new ArrayList<MenuElement>(copy.elements.size());
             while (elementsIter.hasNext())
             {
                 MenuElementImpl elementCopy = (MenuElementImpl)((MenuElementImpl)elementsIter.next()).clone();
@@ -1008,7 +1008,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      *
      * @return menu elements list
      */
-    public List getElements()
+    public List<MenuElement> getElements()
     {
         return elements;
     }

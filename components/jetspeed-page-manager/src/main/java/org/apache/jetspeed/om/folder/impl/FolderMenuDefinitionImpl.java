@@ -19,6 +19,7 @@ package org.apache.jetspeed.om.folder.impl;
 import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuDefinitionElement;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +39,7 @@ public class FolderMenuDefinitionImpl extends BaseMenuDefinitionImpl implements 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.impl.BaseMenuDefinitionMetadata#newPageMetadata()
      */
-    public PageMetadataImpl newPageMetadata(Collection fields)
+    public PageMetadataImpl newPageMetadata(Collection<LocalizedField> fields)
     {
         PageMetadataImpl pageMetadata = new PageMetadataImpl(FolderMenuMetadataLocalizedFieldImpl.class);
         pageMetadata.setFields(fields);

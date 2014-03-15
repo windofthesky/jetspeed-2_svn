@@ -34,8 +34,10 @@ import javax.security.auth.Subject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -94,9 +96,11 @@ public class DatabasePageManagerServer
         
         // create jexl context
         jexlContext = JexlHelper.createContext();
-        jexlContext.getVars().put("pageManager", pageManager);
-        jexlContext.getVars().put("pageManagerServer", this);
-        
+        @SuppressWarnings("unchecked")
+        Map<String,Object> jexlContextVars = jexlContext.getVars();
+        jexlContextVars.put("pageManager", pageManager);
+        jexlContextVars.put("pageManagerServer", this);
+
         log.info( "DatabasePageManager server initialized");
     }
     
@@ -237,7 +241,7 @@ public class DatabasePageManagerServer
     {
         if ((userSubject == null) && (user != null))
         {
-            Set userPrincipals = new PrincipalsSet();
+            Set<Principal> userPrincipals = new PrincipalsSet();
             userPrincipals.add(new PageManagerTestShared.TestUser(user));
             if (groups != null)
             {
@@ -255,7 +259,7 @@ public class DatabasePageManagerServer
                     userPrincipals.add(new PageManagerTestShared.TestRole(rolesArray[i].trim()));                                    
                 }
             }
-            userSubject = new Subject(true, userPrincipals, new HashSet(), new HashSet());            
+            userSubject = new Subject(true, userPrincipals, new HashSet<Principal>(), new HashSet<Principal>());
         }
         return userSubject;
     }

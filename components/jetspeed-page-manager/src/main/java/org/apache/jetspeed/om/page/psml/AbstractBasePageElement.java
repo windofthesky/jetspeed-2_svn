@@ -47,7 +47,7 @@ public abstract class AbstractBasePageElement extends AbstractBaseFragmentsEleme
     /**
      * menuDefinitions - menu definitions for page
      */
-    private List menuDefinitions;
+    private List<MenuDefinition> menuDefinitions;
     
     public String getSkin()
     {

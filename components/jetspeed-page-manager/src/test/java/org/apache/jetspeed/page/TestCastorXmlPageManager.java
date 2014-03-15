@@ -16,20 +16,8 @@
  */
 package org.apache.jetspeed.page;
 
-import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.security.auth.Subject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.common.SecurityConstraint;
@@ -37,6 +25,7 @@ import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuDefinitionElement;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
@@ -59,6 +48,17 @@ import org.apache.jetspeed.page.psml.CastorXmlPageManager;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PrincipalsSet;
 import org.apache.jetspeed.test.JetspeedTestCase;
+
+import javax.security.auth.Subject;
+import java.security.Principal;
+import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * TestCastorXmlPageManager
@@ -457,7 +457,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         Fragment f = pageManager.newFragment();
         f.setType(Fragment.PORTLET);
         f.setName("TestPortlet");
-        List properties = f.getProperties();
+        List<FragmentProperty> properties = f.getProperties();
         FragmentProperty fp = pageManager.newFragmentProperty();
         fp.setName(Fragment.ROW_PROPERTY_NAME);
         fp.setValue("0");
@@ -478,14 +478,14 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
         SecurityConstraints constraints = page.newSecurityConstraints();
         constraints.setOwner("new-user");
-        List constraintsList = new ArrayList(1);
+        List<SecurityConstraint> constraintsList = new ArrayList<SecurityConstraint>(1);
         SecurityConstraint constraint = page.newSecurityConstraint();
         constraint.setUsers(Shared.makeListFromCSV("user10,user11"));
         constraint.setRoles(Shared.makeListFromCSV("*"));
         constraint.setPermissions(Shared.makeListFromCSV(JetspeedActions.EDIT + "," + JetspeedActions.VIEW));
         constraintsList.add(constraint);
         constraints.setSecurityConstraints(constraintsList);
-        List constraintsRefsList = new ArrayList(1);
+        List<String> constraintsRefsList = new ArrayList<String>(1);
         constraintsRefsList.add("public-view");
         constraints.setSecurityConstraintsRefs(constraintsRefsList);
         page.setSecurityConstraints(constraints);
@@ -552,7 +552,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         root = (Fragment)rootFragmentElement;
         assertTrue(root.getName().equals("TestLayout"));
         assertTrue(root.getFragments().size() == 2);
-        BaseFragmentElement bf = (BaseFragmentElement)root.getFragments().get(0);
+        BaseFragmentElement bf = root.getFragments().get(0);
         assertTrue(bf instanceof Fragment);
         f = (Fragment)bf;
         assertNotNull(f.getProperties());
@@ -638,18 +638,18 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(root.getName().equals("TestLayout"));
         assertTrue(root.getType().equals(Fragment.LAYOUT));
         assertTrue(root.getFragments().size() == 3);
-        bf = (BaseFragmentElement)root.getFragments().get(0);
+        bf = root.getFragments().get(0);
         assertTrue(bf instanceof Fragment);
         f = (Fragment)bf;
         assertTrue(f.getName().equals("TestPortlet"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
         assertNotNull(f.getProperties());
         assertEquals(1, f.getIntProperty(Fragment.ROW_PROPERTY_NAME));
-        bf = (BaseFragmentElement)root.getFragments().get(1);
+        bf = root.getFragments().get(1);
         assertTrue(bf instanceof FragmentReference);
         fr = (FragmentReference)bf;
         assertTrue(fr.getRefId().equals("test002"));
-        bf = (BaseFragmentElement)root.getFragments().get(2);
+        bf = root.getFragments().get(2);
         assertTrue(bf instanceof PageFragment);
 
         DynamicPage dynamicpage = pageManager.newDynamicPage("/test002.dpsml");
@@ -691,12 +691,12 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(root.getName().equals("TestLayout"));
         assertTrue(root.getType().equals(Fragment.LAYOUT));
         assertTrue(root.getFragments().size() == 2);
-        bf = (BaseFragmentElement)root.getFragments().get(0);
+        bf = root.getFragments().get(0);
         assertTrue(bf instanceof Fragment);
         f = (Fragment)bf;
         assertTrue(f.getName().equals("TestPortlet"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
-        bf = (BaseFragmentElement)root.getFragments().get(1);
+        bf = root.getFragments().get(1);
         assertTrue(bf instanceof FragmentReference);
         fr = (FragmentReference)bf;
         assertTrue(fr.getRefId().equals("test002"));
@@ -1195,11 +1195,11 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
         // test writing page menu definitions
         page = pageManager.getPage("/test002.psml");
-        page.setMenuDefinitions(new ArrayList());
+        page.setMenuDefinitions(new ArrayList<MenuDefinition>());
         MenuDefinition newMenu = page.newMenuDefinition();
         newMenu.setName("updated-menu");
         newMenu.setSkin("tabs");
-        newMenu.setMenuElements(new ArrayList());
+        newMenu.setMenuElements(new ArrayList<MenuDefinitionElement>());
         MenuSeparatorDefinition newSeparator = page.newMenuSeparatorDefinition();
         newSeparator.setText("-- Updated Menu --");
         newMenu.getMenuElements().add(newSeparator);
@@ -1247,7 +1247,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
 
         // test writing folder menu definitions
         folder = pageManager.getFolder("/folder2");
-        folder.setMenuDefinitions(new ArrayList());
+        folder.setMenuDefinitions(new ArrayList<MenuDefinition>());
         newMenu = folder.newMenuDefinition();
         newMenu.setName("updated-menu");
         newMenu.setSkin("bread-crumbs");
@@ -1618,8 +1618,8 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(root.getFragments().isEmpty());
     }
     
-    public Collection collectIds(Folder f) throws Exception {
-        Collection result = new ArrayList();
+    public Collection<String> collectIds(Folder f) throws Exception {
+        Collection<String> result = new ArrayList<String>();
         
         for (Iterator iter = f.getAll().iterator(); iter.hasNext();)
         {
@@ -1633,15 +1633,15 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
            } else
            if (obj instanceof Folder){
                Folder thisFolder = (Folder)obj;
-               result.addAll(collectIds((Folder)obj));
+               result.addAll(collectIds(thisFolder));
            }            
         }   
         
         return result;
     }
     
-    public Collection collectIds(BaseFragmentElement bf){
-    	Collection result = new ArrayList();
+    public Collection<String> collectIds(BaseFragmentElement bf){
+    	Collection<String> result = new ArrayList<String>();
         
     	result.add(bf.getId());
     	if (bf instanceof Fragment) {
@@ -1717,10 +1717,10 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
     private Subject constructUserSubject()
     {
         // setup test subject
-        Set principals = new PrincipalsSet();
+        Set<Principal> principals = new PrincipalsSet();
         principals.add(new TestUser("user"));
         principals.add(new TestGroup("group"));
         principals.add(new TestRole("role"));
-        return new Subject(true, principals, new HashSet(), new HashSet());
+        return new Subject(true, principals, new HashSet<Principal>(), new HashSet<Principal>());
     }
 }

@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.page.impl;
 
+import org.apache.jetspeed.om.page.FragmentProperty;
+
 import java.util.ArrayList;
 
 /**
@@ -24,7 +26,7 @@ import java.util.ArrayList;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id: $
 */
-public class DatabasePageManagerCachedFragmentPropertyList extends ArrayList
+public class DatabasePageManagerCachedFragmentPropertyList extends ArrayList<FragmentProperty>
 {
     private static final long serialVersionUID = 1L;
     

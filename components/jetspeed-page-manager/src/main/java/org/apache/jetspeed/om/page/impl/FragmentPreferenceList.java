@@ -16,9 +16,12 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import org.apache.jetspeed.om.preference.FragmentPreference;
+
 import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * FragmentPreferenceList
@@ -26,11 +29,11 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class FragmentPreferenceList extends AbstractList
+class FragmentPreferenceList extends AbstractList<FragmentPreference>
 {
     private BaseFragmentElementImpl fragment;
 
-    private List removedPreferences;
+    private List<FragmentPreference> removedPreferences;
 
     FragmentPreferenceList(BaseFragmentElementImpl fragment)
     {
@@ -46,7 +49,7 @@ class FragmentPreferenceList extends AbstractList
      * @param preference preference to add
      * @return list element to add
      */
-    private FragmentPreferenceImpl validatePreferenceForAdd(FragmentPreferenceImpl preference)
+    private FragmentPreferenceImpl validatePreferenceForAdd(FragmentPreference preference)
     {
         // only non-null definitions supported
         if (preference == null)
@@ -66,14 +69,14 @@ class FragmentPreferenceList extends AbstractList
             int removedIndex = removedPreferences.indexOf(preference);
             if (removedIndex >= 0)
             {
-                FragmentPreferenceImpl addPreference = preference;
-                preference = (FragmentPreferenceImpl)removedPreferences.remove(removedIndex);
+                FragmentPreference addPreference = preference;
+                preference = removedPreferences.remove(removedIndex);
                 // TODO: move this logic to copy methods on implementations
                 preference.setReadOnly(addPreference.isReadOnly());
                 preference.setValueList(addPreference.getValueList());
             }
         }
-        return preference;
+        return (FragmentPreferenceImpl)preference;
     }
 
     /**
@@ -81,11 +84,11 @@ class FragmentPreferenceList extends AbstractList
      *
      * @return removed preferences tracking collection
      */
-    private List getRemovedPreferences()
+    private List<FragmentPreference> getRemovedPreferences()
     {
         if (removedPreferences == null)
         {
-            removedPreferences = DatabasePageManagerUtils.createList();
+            removedPreferences = Collections.synchronizedList(new ArrayList<FragmentPreference>());
         }
         return removedPreferences;
     }
@@ -93,7 +96,7 @@ class FragmentPreferenceList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, FragmentPreference element)
     {
         // implement for modifiable AbstractList:
         // validate index
@@ -102,7 +105,7 @@ class FragmentPreferenceList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // verify preference
-        FragmentPreferenceImpl preference = validatePreferenceForAdd((FragmentPreferenceImpl)element);
+        FragmentPreferenceImpl preference = validatePreferenceForAdd(element);
         // add to underlying ordered list
         fragment.accessPreferences().add(index, preference);
     }
@@ -110,7 +113,7 @@ class FragmentPreferenceList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public FragmentPreference get(int index)
     {
         // implement for modifiable AbstractList
         return fragment.accessPreferences().get(index);
@@ -119,11 +122,11 @@ class FragmentPreferenceList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public FragmentPreference remove(int index)
     {
         // implement for modifiable AbstractList:
         // save removed element 
-        FragmentPreferenceImpl removed = (FragmentPreferenceImpl)fragment.accessPreferences().remove(index);
+        FragmentPreference removed = fragment.accessPreferences().remove(index);
         if (removed != null)
         {
             getRemovedPreferences().add(removed);
@@ -134,13 +137,13 @@ class FragmentPreferenceList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public FragmentPreference set(int index, FragmentPreference element)
     {
         // implement for modifiable AbstractList:
         // verify preference
-        FragmentPreferenceImpl newPreference = validatePreferenceForAdd((FragmentPreferenceImpl)element);
+        FragmentPreferenceImpl newPreference = validatePreferenceForAdd(element);
         // set in underlying ordered list
-        FragmentPreferenceImpl preference = (FragmentPreferenceImpl)fragment.accessPreferences().set(index, newPreference);
+        FragmentPreferenceImpl preference = fragment.accessPreferences().set(index, newPreference);
         // save replaced element
         getRemovedPreferences().add(preference);
         // return constraints ref

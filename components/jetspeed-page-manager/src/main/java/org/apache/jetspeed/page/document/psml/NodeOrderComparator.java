@@ -37,15 +37,15 @@ import java.util.List;
  * @version $Id$
  *  
  */
-public class NodeOrderComparator implements Comparator
+public class NodeOrderComparator implements Comparator<String>
 {
-    private List nodeIndex;
+    private List<String> nodeIndex;
     private String relativePath="";
 
     /**
      *  
      */
-    public NodeOrderComparator( List nodeIndex, String relativePath )
+    public NodeOrderComparator( List<String> nodeIndex, String relativePath )
     {
         super();
         this.nodeIndex = nodeIndex;        
@@ -58,32 +58,32 @@ public class NodeOrderComparator implements Comparator
      * </p>
      * 
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-     * @param o1
-     * @param o2
+     * @param s1
+     * @param s2
      * @return
      */
-    public int compare( Object o1, Object o2 )
+    public int compare( String s1, String s2 )
     {
         
             String node1 = null;
             String node2 = null;
        
-            if(relativePath.length() < o1.toString().length())
+            if(relativePath.length() < s1.length())
             {
-                node1 =  o1.toString().substring(relativePath.length());
+                node1 =  s1.substring(relativePath.length());
             }
             else
             {
-                node1 =  o1.toString(); 
+                node1 =  s1;
             }
             
-            if(relativePath.length() < o2.toString().length())
+            if(relativePath.length() < s2.length())
             {
-                node2 =  o2.toString().substring(relativePath.length());
+                node2 =  s2.substring(relativePath.length());
             }
             else
             {
-                node2 =  o2.toString(); 
+                node2 =  s2;
             }
 
             String c1 = null;

@@ -16,14 +16,6 @@
  */
 package org.apache.jetspeed.page;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.security.auth.Subject;
-
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -31,6 +23,7 @@ import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuDefinitionElement;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
@@ -52,10 +45,15 @@ import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
-import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.security.auth.Subject;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * AbstractPageManagerService
@@ -112,7 +110,7 @@ public abstract class AbstractPageManager
 
     private boolean constraintsEnabled;
     
-    private List listeners = new LinkedList();
+    private List<PageManagerEventListener> listeners = new LinkedList<PageManagerEventListener>();
 
     private long nodeReapingInterval = DEFAULT_NODE_REAPING_INTERVAL;
     
@@ -970,10 +968,10 @@ public abstract class AbstractPageManager
     public void notifyNewNode(Node node)
     {
         // copy listeners list to reduce synchronization deadlock
-        List listenersList = null;
+        List<PageManagerEventListener> listenersList = null;
         synchronized (listeners)
         {
-            listenersList = new ArrayList(listeners);
+            listenersList = new ArrayList<PageManagerEventListener>(listeners);
         }
         // notify listeners
         Iterator listenersIter = listenersList.iterator();
@@ -1000,10 +998,10 @@ public abstract class AbstractPageManager
     public void notifyUpdatedNode(Node node)
     {
         // copy listeners list to reduce synchronization deadlock
-        List listenersList = null;
+        List<PageManagerEventListener> listenersList = null;
         synchronized (listeners)
         {
-            listenersList = new ArrayList(listeners);
+            listenersList = new ArrayList<PageManagerEventListener>(listeners);
         }
         // notify listeners
         Iterator listenersIter = listenersList.iterator();
@@ -1030,10 +1028,10 @@ public abstract class AbstractPageManager
     public void notifyRemovedNode(Node node)
     {
         // copy listeners list to reduce synchronization deadlock
-        List listenersList = null;
+        List<PageManagerEventListener> listenersList = null;
         synchronized (listeners)
         {
-            listenersList = new ArrayList(listeners);
+            listenersList = new ArrayList<PageManagerEventListener>(listeners);
         }
         // notify listeners
         Iterator listenersIter = listenersList.iterator();
@@ -1058,10 +1056,10 @@ public abstract class AbstractPageManager
     public void notifyReapNodes()
     {
         // copy listeners list to reduce synchronization deadlock
-        List listenersList = null;
+        List<PageManagerEventListener> listenersList = null;
         synchronized (listeners)
         {
-            listenersList = new ArrayList(listeners);
+            listenersList = new ArrayList<PageManagerEventListener>(listeners);
         }
         // notify listeners
         Iterator listenersIter = listenersList.iterator();
@@ -1107,7 +1105,7 @@ public abstract class AbstractPageManager
         }    
         
         // copy document orders
-        folder.setDocumentOrder(DatabasePageManagerUtils.createList());
+        folder.setDocumentOrder(this.<String>createList());
         Iterator documentOrders = source.getDocumentOrder().iterator();
         while (documentOrders.hasNext())
         {
@@ -1116,10 +1114,10 @@ public abstract class AbstractPageManager
         }
 
         // copy menu definitions
-        List menus = source.getMenuDefinitions();
+        List<MenuDefinition> menus = source.getMenuDefinitions();
         if (menus != null)
         {
-            List copiedMenus = copyMenuDefinitions(FOLDER_NODE_TYPE, menus);
+            List<MenuDefinition> copiedMenus = copyMenuDefinitions(FOLDER_NODE_TYPE, menus);
             folder.setMenuDefinitions(copiedMenus);
         }        
                 
@@ -1261,10 +1259,10 @@ public abstract class AbstractPageManager
         dest.setSkin(source.getSkin());
     
         // copy menu definitions
-        List menus = source.getMenuDefinitions();
+        List<MenuDefinition> menus = source.getMenuDefinitions();
         if (menus != null)
         {
-            List copiedMenus = copyMenuDefinitions(PAGE_NODE_TYPE, menus);
+            List<MenuDefinition> copiedMenus = copyMenuDefinitions(PAGE_NODE_TYPE, menus);
             dest.setMenuDefinitions(copiedMenus);
         }
     }
@@ -1358,7 +1356,7 @@ public abstract class AbstractPageManager
             FragmentPreference newPref = this.newFragmentPreference();
             newPref.setName(pref.getName());
             newPref.setReadOnly(pref.isReadOnly());
-            newPref.setValueList(DatabasePageManagerUtils.createList());
+            newPref.setValueList(this.<String>createList());
             Iterator values = pref.getValueList().iterator();            
             while (values.hasNext())
             {
@@ -1440,14 +1438,14 @@ public abstract class AbstractPageManager
         copy.setVersion(source.getVersion());        
 
         // copy security constraint defintions
-        copy.setSecurityConstraintsDefs(DatabasePageManagerUtils.createList());                
+        copy.setSecurityConstraintsDefs(this.<SecurityConstraintsDef>createList());
         Iterator defs = source.getSecurityConstraintsDefs().iterator();
         while (defs.hasNext())
         {
             SecurityConstraintsDef def = (SecurityConstraintsDef)defs.next();
             SecurityConstraintsDef defCopy = this.newSecurityConstraintsDef();            
             defCopy.setName(def.getName());
-            List copiedConstraints = DatabasePageManagerUtils.createList();
+            List<SecurityConstraint> copiedConstraints = createList();
             Iterator constraints = def.getSecurityConstraints().iterator();
             while (constraints.hasNext())
             {
@@ -1461,7 +1459,7 @@ public abstract class AbstractPageManager
         }
         
         // copy global security constraint references
-        copy.setGlobalSecurityConstraintsRefs(DatabasePageManagerUtils.createList());
+        copy.setGlobalSecurityConstraintsRefs(this.<String>createList());
         Iterator globals = source.getGlobalSecurityConstraintsRefs().iterator();
         while (globals.hasNext())
         {
@@ -1472,9 +1470,9 @@ public abstract class AbstractPageManager
         return copy;
     }
 
-    protected List copyMenuDefinitions(String type, List srcMenus)
+    protected List<MenuDefinition> copyMenuDefinitions(String type, List<MenuDefinition> srcMenus)
     {
-        List copiedMenus = DatabasePageManagerUtils.createList(); 
+        List<MenuDefinition> copiedMenus = createList();
         Iterator menus = srcMenus.iterator();
         while (menus.hasNext())
         {
@@ -1488,7 +1486,7 @@ public abstract class AbstractPageManager
         return copiedMenus;
     }
     
-    protected Object copyMenuElement(String type, Object srcElement)
+    protected MenuDefinitionElement copyMenuElement(String type, MenuDefinitionElement srcElement)
     {
         if (srcElement instanceof MenuDefinition)
         {
@@ -1518,15 +1516,15 @@ public abstract class AbstractPageManager
             menu.getMetadata().copyFields(source.getMetadata().getFields());
         
             // recursively copy menu elements
-            List elements = source.getMenuElements();
+            List<MenuDefinitionElement> elements = source.getMenuElements();
             if (elements != null)
             {
-                List copiedElements = DatabasePageManagerUtils.createList(); 
+                List<MenuDefinitionElement> copiedElements = createList();
                 Iterator elementsIter = elements.iterator();
                 while (elementsIter.hasNext())
                 {
-                    Object element = elementsIter.next();
-                    Object copiedElement = copyMenuElement(type, element);
+                    MenuDefinitionElement element = (MenuDefinitionElement)elementsIter.next();
+                    MenuDefinitionElement copiedElement = copyMenuElement(type, element);
                     if (copiedElement != null)
                     {
                         copiedElements.add(copiedElement);
@@ -1634,7 +1632,7 @@ public abstract class AbstractPageManager
         }
         if (source.getSecurityConstraints() != null)
         {
-            List copiedConstraints = DatabasePageManagerUtils.createList();
+            List<SecurityConstraint> copiedConstraints = createList();
             Iterator constraints = source.getSecurityConstraints().iterator();
             while (constraints.hasNext())
             {
@@ -1663,7 +1661,7 @@ public abstract class AbstractPageManager
         }
         if (source.getSecurityConstraintsRefs() != null)
         {
-            List copiedRefs = DatabasePageManagerUtils.createList();
+            List<String> copiedRefs = createList();
             Iterator refs = source.getSecurityConstraintsRefs().iterator();
             while (refs.hasNext())
             {                

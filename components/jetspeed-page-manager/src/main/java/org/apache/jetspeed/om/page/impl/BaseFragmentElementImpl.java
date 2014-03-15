@@ -54,7 +54,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
     private float layoutZProperty = -1.0F;
     private float layoutWidthProperty = -1.0F;
     private float layoutHeightProperty = -1.0F;
-    private List preferences;
+    private List<FragmentPreferenceImpl> preferences;
 
     private FragmentPropertyList fragmentProperties;
     private FragmentPreferenceList fragmentPreferences;
@@ -72,7 +72,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
      *
      * @return persistent collection
      */
-    List accessPreferences()
+    List<FragmentPreferenceImpl> accessPreferences()
     {
         // create initial collection if necessary
         if (preferences == null)
@@ -135,16 +135,13 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
      * @param name fragment name to retrieve.
      * @return list of matched fragments
      */
-    List getFragmentsByName(String name)
+    List<BaseFragmentElement> getFragmentsByName(String name)
     {
-        List matchedFragments = null;
+        List<BaseFragmentElement> matchedFragments = null;
         // check for match
         if ((getName() != null) && getName().equals(name))
         {
-            if (matchedFragments == null)
-            {
-                matchedFragments = new ArrayList();
-            }
+            matchedFragments = new ArrayList<BaseFragmentElement>();
             matchedFragments.add(this);
         }
         return matchedFragments;
@@ -159,16 +156,13 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
      * @param interfaceFilter fragment interface to retrieve or null for all.
      * @return list of matched fragments
      */
-    List getFragmentsByInterface(Class interfaceFilter)
+    List<BaseFragmentElement> getFragmentsByInterface(Class interfaceFilter)
     {
-        List matchedFragments = null;
+        List<BaseFragmentElement> matchedFragments = null;
         // check for match
         if ((interfaceFilter == null) || interfaceFilter.isInstance(this))
         {
-            if (matchedFragments == null)
-            {
-                matchedFragments = new ArrayList();
-            }
+            matchedFragments = new ArrayList<BaseFragmentElement>();
             matchedFragments.add(this);
         }
         return matchedFragments;
@@ -807,7 +801,7 @@ public abstract class BaseFragmentElementImpl extends BaseElementImpl implements
         List<FragmentProperty> fragmentProperties = getProperties();
         if (properties != fragmentProperties)
         {
-            // replace all preferences
+            // replace all properties
             fragmentProperties.clear();
             if (properties != null)
             {

@@ -129,15 +129,15 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseFragmentsElement#getFragmentById(java.lang.String)
      */
-    public BaseFragmentElement getFragmentById( String id )
+    public BaseFragmentElement getFragmentById(String id)
     {
-        Stack stack = new Stack();
+        Stack<BaseFragmentElement> stack = new Stack<BaseFragmentElement>();
         if (getRootFragment() != null)
         {
             stack.push(getRootFragment());
         }
 
-        BaseFragmentElement f = (BaseFragmentElement) stack.pop();
+        BaseFragmentElement f = stack.pop();
 
         while ((f != null) && (!(f.getId().equals(id))))
         {
@@ -147,13 +147,13 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
 
                 while (i.hasNext())
                 {
-                    stack.push(i.next());
+                    stack.push((BaseFragmentElement)i.next());
                 }
             }
 
             if (stack.size() > 0)
             {
-                f = (BaseFragmentElement) stack.pop();
+                f = stack.pop();
             }
             else
             {
@@ -167,16 +167,16 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseFragmentsElement#removeFragmentById(java.lang.String)
      */
-    public BaseFragmentElement removeFragmentById( String id )
+    public BaseFragmentElement removeFragmentById(String id)
     {
         // find fragment by id, tracking fragment parent
-        Map parents = new HashMap();
-        Stack stack = new Stack();
+        Map<BaseFragmentElement,BaseFragmentElement> parents = new HashMap<BaseFragmentElement,BaseFragmentElement>();
+        Stack<BaseFragmentElement> stack = new Stack<BaseFragmentElement>();
         if (getRootFragment() != null)
         {
             stack.push(getRootFragment());
         }
-        BaseFragmentElement f = (BaseFragmentElement) stack.pop();
+        BaseFragmentElement f = stack.pop();
         while ((f != null) && (!(f.getId().equals(id))))
         {
             if (f instanceof Fragment)
@@ -193,7 +193,7 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
 
             if (stack.size() > 0)
             {
-                f = (BaseFragmentElement) stack.pop();
+                f = stack.pop();
             }
             else
             {
@@ -204,7 +204,7 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
         // remove fragment from parent/page root
         if (f != null)
         {
-            BaseFragmentElement parent = (BaseFragmentElement)parents.get(f);
+            BaseFragmentElement parent = parents.get(f);
             if (parent != null)
             {
                 if (parent instanceof Fragment)
@@ -232,17 +232,17 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseFragmentsElement#getFragmentsByName(java.lang.String)
      */
-    public List<BaseFragmentElement> getFragmentsByName( String name )
+    public List<BaseFragmentElement> getFragmentsByName(String name)
     {
         List<BaseFragmentElement> fragments = new ArrayList<BaseFragmentElement>();
 
-        Stack stack = new Stack();
+        Stack<BaseFragmentElement> stack = new Stack<BaseFragmentElement>();
         if (getRootFragment() != null)
         {
             stack.push(getRootFragment());
         }
 
-        BaseFragmentElement f = (BaseFragmentElement) stack.pop();
+        BaseFragmentElement f = stack.pop();
 
         while (f != null)
         {
@@ -258,13 +258,13 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
 
                 while (i.hasNext())
                 {
-                    stack.push(i.next());
+                    stack.push((BaseFragmentElement)i.next());
                 }
             }
 
             if (stack.size() > 0)
             {
-                f = (BaseFragmentElement) stack.pop();
+                f = stack.pop();
             }
             else
             {
@@ -278,17 +278,17 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.BaseFragmentsElement#getFragmentsByInterface(java.lang.Class)
      */
-    public List<BaseFragmentElement> getFragmentsByInterface( Class interfaceFilter )
+    public List<BaseFragmentElement> getFragmentsByInterface(Class interfaceFilter)
     {
         List<BaseFragmentElement> fragments = new ArrayList<BaseFragmentElement>();
 
-        Stack stack = new Stack();
+        Stack<BaseFragmentElement> stack = new Stack<BaseFragmentElement>();
         if (getRootFragment() != null)
         {
             stack.push(getRootFragment());
         }
         
-        BaseFragmentElement f = (stack.isEmpty() ? null : (BaseFragmentElement) stack.pop());
+        BaseFragmentElement f = (stack.isEmpty() ? null : stack.pop());
 
         while (f != null)
         {
@@ -304,11 +304,11 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
 
                 while (i.hasNext())
                 {
-                    stack.push(i.next());
+                    stack.push((BaseFragmentElement)i.next());
                 }
             }
 
-            f = (stack.isEmpty() ? null : (BaseFragmentElement) stack.pop());
+            f = (stack.isEmpty() ? null : stack.pop());
         }
 
         return fragments;

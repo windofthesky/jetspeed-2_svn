@@ -17,9 +17,9 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * SecurityConstraintsRefList
@@ -27,11 +27,11 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class SecurityConstraintsRefList extends AbstractList
+class SecurityConstraintsRefList extends AbstractList<String>
 {
     private SecurityConstraintsImpl constraints;
 
-    private List removedConstraintsRefs;
+    private List<BaseSecurityConstraintsRef> removedConstraintsRefs;
 
     SecurityConstraintsRefList(SecurityConstraintsImpl constraints)
     {
@@ -90,7 +90,7 @@ class SecurityConstraintsRefList extends AbstractList
             int removedIndex = removedConstraintsRefs.indexOf(constraintsRef);
             if (removedIndex >= 0)
             {
-                constraintsRef = (BaseSecurityConstraintsRef)removedConstraintsRefs.remove(removedIndex);
+                constraintsRef = removedConstraintsRefs.remove(removedIndex);
             }
         }
         return constraintsRef;
@@ -101,11 +101,11 @@ class SecurityConstraintsRefList extends AbstractList
      *
      * @return removed constraints refs tracking collection
      */
-    private List getRemovedConstraintsRefs()
+    private List<BaseSecurityConstraintsRef> getRemovedConstraintsRefs()
     {
         if (removedConstraintsRefs == null)
         {
-            removedConstraintsRefs = DatabasePageManagerUtils.createList();
+            removedConstraintsRefs = Collections.synchronizedList(new ArrayList<BaseSecurityConstraintsRef>());
         }
         return removedConstraintsRefs;
     }
@@ -113,7 +113,7 @@ class SecurityConstraintsRefList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, String element)
     {
         // implement for modifiable AbstractList:
         // validate index
@@ -122,13 +122,13 @@ class SecurityConstraintsRefList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // wrap and verify constraints ref name string
-        BaseSecurityConstraintsRef constraintsRef = wrapNameStringForAdd((String)element);
+        BaseSecurityConstraintsRef constraintsRef = wrapNameStringForAdd(element);
         // add to underlying ordered list
         constraints.accessConstraintsRefs().add(index, constraintsRef);
         // set apply order in added element
         if (index > 0)
         {
-            constraintsRef.setApplyOrder(((BaseSecurityConstraintsRef)constraints.accessConstraintsRefs().get(index-1)).getApplyOrder() + 1);
+            constraintsRef.setApplyOrder(constraints.accessConstraintsRefs().get(index-1).getApplyOrder() + 1);
         }
         else
         {
@@ -137,7 +137,7 @@ class SecurityConstraintsRefList extends AbstractList
         // maintain apply order in subsequent elements
         for (int i = index, limit = constraints.accessConstraintsRefs().size() - 1; (i < limit); i++)
         {
-            BaseSecurityConstraintsRef nextConstraintsRef = (BaseSecurityConstraintsRef)constraints.accessConstraintsRefs().get(i + 1);
+            BaseSecurityConstraintsRef nextConstraintsRef = constraints.accessConstraintsRefs().get(i + 1);
             if (nextConstraintsRef.getApplyOrder() <= constraintsRef.getApplyOrder())
             {
                 // adjust apply order for next element
@@ -157,20 +157,20 @@ class SecurityConstraintsRefList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public String get(int index)
     {
         // implement for modifiable AbstractList:
         // unwrap constraints ref name string
-        return ((BaseSecurityConstraintsRef)constraints.accessConstraintsRefs().get(index)).getName();
+        return constraints.accessConstraintsRefs().get(index).getName();
     }
 
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public String remove(int index)
     {
         // implement for modifiable AbstractList
-        BaseSecurityConstraintsRef removed = (BaseSecurityConstraintsRef)constraints.accessConstraintsRefs().remove(index);
+        BaseSecurityConstraintsRef removed = constraints.accessConstraintsRefs().remove(index);
         if (removed != null)
         {
             // save removed element 
@@ -178,19 +178,19 @@ class SecurityConstraintsRefList extends AbstractList
             // clear all cached security constraints
             constraints.clearAllSecurityConstraints();
         }
-        return removed;
+        return removed.getName();
     }
 
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public String set(int index, String element)
     {
         // implement for modifiable AbstractList:
         // wrap and verify constraints ref name string
-        BaseSecurityConstraintsRef newConstraintsRef = wrapNameStringForAdd((String)element);
+        BaseSecurityConstraintsRef newConstraintsRef = wrapNameStringForAdd(element);
         // set in underlying ordered list
-        BaseSecurityConstraintsRef constraintsRef = (BaseSecurityConstraintsRef)constraints.accessConstraintsRefs().set(index, newConstraintsRef);
+        BaseSecurityConstraintsRef constraintsRef = constraints.accessConstraintsRefs().set(index, newConstraintsRef);
         // set apply order in new element
         newConstraintsRef.setApplyOrder(constraintsRef.getApplyOrder());
         // save replaced element

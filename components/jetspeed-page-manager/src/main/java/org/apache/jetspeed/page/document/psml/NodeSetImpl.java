@@ -16,15 +16,15 @@
  */
 package org.apache.jetspeed.page.document.psml;
 
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeSet;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
-
-import org.apache.jetspeed.page.document.Node;
-import org.apache.jetspeed.page.document.NodeSet;
 
 /**
  * <p>
@@ -40,17 +40,17 @@ import org.apache.jetspeed.page.document.NodeSet;
  */
 public class NodeSetImpl implements NodeSet
 {
-    private Map nodes;
-    private Map subsets;
+    private Map<String,Node> nodes;
+    private Map<String,NodeSet> subsets;
     private String resolveToPath;
-    private Comparator comparator;
-    protected static final Map patternCache = new HashMap();
+    private Comparator<String> comparator;
+    protected static final Map<String,Pattern> patternCache = new HashMap<String,Pattern>();
 
     public NodeSetImpl( String resolveToPath )
     {
         this.resolveToPath = resolveToPath;
-        nodes = new TreeMap();
-        subsets = new HashMap();
+        this.nodes = new TreeMap<String,Node>();
+        this.subsets = new HashMap<String,NodeSet>();
     }
 
     /**
@@ -58,12 +58,12 @@ public class NodeSetImpl implements NodeSet
      * @param resolveToPath
      * @param comparator
      */
-    public NodeSetImpl( String resolveToPath, Comparator comparator )
+    public NodeSetImpl( String resolveToPath, Comparator<String> comparator )
     {
         this.resolveToPath = resolveToPath;
-        nodes = new TreeMap(comparator);
+        this.nodes = new TreeMap<String,Node>(comparator);
         this.comparator = comparator;
-        subsets = new HashMap();
+        this.subsets = new HashMap<String,NodeSet>();
     }
 
     /**
@@ -81,17 +81,17 @@ public class NodeSetImpl implements NodeSet
 
         if (nodes.containsKey(name))
         {
-            return (Node) nodes.get(name);
+            return nodes.get(name);
         }
         else if (resolveToPath != null)
         {
             if (resolveToPath.endsWith(Node.PATH_SEPARATOR))
             {
-                return (Node) nodes.get(resolveToPath + name);
+                return nodes.get(resolveToPath + name);
             }
             else
             {
-                return (Node) nodes.get(resolveToPath + Node.PATH_SEPARATOR + name);
+                return nodes.get(resolveToPath + Node.PATH_SEPARATOR + name);
             }
         }
 
@@ -105,7 +105,7 @@ public class NodeSetImpl implements NodeSet
      * </p>
      * 
      * @see org.apache.jetspeed.page.document.NodeSet#add(org.apache.jetspeed.page.document.Node)
-     * @param document
+     * @param node
      */
     public void add( Node node )
     {
@@ -113,7 +113,7 @@ public class NodeSetImpl implements NodeSet
         nodes.put(path, node);
         if (subsets.containsKey(node.getType()))
         {
-            ((NodeSet) subsets.get(node.getType())).add(node);
+            subsets.get(node.getType()).add(node);
         }
     }
 
@@ -139,7 +139,7 @@ public class NodeSetImpl implements NodeSet
      * @see org.apache.jetspeed.page.document.NodeSet#iterator()
      * @return
      */
-    public Iterator iterator()
+    public Iterator<Node> iterator()
     {
         return nodes.values().iterator();
     }
@@ -155,7 +155,7 @@ public class NodeSetImpl implements NodeSet
      */
     public NodeSet subset( String type )
     {
-        NodeSet subset = (NodeSet) subsets.get(type);
+        NodeSet subset = subsets.get(type);
         if (subset == null)
         {
             subset = new NodeSetImpl(resolveToPath, comparator);
@@ -243,7 +243,7 @@ public class NodeSetImpl implements NodeSet
      * 
      * @return comparator used to order nodes
      */
-    public Comparator getComparator()
+    public Comparator<String> getComparator()
     {
         return comparator;
     }
@@ -291,7 +291,7 @@ public class NodeSetImpl implements NodeSet
      * contains
      * </p>
      * 
-     * @see org.apache.jetspeed.page.document.NodeSet#contains()
+     * @see org.apache.jetspeed.page.document.NodeSet#contains(org.apache.jetspeed.page.document.Node node)
      * @return
      */
     public boolean contains( Node node )

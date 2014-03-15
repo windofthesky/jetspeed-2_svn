@@ -16,12 +16,12 @@
  */
 package org.apache.jetspeed.page.impl;
 
-import java.util.Collection;
-import java.util.List;
-
+import org.apache.jetspeed.util.ojb.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.jetspeed.util.ojb.CollectionUtils;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * DatabasePageManagerUtils
@@ -39,12 +39,11 @@ public class DatabasePageManagerUtils
      * This issue on occurs when persisting newly create object collections
      * When persisting objects retrieved with OJB, this issue does not occur
      * 
-     * @see JS2-590
-     * @return
+     * See issue: JS2-590
      */
 
     @SuppressWarnings("unchecked")
-    public static final Collection createCollection()
+    public static <T> Collection<T> createCollection()
     {
         // return synchronized manageable/removal aware collection;
         // requires setting collection-class attributes for collection-
@@ -54,9 +53,9 @@ public class DatabasePageManagerUtils
         //
         return CollectionUtils.createSynchronizedCollection();
     }
-    
+
     @SuppressWarnings("unchecked")
-    public static final List createList()
+    public static <T> List<T> createList()
     {
         // return synchronized manageable/removal aware list;
         // requires setting collection-class attributes for collection-

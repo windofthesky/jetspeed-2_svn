@@ -16,14 +16,15 @@
  */
 package org.apache.jetspeed.om.folder.psml;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.jetspeed.idgenerator.IdGenerator;
+import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.page.Document;
 import org.apache.jetspeed.om.page.psml.DefaultsImpl;
 import org.apache.jetspeed.om.page.psml.DocumentImpl;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * <p>
@@ -42,17 +43,17 @@ public class FolderMetaDataImpl extends DocumentImpl implements Document
     public static final String DOCUMENT_TYPE = "folder.metadata";
 
     private DefaultsImpl defaults = new DefaultsImpl();
-    private List docOrder;
+    private List<String> docOrder;
     private String defaultPage;
 
     /**
      * menuDefinitions - menu definitions for folder
      */
-    private List menuDefinitions;
+    private List<MenuDefinition> menuDefinitions;
     
     public FolderMetaDataImpl()
     {
-        docOrder = new ArrayList(4);
+        docOrder = new ArrayList<String>(4);
     }
        
     /**
@@ -140,7 +141,7 @@ public class FolderMetaDataImpl extends DocumentImpl implements Document
      *
      * @return document order
      */
-    public List getDocumentOrder()
+    public List<String> getDocumentOrder()
     {
         return docOrder;
     }
@@ -152,7 +153,7 @@ public class FolderMetaDataImpl extends DocumentImpl implements Document
      *
      * @param docIndexes
      */
-    public void setDocumentOrder(List docIndexes)
+    public void setDocumentOrder(List<String> docIndexes)
     {
         docOrder = docIndexes;
     }
@@ -178,7 +179,7 @@ public class FolderMetaDataImpl extends DocumentImpl implements Document
      *
      * @return definition list
      */
-    public List getMenuDefinitions()
+    public List<MenuDefinition> getMenuDefinitions()
     {
         return menuDefinitions;
     }
@@ -188,7 +189,7 @@ public class FolderMetaDataImpl extends DocumentImpl implements Document
      *
      * @param definitions definition list
      */
-    public void setMenuDefinitions(List definitions)
+    public void setMenuDefinitions(List<MenuDefinition> definitions)
     {
         menuDefinitions = definitions;
     }

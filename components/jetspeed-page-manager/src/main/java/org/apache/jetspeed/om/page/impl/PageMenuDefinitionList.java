@@ -16,10 +16,12 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.AbstractList;
-import java.util.List;
+import org.apache.jetspeed.om.folder.MenuDefinition;
 
-import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -28,11 +30,11 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class PageMenuDefinitionList extends AbstractList
+class PageMenuDefinitionList extends AbstractList<MenuDefinition>
 {
     private BasePageElementImpl page;
 
-    private List removedMenuDefinitions;
+    private List<MenuDefinition> removedMenuDefinitions;
 
     PageMenuDefinitionList(BasePageElementImpl page)
     {
@@ -48,7 +50,7 @@ class PageMenuDefinitionList extends AbstractList
      * @param definition menu definition to add
      * @return list element to add
      */
-    private PageMenuDefinitionImpl validateDefinitionForAdd(PageMenuDefinitionImpl definition)
+    private PageMenuDefinitionImpl validateDefinitionForAdd(MenuDefinition definition)
     {
         // only non-null definitions supported
         if (definition == null)
@@ -69,8 +71,8 @@ class PageMenuDefinitionList extends AbstractList
             if (removedIndex >= 0)
             {
                 // reuse menu definition with matching name
-                PageMenuDefinitionImpl addDefinition = definition;
-                definition = (PageMenuDefinitionImpl)removedMenuDefinitions.remove(removedIndex);
+                MenuDefinition addDefinition = definition;
+                definition = removedMenuDefinitions.remove(removedIndex);
                 // TODO: move this logic to copy methods on implementations
                 // copy menu definition members
                 definition.setOptions(addDefinition.getOptions());
@@ -95,7 +97,7 @@ class PageMenuDefinitionList extends AbstractList
                 definition.getMetadata().copyFields(addDefinition.getMetadata().getFields());
             }
         }
-        return definition;
+        return (PageMenuDefinitionImpl)definition;
     }
 
     /**
@@ -103,11 +105,11 @@ class PageMenuDefinitionList extends AbstractList
      *
      * @return removed menu definitions tracking collection
      */
-    private List getRemovedMenuDefinitions()
+    private List<MenuDefinition> getRemovedMenuDefinitions()
     {
         if (removedMenuDefinitions == null)
         {
-            removedMenuDefinitions = DatabasePageManagerUtils.createList();
+            removedMenuDefinitions = Collections.synchronizedList(new ArrayList<MenuDefinition>());
         }
         return removedMenuDefinitions;
     }
@@ -115,7 +117,7 @@ class PageMenuDefinitionList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, MenuDefinition element)
     {
         // implement for modifiable AbstractList:
         // validate index
@@ -124,7 +126,7 @@ class PageMenuDefinitionList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // verify menu definition
-        PageMenuDefinitionImpl definition = validateDefinitionForAdd((PageMenuDefinitionImpl)element);
+        PageMenuDefinitionImpl definition = validateDefinitionForAdd(element);
         // add to underlying ordered list
         page.accessMenus().add(index, definition);
     }
@@ -132,7 +134,7 @@ class PageMenuDefinitionList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public MenuDefinition get(int index)
     {
         // implement for modifiable AbstractList
         return page.accessMenus().get(index);
@@ -141,11 +143,11 @@ class PageMenuDefinitionList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public MenuDefinition remove(int index)
     {
         // implement for modifiable AbstractList:
         // save removed element 
-        PageMenuDefinitionImpl removed = (PageMenuDefinitionImpl)page.accessMenus().remove(index);
+        PageMenuDefinitionImpl removed = page.accessMenus().remove(index);
         if (removed != null)
         {
             getRemovedMenuDefinitions().add(removed);
@@ -156,13 +158,13 @@ class PageMenuDefinitionList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public MenuDefinition set(int index, Object element)
     {
         // implement for modifiable AbstractList:
         // verify menu definition
         PageMenuDefinitionImpl newDefinition = validateDefinitionForAdd((PageMenuDefinitionImpl)element);
         // set in underlying ordered list
-        PageMenuDefinitionImpl definition = (PageMenuDefinitionImpl)page.accessMenus().set(index, newDefinition);
+        PageMenuDefinitionImpl definition = page.accessMenus().set(index, newDefinition);
         // save replaced element
         getRemovedMenuDefinitions().add(definition);
         // return menu definition

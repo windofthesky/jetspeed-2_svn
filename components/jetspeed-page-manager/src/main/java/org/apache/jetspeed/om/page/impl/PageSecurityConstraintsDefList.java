@@ -16,10 +16,12 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.AbstractList;
-import java.util.List;
+import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 
-import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * PageSecurityConstraintsDefList
@@ -27,11 +29,11 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class PageSecurityConstraintsDefList extends AbstractList
+class PageSecurityConstraintsDefList extends AbstractList<SecurityConstraintsDef>
 {
     private PageSecurityImpl pageSecurity;
 
-    private List removedConstraintsDefs;
+    private List<SecurityConstraintsDef> removedConstraintsDefs;
 
     PageSecurityConstraintsDefList(PageSecurityImpl pageSecurity)
     {
@@ -47,7 +49,7 @@ class PageSecurityConstraintsDefList extends AbstractList
      * @param constraintsDef constraints definition to add
      * @return list element to add
      */
-    private SecurityConstraintsDefImpl validateConstraintsDefForAdd(SecurityConstraintsDefImpl constraintsDef)
+    private SecurityConstraintsDefImpl validateConstraintsDefForAdd(SecurityConstraintsDef constraintsDef)
     {
         // only non-null definitions supported
         if (constraintsDef == null)
@@ -67,13 +69,13 @@ class PageSecurityConstraintsDefList extends AbstractList
             int removedIndex = removedConstraintsDefs.indexOf(constraintsDef);
             if (removedIndex >= 0)
             {
-                SecurityConstraintsDefImpl addConstraintsDef = constraintsDef;
-                constraintsDef = (SecurityConstraintsDefImpl)removedConstraintsDefs.remove(removedIndex);
+                SecurityConstraintsDef addConstraintsDef = constraintsDef;
+                constraintsDef = removedConstraintsDefs.remove(removedIndex);
                 // TODO: move this logic to copy methods on implementations
                 constraintsDef.setSecurityConstraints(addConstraintsDef.getSecurityConstraints());
             }
         }
-        return constraintsDef;
+        return (SecurityConstraintsDefImpl)constraintsDef;
     }
 
     /**
@@ -81,11 +83,11 @@ class PageSecurityConstraintsDefList extends AbstractList
      *
      * @return removed constraints defs tracking collection
      */
-    private List getRemovedConstraintsDefs()
+    private List<SecurityConstraintsDef> getRemovedConstraintsDefs()
     {
         if (removedConstraintsDefs == null)
         {
-            removedConstraintsDefs = DatabasePageManagerUtils.createList();
+            removedConstraintsDefs = Collections.synchronizedList(new ArrayList<SecurityConstraintsDef>());
         }
         return removedConstraintsDefs;
     }
@@ -93,7 +95,7 @@ class PageSecurityConstraintsDefList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, SecurityConstraintsDef element)
     {
         // implement for modifiable AbstractList:
         // validate index
@@ -102,7 +104,7 @@ class PageSecurityConstraintsDefList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // verify constraints definition
-        SecurityConstraintsDefImpl constraintsDef = validateConstraintsDefForAdd((SecurityConstraintsDefImpl)element);
+        SecurityConstraintsDefImpl constraintsDef = validateConstraintsDefForAdd(element);
         // add to underlying ordered list
         pageSecurity.accessConstraintsDefs().add(index, constraintsDef);
         // clear cached security constraints definition map
@@ -112,7 +114,7 @@ class PageSecurityConstraintsDefList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public SecurityConstraintsDef get(int index)
     {
         // implement for modifiable AbstractList
         return pageSecurity.accessConstraintsDefs().get(index);
@@ -121,10 +123,10 @@ class PageSecurityConstraintsDefList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public SecurityConstraintsDef remove(int index)
     {
         // implement for modifiable AbstractList
-        SecurityConstraintsDefImpl removed = (SecurityConstraintsDefImpl)pageSecurity.accessConstraintsDefs().remove(index);
+        SecurityConstraintsDefImpl removed = pageSecurity.accessConstraintsDefs().remove(index);
         if (removed != null)
         {
             // save removed element 
@@ -138,13 +140,13 @@ class PageSecurityConstraintsDefList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public SecurityConstraintsDef set(int index, SecurityConstraintsDef element)
     {
         // implement for modifiable AbstractList:
         // verify constraints definition
         SecurityConstraintsDefImpl newConstraintsDef = validateConstraintsDefForAdd((SecurityConstraintsDefImpl)element);
         // set in underlying ordered list
-        SecurityConstraintsDefImpl constraintsDef = (SecurityConstraintsDefImpl)pageSecurity.accessConstraintsDefs().set(index, newConstraintsDef);
+        SecurityConstraintsDefImpl constraintsDef = pageSecurity.accessConstraintsDefs().set(index, newConstraintsDef);
         // save replaced element
         getRemovedConstraintsDefs().add(constraintsDef);
         // clear cached security constraints definition map

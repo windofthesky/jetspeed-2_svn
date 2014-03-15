@@ -392,7 +392,7 @@ public class CastorFileSystemDocumentHandler implements org.apache.jetspeed.page
  		classDescriptorResolver.setMappingLoader(mappingLoader);
     }
 
-    protected Object unmarshallDocument( Class clazz, String path, String extension ) throws DocumentNotFoundException,
+    protected Object unmarshallDocument(Class<?> clazz, String path, String extension ) throws DocumentNotFoundException,
             DocumentException
     {
         Document document = null;

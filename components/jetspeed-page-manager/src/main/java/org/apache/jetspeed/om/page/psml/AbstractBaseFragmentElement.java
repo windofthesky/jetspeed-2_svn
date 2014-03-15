@@ -46,9 +46,9 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
 
     private String skin = null;
 
-    private List propertyImpls = new ArrayList();
+    private List<FragmentProperty> propertyImpls = new ArrayList<FragmentProperty>();
     
-    private List preferences = new ArrayList();
+    private List<FragmentPreference> preferences = new ArrayList<FragmentPreference>();
     
     private String name;
 
@@ -650,7 +650,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
     {
         if (preferences == null)
         {
-            preferences = new ArrayList();
+            preferences = new ArrayList<FragmentPreference>();
         }
         this.preferences = preferences;  
     } 

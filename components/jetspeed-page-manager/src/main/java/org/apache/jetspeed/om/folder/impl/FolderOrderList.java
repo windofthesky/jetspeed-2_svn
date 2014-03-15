@@ -17,9 +17,9 @@
 package org.apache.jetspeed.om.folder.impl;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * FolderOrderList
@@ -27,11 +27,11 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class FolderOrderList extends AbstractList
+class FolderOrderList extends AbstractList<String>
 {
     private FolderImpl folder;
 
-    private List removedFolderOrders;
+    private List<FolderOrder> removedFolderOrders;
 
     FolderOrderList(FolderImpl folder)
     {
@@ -81,11 +81,11 @@ class FolderOrderList extends AbstractList
      *
      * @return removed folder orders tracking collection
      */
-    private List getRemovedFolderOrders()
+    private List<FolderOrder> getRemovedFolderOrders()
     {
         if (removedFolderOrders == null)
         {
-            removedFolderOrders = DatabasePageManagerUtils.createList();
+            removedFolderOrders = Collections.synchronizedList(new ArrayList<FolderOrder>());
         }
         return removedFolderOrders;
     }
@@ -93,7 +93,7 @@ class FolderOrderList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, String element)
     {
         // implement for modifiable AbstractList:
         // validate index
@@ -102,13 +102,13 @@ class FolderOrderList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // wrap and verify folder order name string
-        FolderOrder folderOrder = wrapNameStringForAdd((String)element);
+        FolderOrder folderOrder = wrapNameStringForAdd(element);
         // add to underlying ordered list
         folder.accessFolderOrders().add(index, folderOrder);
         // set sort order in added element
         if (index > 0)
         {
-            folderOrder.setSortOrder(((FolderOrder)folder.accessFolderOrders().get(index-1)).getSortOrder() + 1);
+            folderOrder.setSortOrder(folder.accessFolderOrders().get(index-1).getSortOrder() + 1);
         }
         else
         {
@@ -117,7 +117,7 @@ class FolderOrderList extends AbstractList
         // maintain sort order in subsequent elements
         for (int i = index, limit = folder.accessFolderOrders().size() - 1; (i < limit); i++)
         {
-            FolderOrder nextFolderOrder = (FolderOrder)folder.accessFolderOrders().get(i + 1);
+            FolderOrder nextFolderOrder = folder.accessFolderOrders().get(i + 1);
             if (nextFolderOrder.getSortOrder() <= folderOrder.getSortOrder())
             {
                 // adjust sort order for next element
@@ -137,40 +137,41 @@ class FolderOrderList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public String get(int index)
     {
         // implement for modifiable AbstractList:
         // unwrap folder order name string
-        return ((FolderOrder)folder.accessFolderOrders().get(index)).getName();
+        return folder.accessFolderOrders().get(index).getName();
     }
 
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public String remove(int index)
     {
         // implement for modifiable AbstractList
-        FolderOrder removed = (FolderOrder)folder.accessFolderOrders().remove(index);
+        FolderOrder removed = folder.accessFolderOrders().remove(index);
         if (removed != null)
         {
             // save removed element 
             getRemovedFolderOrders().add(removed);
             // clear all cached folder ordering
             folder.clearDocumentOrderComparator();
+            return removed.getName();
         }
-        return removed;
+        return null;
     }
 
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public String set(int index, String element)
     {
         // implement for modifiable AbstractList:
         // wrap and verify folder order name string
-        FolderOrder newFolderOrder = wrapNameStringForAdd((String)element);
+        FolderOrder newFolderOrder = wrapNameStringForAdd(element);
         // set in underlying ordered list
-        FolderOrder folderOrder = (FolderOrder)folder.accessFolderOrders().set(index, newFolderOrder);
+        FolderOrder folderOrder = folder.accessFolderOrders().set(index, newFolderOrder);
         // set sort order in new element
         newFolderOrder.setSortOrder(folderOrder.getSortOrder());
         // save replaced element

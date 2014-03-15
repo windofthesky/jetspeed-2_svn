@@ -24,7 +24,7 @@ import java.util.AbstractList;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class FragmentPreferenceValueList extends AbstractList
+class FragmentPreferenceValueList extends AbstractList<String>
 {
     private FragmentPreferenceImpl preference;
 
@@ -59,7 +59,7 @@ class FragmentPreferenceValueList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, String element)
     {
         // implement for modifiable AbstractList:
         // validate index
@@ -68,13 +68,13 @@ class FragmentPreferenceValueList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // wrap and verify preference value string
-        FragmentPreferenceValue preferenceValue = wrapValueStringForAdd((String)element);
+        FragmentPreferenceValue preferenceValue = wrapValueStringForAdd(element);
         // add to underlying ordered list
         preference.accessValues().add(index, preferenceValue);
         // set value order in added element
         if (index > 0)
         {
-            preferenceValue.setValueOrder(((FragmentPreferenceValue)preference.accessValues().get(index-1)).getValueOrder() + 1);
+            preferenceValue.setValueOrder(preference.accessValues().get(index-1).getValueOrder() + 1);
         }
         else
         {
@@ -83,7 +83,7 @@ class FragmentPreferenceValueList extends AbstractList
         // maintain value order in subsequent elements
         for (int i = index, limit = preference.accessValues().size() - 1; (i < limit); i++)
         {
-            FragmentPreferenceValue nextPreferenceValue = (FragmentPreferenceValue)preference.accessValues().get(i + 1);
+            FragmentPreferenceValue nextPreferenceValue = preference.accessValues().get(i + 1);
             if (nextPreferenceValue.getValueOrder() <= preferenceValue.getValueOrder())
             {
                 // adjust value order for next element
@@ -101,32 +101,32 @@ class FragmentPreferenceValueList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public String get(int index)
     {
         // implement for modifiable AbstractList:
         // unwrap preference value string
-        return ((FragmentPreferenceValue)preference.accessValues().get(index)).getValue();
+        return preference.accessValues().get(index).getValue();
     }
 
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public String remove(int index)
     {
         // implement for modifiable AbstractList
-        return preference.accessValues().remove(index);
+        return preference.accessValues().remove(index).getValue();
     }
 
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public String set(int index, String element)
     {
         // implement for modifiable AbstractList:
         // wrap and verify preference value string
-        FragmentPreferenceValue newPreferenceValue = wrapValueStringForAdd((String)element);
+        FragmentPreferenceValue newPreferenceValue = wrapValueStringForAdd(element);
         // set in underlying ordered list
-        FragmentPreferenceValue preferenceValue = (FragmentPreferenceValue)preference.accessValues().set(index, newPreferenceValue);
+        FragmentPreferenceValue preferenceValue = preference.accessValues().set(index, newPreferenceValue);
         // set value order in new element
         newPreferenceValue.setValueOrder(preferenceValue.getValueOrder());
         // return unwrapped preference value string

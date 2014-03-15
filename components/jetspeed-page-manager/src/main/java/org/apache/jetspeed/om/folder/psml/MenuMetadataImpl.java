@@ -16,11 +16,12 @@
  */
 package org.apache.jetspeed.om.folder.psml;
 
-import java.util.Collection;
-import java.util.Locale;
-
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.om.portlet.LocalizedField;
+
+import java.util.Collection;
+import java.util.Locale;
 
 /**
  * This class implements metadata protocols for menu
@@ -148,7 +149,7 @@ public abstract class MenuMetadataImpl
      *
      * @return metadata fields collection
      */
-    public Collection getMetadataFields()
+    public Collection<LocalizedField> getMetadataFields()
     {
         // return metadata fields collection that
         // may in fact be side effected on unmarshall
@@ -160,7 +161,7 @@ public abstract class MenuMetadataImpl
      *
      * @param metadataFields metadata fields collection
      */
-    public void setMetadataFields(Collection metadataFields)
+    public void setMetadataFields(Collection<LocalizedField> metadataFields)
     {
         // set metadata fields collection that
         // may in fact be side effected after
@@ -191,7 +192,7 @@ public abstract class MenuMetadataImpl
         // force metadata update after unmarshalled since
         // metadata collection can be side effected by
         // unmarshalling colection accessors
-        Collection metadataFields = getMetadataFields();
+        Collection<LocalizedField> metadataFields = getMetadataFields();
         if (metadataFields != null)
         {
             setMetadataFields(metadataFields);

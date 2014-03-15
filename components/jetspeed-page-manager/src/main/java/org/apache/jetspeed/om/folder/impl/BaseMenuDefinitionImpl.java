@@ -40,7 +40,7 @@ public abstract class BaseMenuDefinitionImpl extends BaseMenuDefinitionMetadata 
     private String skin;
     private String title;
     private String shortTitle;
-    private List elements;
+    private List<MenuDefinitionElement> elements;
 
     /**
      * accessElements
@@ -49,7 +49,7 @@ public abstract class BaseMenuDefinitionImpl extends BaseMenuDefinitionMetadata 
      *
      * @return persistent collection
      */
-    public List accessElements()
+    public List<MenuDefinitionElement> accessElements()
     {
         // create initial collection if necessary
         if (elements == null)

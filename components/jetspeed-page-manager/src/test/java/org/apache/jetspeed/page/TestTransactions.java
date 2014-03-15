@@ -53,7 +53,7 @@ public class TestTransactions extends  DatasourceEnabledSpringTestCase implement
 
     public void testTx() throws Exception
     {
-        PageManager pageManager = (PageManager)scm.getComponent("pageManager");
+         PageManager pageManager = (PageManager)scm.getComponent("pageManager");
 
         if (pageManager.folderExists("/"))
         {

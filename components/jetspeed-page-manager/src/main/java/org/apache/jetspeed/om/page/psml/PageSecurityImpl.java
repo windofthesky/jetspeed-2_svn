@@ -37,11 +37,11 @@ import java.util.Map;
  */
 public class PageSecurityImpl extends DocumentImpl implements PageSecurity
 {
-    private List constraintsDefsList;
+    private List<SecurityConstraintsDef> constraintsDefsList;
 
-    private Map constraintsDefsMap;
+    private Map<String,SecurityConstraintsDef> constraintsDefsMap;
 
-    private List globalConstraintsRefs;
+    private List<String> globalConstraintsRefs;
 
     /**
      * <p>
@@ -109,7 +109,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
     {
         if ((constraintsDefsList != null) && (constraintsDefsMap == null))
         {
-            constraintsDefsMap = new HashMap((constraintsDefsList.size() * 2) + 1);
+            constraintsDefsMap = new HashMap<String,SecurityConstraintsDef>((constraintsDefsList.size() * 2) + 1);
             Iterator definitionsIter = constraintsDefsList.iterator();
             while (definitionsIter.hasNext())
             {
@@ -119,7 +119,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
         }
         if (constraintsDefsMap != null)
         {
-            return (SecurityConstraintsDef) constraintsDefsMap.get(name);
+            return constraintsDefsMap.get(name);
         }
         return null;
     }
@@ -132,7 +132,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
      * @see org.apache.jetspeed.om.page.PageSecurity#getGlobalSecurityConstraintsRefs()
      * @return
      */
-    public List getGlobalSecurityConstraintsRefs()
+    public List<String> getGlobalSecurityConstraintsRefs()
     {
         return globalConstraintsRefs;
     }
@@ -145,7 +145,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
      * @see org.apache.jetspeed.om.page.PageSecurity#setGlobalSecurityConstraintsRefs(java.util.List)
      * @param constraintsRefs
      */
-    public void setGlobalSecurityConstraintsRefs(List constraintsRefs)
+    public void setGlobalSecurityConstraintsRefs(List<String> constraintsRefs)
     {
         globalConstraintsRefs = constraintsRefs;
     }

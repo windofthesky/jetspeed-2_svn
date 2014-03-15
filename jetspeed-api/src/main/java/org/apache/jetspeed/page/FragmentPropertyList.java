@@ -16,32 +16,32 @@
  */
 package org.apache.jetspeed.page;
 
-import java.util.List;
-
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.FragmentProperty;
 
-public interface FragmentPropertyList extends List
+import java.util.List;
+
+public interface FragmentPropertyList extends List<FragmentProperty>
 {
 	/* (non-Javadoc)
 	 * @see java.util.List#add(int,java.lang.Object)
 	 */
-	public abstract void add(int index, Object element);
+	public abstract void add(int index, FragmentProperty element);
 
 	/* (non-Javadoc)
 	 * @see java.util.List#get(int)
 	 */
-	public abstract Object get(int index);
+	public abstract FragmentProperty get(int index);
 
 	/* (non-Javadoc)
 	 * @see java.util.List#remove(int)
 	 */
-	public abstract Object remove(int index);
+	public abstract FragmentProperty remove(int index);
 
 	/* (non-Javadoc)
 	 * @see java.util.List#set(int,java.lang.Object)
 	 */
-	public abstract Object set(int index, Object element);
+	public abstract FragmentProperty set(int index, FragmentProperty element);
 
 	/* (non-Javadoc)
 	 * @see java.util.List#size()
@@ -60,14 +60,14 @@ public interface FragmentPropertyList extends List
 	 * 
 	 * @return fragment property list
 	 */
-	public abstract List getProperties();
+	public abstract List<FragmentProperty> getProperties();
 
 	/**
 	 * Get underlying removed fragment properties list.
 	 * 
 	 * @return removed fragment property list
 	 */
-	public abstract List getRemovedProperties();
+	public abstract List<FragmentProperty> getRemovedProperties();
 
 	/**
 	 * Find matching property.
@@ -75,8 +75,7 @@ public interface FragmentPropertyList extends List
 	 * @param match match property
 	 * @return matching property
 	 */
-	public abstract FragmentProperty getMatchingProperty(
-			FragmentProperty match);
+	public abstract FragmentProperty getMatchingProperty(FragmentProperty match);
 
 	/**
 	 * Clear all transient properties.

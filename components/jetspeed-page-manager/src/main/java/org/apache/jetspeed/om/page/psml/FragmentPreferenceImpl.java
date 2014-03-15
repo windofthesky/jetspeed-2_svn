@@ -32,7 +32,7 @@ import java.util.List;
 public class FragmentPreferenceImpl implements FragmentPreference
 {
     private String name;
-    private List values;
+    private List<String> values;
     private boolean readOnly;
     
     public String getName()
@@ -59,7 +59,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
     {
         if (this.values == null)
         {
-            this.values = new ArrayList();            
+            this.values = new ArrayList<String>();
         }
         return this.values;
     }

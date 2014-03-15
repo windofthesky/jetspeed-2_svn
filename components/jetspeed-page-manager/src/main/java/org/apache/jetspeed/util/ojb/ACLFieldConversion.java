@@ -16,13 +16,13 @@
  */
 package org.apache.jetspeed.util.ojb;
 
+import org.apache.ojb.broker.accesslayer.conversions.ConversionException;
+import org.apache.ojb.broker.accesslayer.conversions.FieldConversion;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import org.apache.ojb.broker.accesslayer.conversions.ConversionException;
-import org.apache.ojb.broker.accesslayer.conversions.FieldConversion;
 
 /**
  * ACLFieldConversion 
@@ -88,7 +88,7 @@ public class ACLFieldConversion implements FieldConversion
     {
         if (arg0 instanceof String)
         {
-            List aclList = new ArrayList(4);
+            List<String> aclList = new ArrayList<String>(4);
             StringTokenizer tokens = new StringTokenizer((String) arg0, DELIM);
             while (tokens.hasMoreTokens())
             {

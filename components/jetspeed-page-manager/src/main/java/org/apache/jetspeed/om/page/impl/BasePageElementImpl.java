@@ -38,7 +38,7 @@ public abstract class BasePageElementImpl extends BaseFragmentsElementImpl imple
     private String skin;
     private String defaultLayoutDecorator;
     private String defaultPortletDecorator;
-    private List menus;
+    private List<PageMenuDefinitionImpl> menus;
 
     private PageMenuDefinitionList menuDefinitions;
 
@@ -49,7 +49,7 @@ public abstract class BasePageElementImpl extends BaseFragmentsElementImpl imple
      *
      * @return persistent collection
      */
-    List accessMenus()
+    List<PageMenuDefinitionImpl> accessMenus()
     {
         // create initial collection if necessary
         if (menus == null)

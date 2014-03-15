@@ -16,11 +16,12 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.Collection;
-
 import org.apache.jetspeed.om.folder.MenuSeparatorDefinition;
 import org.apache.jetspeed.om.folder.impl.BaseMenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
+import org.apache.jetspeed.om.portlet.LocalizedField;
+
+import java.util.Collection;
 
 /**
  * PageMenuSeparatorDefinitionImpl
@@ -35,7 +36,7 @@ public class PageMenuSeparatorDefinitionImpl extends BaseMenuSeparatorDefinition
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.impl.BaseMenuDefinitionMetadata#newPageMetadata()
      */
-    public PageMetadataImpl newPageMetadata(Collection fields)
+    public PageMetadataImpl newPageMetadata(Collection<LocalizedField> fields)
     {
         PageMetadataImpl pageMetadata = new PageMetadataImpl(PageMenuMetadataLocalizedFieldImpl.class);
         pageMetadata.setFields(fields);

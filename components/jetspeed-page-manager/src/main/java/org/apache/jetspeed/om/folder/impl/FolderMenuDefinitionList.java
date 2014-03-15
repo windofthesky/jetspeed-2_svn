@@ -16,10 +16,12 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
-import java.util.AbstractList;
-import java.util.List;
+import org.apache.jetspeed.om.folder.MenuDefinition;
 
-import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * FolderMenuDefinitionList
@@ -27,11 +29,11 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class FolderMenuDefinitionList extends AbstractList
+class FolderMenuDefinitionList extends AbstractList<MenuDefinition>
 {
     private FolderImpl folder;
 
-    private List removedMenuDefinitions;
+    private List<MenuDefinition> removedMenuDefinitions;
 
     FolderMenuDefinitionList(FolderImpl folder)
     {
@@ -47,7 +49,7 @@ class FolderMenuDefinitionList extends AbstractList
      * @param definition menu definition to add
      * @return list element to add
      */
-    private FolderMenuDefinitionImpl validateDefinitionForAdd(FolderMenuDefinitionImpl definition)
+    private FolderMenuDefinitionImpl validateDefinitionForAdd(MenuDefinition definition)
     {
         // only non-null definitions supported
         if (definition == null)
@@ -68,8 +70,8 @@ class FolderMenuDefinitionList extends AbstractList
             if (removedIndex >= 0)
             {
                 // reuse menu definition with matching name
-                FolderMenuDefinitionImpl addDefinition = definition;
-                definition = (FolderMenuDefinitionImpl)removedMenuDefinitions.remove(removedIndex);
+                MenuDefinition addDefinition = definition;
+                definition = removedMenuDefinitions.remove(removedIndex);
                 // TODO: move this logic to copy methods on implementations
                 // copy menu definition members
                 definition.setOptions(addDefinition.getOptions());
@@ -94,7 +96,7 @@ class FolderMenuDefinitionList extends AbstractList
                 definition.getMetadata().copyFields(addDefinition.getMetadata().getFields());
             }
         }
-        return definition;
+        return (FolderMenuDefinitionImpl)definition;
     }
 
     /**
@@ -102,11 +104,11 @@ class FolderMenuDefinitionList extends AbstractList
      *
      * @return removed menu definitions tracking collection
      */
-    private List getRemovedMenuDefinitions()
+    private List<MenuDefinition> getRemovedMenuDefinitions()
     {
         if (removedMenuDefinitions == null)
         {
-            removedMenuDefinitions = DatabasePageManagerUtils.createList();
+            removedMenuDefinitions = Collections.synchronizedList(new ArrayList<MenuDefinition>());
         }
         return removedMenuDefinitions;
     }
@@ -114,7 +116,7 @@ class FolderMenuDefinitionList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, MenuDefinition element)
     {
         // implement for modifiable AbstractList:
         // validate index
@@ -123,7 +125,7 @@ class FolderMenuDefinitionList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // verify menu definition
-        FolderMenuDefinitionImpl definition = validateDefinitionForAdd((FolderMenuDefinitionImpl)element);
+        FolderMenuDefinitionImpl definition = validateDefinitionForAdd(element);
         // add to underlying ordered list
         folder.accessMenus().add(index, definition);
     }
@@ -131,7 +133,7 @@ class FolderMenuDefinitionList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public MenuDefinition get(int index)
     {
         // implement for modifiable AbstractList
         return folder.accessMenus().get(index);
@@ -140,11 +142,11 @@ class FolderMenuDefinitionList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public MenuDefinition remove(int index)
     {
         // implement for modifiable AbstractList:
         // save removed element 
-        FolderMenuDefinitionImpl removed = (FolderMenuDefinitionImpl)folder.accessMenus().remove(index);
+        FolderMenuDefinitionImpl removed = folder.accessMenus().remove(index);
         if (removed != null)
         {
             getRemovedMenuDefinitions().add(removed);
@@ -155,13 +157,13 @@ class FolderMenuDefinitionList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public MenuDefinition set(int index, MenuDefinition element)
     {
         // implement for modifiable AbstractList:
         // verify menu definition
-        FolderMenuDefinitionImpl newDefinition = validateDefinitionForAdd((FolderMenuDefinitionImpl)element);
+        FolderMenuDefinitionImpl newDefinition = validateDefinitionForAdd(element);
         // set in underlying ordered list
-        FolderMenuDefinitionImpl definition = (FolderMenuDefinitionImpl)folder.accessMenus().set(index, newDefinition);
+        FolderMenuDefinitionImpl definition = folder.accessMenus().set(index, newDefinition);
         // save replaced element
         getRemovedMenuDefinitions().add(definition);
         // return menu definition

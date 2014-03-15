@@ -32,7 +32,7 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
 {
     private int id;
     private String name;
-    private List constraintDefs = DatabasePageManagerUtils.createList();
+    private List<PageSecuritySecurityConstraintImpl> constraintDefs;
 
     private SecurityConstraintDefList securityConstraintDefs;
 
@@ -43,7 +43,7 @@ public class SecurityConstraintsDefImpl implements SecurityConstraintsDef
      *
      * @return persistent collection
      */
-    List accessConstraintDefs()
+    List<PageSecuritySecurityConstraintImpl> accessConstraintDefs()
     {
         // create initial collection if necessary
         if (constraintDefs == null)

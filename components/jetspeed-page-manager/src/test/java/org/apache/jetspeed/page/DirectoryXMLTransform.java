@@ -16,6 +16,17 @@
 */
 package org.apache.jetspeed.page;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.jetspeed.util.DirectoryHelper;
+
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -26,18 +37,6 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.nio.channels.FileChannel;
 import java.util.Map;
-
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.jetspeed.util.DirectoryHelper;
 
 
 /**
@@ -50,9 +49,9 @@ public class DirectoryXMLTransform extends DirectoryHelper
 
     private SAXParserFactory saxFactory;
     
-    private Map xsltMapping;
+    private Map<String,Object> xsltMapping;
     
-        public DirectoryXMLTransform(File base, Map extensionToXslt) {
+        public DirectoryXMLTransform(File base, Map<String,Object> extensionToXslt) {
           super(base);
           this.xsltMapping=extensionToXslt;
           System.setProperty("javax.xml.transform.TransformerFactory",
@@ -110,7 +109,7 @@ public class DirectoryXMLTransform extends DirectoryHelper
          * </p>
          *
          * @see org.apache.jetspeed.util.FileSystemHelper#copyFrom(java.io.File, java.io.FileFilter)
-         * @param directory
+         * @param srcDirectory
          * @param fileFilter
          * @throws IOException
          */

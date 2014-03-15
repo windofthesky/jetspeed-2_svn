@@ -88,12 +88,12 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
      * menuElements - ordered polymorphic list of menu options nested
      *                menu, separator, include, and exclude definitions
      */
-    private List menuElements;
+    private List<MenuDefinitionElement> menuElements;
 
     /**
      * menuElementImpls - ordered homogeneous list of menu elements
      */
-    private List menuElementImpls;
+    private List<MenuElementImpl> menuElementImpls;
 
     /**
      * MenuDefinitionImpl - constructor
@@ -329,7 +329,7 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
      *
      * @return element list
      */
-    public List getMenuElementImpls()
+    public List<MenuElementImpl> getMenuElementImpls()
     {
         return menuElementImpls;
     }
@@ -340,7 +340,7 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
      *
      * @param elements element list
      */
-    public void setMenuElementImpls(List elements)
+    public void setMenuElementImpls(List<MenuElementImpl> elements)
     {
         menuElementImpls = elements;
     }
@@ -358,12 +358,12 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
         // unmarshalled notification
         if (menuElementImpls != null)
         {
-            menuElements = new ArrayList(menuElementImpls.size());
+            menuElements = new ArrayList<MenuDefinitionElement>(menuElementImpls.size());
             Iterator menuElementIter = menuElementImpls.iterator();
             while (menuElementIter.hasNext())
             {
                 // unwrap menu element
-                Object menuElement = ((MenuElementImpl)menuElementIter.next()).getElement();
+                MenuDefinitionElement menuElement = ((MenuElementImpl)menuElementIter.next()).getElement();
                 menuElements.add(menuElement);
 
                 // propagate unmarshalled notification
@@ -389,12 +389,12 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
         // marshalling notification
         if (menuElements != null)
         {
-            menuElementImpls = new ArrayList(menuElements.size());
+            menuElementImpls = new ArrayList<MenuElementImpl>(menuElements.size());
             Iterator menuElementIter = menuElements.iterator();
             while (menuElementIter.hasNext())
             {
                 // wrap menu element
-                Object menuElement = menuElementIter.next();
+                MenuDefinitionElement menuElement = (MenuDefinitionElement)menuElementIter.next();
                 menuElementImpls.add(new MenuElementImpl(menuElement));
 
                 // propagate marshalling notification

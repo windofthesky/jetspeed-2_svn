@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.om.page;
 
+import org.apache.jetspeed.om.common.SecurityConstraint;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,14 +67,14 @@ public class SecurityConstraintsRefParser
                 SecurityConstraintsDef securityConstraintsDef = pageSecurity.getSecurityConstraintsDef(postfixToken);
                 if ((securityConstraintsDef != null) && (securityConstraintsDef.getSecurityConstraints() != null))
                 {
-                    return new ArrayList(securityConstraintsDef.getSecurityConstraints());
+                    return new ArrayList<SecurityConstraint>(securityConstraintsDef.getSecurityConstraints());
                 }
                 return null;
             }
         }
 
         // convert postfix expression tokens into constraints reference tokens
-        List constraintsRefTokens = new ArrayList();
+        List<SecurityConstraintsRefToken> constraintsRefTokens = new ArrayList<SecurityConstraintsRefToken>();
         Iterator postfixTokensIter = postfixTokens.iterator();
         while (postfixTokensIter.hasNext()) {
             String postfixToken = (String)postfixTokensIter.next();
@@ -128,8 +130,8 @@ public class SecurityConstraintsRefParser
      */
     static List parseConstraintsRef(String constraintsRef)
     {
-        List postfixTokens = new ArrayList();
-        Stack infixToPostfixStack = new Stack();
+        List<String> postfixTokens = new ArrayList<String>();
+        Stack<String> infixToPostfixStack = new Stack<String>();
         int tokenIndex = -1;
         boolean token = false;
         int parseIndex = 0;
@@ -176,7 +178,7 @@ public class SecurityConstraintsRefParser
     /**
      * Logical operator precedence map.
      */
-    private static final Map OPERATOR_PRECEDENCE = new HashMap();
+    private static final Map<String,Integer> OPERATOR_PRECEDENCE = new HashMap<String,Integer>();
     static
     {
         OPERATOR_PRECEDENCE.put(NOT_OPERATION, new Integer(2));
@@ -193,14 +195,14 @@ public class SecurityConstraintsRefParser
      * @param stack infix to postfix operations stack
      * @param postfixTokens postfix expression tokens
      */
-    private static void infixToPostfix(String expression, String token, int parseIndex, Stack stack, List postfixTokens)
+    private static void infixToPostfix(String expression, String token, int parseIndex, Stack<String> stack, List<String> postfixTokens)
     {
         // null token: end expression infix to postfix operation conversion
         if (token == null)
         {
             if (!stack.empty())
             {
-                String peek = (String)stack.peek();
+                String peek = stack.peek();
                 while (!peek.equals(OPEN_PAREN))
                 {
                     postfixTokens.add(stack.pop());
@@ -208,7 +210,7 @@ public class SecurityConstraintsRefParser
                     {
                         break;
                     }
-                    peek = (String)stack.peek();
+                    peek = stack.peek();
                 }
                 if (peek.equals(OPEN_PAREN))
                 {
@@ -229,7 +231,7 @@ public class SecurityConstraintsRefParser
             boolean matchedParen = false;
             if (!stack.empty())
             {
-                String peek = (String)stack.peek();
+                String peek = stack.peek();
                 while (!peek.equals(OPEN_PAREN))
                 {
                     postfixTokens.add(stack.pop());
@@ -237,7 +239,7 @@ public class SecurityConstraintsRefParser
                     {
                         break;
                     }
-                    peek = (String)stack.peek();
+                    peek = stack.peek();
                 }
                 if (peek.equals(OPEN_PAREN))
                 {
@@ -265,7 +267,7 @@ public class SecurityConstraintsRefParser
             token = NOT_OPERATION;
         }
         // push non-operation tokens
-        Integer operatorPrecedence = (Integer)OPERATOR_PRECEDENCE.get(token);
+        Integer operatorPrecedence = OPERATOR_PRECEDENCE.get(token);
         if (operatorPrecedence == null)
         {
             postfixTokens.add(token);
@@ -274,15 +276,15 @@ public class SecurityConstraintsRefParser
         // infix to postfix operation conversion
         if (!stack.empty())
         {
-            String peek = (String)stack.peek();
-            while (!peek.equals(OPEN_PAREN) && (((Integer)OPERATOR_PRECEDENCE.get(peek)).intValue() >= operatorPrecedence.intValue()))
+            String peek = stack.peek();
+            while (!peek.equals(OPEN_PAREN) && ((OPERATOR_PRECEDENCE.get(peek)).intValue() >= operatorPrecedence.intValue()))
             {
                 postfixTokens.add(stack.pop());
                 if (stack.empty())
                 {
                     break;
                 }
-                peek = (String)stack.peek();
+                peek = stack.peek();
             }
         }
         stack.push(token);

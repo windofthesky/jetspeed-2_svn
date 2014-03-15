@@ -16,9 +16,10 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.AbstractList;
-
+import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
+
+import java.util.AbstractList;
 
 /**
  * SecurityConstraintList
@@ -26,7 +27,7 @@ import org.apache.jetspeed.om.page.SecurityConstraintImpl;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class SecurityConstraintList extends AbstractList
+class SecurityConstraintList extends AbstractList<SecurityConstraint>
 {
     private SecurityConstraintsImpl constraints;
 
@@ -44,7 +45,7 @@ class SecurityConstraintList extends AbstractList
      * @param constraint to add
      * @return list element to add
      */
-    private SecurityConstraintImpl validateConstraintForAdd(SecurityConstraintImpl constraint)
+    private SecurityConstraintImpl validateConstraintForAdd(SecurityConstraint constraint)
     {
         // validate constraint instance class
         if (constraint == null)
@@ -56,13 +57,13 @@ class SecurityConstraintList extends AbstractList
         {
             throw new ClassCastException("Unable to add list element instance: expected " + constraints.getSecurityConstraintClass().getName() + ", got " + constraint.getClass().getName() + ".");
         }
-        return constraint;
+        return (SecurityConstraintImpl)constraint;
     }
 
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, SecurityConstraint element)
     {
         // implement for modifiable AbstractList:
         // validate index
@@ -71,13 +72,13 @@ class SecurityConstraintList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // verify constraint
-        SecurityConstraintImpl constraint = validateConstraintForAdd((SecurityConstraintImpl)element);
+        SecurityConstraintImpl constraint = validateConstraintForAdd(element);
         // add to underlying ordered list
         constraints.accessConstraints().add(index, constraint);
         // set apply order in added element
         if (index > 0)
         {
-            constraint.setApplyOrder(((SecurityConstraintImpl)constraints.accessConstraints().get(index-1)).getApplyOrder() + 1);
+            constraint.setApplyOrder(constraints.accessConstraints().get(index-1).getApplyOrder() + 1);
         }
         else
         {
@@ -86,7 +87,7 @@ class SecurityConstraintList extends AbstractList
         // maintain apply order in subsequent elements
         for (int i = index, limit = constraints.accessConstraints().size() - 1; (i < limit); i++)
         {
-            SecurityConstraintImpl nextConstraint = (SecurityConstraintImpl)constraints.accessConstraints().get(i + 1);
+            SecurityConstraintImpl nextConstraint = constraints.accessConstraints().get(i + 1);
             if (nextConstraint.getApplyOrder() <= constraint.getApplyOrder())
             {
                 // adjust apply order for next element
@@ -106,7 +107,7 @@ class SecurityConstraintList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public SecurityConstraint get(int index)
     {
         // implement for modifiable AbstractList
         return constraints.accessConstraints().get(index);
@@ -115,10 +116,10 @@ class SecurityConstraintList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public SecurityConstraint remove(int index)
     {
         // implement for modifiable AbstractList
-        Object removed = constraints.accessConstraints().remove(index);
+        SecurityConstraint removed = constraints.accessConstraints().remove(index);
         if (removed != null)
         {
             // clear all cached security constraints
@@ -130,13 +131,13 @@ class SecurityConstraintList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public SecurityConstraint set(int index, SecurityConstraint element)
     {
         // implement for modifiable AbstractList:
         // verify constraint
-        SecurityConstraintImpl newConstraint = validateConstraintForAdd((SecurityConstraintImpl)element);
+        SecurityConstraintImpl newConstraint = validateConstraintForAdd(element);
         // set in underlying ordered list
-        SecurityConstraintImpl constraint = (SecurityConstraintImpl)constraints.accessConstraints().set(index, newConstraint);
+        SecurityConstraintImpl constraint = constraints.accessConstraints().set(index, newConstraint);
         // set apply order in new element
         newConstraint.setApplyOrder(constraint.getApplyOrder());
         // clear all cached security constraints

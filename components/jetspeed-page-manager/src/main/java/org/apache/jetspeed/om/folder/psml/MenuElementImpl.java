@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.om.folder.psml;
 
+import org.apache.jetspeed.om.folder.MenuDefinitionElement;
+
 import java.io.Serializable;
 
 /**
@@ -30,7 +32,7 @@ public class MenuElementImpl implements Serializable
     /**
      * element - wrapped menu element
      */
-    private Object element;
+    private MenuDefinitionElement element;
 
     /**
      * MenuElementImpl - constructor
@@ -42,15 +44,15 @@ public class MenuElementImpl implements Serializable
     /**
      * MenuElementImpl - constructor
      */
-    public MenuElementImpl(Object element)
+    public MenuElementImpl(MenuDefinitionElement element)
     {
         this.element = element;
     }
 
     /**
-     * getOption - get wrapped menu element
+     * getElement - get wrapped menu element
      */
-    public Object getElement()
+    public MenuDefinitionElement getElement()
     {
         return element;
     }

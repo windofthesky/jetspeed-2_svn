@@ -16,12 +16,13 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
-import java.util.Collection;
-import java.util.Locale;
-
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+
+import java.util.Collection;
+import java.util.Locale;
 
 /**
  * BaseMenuDefinitionMetadata
@@ -31,7 +32,7 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
  */
 public abstract class BaseMenuDefinitionMetadata extends BaseMenuDefinitionElement 
 {
-    private Collection metadataFields;
+    private Collection<LocalizedField> metadataFields;
 
     private PageMetadataImpl pageMetadata;
 
@@ -43,7 +44,7 @@ public abstract class BaseMenuDefinitionMetadata extends BaseMenuDefinitionEleme
      * @param fields mutable fields collection
      * @return page metadata
      */
-    public abstract PageMetadataImpl newPageMetadata(Collection fields);
+    public abstract PageMetadataImpl newPageMetadata(Collection<LocalizedField> fields);
 
     /**
      * getPageMetadata

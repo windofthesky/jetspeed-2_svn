@@ -32,7 +32,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
     private int id;
     private String name;
     private boolean readOnly;
-    private List values;
+    private List<FragmentPreferenceValue> values;
 
     private FragmentPreferenceValueList preferenceValues;
 
@@ -43,7 +43,7 @@ public class FragmentPreferenceImpl implements FragmentPreference
      *
      * @return persistent collection
      */
-    List accessValues()
+    List<FragmentPreferenceValue> accessValues()
     {
         // create initial collection if necessary
         if (values == null)

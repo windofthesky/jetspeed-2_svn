@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
+import org.apache.jetspeed.om.folder.MenuDefinitionElement;
+
 import java.util.AbstractList;
 
 /**
@@ -24,7 +26,7 @@ import java.util.AbstractList;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class FolderMenuDefinitionElementList extends AbstractList
+class FolderMenuDefinitionElementList extends AbstractList<MenuDefinitionElement>
 {
     private FolderMenuDefinitionImpl menuDefinition;
 
@@ -42,20 +44,20 @@ class FolderMenuDefinitionElementList extends AbstractList
      * @param menuElement element to add
      * @return list element to add
      */
-    private FolderMenuDefinitionElement validateMenuElementForAdd(FolderMenuDefinitionElement menuElement)
+    private FolderMenuDefinitionElement validateMenuElementForAdd(MenuDefinitionElement menuElement)
     {
         // validate element instance class
         if (menuElement == null)
         {
             throw new NullPointerException("Unable to add null to list.");
         }
-        return menuElement;
+        return (FolderMenuDefinitionElement)menuElement;
     }
 
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, MenuDefinitionElement element)
     {
         // implement for modifiable AbstractList:
         // validate index
@@ -64,7 +66,7 @@ class FolderMenuDefinitionElementList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // verify element
-        FolderMenuDefinitionElement menuElement = validateMenuElementForAdd((FolderMenuDefinitionElement)element);
+        FolderMenuDefinitionElement menuElement = validateMenuElementForAdd(element);
         // add to underlying ordered list
         menuDefinition.accessElements().add(index, menuElement);
         // set element order in added element
@@ -97,7 +99,7 @@ class FolderMenuDefinitionElementList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public MenuDefinitionElement get(int index)
     {
         // implement for modifiable AbstractList
         return menuDefinition.accessElements().get(index);
@@ -106,7 +108,7 @@ class FolderMenuDefinitionElementList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public MenuDefinitionElement remove(int index)
     {
         // implement for modifiable AbstractList
         return menuDefinition.accessElements().remove(index);
@@ -115,11 +117,11 @@ class FolderMenuDefinitionElementList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public MenuDefinitionElement set(int index, MenuDefinitionElement element)
     {
         // implement for modifiable AbstractList:
         // verify element
-        FolderMenuDefinitionElement newMenuElement = validateMenuElementForAdd((FolderMenuDefinitionElement)element);
+        FolderMenuDefinitionElement newMenuElement = validateMenuElementForAdd(element);
         // set in underlying ordered list
         FolderMenuDefinitionElement menuElement = (FolderMenuDefinitionElement)menuDefinition.accessElements().set(index, newMenuElement);
         // set element order in new element

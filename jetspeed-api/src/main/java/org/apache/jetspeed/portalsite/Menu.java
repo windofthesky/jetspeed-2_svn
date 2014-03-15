@@ -71,7 +71,7 @@ public interface Menu extends MenuElement
      *
      * @return menu elements list
      */
-    List getElements();
+    List<MenuElement> getElements();
 
     /**
      * isEmpty - get empty state of list of menu elements

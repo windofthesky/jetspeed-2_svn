@@ -16,17 +16,16 @@
  */
 package org.apache.jetspeed.page;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.security.auth.Subject;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
 import org.apache.jetspeed.test.JetspeedTestCase;
+
+import javax.security.auth.Subject;
+import java.security.Principal;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * TestSecureCastorXmlPageManager
@@ -112,7 +111,7 @@ public class TestCreateUserHomePagesFromRoles extends JetspeedTestCase implement
         assertTrue("folder2 failed to create", pageManager.folderExists(FOLDER2));
         assertTrue("folder3 failed to create", pageManager.folderExists(FOLDER3));
         
-        Set principals = new HashSet();
+        Set<Principal> principals = new HashSet<Principal>();
         
         // create the role principals
         principals.add(new TestRole("role1"));
@@ -123,7 +122,7 @@ public class TestCreateUserHomePagesFromRoles extends JetspeedTestCase implement
         principals.add(new TestUser("david"));
         
         // create the subject
-        Subject subject = new Subject(true, principals, new HashSet(), new HashSet());
+        Subject subject = new Subject(true, principals, new HashSet<Principal>(), new HashSet<Principal>());
 
         pageManager.createUserHomePagesFromRoles(subject);
         

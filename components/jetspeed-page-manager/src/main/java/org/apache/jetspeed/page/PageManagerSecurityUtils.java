@@ -16,15 +16,6 @@
  */
 package org.apache.jetspeed.page;
 
-import java.security.AccessController;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.security.auth.Subject;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
@@ -33,6 +24,14 @@ import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.Role;
 import org.apache.jetspeed.security.User;
+
+import javax.security.auth.Subject;
+import java.security.AccessController;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -46,8 +45,8 @@ public class PageManagerSecurityUtils
     public static boolean checkConstraint(SecurityConstraintsDef def, String actions)
     throws DocumentException
     {
-        List viewActionList = SecurityConstraintImpl.parseCSVList(actions);
-        List otherActionsList = null;
+        List<String> viewActionList = SecurityConstraintImpl.parseCSVList(actions);
+        List<String> otherActionsList = null;
         if (viewActionList.size() == 1)
         {
             if (!viewActionList.contains(JetspeedActions.VIEW))
@@ -62,7 +61,7 @@ public class PageManagerSecurityUtils
             viewActionList = null;
             if (otherActionsList.remove(JetspeedActions.VIEW))
             {
-                viewActionList = new ArrayList(1);
+                viewActionList = new ArrayList<String>(1);
                 viewActionList.add(JetspeedActions.VIEW);
             }
         }
@@ -75,9 +74,9 @@ public class PageManagerSecurityUtils
         }
 
         // get user/group/role principal names
-        List userPrincipals = null;
-        List rolePrincipals = null;
-        List groupPrincipals = null;
+        List<String> userPrincipals = null;
+        List<String> rolePrincipals = null;
+        List<String> groupPrincipals = null;
         Iterator principals = subject.getPrincipals().iterator();
         while (principals.hasNext())
         {
@@ -86,7 +85,7 @@ public class PageManagerSecurityUtils
             {
                 if (userPrincipals == null)
                 {
-                    userPrincipals = new LinkedList();
+                    userPrincipals = new LinkedList<String>();
                 }
                 userPrincipals.add(principal.getName());
             }
@@ -94,7 +93,7 @@ public class PageManagerSecurityUtils
             {
                 if (rolePrincipals == null)
                 {
-                    rolePrincipals = new LinkedList();
+                    rolePrincipals = new LinkedList<String>();
                 }
                 rolePrincipals.add(principal.getName());
             }
@@ -102,7 +101,7 @@ public class PageManagerSecurityUtils
             {
                 if (groupPrincipals == null)
                 {
-                    groupPrincipals = new LinkedList();
+                    groupPrincipals = new LinkedList<String>();
                 }
                 groupPrincipals.add(principal.getName());
             }

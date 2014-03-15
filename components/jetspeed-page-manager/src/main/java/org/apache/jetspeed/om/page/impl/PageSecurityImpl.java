@@ -35,11 +35,11 @@ import java.util.Map;
  */
 public class PageSecurityImpl extends DocumentImpl implements PageSecurity
 {
-    private List constraintsDefs;
-    private List globalConstraintsRefs;
+    private List<SecurityConstraintsDefImpl> constraintsDefs;
+    private List<PageSecurityGlobalSecurityConstraintsRef> globalConstraintsRefs;
 
     private PageSecurityConstraintsDefList securityConstraintsDefs;
-    private Map securityConstraintsDefsMap;
+    private Map<String,SecurityConstraintsDef> securityConstraintsDefsMap;
     private PageSecurityConstraintsRefList globalSecurityConstraintsRefs;
 
     public PageSecurityImpl()
@@ -54,7 +54,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
      *
      * @return persistent collection
      */
-    List accessConstraintsDefs()
+    List<SecurityConstraintsDefImpl> accessConstraintsDefs()
     {
         // create initial collection if necessary
         if (constraintsDefs == null)
@@ -71,7 +71,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
      *
      * @return persistent collection
      */
-    List accessGlobalConstraintsRefs()
+    List<PageSecurityGlobalSecurityConstraintsRef> accessGlobalConstraintsRefs()
     {
         // create initial collection if necessary
         if (globalConstraintsRefs == null)
@@ -155,7 +155,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
         // map if necessary upon realization or after modification
         if ((getSecurityConstraintsDefs() != null) && (securityConstraintsDefsMap == null))
         {
-            securityConstraintsDefsMap = new HashMap((getSecurityConstraintsDefs().size() * 2) + 1);
+            securityConstraintsDefsMap = new HashMap<String,SecurityConstraintsDef>((getSecurityConstraintsDefs().size() * 2) + 1);
             Iterator definitionsIter = getSecurityConstraintsDefs().iterator();
             while (definitionsIter.hasNext())
             {
@@ -170,7 +170,7 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
         // lookup constraints definition using cached map 
         if (securityConstraintsDefsMap != null)
         {
-            return (SecurityConstraintsDef)securityConstraintsDefsMap.get(name);
+            return securityConstraintsDefsMap.get(name);
         }
         return null;
     }

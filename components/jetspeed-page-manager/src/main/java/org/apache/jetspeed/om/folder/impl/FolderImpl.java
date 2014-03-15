@@ -16,13 +16,6 @@
  */
 package org.apache.jetspeed.om.folder.impl;
 
-import java.security.AccessController;
-import java.security.Permission;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
@@ -45,6 +38,7 @@ import org.apache.jetspeed.om.page.impl.LinkImpl;
 import org.apache.jetspeed.om.page.impl.PageImpl;
 import org.apache.jetspeed.om.page.impl.PageSecurityImpl;
 import org.apache.jetspeed.om.page.impl.PageTemplateImpl;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.page.PageNotFoundException;
 import org.apache.jetspeed.page.document.DocumentException;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
@@ -58,6 +52,15 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.jetspeed.security.PermissionFactory;
 import org.apache.ojb.broker.core.proxy.ProxyHelper;
 
+import java.security.AccessController;
+import java.security.Permission;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * FolderImpl
  *
@@ -70,28 +73,28 @@ public class FolderImpl extends NodeImpl implements Folder
     private String skin;
     private String defaultLayoutDecorator;
     private String defaultPortletDecorator;
-    private List orders;
-    private List menus;
+    private List<FolderOrder> orders;
+    private List<FolderMenuDefinitionImpl> menus;
 
-    private List folders;
+    private List<FolderImpl> folders;
     private boolean foldersCached;
-    private List pages;
+    private List<PageImpl> pages;
     private boolean pagesCached;
-    private List pageTemplates;
+    private List<PageTemplateImpl> pageTemplates;
     private boolean pageTemplatesCached;
-    private List dynamicPages;
+    private List<DynamicPageImpl> dynamicPages;
     private boolean dynamicPagesCached;
-    private List fragmentDefinitions;
+    private List<FragmentDefinitionImpl> fragmentDefinitions;
     private boolean fragmentDefinitionsCached;
-    private List links;
+    private List<LinkImpl> links;
     private boolean linksCached;
     private PageSecurityImpl pageSecurity;
     private boolean pageSecurityCached;
-    private List all;
+    private List<Node> all;
     private boolean allCached;
     private FolderOrderList documentOrder;
     private boolean documentOrderComparatorValid;
-    private Comparator documentOrderComparator;
+    private Comparator<String> documentOrderComparator;
     private NodeSet foldersNodeSet;
     private NodeSet pagesNodeSet;
     private NodeSet pageTemplatesNodeSet;
@@ -120,7 +123,7 @@ public class FolderImpl extends NodeImpl implements Folder
      *
      * @return persistent collection
      */
-    List accessFolderOrders()
+    List<FolderOrder> accessFolderOrders()
     {
         // create initial collection if necessary
         if (orders == null)
@@ -137,7 +140,7 @@ public class FolderImpl extends NodeImpl implements Folder
      *
      * @return persistent collection
      */
-    List accessMenus()
+    List<FolderMenuDefinitionImpl> accessMenus()
     {
         // create initial collection if necessary
         if (menus == null)
@@ -154,12 +157,12 @@ public class FolderImpl extends NodeImpl implements Folder
      *
      * @return folders collection
      */
-    public List accessFolders()
+    public List<FolderImpl> accessFolders()
     {
         // create initial collection if necessary
         if (folders == null)
         {
-            folders = DatabasePageManagerUtils.createList();
+            folders = Collections.synchronizedList(new ArrayList<FolderImpl>());
         }
         return folders;
     }
@@ -196,12 +199,12 @@ public class FolderImpl extends NodeImpl implements Folder
      *
      * @return pages collection
      */
-    public List accessPages()
+    public List<PageImpl> accessPages()
     {
         // create initial collection if necessary
         if (pages == null)
         {
-            pages = DatabasePageManagerUtils.createList();
+            pages = Collections.synchronizedList(new ArrayList<PageImpl>());
         }
         return pages;
     }
@@ -238,12 +241,12 @@ public class FolderImpl extends NodeImpl implements Folder
      *
      * @return page templates collection
      */
-    public List accessPageTemplates()
+    public List<PageTemplateImpl> accessPageTemplates()
     {
         // create initial collection if necessary
         if (pageTemplates == null)
         {
-            pageTemplates = DatabasePageManagerUtils.createList();
+            pageTemplates = Collections.synchronizedList(new ArrayList<PageTemplateImpl>());
         }
         return pageTemplates;
     }
@@ -280,12 +283,12 @@ public class FolderImpl extends NodeImpl implements Folder
      *
      * @return dynamic pages collection
      */
-    public List accessDynamicPages()
+    public List<DynamicPageImpl> accessDynamicPages()
     {
         // create initial collection if necessary
         if (dynamicPages == null)
         {
-            dynamicPages = DatabasePageManagerUtils.createList();
+            dynamicPages = Collections.synchronizedList(new ArrayList<DynamicPageImpl>());
         }
         return dynamicPages;
     }
@@ -322,12 +325,12 @@ public class FolderImpl extends NodeImpl implements Folder
      *
      * @return fragment definitions collection
      */
-    public List accessFragmentDefinitions()
+    public List<FragmentDefinitionImpl> accessFragmentDefinitions()
     {
         // create initial collection if necessary
         if (fragmentDefinitions == null)
         {
-            fragmentDefinitions = DatabasePageManagerUtils.createList();
+            fragmentDefinitions = Collections.synchronizedList(new ArrayList<FragmentDefinitionImpl>());
         }
         return fragmentDefinitions;
     }
@@ -364,12 +367,12 @@ public class FolderImpl extends NodeImpl implements Folder
      *
      * @return links collection
      */
-    public List accessLinks()
+    public List<LinkImpl> accessLinks()
     {
         // create initial collection if necessary
         if (links == null)
         {
-            links = DatabasePageManagerUtils.createList();
+            links = Collections.synchronizedList(new ArrayList<LinkImpl>());
         }
         return links;
     }
@@ -416,7 +419,7 @@ public class FolderImpl extends NodeImpl implements Folder
      *
      * Reset pageSecurity transient cache instance for use by PageManager.
      *
-     * @param newPageSecurty cached page security instance.
+     * @param newPageSecurity cached page security instance.
      * @param cached set cached state for page security
      */
     public void resetPageSecurity(PageSecurityImpl newPageSecurity, boolean cached)
@@ -440,12 +443,12 @@ public class FolderImpl extends NodeImpl implements Folder
      *
      * @return all collection
      */
-    public List accessAll()
+    public List<Node> accessAll()
     {
         // create initial collection if necessary
         if (all == null)
         {
-            all = DatabasePageManagerUtils.createList();
+            all = Collections.synchronizedList(new ArrayList<Node>());
         }
         return all;
     }
@@ -488,27 +491,27 @@ public class FolderImpl extends NodeImpl implements Folder
                     Node node = (Node)nodeIter.next();
                     if (node instanceof PageImpl)
                     {
-                        pages.add(node);
+                        pages.add((PageImpl)node);
                     }
                     else if (node instanceof PageTemplateImpl)
                     {
-                        pageTemplates.add(node);
+                        pageTemplates.add((PageTemplateImpl)node);
                     }
                     else if (node instanceof DynamicPageImpl)
                     {
-                        dynamicPages.add(node);
+                        dynamicPages.add((DynamicPageImpl)node);
                     }
                     else if (node instanceof FragmentDefinitionImpl)
                     {
-                        fragmentDefinitions.add(node);
+                        fragmentDefinitions.add((FragmentDefinitionImpl)node);
                     }
                     else if (node instanceof FolderImpl)
                     {
-                        folders.add(node);
+                        folders.add((FolderImpl)node);
                     }
                     else if (node instanceof LinkImpl)
                     {
-                        links.add(node);
+                        links.add((LinkImpl)node);
                     }
                     else if (node instanceof PageSecurityImpl)
                     {
@@ -537,38 +540,38 @@ public class FolderImpl extends NodeImpl implements Folder
      *
      * @return document order comparator
      */
-    private Comparator createDocumentOrderComparator()
+    private Comparator<String> createDocumentOrderComparator()
     {
         if (!documentOrderComparatorValid)
         {
             documentOrderComparatorValid = true;
             // return null if no document order exists;
             // (null implies natural ordering by name)
-            final List documentOrder = getDocumentOrder();
+            final List<String> documentOrder = getDocumentOrder();
             if ((documentOrder == null) || documentOrder.isEmpty())
             {
                 return null;
             }
             // create new document order comparator
-            documentOrderComparator = new Comparator()
+            documentOrderComparator = new Comparator<String>()
                 {
                     /* (non-Javadoc)
                      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
                      */
-                    public int compare(Object o1, Object o2)
+                    public int compare(String s1, String s2)
                     {
                         // Compare node names using document order;
                         // use indices as names if found in document
                         // order to force explicitly ordered items
                         // ahead of unordered items
-                        String name1 = (String)o1;
+                        String name1 = (String)s1;
                         int index1 = documentOrder.indexOf(name1);
                         if (index1 >= 0)
                         {
                             // use order index as name1
                             name1 = String.valueOf(index1);
                         }
-                        String name2 = (String)o2;
+                        String name2 = (String)s2;
                         int index2 = documentOrder.indexOf(name2);
                         if (index2 >= 0)
                         {
@@ -618,7 +621,7 @@ public class FolderImpl extends NodeImpl implements Folder
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.impl.NodeImpl#newPageMetadata(java.util.Collection)
      */
-    public PageMetadataImpl newPageMetadata(Collection fields)
+    public PageMetadataImpl newPageMetadata(Collection<LocalizedField> fields)
     {
         PageMetadataImpl pageMetadata = new PageMetadataImpl(FolderMetadataLocalizedFieldImpl.class);
         pageMetadata.setFields(fields);
@@ -776,7 +779,7 @@ public class FolderImpl extends NodeImpl implements Folder
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getDocumentOrder()
      */
-    public List getDocumentOrder()
+    public List<String> getDocumentOrder()
     {
         // return mutable document order list
         // by using list wrapper to manage sort
@@ -791,12 +794,12 @@ public class FolderImpl extends NodeImpl implements Folder
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#setDocumentOrder(java.util.List)
      */
-    public void setDocumentOrder(List docNames)
+    public void setDocumentOrder(List<String> docNames)
     {
         // set document order using ordered document
         // names by replacing existing entries with
         // new elements if new collection is specified
-        List documentOrder = getDocumentOrder();
+        List<String> documentOrder = getDocumentOrder();
         if (docNames != documentOrder)
         {
             // replace all document order names
@@ -1125,7 +1128,7 @@ public class FolderImpl extends NodeImpl implements Folder
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getMenuDefinitions()
      */
-    public List getMenuDefinitions()
+    public List<MenuDefinition> getMenuDefinitions()
     {
         // return mutable menu definition list
         // by using list wrapper to manage
@@ -1180,12 +1183,12 @@ public class FolderImpl extends NodeImpl implements Folder
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#setMenuDefinitions(java.util.List)
      */
-    public void setMenuDefinitions(List definitions)
+    public void setMenuDefinitions(List<MenuDefinition> definitions)
     {
         // set menu definitions by replacing
         // existing entries with new elements if
         // new collection is specified
-        List menuDefinitions = getMenuDefinitions();
+        List<MenuDefinition> menuDefinitions = getMenuDefinitions();
         if (definitions != menuDefinitions)
         {
             // replace all menu definitions
@@ -1374,12 +1377,10 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             if ((all != null) && !all.isEmpty())
             {
-                List allCopy = new java.util.ArrayList();
                 synchronized(all)
                 {
-                    allCopy.addAll(all); 
+                    allNodeSet = new NodeSetImpl(new ArrayList<Node>(all), createDocumentOrderComparator());
                 }
-                allNodeSet = new NodeSetImpl(allCopy, createDocumentOrderComparator());
             }
             else
             {

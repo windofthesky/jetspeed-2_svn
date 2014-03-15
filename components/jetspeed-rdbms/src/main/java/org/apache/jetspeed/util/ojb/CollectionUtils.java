@@ -16,17 +16,17 @@
  */
 package org.apache.jetspeed.util.ojb;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-
 import org.apache.ojb.broker.ManageableCollection;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;
 import org.apache.ojb.broker.util.collections.IRemovalAwareCollection;
 import org.apache.ojb.broker.util.collections.RemovalAwareCollection;
 import org.apache.ojb.broker.util.collections.RemovalAwareList;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * CollectionUtils
@@ -42,12 +42,11 @@ public class CollectionUtils
      * This issue on occurs when persisting newly create object collections
      * When persisting objects retrieved with OJB, this issue does not occur
      * 
-     * @see JS2-590
-     * @return
+     * See issue JS2-590
      */
     
     @SuppressWarnings("unchecked")
-    public static final Collection createCollection()
+    public static <T> Collection<T> createCollection()
     {
         // highly concurrent applications will require using
         // createSynchronizedCollection() here instead of this OJB
@@ -59,18 +58,18 @@ public class CollectionUtils
      * Synchronized OJB removal aware collection.
      */
     @SuppressWarnings("unchecked")
-    public static class SynchronizedRemovalAwareCollection implements Collection, ManageableCollection, IRemovalAwareCollection
+    public static class SynchronizedRemovalAwareCollection<T> implements Collection<T>, ManageableCollection, IRemovalAwareCollection
     {
         private static final long serialVersionUID = 1L;
 
         private RemovalAwareCollection collection = new RemovalAwareCollection();
 
-        public synchronized boolean add(Object e)
+        public synchronized boolean add(T e)
         {
             return collection.add(e);
         }
 
-        public synchronized boolean addAll(Collection c)
+        public synchronized boolean addAll(Collection<? extends T> c)
         {
             return collection.addAll(c);
         }
@@ -95,7 +94,7 @@ public class CollectionUtils
             return collection.isEmpty();
         }
 
-        public synchronized Iterator iterator()
+        public synchronized Iterator<T> iterator()
         {
             return collection.iterator();
         }
@@ -120,14 +119,14 @@ public class CollectionUtils
             return collection.size();
         }
 
-        public synchronized Object[] toArray()
+        public synchronized T[] toArray()
         {
-            return collection.toArray();
+            return (T[])collection.toArray();
         }
 
-        public synchronized Object[] toArray(Object[] a)
+        public synchronized <A> A[] toArray(A[] a)
         {
-            return collection.toArray(a);
+            return (A[])collection.toArray(a);
         }
 
         public synchronized void afterStore(PersistenceBroker broker) throws PersistenceBrokerException
@@ -151,8 +150,7 @@ public class CollectionUtils
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static final Collection createSynchronizedCollection()
+    public static <T> Collection<T> createSynchronizedCollection()
     {
         // if OJB collections are to be synchronized, collection-class
         // attributes for collection-descriptor need to be set in the
@@ -167,11 +165,11 @@ public class CollectionUtils
         // using Collections.synchronizedCollection() will not work since
         // OJB collections that are removal aware must implement the
         // ManageableCollection, IRemovalAwareCollection interfaces.
-        return new SynchronizedRemovalAwareCollection();
+        return new SynchronizedRemovalAwareCollection<T>();
     }
-    
+
     @SuppressWarnings("unchecked")
-    public static final List createList()
+    public static <T> List<T> createList()
     {
         // highly concurrent applications will require using
         // createSynchronizedList() here instead of this OJB
@@ -183,23 +181,23 @@ public class CollectionUtils
      * Synchronized OJB removal aware list.
      */
     @SuppressWarnings("unchecked")
-    public static class SynchronizedRemovalAwareList implements List, ManageableCollection, IRemovalAwareCollection
+    public static class SynchronizedRemovalAwareList<T> implements List<T>, ManageableCollection, IRemovalAwareCollection
     {
         private static final long serialVersionUID = 1L;
 
         private RemovalAwareList list = new RemovalAwareList();
 
-        public synchronized void add(int index, Object element)
+        public synchronized void add(int index, T element)
         {
             list.add(index, element);
         }
 
-        public synchronized boolean add(Object e)
+        public synchronized boolean add(T e)
         {
             return list.add(e);
         }
 
-        public synchronized boolean addAll(Collection c)
+        public synchronized boolean addAll(Collection<? extends T> c)
         {
             return list.addAll(c);
         }
@@ -224,9 +222,9 @@ public class CollectionUtils
             return list.containsAll(c);
         }
 
-        public synchronized Object get(int index)
+        public synchronized T get(int index)
         {
-            return list.get(index);
+            return (T)list.get(index);
         }
 
         public synchronized int indexOf(Object o)
@@ -239,7 +237,7 @@ public class CollectionUtils
             return list.isEmpty();
         }
 
-        public synchronized Iterator iterator()
+        public synchronized Iterator<T> iterator()
         {
             return list.iterator();
         }
@@ -249,19 +247,19 @@ public class CollectionUtils
             return list.lastIndexOf(o);
         }
 
-        public synchronized ListIterator listIterator()
+        public synchronized ListIterator<T> listIterator()
         {
             return list.listIterator();
         }
 
-        public synchronized ListIterator listIterator(int index)
+        public synchronized ListIterator<T> listIterator(int index)
         {
             return list.listIterator(index);
         }
 
-        public synchronized Object remove(int index)
+        public synchronized T remove(int index)
         {
-            return list.remove(index);
+            return (T)list.remove(index);
         }
 
         public synchronized boolean remove(Object o)
@@ -279,9 +277,9 @@ public class CollectionUtils
             return list.retainAll(c);
         }
 
-        public synchronized Object set(int index, Object element)
+        public synchronized T set(int index, T element)
         {
-            return list.set(index, element);
+            return (T)list.set(index, element);
         }
 
         public synchronized int size()
@@ -289,19 +287,19 @@ public class CollectionUtils
             return list.size();
         }
 
-        public synchronized List subList(int fromIndex, int toIndex)
+        public synchronized List<T> subList(int fromIndex, int toIndex)
         {
             return list.subList(fromIndex, toIndex);
         }
 
-        public synchronized Object[] toArray()
+        public synchronized T[] toArray()
         {
-            return list.toArray();
+            return (T[])list.toArray();
         }
 
-        public synchronized Object[] toArray(Object[] a)
+        public synchronized <A> A[] toArray(A[] a)
         {
-            return list.toArray(a);
+            return (A[])list.toArray(a);
         }
 
         public synchronized void afterStore(PersistenceBroker broker) throws PersistenceBrokerException
@@ -325,8 +323,7 @@ public class CollectionUtils
         }            
     }
 
-    @SuppressWarnings("unchecked")
-    public static final List createSynchronizedList()
+    public static <T> List<T> createSynchronizedList()
     {
         // if OJB lists are to be synchronized, collection-class
         // attributes for collection-descriptor need to be set in the
@@ -341,6 +338,6 @@ public class CollectionUtils
         // Collections.synchronizedList() will not work since
         // OJB lists that are removal aware must implement the
         // ManageableCollection, IRemovalAwareCollection interfaces.
-        return new SynchronizedRemovalAwareList();
+        return new SynchronizedRemovalAwareList<T>();
     }
 }

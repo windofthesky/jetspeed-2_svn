@@ -16,13 +16,15 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import org.apache.jetspeed.om.folder.MenuDefinitionElement;
+
 /**
  * PageMenuDefinitionElement
  * 
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id:$
  */
-public interface PageMenuDefinitionElement
+public interface PageMenuDefinitionElement extends MenuDefinitionElement
 {
     // new interface defined only to facilitate OJB table/class mapping
 

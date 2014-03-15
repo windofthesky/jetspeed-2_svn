@@ -51,6 +51,8 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 
+import java.util.List;
+
 
 /**
  * This service is responsible for loading and saving Pages into
@@ -1171,5 +1173,12 @@ public interface PageManager
      * Fragment Property lists can be manipulated with this interface 
      */
     public FragmentPropertyManagement getFragmentPropertyManager();
-    
+
+    /**
+     * Create list suitable for list model members.
+     *
+     * @param <T> list element type
+     * @return list
+     */
+    public <T> List<T> createList();
 }

@@ -16,10 +16,6 @@
  */
 package org.apache.jetspeed.page.document.psml;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -28,7 +24,12 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.psml.AbstractBaseElement;
 import org.apache.jetspeed.om.page.psml.SecurityConstraintsImpl;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.page.document.Node;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -83,7 +84,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      *
      * @return metadata fields collection
      */
-    public Collection getMetadataFields()
+    public Collection<LocalizedField> getMetadataFields()
     {
         // return metadata fields collection that
         // may in fact be side effected on unmarshall
@@ -95,7 +96,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      *
      * @param metadataFields metadata fields collection
      */
-    public void setMetadataFields(Collection metadataFields)
+    public void setMetadataFields(Collection<LocalizedField> metadataFields)
     {
         // set metadata fields collection that
         // may in fact be side effected after
@@ -394,7 +395,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
      * @param checkParentsOnly
      * @throws SecurityException
      */
-    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    public void checkConstraints(List<String> actions, List<String> userPrincipals, List<String> rolePrincipals, List<String> groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check constraints in node hierarchy
         if (checkNodeOnly)
@@ -499,7 +500,7 @@ public abstract class AbstractNode extends AbstractBaseElement implements Node
         // force metadata update after unmarshalled since
         // metadata collection can be side effected by
         // unmarshalling collection accessors
-        Collection metadataFields = getMetadataFields();
+        Collection<LocalizedField> metadataFields = getMetadataFields();
         if (metadataFields != null)
         {
             setMetadataFields(metadataFields);

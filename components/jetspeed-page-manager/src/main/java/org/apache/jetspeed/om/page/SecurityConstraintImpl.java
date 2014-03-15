@@ -16,13 +16,13 @@
  */
 package org.apache.jetspeed.om.page;
 
+import org.apache.jetspeed.om.common.SecurityConstraint;
+import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import org.apache.jetspeed.om.common.SecurityConstraint;
-import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 
 /**
@@ -40,10 +40,10 @@ public class SecurityConstraintImpl implements SecurityConstraint
 {
     private int id;
     private int applyOrder;
-    private List usersList;
-    private List rolesList;
-    private List groupsList;
-    private List permissionsList;
+    private List<String> usersList;
+    private List<String> rolesList;
+    private List<String> groupsList;
+    private List<String> permissionsList;
 
     private String users;
     private String roles;
@@ -186,7 +186,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * @see org.apache.jetspeed.om.common.SecurityConstraint#getUsers()
      * @return users list
      */
-    public List getUsers()
+    public List<String> getUsers()
     {
         return usersList;
     }
@@ -199,7 +199,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * @see org.apache.jetspeed.om.common.SecurityConstraint#setUsers(java.util.List)
      * @param users users list
      */
-    public void setUsers(List users)
+    public void setUsers(List<String> users)
     {
         // set and clear potentially stale string representation
         usersList = users;
@@ -214,7 +214,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * @see org.apache.jetspeed.om.common.SecurityConstraint#getRoles()
      * @return roles list
      */
-    public List getRoles()
+    public List<String> getRoles()
     {
         return rolesList;
     }
@@ -227,7 +227,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * @see org.apache.jetspeed.om.common.SecurityConstraint#setRoles(java.util.List)
      * @param roles roles list
      */
-    public void setRoles(List roles)
+    public void setRoles(List<String> roles)
     {
         // set and clear potentially stale string representation
         rolesList = roles;
@@ -242,7 +242,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * @see org.apache.jetspeed.om.common.SecurityConstraint#getGroups()
      * @return groups list
      */
-    public List getGroups()
+    public List<String> getGroups()
     {
         return groupsList;
     }
@@ -255,7 +255,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * @see org.apache.jetspeed.om.common.SecurityConstraint#setGroups(java.util.List)
      * @param groups groups list
      */
-    public void setGroups(List groups)
+    public void setGroups(List<String> groups)
     {
         // set and clear potentially stale string representation
         groupsList = groups;
@@ -270,7 +270,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * @see org.apache.jetspeed.om.common.SecurityConstraint#getPermissions()
      * @return permissions list
      */
-    public List getPermissions()
+    public List<String> getPermissions()
     {
         return permissionsList;
     }
@@ -283,7 +283,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * @see org.apache.jetspeed.om.common.SecurityConstraint#setPermissions(java.util.List)
      * @param permissions permissions list
      */
-    public void setPermissions(List permissions)
+    public void setPermissions(List<String> permissions)
     {
         // set and clear potentially stale string representation
         permissionsList = permissions;
@@ -347,11 +347,11 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * @param csv
      * @return parsed values list.
      */
-    public static List parseCSVList(String csv)
+    public static List<String> parseCSVList(String csv)
     {
         if (csv != null)
         {
-            List csvList = DatabasePageManagerUtils.createList();
+            List<String> csvList = DatabasePageManagerUtils.createList();;
             if (csv.indexOf(',') != -1)
             {
                 StringTokenizer csvTokens = new StringTokenizer(csv, ",");
@@ -380,7 +380,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * @param list
      * @return formatted string value.
      */
-    public static String formatCSVList(List list)
+    public static String formatCSVList(List<String> list)
     {
         if ((list != null) && !list.isEmpty())
         {

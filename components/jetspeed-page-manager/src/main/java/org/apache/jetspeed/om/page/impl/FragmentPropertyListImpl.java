@@ -16,14 +16,15 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.page.FragmentPropertyList;
+
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * FragmentPropertyList
@@ -31,17 +32,17 @@ import org.apache.jetspeed.page.FragmentPropertyList;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class FragmentPropertyListImpl extends AbstractList implements FragmentPropertyList
+public class FragmentPropertyListImpl extends AbstractList<FragmentProperty> implements FragmentPropertyList
 {
     private BaseFragmentElementImpl fragment;
 
-    private List properties;
-    private List removedProperties;
+    private List<FragmentProperty> properties;
+    private List<FragmentProperty> removedProperties;
 
     public FragmentPropertyListImpl(BaseFragmentElementImpl fragment)
     {
         super();
-        this.properties = new ArrayList();
+        this.properties = Collections.synchronizedList(new ArrayList<FragmentProperty>());
         this.fragment = fragment;
     }
 
@@ -51,7 +52,7 @@ public class FragmentPropertyListImpl extends AbstractList implements FragmentPr
     /* (non-Javadoc)
 	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#add(int, java.lang.Object)
 	 */
-    public synchronized void add(int index, Object element)
+    public synchronized void add(int index, FragmentProperty element)
     {
         // implement for modifiable AbstractList:
         FragmentPropertyImpl add = (FragmentPropertyImpl)element;
@@ -81,7 +82,7 @@ public class FragmentPropertyListImpl extends AbstractList implements FragmentPr
     /* (non-Javadoc)
 	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#get(int)
 	 */
-    public synchronized Object get(int index)
+    public synchronized FragmentProperty get(int index)
     {
         // implement for modifiable AbstractList
         return properties.get(index);
@@ -93,7 +94,7 @@ public class FragmentPropertyListImpl extends AbstractList implements FragmentPr
     /* (non-Javadoc)
 	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#remove(int)
 	 */
-    public synchronized Object remove(int index)
+    public synchronized FragmentProperty remove(int index)
     {
         // implement for modifiable AbstractList:
         // save removed element 
@@ -107,7 +108,7 @@ public class FragmentPropertyListImpl extends AbstractList implements FragmentPr
     /* (non-Javadoc)
 	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#set(int, java.lang.Object)
 	 */
-    public synchronized Object set(int index, Object element)
+    public synchronized FragmentProperty set(int index, FragmentProperty element)
     {
         // implement for modifiable AbstractList:
         FragmentPropertyImpl set = (FragmentPropertyImpl)element;
@@ -161,7 +162,7 @@ public class FragmentPropertyListImpl extends AbstractList implements FragmentPr
     /* (non-Javadoc)
 	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#getProperties()
 	 */
-    public List getProperties()
+    public List<FragmentProperty> getProperties()
     {
         return properties;
     }
@@ -169,7 +170,7 @@ public class FragmentPropertyListImpl extends AbstractList implements FragmentPr
     /* (non-Javadoc)
 	 * @see org.apache.jetspeed.om.page.impl.FragmentPropertyList#getRemovedProperties()
 	 */
-    public List getRemovedProperties()
+    public List<FragmentProperty> getRemovedProperties()
     {
         return removedProperties;
     }
@@ -235,7 +236,7 @@ public class FragmentPropertyListImpl extends AbstractList implements FragmentPr
         {
             if (removedProperties == null)
             {
-                removedProperties = new ArrayList();
+                removedProperties = Collections.synchronizedList(new ArrayList<FragmentProperty>());
             }
             removedProperties.add(removed);
         }

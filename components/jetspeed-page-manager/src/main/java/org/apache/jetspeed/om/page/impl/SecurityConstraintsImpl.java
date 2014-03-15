@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.common.SecurityConstraints;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
@@ -40,13 +41,13 @@ public class SecurityConstraintsImpl implements SecurityConstraints
     private final static Logger log = LoggerFactory.getLogger(SecurityConstraintsImpl.class);
 
     private String owner;
-    private List constraints;
-    private List constraintsRefs;
+    private List<SecurityConstraintImpl> constraints;
+    private List<BaseSecurityConstraintsRef> constraintsRefs;
 
     private SecurityConstraintList securityConstraints;
     private SecurityConstraintsRefList securityConstraintsRefs;
 
-    private List allConstraints;
+    private List<Object> allConstraints;
 
     /**
      * accessConstraintsRefs
@@ -55,7 +56,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      *
      * @return persistent collection
      */
-    List accessConstraintsRefs()
+    List<BaseSecurityConstraintsRef> accessConstraintsRefs()
     {
         // create initial collection if necessary
         if (constraintsRefs == null)
@@ -72,7 +73,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      *
      * @return persistent collection
      */
-    List accessConstraints()
+    List<SecurityConstraintImpl> accessConstraints()
     {
         // create initial collection if necessary
         if (constraints == null)
@@ -118,7 +119,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      * @param pageSecurity page security definitions
      * @throws SecurityException
      */
-    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, PageSecurity pageSecurity) throws SecurityException
+    public void checkConstraints(List<String> actions, List<String> userPrincipals, List<String> rolePrincipals, List<String> groupPrincipals, PageSecurity pageSecurity) throws SecurityException
     {
         // if owner defined, override all constraints and allow all access
         if ((owner != null) && (userPrincipals != null) && userPrincipals.contains(owner))
@@ -239,7 +240,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      * @return all security constraints and constraints ref expressions
      * @throws RuntimeException if expression parsing error occurs
      */
-    private synchronized List getAllSecurityConstraints(PageSecurity pageSecurity)
+    private synchronized List<Object> getAllSecurityConstraints(PageSecurity pageSecurity)
     {
         // return previously cached security constraints
         if (allConstraints != null)
@@ -248,7 +249,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         }
 
         // construct new ordered security constraints list
-        List newAllConstraints = new ArrayList();
+        List<Object> newAllConstraints = new ArrayList<Object>();
 
         // add any defined security constraints
         if ((getSecurityConstraints() != null) && !getSecurityConstraints().isEmpty())
@@ -259,7 +260,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         // add any security constraints references
         if ((getSecurityConstraintsRefs() != null) && !getSecurityConstraintsRefs().isEmpty())
         {
-            List referencedConstraints = dereferenceSecurityConstraintsRefs(getSecurityConstraintsRefs(), pageSecurity);
+            List<Object> referencedConstraints = dereferenceSecurityConstraintsRefs(getSecurityConstraintsRefs(), pageSecurity);
             if (referencedConstraints != null)
             {
                 newAllConstraints.addAll(referencedConstraints);
@@ -269,10 +270,10 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         // add any global security constraints references
         if (pageSecurity != null)
         {
-            List globalConstraintsRefs = pageSecurity.getGlobalSecurityConstraintsRefs();
+            List<String> globalConstraintsRefs = pageSecurity.getGlobalSecurityConstraintsRefs();
             if ((globalConstraintsRefs != null) && !globalConstraintsRefs.isEmpty())
             {
-                List referencedConstraints = dereferenceSecurityConstraintsRefs(globalConstraintsRefs, pageSecurity);
+                List<Object> referencedConstraints = dereferenceSecurityConstraintsRefs(globalConstraintsRefs, pageSecurity);
                 if (referencedConstraints != null)
                 {
                     newAllConstraints.addAll(referencedConstraints);
@@ -300,9 +301,9 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      * @return security constraints and constraints ref expressions
      * @throws RuntimeException if expression parsing error occurs
      */
-    private List dereferenceSecurityConstraintsRefs(List constraintsRefs, PageSecurity pageSecurity)
+    private List<Object> dereferenceSecurityConstraintsRefs(List<String> constraintsRefs, PageSecurity pageSecurity)
     {
-        List constraints = null;
+        List<Object> constraints = null;
         if (pageSecurity != null)
         {   
             // dereference each security constraints definition
@@ -311,24 +312,27 @@ public class SecurityConstraintsImpl implements SecurityConstraints
             {
                 String constraintsRef = (String)constraintsRefsIter.next();
                 // parse constraints ref and return constraints/constraints ref expressions
-                Object constraintsOrExpression = SecurityConstraintsRefParser.parse(constraintsRef, pageSecurity);
-                if (constraintsOrExpression instanceof List)
+                Object parsedConstraintsOrExpression = SecurityConstraintsRefParser.parse(constraintsRef, pageSecurity);
+                if (parsedConstraintsOrExpression instanceof List)
                 {
+                    @SuppressWarnings("unchecked")
+                    List<Object> parsedConstraints = (List)parsedConstraintsOrExpression;
                     if (constraints == null)
                     {
-                        constraints = new ArrayList();
+                        constraints = new ArrayList<Object>();
                     }
-                    constraints.addAll((List)constraintsOrExpression);
+                    constraints.addAll(parsedConstraints);
                 }
-                else if (constraintsOrExpression instanceof SecurityConstraintsRefExpression)
+                else if (parsedConstraintsOrExpression instanceof SecurityConstraintsRefExpression)
                 {
+                    Object parsedExpression = parsedConstraintsOrExpression;
                     if (constraints == null)
                     {
-                        constraints = new ArrayList();
+                        constraints = new ArrayList<Object>();
                     }
-                    constraints.add(constraintsOrExpression);
+                    constraints.add(parsedExpression);
                 }
-                else if (constraintsOrExpression != null)
+                else if (parsedConstraintsOrExpression != null)
                 {
                     throw new RuntimeException("Unexpected security constraints ref parser result");
                 }
@@ -362,7 +366,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecurityConstraints#getSecurityConstraints()
      */
-    public List getSecurityConstraints()
+    public List<SecurityConstraint> getSecurityConstraints()
     {
         // return mutable inline constraint list
         // by using list wrapper to manage apply order
@@ -376,12 +380,12 @@ public class SecurityConstraintsImpl implements SecurityConstraints
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecurityConstraints#setSecurityConstraints(java.util.List)
      */
-    public void setSecurityConstraints(List constraints)
+    public void setSecurityConstraints(List<SecurityConstraint> constraints)
     {
         // set inline constraints by replacing existing
         // entries with new elements if new collection
         // is specified
-        List securityConstraints = getSecurityConstraints();
+        List<SecurityConstraint> securityConstraints = getSecurityConstraints();
         if (constraints != securityConstraints)
         {
             // replace all constraints
@@ -398,7 +402,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecurityConstraints#getSecurityConstraintsRefs()
      */
-    public List getSecurityConstraintsRefs()
+    public List<String> getSecurityConstraintsRefs()
     {
         // return mutable constraints refs list
         // by using list wrapper to manage apply
@@ -413,12 +417,12 @@ public class SecurityConstraintsImpl implements SecurityConstraints
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.common.SecurityConstraints#setSecurityConstraintsRefs(java.util.List)
      */
-    public void setSecurityConstraintsRefs(List constraintsRefs)
+    public void setSecurityConstraintsRefs(List<String> constraintsRefs)
     {
         // set constraints refs using ordered ref
         // names by replacing existing entries with
         // new elements if new collection is specified
-        List securityConstraintsRefs = getSecurityConstraintsRefs();
+        List<String> securityConstraintsRefs = getSecurityConstraintsRefs();
         if (constraintsRefs != securityConstraintsRefs)
         {
             // replace all constraints ref names

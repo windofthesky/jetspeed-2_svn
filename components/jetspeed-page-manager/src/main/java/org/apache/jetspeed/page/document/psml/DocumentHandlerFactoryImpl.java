@@ -16,17 +16,16 @@
  */
 package org.apache.jetspeed.page.document.psml;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.jetspeed.page.document.DocumentHandler;
 import org.apache.jetspeed.page.document.DocumentHandlerFactory;
 import org.apache.jetspeed.page.document.DocumentTypeAlreadyRegisteredException;
+import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.util.ArgUtil;
 
-import org.apache.jetspeed.page.document.Node;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * <p>
@@ -42,7 +41,7 @@ import org.apache.jetspeed.page.document.Node;
  */
 public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
 {
-    private Map handlers;
+    private Map<String,DocumentHandler> handlers;
 
     private boolean permissionsEnabled;
 
@@ -52,7 +51,7 @@ public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
     /**
      *  
      */
-    public DocumentHandlerFactoryImpl( Map handlers )
+    public DocumentHandlerFactoryImpl( Map<String,DocumentHandler> handlers )
     {
         super();
         
@@ -70,7 +69,7 @@ public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
     
     public DocumentHandlerFactoryImpl()
     {
-        this(new HashMap());
+        this(new HashMap<String,DocumentHandler>());
              
     }
 
@@ -87,7 +86,7 @@ public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
     {        
         if(handlers.containsKey(documentType))
         {
-            return (DocumentHandler)handlers.get(documentType);
+            return handlers.get(documentType);
         }
         else
         {
@@ -100,7 +99,7 @@ public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
      * registerDocumentHandler
      * </p>
      *
-     * @see org.apache.jetspeed.page.document.DocumentHandlerFactory#registerDocumentHandler(org.apache.jetspeed.page.documenthandler.DocumentHandler)
+     * @see org.apache.jetspeed.page.document.DocumentHandlerFactory#registerDocumentHandler(org.apache.jetspeed.page.document.DocumentHandler)
      * @param documentHandler
      * @throws DocumentTypeAlreadyRegisteredException
      */

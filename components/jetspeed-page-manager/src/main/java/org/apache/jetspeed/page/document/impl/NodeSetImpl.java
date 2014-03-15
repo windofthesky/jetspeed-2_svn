@@ -16,16 +16,16 @@
  */
 package org.apache.jetspeed.page.document.impl;
 
+import org.apache.commons.collections.map.LRUMap;
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeSet;
+
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
-
-import org.apache.commons.collections.map.LRUMap;
-import org.apache.jetspeed.page.document.Node;
-import org.apache.jetspeed.page.document.NodeSet;
 
 /**
  * NodeSetImpl
@@ -37,18 +37,19 @@ public class NodeSetImpl implements NodeSet
 {
     public static final NodeSetImpl EMPTY_NODE_SET = new NodeSetImpl();
 
-    private static final Map patternCache = new LRUMap(128);
+    @SuppressWarnings("unchecked")
+    private static final Map<String,Pattern> patternCache = new LRUMap(128);
 
-    private Map nodes;
-    private Comparator comparator;
+    private Map<String,Node> nodes;
+    private Comparator<String> comparator;
 
-    public NodeSetImpl(List nodes, Comparator comparator)
+    public NodeSetImpl(List<? extends Node> nodes, Comparator<String> comparator)
     {
-        this.nodes = new TreeMap(comparator);        
-        Object[] nodeToCopy = nodes.toArray();
+        this.nodes = new TreeMap<String,Node>(comparator);
+        Node[] nodeToCopy = nodes.toArray(new Node[nodes.size()]);
         for (int ix = 0; ix < nodeToCopy.length; ix++)
         {
-            Node node = (Node)nodeToCopy[ix];
+            Node node = nodeToCopy[ix];
             if (!this.nodes.containsKey( node.getName()))
             {
                 this.nodes.put(node.getName(), node);
@@ -57,19 +58,19 @@ public class NodeSetImpl implements NodeSet
         this.comparator = comparator;
     }
 
-    public NodeSetImpl(List nodes)
+    public NodeSetImpl(List<? extends Node> nodes)
     {
         this(nodes, null);
     }
 
-    public NodeSetImpl(Comparator comparator)
+    public NodeSetImpl(Comparator<String> comparator)
     {
         this.comparator = comparator;
     }
 
     public NodeSetImpl(NodeSet nodeSet)
     {
-        this((nodeSet instanceof NodeSetImpl) ? ((NodeSetImpl)nodeSet).comparator : (Comparator)null);
+        this((nodeSet instanceof NodeSetImpl) ? ((NodeSetImpl)nodeSet).comparator : null);
     }
 
     public NodeSetImpl()
@@ -88,7 +89,7 @@ public class NodeSetImpl implements NodeSet
         {
             if (patternCache.containsKey(regex))
             {
-                return (Pattern)patternCache.get(regex);
+                return patternCache.get(regex);
             }
             else
             {
@@ -106,7 +107,7 @@ public class NodeSetImpl implements NodeSet
     {
         if (nodes == null)
         {
-            nodes = new TreeMap(comparator);
+            nodes = new TreeMap<String,Node>(comparator);
         }
         if (!nodes.containsKey(node.getName()))
         {
@@ -121,7 +122,7 @@ public class NodeSetImpl implements NodeSet
     {
         if (nodes != null)
         {
-            return (Node)nodes.get(name);
+            return nodes.get(name);
         }
         return null;
     }
@@ -129,11 +130,11 @@ public class NodeSetImpl implements NodeSet
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.NodeSet#iterator()
      */
-    public Iterator iterator()
+    public Iterator<Node> iterator()
     {
         if (nodes == null)
         {
-            nodes = new TreeMap(comparator);
+            nodes = new TreeMap<String,Node>(comparator);
         }
         return nodes.values().iterator();
     }

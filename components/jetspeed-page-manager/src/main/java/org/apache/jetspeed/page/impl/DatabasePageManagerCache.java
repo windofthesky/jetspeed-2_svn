@@ -16,16 +16,6 @@
  */
 package org.apache.jetspeed.page.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
@@ -38,9 +28,18 @@ import org.apache.jetspeed.page.document.impl.NodeImpl;
 import org.apache.ojb.broker.Identity;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.cache.ObjectCache;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * DatabasePageManagerCache
@@ -58,17 +57,17 @@ public class DatabasePageManagerCache implements ObjectCache
     
     private static JetspeedCache oidCache;
     private static JetspeedCache pathCache;
-    private static Map pathToOidMap;
+    private static Map<String,Identity> pathToOidMap;
     private static JetspeedCache propertiesCache;
     private static JetspeedCache propertiesPathCache;
     private static JetspeedCache principalPropertiesCache;
     private static JetspeedCache principalPropertiesPathCache;
-    private static Map propertiesCacheIndexMap;
+    private static Map<String,Set<String>> propertiesCacheIndexMap;
     private static boolean constraintsEnabled;
     private static boolean permissionsEnabled;
     private static PageManager pageManager;
-    private static List updatePathsList = new ArrayList();
-    private static ThreadLocal transactionedOperations = new ThreadLocal();
+    private static List<String> updatePathsList = new ArrayList<String>();
+    private static ThreadLocal<List<TransactionedOperation>> transactionedOperations = new ThreadLocal<List<TransactionedOperation>>();
 
     // Implementation
     
@@ -85,12 +84,12 @@ public class DatabasePageManagerCache implements ObjectCache
         // initialize
         DatabasePageManagerCache.oidCache = oidCache;
         DatabasePageManagerCache.pathCache = pathCache;
-        DatabasePageManagerCache.pathToOidMap = new HashMap();
+        DatabasePageManagerCache.pathToOidMap = new HashMap<String,Identity>();
         DatabasePageManagerCache.propertiesCache = propertiesCache;
         DatabasePageManagerCache.propertiesPathCache = propertiesPathCache;
         DatabasePageManagerCache.principalPropertiesCache = principalPropertiesCache;
         DatabasePageManagerCache.principalPropertiesPathCache = principalPropertiesPathCache;
-        propertiesCacheIndexMap = new HashMap();
+        propertiesCacheIndexMap = new HashMap<String,Set<String>>();
         constraintsEnabled = pageManager.getConstraintsEnabled();
         permissionsEnabled = pageManager.getPermissionsEnabled();
         DatabasePageManagerCache.pageManager = pageManager;
@@ -227,12 +226,12 @@ public class DatabasePageManagerCache implements ObjectCache
                             }
                             // remove all indexed fragment keys for page path from
                             // properties cache index
-                            Set index = (Set)propertiesCacheIndexMap.get(path);
+                            Set<String> index = propertiesCacheIndexMap.get(path);
                             if (index != null)
                             {
                                 // remove all indexed fragment keys, (copy first since "quiet" removes
                                 // from fragment property caches will side effect this set while iterating)
-                                Iterator fragmentKeyIter = (new ArrayList(index)).iterator();
+                                Iterator fragmentKeyIter = (new ArrayList<String>(index)).iterator();
                                 while (fragmentKeyIter.hasNext())
                                 {
                                     String fragmentKey = (String)fragmentKeyIter.next();
@@ -271,10 +270,10 @@ public class DatabasePageManagerCache implements ObjectCache
                     String path = fragmentPropertyList.getBaseFragmentsElementPath();
                     synchronized (DatabasePageManagerCache.class)
                     {
-                        Set index = (Set)propertiesCacheIndexMap.get(path);
+                        Set<String> index = propertiesCacheIndexMap.get(path);
                         if (index == null)
                         {
-                            index = new HashSet();
+                            index = new HashSet<String>();
                             propertiesCacheIndexMap.put(path, index);
                         }
                         index.add(fragmentKey);
@@ -319,7 +318,7 @@ public class DatabasePageManagerCache implements ObjectCache
                     String path = fragmentPropertyList.getBaseFragmentsElementPath();
                     synchronized (DatabasePageManagerCache.class)
                     {
-                        Set index = (Set)propertiesCacheIndexMap.get(path);
+                        Set<String> index = propertiesCacheIndexMap.get(path);
                         if (index != null)
                         {
                             index.remove(fragmentKeyOrPath);
@@ -335,7 +334,7 @@ public class DatabasePageManagerCache implements ObjectCache
                     // remove all indexed cache keys from properties cache index
                     synchronized (DatabasePageManagerCache.class)
                     {
-                        Set index = (Set)propertiesCacheIndexMap.get(fragmentKeyOrPath);
+                        Set<String> index = propertiesCacheIndexMap.get(fragmentKeyOrPath);
                         if (index != null)
                         {
                             // remove all indexed cache keys
@@ -569,7 +568,7 @@ public class DatabasePageManagerCache implements ObjectCache
         if (path != null)
         {
             // return valid object cached by path and oid
-            Identity oid = (Identity)pathToOidMap.get(path);
+            Identity oid = pathToOidMap.get(path);
             if (oid != null)
             {
                 return cacheLookup(oid, cacheRead);
@@ -596,7 +595,7 @@ public class DatabasePageManagerCache implements ObjectCache
      * infuse nodes loaded by OJB with page manager configuration.
      *
      * @param oid object/node identity
-     * @param obj object/node to cache
+     * @param node object/node to cache
      */
     private synchronized static void cacheAdd(Identity oid, NodeImpl node)
     {
@@ -642,7 +641,7 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public synchronized static void cacheClear()
     {
-        // clear localally managed mappings
+        // clear locally managed mappings
         pathToOidMap.clear();
         // remove all items from oid and properties caches
         // individually to ensure notifications are run to
@@ -785,7 +784,7 @@ public class DatabasePageManagerCache implements ObjectCache
         if (path != null)
         {
             // remove from oid cache
-            Identity oid = (Identity)pathToOidMap.get(path);
+            Identity oid = pathToOidMap.get(path);
             if (oid != null)
             {
                 oidCache.remove(oid);
@@ -1006,12 +1005,12 @@ public class DatabasePageManagerCache implements ObjectCache
      * 
      * @return transactions list
      */
-    public static List getTransactions()
+    public static List<TransactionedOperation> getTransactions()
     {
-        List operations = (List)transactionedOperations.get();
+        List<TransactionedOperation> operations = transactionedOperations.get();
         if (operations == null)
         {
-            operations = new LinkedList();
+            operations = new LinkedList<TransactionedOperation>();
             transactionedOperations.set(operations);
         }
         return operations;
@@ -1024,7 +1023,7 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public static void addTransaction(TransactionedOperation operation)
     {
-        List transactions = getTransactions();        
+        List<TransactionedOperation> transactions = getTransactions();
         transactions.add(operation);
     }
     

@@ -161,7 +161,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
      * getConstraintsEnabled
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecureResource#getConstraintsEnabled()
+     * @see org.apache.jetspeed.om.common.SecuredResource#getConstraintsEnabled()
      * @return whether security relies on PSML constraints
      */
     public boolean getConstraintsEnabled()
@@ -186,7 +186,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
      * getSecurityConstraints
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecureResource#getSecurityConstraints()
+     * @see org.apache.jetspeed.om.common.SecuredResource#getSecurityConstraints()
      * @return the PSML security constraints
      */
     public SecurityConstraints getSecurityConstraints()
@@ -199,7 +199,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
      * newSecurityConstraints
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecureResource#newSecurityConstraints()
+     * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraints()
      * @return  a new security constraints object
      */
     public SecurityConstraints newSecurityConstraints()
@@ -212,7 +212,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
      * newSecurityConstraint
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecureResource#newSecurityConstraint()
+     * @see org.apache.jetspeed.om.common.SecuredResource#newSecurityConstraint()
      * @return security constraint
      */
     public SecurityConstraint newSecurityConstraint()
@@ -225,7 +225,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
      * setSecurityConstraints
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecureResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
+     * @see org.apache.jetspeed.om.common.SecuredResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
      * @param constraints
      */
     public void setSecurityConstraints(SecurityConstraints constraints)
@@ -238,7 +238,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
      * checkConstraints
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecureResource#checkConstraints(java.lang.String)
+     * @see org.apache.jetspeed.om.common.SecuredResource#checkConstraints(java.lang.String)
      * @param actions
      * @throws SecurityException
      */
@@ -258,8 +258,8 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
 
         // get action names lists; separate view and other
         // actions to mimic file system permissions logic
-        List viewActionList = SecurityConstraintImpl.parseCSVList(actions);
-        List otherActionsList = null;
+        List<String> viewActionList = SecurityConstraintImpl.parseCSVList(actions);
+        List<String> otherActionsList = null;
         if (viewActionList.size() == 1)
         {
             if (!viewActionList.contains(JetspeedActions.VIEW))
@@ -274,7 +274,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
             viewActionList = null;
             if (otherActionsList.remove(JetspeedActions.VIEW))
             {
-                viewActionList = new ArrayList(1);
+                viewActionList = new ArrayList<String>(1);
                 viewActionList.add(JetspeedActions.VIEW);
             }
         }
@@ -287,9 +287,9 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
         }
 
         // get user/group/role principal names
-        List userPrincipals = null;
-        List rolePrincipals = null;
-        List groupPrincipals = null;
+        List<String> userPrincipals = null;
+        List<String> rolePrincipals = null;
+        List<String> groupPrincipals = null;
         Iterator principals = subject.getPrincipals().iterator();
         while (principals.hasNext())
         {
@@ -298,7 +298,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
             {
                 if (userPrincipals == null)
                 {
-                    userPrincipals = new LinkedList();
+                    userPrincipals = new LinkedList<String>();
                 }
                 userPrincipals.add(principal.getName());
             }
@@ -306,7 +306,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
             {
                 if (rolePrincipals == null)
                 {
-                    rolePrincipals = new LinkedList();
+                    rolePrincipals = new LinkedList<String>();
                 }
                 rolePrincipals.add(principal.getName());
             }
@@ -314,7 +314,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
             {
                 if (groupPrincipals == null)
                 {
-                    groupPrincipals = new LinkedList();
+                    groupPrincipals = new LinkedList<String>();
                 }
                 groupPrincipals.add(principal.getName());
             }
@@ -344,7 +344,7 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
      * @param checkParentsOnly
      * @throws SecurityException
      */
-    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    public void checkConstraints(List<String> actions, List<String> userPrincipals, List<String> rolePrincipals, List<String> groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check node constraints if available
         if ((constraints != null) && !constraints.isEmpty())

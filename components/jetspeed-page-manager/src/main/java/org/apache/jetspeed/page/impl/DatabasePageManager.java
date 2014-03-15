@@ -16,20 +16,6 @@
  */
 package org.apache.jetspeed.page.impl;
 
-import java.lang.ref.WeakReference;
-import java.security.AccessController;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.security.auth.Subject;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
@@ -124,6 +110,19 @@ import org.apache.ojb.broker.query.QueryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.security.auth.Subject;
+import java.lang.ref.WeakReference;
+import java.security.AccessController;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * DatabasePageManager
  * 
@@ -137,9 +136,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
     
     private static final int MIN_THREAD_CACHE_SIZE = 16;
 
-    private static ThreadLocal fragmentPropertyListsCache = new ThreadLocal();
+    private static ThreadLocal<Map<String,WeakReference<FragmentPropertyList>>> fragmentPropertyListsCache = new ThreadLocal<Map<String,WeakReference<FragmentPropertyList>>>();
     
-    private static Map modelClasses = new HashMap();
+    private static Map<String,Class<?>> modelClasses = new HashMap<String,Class<?>>();
     static
     {
         modelClasses.put("FragmentImpl", FragmentImpl.class);
@@ -183,7 +182,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                                JetspeedCache propertiesCache, JetspeedCache propertiesPathCache, JetspeedCache principalPropertiesCache, JetspeedCache principalPropertiesPathCache)
     {
         super(repositoryPath);
-        delegator = new DelegatingPageManager(generator, isPermissionsSecurity, isConstraintsSecurity, modelClasses);
+        delegator = new DelegatingPageManager(this, generator, isPermissionsSecurity, isConstraintsSecurity, modelClasses);
         maxThreadCacheSize = Math.max(Math.max(Math.max(oidCache.getMaxSize()/10, propertiesCache.getMaxSize()/10), principalPropertiesCache.getMaxSize()/10), MIN_THREAD_CACHE_SIZE);
         DatabasePageManagerCache.cacheInit(oidCache, pathCache, propertiesCache, propertiesPathCache, principalPropertiesCache, principalPropertiesPathCache, this);
     }
@@ -815,7 +814,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for folders
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
             Collection folders = getPersistenceBrokerTemplate().getCollectionByQuery(query);
 
@@ -823,7 +822,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             folderImpl.accessFolders().clear();
             if (folders != null)
             {
-                folderImpl.accessFolders().addAll(folders);
+                @SuppressWarnings("unchecked")
+                Collection<FolderImpl> folderImpls = folders;
+                folderImpl.accessFolders().addAll(folderImpls);
             }
             folderImpl.resetFolders(true);
         }
@@ -872,7 +873,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for pages
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             QueryByCriteria query = QueryFactory.newQuery(PageImpl.class, filter);
             Collection pages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
 
@@ -880,7 +881,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             folderImpl.accessPages().clear();
             if (pages != null)
             {
-                folderImpl.accessPages().addAll(pages);
+                @SuppressWarnings("unchecked")
+                Collection<PageImpl> pageImpls = pages;
+                folderImpl.accessPages().addAll(pageImpls);
             }
             folderImpl.resetPages(true);
         }
@@ -929,7 +932,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for page templates
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             QueryByCriteria query = QueryFactory.newQuery(PageTemplateImpl.class, filter);
             Collection pageTemplates = getPersistenceBrokerTemplate().getCollectionByQuery(query);
 
@@ -937,7 +940,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             folderImpl.accessPageTemplates().clear();
             if (pageTemplates != null)
             {
-                folderImpl.accessPageTemplates().addAll(pageTemplates);
+                @SuppressWarnings("unchecked")
+                Collection<PageTemplateImpl> pageTemplateImpls = pageTemplates;
+                folderImpl.accessPageTemplates().addAll(pageTemplateImpls);
             }
             folderImpl.resetPageTemplates(true);
         }
@@ -986,7 +991,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for dynamic pages
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             QueryByCriteria query = QueryFactory.newQuery(DynamicPageImpl.class, filter);
             Collection dynamicPages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
 
@@ -994,7 +999,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             folderImpl.accessDynamicPages().clear();
             if (dynamicPages != null)
             {
-                folderImpl.accessDynamicPages().addAll(dynamicPages);
+                @SuppressWarnings("unchecked")
+                Collection<DynamicPageImpl> dynamicPageImpls = dynamicPages;
+                folderImpl.accessDynamicPages().addAll(dynamicPageImpls);
             }
             folderImpl.resetDynamicPages(true);
         }
@@ -1043,7 +1050,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for fragment definition
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             QueryByCriteria query = QueryFactory.newQuery(FragmentDefinitionImpl.class, filter);
             Collection fragmentDefinitions = getPersistenceBrokerTemplate().getCollectionByQuery(query);
 
@@ -1051,7 +1058,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             folderImpl.accessFragmentDefinitions().clear();
             if (fragmentDefinitions != null)
             {
-                folderImpl.accessFragmentDefinitions().addAll(fragmentDefinitions);
+                @SuppressWarnings("unchecked")
+                Collection<FragmentDefinitionImpl> fragmentDefinitionImpls = fragmentDefinitions;
+                folderImpl.accessFragmentDefinitions().addAll(fragmentDefinitionImpls);
             }
             folderImpl.resetFragmentDefinitions(true);
         }
@@ -1100,7 +1109,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // query for links
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             QueryByCriteria query = QueryFactory.newQuery(LinkImpl.class, filter);
             Collection links = getPersistenceBrokerTemplate().getCollectionByQuery(query);
 
@@ -1108,7 +1117,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             folderImpl.accessLinks().clear();
             if (links != null)
             {
-                folderImpl.accessLinks().addAll(links);
+                @SuppressWarnings("unchecked")
+                Collection<LinkImpl> linkImpls = links;
+                folderImpl.accessLinks().addAll(linkImpls);
             }
             folderImpl.resetLinks(true);
         }
@@ -1162,7 +1173,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             {
                 // query for page security
                 Criteria filter = new Criteria();
-                filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+                filter.addEqualTo("parent", folderImpl.getIdentity());
                 QueryByCriteria query = QueryFactory.newQuery(PageSecurityImpl.class, filter);
                 PageSecurity document = (PageSecurity)getPersistenceBrokerTemplate().getObjectByQuery(query);
 
@@ -1198,42 +1209,48 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         try
         {
             // query for all nodes
-            List all = DatabasePageManagerUtils.createList();
+            List<Node> all = new ArrayList<Node>();
             
             // query for subfolders
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
             Collection folders = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (folders != null)
             {
-                all.addAll(folders);
+                @SuppressWarnings("unchecked")
+                Collection<FolderImpl> folderImpls = folders;
+                all.addAll(folderImpls);
             }
 
             // polymorphic query for pages, page templates, dynamic pages,
             // and fragment definitions
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(BaseFragmentsElementImpl.class, filter);
             Collection baseFragments = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (baseFragments != null)
             {
-                all.addAll(baseFragments);
+                @SuppressWarnings("unchecked")
+                Collection<BaseFragmentsElementImpl> baseFragmentImpls = baseFragments;
+                all.addAll(baseFragmentImpls);
             }
 
             // query for links
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(LinkImpl.class, filter);
             Collection links = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (links != null)
             {
-                all.addAll(links);
+                @SuppressWarnings("unchecked")
+                Collection<LinkImpl> linkImpls = links;
+                all.addAll(linkImpls);
             }
 
             // query for page security
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(PageSecurityImpl.class, filter);
             PageSecurity document = (PageSecurity)getPersistenceBrokerTemplate().getObjectByQuery(query);
             if (document != null)
@@ -1688,7 +1705,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * updateFolderNodes - recursively update all folder nodes
      *
      * @param folderImpl folder whose nodes are to be updated
-     * @param throws FolderNotUpdatedException
+     * @throws FolderNotUpdatedException
      */
     private void updateFolderNodes(FolderImpl folderImpl) throws FolderNotUpdatedException
     {
@@ -1696,7 +1713,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // update pages
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             QueryByCriteria query = QueryFactory.newQuery(PageImpl.class, filter);
             Collection pages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (pages != null)
@@ -1710,7 +1727,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
             // update page templates
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(PageTemplateImpl.class, filter);
             Collection pageTemplates = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (pageTemplates != null)
@@ -1724,7 +1741,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
             // update dynamic pages
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(DynamicPageImpl.class, filter);
             Collection dynamicPages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (dynamicPages != null)
@@ -1738,7 +1755,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
             // update fragment definitions
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(FragmentDefinitionImpl.class, filter);
             Collection fragmentDefinitions = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (fragmentDefinitions != null)
@@ -1752,7 +1769,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
             // update links
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(LinkImpl.class, filter);
             Collection links = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (links != null)
@@ -1766,7 +1783,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
             // update page security
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(PageSecurityImpl.class, filter);
             PageSecurity document = (PageSecurity)getPersistenceBrokerTemplate().getObjectByQuery(query);
             if (document != null)
@@ -1776,7 +1793,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
             // update folders last: breadth first recursion
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(FolderImpl.class, filter);
             Collection folders = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (folders != null)
@@ -1855,7 +1872,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * removeFolderNodes - recursively remove all folder nodes
      *
      * @param folderImpl folder whose nodes are to be removed
-     * @param throws FolderNotRemovedException
+     * @throws FolderNotRemovedException
      */
     private void removeFolderNodes(FolderImpl folderImpl) throws FolderNotRemovedException
     {
@@ -1863,7 +1880,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         {
             // remove folders first: depth first recursion
             Criteria filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             QueryByCriteria query = QueryFactory.newQuery(FolderImpl.class, filter);
             Collection folders = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (folders != null)
@@ -1877,7 +1894,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
             // remove pages
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(PageImpl.class, filter);
             Collection pages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (pages != null)
@@ -1891,7 +1908,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
             // remove page templates
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(PageTemplateImpl.class, filter);
             Collection pageTemplates = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (pageTemplates != null)
@@ -1905,7 +1922,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
             // remove dynamic pages
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(DynamicPageImpl.class, filter);
             Collection dynamicPages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (dynamicPages != null)
@@ -1919,7 +1936,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
             // remove fragment definitions
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(FragmentDefinitionImpl.class, filter);
             Collection fragmentDefinitions = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (fragmentDefinitions != null)
@@ -1933,7 +1950,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
             // remove links
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(LinkImpl.class, filter);
             Collection links = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (links != null)
@@ -1947,7 +1964,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 
             // remove page security
             filter = new Criteria();
-            filter.addEqualTo("parent", new Integer(folderImpl.getIdentity()));
+            filter.addEqualTo("parent", folderImpl.getIdentity());
             query = QueryFactory.newQuery(PageSecurityImpl.class, filter);
             PageSecurity document = (PageSecurity)getPersistenceBrokerTemplate().getObjectByQuery(query);
             if (document != null)
@@ -2702,9 +2719,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         Subject subject = JSSubject.getSubject(AccessController.getContext());
         Principal userPrincipal = ((subject != null) ? SubjectHelper.getBestPrincipal(subject, User.class) : null);
         String fragmentListKey = getFragmentPropertyListKey(fragmentKey, userPrincipal);
-        Map threadLocalCache = (Map)fragmentPropertyListsCache.get();
-        WeakReference listReference = ((threadLocalCache != null) ? (WeakReference)threadLocalCache.get(fragmentListKey) : null);
-        FragmentPropertyList list = ((listReference != null) ? (FragmentPropertyList)listReference.get() : null);
+        Map<String,WeakReference<FragmentPropertyList>> threadLocalCache = fragmentPropertyListsCache.get();
+        WeakReference<FragmentPropertyList> listReference = ((threadLocalCache != null) ? threadLocalCache.get(fragmentListKey) : null);
+        FragmentPropertyList list = ((listReference != null) ? listReference.get() : null);
 
         // get and cache persistent list
         if (list == null)
@@ -2716,14 +2733,16 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             {
                 globalFragmentPropertyList = new DatabasePageManagerCachedFragmentPropertyList(baseFragmentElementImpl.getBaseFragmentsElement().getPath());
                 Criteria filter = new Criteria();
-                filter.addEqualTo("fragment", new Integer(baseFragmentElementImpl.getIdentity()));
+                filter.addEqualTo("fragment", baseFragmentElementImpl.getIdentity());
                 filter.addIsNull("scope");
                 QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
                 Collection fragmentProperties = getPersistenceBrokerTemplate().getCollectionByQuery(query);
-                globalFragmentPropertyList.addAll(fragmentProperties);
+                @SuppressWarnings("unchecked")
+                Collection<FragmentPropertyImpl> fragmentPropertyImpls = fragmentProperties;
+                globalFragmentPropertyList.addAll(fragmentPropertyImpls);
                 DatabasePageManagerCache.fragmentPropertyListCacheAdd(fragmentKey, globalFragmentPropertyList, false);
             }
-            Map principalFragmentPropertyLists = null;
+            Map<String,DatabasePageManagerCachedFragmentPropertyList> principalFragmentPropertyLists = null;
             DatabasePageManagerCachedFragmentPropertyList userFragmentPropertyList = null;
             if (subject != null)
             {
@@ -2759,14 +2778,16 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                                 filter.addEqualTo("scopeValue", principal.getName());
                                 QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
                                 Collection fragmentProperties = getPersistenceBrokerTemplate().getCollectionByQuery(query);
-                                principalFragmentPropertyList.addAll(fragmentProperties);
+                                @SuppressWarnings("unchecked")
+                                Collection<FragmentPropertyImpl> fragmentPropertyImpls = fragmentProperties;
+                                principalFragmentPropertyList.addAll(fragmentPropertyImpls);
                                 DatabasePageManagerCache.principalFragmentPropertyListCacheAdd(principalKey, principalFragmentPropertyList, false);
                             }
                             if (principalFragmentPropertyList != null)
                             {
                                 if (principalFragmentPropertyLists == null)
                                 {
-                                    principalFragmentPropertyLists = new HashMap();
+                                    principalFragmentPropertyLists = new HashMap<String,DatabasePageManagerCachedFragmentPropertyList>();
                                 }
                                 principalFragmentPropertyLists.put(principalKey, principalFragmentPropertyList);
                             }
@@ -2785,7 +2806,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                         filter.addEqualTo("scopeValue", userPrincipal.getName());
                         QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
                         Collection fragmentProperties = getPersistenceBrokerTemplate().getCollectionByQuery(query);
-                        userFragmentPropertyList.addAll(fragmentProperties);
+                        @SuppressWarnings("unchecked")
+                        Collection<FragmentPropertyImpl> fragmentPropertyImpls = fragmentProperties;
+                        userFragmentPropertyList.addAll(fragmentPropertyImpls);
                         DatabasePageManagerCache.principalFragmentPropertyListCacheAdd(principalKey, userFragmentPropertyList, false);
                     }
                 }
@@ -2801,7 +2824,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 {
                     if (principalFragmentPropertyLists != null)
                     {                        
-                        Set principals = subject.getPrincipals();
+                        Set<Principal> principals = subject.getPrincipals();
                         Iterator principalsIter = principals.iterator();
                         while (principalsIter.hasNext())
                         {
@@ -2823,7 +2846,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                             {
                                 String principalKey = getFragmentPropertyListPrincipalKey(principalScope, principal.getName());
                                 DatabasePageManagerCachedFragmentPropertyList principalFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)principalFragmentPropertyLists.get(principalKey);
-                                List principalFragmentProperties = filterPrincipalFragmentPropertyList(principalFragmentPropertyList, baseFragmentElementImpl);
+                                List<FragmentProperty> principalFragmentProperties = filterPrincipalFragmentPropertyList(principalFragmentPropertyList, baseFragmentElementImpl);
                                 if (principalFragmentProperties != null)
                                 {
                                     list.getProperties().addAll(principalFragmentProperties);
@@ -2834,7 +2857,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 }
                 else if (userFragmentPropertyList != null)
                 {
-                    List userFragmentProperties = filterPrincipalFragmentPropertyList(userFragmentPropertyList, baseFragmentElementImpl);
+                    List<FragmentProperty> userFragmentProperties = filterPrincipalFragmentPropertyList(userFragmentPropertyList, baseFragmentElementImpl);
                     if (userFragmentProperties != null)
                     {
                         list.getProperties().addAll(userFragmentProperties);
@@ -2881,16 +2904,16 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // create bounded LRU cache per thread to limit footprint
                 // of long running or pooled threads, (typically batch
                 // processes accessing the PageManager).
-                threadLocalCache = new LinkedHashMap(MIN_THREAD_CACHE_SIZE, 0.75F, true)
+                threadLocalCache = new LinkedHashMap<String,WeakReference<FragmentPropertyList>>(MIN_THREAD_CACHE_SIZE, 0.75F, true)
                 {
-                    protected boolean removeEldestEntry(Map.Entry eldest)
+                    protected boolean removeEldestEntry(Map.Entry<String,WeakReference<FragmentPropertyList>> eldest)
                     {
                         return (size() > maxThreadCacheSize);
                     }
                 };
                 fragmentPropertyListsCache.set(threadLocalCache);
             }
-            threadLocalCache.put(fragmentListKey, new WeakReference(list));
+            threadLocalCache.put(fragmentListKey, new WeakReference<FragmentPropertyList>(list));
         }
         return list;
     }
@@ -2922,14 +2945,14 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 // extents are fully represented in list).
                 boolean updateTransaction = false;
                 DatabasePageManagerCachedFragmentPropertyList globalFragmentPropertyList = null;
-                Map principalPartialFragmentPropertyLists = null;
+                Map<String,DatabasePageManagerCachedFragmentPropertyList> principalPartialFragmentPropertyLists = null;
                 String fragmentKey = getFragmentPropertyListFragmentKey(baseFragmentElementImpl);
-                List properties = list.getProperties();
-                List removedProperties = list.getRemovedProperties();
+                List<FragmentProperty> properties = list.getProperties();
+                List<FragmentProperty> removedProperties = list.getRemovedProperties();
                 
                 // construct scoped properties lists for cache updates from
                 // all properties, (add, update, and remove)
-                List allProperties = new ArrayList(properties);
+                List<FragmentProperty> allProperties = new ArrayList<FragmentProperty>(properties);
                 if (removedProperties != null)
                 {
                     allProperties.addAll(removedProperties);                    
@@ -2970,7 +2993,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                             {
                                 if (principalPartialFragmentPropertyLists == null)
                                 {
-                                    principalPartialFragmentPropertyLists = new HashMap();
+                                    principalPartialFragmentPropertyLists = new HashMap<String,DatabasePageManagerCachedFragmentPropertyList>();
                                 }
                                 String principalKey = getFragmentPropertyListPrincipalKey(propertyScope, propertyScopeValue);
                                 DatabasePageManagerCachedFragmentPropertyList principalPartialFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)principalPartialFragmentPropertyLists.get(principalKey);
@@ -2987,7 +3010,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                             {
                                 if (principalPartialFragmentPropertyLists == null)
                                 {
-                                    principalPartialFragmentPropertyLists = new HashMap();
+                                    principalPartialFragmentPropertyLists = new HashMap<String,DatabasePageManagerCachedFragmentPropertyList>();
                                 }
                                 DatabasePageManagerCachedFragmentPropertyList principalPartialFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)principalPartialFragmentPropertyLists.get(userPrincipalKey);
                                 if (principalPartialFragmentPropertyList == null)
@@ -3028,7 +3051,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                             if (principalPartialFragmentPropertyLists != null)
                             {
                                 String principalKey = getFragmentPropertyListPrincipalKey(storePropertyScope, storePropertyScopeValue);
-                                DatabasePageManagerCachedFragmentPropertyList principalPartialFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)principalPartialFragmentPropertyLists.get(principalKey);
+                                DatabasePageManagerCachedFragmentPropertyList principalPartialFragmentPropertyList = principalPartialFragmentPropertyLists.get(principalKey);
                                 if (principalPartialFragmentPropertyList != null)
                                 {
                                     principalPartialFragmentPropertyList.add(storeProperty);
@@ -3128,9 +3151,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         Subject subject = JSSubject.getSubject(AccessController.getContext());
         Principal userPrincipal = ((subject != null) ? SubjectHelper.getBestPrincipal(subject, User.class) : null);
         String fragmentListKey = getFragmentPropertyListKey(fragmentKey, userPrincipal);
-        Map threadLocalCache = (Map)fragmentPropertyListsCache.get();
-        WeakReference listReference = ((threadLocalCache != null) ? (WeakReference)threadLocalCache.get(fragmentListKey) : null);
-        FragmentPropertyList list = ((listReference != null) ? (FragmentPropertyList)listReference.get() : null);
+        Map<String,WeakReference<FragmentPropertyList>> threadLocalCache = fragmentPropertyListsCache.get();
+        WeakReference<FragmentPropertyList> listReference = ((threadLocalCache != null) ? threadLocalCache.get(fragmentListKey) : null);
+        FragmentPropertyList list = ((listReference != null) ? listReference.get() : null);
 
         // remove cached persistent list
         if (list != null)
@@ -3147,7 +3170,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         }
 
         // remove all fragment properties in list from database
-        Integer fragmentId = new Integer(baseFragmentElementImpl.getIdentity());
+        int fragmentId = baseFragmentElementImpl.getIdentity();
         Criteria filter = new Criteria();
         filter.addEqualTo("fragment", fragmentId);
         QueryByCriteria query = QueryFactory.newQuery(FragmentPropertyImpl.class, filter);
@@ -3204,9 +3227,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
      * @param baseFragmentElementImpl fragment property owning fragment
      * @return fragment property list for owning fragment
      */
-    private static List filterPrincipalFragmentPropertyList(DatabasePageManagerCachedFragmentPropertyList principalFragmentPropertyList, BaseFragmentElementImpl baseFragmentElementImpl)
+    private static List<FragmentProperty> filterPrincipalFragmentPropertyList(DatabasePageManagerCachedFragmentPropertyList principalFragmentPropertyList, BaseFragmentElementImpl baseFragmentElementImpl)
     {
-        List filteredList = null;
+        List<FragmentProperty> filteredList = null;
         synchronized (principalFragmentPropertyList)
         {
             for (Iterator iter = principalFragmentPropertyList.iterator(); iter.hasNext();)
@@ -3216,7 +3239,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 {
                     if (filteredList == null)
                     {
-                        filteredList = new ArrayList();
+                        filteredList = new ArrayList<FragmentProperty>();
                     }
                     filteredList.add(fragmentProperty);
                 }
@@ -3288,5 +3311,15 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
 	{
 		updateFragmentPropertyList((BaseFragmentElementImpl)baseFragmentElement, scope, transientList);
 	}
-        
+
+    /**
+     * Create list suitable for list model members.
+     *
+     * @param <T> list element type
+     * @return list
+     */
+    public <T> List<T> createList()
+    {
+        return DatabasePageManagerUtils.createList();
+    }
 }

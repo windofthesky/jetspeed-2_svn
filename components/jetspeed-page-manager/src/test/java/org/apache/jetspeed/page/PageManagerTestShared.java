@@ -112,7 +112,7 @@ public interface PageManagerTestShared
         static CastorXmlPageManager makeCastorXMLPageManager(String baseDir, String pagesDirName, boolean permissionsEnabled, boolean constraintsEnabled)
             throws Exception
         {
-            Map extensionsToXslt = new HashMap();
+            Map<String,Object> extensionsToXslt = new HashMap<String,Object>();
             extensionsToXslt.put("psml",baseDir+"src/main/resources/stripIds.xslt");
                 
             File pagesDirFile = new File(baseDir+"target/testdata/" + pagesDirName);
@@ -188,11 +188,11 @@ public interface PageManagerTestShared
          * @param csv CSV string
          * @return values list
          */
-        static List makeListFromCSV(String csv)
+        static List<String> makeListFromCSV(String csv)
         {
             if (csv != null)
             {
-                List csvList = new ArrayList();
+                List<String> csvList = new ArrayList<String>();
                 if (csv.indexOf(',') != -1)
                 {
                     StringTokenizer csvTokens = new StringTokenizer(csv, ",");
@@ -218,7 +218,7 @@ public interface PageManagerTestShared
          * @param list values list
          * @return CSV string
          */
-        static String makeCSVFromList(List list)
+        static String makeCSVFromList(List<String> list)
         {
             if ((list != null) && !list.isEmpty())
             {
@@ -230,7 +230,7 @@ public interface PageManagerTestShared
                     {
                         csv.append(",");
                     }
-                    csv.append((String)listIter.next());
+                    csv.append(listIter.next());
                 }
                 return csv.toString();
             }
@@ -252,23 +252,23 @@ public interface PageManagerTestShared
             pageManager.reset();
             
             // setup test subjects
-            Set principals = new PrincipalsSet();
+            Set<Principal> principals = new PrincipalsSet();
             principals.add(new TestUser("admin"));
             principals.add(new TestRole("admin"));
-            Subject adminSubject = new Subject(true, principals, new HashSet(), new HashSet());
+            Subject adminSubject = new Subject(true, principals, new HashSet<Principal>(), new HashSet<Principal>());
             
             principals = new PrincipalsSet();
             principals.add(new TestUser("user"));
-            Subject userSubject = new Subject(true, principals, new HashSet(), new HashSet());
+            Subject userSubject = new Subject(true, principals, new HashSet<Principal>(), new HashSet<Principal>());
             
             principals = new PrincipalsSet();
             principals.add(new TestUser("manager"));
             principals.add(new TestRole("manager"));
-            Subject managerSubject = new Subject(true, principals, new HashSet(), new HashSet());
+            Subject managerSubject = new Subject(true, principals, new HashSet<Principal>(), new HashSet<Principal>());
 
             principals = new PrincipalsSet();
             principals.add(new TestUser("guest"));
-            Subject guestSubject = new Subject(true, principals, new HashSet(), new HashSet());
+            Subject guestSubject = new Subject(true, principals, new HashSet<Principal>(), new HashSet<Principal>());
 
             // setup test as admin user
             Exception setup = (Exception)JSSubject.doAsPrivileged(adminSubject, new PrivilegedAction()
@@ -292,17 +292,17 @@ public interface PageManagerTestShared
                             Folder folder = pageManager.newFolder("/");
                             SecurityConstraints constraints = pageManager.newSecurityConstraints();
                             constraints.setOwner("admin");
-                            List constraintsRefs = new ArrayList(1);
+                            List<String> constraintsRefs = new ArrayList<String>(1);
                             constraintsRefs.add("public-view");
                             constraints.setSecurityConstraintsRefs(constraintsRefs);
                             folder.setSecurityConstraints(constraints);
                             pageManager.updateFolder(folder);
                         
                             PageSecurity pageSecurity = pageManager.newPageSecurity();
-                            List constraintsDefs = new ArrayList(2);
+                            List<SecurityConstraintsDef> constraintsDefs = new ArrayList<SecurityConstraintsDef>(2);
                             SecurityConstraintsDef constraintsDef = pageManager.newSecurityConstraintsDef();
                             constraintsDef.setName("public-view");
-                            List defConstraints = new ArrayList(1);
+                            List<SecurityConstraint> defConstraints = new ArrayList<SecurityConstraint>(1);
                             SecurityConstraint defConstraint = pageManager.newPageSecuritySecurityConstraint();
                             defConstraint.setUsers(Shared.makeListFromCSV("*"));
                             defConstraint.setPermissions(Shared.makeListFromCSV("view"));
@@ -311,7 +311,7 @@ public interface PageManagerTestShared
                             constraintsDefs.add(constraintsDef);
                             constraintsDef = pageManager.newSecurityConstraintsDef();
                             constraintsDef.setName("admin-all");
-                            defConstraints = new ArrayList(1);
+                            defConstraints = new ArrayList<SecurityConstraint>(1);
                             defConstraint = pageManager.newPageSecuritySecurityConstraint();
                             defConstraint.setRoles(Shared.makeListFromCSV("admin"));
                             defConstraint.setPermissions(Shared.makeListFromCSV("view,edit"));
@@ -319,7 +319,7 @@ public interface PageManagerTestShared
                             constraintsDef.setSecurityConstraints(defConstraints);
                             constraintsDefs.add(constraintsDef);
                             pageSecurity.setSecurityConstraintsDefs(constraintsDefs);
-                            List globalConstraintsRefs = new ArrayList(1);
+                            List<String> globalConstraintsRefs = new ArrayList<String>(1);
                             globalConstraintsRefs.add("admin-all");
                             pageSecurity.setGlobalSecurityConstraintsRefs(globalConstraintsRefs);
                             pageManager.updatePageSecurity(pageSecurity);
@@ -327,13 +327,13 @@ public interface PageManagerTestShared
                             Page page = pageManager.newPage("/default-page.psml");
                             constraints = pageManager.newSecurityConstraints();
                             constraints.setOwner("admin");
-                            List inlineConstraints = new ArrayList(1);
+                            List<SecurityConstraint> inlineConstraints = new ArrayList<SecurityConstraint>(1);
                             SecurityConstraint constraint = pageManager.newPageSecurityConstraint();
                             constraint.setRoles(Shared.makeListFromCSV("manager"));
                             constraint.setPermissions(Shared.makeListFromCSV("edit"));
                             inlineConstraints.add(constraint);
                             constraints.setSecurityConstraints(inlineConstraints);
-                            constraintsRefs = new ArrayList(1);
+                            constraintsRefs = new ArrayList<String>(1);
                             constraintsRefs.add("public-view");
                             constraints.setSecurityConstraintsRefs(constraintsRefs);
                             page.setSecurityConstraints(constraints);
@@ -365,7 +365,7 @@ public interface PageManagerTestShared
                         
                             page = pageManager.newPage("/user-page.psml");
                             constraints = pageManager.newSecurityConstraints();
-                            inlineConstraints = new ArrayList(1);
+                            inlineConstraints = new ArrayList<SecurityConstraint>(1);
                             constraint = pageManager.newPageSecurityConstraint();
                             constraint.setUsers(Shared.makeListFromCSV("user"));
                             constraint.setPermissions(Shared.makeListFromCSV("view,edit"));
@@ -378,7 +378,7 @@ public interface PageManagerTestShared
                             link.setUrl("http://www.default.org/");
                             constraints = pageManager.newSecurityConstraints();
                             constraints.setOwner("admin");
-                            inlineConstraints = new ArrayList(1);
+                            inlineConstraints = new ArrayList<SecurityConstraint>(1);
                             constraint = pageManager.newLinkSecurityConstraint();
                             constraint.setRoles(Shared.makeListFromCSV("manager"));
                             constraint.setPermissions(Shared.makeListFromCSV("edit"));
@@ -729,34 +729,34 @@ public interface PageManagerTestShared
             pageManager.reset();
 
             // setup test subjects
-            Set principals = new PrincipalsSet();
+            Set<Principal> principals = new PrincipalsSet();
             principals.add(new TestUser("admin"));
-            Subject adminSubject = new Subject(true, principals, new HashSet(), new HashSet());
+            Subject adminSubject = new Subject(true, principals, new HashSet<Principal>(), new HashSet<Principal>());
 
             principals = new PrincipalsSet();
             principals.add(new TestUser("user-with-admin"));
             principals.add(new TestRole("admin"));
-            Subject userWithAdminSubject = new Subject(true, principals, new HashSet(), new HashSet());
+            Subject userWithAdminSubject = new Subject(true, principals, new HashSet<Principal>(), new HashSet<Principal>());
 
             principals = new PrincipalsSet();
             principals.add(new TestUser("user"));
-            Subject userSubject = new Subject(true, principals, new HashSet(), new HashSet());
+            Subject userSubject = new Subject(true, principals, new HashSet<Principal>(), new HashSet<Principal>());
 
             principals = new PrincipalsSet();
             principals.add(new TestUser("test-group-user"));
             principals.add(new TestGroup("test-group"));
-            Subject testGroupUserSubject = new Subject(true, principals, new HashSet(), new HashSet());
+            Subject testGroupUserSubject = new Subject(true, principals, new HashSet<Principal>(), new HashSet<Principal>());
 
             principals = new PrincipalsSet();
             principals.add(new TestUser("test-role-user"));
             principals.add(new TestRole("test-role"));
-            Subject testRoleUserSubject = new Subject(true, principals, new HashSet(), new HashSet());
+            Subject testRoleUserSubject = new Subject(true, principals, new HashSet<Principal>(), new HashSet<Principal>());
 
             principals = new PrincipalsSet();
             principals.add(new TestUser("test-group-role-user"));
             principals.add(new TestGroup("test-group"));
             principals.add(new TestRole("test-role"));
-            Subject testGroupRoleUserSubject = new Subject(true, principals, new HashSet(), new HashSet());
+            Subject testGroupRoleUserSubject = new Subject(true, principals, new HashSet<Principal>(), new HashSet<Principal>());
 
             // setup test as admin
             Exception setup = (Exception) JSSubject.doAsPrivileged(adminSubject, new PrivilegedAction()
@@ -780,17 +780,17 @@ public interface PageManagerTestShared
                         Folder folder = pageManager.newFolder("/");
                         SecurityConstraints constraints = pageManager.newSecurityConstraints();
                         constraints.setOwner("admin");
-                        List constraintsRefs = new ArrayList(1);
+                        List<String> constraintsRefs = new ArrayList<String>(1);
                         constraintsRefs.add("public-view");
                         constraints.setSecurityConstraintsRefs(constraintsRefs);
                         folder.setSecurityConstraints(constraints);
                         pageManager.updateFolder(folder);
 
                         PageSecurity pageSecurity = pageManager.newPageSecurity();
-                        List constraintsDefs = new ArrayList(5);
+                        List<SecurityConstraintsDef> constraintsDefs = new ArrayList<SecurityConstraintsDef>(5);
                         SecurityConstraintsDef constraintsDef = pageManager.newSecurityConstraintsDef();
                         constraintsDef.setName("public-view");
-                        List defConstraints = new ArrayList(1);
+                        List<SecurityConstraint> defConstraints = new ArrayList<SecurityConstraint>(1);
                         SecurityConstraint defConstraint = pageManager.newPageSecuritySecurityConstraint();
                         defConstraint.setUsers(Shared.makeListFromCSV("*"));
                         defConstraint.setPermissions(Shared.makeListFromCSV("view"));
@@ -799,7 +799,7 @@ public interface PageManagerTestShared
                         constraintsDefs.add(constraintsDef);
                         constraintsDef = pageManager.newSecurityConstraintsDef();
                         constraintsDef.setName("test-group");
-                        defConstraints = new ArrayList(1);
+                        defConstraints = new ArrayList<SecurityConstraint>(1);
                         defConstraint = pageManager.newPageSecuritySecurityConstraint();
                         defConstraint.setGroups(Shared.makeListFromCSV("test-group"));
                         defConstraint.setPermissions(Shared.makeListFromCSV("view"));
@@ -808,7 +808,7 @@ public interface PageManagerTestShared
                         constraintsDefs.add(constraintsDef);
                         constraintsDef = pageManager.newSecurityConstraintsDef();
                         constraintsDef.setName("test-role");
-                        defConstraints = new ArrayList(1);
+                        defConstraints = new ArrayList<SecurityConstraint>(1);
                         defConstraint = pageManager.newPageSecuritySecurityConstraint();
                         defConstraint.setRoles(Shared.makeListFromCSV("test-role"));
                         defConstraint.setPermissions(Shared.makeListFromCSV("view"));
@@ -817,7 +817,7 @@ public interface PageManagerTestShared
                         constraintsDefs.add(constraintsDef);
                         constraintsDef = pageManager.newSecurityConstraintsDef();
                         constraintsDef.setName("admin-role");
-                        defConstraints = new ArrayList(1);
+                        defConstraints = new ArrayList<SecurityConstraint>(1);
                         defConstraint = pageManager.newPageSecuritySecurityConstraint();
                         defConstraint.setRoles(Shared.makeListFromCSV("admin"));
                         defConstraint.setPermissions(Shared.makeListFromCSV("view,edit"));
@@ -826,7 +826,7 @@ public interface PageManagerTestShared
                         constraintsDefs.add(constraintsDef);
                         constraintsDef = pageManager.newSecurityConstraintsDef();
                         constraintsDef.setName("admin-user");
-                        defConstraints = new ArrayList(1);
+                        defConstraints = new ArrayList<SecurityConstraint>(1);
                         defConstraint = pageManager.newPageSecuritySecurityConstraint();
                         defConstraint.setUsers(Shared.makeListFromCSV("admin"));
                         defConstraint.setPermissions(Shared.makeListFromCSV("view,edit"));
@@ -834,7 +834,7 @@ public interface PageManagerTestShared
                         constraintsDef.setSecurityConstraints(defConstraints);
                         constraintsDefs.add(constraintsDef);
                         pageSecurity.setSecurityConstraintsDefs(constraintsDefs);
-                        List globalConstraintsRefs = new ArrayList(1);
+                        List<String> globalConstraintsRefs = new ArrayList<String>(1);
                         globalConstraintsRefs.add("admin-role or admin-user");
                         pageSecurity.setGlobalSecurityConstraintsRefs(globalConstraintsRefs);
                         pageManager.updatePageSecurity(pageSecurity);
@@ -842,7 +842,7 @@ public interface PageManagerTestShared
                         Page page = pageManager.newPage("/default-page.psml");
                         constraints = pageManager.newSecurityConstraints();
                         constraints.setOwner("admin");
-                        constraintsRefs = new ArrayList(1);
+                        constraintsRefs = new ArrayList<String>(1);
                         constraintsRefs.add("public-view");
                         constraints.setSecurityConstraintsRefs(constraintsRefs);
                         page.setSecurityConstraints(constraints);
@@ -851,13 +851,13 @@ public interface PageManagerTestShared
                         page = pageManager.newPage("/or-page.psml");
                         constraints = pageManager.newSecurityConstraints();
                         constraints.setOwner("admin");
-                        List inlineConstraints = new ArrayList(1);
+                        List<SecurityConstraint> inlineConstraints = new ArrayList<SecurityConstraint>(1);
                         SecurityConstraint constraint = pageManager.newPageSecurityConstraint();
                         constraint.setUsers(Shared.makeListFromCSV("user"));
                         constraint.setPermissions(Shared.makeListFromCSV("view"));
                         inlineConstraints.add(constraint);
                         constraints.setSecurityConstraints(inlineConstraints);
-                        constraintsRefs = new ArrayList(1);
+                        constraintsRefs = new ArrayList<String>(1);
                         constraintsRefs.add("test-group || test-role");
                         constraints.setSecurityConstraintsRefs(constraintsRefs);
                         page.setSecurityConstraints(constraints);
@@ -866,7 +866,7 @@ public interface PageManagerTestShared
                         page = pageManager.newPage("/and-page.psml");
                         constraints = pageManager.newSecurityConstraints();
                         constraints.setOwner("admin");
-                        constraintsRefs = new ArrayList(1);
+                        constraintsRefs = new ArrayList<String>(1);
                         constraintsRefs.add("test-group and test-role");
                         constraints.setSecurityConstraintsRefs(constraintsRefs);
                         page.setSecurityConstraints(constraints);
@@ -875,7 +875,7 @@ public interface PageManagerTestShared
                         page = pageManager.newPage("/not-page.psml");
                         constraints = pageManager.newSecurityConstraints();
                         constraints.setOwner("admin");
-                        constraintsRefs = new ArrayList(1);
+                        constraintsRefs = new ArrayList<String>(1);
                         constraintsRefs.add("not test-role");
                         constraints.setSecurityConstraintsRefs(constraintsRefs);
                         page.setSecurityConstraints(constraints);
@@ -884,7 +884,7 @@ public interface PageManagerTestShared
                         page = pageManager.newPage("/and-not-page.psml");
                         constraints = pageManager.newSecurityConstraints();
                         constraints.setOwner("admin");
-                        constraintsRefs = new ArrayList(1);
+                        constraintsRefs = new ArrayList<String>(1);
                         constraintsRefs.add("public-view and not test-group");
                         constraints.setSecurityConstraintsRefs(constraintsRefs);
                         page.setSecurityConstraints(constraints);
@@ -893,7 +893,7 @@ public interface PageManagerTestShared
                         page = pageManager.newPage("/paren-page.psml");
                         constraints = pageManager.newSecurityConstraints();
                         constraints.setOwner("admin");
-                        constraintsRefs = new ArrayList(1);
+                        constraintsRefs = new ArrayList<String>(1);
                         constraintsRefs.add("((test-group||test-role)&&!admin-role)");
                         constraints.setSecurityConstraintsRefs(constraintsRefs);
                         page.setSecurityConstraints(constraints);

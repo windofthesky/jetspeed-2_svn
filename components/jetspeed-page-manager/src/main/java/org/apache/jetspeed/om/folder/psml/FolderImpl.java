@@ -16,12 +16,6 @@
  */
 package org.apache.jetspeed.om.folder.psml;
 
-import java.security.AccessController;
-import java.security.Permission;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.common.SecurityConstraints;
@@ -55,9 +49,14 @@ import org.apache.jetspeed.page.document.psml.AbstractNode;
 import org.apache.jetspeed.page.document.psml.NodeOrderComparator;
 import org.apache.jetspeed.page.document.psml.NodeSetImpl;
 import org.apache.jetspeed.security.PermissionFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.security.AccessController;
+import java.security.Permission;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * FolderImpl
@@ -170,7 +169,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#getDocumentOrder()
      */
-    public List getDocumentOrder()
+    public List<String> getDocumentOrder()
     {
         return metadata.getDocumentOrder();
     }
@@ -178,7 +177,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.folder.Folder#setDocumentOrder(java.util.List)
      */
-    public void setDocumentOrder(List docIndexes)
+    public void setDocumentOrder(List<String> docIndexes)
     {
         metadata.setDocumentOrder(docIndexes);
     }
@@ -835,7 +834,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * getMetadata
      * </p>
      *
-     * @see org.apache.jetspeed.page.document.AbstractNode#getMetadata()
+     * @see org.apache.jetspeed.page.document.psml.AbstractNode#getMetadata()
      * @return metadata
      */
     public GenericMetadata getMetadata()
@@ -848,7 +847,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * getSecurityConstraints
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecureResource#getSecurityConstraints()
+     * @see org.apache.jetspeed.om.common.SecuredResource#getSecurityConstraints()
      * @return
      */
     public SecurityConstraints getSecurityConstraints()
@@ -860,7 +859,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * setSecurityConstraints
      * </p>
      *
-     * @see org.apache.jetspeed.om.common.SecureResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
+     * @see org.apache.jetspeed.om.common.SecuredResource#setSecurityConstraints(org.apache.jetspeed.om.common.SecurityConstraints)
      * @param constraints
      */
     public void setSecurityConstraints(SecurityConstraints constraints)
@@ -871,7 +870,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     /**
      * getEffectivePageSecurity
      *
-     * @see org.apache.jetspeed.om.page.psml.AbstractElementImpl#getEffectivePageSecurity()
+     * @see org.apache.jetspeed.om.page.psml.AbstractBaseElement#getEffectivePageSecurity()
      */
     public PageSecurity getEffectivePageSecurity()
     {
@@ -1032,7 +1031,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      * setHidden
      * </p>
      *
-     * @see org.apache.jetspeed.page.document.AbstractNode#setHidden(boolean)
+     * @see org.apache.jetspeed.page.document.Node#setHidden(boolean)
      * @param hidden
      */
     public void setHidden( boolean hidden )
@@ -1046,7 +1045,6 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
     public void reset()
     {
         allNodes = null;
-        
     }
 
     /**
@@ -1054,7 +1052,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      *
      * @return definition list
      */
-    public List getMenuDefinitions()
+    public List<MenuDefinition> getMenuDefinitions()
     {
         return metadata.getMenuDefinitions();
     }
@@ -1114,7 +1112,7 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
      *
      * @param definitions definition list
      */
-    public void setMenuDefinitions(List definitions)
+    public void setMenuDefinitions(List<MenuDefinition> definitions)
     {
         metadata.setMenuDefinitions(definitions);
     }

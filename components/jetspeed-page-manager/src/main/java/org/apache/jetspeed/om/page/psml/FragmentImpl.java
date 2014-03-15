@@ -38,9 +38,9 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
 {
     private String type = null;
 
-    private List fragments = new ArrayList();
+    private List<AbstractBaseFragmentElement> fragments = new ArrayList<AbstractBaseFragmentElement>();
 
-    private List fragmentElementImpls = new ArrayList();
+    private List<FragmentElementImpl> fragmentElementImpls = new ArrayList<FragmentElementImpl>();
 
     private String name;
 
@@ -65,7 +65,7 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
         this.type = type;
     }
 
-    List accessFragments()
+    List<AbstractBaseFragmentElement> accessFragments()
     {
         return fragments;
     }
@@ -86,7 +86,7 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
      *
      * @return wrapped element list
      */
-    public List getFragmentElementImpls()
+    public List<FragmentElementImpl> getFragmentElementImpls()
     {
         return fragmentElementImpls;
     }
@@ -96,7 +96,7 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
      *
      * @param elements wrapped element list
      */
-    public void setFragmentElementImpls(List elements)
+    public void setFragmentElementImpls(List<FragmentElementImpl> elements)
     {
         fragmentElementImpls = elements;
     }
@@ -146,16 +146,16 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#getFragmentById(java.lang.String)
      */
-    public BaseFragmentElement getFragmentById( String id )
+    public BaseFragmentElement getFragmentById(String id)
     {
-        Stack stack = new Stack();
+        Stack<BaseFragmentElement> stack = new Stack<BaseFragmentElement>();
         Iterator i = getFragments().iterator();
         while (i.hasNext())
         {
-            stack.push(i.next());
+            stack.push((BaseFragmentElement)i.next());
         }
 
-        BaseFragmentElement f = (BaseFragmentElement) stack.pop();
+        BaseFragmentElement f = stack.pop();
 
         while ((f != null) && (!(f.getId().equals(id))))
         {
@@ -165,13 +165,13 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
 
                 while (i.hasNext())
                 {
-                    stack.push(i.next());
+                    stack.push((BaseFragmentElement)i.next());
                 }
             }
 
             if (stack.size() > 0)
             {
-                f = (BaseFragmentElement) stack.pop();
+                f = stack.pop();
             }
             else
             {
@@ -185,18 +185,18 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Fragment#removeFragmentById(java.lang.String)
      */
-    public BaseFragmentElement removeFragmentById( String id )
+    public BaseFragmentElement removeFragmentById(String id)
     {
         // find fragment by id, tracking fragment parent
-        Map parents = new HashMap();
-        Stack stack = new Stack();
+        Map<BaseFragmentElement,BaseFragmentElement> parents = new HashMap<BaseFragmentElement,BaseFragmentElement>();
+        Stack<BaseFragmentElement> stack = new Stack<BaseFragmentElement>();
         Iterator i = getFragments().iterator();
         while (i.hasNext())
         {
-            stack.push(i.next());
+            stack.push((BaseFragmentElement)i.next());
         }
 
-        BaseFragmentElement f = (BaseFragmentElement) stack.pop();
+        BaseFragmentElement f = stack.pop();
         while ((f != null) && (!(f.getId().equals(id))))
         {
             if (f instanceof Fragment)
@@ -213,7 +213,7 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
 
             if (stack.size() > 0)
             {
-                f = (BaseFragmentElement) stack.pop();
+                f = stack.pop();
             }
             else
             {
@@ -224,7 +224,7 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
         // remove fragment from parent/fragments
         if (f != null)
         {
-            BaseFragmentElement parent = (BaseFragmentElement)parents.get(f);
+            BaseFragmentElement parent = parents.get(f);
             if (parent != null)
             {
                 if (parent instanceof Fragment)

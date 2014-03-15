@@ -16,21 +16,19 @@
  */
 package org.apache.jetspeed.om.page;
 
+import org.apache.jetspeed.security.Group;
+import org.apache.jetspeed.security.JSSubject;
+import org.apache.jetspeed.security.Role;
+import org.apache.jetspeed.security.SubjectHelper;
+import org.apache.jetspeed.security.User;
+
+import javax.security.auth.Subject;
 import java.security.AccessController;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import javax.security.auth.Subject;
-
-import org.apache.jetspeed.om.page.FragmentProperty;
-import org.apache.jetspeed.security.Group;
-import org.apache.jetspeed.security.JSSubject;
-import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.SubjectHelper;
-import org.apache.jetspeed.security.User;
 
 /**
  * BaseFragmentPropertyImpl
@@ -155,9 +153,9 @@ public abstract class BaseFragmentPropertyImpl implements FragmentProperty
      * @param properties unfiltered fragment properties list
      * @return filtered fragment properties
      */
-    public static List filterFragmentProperties(List properties)
+    public static List<FragmentProperty> filterFragmentProperties(List<FragmentProperty> properties)
     {
-        List filteredProperties = new ArrayList();
+        List<FragmentProperty> filteredProperties = new ArrayList<FragmentProperty>();
         
         // iterate through properties list and merge with current
         // principals to determine most specific property value

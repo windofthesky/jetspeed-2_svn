@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import org.apache.jetspeed.om.common.SecurityConstraint;
+
 import java.util.AbstractList;
 
 /**
@@ -24,7 +26,7 @@ import java.util.AbstractList;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class SecurityConstraintDefList extends AbstractList
+class SecurityConstraintDefList extends AbstractList<SecurityConstraint>
 {
     private SecurityConstraintsDefImpl constraintsDef;
 
@@ -42,20 +44,20 @@ class SecurityConstraintDefList extends AbstractList
      * @param constraint constraint to add
      * @return list element to add
      */
-    private PageSecuritySecurityConstraintImpl validateConstraintForAdd(PageSecuritySecurityConstraintImpl constraint)
+    private PageSecuritySecurityConstraintImpl validateConstraintForAdd(SecurityConstraint constraint)
     {
         // validate constraint instance class
         if (constraint == null)
         {
             throw new NullPointerException("Unable to add null to list.");
         }
-        return constraint;
+        return (PageSecuritySecurityConstraintImpl)constraint;
     }
 
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, SecurityConstraint element)
     {
         // implement for modifiable AbstractList:
         // validate index
@@ -64,13 +66,13 @@ class SecurityConstraintDefList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // verify constraint
-        PageSecuritySecurityConstraintImpl constraint = validateConstraintForAdd((PageSecuritySecurityConstraintImpl)element);
+        PageSecuritySecurityConstraintImpl constraint = validateConstraintForAdd(element);
         // add to underlying ordered list
         constraintsDef.accessConstraintDefs().add(index, constraint);
         // set apply order in added element
         if (index > 0)
         {
-            constraint.setApplyOrder(((PageSecuritySecurityConstraintImpl)constraintsDef.accessConstraintDefs().get(index-1)).getApplyOrder() + 1);
+            constraint.setApplyOrder(constraintsDef.accessConstraintDefs().get(index-1).getApplyOrder() + 1);
         }
         else
         {
@@ -79,7 +81,7 @@ class SecurityConstraintDefList extends AbstractList
         // maintain apply order in subsequent elements
         for (int i = index, limit = constraintsDef.accessConstraintDefs().size() - 1; (i < limit); i++)
         {
-            PageSecuritySecurityConstraintImpl nextConstraint = (PageSecuritySecurityConstraintImpl)constraintsDef.accessConstraintDefs().get(i + 1);
+            PageSecuritySecurityConstraintImpl nextConstraint = constraintsDef.accessConstraintDefs().get(i + 1);
             if (nextConstraint.getApplyOrder() <= constraint.getApplyOrder())
             {
                 // adjust apply order for next element
@@ -97,7 +99,7 @@ class SecurityConstraintDefList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public SecurityConstraint get(int index)
     {
         // implement for modifiable AbstractList
         return constraintsDef.accessConstraintDefs().get(index);
@@ -106,7 +108,7 @@ class SecurityConstraintDefList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public SecurityConstraint remove(int index)
     {
         // implement for modifiable AbstractList
         return constraintsDef.accessConstraintDefs().remove(index);
@@ -115,13 +117,13 @@ class SecurityConstraintDefList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public SecurityConstraint set(int index, SecurityConstraint element)
     {
         // implement for modifiable AbstractList:
         // verify constraint
-        PageSecuritySecurityConstraintImpl newConstraint = validateConstraintForAdd((PageSecuritySecurityConstraintImpl)element);
+        PageSecuritySecurityConstraintImpl newConstraint = validateConstraintForAdd(element);
         // set in underlying ordered list
-        PageSecuritySecurityConstraintImpl constraint = (PageSecuritySecurityConstraintImpl)constraintsDef.accessConstraintDefs().set(index, newConstraint);
+        PageSecuritySecurityConstraintImpl constraint = constraintsDef.accessConstraintDefs().set(index, newConstraint);
         // set apply order in new element
         newConstraint.setApplyOrder(constraint.getApplyOrder());
         // return constraint

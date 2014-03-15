@@ -29,9 +29,9 @@ import java.util.Stack;
 public class SecurityConstraintsRefExpression
 {
     private String constraintsRef;
-    private List constraintsRefTokens;
+    private List<SecurityConstraintsRefToken> constraintsRefTokens;
 
-    SecurityConstraintsRefExpression(String constraintsRef, List constraintsRefTokens)
+    SecurityConstraintsRefExpression(String constraintsRef, List<SecurityConstraintsRefToken> constraintsRefTokens)
     {
         this.constraintsRef = constraintsRef;
         this.constraintsRefTokens = constraintsRefTokens;
@@ -49,10 +49,10 @@ public class SecurityConstraintsRefExpression
      * @return flag indicating permission grant
      * @throws RuntimeException if expression evaluation error occurs
      */
-    public boolean checkExpression(String action, List userPrincipals, List rolePrincipals, List groupPrincipals)
+    public boolean checkExpression(String action, List<String> userPrincipals, List<String> rolePrincipals, List<String> groupPrincipals)
     {
         // evaluate postfix constraints ref tokens
-        Stack operandsStack = new Stack();
+        Stack<Boolean> operandsStack = new Stack<Boolean>();
         Iterator constraintsRefTokensIter = constraintsRefTokens.iterator();
         while (constraintsRefTokensIter.hasNext())
         {
@@ -64,9 +64,9 @@ public class SecurityConstraintsRefExpression
                 {
                     if (operandsStack.size() >= 1)
                     {
-                        boolean operand = ((Boolean)operandsStack.pop()).booleanValue();
+                        boolean operand = operandsStack.pop();
                         operand = !operand;
-                        operandsStack.push(new Boolean(operand));
+                        operandsStack.push(operand);
                     }
                     else
                     {
@@ -77,10 +77,10 @@ public class SecurityConstraintsRefExpression
                 {
                     if (operandsStack.size() >= 2)
                     {
-                        boolean operand0 = ((Boolean)operandsStack.pop()).booleanValue();
-                        boolean operand1 = ((Boolean)operandsStack.pop()).booleanValue();
+                        boolean operand0 = operandsStack.pop();
+                        boolean operand1 = operandsStack.pop();
                         boolean operand = (operand0 && operand1);
-                        operandsStack.push(new Boolean(operand));
+                        operandsStack.push(operand);
                     }
                     else
                     {
@@ -91,10 +91,10 @@ public class SecurityConstraintsRefExpression
                 {
                     if (operandsStack.size() >= 2)
                     {
-                        boolean operand0 = ((Boolean)operandsStack.pop()).booleanValue();
-                        boolean operand1 = ((Boolean)operandsStack.pop()).booleanValue();
+                        boolean operand0 = operandsStack.pop();
+                        boolean operand1 = operandsStack.pop();
                         boolean operand = (operand0 || operand1);
-                        operandsStack.push(new Boolean(operand));
+                        operandsStack.push(operand);
                     }
                     else
                     {
@@ -110,7 +110,7 @@ public class SecurityConstraintsRefExpression
             {
                 // evaluate security constraint operand and place on stack
                 boolean operand = checkExpressionConstraint(action, userPrincipals, rolePrincipals, groupPrincipals, token.getConstraint());
-                operandsStack.push(new Boolean(operand));
+                operandsStack.push(operand);
             }
             else
             {
@@ -121,7 +121,7 @@ public class SecurityConstraintsRefExpression
         // return single operand left on stack
         if (operandsStack.size() == 1)
         {
-            return ((Boolean)operandsStack.pop()).booleanValue();
+            return operandsStack.pop();
         }
         else
         {
@@ -143,7 +143,7 @@ public class SecurityConstraintsRefExpression
      * @param constraint check constraint
      * @return flag indicating permission grant
      */
-    private boolean checkExpressionConstraint(String action, List userPrincipals, List rolePrincipals, List groupPrincipals, SecurityConstraintImpl constraint)
+    private boolean checkExpressionConstraint(String action, List<String> userPrincipals, List<String> rolePrincipals, List<String> groupPrincipals, SecurityConstraintImpl constraint)
     {
         if (constraint.getPermissions() != null)
         {

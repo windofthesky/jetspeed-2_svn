@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.om.page.psml;
 
+import org.apache.jetspeed.om.page.FragmentProperty;
+
 import java.util.AbstractList;
 import java.util.List;
 
@@ -25,12 +27,12 @@ import java.util.List;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-public class PropertiesList extends AbstractList
+public class PropertiesList extends AbstractList<FragmentProperty>
 {
-    private List filteredProperties;
-    private List properties;
+    private List<FragmentProperty> filteredProperties;
+    private List<FragmentProperty> properties;
    
-    PropertiesList(List filteredProperties, List properties)
+    PropertiesList(List<FragmentProperty> filteredProperties, List<FragmentProperty> properties)
     {
         this.filteredProperties = filteredProperties;
         this.properties = properties;
@@ -39,18 +41,17 @@ public class PropertiesList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, FragmentProperty element)
     {
         // implement for modifiable AbstractList
-        PropertyImpl addFragmentProperty = (PropertyImpl)element;
-        filteredProperties.add(addFragmentProperty);
-        properties.add(addFragmentProperty);
+        filteredProperties.add(element);
+        properties.add(element);
     }
 
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public FragmentProperty get(int index)
     {
         // implement for modifiable AbstractList
         return filteredProperties.get(index);
@@ -59,10 +60,10 @@ public class PropertiesList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public FragmentProperty remove(int index)
     {
         // implement for modifiable AbstractList
-        PropertyImpl removedFragmentProperty = (PropertyImpl)filteredProperties.remove(index);
+        FragmentProperty removedFragmentProperty = filteredProperties.remove(index);
         if (removedFragmentProperty != null)
         {
             properties.remove(removedFragmentProperty);
@@ -73,12 +74,11 @@ public class PropertiesList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public FragmentProperty set(int index, FragmentProperty element)
     {
         // implement for modifiable AbstractList
-        PropertyImpl addFragmentProperty = (PropertyImpl)element;
-        PropertyImpl removedFragmentProperty = (PropertyImpl)filteredProperties.set(index, element);
-        properties.add(addFragmentProperty);
+        FragmentProperty removedFragmentProperty = filteredProperties.set(index, element);
+        properties.add(element);
         if (removedFragmentProperty != null)
         {
             properties.remove(removedFragmentProperty);

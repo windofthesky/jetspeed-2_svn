@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
 {
-    private List fragments;
+    private List<BaseFragmentElementImpl> fragments;
     private String type;
 
     private FragmentList fragmentsList;
@@ -47,7 +47,7 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
      *
      * @return persistent collection
      */
-    List accessFragments()
+    List<BaseFragmentElementImpl> accessFragments()
     {
         // create initial collection if necessary
         if (fragments == null)
@@ -148,17 +148,17 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl#getFragmentsByName(java.lang.String)
      */
-    List getFragmentsByName(String name)
+    List<BaseFragmentElement> getFragmentsByName(String name)
     {
         // check for match
-        List matchedFragments = super.getFragmentsByName(name);
+        List<BaseFragmentElement> matchedFragments = super.getFragmentsByName(name);
         // match named children
         if (fragments != null)
         {
             Iterator fragmentsIter = fragments.iterator();
             while (fragmentsIter.hasNext())
             {
-                List matchedChildFragments = ((BaseFragmentElementImpl)fragmentsIter.next()).getFragmentsByName(name);
+                List<BaseFragmentElement> matchedChildFragments = ((BaseFragmentElementImpl)fragmentsIter.next()).getFragmentsByName(name);
                 if (matchedChildFragments != null)
                 {
                     if (matchedFragments == null)
@@ -178,17 +178,17 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl#getFragmentsByInterface(java.lang.Class)
      */
-    List getFragmentsByInterface(Class interfaceFilter)
+    List<BaseFragmentElement> getFragmentsByInterface(Class interfaceFilter)
     {
         // check for match
-        List matchedFragments = super.getFragmentsByInterface(interfaceFilter);
+        List<BaseFragmentElement> matchedFragments = super.getFragmentsByInterface(interfaceFilter);
         // match children
         if (fragments != null)
         {
             Iterator fragmentsIter = fragments.iterator();
             while (fragmentsIter.hasNext())
             {
-                List matchedChildFragments = ((BaseFragmentElementImpl)fragmentsIter.next()).getFragmentsByInterface(interfaceFilter);
+                List<BaseFragmentElement> matchedChildFragments = ((BaseFragmentElementImpl)fragmentsIter.next()).getFragmentsByInterface(interfaceFilter);
                 if (matchedChildFragments != null)
                 {
                     if (matchedFragments == null)

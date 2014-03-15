@@ -16,25 +16,23 @@
  */
 package org.apache.jetspeed.page.document.psml;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import net.sf.ehcache.CacheManager;
-
-import org.apache.jetspeed.idgenerator.IdGenerator;
-import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
-import org.apache.jetspeed.om.page.Document;
-import org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl;
-import org.apache.jetspeed.page.document.DocumentHandlerFactory;
-import org.apache.jetspeed.page.document.psml.DocumentHandlerFactoryImpl;
-import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.impl.EhCacheImpl;
+import org.apache.jetspeed.idgenerator.IdGenerator;
+import org.apache.jetspeed.idgenerator.JetspeedIdGenerator;
+import org.apache.jetspeed.om.folder.psml.FolderMetaDataImpl;
+import org.apache.jetspeed.om.page.Document;
+import org.apache.jetspeed.page.document.DocumentHandler;
+import org.apache.jetspeed.page.document.DocumentHandlerFactory;
+import org.apache.jetspeed.test.JetspeedTestCase;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -73,7 +71,7 @@ public class TestCastorFileSystemDocumentHandler extends JetspeedTestCase
             getBaseDir()+"src/test/testdata/pages",
             cache);
             
-        Map handlerMap = new HashMap();
+        Map<String,DocumentHandler> handlerMap = new HashMap<String,DocumentHandler>();
         handlerMap.put("folder.metadata", folderMetaDataDocumentHandler);
         DocumentHandlerFactory handlerFactory = new DocumentHandlerFactoryImpl(handlerMap);
         folderMetaDataDocumentHandler.setHandlerFactory(handlerFactory);
@@ -138,7 +136,7 @@ public class TestCastorFileSystemDocumentHandler extends JetspeedTestCase
     {
         Thread [] threads = new Thread[10];
         int i;
-        final List exceptions = new ArrayList(10);
+        final List<Exception> exceptions = new ArrayList<Exception>(10);
         
         for (i = 0; i < threads.length; i++)
         {

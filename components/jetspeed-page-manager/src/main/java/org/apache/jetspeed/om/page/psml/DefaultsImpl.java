@@ -17,10 +17,10 @@
 
 package org.apache.jetspeed.om.page.psml;
 
-import java.util.Map;
-import java.util.HashMap;
-
 import org.apache.jetspeed.om.page.Fragment;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -29,7 +29,7 @@ public class DefaultsImpl
 {
 
     private String skin = null;
-    private Map decoratorMap = new HashMap();
+    private Map<String,String> decoratorMap = new HashMap<String,String>();
 
     /**
      * getSkin
@@ -59,7 +59,7 @@ public class DefaultsImpl
      */
     public String getDecorator(String type)
     {
-        return (String)decoratorMap.get(type);
+        return decoratorMap.get(type);
     }
 
     /**

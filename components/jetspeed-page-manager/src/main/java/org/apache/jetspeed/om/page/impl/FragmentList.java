@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import org.apache.jetspeed.om.page.BaseFragmentElement;
+
 import java.util.AbstractList;
 
 /**
@@ -24,7 +26,7 @@ import java.util.AbstractList;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class FragmentList extends AbstractList
+class FragmentList extends AbstractList<BaseFragmentElement>
 {
     private FragmentImpl fragment;
 
@@ -37,12 +39,12 @@ class FragmentList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, BaseFragmentElement element)
     {
         // implement for modifiable AbstractList:
         // add and maintain page implementation reference
-        fragment.accessFragments().add(index, element);
-        if ((fragment.getBaseFragmentsElement() != null) && (element instanceof BaseFragmentElementImpl))
+        fragment.accessFragments().add(index, (BaseFragmentElementImpl)element);
+        if (fragment.getBaseFragmentsElement() != null)
         {
             ((BaseFragmentElementImpl)element).setBaseFragmentsElement(fragment.getBaseFragmentsElement());
         }
@@ -51,7 +53,7 @@ class FragmentList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public BaseFragmentElement get(int index)
     {
         // implement for modifiable AbstractList
         return fragment.accessFragments().get(index);
@@ -60,7 +62,7 @@ class FragmentList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public BaseFragmentElement remove(int index)
     {
         // implement for modifiable AbstractList
         return fragment.accessFragments().remove(index);
@@ -69,12 +71,12 @@ class FragmentList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public BaseFragmentElement set(int index, BaseFragmentElement element)
     {
         // implement for modifiable AbstractList:
         // set and maintain page implementation reference
-        Object o = fragment.accessFragments().set(index, element);
-        if ((fragment.getBaseFragmentsElement() != null) && (element instanceof BaseFragmentElementImpl))
+        BaseFragmentElementImpl o = fragment.accessFragments().set(index, (BaseFragmentElementImpl)element);
+        if (fragment.getBaseFragmentsElement() != null)
         {
             ((BaseFragmentElementImpl)element).setBaseFragmentsElement(fragment.getBaseFragmentsElement());
         }

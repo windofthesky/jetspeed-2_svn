@@ -178,7 +178,7 @@ public abstract class BaseElementImpl implements BaseElement
      * @param checkParentsOnly check parent folder scope only
      * @throws SecurityException
      */
-    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    public void checkConstraints(List<String> actions, List<String> userPrincipals, List<String> rolePrincipals, List<String> groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check node constraints if available
         if ((constraints != null) && !constraints.isEmpty())
@@ -371,8 +371,8 @@ public abstract class BaseElementImpl implements BaseElement
 
         // get action names lists; separate view and other
         // actions to mimic file system permissions logic
-        List viewActionList = SecurityConstraintImpl.parseCSVList(actions);
-        List otherActionsList = null;
+        List<String> viewActionList = SecurityConstraintImpl.parseCSVList(actions);
+        List<String> otherActionsList = null;
         if (viewActionList.size() == 1)
         {
             if (!viewActionList.contains(JetspeedActions.VIEW))
@@ -400,9 +400,9 @@ public abstract class BaseElementImpl implements BaseElement
         }
 
         // get user/group/role principal names
-        List userPrincipals = null;
-        List rolePrincipals = null;
-        List groupPrincipals = null;
+        List<String> userPrincipals = null;
+        List<String> rolePrincipals = null;
+        List<String> groupPrincipals = null;
         Iterator principals = subject.getPrincipals().iterator();
         while (principals.hasNext())
         {
@@ -411,7 +411,7 @@ public abstract class BaseElementImpl implements BaseElement
             {
                 if (userPrincipals == null)
                 {
-                    userPrincipals = new LinkedList();
+                    userPrincipals = new LinkedList<String>();
                 }
                 userPrincipals.add(principal.getName());
             }
@@ -419,7 +419,7 @@ public abstract class BaseElementImpl implements BaseElement
             {
                 if (rolePrincipals == null)
                 {
-                    rolePrincipals = new LinkedList();
+                    rolePrincipals = new LinkedList<String>();
                 }
                 rolePrincipals.add(principal.getName());
             }
@@ -427,7 +427,7 @@ public abstract class BaseElementImpl implements BaseElement
             {
                 if (groupPrincipals == null)
                 {
-                    groupPrincipals = new LinkedList();
+                    groupPrincipals = new LinkedList<String>();
                 }
                 groupPrincipals.add(principal.getName());
             }

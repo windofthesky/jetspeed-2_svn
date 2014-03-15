@@ -17,11 +17,6 @@
 
 package org.apache.jetspeed.page.psml;
 
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.file.FileCache;
 import org.apache.jetspeed.cache.file.FileCacheEntry;
@@ -82,6 +77,14 @@ import org.apache.jetspeed.page.document.psml.NodeSetImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /**
  * This service is responsible for loading and saving PSML pages serialized to
  * disk
@@ -94,7 +97,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
 {
     private final static Logger log = LoggerFactory.getLogger(CastorXmlPageManager.class);
 
-    private static Map modelClasses = new HashMap();
+    private static Map<String,Class<?>> modelClasses = new HashMap<String,Class<?>>();
     static
     {
         modelClasses.put("FragmentImpl", FragmentImpl.class);
@@ -1322,5 +1325,15 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         }
         return pages.length;
     }
-    
+
+    /**
+     * Create list suitable for list model members.
+     *
+     * @param <T> list element type
+     * @return list
+     */
+    public <T> List<T> createList()
+    {
+        return Collections.synchronizedList(new ArrayList<T>());
+    }
 }

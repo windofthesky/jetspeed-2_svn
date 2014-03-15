@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.om.page.psml;
 
+import org.apache.jetspeed.om.page.BaseFragmentElement;
+
 import java.util.AbstractList;
 import java.util.List;
 import java.util.ListIterator;
@@ -26,12 +28,12 @@ import java.util.ListIterator;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class FilteredFragmentList extends AbstractList
+class FilteredFragmentList extends AbstractList<BaseFragmentElement>
 {
     private FragmentImpl fragment;
-    private List filteredList;
+    private List<BaseFragmentElement> filteredList;
 
-    FilteredFragmentList(FragmentImpl fragment, List filteredList)
+    FilteredFragmentList(FragmentImpl fragment, List<BaseFragmentElement> filteredList)
     {
         super();
         this.fragment = fragment;
@@ -41,23 +43,23 @@ class FilteredFragmentList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, BaseFragmentElement element)
     {
         // implement for modifiable AbstractList
         filteredList.add(index, element);
         // add object to persistent list
-        fragment.accessFragments().add(element);
+        fragment.accessFragments().add((AbstractBaseFragmentElement)element);
         // maintain base fragments implementation reference
-        if ((fragment.getBaseFragmentsElement() != null) && (element instanceof FragmentImpl))
+        if (fragment.getBaseFragmentsElement() != null)
         {
-            ((FragmentImpl)element).setBaseFragmentsElement(fragment.getBaseFragmentsElement());
+            ((AbstractBaseFragmentElement)element).setBaseFragmentsElement(fragment.getBaseFragmentsElement());
         }
     }
 
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public BaseFragmentElement get(int index)
     {
         // implement for modifiable AbstractList
         return filteredList.get(index);
@@ -66,10 +68,10 @@ class FilteredFragmentList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public BaseFragmentElement remove(int index)
     {
         // implement for modifiable AbstractList
-        Object o = filteredList.remove(index);
+        BaseFragmentElement o = filteredList.remove(index);
         // remove removed object from persistent list
         if (o != null)
         {
@@ -89,27 +91,27 @@ class FilteredFragmentList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public BaseFragmentElement set(int index, BaseFragmentElement element)
     {
         // implement for modifiable AbstractList
-        Object o = filteredList.set(index, element);
+        BaseFragmentElement o = filteredList.set(index, element);
         // replace replaced object in persistent list
         if (o != null)
         {
-            ListIterator iter = fragment.accessFragments().listIterator();
+            ListIterator<AbstractBaseFragmentElement> iter = fragment.accessFragments().listIterator();
             while (iter.hasNext())
             {
                 if (iter.next() == o)
                 {
-                    iter.set(element);
+                    iter.set((AbstractBaseFragmentElement)element);
                     break;
                 }
             }
         }
         // maintain base fragments implementation reference
-        if ((fragment.getBaseFragmentsElement() != null) && (element instanceof FragmentImpl))
+        if (fragment.getBaseFragmentsElement() != null)
         {
-            ((FragmentImpl)element).setBaseFragmentsElement(fragment.getBaseFragmentsElement());
+            ((AbstractBaseFragmentElement)element).setBaseFragmentsElement(fragment.getBaseFragmentsElement());
         }
         return o;
     }

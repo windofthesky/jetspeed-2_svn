@@ -16,6 +16,8 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
+import org.apache.jetspeed.om.folder.MenuDefinitionElement;
+
 import java.util.AbstractList;
 
 /**
@@ -24,7 +26,7 @@ import java.util.AbstractList;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class PageMenuDefinitionElementList extends AbstractList
+class PageMenuDefinitionElementList extends AbstractList<MenuDefinitionElement>
 {
     private PageMenuDefinitionImpl menuDefinition;
 
@@ -42,20 +44,20 @@ class PageMenuDefinitionElementList extends AbstractList
      * @param menuElement element to add
      * @return list element to add
      */
-    private PageMenuDefinitionElement validateMenuElementForAdd(PageMenuDefinitionElement menuElement)
+    private PageMenuDefinitionElement validateMenuElementForAdd(MenuDefinitionElement menuElement)
     {
         // validate element instance
         if (menuElement == null)
         {
             throw new NullPointerException("Unable to add null to list.");
         }
-        return menuElement;
+        return (PageMenuDefinitionElement)menuElement;
     }
 
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, MenuDefinitionElement element)
     {
         // implement for modifiable AbstractList:
         // validate index
@@ -64,7 +66,7 @@ class PageMenuDefinitionElementList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // verify element
-        PageMenuDefinitionElement menuElement = validateMenuElementForAdd((PageMenuDefinitionElement)element);
+        PageMenuDefinitionElement menuElement = validateMenuElementForAdd(element);
         // add to underlying ordered list
         menuDefinition.accessElements().add(index, menuElement);
         // set element order in added element
@@ -97,7 +99,7 @@ class PageMenuDefinitionElementList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public MenuDefinitionElement get(int index)
     {
         // implement for modifiable AbstractList
         return menuDefinition.accessElements().get(index);
@@ -106,7 +108,7 @@ class PageMenuDefinitionElementList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public MenuDefinitionElement remove(int index)
     {
         // implement for modifiable AbstractList
         return menuDefinition.accessElements().remove(index);
@@ -115,11 +117,11 @@ class PageMenuDefinitionElementList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public MenuDefinitionElement set(int index, MenuDefinitionElement element)
     {
         // implement for modifiable AbstractList:
         // verify element
-        PageMenuDefinitionElement newMenuElement = validateMenuElementForAdd((PageMenuDefinitionElement)element);
+        PageMenuDefinitionElement newMenuElement = validateMenuElementForAdd(element);
         // set in underlying ordered list
         PageMenuDefinitionElement menuElement = (PageMenuDefinitionElement)menuDefinition.accessElements().set(index, newMenuElement);
         // set element order in new element

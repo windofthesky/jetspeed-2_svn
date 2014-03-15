@@ -17,9 +17,9 @@
 package org.apache.jetspeed.om.page.impl;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 /**
  * PageSecurityConstraintsRefList
@@ -27,11 +27,11 @@ import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id$
  */
-class PageSecurityConstraintsRefList extends AbstractList
+class PageSecurityConstraintsRefList extends AbstractList<String>
 {
     private PageSecurityImpl pageSecurity;
 
-    private List removedConstraintsRefs;
+    private List<PageSecurityGlobalSecurityConstraintsRef> removedConstraintsRefs;
 
     PageSecurityConstraintsRefList(PageSecurityImpl pageSecurity)
     {
@@ -70,7 +70,7 @@ class PageSecurityConstraintsRefList extends AbstractList
             int removedIndex = removedConstraintsRefs.indexOf(constraintsRef);
             if (removedIndex >= 0)
             {
-                constraintsRef = (PageSecurityGlobalSecurityConstraintsRef)removedConstraintsRefs.remove(removedIndex);
+                constraintsRef = removedConstraintsRefs.remove(removedIndex);
             }
         }
         return constraintsRef;
@@ -81,11 +81,11 @@ class PageSecurityConstraintsRefList extends AbstractList
      *
      * @return removed constraints refs tracking collection
      */
-    private List getRemovedConstraintsRefs()
+    private List<PageSecurityGlobalSecurityConstraintsRef> getRemovedConstraintsRefs()
     {
         if (removedConstraintsRefs == null)
         {
-            removedConstraintsRefs = DatabasePageManagerUtils.createList();
+            removedConstraintsRefs = Collections.synchronizedList(new ArrayList<PageSecurityGlobalSecurityConstraintsRef>());
         }
         return removedConstraintsRefs;
     }
@@ -93,7 +93,7 @@ class PageSecurityConstraintsRefList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#add(int,java.lang.Object)
      */
-    public void add(int index, Object element)
+    public void add(int index, String element)
     {
         // implement for modifiable AbstractList:
         // validate index
@@ -102,13 +102,13 @@ class PageSecurityConstraintsRefList extends AbstractList
             throw new IndexOutOfBoundsException("Unable to add to list at index: " + index);
         }
         // wrap and verify constraints ref name string
-        PageSecurityGlobalSecurityConstraintsRef constraintsRef = wrapNameStringForAdd((String)element);
+        PageSecurityGlobalSecurityConstraintsRef constraintsRef = wrapNameStringForAdd(element);
         // add to underlying ordered list
         pageSecurity.accessGlobalConstraintsRefs().add(index, constraintsRef);
         // set apply order in added element
         if (index > 0)
         {
-            constraintsRef.setApplyOrder(((PageSecurityGlobalSecurityConstraintsRef)pageSecurity.accessGlobalConstraintsRefs().get(index-1)).getApplyOrder() + 1);
+            constraintsRef.setApplyOrder(pageSecurity.accessGlobalConstraintsRefs().get(index-1).getApplyOrder() + 1);
         }
         else
         {
@@ -117,7 +117,7 @@ class PageSecurityConstraintsRefList extends AbstractList
         // maintain apply order in subsequent elements
         for (int i = index, limit = pageSecurity.accessGlobalConstraintsRefs().size() - 1; (i < limit); i++)
         {
-            PageSecurityGlobalSecurityConstraintsRef nextConstraintsRef = (PageSecurityGlobalSecurityConstraintsRef)pageSecurity.accessGlobalConstraintsRefs().get(i + 1);
+            PageSecurityGlobalSecurityConstraintsRef nextConstraintsRef = pageSecurity.accessGlobalConstraintsRefs().get(i + 1);
             if (nextConstraintsRef.getApplyOrder() <= constraintsRef.getApplyOrder())
             {
                 // adjust apply order for next element
@@ -135,38 +135,39 @@ class PageSecurityConstraintsRefList extends AbstractList
     /* (non-Javadoc)
      * @see java.util.List#get(int)
      */
-    public Object get(int index)
+    public String get(int index)
     {
         // implement for modifiable AbstractList:
         // unwrap constraints ref name string
-        return ((PageSecurityGlobalSecurityConstraintsRef)pageSecurity.accessGlobalConstraintsRefs().get(index)).getName();
+        return pageSecurity.accessGlobalConstraintsRefs().get(index).getName();
     }
 
     /* (non-Javadoc)
      * @see java.util.List#remove(int)
      */
-    public Object remove(int index)
+    public String remove(int index)
     {
         // implement for modifiable AbstractList:
         // save removed element 
-        PageSecurityGlobalSecurityConstraintsRef removed = (PageSecurityGlobalSecurityConstraintsRef)pageSecurity.accessGlobalConstraintsRefs().remove(index);
+        PageSecurityGlobalSecurityConstraintsRef removed = pageSecurity.accessGlobalConstraintsRefs().remove(index);
         if (removed != null)
         {
             getRemovedConstraintsRefs().add(removed);
+            return removed.getName();
         }
-        return removed;
+        return null;
     }
 
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public Object set(int index, Object element)
+    public String set(int index, String element)
     {
         // implement for modifiable AbstractList:
         // wrap and verify constraints ref name string
-        PageSecurityGlobalSecurityConstraintsRef newConstraintsRef = wrapNameStringForAdd((String)element);
+        PageSecurityGlobalSecurityConstraintsRef newConstraintsRef = wrapNameStringForAdd(element);
         // set in underlying ordered list
-        PageSecurityGlobalSecurityConstraintsRef constraintsRef = (PageSecurityGlobalSecurityConstraintsRef)pageSecurity.accessGlobalConstraintsRefs().set(index, newConstraintsRef);
+        PageSecurityGlobalSecurityConstraintsRef constraintsRef = pageSecurity.accessGlobalConstraintsRefs().set(index, newConstraintsRef);
         // set apply order in new element
         newConstraintsRef.setApplyOrder(constraintsRef.getApplyOrder());
         // save replaced element

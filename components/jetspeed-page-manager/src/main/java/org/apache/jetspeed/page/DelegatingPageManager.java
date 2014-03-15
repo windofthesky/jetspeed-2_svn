@@ -16,15 +16,13 @@
  */
 package org.apache.jetspeed.page;
 
-import java.util.Map;
-
 import org.apache.jetspeed.idgenerator.IdGenerator;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.folder.InvalidFolderException;
 import org.apache.jetspeed.om.page.BaseFragmentElement;
-import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.DynamicPage;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
@@ -37,6 +35,9 @@ import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * DelegatingPageManager
@@ -47,13 +48,17 @@ import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 
 public class DelegatingPageManager extends AbstractPageManager
 {
+    private PageManager delegate;
+
     public DelegatingPageManager(
+            PageManager delegate,
             IdGenerator generator,
             boolean isPermissionsSecurity, 
             boolean isConstraintsSecurity,
             Map modelClasses)
     {
         super(generator, isPermissionsSecurity, isConstraintsSecurity, modelClasses);
+        this.delegate = delegate;
     }
 
     /* (non-Javadoc)
@@ -401,5 +406,16 @@ public class DelegatingPageManager extends AbstractPageManager
     throws NodeException
     {
         throw new NodeException("not impl");
+    }
+
+    /**
+     * Create list suitable for list model members.
+     *
+     * @param <T> list element type
+     * @return list
+     */
+    public <T> List<T> createList()
+    {
+        return delegate.createList();
     }
 }

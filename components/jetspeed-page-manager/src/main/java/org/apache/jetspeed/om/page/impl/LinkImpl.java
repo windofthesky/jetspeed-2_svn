@@ -16,11 +16,12 @@
  */
 package org.apache.jetspeed.om.page.impl;
 
-import java.util.Collection;
-
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.page.document.impl.DocumentImpl;
+
+import java.util.Collection;
 
 /**
  * LinkImpl
@@ -42,7 +43,7 @@ public class LinkImpl extends DocumentImpl implements Link
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.impl.NodeImpl#newPageMetadata(java.util.Collection)
      */
-    public PageMetadataImpl newPageMetadata(Collection fields)
+    public PageMetadataImpl newPageMetadata(Collection<LocalizedField> fields)
     {
         PageMetadataImpl pageMetadata = new PageMetadataImpl(LinkMetadataLocalizedFieldImpl.class);
         pageMetadata.setFields(fields);

@@ -16,20 +16,21 @@
  */
 package org.apache.jetspeed.page.document.impl;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
-
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.impl.BaseElementImpl;
 import org.apache.jetspeed.om.page.impl.SecurityConstraintsImpl;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 import org.apache.ojb.broker.core.proxy.ProxyHelper;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringTokenizer;
 
 /**
  * NodeImpl
@@ -42,7 +43,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     private Integer parentId;
     private Node parent;
     private boolean hidden;
-    private Collection metadataFields;
+    private Collection<LocalizedField> metadataFields;
     private String path = Folder.PATH_SEPARATOR;
     private String subsite;
     private String user;
@@ -95,7 +96,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
      * @param fields mutable fields collection
      * @return page metadata
      */
-    public PageMetadataImpl newPageMetadata(Collection fields)
+    public PageMetadataImpl newPageMetadata(Collection<LocalizedField> fields)
     {
         // no metadata available by default
         return null;
@@ -235,7 +236,7 @@ public abstract class NodeImpl extends BaseElementImpl implements Node
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.impl.BaseElementImpl#checkConstraints(java.util.List, java.util.List, java.util.List, java.util.List, boolean, boolean)
      */
-    public void checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
+    public void checkConstraints(List<String> actions, List<String> userPrincipals, List<String> rolePrincipals, List<String> groupPrincipals, boolean checkNodeOnly, boolean checkParentsOnly) throws SecurityException
     {
         // check constraints in node hierarchy
         if (checkNodeOnly)

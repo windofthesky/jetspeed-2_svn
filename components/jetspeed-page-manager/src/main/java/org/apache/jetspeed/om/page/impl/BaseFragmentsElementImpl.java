@@ -21,6 +21,7 @@ import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentValidationListener;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.PageMetadataImpl;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.page.document.impl.DocumentImpl;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
@@ -37,7 +38,7 @@ import java.util.List;
 public abstract class BaseFragmentsElementImpl extends DocumentImpl implements BaseFragmentsElement
 {
     private String ojbConcreteClass = getClass().getName();
-    private Collection fragment;
+    private Collection<BaseFragmentElement> fragment;
 
     /**
      * Default constructor to specify security constraints
@@ -50,7 +51,7 @@ public abstract class BaseFragmentsElementImpl extends DocumentImpl implements B
     /* (non-Javadoc)
      * @see org.apache.jetspeed.page.document.impl.NodeImpl#newPageMetadata(java.util.Collection)
      */
-    public PageMetadataImpl newPageMetadata(Collection fields)
+    public PageMetadataImpl newPageMetadata(Collection<LocalizedField> fields)
     {
         PageMetadataImpl pageMetadata = new PageMetadataImpl(PageMetadataLocalizedFieldImpl.class);
         pageMetadata.setFields(fields);
@@ -179,7 +180,7 @@ public abstract class BaseFragmentsElementImpl extends DocumentImpl implements B
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.Page#getFragmentsByName(java.lang.String)
      */
-    public List getFragmentsByName(String name)
+    public List<BaseFragmentElement> getFragmentsByName(String name)
     {
         // get fragments by name and filter by access
         BaseFragmentElementImpl rootFragment = (BaseFragmentElementImpl)getRootFragment();

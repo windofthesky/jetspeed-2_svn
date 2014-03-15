@@ -323,11 +323,11 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         try
         {
             // copy all folder nodes to remove
-            List removeNodes = new ArrayList();
+            List<Node> removeNodes = new ArrayList<Node>();
             Iterator copyIter = folderImpl.getAllNodes().iterator();
             while (copyIter.hasNext())
             {
-                removeNodes.add(copyIter.next());
+                removeNodes.add((Node)copyIter.next());
             }
             
             // remove folder nodes
