@@ -49,13 +49,13 @@ public abstract class BaseFragmentPropertyImpl implements FragmentProperty
      * @param globalValue returned global value
      * @return value found flag
      */
-    public static boolean getFragmentProperty(String propName, List properties, String [] userValue, String [] groupValue, String [] roleValue, String [] globalValue)
+    public static boolean getFragmentProperty(String propName, List<FragmentProperty> properties, String [] userValue, String [] groupValue, String [] roleValue, String [] globalValue)
     {
         boolean valueFound = false;
         
         // iterate through properties list and merge with current
         // principals to determine most specific property value
-        Set principals = null;
+        Set<Principal> principals = null;
         Principal userPrincipal = null;
         boolean skipPropertyScopes = false;
         Iterator propertiesIter = properties.iterator();
@@ -159,7 +159,7 @@ public abstract class BaseFragmentPropertyImpl implements FragmentProperty
         
         // iterate through properties list and merge with current
         // principals to determine most specific property value
-        Set principals = null;
+        Set<Principal> principals = null;
         Principal userPrincipal = null;
         boolean skipPropertyScopes = false;
         Iterator propertiesIter = properties.iterator();
@@ -238,7 +238,7 @@ public abstract class BaseFragmentPropertyImpl implements FragmentProperty
      * @param properties fragment properties list
      * @return fragment property
      */
-    public static FragmentProperty findFragmentProperty(String propName, String propScope, String propScopeValue, List properties)
+    public static FragmentProperty findFragmentProperty(String propName, String propScope, String propScopeValue, List<FragmentProperty> properties)
     {
         // iterate through properties to find specified scoped property
         FragmentProperty fragmentProperty = null;

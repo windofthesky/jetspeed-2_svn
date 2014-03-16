@@ -304,7 +304,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * @param allowDefault
      * @return match result
      */
-    public boolean principalsMatch(List userPrincipals, List rolePrincipals, List groupPrincipals, boolean allowDefault)
+    public boolean principalsMatch(List<String> userPrincipals, List<String> rolePrincipals, List<String> groupPrincipals, boolean allowDefault)
     {
         // test match using users, roles, and groups list members
         // since these are the master representation in this impl
@@ -411,7 +411,7 @@ public class SecurityConstraintImpl implements SecurityConstraint
      * @param collection1
      * @return contains any result.
      */
-    public static boolean containsAny(Collection collection0, Collection collection1)
+    public static boolean containsAny(Collection<String> collection0, Collection<String> collection1)
     {
         if ((collection0 != null) && (collection1 != null))
         {

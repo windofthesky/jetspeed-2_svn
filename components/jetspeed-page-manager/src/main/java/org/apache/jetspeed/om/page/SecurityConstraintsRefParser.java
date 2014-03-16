@@ -52,7 +52,7 @@ public class SecurityConstraintsRefParser
     public static Object parse(String constraintsRef, PageSecurity pageSecurity)
     {
         // parse infix constraints ref expression into postfix tokens
-        List postfixTokens = parseConstraintsRef(constraintsRef);
+        List<String> postfixTokens = parseConstraintsRef(constraintsRef);
         if (postfixTokens.isEmpty())
         {
             return null;
@@ -60,7 +60,7 @@ public class SecurityConstraintsRefParser
 
         // single reference expression check
         if (postfixTokens.size() == 1) {
-            String postfixToken = (String)postfixTokens.get(0);
+            String postfixToken = postfixTokens.get(0);
             if (!postfixToken.equals(AND_OPERATION) && !postfixToken.equals(OR_OPERATION) && !postfixToken.equals(NOT_OPERATION))
             {
                 // return definition security constraints
@@ -128,7 +128,7 @@ public class SecurityConstraintsRefParser
      * @return list of postfix expression token strings.
      * @throws RuntimeException if expression parsing error occurs
      */
-    static List parseConstraintsRef(String constraintsRef)
+    static List<String> parseConstraintsRef(String constraintsRef)
     {
         List<String> postfixTokens = new ArrayList<String>();
         Stack<String> infixToPostfixStack = new Stack<String>();

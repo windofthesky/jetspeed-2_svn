@@ -122,7 +122,7 @@ public class SiteViewUtils
      * @param name menu definition name
      * @return contains name result
      */
-    public static boolean menuDefinitionLocatorsContains(List menuDefinitionLocators, String name)
+    public static boolean menuDefinitionLocatorsContains(List<SiteViewMenuDefinitionLocator> menuDefinitionLocators, String name)
     {
         // test for matching name in menu definition locators
         return (findMenuDefinitionLocator(menuDefinitionLocators, name) != null);
@@ -135,7 +135,7 @@ public class SiteViewUtils
      * @param name menu definition name
      * @return menu definition locator
      */
-    public static SiteViewMenuDefinitionLocator findMenuDefinitionLocator(List menuDefinitionLocators, String name)
+    public static SiteViewMenuDefinitionLocator findMenuDefinitionLocator(List<SiteViewMenuDefinitionLocator> menuDefinitionLocators, String name)
     {
         // find matching menu definition locator by name
         if ((menuDefinitionLocators != null) && (name != null))

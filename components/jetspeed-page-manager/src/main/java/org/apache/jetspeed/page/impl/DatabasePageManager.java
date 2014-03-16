@@ -2748,7 +2748,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             {
                 if (GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
                 {
-                    Set principals = subject.getPrincipals();
+                    Set<Principal> principals = subject.getPrincipals();
                     Iterator principalsIter = principals.iterator();
                     while (principalsIter.hasNext())
                     {

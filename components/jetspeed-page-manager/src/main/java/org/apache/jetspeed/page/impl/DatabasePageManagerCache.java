@@ -500,7 +500,8 @@ public class DatabasePageManagerCache implements ObjectCache
     private static void clearPrincipalPropertiesCache(int fragmentId)
     {
         // scan principal fragment property cache
-        List principalKeys = principalPropertiesCache.getKeys();
+        @SuppressWarnings("unchecked")
+        List<String> principalKeys = principalPropertiesCache.getKeys();
         Iterator principalKeysIter = principalKeys.iterator();
         while (principalKeysIter.hasNext())
         {

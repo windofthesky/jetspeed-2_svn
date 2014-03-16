@@ -732,7 +732,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      * 
      * @return properties collection
      */
-    public List getPropertyImpls()
+    public List<FragmentProperty> getPropertyImpls()
     {
         return propertyImpls;
     }
@@ -742,7 +742,7 @@ public abstract class AbstractBaseFragmentElement extends AbstractBaseElement im
      * 
      * @param propertiesImpls properties collection
      */
-    public void setPropertyImpls(List propertiesImpls)
+    public void setPropertyImpls(List<FragmentProperty> propertiesImpls)
     {
         this.propertyImpls = propertyImpls;  
     }

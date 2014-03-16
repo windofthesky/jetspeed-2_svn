@@ -206,7 +206,7 @@ public abstract class NodeProxy extends SearchPathsSiteViewProxy
         // aggregated menu definition locators
         if (! menuDefinitionsAggregated)
         {
-            List locators = getMenuDefinitionLocators();
+            List<SiteViewMenuDefinitionLocator> locators = getMenuDefinitionLocators();
             if (locators != null)
             {
                 menuDefinitions = Collections.synchronizedList(new ArrayList<MenuDefinition>(locators.size()));
@@ -278,7 +278,7 @@ public abstract class NodeProxy extends SearchPathsSiteViewProxy
     public SiteViewMenuDefinitionLocator getMenuDefinitionLocator(String name)
     {
         // get menu definition locators and find by name
-        List locators = getMenuDefinitionLocators();
+        List<SiteViewMenuDefinitionLocator> locators = getMenuDefinitionLocators();
         if (locators != null)
         {
             return SiteViewUtils.findMenuDefinitionLocator(locators, name);

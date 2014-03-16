@@ -29,6 +29,7 @@ import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
 import org.apache.jetspeed.page.document.proxy.NodeProxy;
@@ -245,15 +246,15 @@ public class TestPortalSite extends AbstractSpringTestCase
         catch (NodeNotFoundException nnfe)
         {
         }
-        List rootPageViewsByPath = baseView.getNodeViews("/page?.psml", null, null, true, false, false);
+        List<Node> rootPageViewsByPath = baseView.getNodeViews("/page?.psml", null, null, true, false, false);
         assertNotNull(rootPageViewsByPath);
         assertEquals(3,rootPageViewsByPath.size());
         assertTrue(rootPageViewsByPath.contains(rootPage0View));
-        List rootFolderViewsByPath = baseView.getNodeViews("/*/", null, null, true, false, false);
+        List<Node> rootFolderViewsByPath = baseView.getNodeViews("/*/", null, null, true, false, false);
         assertNotNull(rootFolderViewsByPath);
         assertEquals(6,rootFolderViewsByPath.size());
         assertTrue(rootFolderViewsByPath.contains(rootFolder0View));
-        List folderPageViewsByPath = baseView.getNodeViews("*/p*[0-9].psml", rootFolderView, null, true, false, false);
+        List<Node> folderPageViewsByPath = baseView.getNodeViews("*/p*[0-9].psml", rootFolderView, null, true, false, false);
         assertNotNull(folderPageViewsByPath);
         assertEquals(2,folderPageViewsByPath.size());
         assertTrue(folderPageViewsByPath.contains(folder0Page0View));
@@ -275,7 +276,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals(rootFolderView, rootPage0View.getParent());
         assertEquals("page0.psml", rootPage0View.getName());
         assertEquals("/page0.psml", extractFileSystemPathFromId(rootPage0View.getId()));
-        List rootPage0ViewMenus = rootPage0View.getMenuDefinitions();
+        List<MenuDefinition> rootPage0ViewMenus = rootPage0View.getMenuDefinitions();
         assertNotNull(rootPage0ViewMenus);
         assertEquals(7 + aggregateView.getStandardMenuNames().size(), rootPage0ViewMenus.size());
         Iterator menusIter = rootPage0ViewMenus.iterator();
@@ -311,7 +312,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals(rootFolderView, rootPage2View.getParent());
         assertEquals("page2.psml", rootPage2View.getName());
         assertEquals("/_user/user/page2.psml", extractFileSystemPathFromId(rootPage2View.getId()));
-        List rootPage2ViewMenus = rootPage2View.getMenuDefinitions();
+        List<MenuDefinition> rootPage2ViewMenus = rootPage2View.getMenuDefinitions();
         assertNotNull(rootPage2ViewMenus);
         assertEquals(7 + aggregateView.getStandardMenuNames().size(), rootPage2ViewMenus.size());
         menusIter = rootPage2ViewMenus.iterator();
@@ -946,7 +947,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         locators.put("group", locator);
         PortalSiteRequestContext requestContext = sessionContext.newRequestContext(locators, "user");
         assertNotNull(requestContext);
-        Set customMenuNames = requestContext.getCustomMenuNames();
+        Set<String> customMenuNames = requestContext.getCustomMenuNames();
         assertNotNull(customMenuNames);
         assertEquals(7, customMenuNames.size());
         assertTrue(customMenuNames.contains("top"));
@@ -966,7 +967,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("top", topMenu.getName());
         assertEquals("/", topMenu.getUrl());
         assertFalse(topMenu.isEmpty());
-        List topMenuElements = topMenu.getElements();
+        List<MenuElement> topMenuElements = topMenu.getElements();
         assertNotNull(topMenuElements);
         assertEquals(8, topMenuElements.size());
         Iterator menuElementsIter = topMenuElements.iterator();
@@ -983,7 +984,7 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertTrue(element.getManagedNode() instanceof Folder);
                 assertEquals("/folder0", element.getManagedNode().getPath());
                 assertFalse(((Menu)element).isEmpty());
-                List elements = ((Menu)element).getElements();
+                List<MenuElement> elements = ((Menu)element).getElements();
                 assertNotNull(elements);
                 assertEquals(1, elements.size());
                 assertTrue(elements.get(0) instanceof MenuOption);
@@ -1000,7 +1001,7 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertTrue(element.getManagedNode() instanceof Folder);
                 assertEquals("/_user/user/folder1", element.getManagedNode().getPath());
                 assertFalse(((Menu)element).isEmpty());
-                List elements = ((Menu)element).getElements();
+                List<MenuElement> elements = ((Menu)element).getElements();
                 assertNotNull(elements);
                 assertEquals(3, elements.size());
                 assertTrue(elements.get(0) instanceof MenuOption);
@@ -1020,7 +1021,7 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertTrue(element.getManagedNode() instanceof Folder);
                 assertEquals("/folder4", element.getManagedNode().getPath());
                 assertFalse(((Menu)element).isEmpty());
-                List elements = ((Menu)element).getElements();
+                List<MenuElement> elements = ((Menu)element).getElements();
                 assertNotNull(elements);
                 assertEquals(1, elements.size());
                 assertTrue(elements.get(0) instanceof MenuOption);
@@ -1095,7 +1096,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("bread-crumbs", breadCrumbsMenu.getName());
         assertEquals("/", breadCrumbsMenu.getUrl());
         assertFalse(breadCrumbsMenu.isEmpty());
-        List breadCrumbsElements = breadCrumbsMenu.getElements();
+        List<MenuElement> breadCrumbsElements = breadCrumbsMenu.getElements();
         assertNotNull(breadCrumbsElements);
         assertEquals(1, breadCrumbsElements.size());
         assertTrue(breadCrumbsElements.get(0) instanceof MenuOption);
@@ -1106,7 +1107,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(templateTestMenu);
         assertEquals("template-test", templateTestMenu.getName());
         assertFalse(templateTestMenu.isEmpty());
-        List templateTestElements = templateTestMenu.getElements();
+        List<MenuElement> templateTestElements = templateTestMenu.getElements();
         assertNotNull(templateTestElements);
         assertEquals(1, templateTestElements.size());
         assertTrue(templateTestElements.get(0) instanceof MenuOption);
@@ -1114,7 +1115,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         Menu currentPageTestMenu = requestContext.getMenu("current-page-test");
         assertEquals("current-page-test", currentPageTestMenu.getName());
         assertFalse(currentPageTestMenu.isEmpty());
-        List currentPageTestElements = currentPageTestMenu.getElements();
+        List<MenuElement> currentPageTestElements = currentPageTestMenu.getElements();
         assertNotNull(currentPageTestElements);
         assertEquals(1, currentPageTestElements.size());
         assertTrue(currentPageTestElements.get(0) instanceof MenuOption);
@@ -1124,12 +1125,12 @@ public class TestPortalSite extends AbstractSpringTestCase
         Menu currentPathTestMenu = requestContext.getMenu("current-path-test");
         assertEquals("current-path-test", currentPathTestMenu.getName());
         assertTrue(currentPathTestMenu.isEmpty());
-        List currentPathTestElements = currentPathTestMenu.getElements();
+        List<MenuElement> currentPathTestElements = currentPathTestMenu.getElements();
         assertNull(currentPathTestElements);
         Menu siteNavigationsMenu = requestContext.getMenu("site-navigations");
         assertEquals("site-navigations", siteNavigationsMenu.getName());
         assertFalse(siteNavigationsMenu.isEmpty());
-        List siteNavigationsElements = siteNavigationsMenu.getElements();
+        List<MenuElement> siteNavigationsElements = siteNavigationsMenu.getElements();
         assertNotNull(siteNavigationsElements);
         assertEquals(6, siteNavigationsElements.size());
         menuElementsIter = siteNavigationsElements.iterator();
@@ -1146,7 +1147,7 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertTrue(element.getManagedNode() instanceof Folder);
                 assertEquals("/folder0", element.getManagedNode().getPath());
                 assertFalse(((Menu)element).isEmpty());
-                List elements = ((Menu)element).getElements();
+                List<MenuElement> elements = ((Menu)element).getElements();
                 assertNotNull(elements);
                 assertEquals(1, elements.size());
                 assertTrue(elements.get(0) instanceof MenuOption);
@@ -1162,7 +1163,7 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertTrue(element.getManagedNode() instanceof Folder);
                 assertEquals("/_user/user/folder1", element.getManagedNode().getPath());
                 assertFalse(((Menu)element).isEmpty());
-                List elements = ((Menu)element).getElements();
+                List<MenuElement> elements = ((Menu)element).getElements();
                 assertNotNull(elements);
                 assertEquals(3, elements.size());
                 assertTrue(elements.get(0) instanceof Menu);
@@ -1183,7 +1184,7 @@ public class TestPortalSite extends AbstractSpringTestCase
                 assertEquals("/folder4", element.getManagedNode().getPath());
                 Menu menuElement = (Menu)element;
                 assertFalse(menuElement.isEmpty());
-                List elements = menuElement.getElements();
+                List<MenuElement> elements = menuElement.getElements();
                 assertNotNull(elements);
                 assertEquals(1, elements.size());
                 assertTrue(elements.get(0) instanceof Menu);
@@ -1237,7 +1238,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         Menu rootedMenu = requestContext.getMenu("rooted-navigations");
         assertNotNull(rootedMenu);
         assertFalse(rootedMenu.isEmpty());
-        List rootedElements = rootedMenu.getElements();
+        List<MenuElement> rootedElements = rootedMenu.getElements();
         assertNotNull(rootedElements);
         assertEquals(8, rootedElements.size());
         menuElementsIter = rootedElements.iterator();
@@ -1365,7 +1366,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         navigationsMenu = requestContext.getMenu("navigations");
         assertNotNull(navigationsMenu);
         assertFalse(navigationsMenu.isEmpty());
-        List navigationsElements = navigationsMenu.getElements();
+        List<MenuElement> navigationsElements = navigationsMenu.getElements();
         assertNotNull(navigationsElements);
         assertEquals(7, navigationsElements.size());
         menuElementsIter = navigationsElements.iterator();
@@ -1438,7 +1439,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         Menu pagesMenu = requestContext.getMenu("pages");
         assertNotNull(pagesMenu);
         assertFalse(pagesMenu.isEmpty());
-        List pagesElements = pagesMenu.getElements();
+        List<MenuElement> pagesElements = pagesMenu.getElements();
         assertNotNull(pagesElements);
         assertEquals(3, pagesElements.size());
         menuElementsIter = pagesElements.iterator();
@@ -1491,7 +1492,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(templateTestMenu2);
         assertEquals("template-test", templateTestMenu2.getName());
         assertFalse(templateTestMenu2.isEmpty());
-        List templateTestElements2 = templateTestMenu2.getElements();
+        List<MenuElement> templateTestElements2 = templateTestMenu2.getElements();
         assertNotNull(templateTestElements2);
         assertEquals(1, templateTestElements2.size());
         assertTrue(templateTestElements2.get(0) instanceof MenuOption);
@@ -1519,7 +1520,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         Menu customMenu = requestContext.getMenu("custom");
         assertNotNull(customMenu);
         assertFalse(customMenu.isEmpty());
-        List customElements = customMenu.getElements();
+        List<MenuElement> customElements = customMenu.getElements();
         assertNotNull(customElements);
         assertEquals(12, customElements.size());
         assertEquals("custom", customMenu.getName());
@@ -1552,7 +1553,7 @@ public class TestPortalSite extends AbstractSpringTestCase
             if (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("user root"))
             {
                 assertFalse(((Menu)element).isEmpty());
-                List nestedElements = ((Menu)element).getElements();
+                List<MenuElement> nestedElements = ((Menu)element).getElements();
                 assertEquals(6, nestedElements.size());
                 Iterator nestedElementsIter = nestedElements.iterator();
                 if (nestedElementsIter.hasNext())
@@ -2053,7 +2054,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         Menu topMenu = requestContext.getMenu("top");
         assertNotNull(topMenu);
         assertFalse(topMenu.isEmpty());
-        List topMenuElements = topMenu.getElements();
+        List<MenuElement> topMenuElements = topMenu.getElements();
         assertNotNull(topMenuElements);
         Iterator menuElementsIter = topMenuElements.iterator();
         boolean hiddenElement = false;
@@ -2069,7 +2070,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         Menu pagesMenu = requestContext.getMenu("pages");
         assertNotNull(pagesMenu);
         assertFalse(pagesMenu.isEmpty());
-        List pagesElements = pagesMenu.getElements();
+        List<MenuElement> pagesElements = pagesMenu.getElements();
         assertNotNull(pagesElements);
         menuElementsIter = pagesElements.iterator();
         hiddenElement = false;

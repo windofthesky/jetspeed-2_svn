@@ -42,7 +42,8 @@ public class ACLFieldConversion implements FieldConversion
     {
         if (arg0 instanceof List)
         {
-            List csvList = (List) arg0;
+            @SuppressWarnings("unchecked")
+            List<String> csvList = (List)arg0;
             if (csvList.size() > 1)
             {
                 StringBuffer buffer = null;

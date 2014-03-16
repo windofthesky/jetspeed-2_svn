@@ -300,7 +300,7 @@ public class SearchPathsSiteView extends AbstractSiteView
      * @param searchPaths string of comma separated search paths
      * @return search path list
      */
-    private static List makeSearchPathList(String searchPaths)
+    private static List<String> makeSearchPathList(String searchPaths)
     {
         return ((searchPaths != null) ? makeSearchPathList(searchPaths.split(",")) : null);
     }

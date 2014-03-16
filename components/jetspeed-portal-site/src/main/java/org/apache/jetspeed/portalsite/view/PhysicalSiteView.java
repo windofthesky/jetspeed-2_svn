@@ -180,7 +180,7 @@ public class PhysicalSiteView extends AbstractSiteView
     public SiteViewMenuDefinitionLocator getMenuDefinitionLocator(Node node, String name)
     {
         // get menu definition locators and find by name
-        List locators = getMenuDefinitionLocators(node);
+        List<SiteViewMenuDefinitionLocator> locators = getMenuDefinitionLocators(node);
         if (locators != null)
         {
             return SiteViewUtils.findMenuDefinitionLocator(locators, name);

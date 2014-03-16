@@ -879,7 +879,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
                 {
                     try
                     {
-                        List properties = checkUserFragment.getProperties();
+                        List<FragmentProperty> properties = checkUserFragment.getProperties();
                         assertNotNull(properties);
                         assertEquals((FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED ? 12 : 7), properties.size());
                         assertEquals("50%,50%", checkUserFragment.getProperty(Fragment.SIZES_PROPERTY_NAME));

@@ -42,6 +42,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageFragment;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.om.portlet.GenericMetadata;
+import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
@@ -209,8 +210,8 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(testpage.getVersion().equals("2.77"));
 
         GenericMetadata md = testpage.getMetadata();
-        Collection descriptions = md.getFields("description");
-        Collection subjects = md.getFields("subject");
+        Collection<LocalizedField> descriptions = md.getFields("description");
+        Collection<LocalizedField> subjects = md.getFields("subject");
         assertEquals(2, descriptions.size());
         assertEquals(1, subjects.size());
 
@@ -223,7 +224,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(root.getType().equals(Fragment.LAYOUT));
         assertNull(root.getDecorator());
 
-        List children = root.getFragments();
+        List<BaseFragmentElement> children = root.getFragments();
         assertNotNull(children);
         assertTrue(children.size() == 4);
 
@@ -232,7 +233,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(f.getName().equals("HelloPortlet"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
 
-        List properties = f.getProperties();
+        List<FragmentProperty> properties = f.getProperties();
         assertNotNull(properties);
         assertEquals(11, properties.size());
         assertEquals("0", f.getProperty(Fragment.ROW_PROPERTY_NAME));
@@ -261,7 +262,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
                 try
                 {
                     assertTrue(userFragment.getId().equals("pe001"));
-                    List properties = userFragment.getProperties();
+                    List<FragmentProperty> properties = userFragment.getProperties();
                     assertNotNull(properties);
                     assertEquals((FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED ? 17 : 12), properties.size());
                     assertEquals("0", userFragment.getProperty(Fragment.ROW_PROPERTY_NAME));
@@ -310,20 +311,20 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
             throw userException;
         }
 
-        List preferences = f.getPreferences();
+        List<FragmentPreference> preferences = f.getPreferences();
         assertNotNull(preferences);
         assertTrue(preferences.size() == 2);
-        assertEquals("pref0", ((FragmentPreference)preferences.get(0)).getName());
-        assertTrue(((FragmentPreference)preferences.get(0)).isReadOnly());
-        assertNotNull(((FragmentPreference)preferences.get(0)).getValueList());
-        assertEquals(2, ((FragmentPreference)preferences.get(0)).getValueList().size());
-        assertEquals("pref0-value0", (String)((FragmentPreference)preferences.get(0)).getValueList().get(0));
-        assertEquals("pref0-value1", (String)((FragmentPreference)preferences.get(0)).getValueList().get(1));
-        assertEquals("pref1", ((FragmentPreference)preferences.get(1)).getName());
-        assertFalse(((FragmentPreference)preferences.get(1)).isReadOnly());
-        assertNotNull(((FragmentPreference)preferences.get(1)).getValueList());
-        assertEquals(1, ((FragmentPreference)preferences.get(1)).getValueList().size());
-        assertEquals("pref1-value", (String)((FragmentPreference)preferences.get(1)).getValueList().get(0));
+        assertEquals("pref0", preferences.get(0).getName());
+        assertTrue(preferences.get(0).isReadOnly());
+        assertNotNull(preferences.get(0).getValueList());
+        assertEquals(2, preferences.get(0).getValueList().size());
+        assertEquals("pref0-value0", preferences.get(0).getValueList().get(0));
+        assertEquals("pref0-value1", preferences.get(0).getValueList().get(1));
+        assertEquals("pref1", preferences.get(1).getName());
+        assertFalse(preferences.get(1).isReadOnly());
+        assertNotNull(preferences.get(1).getValueList());
+        assertEquals(1, preferences.get(1).getValueList().size());
+        assertEquals("pref1-value", preferences.get(1).getValueList().get(0));
 
         f = (Fragment) children.get(1);
         assertTrue(f.getId().equals("pe002"));
@@ -353,13 +354,13 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(fr.getId().equals("f003"));
         assertTrue(fr.getRefId().equals("test001"));
 
-        List fragments = testpage.getFragmentsByName("JMXPortlet");
+        List<BaseFragmentElement> fragments = testpage.getFragmentsByName("JMXPortlet");
         assertNotNull(fragments);
         assertEquals(1, fragments.size());
         assertTrue(((Fragment)fragments.get(0)).getId().equals("pe002"));
         assertTrue(((Fragment)fragments.get(0)).getName().equals("JMXPortlet"));
         assertTrue(((Fragment)fragments.get(0)).getType().equals(Fragment.PORTLET));
-        List fragmentsByInterface = testpage.getFragmentsByInterface(null);
+        List<BaseFragmentElement> fragmentsByInterface = testpage.getFragmentsByInterface(null);
         assertNotNull(fragmentsByInterface);
         assertEquals(7, fragmentsByInterface.size());
         fragmentsByInterface = testpage.getFragmentsByInterface(FragmentReference.class);
@@ -1105,11 +1106,11 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         // test folder resident menu definitions
         Folder folder = pageManager.getFolder("/");
         assertNotNull(folder);
-        List menus = folder.getMenuDefinitions();
+        List<MenuDefinition> menus = folder.getMenuDefinitions();
         assertNotNull(menus);
         assertEquals(5, menus.size());
 
-        MenuDefinition simpleMenu = (MenuDefinition)menus.get(0);
+        MenuDefinition simpleMenu = menus.get(0);
         assertNotNull(simpleMenu);
         assertEquals("simple", simpleMenu.getName());
         assertNotNull(simpleMenu.getMenuElements());
@@ -1117,7 +1118,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(simpleMenu.getMenuElements().get(0) instanceof MenuOptionsDefinition);
         assertEquals("/test001.psml,/folder1/folder2", ((MenuOptionsDefinition)simpleMenu.getMenuElements().get(0)).getOptions());
 
-        MenuDefinition top2LevelsMenu = (MenuDefinition)menus.get(1);
+        MenuDefinition top2LevelsMenu = menus.get(1);
         assertNotNull(top2LevelsMenu);
         assertEquals("top-2-levels", top2LevelsMenu.getName());
         assertNull(top2LevelsMenu.getMenuElements());
@@ -1125,19 +1126,19 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals(2, top2LevelsMenu.getDepth());
         assertEquals("dhtml-pull-down", top2LevelsMenu.getSkin());
 
-        MenuDefinition topRolePagesMenu = (MenuDefinition)menus.get(2);
+        MenuDefinition topRolePagesMenu = menus.get(2);
         assertNotNull(topRolePagesMenu);
         assertEquals("top-role-pages", topRolePagesMenu.getName());
         assertTrue(topRolePagesMenu.isRegexp());
         assertEquals("roles", topRolePagesMenu.getProfile());
         assertEquals("*.psml,*.link", topRolePagesMenu.getOrder());
 
-        MenuDefinition breadCrumbsMenu = (MenuDefinition)menus.get(3);
+        MenuDefinition breadCrumbsMenu = menus.get(3);
         assertNotNull(breadCrumbsMenu);
         assertEquals("bread-crumbs", breadCrumbsMenu.getName());
         assertTrue(breadCrumbsMenu.isPaths());
 
-        MenuDefinition topCustomMenu = (MenuDefinition)menus.get(4);
+        MenuDefinition topCustomMenu = menus.get(4);
         assertNotNull(topCustomMenu);
         assertEquals("top-custom", topCustomMenu.getName());
         assertEquals("Top Menu", topCustomMenu.getTitle());
@@ -1187,7 +1188,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertNotNull(menus);
         assertEquals(1, menus.size());
 
-        simpleMenu = (MenuDefinition)menus.get(0);
+        simpleMenu = menus.get(0);
         assertNotNull(simpleMenu);
         assertEquals("simple", simpleMenu.getName());
         assertNotNull(simpleMenu.getMenuElements());
@@ -1236,14 +1237,14 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         page = pageManager.getPage("/test002.psml");
         assertNotNull(page.getMenuDefinitions());
         assertEquals(1, page.getMenuDefinitions().size());
-        assertNotNull(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements());
-        assertEquals(6,((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().size());
-        assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(0) instanceof MenuSeparatorDefinition);
-        assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(1) instanceof MenuOptionsDefinition);
-        assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(2) instanceof MenuOptionsDefinition);
-        assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(3) instanceof MenuDefinition);
-        assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(4) instanceof MenuExcludeDefinition);
-        assertTrue(((MenuDefinition)page.getMenuDefinitions().get(0)).getMenuElements().get(5) instanceof MenuIncludeDefinition);
+        assertNotNull(page.getMenuDefinitions().get(0).getMenuElements());
+        assertEquals(6, page.getMenuDefinitions().get(0).getMenuElements().size());
+        assertTrue(page.getMenuDefinitions().get(0).getMenuElements().get(0) instanceof MenuSeparatorDefinition);
+        assertTrue(page.getMenuDefinitions().get(0).getMenuElements().get(1) instanceof MenuOptionsDefinition);
+        assertTrue(page.getMenuDefinitions().get(0).getMenuElements().get(2) instanceof MenuOptionsDefinition);
+        assertTrue(page.getMenuDefinitions().get(0).getMenuElements().get(3) instanceof MenuDefinition);
+        assertTrue(page.getMenuDefinitions().get(0).getMenuElements().get(4) instanceof MenuExcludeDefinition);
+        assertTrue(page.getMenuDefinitions().get(0).getMenuElements().get(5) instanceof MenuIncludeDefinition);
 
         // test writing folder menu definitions
         folder = pageManager.getFolder("/folder2");
@@ -1268,9 +1269,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         folder = pageManager.getFolder("/folder2");
         assertNotNull(folder.getMenuDefinitions());
         assertEquals(1, folder.getMenuDefinitions().size());
-        assertEquals("updated-menu", ((MenuDefinition)folder.getMenuDefinitions().get(0)).getName());
-        assertEquals("bread-crumbs", ((MenuDefinition)folder.getMenuDefinitions().get(0)).getSkin());
-        assertEquals("./", ((MenuDefinition)folder.getMenuDefinitions().get(0)).getOptions());
+        assertEquals("updated-menu", folder.getMenuDefinitions().get(0).getName());
+        assertEquals("bread-crumbs", folder.getMenuDefinitions().get(0).getSkin());
+        assertEquals("./", folder.getMenuDefinitions().get(0).getOptions());
     }
 
     public void testRemovePage() throws Exception
@@ -1460,8 +1461,8 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(cloneRoot.getType().equals(Fragment.LAYOUT));
         assertNull(cloneRoot.getDecorator());
 
-        List children = root.getFragments();
-        List cloneChildren = cloneRoot.getFragments();
+        List<BaseFragmentElement> children = root.getFragments();
+        List<BaseFragmentElement> cloneChildren = cloneRoot.getFragments();
         assertNotNull(cloneChildren);
         assertTrue(cloneChildren.size() == 3);
 
@@ -1472,8 +1473,8 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(cf.getName().equals("HelloPortlet"));
         assertTrue(cf.getType().equals(Fragment.PORTLET));
 
-        List properties = f.getProperties();
-        List cloneProperties = cf.getProperties();
+        List<FragmentProperty> properties = f.getProperties();
+        List<FragmentProperty> cloneProperties = cf.getProperties();
 
         assertNotNull(cloneProperties);
         assertEquals(3, cloneProperties.size());
@@ -1495,7 +1496,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals("0", cf.getProperty(Fragment.ROW_PROPERTY_NAME));
         assertEquals(1, cf.getIntProperty(Fragment.COLUMN_PROPERTY_NAME));
 
-        BaseFragmentElement bf = (BaseFragmentElement)cloneChildren.get(2);
+        BaseFragmentElement bf = cloneChildren.get(2);
         assertTrue(bf instanceof Fragment);
         cf = (Fragment)bf;
         String id = cf.getId();
@@ -1516,10 +1517,10 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         SecurityConstraints constraints = clone.getSecurityConstraints();
         assertNotNull(constraints); 
         assertTrue(constraints.getOwner().equals("new-user"));
-        List secs = constraints.getSecurityConstraints();
+        List<SecurityConstraint> secs = constraints.getSecurityConstraints();
         assertNotNull(secs);
         assertTrue(secs.size() == 1);
-        SecurityConstraint constraint = (SecurityConstraint)secs.get(0);
+        SecurityConstraint constraint = secs.get(0);
         assertNotNull(constraint);
         assertTrue(constraint.getUsers() != null);
         assertTrue(constraint.getUsers().size() == 2);
@@ -1530,10 +1531,10 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(constraint.getPermissions() != null);
         assertTrue(constraint.getPermissions().size() == 2);
         assertTrue(Shared.makeCSVFromList(constraint.getPermissions()).equals("edit,view"));
-        List refs = constraints.getSecurityConstraintsRefs();
+        List<String> refs = constraints.getSecurityConstraintsRefs();
         assertNotNull(refs);
         assertTrue(refs.size() == 1);
-        String ref = (String)refs.get(0);
+        String ref = refs.get(0);
         assertNotNull(ref);
         assertTrue(ref.equals("public-view"));
         
@@ -1549,7 +1550,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(clonepagetemplate.getDefaultDecorator(Fragment.LAYOUT).equals("test-template-layout"));
         assertTrue(clonepagetemplate.getDefaultDecorator(Fragment.PORTLET).equals("test-template-portlet"));
         GenericMetadata md = clonepagetemplate.getMetadata();
-        Collection descriptions = md.getFields("description");
+        Collection<LocalizedField> descriptions = md.getFields("description");
         assertNotNull(descriptions);
         assertEquals(1, descriptions.size());
         rootFragmentElement = clonepagetemplate.getRootFragment();
@@ -1565,11 +1566,11 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertFalse(f.getId().equals("cpt-f002"));
         assertTrue(f.getName().equals("TemplatePortlet"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
-        bf = (BaseFragmentElement)root.getFragments().get(1);
+        bf = root.getFragments().get(1);
         assertTrue(bf instanceof PageFragment);
         PageFragment pf = (PageFragment)bf;
         assertFalse(pf.getId().equals("cpt-f003"));
-        bf = (BaseFragmentElement)root.getFragments().get(2);
+        bf = root.getFragments().get(2);
         assertTrue(bf instanceof FragmentReference);
         FragmentReference fr = (FragmentReference)bf;
         assertFalse(fr.getId().equals("cpt-f004"));
@@ -1596,7 +1597,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertFalse(f.getId().equals("cdp-f002"));
         assertTrue(f.getName().equals("HelloPortlet"));
         assertTrue(f.getType().equals(Fragment.PORTLET));
-        bf = (BaseFragmentElement)root.getFragments().get(1);
+        bf = root.getFragments().get(1);
         assertTrue(bf instanceof FragmentReference);
         fr = (FragmentReference)bf;
         assertFalse(fr.getId().equals("cdp-f003"));
@@ -1702,7 +1703,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         
         compareFolders(webappIds,webappNoIds);
         
-        Collection allIds = collectIds(webappNoIds); 
+        Collection<String> allIds = collectIds(webappNoIds);
         for (Iterator iter = allIds.iterator(); iter.hasNext();) {
 			String id = (String) iter.next();
 			assertNotNull(id);

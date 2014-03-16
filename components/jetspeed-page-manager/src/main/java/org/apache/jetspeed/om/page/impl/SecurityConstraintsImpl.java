@@ -130,7 +130,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         try
         {
             // skip missing or empty constraints: permit all access
-            List checkConstraints = getAllSecurityConstraints(pageSecurity);
+            List<Object> checkConstraints = getAllSecurityConstraints(pageSecurity);
             if ((checkConstraints != null) && !checkConstraints.isEmpty())
             {
                 // test each action, constraints check passes only

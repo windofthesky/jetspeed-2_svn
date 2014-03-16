@@ -1172,7 +1172,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             // document order or strict collation order
             if (allChildren.size() > 1)
             {
-                final List order = folderDocumentOrder;
+                final List<String> order = folderDocumentOrder;
                 Comparator<Node> comparator = new Comparator<Node>()
                     {
                         public int compare(Node proxyNode1, Node proxyNode2)
@@ -1227,7 +1227,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      * @return list containing concrete search folders in folder view
      * @throws FolderNotFoundException
      */
-    private List getSearchFolders() throws FolderNotFoundException
+    private List<SearchFolder> getSearchFolders() throws FolderNotFoundException
     {
         // latently aggregate search folders
         if (searchFolders == null)
@@ -1289,7 +1289,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      * @return list containing concrete inheritance folders in folder view
      * @throws FolderNotFoundException
      */
-    private List getInheritanceFolders() throws FolderNotFoundException
+    private List<InheritanceFolder> getInheritanceFolders() throws FolderNotFoundException
     {
         // latently aggregate inheritance folders
         if (inheritanceFolders == null)
@@ -1300,7 +1300,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             // folder to the proxy root to create the inheritance
             // graph folder list
             FolderProxy folder = this;
-            List searchFolders = folder.getSearchFolders();
+            List<SearchFolder> searchFolders = folder.getSearchFolders();
             if (getParent() != null)
             {
                 inheritanceFolders = new ArrayList<InheritanceFolder>(searchFolders.size() * 2);

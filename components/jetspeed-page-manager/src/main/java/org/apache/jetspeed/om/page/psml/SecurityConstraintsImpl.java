@@ -176,7 +176,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         try
         {
             // skip missing or empty constraints: permit all access
-            List checkConstraints = getAllSecurityConstraints(pageSecurity);
+            List<Object> checkConstraints = getAllSecurityConstraints(pageSecurity);
             if ((checkConstraints != null) && !checkConstraints.isEmpty())
             {
                 // test each action, constraints check passes only
@@ -310,7 +310,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         // add any global decurity constraints references
         if (pageSecurity != null)
         {
-            List globalConstraintsRefs = pageSecurity.getGlobalSecurityConstraintsRefs();
+            List<String> globalConstraintsRefs = pageSecurity.getGlobalSecurityConstraintsRefs();
             if ((globalConstraintsRefs != null) && !globalConstraintsRefs.isEmpty())
             {
                 List<Object> referencedConstraints = dereferenceSecurityConstraintsRefs(globalConstraintsRefs, pageSecurity);
@@ -334,7 +334,7 @@ public class SecurityConstraintsImpl implements SecurityConstraints
      * @return security constraints and constraints ref expressions
      * @throws RuntimeException if expression parsing error occurs
      */
-    private List<Object> dereferenceSecurityConstraintsRefs(List constraintsRefs, PageSecurity pageSecurity)
+    private List<Object> dereferenceSecurityConstraintsRefs(List<String> constraintsRefs, PageSecurity pageSecurity)
     {
         // access security document to dereference security
         // constraints definitions

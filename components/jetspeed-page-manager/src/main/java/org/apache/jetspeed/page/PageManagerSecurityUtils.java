@@ -17,6 +17,7 @@
 package org.apache.jetspeed.page;
 
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.om.page.SecurityConstraintImpl;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 import org.apache.jetspeed.page.document.DocumentException;
@@ -120,6 +121,7 @@ public class PageManagerSecurityUtils
         }
         return result;
     }
+
     /**
      * check access for the constraints list of a security constraints definition
      * 
@@ -130,14 +132,10 @@ public class PageManagerSecurityUtils
      * @param def the security constraint definition 
      * @throws SecurityException
      */
-    public static boolean checkConstraints(List actions, List userPrincipals, List rolePrincipals, List groupPrincipals, SecurityConstraintsDef def) 
+    public static boolean checkConstraints(List<String> actions, List<String> userPrincipals, List<String> rolePrincipals, List<String> groupPrincipals, SecurityConstraintsDef def)
     throws DocumentException
     {
-        
-        List checkConstraints = def.getSecurityConstraints();
-            // SecurityConstraint c =(SecurityConstraint)constraints.next();
-        // skip missing or empty constraints: permit all access
-        //List checkConstraints = getAllSecurityConstraints(pageSecurity);
+        List<SecurityConstraint> checkConstraints = def.getSecurityConstraints();
         if ((checkConstraints != null) && !checkConstraints.isEmpty())
         {
             // test each action, constraints check passes only
@@ -146,7 +144,7 @@ public class PageManagerSecurityUtils
             while (actionsIter.hasNext())
             {
                 // check each action:
-                // - if any actions explicity permitted, (including owner),
+                // - if any actions explicitly permitted, (including owner),
                 //   assume no permissions are permitted by default
                 // - if all constraints do not specify a permission, assume
                 //   access is permitted by default
@@ -189,19 +187,16 @@ public class PageManagerSecurityUtils
                 // fail if any action not permitted
                 if ((!actionPermitted && anyActionsPermitted) || actionNotPermitted)
                 {
-                    //throw new SecurityException("SecurityConstraintsImpl.checkConstraints(): Access for " + action + " not permitted.");
                     return false;
                 }
             }
         }
         else
         {
-            // fail for any action if owner specified
-            // since no other constraints were found
-            if (/*(getOwner() != null) && */ !actions.isEmpty())
+            // fail if no constraints were found and
+            // actions specified
+            if (!actions.isEmpty())
             {
-                //String action = (String)actions.get(0);
-                //throw new SecurityException("SecurityConstraintsImpl.checkConstraints(): Access for " + action + " not permitted, (not owner).");
                 return false;
             }
         }
