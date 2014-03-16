@@ -16,12 +16,6 @@
  */
 package org.apache.jetspeed.portalsite.view;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.DynamicPage;
@@ -38,6 +32,12 @@ import org.apache.jetspeed.portalsite.menu.StandardBackMenuDefinition;
 import org.apache.jetspeed.portalsite.menu.StandardBreadcrumbsMenuDefinition;
 import org.apache.jetspeed.portalsite.menu.StandardNavigationsMenuDefinition;
 import org.apache.jetspeed.portalsite.menu.StandardPagesMenuDefinition;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This abstract class defines the base implementation for
@@ -82,7 +82,7 @@ public abstract class AbstractSiteView
     /**
      * STANDARD_MENU_NAMES - set of supported standard menu names
      */
-    private final static Set STANDARD_MENU_NAMES = new HashSet(3);
+    private final static Set<String> STANDARD_MENU_NAMES = new HashSet<String>(3);
     static
     {
         STANDARD_MENU_NAMES.add(STANDARD_BACK_MENU_NAME);
@@ -94,7 +94,7 @@ public abstract class AbstractSiteView
     /**
      * STANDARD_MENU_DEFINITION_LOCATORS - list of standard menu definition locators
      */
-    private final static List STANDARD_MENU_DEFINITION_LOCATORS = new ArrayList(4);
+    private final static List<SiteViewMenuDefinitionLocator> STANDARD_MENU_DEFINITION_LOCATORS = new ArrayList<SiteViewMenuDefinitionLocator>(4);
     static
     {
         STANDARD_MENU_DEFINITION_LOCATORS.add(new SiteViewMenuDefinitionLocator(new StandardBackMenuDefinition()));
@@ -341,7 +341,7 @@ public abstract class AbstractSiteView
      * @param onlyVisible node required to be visible, (or current)
      * @return list of folder, page, or link node views
      */
-    public List getNodeViews(String regexpPath, Node currentNode, String menuPath, boolean onlyConcrete, boolean onlyViewable, boolean onlyVisible)
+    public List<Node> getNodeViews(String regexpPath, Node currentNode, String menuPath, boolean onlyConcrete, boolean onlyViewable, boolean onlyVisible)
     {
         // determine current folder and page
         String currentRegexpPath = regexpPath;
@@ -363,7 +363,7 @@ public abstract class AbstractSiteView
             if (currentPage != null)
             {
                 // return current page, (assume viewable)
-                List views = new ArrayList(1);
+                List<Node> views = new ArrayList<Node>(1);
                 views.add(currentPage);
                 return views;
             }
@@ -381,7 +381,7 @@ public abstract class AbstractSiteView
             if (currentRegexpPath.equals(ALT_CURRENT_PAGE_PATH_0))
             {
                 // return current node, (assume viewable)
-                List views = new ArrayList(1);
+                List<Node> views = new ArrayList<Node>(1);
                 views.add(currentNode);
                 return views;
             }
@@ -463,17 +463,17 @@ public abstract class AbstractSiteView
                                     if (subfolders.size() > 1)
                                     {
                                         // recursively process matching sub-folders
-                                        List views = null;
+                                        List<Node> views = null;
                                         Iterator subfoldersIter = subfolders.iterator();
                                         while (subfoldersIter.hasNext())
                                         {
                                             currentFolder = (Folder)subfoldersIter.next();
-                                            List subfolderViews = getNodeViews(currentRegexpPath, currentFolder, menuPath, onlyConcrete, onlyViewable, onlyVisible);
+                                            List<Node> subfolderViews = getNodeViews(currentRegexpPath, currentFolder, menuPath, onlyConcrete, onlyViewable, onlyVisible);
                                             if ((subfolderViews != null) && !subfolderViews.isEmpty())
                                             {
                                                 if (views == null)
                                                 {
-                                                    views = new ArrayList();
+                                                    views = new ArrayList<Node>();
                                                 }
                                                 views.addAll(subfolderViews);
                                             }
@@ -545,7 +545,7 @@ public abstract class AbstractSiteView
                             children = children.inclusiveSubset(pathPattern);
                             if ((children != null) && !children.isEmpty())
                             {
-                                List views = null;
+                                List<Node> views = null;
                                 Iterator childrenIter = children.iterator();
                                 while (childrenIter.hasNext())
                                 {
@@ -556,7 +556,7 @@ public abstract class AbstractSiteView
                                     {
                                         if (views == null)
                                         {
-                                            views = new ArrayList(children.size());
+                                            views = new ArrayList<Node>(children.size());
                                         }
                                         views.add(child);
                                     }
@@ -574,7 +574,7 @@ public abstract class AbstractSiteView
                                 (!onlyVisible || isVisible(child, currentPage)) &&
                                 (!onlyViewable || isViewable(child, onlyVisible)))
                             {
-                                List views = new ArrayList(1);
+                                List<Node> views = new ArrayList<Node>(1);
                                 views.add(currentFolder);
                                 return views;
                             }
@@ -599,7 +599,7 @@ public abstract class AbstractSiteView
         if ((!onlyVisible || isVisible(currentFolder, null)) &&
             (!onlyViewable || isViewable(currentFolder, onlyVisible)))
         {
-            List views = new ArrayList(1);
+            List<Node> views = new ArrayList<Node>(1);
             views.add(currentFolder);
             return views;
         }
@@ -876,7 +876,7 @@ public abstract class AbstractSiteView
      *  
      * @return menu names set
      */
-    public Set getStandardMenuNames()
+    public Set<String> getStandardMenuNames()
     {
         // return constant standard menu names
         return STANDARD_MENU_NAMES;
@@ -888,7 +888,7 @@ public abstract class AbstractSiteView
      *  
      * @return menu definition locators list
      */
-    public List getStandardMenuDefinitionLocators()
+    public List<SiteViewMenuDefinitionLocator> getStandardMenuDefinitionLocators()
     {
         // return constant standard menu definition locators
         return STANDARD_MENU_DEFINITION_LOCATORS;
@@ -900,7 +900,7 @@ public abstract class AbstractSiteView
      * @param node node view
      * @return definition locator list
      */
-    public abstract List getMenuDefinitionLocators(Node node);
+    public abstract List<SiteViewMenuDefinitionLocator> getMenuDefinitionLocators(Node node);
 
     /**
      * getMenuDefinitionLocator - get named view node menu definition locator

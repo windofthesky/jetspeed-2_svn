@@ -16,6 +16,14 @@
  */
 package org.apache.jetspeed.page.document.proxy;
 
+import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
+import org.apache.jetspeed.portalsite.view.SearchPathsSiteViewProxy;
+import org.apache.jetspeed.portalsite.view.SiteViewMenuDefinitionLocator;
+import org.apache.jetspeed.portalsite.view.SiteViewUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -24,13 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.jetspeed.om.folder.Folder;
-import org.apache.jetspeed.page.document.Node;
-import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
-import org.apache.jetspeed.portalsite.view.SiteViewMenuDefinitionLocator;
-import org.apache.jetspeed.portalsite.view.SearchPathsSiteViewProxy;
-import org.apache.jetspeed.portalsite.view.SiteViewUtils;
 
 /**
  * This class proxies Node instances to create a logical
@@ -81,7 +82,7 @@ public abstract class NodeProxy extends SearchPathsSiteViewProxy
      * menuDefinitionLocators - menu definitions aggregated by name saved in
      *                          menu definition locators
      */
-    private List menuDefinitionLocators;
+    private List<SiteViewMenuDefinitionLocator> menuDefinitionLocators;
 
     /**
      * menuDefinitionLocatorsAggregated - boolean flag to indicate
@@ -92,7 +93,7 @@ public abstract class NodeProxy extends SearchPathsSiteViewProxy
     /**
      * menuDefinitions - menu definitions aggregated by name
      */
-    private List menuDefinitions;
+    private List<MenuDefinition> menuDefinitions;
 
     /**
      * menuDefinitionsAggregated - boolean flag to indicate menuDefinitions
@@ -199,7 +200,7 @@ public abstract class NodeProxy extends SearchPathsSiteViewProxy
      *
      * @return definition list
      */
-    public List getMenuDefinitions()
+    public List<MenuDefinition> getMenuDefinitions()
     {
         // get menu definitions aggregated by name from
         // aggregated menu definition locators
@@ -208,7 +209,7 @@ public abstract class NodeProxy extends SearchPathsSiteViewProxy
             List locators = getMenuDefinitionLocators();
             if (locators != null)
             {
-                menuDefinitions = Collections.synchronizedList(new ArrayList(locators.size()));
+                menuDefinitions = Collections.synchronizedList(new ArrayList<MenuDefinition>(locators.size()));
                 Iterator locatorsIter = locators.iterator();
                 while (locatorsIter.hasNext())
                 {
@@ -226,7 +227,7 @@ public abstract class NodeProxy extends SearchPathsSiteViewProxy
      *
      * @return definition locator list
      */
-    public List getMenuDefinitionLocators()
+    public List<SiteViewMenuDefinitionLocator> getMenuDefinitionLocators()
     {
         // get menu definition locators aggregated by name
         if (! menuDefinitionLocatorsAggregated)
@@ -242,12 +243,12 @@ public abstract class NodeProxy extends SearchPathsSiteViewProxy
      *                               to be used by derived implementations to aggregate
      *                               menu definition locators
      *
-     * @param locators list of menu definition locators to merge
+     * @param definitions list of menu definitions to merge
      * @param definitionNode menu definition node
      * @param path menu definition path
      * @param override override menu definition
      */
-    public void mergeMenuDefinitionLocators(List definitions, Node definitionNode, String path, boolean override)
+    public void mergeMenuDefinitionLocators(List<MenuDefinition> definitions, Node definitionNode, String path, boolean override)
     {
         // merge definitions into aggregated menu definition
         // locators if defined
@@ -261,7 +262,7 @@ public abstract class NodeProxy extends SearchPathsSiteViewProxy
      *
      * @param locators list of menu definition locators to merge
      */
-    public void mergeMenuDefinitionLocators(List locators)
+    public void mergeMenuDefinitionLocators(List<SiteViewMenuDefinitionLocator> locators)
     {
         // merge locators into aggregated menu definition
         // locators if defined

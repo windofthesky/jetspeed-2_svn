@@ -16,14 +16,16 @@
  */
 package org.apache.jetspeed.portalsite;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
+import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 import org.apache.jetspeed.page.document.NodeSet;
+import org.apache.jetspeed.profiler.ProfileLocator;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This describes the request context for the portal-site component.
@@ -45,7 +47,7 @@ public interface PortalSiteRequestContext
      *  
      * @return request profile locators
      */
-    Map getLocators();
+    Map<String,ProfileLocator> getLocators();
 
     /**
      * getManagedPageOrTemplate - get request profiled concrete page or template
@@ -77,7 +79,7 @@ public interface PortalSiteRequestContext
      * @throws NodeNotFoundException if page or fragment definition not found
      * @throws SecurityException if page view access not granted
      */
-    Map getManagedFragmentDefinitions() throws NodeNotFoundException;
+    Map<String,FragmentDefinition> getManagedFragmentDefinitions() throws NodeNotFoundException;
     
     /**
      * isContentPage - returns flag indicating request page is honoring
@@ -134,7 +136,7 @@ public interface PortalSiteRequestContext
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    Map getFragmentDefinitions() throws NodeNotFoundException;
+    Map<String,FragmentDefinition> getFragmentDefinitions() throws NodeNotFoundException;
 
     /**
      * getFolder - get folder view relative to request profiled page
@@ -201,7 +203,7 @@ public interface PortalSiteRequestContext
      *  
      * @return menu names set
      */
-    Set getStandardMenuNames();
+    Set<String> getStandardMenuNames();
 
     /**
      * getCustomMenuNames - get set of custom menu names available as
@@ -211,7 +213,7 @@ public interface PortalSiteRequestContext
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    Set getCustomMenuNames() throws NodeNotFoundException;
+    Set<String> getCustomMenuNames() throws NodeNotFoundException;
 
     /**
      * getMenu - get instantiated menu available for the request

@@ -80,7 +80,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param context request context
      * @param menus related menu definition names set
      */
-    public MenuImpl(MenuDefinition definition, String path, PortalSiteRequestContextImpl context, Set menus)
+    public MenuImpl(MenuDefinition definition, String path, PortalSiteRequestContextImpl context, Set<String> menus)
     {
         this((MenuImpl)null, definition, path, context, menus);
     }
@@ -94,7 +94,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param context request context
      * @param menus related menu definition names set
      */
-    public MenuImpl(MenuImpl parent, MenuDefinition definition, String path, PortalSiteRequestContextImpl context, Set menus)
+    public MenuImpl(MenuImpl parent, MenuDefinition definition, String path, PortalSiteRequestContextImpl context, Set<String> menus)
     {
         this(((PortalSiteSessionContextImpl)context.getSessionContext()).getSiteView(), parent, definition, path, context, menus);
     }
@@ -109,7 +109,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param context request context
      * @param menus related menu definition names set
      */
-    protected MenuImpl(AbstractSiteView view, MenuImpl parent, MenuDefinition definition, String path, PortalSiteRequestContextImpl context, Set menus)
+    protected MenuImpl(AbstractSiteView view, MenuImpl parent, MenuDefinition definition, String path, PortalSiteRequestContextImpl context, Set<String> menus)
     {
         super(view, parent);
         this.definition = definition;
@@ -146,7 +146,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                 // options to include all folder children if not to
                 // be expanded with paths and depth inclusion is
                 // specified
-                List overrideOptionViews = null;
+                List<Node> overrideOptionViews = null;
                 if (optionView != null)
                 {
                     if ((optionView instanceof Folder) && !definition.isPaths() && (definition.getDepth() != 0))
@@ -164,7 +164,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
 
                         // override menu options with visible folder contents
                         // or create empty menu if no contents exist
-                        List folderChildren = null;
+                        List<Node> folderChildren = null;
                         try
                         {
                             folderChildren = view.getNodeViews(folderChildrenPath, context.getPageOrTemplate(), path, true, true, true);
@@ -187,7 +187,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                     else
                     {
                         // override menu options with single folder/page/link
-                        overrideOptionViews = new ArrayList(1);
+                        overrideOptionViews = new ArrayList<Node>(1);
                         overrideOptionViews.add(optionView);
                     }
                     
@@ -207,7 +207,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                 {
                     if (menus == null)
                     {
-                        menus = new HashSet(4);
+                        menus = new HashSet<String>(4);
                     }
                     menuNameReferenced = menus.add(definition.getName());
                 }
@@ -218,7 +218,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                 // merge/filter operations apply to options bounded
                 // by separators
                 MenuSeparatorImpl separator = null;
-                List separatedElements = null;
+                List<MenuElement> separatedElements = null;
 
                 // process each defined menu element
                 Iterator menuElementsIter = definition.getMenuElements().iterator();
@@ -240,7 +240,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         {
                             order = definition.getOrder();
                         }
-                        List optionsAndMenus = constructMenuElements(view, context, path, optionDefinition.getOptions(), null, optionDefinition.getDepth(), optionDefinition.isPaths(), optionDefinition.isRegexp(), locatorName, order);
+                        List<MenuElement> optionsAndMenus = constructMenuElements(view, context, path, optionDefinition.getOptions(), null, optionDefinition.getDepth(), optionDefinition.isPaths(), optionDefinition.isRegexp(), locatorName, order);
 
                         // append option and menu elements to current separator
                         // elements list
@@ -270,7 +270,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                                 {
                                     initialSize++;
                                 }
-                                this.elements = new ArrayList(initialSize);
+                                this.elements = new ArrayList<MenuElement>(initialSize);
                             }
                             if (separator != null)
                             {
@@ -297,7 +297,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         // append menu element to current separated elements list
                         if (separatedElements == null)
                         {
-                            separatedElements = new ArrayList(1);
+                            separatedElements = new ArrayList<MenuElement>(1);
                         }
                         appendMenuElement(nestedMenu, separatedElements);
 
@@ -341,7 +341,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                                         // append menu element to current separated elements list
                                         if (separatedElements == null)
                                         {
-                                            separatedElements = new ArrayList(1);
+                                            separatedElements = new ArrayList<MenuElement>(1);
                                         }
                                         appendMenuElement(includeMenu, separatedElements);
                                     }
@@ -377,7 +377,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                                                             {
                                                                 initialSize++;
                                                             }
-                                                            this.elements = new ArrayList(initialSize);
+                                                            this.elements = new ArrayList<MenuElement>(initialSize);
                                                         }
                                                         if (separator != null)
                                                         {
@@ -399,7 +399,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                                                     // append menu element to current separated elements list
                                                     if (separatedElements == null)
                                                     {
-                                                        separatedElements = new ArrayList(includeMenu.getElements().size());
+                                                        separatedElements = new ArrayList<MenuElement>(includeMenu.getElements().size());
                                                     }
                                                     appendMenuElement(includeElement, separatedElements);
                                                 }
@@ -496,7 +496,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param appendMenuElement option/menu element to append
      * @param menuElements option/menu element list
      */
-    private void appendMenuElement(MenuElementImpl appendMenuElement, List menuElements)
+    private void appendMenuElement(MenuElementImpl appendMenuElement, List<MenuElement> menuElements)
     {
         // make sure new menu element is unique and
         // add to menu element list
@@ -516,7 +516,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param appendMenuElements option/menu element list to append
      * @param menuElements option/menu element list
      */
-    private void appendMenuElements(List appendMenuElements, List menuElements)
+    private void appendMenuElements(List<MenuElement> appendMenuElements, List<MenuElement> menuElements)
     {
         // make sure new menu elements are unique and
         // add to menu element list
@@ -537,7 +537,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param removeMenuElements option/menu element list to remove
      * @param menuElements option/menu element list
      */
-    private void removeMenuElements(List removeMenuElements, List menuElements)
+    private void removeMenuElements(List<MenuElement> removeMenuElements, List<MenuElement> menuElements)
     {
         // remove equivalent menu elements from menu
         // element list
@@ -565,13 +565,13 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param locatorName profile locator name
      * @param order ordering patterns list
      */
-    private List constructMenuElements(AbstractSiteView view, PortalSiteRequestContextImpl context, String path, String options, List overrideElementViews, int depth, boolean paths, boolean regexp, String locatorName, String order)
+    private List<MenuElement> constructMenuElements(AbstractSiteView view, PortalSiteRequestContextImpl context, String path, String options, List<Node> overrideElementViews, int depth, boolean paths, boolean regexp, String locatorName, String order)
     {
         if (options != null)
         {
             // use override element views if specified; otherwise
             // compute view list using specified menu options
-            List elementViews = overrideElementViews;
+            List<Node> elementViews = overrideElementViews;
             if (elementViews == null)
             {
                 // split multiple comma separated option paths from specified options 
@@ -590,7 +590,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         {
                             // get list of visible views for path from view and append
                             // to list if unique and pass profile locator name filter
-                            List pathViews = null;
+                            List<Node> pathViews = null;
                             try
                             {
                                 pathViews = view.getNodeViews(optionPath, context.getPageOrTemplate(), path, true, true, true);
@@ -612,7 +612,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                                     {
                                         if (elementViews == null)
                                         {
-                                            elementViews = new ArrayList();
+                                            elementViews = new ArrayList<Node>();
                                         }
                                         appendMenuElementViews(pathView, elementViews);
                                     }
@@ -640,7 +640,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                             {
                                 if (elementViews == null)
                                 {
-                                    elementViews = new ArrayList();
+                                    elementViews = new ArrayList<Node>();
                                 }
                                 appendMenuElementViews(pathView, elementViews);
                             }
@@ -663,7 +663,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
             if ((order != null) && (elementViews.size() > 1))
             {
                 // create ordered element views
-                List orderedElementViews = new ArrayList(elementViews.size());
+                List<Node> orderedElementViews = new ArrayList<Node>(elementViews.size());
                 
                 // split multiple comma separated elements orderings
                 // after converted to regexp pattern
@@ -730,7 +730,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
             if (paths && (depth == 0) && (elementViews.size() == 1) &&
                 ((elementViews.get(0) instanceof Folder) || (elementViews.get(0) instanceof Page)))
             {
-                Node parentNode = ((Node)elementViews.get(0)).getParent();
+                Node parentNode = elementViews.get(0).getParent();
                 while (parentNode != null)
                 {
                     elementViews.add(0, parentNode);
@@ -739,6 +739,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
             }
             
             // convert elements views into menu elements
+            List<MenuElement> menuElements = new ArrayList<MenuElement>(elementViews.size());
             DefaultMenuOptionsDefinition defaultMenuOptionsDefinition = null;
             ListIterator elementViewsIter = elementViews.listIterator();
             while (elementViewsIter.hasNext())
@@ -765,10 +766,9 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                     menuElement = new MenuOptionImpl(view, this, elementView, defaultMenuOptionsDefinition);
                 }
 
-                // replace element view with menu element
-                elementViewsIter.set(menuElement);
+                // save element view menu element
+                menuElements.add(menuElement);
             }
-            List menuElements = elementViews;
 
             // return list of menu elements constructed from element views
             return menuElements;
@@ -785,7 +785,7 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
      * @param pathView menu element page, folder, or link view at path
      * @param elementViews element views list
      */
-    private void appendMenuElementViews(Node pathView, List elementViews)
+    private void appendMenuElementViews(Node pathView, List<Node> elementViews)
     {
         // make sure new view is unique and add
         // to element views list

@@ -16,10 +16,11 @@
  */
 package org.apache.jetspeed.portalsite;
 
+import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.profiler.ProfileLocator;
+
 import java.io.Serializable;
 import java.util.Map;
-
-import org.apache.jetspeed.page.PageManager;
 
 /**
  * This describes the session context for the portal-site component.
@@ -36,7 +37,7 @@ public interface PortalSiteSessionContext extends Serializable
      * @param requestUserPrincipal request user principal
      * @return new request context instance
      */
-    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal);
+    PortalSiteRequestContext newRequestContext(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal);
 
     /**
      * newRequestContext - create a new request context instance with history
@@ -47,7 +48,7 @@ public interface PortalSiteSessionContext extends Serializable
      *                        if locators do not select a page or access is forbidden
      * @return new request context instance
      */
-    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback);
+    PortalSiteRequestContext newRequestContext(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestFallback);
 
     /**
      * newRequestContext - create a new request context instance
@@ -60,7 +61,7 @@ public interface PortalSiteSessionContext extends Serializable
      *                   history to select default page per site folder
      * @return new request context instance
      */
-    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory);
+    PortalSiteRequestContext newRequestContext(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory);
 
     /**
      * newRequestContext - create a new request context instance
@@ -75,7 +76,7 @@ public interface PortalSiteSessionContext extends Serializable
      * @param forceTemplatesAccessible force templates accessible to requests in site view
      * @return new request context instance
      */
-    PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible);
+    PortalSiteRequestContext newRequestContext(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible);
 
     /**
      * newRequestContext - create a new request context instance without profiling

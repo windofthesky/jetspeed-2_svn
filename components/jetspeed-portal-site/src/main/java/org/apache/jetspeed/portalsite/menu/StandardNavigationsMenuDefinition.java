@@ -16,19 +16,20 @@
  */
 package org.apache.jetspeed.portalsite.menu;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.folder.MenuDefinitionElement;
 import org.apache.jetspeed.om.folder.impl.StandardMenuDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.StandardMenuIncludeDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.StandardMenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.impl.StandardMenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.portalsite.view.AbstractSiteView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * This class provides a menu definition for the standard
@@ -43,7 +44,7 @@ public class StandardNavigationsMenuDefinition extends StandardMenuDefinitionImp
      * menuElements - ordered polymorphic list of menu option, nested
      *                menu, separator, include, and exclude definitions
      */
-    private List menuElements;
+    private List<MenuDefinitionElement> menuElements;
 
     /**
      * StandardNavigationsMenuDefinition - constructor
@@ -70,12 +71,12 @@ public class StandardNavigationsMenuDefinition extends StandardMenuDefinitionImp
      *
      * @return element list
      */
-    public synchronized List getMenuElements()
+    public synchronized List<MenuDefinitionElement> getMenuElements()
     {
         // instantiate menu elements if necessary
         if (menuElements == null)
         {
-            menuElements = new ArrayList(4);
+            menuElements = new ArrayList<MenuDefinitionElement>(4);
             menuElements.add(new StandardMenuSeparatorDefinitionImpl()
                 {
                     /**

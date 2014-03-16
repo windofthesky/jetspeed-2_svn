@@ -16,13 +16,13 @@
  */
 package org.apache.jetspeed.portalsite.view;
 
+import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.page.document.Node;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.jetspeed.om.folder.MenuDefinition;
-import org.apache.jetspeed.page.document.Node;
 
 /**
  * Utilities for constructing and accessing site views.
@@ -37,14 +37,14 @@ public class SiteViewUtils
      *                               to be used by derived implementations to aggregate
      *                               menu definition locators
      *
-     * @param locators list of menu definition locators to merge
-     * @param node menu definition node
+     * @param definitions list of menu definitions to merge
+     * @param definitionNode menu definition node
      * @param path node view path
      * @param override override menu definition
      * @param menuDefinitionLocators merged menu definition locators
      * @return merged menu definition locators
      */
-    public static List mergeMenuDefinitionLocators(List definitions, Node definitionNode, String path, boolean override, List menuDefinitionLocators)
+    public static List<SiteViewMenuDefinitionLocator> mergeMenuDefinitionLocators(List<MenuDefinition> definitions, Node definitionNode, String path, boolean override, List<SiteViewMenuDefinitionLocator> menuDefinitionLocators)
     {
         // merge definitions into aggregated menu definition
         // locators if defined
@@ -64,7 +64,7 @@ public class SiteViewUtils
                     {
                         if (menuDefinitionLocators == null)
                         {
-                            menuDefinitionLocators = Collections.synchronizedList(new ArrayList(definitions.size() * 2));
+                            menuDefinitionLocators = Collections.synchronizedList(new ArrayList<SiteViewMenuDefinitionLocator>(definitions.size() * 2));
                         }
                         menuDefinitionLocators.add(new SiteViewMenuDefinitionLocator(definition, definitionNode, path, override));
                     }
@@ -87,7 +87,7 @@ public class SiteViewUtils
      * @param menuDefinitionLocators merged menu definition locators
      * @return merged menu definition locators
      */
-    public static List mergeMenuDefinitionLocators(List locators, List menuDefinitionLocators)
+    public static List<SiteViewMenuDefinitionLocator> mergeMenuDefinitionLocators(List<SiteViewMenuDefinitionLocator> locators, List<SiteViewMenuDefinitionLocator> menuDefinitionLocators)
     {
         // merge locators into aggregated menu definition
         // locators if defined
@@ -106,7 +106,7 @@ public class SiteViewUtils
                 {
                     if (menuDefinitionLocators == null)
                     {
-                        menuDefinitionLocators = Collections.synchronizedList(new ArrayList(locators.size() * 2));
+                        menuDefinitionLocators = Collections.synchronizedList(new ArrayList<SiteViewMenuDefinitionLocator>(locators.size() * 2));
                     }
                     menuDefinitionLocators.add(locator);
                 }

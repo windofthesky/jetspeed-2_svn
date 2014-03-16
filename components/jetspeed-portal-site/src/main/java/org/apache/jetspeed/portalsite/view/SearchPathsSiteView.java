@@ -56,7 +56,7 @@ public class SearchPathsSiteView extends AbstractSiteView
      * searchPaths - validated list of ordered search path objects
      *               where paths have no trailing folder separator
      */
-    private List searchPaths;
+    private List<SiteViewSearchPath> searchPaths;
 
     /**
      * searchPathsString - search paths as string
@@ -86,14 +86,14 @@ public class SearchPathsSiteView extends AbstractSiteView
      *                    object form
      * @param forceReservedVisible force visibility of hidden/reserved folders
      */
-    public SearchPathsSiteView(PageManager pageManager, List searchPaths, boolean forceReservedVisible)
+    public SearchPathsSiteView(PageManager pageManager, List<?> searchPaths, boolean forceReservedVisible)
     {
         super(pageManager);
         if ((searchPaths != null) && !searchPaths.isEmpty())
         {
             // validate search path format and existence
-            this.searchPaths = new ArrayList(searchPaths.size());
-            List allSearchPaths = new ArrayList(searchPaths.size());
+            this.searchPaths = new ArrayList<SiteViewSearchPath>(searchPaths.size());
+            List<SiteViewSearchPath> allSearchPaths = new ArrayList<SiteViewSearchPath>(searchPaths.size());
             StringBuilder searchPathsStringBuilder = new StringBuilder();
             Iterator pathsIter = searchPaths.iterator();
             while (pathsIter.hasNext())
@@ -174,7 +174,7 @@ public class SearchPathsSiteView extends AbstractSiteView
             {
                 // single non-principal search path is the base
                 // search path
-                SiteViewSearchPath searchPath = (SiteViewSearchPath)allSearchPaths.get(0);
+                SiteViewSearchPath searchPath = allSearchPaths.get(0);
                 if (!searchPath.isPrincipalPath())
                 {
                     this.baseSearchPath = searchPath;
@@ -242,10 +242,10 @@ public class SearchPathsSiteView extends AbstractSiteView
         else
         {
             // root search path with no aggregation
-            this.searchPaths = new ArrayList(1);
+            this.searchPaths = new ArrayList<SiteViewSearchPath>(1);
             this.searchPaths.add(new SiteViewSearchPath(ProfileLocator.PAGE_LOCATOR));
             this.searchPathsString = Folder.PATH_SEPARATOR;
-            this.baseSearchPath = (SiteViewSearchPath)this.searchPaths.get(0);
+            this.baseSearchPath = this.searchPaths.get(0);
         }
         this.forceReservedVisible = forceReservedVisible;
     }
@@ -268,11 +268,11 @@ public class SearchPathsSiteView extends AbstractSiteView
      * @param searchPaths array of search paths
      * @return search path list
      */
-    private static List makeSearchPathList(String [] searchPaths)
+    private static List<String> makeSearchPathList(String [] searchPaths)
     {
         if ((searchPaths != null) && (searchPaths.length > 0))
         {
-            List searchPathsList = new ArrayList(searchPaths.length);
+            List<String> searchPathsList = new ArrayList<String>(searchPaths.length);
             for (int i = 0; (i < searchPaths.length); i++)
             {
                 searchPathsList.add(searchPaths[i]);
@@ -323,12 +323,12 @@ public class SearchPathsSiteView extends AbstractSiteView
      * @param locator profile locator search specification
      * @return search path list
      */
-    private static List makeSearchPathList(ProfileLocator locator)
+    private static List<SiteViewSearchPath> makeSearchPathList(ProfileLocator locator)
     {
         if (locator != null)
         {
             // generate and return locator search paths
-            return mergeSearchPathList(ProfileLocator.PAGE_LOCATOR, locator, new ArrayList(8));
+            return mergeSearchPathList(ProfileLocator.PAGE_LOCATOR, locator, new ArrayList<SiteViewSearchPath>(8));
         }
         return null;
     }
@@ -340,7 +340,7 @@ public class SearchPathsSiteView extends AbstractSiteView
      * @param locators map of named profile locator search specifications
      * @param forceReservedVisible force visibility of hidden/reserved folders
      */
-    public SearchPathsSiteView(PageManager pageManager, Map locators, boolean forceReservedVisible)
+    public SearchPathsSiteView(PageManager pageManager, Map<String,ProfileLocator> locators, boolean forceReservedVisible)
     {
         this(pageManager, makeSearchPathList(locators), forceReservedVisible);
     }
@@ -351,7 +351,7 @@ public class SearchPathsSiteView extends AbstractSiteView
      * @param locators map of named profile locator search specifications
      * @return search path list
      */
-    private static List makeSearchPathList(Map locators)
+    private static List<SiteViewSearchPath> makeSearchPathList(Map<String,ProfileLocator> locators)
     {
         if ((locators != null) && !locators.isEmpty())
         {
@@ -359,7 +359,7 @@ public class SearchPathsSiteView extends AbstractSiteView
             // profile locator search paths with the 'page' locator
             // having priority, (all other named locators are processed
             // subsequent to 'page' in unspecified order).
-            List searchPaths = new ArrayList(8 * locators.size());
+            List<SiteViewSearchPath> searchPaths = new ArrayList<SiteViewSearchPath>(8 * locators.size());
             ProfileLocator pageLocator = (ProfileLocator)locators.get(ProfileLocator.PAGE_LOCATOR);
             if (pageLocator != null)
             {
@@ -375,7 +375,7 @@ public class SearchPathsSiteView extends AbstractSiteView
                     if (!locatorName.equals(ProfileLocator.PAGE_LOCATOR))
                     {
                         // add alternate locator search paths
-                        mergeSearchPathList(locatorName, (ProfileLocator)locators.get(locatorName), searchPaths);
+                        mergeSearchPathList(locatorName, locators.get(locatorName), searchPaths);
                     }
                 }
             }
@@ -470,7 +470,7 @@ public class SearchPathsSiteView extends AbstractSiteView
      * @param searchPaths list of search paths to merge into
      * @return search path list
      */
-    private static List mergeSearchPathList(String locatorName, ProfileLocator locator, List searchPaths)
+    private static List<SiteViewSearchPath> mergeSearchPathList(String locatorName, ProfileLocator locator, List<SiteViewSearchPath> searchPaths)
     {
         // generate profile locator search paths with locator
         // names to be used later for node identification and
@@ -482,14 +482,14 @@ public class SearchPathsSiteView extends AbstractSiteView
         // (multiple property values are returned sequentially),
         // profiler locator iterations may be skipped to
         // generate the proper search paths
-        List locatorSearchPaths = new ArrayList(8);
+        List<PathStringBuilder> locatorSearchPaths = new ArrayList<PathStringBuilder>(8);
         int addLocatorSearchPathsAt = 0;
         Iterator<ProfileLocatorProperty []> locatorIter = locator.iterator();
         while (locatorIter.hasNext())
         {
             // initialize path construction variables
             String pathRoot = Folder.PATH_SEPARATOR;
-            List paths = new ArrayList(8);
+            List<PathStringBuilder> paths = new ArrayList<PathStringBuilder>(8);
             paths.add(new PathStringBuilder(pathRoot));
             int pathDepth = 0;
             int lastPathsCount = 0;
@@ -588,7 +588,7 @@ public class SearchPathsSiteView extends AbstractSiteView
                             // duplicate last locator paths set, stripping last matching
                             // control value from each, appending new value, and adding new
                             // valued set to collection of paths
-                            ArrayList multipleValuePaths = new ArrayList(lastPathsCount);
+                            ArrayList<PathStringBuilder> multipleValuePaths = new ArrayList<PathStringBuilder>(lastPathsCount);
                             Iterator pathsIter = paths.iterator();
                             for (int count = 0; (pathsIter.hasNext() && (count < lastPathsCount)); count++)
                             {
@@ -737,7 +737,7 @@ public class SearchPathsSiteView extends AbstractSiteView
      *
      * @return search paths list
      */
-    public List getSearchPaths()
+    public List<SiteViewSearchPath> getSearchPaths()
     {
         return searchPaths;
     }
@@ -810,7 +810,7 @@ public class SearchPathsSiteView extends AbstractSiteView
      * @param node node view
      * @return definition locator list
      */
-    public List getMenuDefinitionLocators(Node node)
+    public List<SiteViewMenuDefinitionLocator> getMenuDefinitionLocators(Node node)
     {
         // access node proxy from specified node and
         // return associated definition locators

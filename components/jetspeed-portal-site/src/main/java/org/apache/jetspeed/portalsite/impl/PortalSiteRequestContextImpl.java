@@ -16,21 +16,13 @@
  */
 package org.apache.jetspeed.portalsite.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Collections;
-
 import org.apache.jetspeed.om.folder.Folder;
+import org.apache.jetspeed.om.page.BaseConcretePageElement;
+import org.apache.jetspeed.om.page.BaseFragmentElement;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
+import org.apache.jetspeed.om.page.DynamicPage;
 import org.apache.jetspeed.om.page.FragmentDefinition;
 import org.apache.jetspeed.om.page.FragmentReference;
-import org.apache.jetspeed.om.page.DynamicPage;
-import org.apache.jetspeed.om.page.BaseConcretePageElement;
 import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.Node;
@@ -42,6 +34,16 @@ import org.apache.jetspeed.portalsite.Menu;
 import org.apache.jetspeed.portalsite.PortalSiteRequestContext;
 import org.apache.jetspeed.portalsite.PortalSiteSessionContext;
 import org.apache.jetspeed.portalsite.view.SiteViewMenuDefinitionLocator;
+import org.apache.jetspeed.profiler.ProfileLocator;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class encapsulates managed request state for and
@@ -60,7 +62,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     /**
      * requestProfileLocators - map of request profile locators by locator names
      */
-    private Map requestProfileLocators;
+    private Map<String,ProfileLocator> requestProfileLocators;
 
     /**
      * requestPath - request path if not using profile locators
@@ -123,7 +125,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     /**
      * requestFragmentDefinitions - cached request request fragment definition views map
      */
-    private Map requestFragmentDefinitions;
+    private Map<String,FragmentDefinition> requestFragmentDefinitions;
 
     /**
      * requestFragmentDefinitionsCached - cached flag for request fragment definition views map
@@ -168,13 +170,13 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
     /**
      * pageMenuDefinitionNames - cached menu definition names for request page
      */
-    private Set pageMenuDefinitionNames;
+    private Set<String> pageMenuDefinitionNames;
 
     /**
      * menuDefinitionLocatorCache - cached menu definition locators for
      *                              relative menus valid for request
      */
-    private Map menuDefinitionLocatorCache;
+    private Map<SiteViewMenuDefinitionLocator,MenuImpl> menuDefinitionLocatorCache;
 
     /**
      * PortalSiteRequestContextImpl - constructor
@@ -189,7 +191,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param forceReservedVisible force reserved/hidden folders visible in site view
      * @param forceTemplatesAccessible force templates accessible to requests in site view
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible)
     {
         this.sessionContext = sessionContext;
         this.requestProfileLocators = requestProfileLocators;
@@ -211,7 +213,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param useHistory flag indicating whether to use visited page
      *                   history to select default page per site folder
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory)
     {
         this(sessionContext, requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, false, false);
     }
@@ -225,7 +227,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param requestFallback flag specifying whether to fallback to root folder
      *                        if locators do not select a page or access is forbidden
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestFallback)
     {
         this(sessionContext, requestProfileLocators, requestUserPrincipal, requestFallback, true, false, false);
     }
@@ -237,7 +239,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param requestProfileLocators request profile locators
      * @param requestUserPrincipal request user principal
      */
-    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map requestProfileLocators, String requestUserPrincipal)
+    public PortalSiteRequestContextImpl(PortalSiteSessionContextImpl sessionContext, Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal)
     {
         this(sessionContext, requestProfileLocators, requestUserPrincipal, true, true, false, false);
     }
@@ -326,7 +328,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      *  
      * @return request profile locators
      */
-    public Map getLocators()
+    public Map<String,ProfileLocator> getLocators()
     {
         return requestProfileLocators;
     }
@@ -367,19 +369,17 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    public Map getManagedFragmentDefinitions() throws NodeNotFoundException
+    public Map<String,FragmentDefinition> getManagedFragmentDefinitions() throws NodeNotFoundException
     {
         // convert map of views to map of managed fragment definitions
-        Map fragmentDefinitions = getFragmentDefinitions();
+        Map<String,FragmentDefinition> fragmentDefinitions = getFragmentDefinitions();
         if (fragmentDefinitions != null)
         {
-            Map managedFragmentDefinitions = new HashMap(4);
-            Iterator fragmentDefinitionsIter = fragmentDefinitions.entrySet().iterator();
-            while (fragmentDefinitionsIter.hasNext())
+            Map<String,FragmentDefinition> managedFragmentDefinitions = new HashMap<String,FragmentDefinition>(4);
+            for (Map.Entry<String,FragmentDefinition> fragmentDefinitionEntry : fragmentDefinitions.entrySet())
             {
-                Map.Entry fragmentDefinitionEntry = (Map.Entry)fragmentDefinitionsIter.next();
-                String id = (String)fragmentDefinitionEntry.getKey();
-                FragmentDefinition fragmentDefinition = (FragmentDefinition)fragmentDefinitionEntry.getValue();
+                String id = fragmentDefinitionEntry.getKey();
+                FragmentDefinition fragmentDefinition = fragmentDefinitionEntry.getValue();
                 FragmentDefinition managedFragmentDefinition = sessionContext.getManagedFragmentDefinition(fragmentDefinition);
                 if (managedFragmentDefinition != null)
                 {
@@ -516,7 +516,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @throws NodeNotFoundException if page or fragment definition not found
      * @throws SecurityException if page view access not granted
      */
-    public Map getFragmentDefinitions() throws NodeNotFoundException
+    public Map<String,FragmentDefinition> getFragmentDefinitions() throws NodeNotFoundException
     {
         if (!requestFragmentDefinitionsCached)
         {
@@ -526,10 +526,10 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
             if (pageOrTemplate != null)
             {
                 // merge fragment reference ids from requested page and page template
-                Set refIds = new HashSet(4);
-                List requestPageFragmentReferences = pageOrTemplate.getFragmentsByInterface(FragmentReference.class);
+                Set<String> refIds = new HashSet<String>(4);
+                List<BaseFragmentElement> requestPageFragmentReferences = pageOrTemplate.getFragmentsByInterface(FragmentReference.class);
                 mergeFragmentDefinitionRefIds(requestPageFragmentReferences, refIds);
-                List requestPageTemplateFragmentReferences = ((pageTemplate != null) ? pageTemplate.getFragmentsByInterface(FragmentReference.class) : null);
+                List<BaseFragmentElement> requestPageTemplateFragmentReferences = ((pageTemplate != null) ? pageTemplate.getFragmentsByInterface(FragmentReference.class) : null);
                 mergeFragmentDefinitionRefIds(requestPageTemplateFragmentReferences, refIds);
                 
                 // scan through site looking for each first matching fragment
@@ -572,7 +572,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                         {
                             if (requestFragmentDefinitions == null)
                             {
-                                requestFragmentDefinitions = Collections.synchronizedMap(new HashMap(4));
+                                requestFragmentDefinitions = Collections.synchronizedMap(new HashMap<String,FragmentDefinition>(4));
                             }
                             requestFragmentDefinitions.put(refId, requestFragmentDefinition);
                         }
@@ -600,7 +600,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param fragmentReferences list of fragment references
      * @param refIds merged set of unique reference ids
      */
-    private void mergeFragmentDefinitionRefIds(List fragmentReferences, Set refIds)
+    private void mergeFragmentDefinitionRefIds(List<BaseFragmentElement> fragmentReferences, Set<String> refIds)
     {
         // merge list of fragment reference reference ids 
         if ((fragmentReferences != null) && !fragmentReferences.isEmpty())
@@ -794,7 +794,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      *  
      * @return menu names set
      */
-    public Set getStandardMenuNames()
+    public Set<String> getStandardMenuNames()
     {
         // return standard menu names defined for session
         return sessionContext.getStandardMenuNames();
@@ -809,7 +809,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    public Set getCustomMenuNames() throws NodeNotFoundException
+    public Set<String> getCustomMenuNames() throws NodeNotFoundException
     {
         // menus only available for concrete page requests
         if (isConcretePage())
@@ -819,21 +819,21 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
             // return available menu definition names from
             // current request page and page template if not
             // previously cached in this context
-            Set standardMenuNames = sessionContext.getStandardMenuNames();
+            Set<String> standardMenuNames = sessionContext.getStandardMenuNames();
             if ((page != null) && (standardMenuNames != null) && (pageMenuDefinitionNames == null))
             {
-                List pageLocators = sessionContext.getMenuDefinitionLocators(page);
-                List pageTemplateLocators = ((pageTemplate != null) ? sessionContext.getMenuDefinitionLocators(pageTemplate) : null);
+                List<SiteViewMenuDefinitionLocator> pageLocators = sessionContext.getMenuDefinitionLocators(page);
+                List<SiteViewMenuDefinitionLocator> pageTemplateLocators = ((pageTemplate != null) ? sessionContext.getMenuDefinitionLocators(pageTemplate) : null);
                 if ((pageLocators != null) || (pageTemplateLocators != null))
                 {
                     // get custom definition names
-                    pageMenuDefinitionNames = Collections.synchronizedSet(new HashSet(8));
+                    pageMenuDefinitionNames = Collections.synchronizedSet(new HashSet<String>(8));
                     mergeMenuDefinitionLocatorNames(pageLocators, standardMenuNames, pageMenuDefinitionNames);
                     mergeMenuDefinitionLocatorNames(pageTemplateLocators, standardMenuNames, pageMenuDefinitionNames);
                 }
                 else
                 {
-                    pageMenuDefinitionNames = Collections.synchronizedSet(new HashSet(0));
+                    pageMenuDefinitionNames = Collections.synchronizedSet(new HashSet<String>(0));
                 }
             }
             return pageMenuDefinitionNames;
@@ -848,7 +848,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @param excludeNames excluded names set
      * @param names merged names set
      */
-    private void mergeMenuDefinitionLocatorNames(List locators, Set excludeNames, Set names)
+    private void mergeMenuDefinitionLocatorNames(List<SiteViewMenuDefinitionLocator> locators, Set<String> excludeNames, Set<String> names)
     {
         // merge menu definition locator names
         if (locators != null)
@@ -893,7 +893,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
      * @throws NodeNotFoundException if page not found
      * @throws SecurityException if page view access not granted
      */
-    public Menu getMenu(String name, Set names) throws NodeNotFoundException
+    public Menu getMenu(String name, Set<String> names) throws NodeNotFoundException
     {
         if (name != null)
         {
@@ -918,7 +918,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                     // lookup and return cached relative/request menus
                     if (menuDefinitionLocatorCache != null)
                     {
-                        MenuImpl menu = (MenuImpl)menuDefinitionLocatorCache.get(locator);
+                        MenuImpl menu = menuDefinitionLocatorCache.get(locator);
                         if (menu != null)
                         {
                             return menu;
@@ -952,7 +952,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                         // cache relative menu for request
                         if (menuDefinitionLocatorCache == null)
                         {
-                            menuDefinitionLocatorCache = Collections.synchronizedMap(new HashMap(8));
+                            menuDefinitionLocatorCache = Collections.synchronizedMap(new HashMap<SiteViewMenuDefinitionLocator,MenuImpl>(8));
                         }
                         menuDefinitionLocatorCache.put(locator, menu);
                     }
@@ -961,7 +961,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                         // cache absolute menu for session
                         if (sessionContext.getMenuDefinitionLocatorCache() == null)
                         {
-                            sessionContext.setMenuDefinitionLocatorCache(Collections.synchronizedMap(new HashMap(8)));
+                            sessionContext.setMenuDefinitionLocatorCache(Collections.synchronizedMap(new HashMap<SiteViewMenuDefinitionLocator,MenuImpl>(8)));
                         }
                         sessionContext.getMenuDefinitionLocatorCache().put(locator, menu);
                     }
@@ -1005,7 +1005,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         if ((nodes != null) && !nodes.isEmpty())
         {
             // filter node views in node set
-            List filteredNodes = null;
+            List<Node> filteredNodes = null;
             Iterator nodesIter = nodes.iterator();
             while (nodesIter.hasNext())
             {
@@ -1017,7 +1017,7 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                     // and copy preceding node views
                     if (filteredNodes == null)
                     {
-                        filteredNodes = new ArrayList(nodes.size());
+                        filteredNodes = new ArrayList<Node>(nodes.size());
                         Iterator copyIter = nodes.iterator();
                         while (copyIter.hasNext())
                         {

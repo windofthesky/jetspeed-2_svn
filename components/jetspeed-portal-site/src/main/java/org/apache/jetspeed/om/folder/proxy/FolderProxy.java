@@ -16,17 +16,6 @@
  */
 package org.apache.jetspeed.om.folder.proxy;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.DynamicPage;
@@ -52,6 +41,17 @@ import org.apache.jetspeed.page.document.proxy.NodeProxy;
 import org.apache.jetspeed.page.document.proxy.NodeSetImpl;
 import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 import org.apache.jetspeed.portalsite.view.SiteViewSearchPath;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * This class proxies PSML Folder instances to create a logical view
@@ -193,7 +193,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      * searchFolders - search folder objects along view search paths
      *                 in most to least specific order
      */
-    private List searchFolders;
+    private List<SearchFolder> searchFolders;
 
     /**
      * InheritanceFolder - data object used hold aggregated concrete search
@@ -215,7 +215,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      * inheritanceFolders - inheritance graph folder list in most to
      *                      least specific order
      */
-    private List inheritanceFolders;
+    private List<InheritanceFolder> inheritanceFolders;
         
     /**
      * newInstance - creates a new proxy instance that implements the Folder interface
@@ -260,125 +260,125 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
      * @param args method arguments
      * @throws Throwable
      */
-    public Object invoke(Object proxy, Method m, Object [] args) throws Throwable
+    public Object invoke(Object proxy, Method method, Object [] args) throws Throwable
     {
         // proxy implementation method dispatch
-        if (m.equals(GET_ALL_METHOD))
+        if (method.equals(GET_ALL_METHOD))
         {
             return getAll(proxy);
         }
-        else if (m.equals(GET_DEFAULT_PAGE_METHOD))
+        else if (method.equals(GET_DEFAULT_PAGE_METHOD))
         {
             return getDefaultPage(proxy);
         }
-        else if (m.equals(GET_DYNAMIC_PAGES_METHOD))
+        else if (method.equals(GET_DYNAMIC_PAGES_METHOD))
         {
             return getDynamicPages(proxy);
         }
-        else if (m.equals(GET_DYNAMIC_PAGE_METHOD))
+        else if (method.equals(GET_DYNAMIC_PAGE_METHOD))
         {
             return getDynamicPage(proxy, (String)args[0]);
         }
-        else if (m.equals(GET_FOLDERS_METHOD))
+        else if (method.equals(GET_FOLDERS_METHOD))
         {
             return getFolders(proxy);
         }
-        else if (m.equals(GET_FOLDER_METHOD))
+        else if (method.equals(GET_FOLDER_METHOD))
         {
             return getFolder(proxy, (String)args[0]);
         }
-        else if (m.equals(GET_FRAGMENT_DEFINITIONS_METHOD))
+        else if (method.equals(GET_FRAGMENT_DEFINITIONS_METHOD))
         {
             return getFragmentDefinitions(proxy);
         }
-        else if (m.equals(GET_FRAGMENT_DEFINITION_METHOD))
+        else if (method.equals(GET_FRAGMENT_DEFINITION_METHOD))
         {
             return getFragmentDefinition(proxy, (String)args[0]);
         }
-        else if (m.equals(GET_LINKS_METHOD))
+        else if (method.equals(GET_LINKS_METHOD))
         {
             return getLinks(proxy);
         }
-        else if (m.equals(GET_LINK_METHOD))
+        else if (method.equals(GET_LINK_METHOD))
         {
             return getLink(proxy, (String)args[0]);
         }
-        else if (m.equals(GET_MENU_DEFINITIONS_METHOD))
+        else if (method.equals(GET_MENU_DEFINITIONS_METHOD))
         {
             return getMenuDefinitions();
         }
-        else if (m.equals(GET_METADATA_METHOD))
+        else if (method.equals(GET_METADATA_METHOD))
         {
             return getMetadata();
         }
-        else if (m.equals(GET_NAME_METHOD))
+        else if (method.equals(GET_NAME_METHOD))
         {
             return getName();
         }
-        else if (m.equals(GET_PAGES_METHOD))
+        else if (method.equals(GET_PAGES_METHOD))
         {
             return getPages(proxy);
         }
-        else if (m.equals(GET_PAGE_METHOD))
+        else if (method.equals(GET_PAGE_METHOD))
         {
             return getPage(proxy, (String)args[0]);
         }
-        else if (m.equals(GET_PAGE_TEMPLATES_METHOD))
+        else if (method.equals(GET_PAGE_TEMPLATES_METHOD))
         {
             return getPageTemplates(proxy);
         }
-        else if (m.equals(GET_PAGE_TEMPLATE_METHOD))
+        else if (method.equals(GET_PAGE_TEMPLATE_METHOD))
         {
             return getPageTemplate(proxy, (String)args[0]);
         }
-        else if (m.equals(GET_SHORT_TITLE_LOCALE_METHOD))
+        else if (method.equals(GET_SHORT_TITLE_LOCALE_METHOD))
         {
             return getShortTitle((Locale)args[0]);
         }
-        else if (m.equals(GET_SHORT_TITLE_METHOD))
+        else if (method.equals(GET_SHORT_TITLE_METHOD))
         {
             return getShortTitle();
         }
-        else if (m.equals(GET_TITLE_LOCALE_METHOD))
+        else if (method.equals(GET_TITLE_LOCALE_METHOD))
         {
             return getTitle((Locale)args[0]);
         }
-        else if (m.equals(GET_TITLE_METHOD))
+        else if (method.equals(GET_TITLE_METHOD))
         {
             return getTitle();
         }
-        else if (m.equals(GET_PARENT_METHOD))
+        else if (method.equals(GET_PARENT_METHOD))
         {
             return getParent();
         }
-        else if (m.equals(GET_PATH_METHOD))
+        else if (method.equals(GET_PATH_METHOD))
         {
             return getPath();
         }
-        else if (m.equals(GET_URL_METHOD))
+        else if (method.equals(GET_URL_METHOD))
         {
             return getUrl();
         }
-        else if (m.equals(EQUALS_METHOD))
+        else if (method.equals(EQUALS_METHOD))
         {
             return new Boolean(equals(args[0]));
         }
-        else if (m.equals(HASH_CODE_METHOD))
+        else if (method.equals(HASH_CODE_METHOD))
         {
             return new Integer(hashCode());
         }
-        else if (m.equals(IS_HIDDEN_METHOD))
+        else if (method.equals(IS_HIDDEN_METHOD))
         {
             return new Boolean(isHidden());
         }
-        else if (m.equals(TO_STRING_METHOD))
+        else if (method.equals(TO_STRING_METHOD))
         {
             return toString();
         }
     
         // proxy suppression of not implemented or mutable methods
-        if (m.equals(GET_PAGE_SECURITY_METHOD) ||
-            m.getName().startsWith("set"))
+        if (method.equals(GET_PAGE_SECURITY_METHOD) ||
+            method.getName().startsWith("set"))
         {
             throw new RuntimeException("Folder instance is immutable from proxy.");
         }
@@ -386,7 +386,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         try
         {
             // attempt to invoke method on delegate Folder instance
-            return m.invoke(defaultFolderReference.getFolder(), args);
+            return method.invoke(defaultFolderReference.getFolder(), args);
         }
         catch (InvocationTargetException ite)
         {
@@ -1092,8 +1092,8 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         try
         {
             // get children proxies
-            List allChildren = new ArrayList();
-            List folderDocumentOrder = null;
+            List<Node> allChildren = new ArrayList<Node>();
+            List<String> folderDocumentOrder = null;
             Iterator foldersIter = getSearchFolders().iterator();
             while (foldersIter.hasNext())
             {
@@ -1160,7 +1160,7 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                 // capture most specific document ordering
                 if (folderDocumentOrder == null)
                 {
-                    List documentOrder = folder.getDocumentOrder();
+                    List<String> documentOrder = folder.getDocumentOrder();
                     if ((documentOrder != null) && !documentOrder.isEmpty()) 
                     {
                         folderDocumentOrder = documentOrder;
@@ -1173,13 +1173,13 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             if (allChildren.size() > 1)
             {
                 final List order = folderDocumentOrder;
-                Comparator comparator = new Comparator()
+                Comparator<Node> comparator = new Comparator<Node>()
                     {
-                        public int compare(Object proxyNode1, Object proxyNode2)
+                        public int compare(Node proxyNode1, Node proxyNode2)
                         {
                             // compare names of nodes against order or each other by default
-                            String name1 = ((Node)proxyNode1).getName();
-                            String name2 = ((Node)proxyNode2).getName();
+                            String name1 = proxyNode1.getName();
+                            String name2 = proxyNode2.getName();
                             if (order != null)
                             {
                                 // compare names against order
@@ -1233,8 +1233,8 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         if (searchFolders == null)
         {
             // search for existing folders along search paths
-            List searchPaths = getView().getSearchPaths();
-            searchFolders = new ArrayList(searchPaths.size());
+            List<SiteViewSearchPath> searchPaths = getView().getSearchPaths();
+            searchFolders = new ArrayList<SearchFolder>(searchPaths.size());
             Iterator pathsIter = searchPaths.iterator();
             while (pathsIter.hasNext())
             {
@@ -1303,11 +1303,11 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             List searchFolders = folder.getSearchFolders();
             if (getParent() != null)
             {
-                inheritanceFolders = new ArrayList(searchFolders.size() * 2);
+                inheritanceFolders = new ArrayList<InheritanceFolder>(searchFolders.size() * 2);
             }
             else
             {
-                inheritanceFolders = new ArrayList(searchFolders.size());
+                inheritanceFolders = new ArrayList<InheritanceFolder>(searchFolders.size());
             }        
             do
             {

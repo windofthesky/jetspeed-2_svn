@@ -16,10 +16,6 @@
  */
 package org.apache.jetspeed.portalsite.view;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
 import org.apache.jetspeed.om.page.DynamicPage;
@@ -32,6 +28,10 @@ import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.page.document.NodeNotFoundException;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * This class defines a physical view of site content.
  * 
@@ -40,7 +40,7 @@ import org.apache.jetspeed.page.document.NodeNotFoundException;
  */
 public class PhysicalSiteView extends AbstractSiteView
 {
-    private static final List NULL_LOCATORS = new ArrayList(0);
+    private static final List<SiteViewMenuDefinitionLocator> NULL_LOCATORS = new ArrayList<SiteViewMenuDefinitionLocator>(0);
     
     /**
      * userPrincipal - user principal for view
@@ -50,7 +50,7 @@ public class PhysicalSiteView extends AbstractSiteView
     /**
      * menuDefinitionLocatorsCache - cached menu definition locators
      */
-    private ConcurrentHashMap menuDefinitionLocatorsCache = new ConcurrentHashMap();
+    private ConcurrentHashMap<String,List<SiteViewMenuDefinitionLocator>> menuDefinitionLocatorsCache = new ConcurrentHashMap<String,List<SiteViewMenuDefinitionLocator>>();
     
     /**
      * PhysicalSiteView - basic constructor
@@ -111,11 +111,11 @@ public class PhysicalSiteView extends AbstractSiteView
      * @param node node view
      * @return definition locator list
      */
-    public List getMenuDefinitionLocators(Node node)
+    public List<SiteViewMenuDefinitionLocator> getMenuDefinitionLocators(Node node)
     {
         // access cached menu definition locators
         String path = node.getPath();
-        List locators = (List)menuDefinitionLocatorsCache.get(path);
+        List<SiteViewMenuDefinitionLocator> locators = menuDefinitionLocatorsCache.get(path);
         if (locators == null)
         {
             if (node instanceof Folder)
@@ -142,7 +142,7 @@ public class PhysicalSiteView extends AbstractSiteView
                 // locator defaults
                 Page page = (Page)node;
                 Folder folder = (Folder)node.getParent();
-                locators = SiteViewUtils.mergeMenuDefinitionLocators(page.getMenuDefinitions(), page, folder.getPath(), true, locators);
+                locators = SiteViewUtils.mergeMenuDefinitionLocators(page.getMenuDefinitions(), page, folder.getPath(), true, null);
                 locators = SiteViewUtils.mergeMenuDefinitionLocators(getMenuDefinitionLocators(folder), locators);
             }
             else if (node instanceof DynamicPage)
@@ -154,7 +154,7 @@ public class PhysicalSiteView extends AbstractSiteView
                 // locator defaults
                 DynamicPage dynamicPage = (DynamicPage)node;
                 Folder folder = (Folder)node.getParent();
-                locators = SiteViewUtils.mergeMenuDefinitionLocators(dynamicPage.getMenuDefinitions(), dynamicPage, folder.getPath(), true, locators);
+                locators = SiteViewUtils.mergeMenuDefinitionLocators(dynamicPage.getMenuDefinitions(), dynamicPage, folder.getPath(), true, null);
                 locators = SiteViewUtils.mergeMenuDefinitionLocators(getMenuDefinitionLocators(folder), locators);
             }
             else if (node instanceof PageTemplate)
@@ -162,10 +162,10 @@ public class PhysicalSiteView extends AbstractSiteView
                 // merge only page template menu definition locators by name
                 PageTemplate pageTemplate = (PageTemplate)node;
                 Folder folder = (Folder)node.getParent();
-                locators = SiteViewUtils.mergeMenuDefinitionLocators(pageTemplate.getMenuDefinitions(), pageTemplate, folder.getPath(), false, locators);
+                locators = SiteViewUtils.mergeMenuDefinitionLocators(pageTemplate.getMenuDefinitions(), pageTemplate, folder.getPath(), false, null);
             }
             locators = ((locators != null) ? locators : NULL_LOCATORS);
-            List cachedLocators = (List)menuDefinitionLocatorsCache.putIfAbsent(path, locators);
+            List<SiteViewMenuDefinitionLocator> cachedLocators = menuDefinitionLocatorsCache.putIfAbsent(path, locators);
             locators = ((cachedLocators != null) ? cachedLocators : locators);
         }
         return ((locators != NULL_LOCATORS) ? locators : null);

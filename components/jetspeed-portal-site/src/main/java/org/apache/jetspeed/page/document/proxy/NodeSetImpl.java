@@ -16,13 +16,13 @@
  */
 package org.apache.jetspeed.page.document.proxy;
 
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.page.document.NodeSet;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import org.apache.jetspeed.page.document.Node;
-import org.apache.jetspeed.page.document.NodeSet;
 
 /**
  * This class implements generic NodeSet ordered lists
@@ -37,14 +37,14 @@ public class NodeSetImpl implements NodeSet
     /**
      * nodes - list of proxy nodes
      */
-    private List nodes;
+    private List<Node> nodes;
 
     /**
      * NodeSetImpl - construct immutable proxy Node NodeSet list
      *
      * @param nodes list of proxy Nodes
      */
-    public NodeSetImpl(List nodes)
+    public NodeSetImpl(List<Node> nodes)
     {
         this.nodes = nodes;
     }
@@ -90,7 +90,7 @@ public class NodeSetImpl implements NodeSet
     public NodeSet subset(String type)
     {
         // search for matching nodes
-        List subsetNodes = null;
+        List<Node> subsetNodes = null;
         Iterator nodesIter = nodes.iterator();
         while (nodesIter.hasNext())
         {
@@ -99,7 +99,7 @@ public class NodeSetImpl implements NodeSet
             {
                 if (subsetNodes == null)
                 {
-                    subsetNodes = new ArrayList(nodes.size());
+                    subsetNodes = new ArrayList<Node>(nodes.size());
                 }
                 subsetNodes.add(node);
             }
@@ -122,7 +122,7 @@ public class NodeSetImpl implements NodeSet
     public NodeSet inclusiveSubset(String regex)
     {
         // search for matching nodes
-        List subsetNodes = null;
+        List<Node> subsetNodes = null;
         Pattern pattern = Pattern.compile(regex);
         Iterator nodesIter = nodes.iterator();
         while (nodesIter.hasNext())
@@ -132,7 +132,7 @@ public class NodeSetImpl implements NodeSet
             {
                 if (subsetNodes == null)
                 {
-                    subsetNodes = new ArrayList(nodes.size());
+                    subsetNodes = new ArrayList<Node>(nodes.size());
                 }
                 subsetNodes.add(node);
             }
@@ -155,7 +155,7 @@ public class NodeSetImpl implements NodeSet
     public NodeSet exclusiveSubset(String regex)
     {
         // search for matching nodes
-        List subsetNodes = null;
+        List<Node> subsetNodes = null;
         Pattern pattern = Pattern.compile(regex);
         Iterator nodesIter = nodes.iterator();
         while (nodesIter.hasNext())
@@ -165,7 +165,7 @@ public class NodeSetImpl implements NodeSet
             {
                 if (subsetNodes == null)
                 {
-                    subsetNodes = new ArrayList(nodes.size());
+                    subsetNodes = new ArrayList<Node>(nodes.size());
                 }
                 subsetNodes.add(node);
             }

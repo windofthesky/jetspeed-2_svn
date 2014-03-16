@@ -83,7 +83,7 @@ public abstract class SearchPathsSiteViewProxy
      * @param methodName method name
      * @param methodArgs array of type, class, or interface parameter types
      */
-    protected static Method reflectMethod(Class methodClass, String methodName, Class [] methodArgs)
+    protected static Method reflectMethod(Class<?> methodClass, String methodName, Class<?> [] methodArgs)
     {
         // trap reflection exceptions
         try

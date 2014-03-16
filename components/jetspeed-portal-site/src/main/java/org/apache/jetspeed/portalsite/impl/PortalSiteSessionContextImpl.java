@@ -16,18 +16,6 @@
  */
 package org.apache.jetspeed.portalsite.impl;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpSessionActivationListener;
-import javax.servlet.http.HttpSessionBindingEvent;
-import javax.servlet.http.HttpSessionBindingListener;
-import javax.servlet.http.HttpSessionEvent;
-
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.BaseFragmentsElement;
 import org.apache.jetspeed.om.page.DynamicPage;
@@ -49,9 +37,19 @@ import org.apache.jetspeed.portalsite.view.SearchPathsSiteView;
 import org.apache.jetspeed.portalsite.view.SiteViewMenuDefinitionLocator;
 import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.ProfileLocatorProperty;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpSessionActivationListener;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
+import javax.servlet.http.HttpSessionEvent;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class encapsulates managed session state for and
@@ -95,7 +93,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     /**
      * profileLocators - map of session profile locators by locator names
      */
-    private transient Map profileLocators;
+    private transient Map<String,ProfileLocator> profileLocators;
 
     /**
      * forceReservedVisible - force reserved/hidden folders visible in site view
@@ -115,13 +113,13 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     /**
      * folderPageHistory - map of last page visited by folder 
      */
-    private transient Map folderPageHistory;
+    private transient Map<String,String> folderPageHistory;
 
     /**
      * menuDefinitionLocatorCache - cached menu definition locators for
      *                              absolute menus valid for session
      */
-    private transient Map menuDefinitionLocatorCache;
+    private transient Map<SiteViewMenuDefinitionLocator,MenuImpl> menuDefinitionLocatorCache;
 
     /**
      * subscribed - flag that indicates whether this context
@@ -159,7 +157,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @param requestUserPrincipal request user principal
      * @return new request context instance
      */
-    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal)
+    public PortalSiteRequestContext newRequestContext(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal)
     {
         return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, true, true, false, false);
     }
@@ -173,7 +171,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *                        if locators do not select a page or access is forbidden
      * @return new request context instance
      */
-    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback)
+    public PortalSiteRequestContext newRequestContext(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestFallback)
     {
         return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, requestFallback, true, false, false);
     }
@@ -189,7 +187,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *                   history to select default page per site folder
      * @return new request context instance
      */
-    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory)
+    public PortalSiteRequestContext newRequestContext(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory)
     {
         return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, false, false);
     }
@@ -207,7 +205,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @param forceTemplatesAccessible force templates accessible to requests in site view
      * @return new request context instance
      */
-    public PortalSiteRequestContext newRequestContext(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible)
+    public PortalSiteRequestContext newRequestContext(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible)
     {
         return new PortalSiteRequestContextImpl(this, requestProfileLocators, requestUserPrincipal, requestFallback, useHistory, forceReservedVisible, forceTemplatesAccessible);
     }
@@ -318,7 +316,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public BaseFragmentsElement selectRequestPageOrTemplate(Map requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible, String [] requestPageContentPath) throws NodeNotFoundException
+    public BaseFragmentsElement selectRequestPageOrTemplate(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible, String [] requestPageContentPath) throws NodeNotFoundException
     {
         return selectRequestPageOrTemplate(requestProfileLocators, null, null, requestUserPrincipal, requestFallback, useHistory, forceReservedVisible, forceTemplatesAccessible, requestPageContentPath);
     }
@@ -341,7 +339,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    private BaseFragmentsElement selectRequestPageOrTemplate(Map requestProfileLocators, String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible, String [] requestPageContentPath) throws NodeNotFoundException
+    private BaseFragmentsElement selectRequestPageOrTemplate(Map<String,ProfileLocator> requestProfileLocators, String requestPath, String requestServerName, String requestUserPrincipal, boolean requestFallback, boolean useHistory, boolean forceReservedVisible, boolean forceTemplatesAccessible, String [] requestPageContentPath) throws NodeNotFoundException
     {
         // validate and update session profile locators if modified
         if (updateSessionProfileLocators(requestProfileLocators, requestUserPrincipal, forceReservedVisible))
@@ -1163,7 +1161,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @throws NodeNotFoundException if not found
      * @throws SecurityException if view access not granted
      */
-    public Folder getRequestRootFolder(Map requestProfileLocators, String requestUserPrincipal, boolean requestForceReservedVisible) throws NodeNotFoundException
+    public Folder getRequestRootFolder(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestForceReservedVisible) throws NodeNotFoundException
     {
         // validate and update session profile locators if modified
         if (updateSessionProfileLocators(requestProfileLocators, requestUserPrincipal, requestForceReservedVisible))
@@ -1190,7 +1188,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @param requestForceReservedVisible force reserved/hidden folders visible for request
      * @return profile locators validation flag
      */
-    private boolean updateSessionProfileLocators(Map requestProfileLocators, String requestUserPrincipal, boolean requestForceReservedVisible)
+    private boolean updateSessionProfileLocators(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestForceReservedVisible)
     {
         // valid request profile locators are required
         if ((requestProfileLocators == null) || !requestProfileLocators.isEmpty())
@@ -1337,7 +1335,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         while (view == null)
         {
             // access site view and test for creation
-            Map createViewProfileLocators = null;
+            Map<String,ProfileLocator> createViewProfileLocators = null;
             String createViewUserPrincipal = null;
             boolean createView = false;
             synchronized (this)
@@ -1433,7 +1431,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
     /**
      * getProfileLocators - get session profile locators
      */
-    public Map getProfileLocators()
+    public Map<String,ProfileLocator> getProfileLocators()
     {
         return profileLocators;
     }
@@ -1443,7 +1441,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *  
      * @return menu names set
      */
-    public Set getStandardMenuNames()
+    public Set<String> getStandardMenuNames()
     {
         // return standard menu names defined for site view
         AbstractSiteView view = getSiteView();
@@ -1457,7 +1455,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @param node site view node view
      * @return definition locator list
      */
-    public List getMenuDefinitionLocators(Node node)
+    public List<SiteViewMenuDefinitionLocator> getMenuDefinitionLocators(Node node)
     {
         // return menu definition locators for node in site view
         AbstractSiteView view = getSiteView();
@@ -1483,7 +1481,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * getManagedPageOrTemplate - get managed page, page template, dynamic page, or
      *                            fragment definition instance from page view
      *  
-     * @param page page view
+     * @param pageOrTemplate page view
      * @return managed page
      */
     public BaseFragmentsElement getManagedPageOrTemplate(BaseFragmentsElement pageOrTemplate)
@@ -1556,10 +1554,10 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *
      * @param requestProfileLocators map of profile locators for request
      * @param requestUserPrincipal request user principal
-     * @param forceReservedVisible force reserved/hidden folders visible for request
+     * @param requestForceReservedVisible force reserved/hidden folders visible for request
      * @return user folder path or null
      */
-    public String getUserFolderPath(Map requestProfileLocators, String requestUserPrincipal, boolean requestForceReservedVisible)
+    public String getUserFolderPath(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestForceReservedVisible)
     {
         // validate and update session profile locators if modified
         if (updateSessionProfileLocators(requestProfileLocators, requestUserPrincipal, forceReservedVisible))
@@ -1576,10 +1574,10 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *
      * @param requestProfileLocators map of profile locators for request
      * @param requestUserPrincipal request user principal
-     * @param forceReservedVisible force reserved/hidden folders visible for request
+     * @param requestForceReservedVisible force reserved/hidden folders visible for request
      * @return base folder path or null
      */
-    public String getBaseFolderPath(Map requestProfileLocators, String requestUserPrincipal, boolean requestForceReservedVisible)
+    public String getBaseFolderPath(Map<String,ProfileLocator> requestProfileLocators, String requestUserPrincipal, boolean requestForceReservedVisible)
     {
         // validate and update session profile locators if modified
         if (updateSessionProfileLocators(requestProfileLocators, requestUserPrincipal, forceReservedVisible))
@@ -1597,7 +1595,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *
      * @return menu definition locators cache
      */
-    public Map getMenuDefinitionLocatorCache()
+    public Map<SiteViewMenuDefinitionLocator,MenuImpl> getMenuDefinitionLocatorCache()
     {
         return menuDefinitionLocatorCache;
     }
@@ -1608,7 +1606,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      *
      * @return menu definition locators cache
      */
-    public void setMenuDefinitionLocatorCache(Map cache)
+    public void setMenuDefinitionLocatorCache(Map<SiteViewMenuDefinitionLocator,MenuImpl> cache)
     {
         menuDefinitionLocatorCache = cache;
     }
@@ -1910,11 +1908,11 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         }
     }
 
-	private synchronized Map getFolderPageHistory()
+	private synchronized Map<String,String> getFolderPageHistory()
     {
 		if (folderPageHistory == null)
         {
-			folderPageHistory = new HashMap();
+			folderPageHistory = new HashMap<String,String>();
 		}
 		return folderPageHistory;
 	}
