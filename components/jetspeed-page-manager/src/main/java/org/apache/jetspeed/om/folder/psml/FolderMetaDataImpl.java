@@ -23,7 +23,6 @@ import org.apache.jetspeed.om.page.psml.DefaultsImpl;
 import org.apache.jetspeed.om.page.psml.DocumentImpl;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -229,10 +228,9 @@ public class FolderMetaDataImpl extends DocumentImpl implements Document
         // to all menu definitions
         if (menuDefinitions != null)
         {
-            Iterator menuIter = menuDefinitions.iterator();
-            while (menuIter.hasNext())
+            for (MenuDefinition menu : menuDefinitions)
             {
-                ((MenuDefinitionImpl)menuIter.next()).unmarshalled();
+                ((MenuDefinitionImpl)menu).unmarshalled();
             }
         }
         
@@ -249,10 +247,9 @@ public class FolderMetaDataImpl extends DocumentImpl implements Document
         // to all menu definitions
         if (menuDefinitions != null)
         {
-            Iterator menuIter = menuDefinitions.iterator();
-            while (menuIter.hasNext())
+            for (MenuDefinition menu : menuDefinitions)
             {
-                ((MenuDefinitionImpl)menuIter.next()).marshalling();
+                ((MenuDefinitionImpl)menu).marshalling();
             }
         }
 

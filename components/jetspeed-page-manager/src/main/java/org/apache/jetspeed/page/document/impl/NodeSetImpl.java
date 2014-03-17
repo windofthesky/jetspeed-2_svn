@@ -145,10 +145,8 @@ public class NodeSetImpl implements NodeSet
     public NodeSet subset(String type)
     {
         NodeSetImpl subset = new NodeSetImpl(comparator);
-        Iterator nodeItr = iterator();
-        while (nodeItr.hasNext())
+        for (Node node : this)
         {
-            Node node = (Node) nodeItr.next();
             if (node.getType().equals(type))
             {
                 subset.add(node);
@@ -164,10 +162,8 @@ public class NodeSetImpl implements NodeSet
     {
         Pattern pattern = getCachedPattern(regex);
         NodeSetImpl subset = new NodeSetImpl(comparator);
-        Iterator nodeItr = iterator();
-        while (nodeItr.hasNext())
+        for (Node node : this)
         {
-            Node node = (Node) nodeItr.next();
             if (pattern.matcher(node.getName()).matches())
             {
                 subset.add(node);
@@ -183,10 +179,8 @@ public class NodeSetImpl implements NodeSet
     {
         Pattern pattern = getCachedPattern(regex);
         NodeSetImpl subset = new NodeSetImpl(comparator);
-        Iterator nodeItr = iterator();
-        while (nodeItr.hasNext())
+        for (Node node : this)
         {
-            Node node = (Node) nodeItr.next();
             if (!pattern.matcher(node.getName()).matches())
             {
                 subset.add(node);

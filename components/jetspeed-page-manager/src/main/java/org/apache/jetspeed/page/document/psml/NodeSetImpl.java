@@ -160,10 +160,8 @@ public class NodeSetImpl implements NodeSet
         {
             subset = new NodeSetImpl(resolveToPath, comparator);
 
-            Iterator nodeItr = nodes.values().iterator();
-            while (nodeItr.hasNext())
+            for (Node node : this)
             {
-                Node node = (Node) nodeItr.next();
                 if (node.getType().equals(type))
                 {
                     subset.add(node);
@@ -190,20 +188,17 @@ public class NodeSetImpl implements NodeSet
      */
     public NodeSet exclusiveSubset( String regex )
     {
-        Iterator allNodes = nodes.entrySet().iterator();
         NodeSetImpl subset = new NodeSetImpl(resolveToPath, comparator);
-        final Pattern pattern = getPattern(regex);
-        while (allNodes.hasNext())
+        Pattern pattern = getPattern(regex);
+        for (Map.Entry<String,Node> entry : nodes.entrySet())
         {
-            Map.Entry entry = (Map.Entry) allNodes.next();
-            Node node = (Node) entry.getValue();
-            String key = (String) entry.getKey();
+            Node node = entry.getValue();
+            String key = entry.getKey();
             if (!matches(pattern, key) && !matches(pattern, node.getName()))
             {
                 subset.add(node);
             }
         }
-        
         return subset;
     }
 
@@ -218,20 +213,17 @@ public class NodeSetImpl implements NodeSet
      */
     public NodeSet inclusiveSubset( String regex )
     {
-        Iterator allNodes = nodes.entrySet().iterator();
         NodeSetImpl subset = new NodeSetImpl(resolveToPath, comparator);
-        final Pattern pattern = getPattern(regex);
-        while (allNodes.hasNext())
+        Pattern pattern = getPattern(regex);
+        for (Map.Entry<String,Node> entry : nodes.entrySet())
         {
-            Map.Entry entry = (Map.Entry) allNodes.next();
-            String key = (String) entry.getKey();
-            Node node = (Node) entry.getValue();
+            String key = entry.getKey();
+            Node node = entry.getValue();
             if (matches(pattern, key) || matches(pattern, node.getName()))
             {
                 subset.add(node);
             }
         }
-        
         return subset;
     }
     

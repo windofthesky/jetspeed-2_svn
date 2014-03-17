@@ -81,7 +81,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -257,7 +256,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * updatePage
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#updatePage(org.apache.jetspeed.om.page.Page)
+     * @see org.apache.jetspeed.page.PageManager#updatePage(org.apache.jetspeed.om.page.Page)
      */
     public void updatePage(Page page) throws NodeException
     {
@@ -270,7 +269,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * updatePageTemplate
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#updatePageTemplate(org.apache.jetspeed.om.page.PageTemplate)
+     * @see org.apache.jetspeed.page.PageManager#updatePageTemplate(org.apache.jetspeed.om.page.PageTemplate)
      */
     public void updatePageTemplate(PageTemplate pageTemplate) throws NodeException
     {
@@ -283,7 +282,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * updateDynamicPage
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#updateDynamicPage(org.apache.jetspeed.om.page.DynamicPage)
+     * @see org.apache.jetspeed.page.PageManager#updateDynamicPage(org.apache.jetspeed.om.page.DynamicPage)
      */
     public void updateDynamicPage(DynamicPage dynamicPage) throws NodeException
     {
@@ -296,7 +295,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * updateFragmentDefinition
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#updateFragmentDefinition(org.apache.jetspeed.om.page.FragmentDefinition)
+     * @see org.apache.jetspeed.page.PageManager#updateFragmentDefinition(org.apache.jetspeed.om.page.FragmentDefinition)
      */
     public void updateFragmentDefinition(FragmentDefinition fragmentDefinition) throws NodeException
     {
@@ -432,7 +431,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * removePage
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#removePage(org.apache.jetspeed.om.page.Page)
+     * @see org.apache.jetspeed.page.PageManager#removePage(org.apache.jetspeed.om.page.Page)
      */
     public void removePage(Page page) throws NodeException
     {
@@ -445,7 +444,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * removePageTemplate
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#removePageTemplate(org.apache.jetspeed.om.page.PageTemplate)
+     * @see org.apache.jetspeed.page.PageManager#removePageTemplate(org.apache.jetspeed.om.page.PageTemplate)
      */
     public void removePageTemplate(PageTemplate pageTemplate) throws NodeException
     {
@@ -458,7 +457,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * removeDynamicPage
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#removeDynamicPage(org.apache.jetspeed.om.page.DynamicPage)
+     * @see org.apache.jetspeed.page.PageManager#removeDynamicPage(org.apache.jetspeed.om.page.DynamicPage)
      */
     public void removeDynamicPage(DynamicPage dynamicPage) throws NodeException
     {
@@ -471,7 +470,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * removeFragmentDefinition
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#removeFragmentDefinition(org.apache.jetspeed.om.page.FragmentDefinition)
+     * @see org.apache.jetspeed.page.PageManager#removeFragmentDefinition(org.apache.jetspeed.om.page.FragmentDefinition)
      */
     public void removeFragmentDefinition(FragmentDefinition fragmentsDefinition) throws NodeException
     {
@@ -547,7 +546,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * updateLink
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#updateLink(org.apache.jetspeed.om.page.Link)
+     * @see org.apache.jetspeed.page.PageManager#updateLink(org.apache.jetspeed.om.page.Link)
      */
     public void updateLink(Link link) throws NodeException
     {
@@ -627,7 +626,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * removeLink
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#removeLink(org.apache.jetspeed.om.page.Link)
+     * @see org.apache.jetspeed.page.PageManager#removeLink(org.apache.jetspeed.om.page.Link)
      */
     public void removeLink(Link link) throws NodeException
     {
@@ -964,7 +963,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * updateFolder
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#updateFolder(org.apache.jetspeed.om.folder.Folder)
+     * @see org.apache.jetspeed.page.PageManager#updateFolder(org.apache.jetspeed.om.folder.Folder)
      */
     public void updateFolder(Folder folder) throws NodeException, FolderNotUpdatedException
     {
@@ -1069,7 +1068,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * updateFolderNodes - recursively update all folder nodes
      *
      * @param folderImpl folder whose nodes are to be updated
-     * @param throws FolderNotUpdatedException
+     * @throws FolderNotUpdatedException
      */
     private void updateFolderNodes(FolderImpl folderImpl) throws FolderNotUpdatedException
     {
@@ -1077,10 +1076,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
         {
             // update folder documents
             NodeSet nodes = folderImpl.getAllNodes();
-            Iterator nodesIter = nodes.iterator();
-            while (nodesIter.hasNext())
+            for (Node node : nodes)
             {
-                Node node = (Node) nodesIter.next();
                 if (node instanceof Page)
                 {
                     updatePage((Page)node);
@@ -1108,10 +1105,8 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
             }
 
             // update folders last: breadth first recursion
-            nodesIter = nodes.iterator();
-            while (nodesIter.hasNext())
+            for (Node node : nodes)
             {
-                Node node = (Node) nodesIter.next();
                 if (node instanceof Folder)
                 {
                     updateFolder((Folder)node, true);
@@ -1137,7 +1132,7 @@ public class CastorXmlPageManager extends AbstractPageManager implements PageMan
      * removeFolder
      * </p>
      * 
-     * @see org.apache.jetspeed.services.page.PageManagerService#removeFolder(org.apache.jetspeed.om.folder.Folder)
+     * @see org.apache.jetspeed.page.PageManager#removeFolder(org.apache.jetspeed.om.folder.Folder)
      */
     public void removeFolder(Folder folder) throws NodeException
     {

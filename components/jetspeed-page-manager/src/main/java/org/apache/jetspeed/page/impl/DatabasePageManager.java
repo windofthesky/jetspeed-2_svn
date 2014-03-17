@@ -121,7 +121,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * DatabasePageManager
@@ -1718,10 +1717,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Collection pages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (pages != null)
             {
-                Iterator pagesIter = pages.iterator();
-                while (pagesIter.hasNext())
+                @SuppressWarnings("unchecked")
+                Collection<PageImpl> pageImpls = pages;
+                for (Page page : pageImpls)
                 {
-                    updatePage((Page)pagesIter.next());
+                    updatePage(page);
                 }
             }
 
@@ -1732,10 +1732,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Collection pageTemplates = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (pageTemplates != null)
             {
-                Iterator pageTemplatesIter = pageTemplates.iterator();
-                while (pageTemplatesIter.hasNext())
+                @SuppressWarnings("unchecked")
+                Collection<PageTemplateImpl> pageTemplateImpls = pageTemplates;
+                for (PageTemplate pageTemplate : pageTemplateImpls)
                 {
-                    updatePageTemplate((PageTemplate)pageTemplatesIter.next());
+                    updatePageTemplate(pageTemplate);
                 }
             }
 
@@ -1746,10 +1747,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Collection dynamicPages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (dynamicPages != null)
             {
-                Iterator dynamicPagesIter = dynamicPages.iterator();
-                while (dynamicPagesIter.hasNext())
+                @SuppressWarnings("unchecked")
+                Collection<DynamicPageImpl> dynamicPageImpls = dynamicPages;
+                for (DynamicPage dynamicPage : dynamicPageImpls)
                 {
-                    updateDynamicPage((DynamicPage)dynamicPagesIter.next());
+                    updateDynamicPage(dynamicPage);
                 }
             }
 
@@ -1760,10 +1762,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Collection fragmentDefinitions = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (fragmentDefinitions != null)
             {
-                Iterator fragmentDefinitionsIter = fragmentDefinitions.iterator();
-                while (fragmentDefinitionsIter.hasNext())
+                @SuppressWarnings("unchecked")
+                Collection<FragmentDefinitionImpl> fragmentDefinitionImpls = fragmentDefinitions;
+                for (FragmentDefinition fragmentDefinition : fragmentDefinitionImpls)
                 {
-                    updateFragmentDefinition((FragmentDefinition)fragmentDefinitionsIter.next());
+                    updateFragmentDefinition(fragmentDefinition);
                 }
             }
 
@@ -1774,10 +1777,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Collection links = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (links != null)
             {
-                Iterator linksIter = links.iterator();
-                while (linksIter.hasNext())
+                @SuppressWarnings("unchecked")
+                Collection<LinkImpl> linkImpls = links;
+                for (Link link : linkImpls)
                 {
-                    updateLink((Link)linksIter.next());
+                    updateLink(link);
                 }
             }
 
@@ -1798,10 +1802,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Collection folders = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (folders != null)
             {
-                Iterator foldersIter = folders.iterator();
-                while (foldersIter.hasNext())
+                @SuppressWarnings("unchecked")
+                Collection<FolderImpl> folderImpls = folders;
+                for (Folder folder : folderImpls)
                 {
-                    updateFolder((Folder)foldersIter.next(), true);
+                    updateFolder(folder, true);
                 }
             }
         }
@@ -1885,10 +1890,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Collection folders = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (folders != null)
             {
-                Iterator foldersIter = folders.iterator();
-                while (foldersIter.hasNext())
+                @SuppressWarnings("unchecked")
+                Collection<FolderImpl> folderImpls = folders;
+                for (Folder folder : folderImpls)
                 {
-                    removeFolder((Folder)foldersIter.next());
+                    removeFolder(folder);
                 }
             }
 
@@ -1899,10 +1905,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Collection pages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (pages != null)
             {
-                Iterator pagesIter = pages.iterator();
-                while (pagesIter.hasNext())
+                @SuppressWarnings("unchecked")
+                Collection<PageImpl> pageImpls = pages;
+                for (Page page : pageImpls)
                 {
-                    removePage((Page)pagesIter.next());
+                    removePage(page);
                 }
             }
 
@@ -1913,10 +1920,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Collection pageTemplates = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (pageTemplates != null)
             {
-                Iterator pageTemplatesIter = pageTemplates.iterator();
-                while (pageTemplatesIter.hasNext())
+                @SuppressWarnings("unchecked")
+                Collection<PageTemplateImpl> pageTemplateImpls = pageTemplates;
+                for (PageTemplate pageTemplate : pageTemplateImpls)
                 {
-                    removePageTemplate((PageTemplate)pageTemplatesIter.next());
+                    removePageTemplate(pageTemplate);
                 }
             }
 
@@ -1927,10 +1935,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Collection dynamicPages = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (dynamicPages != null)
             {
-                Iterator dynamicPagesIter = dynamicPages.iterator();
-                while (dynamicPagesIter.hasNext())
+                @SuppressWarnings("unchecked")
+                Collection<DynamicPageImpl> dynamicPageImpls = dynamicPages;
+                for (DynamicPage dynamicPage : dynamicPageImpls)
                 {
-                    removeDynamicPage((DynamicPage)dynamicPagesIter.next());
+                    removeDynamicPage(dynamicPage);
                 }
             }
 
@@ -1941,10 +1950,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Collection fragmentDefinitions = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (fragmentDefinitions != null)
             {
-                Iterator fragmentDefinitionsIter = fragmentDefinitions.iterator();
-                while (fragmentDefinitionsIter.hasNext())
+                @SuppressWarnings("unchecked")
+                Collection<FragmentDefinitionImpl> fragmentDefinitionImpls = fragmentDefinitions;
+                for (FragmentDefinition fragmentDefinition : fragmentDefinitionImpls)
                 {
-                    removeFragmentDefinition((FragmentDefinition)fragmentDefinitionsIter.next());
+                    removeFragmentDefinition(fragmentDefinition);
                 }
             }
 
@@ -1955,10 +1965,11 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             Collection links = getPersistenceBrokerTemplate().getCollectionByQuery(query);
             if (links != null)
             {
-                Iterator linksIter = links.iterator();
-                while (linksIter.hasNext())
+                @SuppressWarnings("unchecked")
+                Collection<LinkImpl> linkImpls = links;
+                for (Link link : linkImpls)
                 {
-                    removeLink((Link)linksIter.next());
+                    removeLink(link);
                 }
             }
 
@@ -2748,11 +2759,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
             {
                 if (GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
                 {
-                    Set<Principal> principals = subject.getPrincipals();
-                    Iterator principalsIter = principals.iterator();
-                    while (principalsIter.hasNext())
+                    for (Principal principal : subject.getPrincipals())
                     {
-                        Principal principal = (Principal)principalsIter.next();
                         String principalScope = null;
                         if (principal instanceof User)
                         {
@@ -2824,11 +2832,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 {
                     if (principalFragmentPropertyLists != null)
                     {                        
-                        Set<Principal> principals = subject.getPrincipals();
-                        Iterator principalsIter = principals.iterator();
-                        while (principalsIter.hasNext())
+                        for (Principal principal : subject.getPrincipals())
                         {
-                            Principal principal = (Principal)principalsIter.next();
                             String principalScope = null;
                             if (principal instanceof User)
                             {
@@ -2845,7 +2850,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                             if (principalScope != null)
                             {
                                 String principalKey = getFragmentPropertyListPrincipalKey(principalScope, principal.getName());
-                                DatabasePageManagerCachedFragmentPropertyList principalFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)principalFragmentPropertyLists.get(principalKey);
+                                DatabasePageManagerCachedFragmentPropertyList principalFragmentPropertyList = principalFragmentPropertyLists.get(principalKey);
                                 List<FragmentProperty> principalFragmentProperties = filterPrincipalFragmentPropertyList(principalFragmentPropertyList, baseFragmentElementImpl);
                                 if (principalFragmentProperties != null)
                                 {
@@ -2875,10 +2880,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                     // this should only happen before new objects are committed
                     // and here we are assuming that only the current user has
                     // access to the new objects
-                    Iterator sourceIter = transientList.iterator();
-                    while (sourceIter.hasNext())
+                    for (FragmentProperty sourceProperty : transientList)
                     {
-                        FragmentProperty sourceProperty = (FragmentProperty)sourceIter.next();
                         FragmentProperty targetProperty = list.getMatchingProperty(sourceProperty);
                         if (targetProperty != null)
                         {
@@ -2957,11 +2960,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 {
                     allProperties.addAll(removedProperties);                    
                 }
-                Iterator allPropertiesIter = allProperties.iterator();
-                while (allPropertiesIter.hasNext())
+                for (FragmentProperty property : allProperties)
                 {
-                    FragmentPropertyImpl property = (FragmentPropertyImpl)allPropertiesIter.next();
-                    property.setFragment(baseFragmentElementImpl);
+                    ((FragmentPropertyImpl)property).setFragment(baseFragmentElementImpl);
                     String propertyScope = property.getScope();
                     String propertyScopeValue = property.getScopeValue();
                     if (updateAllScopes || ((scope == null) && (propertyScope == null)) || ((scope != null) && scope.equals(propertyScope)))
@@ -3025,10 +3026,8 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 
                 // populate properties lists for cache updates and
                 // update persistent properties
-                Iterator propertiesIter = properties.iterator();
-                while (propertiesIter.hasNext())
+                for (FragmentProperty storeProperty : properties)
                 {
-                    FragmentPropertyImpl storeProperty = (FragmentPropertyImpl)propertiesIter.next();
                     String storePropertyScope = storeProperty.getScope();
                     String storePropertyScopeValue = storeProperty.getScopeValue();
                     if (updateAllScopes || ((scope == null) && (storePropertyScope == null)) || ((scope != null) && scope.equals(storePropertyScope)))
@@ -3036,7 +3035,7 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                         // classify and decompose update into individual caches:
                         // allow update only if scoped properties list created above
                         // exists since the subject matching rules are checked there
-                        updateTransaction = (updateTransaction || (storeProperty.getIdentity() != 0));
+                        updateTransaction = (updateTransaction || (((FragmentPropertyImpl)storeProperty).getIdentity() != 0));
                         boolean store = false;
                         if (storePropertyScope == null)
                         {
@@ -3068,11 +3067,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 }
                 if (removedProperties != null)
                 {
-                    Iterator removedPropertiesIter = removedProperties.iterator();
-                    while (removedPropertiesIter.hasNext())
+                    for (FragmentProperty deleteProperty : removedProperties)
                     {
-                        FragmentPropertyImpl deleteProperty = (FragmentPropertyImpl)removedPropertiesIter.next();
-                        deleteProperty.setFragment(baseFragmentElementImpl);
+                        ((FragmentPropertyImpl)deleteProperty).setFragment(baseFragmentElementImpl);
                         String deletePropertyScope = deleteProperty.getScope();
                         String deletePropertyScopeValue = deleteProperty.getScopeValue();
                         if (updateAllScopes || ((scope == null) && (deletePropertyScope == null)) || ((scope != null) && scope.equals(deletePropertyScope)))
@@ -3114,12 +3111,10 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
                 if (principalPartialFragmentPropertyLists != null)
                 {
                     // update cached principal scoped fragment property lists
-                    Iterator listsIter = principalPartialFragmentPropertyLists.entrySet().iterator();
-                    while (listsIter.hasNext())
+                    for (Map.Entry<String,DatabasePageManagerCachedFragmentPropertyList> entry : principalPartialFragmentPropertyLists.entrySet())
                     {
-                        Map.Entry entry = (Map.Entry)listsIter.next();
-                        String principalKey = (String)entry.getKey();
-                        DatabasePageManagerCachedFragmentPropertyList principalPartialFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)entry.getValue();
+                        String principalKey = entry.getKey();
+                        DatabasePageManagerCachedFragmentPropertyList principalPartialFragmentPropertyList = entry.getValue();
                         // update cached principal scoped fragment property list
                         DatabasePageManagerCachedFragmentPropertyList cachedPrincipalFragmentPropertyList = DatabasePageManagerCache.principalFragmentPropertyListCacheLookup(principalKey);
                         if (cachedPrincipalFragmentPropertyList != null)
@@ -3232,10 +3227,9 @@ public class DatabasePageManager extends InitablePersistenceBrokerDaoSupport imp
         List<FragmentProperty> filteredList = null;
         synchronized (principalFragmentPropertyList)
         {
-            for (Iterator iter = principalFragmentPropertyList.iterator(); iter.hasNext();)
+            for (FragmentProperty fragmentProperty : principalFragmentPropertyList)
             {
-                FragmentPropertyImpl fragmentProperty = (FragmentPropertyImpl)iter.next();
-                if (((BaseFragmentElementImpl)fragmentProperty.getFragment()).getIdentity() == baseFragmentElementImpl.getIdentity())
+                if (((BaseFragmentElementImpl)((FragmentPropertyImpl)fragmentProperty).getFragment()).getIdentity() == baseFragmentElementImpl.getIdentity())
                 {
                     if (filteredList == null)
                     {

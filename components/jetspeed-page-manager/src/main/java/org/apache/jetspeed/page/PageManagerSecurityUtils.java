@@ -30,7 +30,6 @@ import javax.security.auth.Subject;
 import java.security.AccessController;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -78,10 +77,8 @@ public class PageManagerSecurityUtils
         List<String> userPrincipals = null;
         List<String> rolePrincipals = null;
         List<String> groupPrincipals = null;
-        Iterator principals = subject.getPrincipals().iterator();
-        while (principals.hasNext())
+        for (Principal principal : subject.getPrincipals())
         {
-            Principal principal = (Principal) principals.next();
             if (principal instanceof User)
             {
                 if (userPrincipals == null)
@@ -140,25 +137,22 @@ public class PageManagerSecurityUtils
         {
             // test each action, constraints check passes only
             // if all actions are permitted for principals
-            Iterator actionsIter = actions.iterator();
-            while (actionsIter.hasNext())
+            for (String action : actions)
             {
                 // check each action:
                 // - if any actions explicitly permitted, (including owner),
                 //   assume no permissions are permitted by default
                 // - if all constraints do not specify a permission, assume
                 //   access is permitted by default
-                String action = (String)actionsIter.next();
                 boolean actionPermitted = false;
                 boolean actionNotPermitted = false;
                 boolean anyActionsPermitted = true; // TODO:(getOwner() != null);
                 
                 // check against constraints
-                Iterator checkConstraintsIter = checkConstraints.iterator();
-                while (checkConstraintsIter.hasNext())
+                for (SecurityConstraint checkConstraint : checkConstraints)
                 {
-                    SecurityConstraintImpl constraint = (SecurityConstraintImpl)checkConstraintsIter.next();
-                    
+                    SecurityConstraintImpl constraint = (SecurityConstraintImpl)checkConstraint;
+
                     // if permissions specified, attempt to match constraint
                     if (constraint.getPermissions() != null)
                     {

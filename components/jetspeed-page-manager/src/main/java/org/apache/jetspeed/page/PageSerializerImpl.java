@@ -16,8 +16,6 @@
  */
 package org.apache.jetspeed.page;
 
-import java.util.Iterator;
-
 import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.FolderNotFoundException;
@@ -28,6 +26,7 @@ import org.apache.jetspeed.om.page.Page;
 import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.PageTemplate;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.tools.ToolsLogger;
 
 /**
@@ -248,10 +247,9 @@ public class PageSerializerImpl implements PageSerializer
             dest.updateFolder(dstFolder);
             context.folderCount++;
         }
-        Iterator pages = srcFolder.getPages().iterator();
-        while (pages.hasNext())
+        for (Node srcPageNode : srcFolder.getPages())
         {
-            Page srcPage = (Page) pages.next();
+            Page srcPage = (Page) srcPageNode;
             Page dstPage = lookupPage(dest, srcPage.getPath());
             if (null != dstPage)
             {
@@ -276,10 +274,9 @@ public class PageSerializerImpl implements PageSerializer
                 context.pageCount++;
             }
         }
-        Iterator pageTemplates = srcFolder.getPageTemplates().iterator();
-        while (pageTemplates.hasNext())
+        for (Node srcPageTemplateNode : srcFolder.getPageTemplates())
         {
-            PageTemplate srcPageTemplate = (PageTemplate) pageTemplates.next();
+            PageTemplate srcPageTemplate = (PageTemplate) srcPageTemplateNode;
             PageTemplate dstPageTemplate = lookupPageTemplate(dest, srcPageTemplate.getPath());
             if (null != dstPageTemplate)
             {
@@ -304,10 +301,9 @@ public class PageSerializerImpl implements PageSerializer
                 context.pageCount++;
             }
         }
-        Iterator dynamicPages = srcFolder.getDynamicPages().iterator();
-        while (dynamicPages.hasNext())
+        for (Node srcDynamicPageNode : srcFolder.getDynamicPages())
         {
-            DynamicPage srcDynamicPage = (DynamicPage) dynamicPages.next();
+            DynamicPage srcDynamicPage = (DynamicPage) srcDynamicPageNode;
             DynamicPage dstDynamicPage = lookupDynamicPage(dest, srcDynamicPage.getPath());
             if (null != dstDynamicPage)
             {
@@ -332,10 +328,9 @@ public class PageSerializerImpl implements PageSerializer
                 context.pageCount++;
             }
         }
-        Iterator fragmentDefinitions = srcFolder.getFragmentDefinitions().iterator();
-        while (fragmentDefinitions.hasNext())
+        for (Node srcFragmentDefinitionNode : srcFolder.getFragmentDefinitions())
         {
-            FragmentDefinition srcFragmentDefinition = (FragmentDefinition) fragmentDefinitions.next();
+            FragmentDefinition srcFragmentDefinition = (FragmentDefinition) srcFragmentDefinitionNode;
             FragmentDefinition dstFragmentDefinition = lookupFragmentDefinition(dest, srcFragmentDefinition.getPath());
             if (null != dstFragmentDefinition)
             {
@@ -360,10 +355,9 @@ public class PageSerializerImpl implements PageSerializer
                 context.pageCount++;
             }
         }
-        Iterator links = srcFolder.getLinks().iterator();
-        while (links.hasNext())
+        for (Node srcLinkNode : srcFolder.getLinks())
         {
-            Link srcLink = (Link) links.next();
+            Link srcLink = (Link) srcLinkNode;
             Link dstLink = lookupLink(dest, srcLink.getPath());
             if (null != dstLink)
             {
@@ -389,10 +383,9 @@ public class PageSerializerImpl implements PageSerializer
             }
         }
 
-        Iterator folders = srcFolder.getFolders().iterator();
-        while (folders.hasNext())
+        for (Node srcFolderNode : srcFolder.getFolders())
         {
-            Folder folder = (Folder) folders.next();
+            Folder folder = (Folder) srcFolderNode;
             processFolder(folder, dest, context);
         }
 

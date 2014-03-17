@@ -17,14 +17,13 @@
 package org.apache.jetspeed.om.page;
 
 // Java imports
-import java.util.Iterator;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.apache.jetspeed.om.page.psml.FragmentImpl;
 import org.apache.jetspeed.om.page.psml.PageImpl;
+
+import java.util.Iterator;
 
 /**
  * TestMarshalPsml
@@ -134,7 +133,7 @@ public class TestPageObjectModel extends TestCase
 
         //Check the construct
         assertTrue(root.getFragments().size()==2);
-        Iterator i = root.getFragments().iterator();
+        Iterator<BaseFragmentElement> i = root.getFragments().iterator();
         FragmentImpl f = (FragmentImpl)i.next();
         assertNotNull(f);
         assertTrue(f.getName().equals("Portlet1"));

@@ -23,7 +23,6 @@ import org.apache.jetspeed.page.document.impl.DocumentImpl;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -156,10 +155,8 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
         if ((getSecurityConstraintsDefs() != null) && (securityConstraintsDefsMap == null))
         {
             securityConstraintsDefsMap = new HashMap<String,SecurityConstraintsDef>((getSecurityConstraintsDefs().size() * 2) + 1);
-            Iterator definitionsIter = getSecurityConstraintsDefs().iterator();
-            while (definitionsIter.hasNext())
+            for (SecurityConstraintsDef definition : getSecurityConstraintsDefs())
             {
-                SecurityConstraintsDef definition = (SecurityConstraintsDef)definitionsIter.next();
                 String definitionName = definition.getName();
                 if (!securityConstraintsDefsMap.containsKey(definitionName))
                 {

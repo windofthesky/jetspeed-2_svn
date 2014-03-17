@@ -35,7 +35,6 @@ import javax.security.auth.Subject;
 import java.security.AccessController;
 import java.security.Permission;
 import java.security.Principal;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -403,10 +402,8 @@ public abstract class BaseElementImpl implements BaseElement
         List<String> userPrincipals = null;
         List<String> rolePrincipals = null;
         List<String> groupPrincipals = null;
-        Iterator principals = subject.getPrincipals().iterator();
-        while (principals.hasNext())
+        for (Principal principal : subject.getPrincipals())
         {
-            Principal principal = (Principal) principals.next();
             if (principal instanceof User)
             {
                 if (userPrincipals == null)

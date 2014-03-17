@@ -25,7 +25,6 @@ import org.apache.jetspeed.om.page.Fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -143,11 +142,9 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
         {
             if (f instanceof Fragment)
             {
-                Iterator i = ((Fragment)f).getFragments().iterator();
-
-                while (i.hasNext())
+                for (BaseFragmentElement child : ((Fragment)f).getFragments())
                 {
-                    stack.push((BaseFragmentElement)i.next());
+                    stack.push(child);
                 }
             }
 
@@ -181,11 +178,8 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
         {
             if (f instanceof Fragment)
             {
-                Iterator i = ((Fragment)f).getFragments().iterator();
-
-                while (i.hasNext())
+                for (BaseFragmentElement child : ((Fragment)f).getFragments())
                 {
-                    BaseFragmentElement child = (BaseFragmentElement)i.next();
                     stack.push(child);
                     parents.put(child, f);
                 }
@@ -254,11 +248,9 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
                     fragments.add(fragment);
                 }
 
-                Iterator i = fragment.getFragments().iterator();
-
-                while (i.hasNext())
+                for (BaseFragmentElement child : fragment.getFragments())
                 {
-                    stack.push((BaseFragmentElement)i.next());
+                    stack.push(child);
                 }
             }
 
@@ -300,11 +292,9 @@ public abstract class AbstractBaseFragmentsElement extends DocumentImpl implemen
             if (f instanceof Fragment)
             {
                 Fragment fragment = (Fragment)f;
-                Iterator i = fragment.getFragments().iterator();
-
-                while (i.hasNext())
+                for (BaseFragmentElement child : fragment.getFragments())
                 {
-                    stack.push((BaseFragmentElement)i.next());
+                    stack.push(child);
                 }
             }
 

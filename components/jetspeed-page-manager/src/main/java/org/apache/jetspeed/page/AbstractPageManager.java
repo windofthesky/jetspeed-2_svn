@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.security.auth.Subject;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -974,10 +973,8 @@ public abstract class AbstractPageManager
             listenersList = new ArrayList<PageManagerEventListener>(listeners);
         }
         // notify listeners
-        Iterator listenersIter = listenersList.iterator();
-        while (listenersIter.hasNext())
+        for (PageManagerEventListener listener : listenersList)
         {
-            PageManagerEventListener listener = (PageManagerEventListener)listenersIter.next();
             try
             {
                 listener.newNode(node);
@@ -1004,10 +1001,8 @@ public abstract class AbstractPageManager
             listenersList = new ArrayList<PageManagerEventListener>(listeners);
         }
         // notify listeners
-        Iterator listenersIter = listenersList.iterator();
-        while (listenersIter.hasNext())
+        for (PageManagerEventListener listener : listenersList)
         {
-            PageManagerEventListener listener = (PageManagerEventListener)listenersIter.next();
             try
             {
                 listener.updatedNode(node);
@@ -1034,10 +1029,8 @@ public abstract class AbstractPageManager
             listenersList = new ArrayList<PageManagerEventListener>(listeners);
         }
         // notify listeners
-        Iterator listenersIter = listenersList.iterator();
-        while (listenersIter.hasNext())
+        for (PageManagerEventListener listener : listenersList)
         {
-            PageManagerEventListener listener = (PageManagerEventListener)listenersIter.next();
             try
             {
                 listener.removedNode(node);
@@ -1062,10 +1055,8 @@ public abstract class AbstractPageManager
             listenersList = new ArrayList<PageManagerEventListener>(listeners);
         }
         // notify listeners
-        Iterator listenersIter = listenersList.iterator();
-        while (listenersIter.hasNext())
+        for (PageManagerEventListener listener : listenersList)
         {
-            PageManagerEventListener listener = (PageManagerEventListener)listenersIter.next();
             try
             {
                 listener.reapNodes(nodeReapingInterval);
@@ -1106,10 +1097,8 @@ public abstract class AbstractPageManager
         
         // copy document orders
         folder.setDocumentOrder(this.<String>createList());
-        Iterator documentOrders = source.getDocumentOrder().iterator();
-        while (documentOrders.hasNext())
+        for (String name : source.getDocumentOrder())
         {
-            String name = (String)documentOrders.next();
             folder.getDocumentOrder().add(name);
         }
 
@@ -1330,10 +1319,8 @@ public abstract class AbstractPageManager
         
         // copy properties, (only properties for global and
         // current user/group/role specific values copied)
-        Iterator props = source.getProperties().iterator();
-        while (props.hasNext())
+        for (FragmentProperty prop : source.getProperties())
         {
-            FragmentProperty prop = (FragmentProperty)props.next();
             String propName = prop.getName();
             String propScope = prop.getScope();
             String propScopeValue = prop.getScopeValue();
@@ -1349,18 +1336,14 @@ public abstract class AbstractPageManager
         }
                   
         // copy preferences
-        Iterator prefs = source.getPreferences().iterator();
-        while (prefs.hasNext())
+        for (FragmentPreference pref : source.getPreferences())
         {
-            FragmentPreference pref = (FragmentPreference)prefs.next();
             FragmentPreference newPref = this.newFragmentPreference();
             newPref.setName(pref.getName());
             newPref.setReadOnly(pref.isReadOnly());
             newPref.setValueList(this.<String>createList());
-            Iterator values = pref.getValueList().iterator();            
-            while (values.hasNext())
+            for (String value : pref.getValueList())
             {
-                String value = (String)values.next();
                 newPref.getValueList().add(value);
             }
             copy.getPreferences().add(newPref);
@@ -1378,10 +1361,8 @@ public abstract class AbstractPageManager
             copyFragment.setType(sourceFragment.getType());
 
             // recursively copy fragments
-            Iterator fragments = sourceFragment.getFragments().iterator();
-            while (fragments.hasNext())
+            for (BaseFragmentElement fragment : sourceFragment.getFragments())
             {
-                BaseFragmentElement fragment = (BaseFragmentElement)fragments.next();
                 BaseFragmentElement copiedFragment = copyFragment(fragment, null, copyIds);
                 copyFragment.getFragments().add(copiedFragment);
             }
@@ -1439,17 +1420,13 @@ public abstract class AbstractPageManager
 
         // copy security constraint defintions
         copy.setSecurityConstraintsDefs(this.<SecurityConstraintsDef>createList());
-        Iterator defs = source.getSecurityConstraintsDefs().iterator();
-        while (defs.hasNext())
+        for (SecurityConstraintsDef def : source.getSecurityConstraintsDefs())
         {
-            SecurityConstraintsDef def = (SecurityConstraintsDef)defs.next();
-            SecurityConstraintsDef defCopy = this.newSecurityConstraintsDef();            
+            SecurityConstraintsDef defCopy = this.newSecurityConstraintsDef();
             defCopy.setName(def.getName());
             List<SecurityConstraint> copiedConstraints = createList();
-            Iterator constraints = def.getSecurityConstraints().iterator();
-            while (constraints.hasNext())
+            for (SecurityConstraint srcConstraint : def.getSecurityConstraints())
             {
-                SecurityConstraint srcConstraint = (SecurityConstraint)constraints.next();
                 SecurityConstraint dstConstraint = newPageSecuritySecurityConstraint();
                 copyConstraint(srcConstraint, dstConstraint);
                 copiedConstraints.add(dstConstraint);
@@ -1460,10 +1437,8 @@ public abstract class AbstractPageManager
         
         // copy global security constraint references
         copy.setGlobalSecurityConstraintsRefs(this.<String>createList());
-        Iterator globals = source.getGlobalSecurityConstraintsRefs().iterator();
-        while (globals.hasNext())
+        for (String global : source.getGlobalSecurityConstraintsRefs())
         {
-            String global = (String)globals.next();
             copy.getGlobalSecurityConstraintsRefs().add(global);
         }
         
@@ -1473,10 +1448,8 @@ public abstract class AbstractPageManager
     protected List<MenuDefinition> copyMenuDefinitions(String type, List<MenuDefinition> srcMenus)
     {
         List<MenuDefinition> copiedMenus = createList();
-        Iterator menus = srcMenus.iterator();
-        while (menus.hasNext())
+        for (MenuDefinition srcMenu : srcMenus)
         {
-            MenuDefinition srcMenu = (MenuDefinition)menus.next();
             MenuDefinition copiedMenu = (MenuDefinition)copyMenuElement(type, srcMenu);
             if (copiedMenu != null)
             {
@@ -1520,10 +1493,8 @@ public abstract class AbstractPageManager
             if (elements != null)
             {
                 List<MenuDefinitionElement> copiedElements = createList();
-                Iterator elementsIter = elements.iterator();
-                while (elementsIter.hasNext())
+                for (MenuDefinitionElement element : elements)
                 {
-                    MenuDefinitionElement element = (MenuDefinitionElement)elementsIter.next();
                     MenuDefinitionElement copiedElement = copyMenuElement(type, element);
                     if (copiedElement != null)
                     {
@@ -1633,10 +1604,8 @@ public abstract class AbstractPageManager
         if (source.getSecurityConstraints() != null)
         {
             List<SecurityConstraint> copiedConstraints = createList();
-            Iterator constraints = source.getSecurityConstraints().iterator();
-            while (constraints.hasNext())
+            for (SecurityConstraint srcConstraint : source.getSecurityConstraints())
             {
-                SecurityConstraint srcConstraint = (SecurityConstraint)constraints.next();
                 SecurityConstraint dstConstraint = null;
                 if (type.equals(PAGE_NODE_TYPE))
                 {
@@ -1662,10 +1631,8 @@ public abstract class AbstractPageManager
         if (source.getSecurityConstraintsRefs() != null)
         {
             List<String> copiedRefs = createList();
-            Iterator refs = source.getSecurityConstraintsRefs().iterator();
-            while (refs.hasNext())
-            {                
-                String constraintsRef = (String)refs.next();                
+            for (String constraintsRef : source.getSecurityConstraintsRefs())
+            {
                 copiedRefs.add(constraintsRef);
             }
             security.setSecurityConstraintsRefs(copiedRefs);            

@@ -58,7 +58,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -485,10 +484,8 @@ public class FolderImpl extends NodeImpl implements Folder
             // populate node caches
             synchronized(all)
             {
-                Iterator nodeIter = accessAll().iterator();
-                while (nodeIter.hasNext())
+                for (Node node: accessAll())
                 {
-                    Node node = (Node)nodeIter.next();
                     if (node instanceof PageImpl)
                     {
                         pages.add((PageImpl)node);
@@ -1404,10 +1401,8 @@ public class FolderImpl extends NodeImpl implements Folder
         {
             // check permissions and constraints, filter nodes as required
             NodeSetImpl filteredNodes = null;
-            Iterator checkAccessIter = nodes.iterator();
-            while (checkAccessIter.hasNext())
+            for (Node node : nodes)
             {
-                Node node = (Node)checkAccessIter.next();
                 try
                 {
                     // check access
@@ -1428,10 +1423,8 @@ public class FolderImpl extends NodeImpl implements Folder
                         // not permitted, copy previously permitted nodes
                         // to new filteredNodes node set with same comparator
                         filteredNodes = new NodeSetImpl(nodes);
-                        Iterator copyIter = nodes.iterator();
-                        while (copyIter.hasNext())
+                        for (Node copyNode : nodes)
                         {
-                            Node copyNode = (Node)copyIter.next();
                             if (copyNode != node)
                             {
                                 filteredNodes.add(copyNode);

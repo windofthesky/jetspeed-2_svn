@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -324,17 +323,14 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         {
             // copy all folder nodes to remove
             List<Node> removeNodes = new ArrayList<Node>();
-            Iterator copyIter = folderImpl.getAllNodes().iterator();
-            while (copyIter.hasNext())
+            for (Node node : folderImpl.getAllNodes())
             {
-                removeNodes.add((Node)copyIter.next());
+                removeNodes.add(node);
             }
             
             // remove folder nodes
-            Iterator removeIter = removeNodes.iterator();
-            while (removeIter.hasNext())
+            for (Node node : removeNodes)
             {
-                Node node = (Node)removeIter.next();
                 if (node instanceof Folder)
                 {
                     // recursively remove folder
@@ -632,11 +628,9 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
 
             // match recursively over matched folders
             path = path.substring(separatorIndex);
-            Iterator matchedFoldersIter = matchedFolders.iterator();
-            while (matchedFoldersIter.hasNext())
+            for (Node matchedFolder : matchedFolders)
             {
-                Folder matchedFolder = (Folder) matchedFoldersIter.next();
-                getNodes(matchedFolder, path, regexp, matched);
+                getNodes((Folder)matchedFolder, path, regexp, matched);
             }
             return;
         }
@@ -647,22 +641,19 @@ public class FileSystemFolderHandler implements FolderHandler, FileCacheEventLis
         if (regexp)
         {
             // get regexp matched nodes
-            Iterator addIter = ((FolderImpl)folder).getAllNodes().inclusiveSubset(nodePath).iterator();
-            while (addIter.hasNext())
+            for (Node matchedNode : ((FolderImpl)folder).getAllNodes().inclusiveSubset(nodePath))
             {
-                matched.add((Node) addIter.next());
+                matched.add(matchedNode);
             }
         }
         else
         {
             // get single matched node
-            Iterator findIter = ((FolderImpl)folder).getAllNodes().iterator();
-            while (findIter.hasNext())
+            for (Node findNode : ((FolderImpl)folder).getAllNodes())
             {
-                Node addNode = (Node) findIter.next();
-                if (addNode.getPath().equals(nodePath))
+                if (findNode.getPath().equals(nodePath))
                 {
-                    matched.add(addNode);
+                    matched.add(findNode);
                     break;
                 }
             }

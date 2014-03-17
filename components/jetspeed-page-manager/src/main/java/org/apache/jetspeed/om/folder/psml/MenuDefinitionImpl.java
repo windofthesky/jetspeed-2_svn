@@ -21,7 +21,6 @@ import org.apache.jetspeed.om.folder.MenuDefinition;
 import org.apache.jetspeed.om.folder.MenuDefinitionElement;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -359,11 +358,10 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
         if (menuElementImpls != null)
         {
             menuElements = new ArrayList<MenuDefinitionElement>(menuElementImpls.size());
-            Iterator menuElementIter = menuElementImpls.iterator();
-            while (menuElementIter.hasNext())
+            for (MenuElementImpl menuElementImpl : menuElementImpls)
             {
                 // unwrap menu element
-                MenuDefinitionElement menuElement = ((MenuElementImpl)menuElementIter.next()).getElement();
+                MenuDefinitionElement menuElement = menuElementImpl.getElement();
                 menuElements.add(menuElement);
 
                 // propagate unmarshalled notification
@@ -390,17 +388,15 @@ public class MenuDefinitionImpl extends MenuMetadataImpl implements MenuDefiniti
         if (menuElements != null)
         {
             menuElementImpls = new ArrayList<MenuElementImpl>(menuElements.size());
-            Iterator menuElementIter = menuElements.iterator();
-            while (menuElementIter.hasNext())
+            for (MenuDefinitionElement menuDefinitionElement : menuElements)
             {
                 // wrap menu element
-                MenuDefinitionElement menuElement = (MenuDefinitionElement)menuElementIter.next();
-                menuElementImpls.add(new MenuElementImpl(menuElement));
+                menuElementImpls.add(new MenuElementImpl(menuDefinitionElement));
 
                 // propagate marshalling notification
-                if (menuElement instanceof MenuDefinitionImpl)
+                if (menuDefinitionElement instanceof MenuDefinitionImpl)
                 {
-                    ((MenuDefinitionImpl)menuElement).unmarshalled();
+                    ((MenuDefinitionImpl)menuDefinitionElement).unmarshalled();
                 }
             }
         }

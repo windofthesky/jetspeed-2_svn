@@ -20,7 +20,6 @@ import org.apache.jetspeed.om.common.SecurityConstraint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -75,9 +74,8 @@ public class SecurityConstraintsRefParser
 
         // convert postfix expression tokens into constraints reference tokens
         List<SecurityConstraintsRefToken> constraintsRefTokens = new ArrayList<SecurityConstraintsRefToken>();
-        Iterator postfixTokensIter = postfixTokens.iterator();
-        while (postfixTokensIter.hasNext()) {
-            String postfixToken = (String)postfixTokensIter.next();
+        for (String postfixToken : postfixTokens)
+        {
             if (postfixToken.equals(AND_OPERATION) || postfixToken.equals(OR_OPERATION) || postfixToken.equals(NOT_OPERATION))
             {
                 // postfix operation
@@ -92,12 +90,10 @@ public class SecurityConstraintsRefParser
                     // multiple security constraints within an expression are treated as an
                     // implicit "or": insert these as a postfix "or" sub expression
                     boolean multipleConstraintsOrExpression = false;
-                    Iterator securityConstraintIter = securityConstraintsDef.getSecurityConstraints().iterator();
-                    while (securityConstraintIter.hasNext())
+                    for (SecurityConstraint securityConstraint : securityConstraintsDef.getSecurityConstraints())
                     {
                         // postfix security constraint
-                        SecurityConstraintImpl securityConstraint = (SecurityConstraintImpl)securityConstraintIter.next();
-                        constraintsRefTokens.add(new SecurityConstraintsRefToken(postfixToken, securityConstraint));
+                        constraintsRefTokens.add(new SecurityConstraintsRefToken(postfixToken, (SecurityConstraintImpl)securityConstraint));
                         if (multipleConstraintsOrExpression)
                         {
                             // multiple security constraints postfix "or" operation

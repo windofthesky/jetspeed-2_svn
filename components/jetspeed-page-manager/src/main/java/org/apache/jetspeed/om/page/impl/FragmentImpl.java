@@ -67,10 +67,9 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
         // propagate to children
         if (fragments != null)
         {
-            Iterator fragmentsIter = fragments.iterator();
-            while (fragmentsIter.hasNext())
+            for (BaseFragmentElementImpl fragmentElement : fragments)
             {
-                ((BaseFragmentElementImpl)fragmentsIter.next()).setBaseFragmentsElement(baseFragmentsElement);
+                fragmentElement.setBaseFragmentsElement(baseFragmentsElement);
             }
         }
     }
@@ -89,10 +88,9 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
         // match children
         if (fragments != null)
         {
-            Iterator fragmentsIter = fragments.iterator();
-            while (fragmentsIter.hasNext())
+            for (BaseFragmentElementImpl fragmentElement : fragments)
             {
-                BaseFragmentElement matchedFragment = ((BaseFragmentElementImpl)fragmentsIter.next()).getFragmentById(id);
+                BaseFragmentElement matchedFragment = fragmentElement.getFragmentById(id);
                 if (matchedFragment != null)
                 {
                     return matchedFragment;
@@ -110,10 +108,9 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
         // remove from deep children
         if (fragments != null)
         {
-            Iterator fragmentsIter = fragments.iterator();
-            while (fragmentsIter.hasNext())
+            for (Iterator<BaseFragmentElementImpl> fragmentsIter = fragments.iterator(); fragmentsIter.hasNext();)
             {
-                BaseFragmentElementImpl fragment = (BaseFragmentElementImpl)fragmentsIter.next();
+                BaseFragmentElementImpl fragment = fragmentsIter.next();
                 if (!fragment.getId().equals(id))
                 {
                     if (fragment instanceof FragmentImpl)
@@ -155,10 +152,9 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
         // match named children
         if (fragments != null)
         {
-            Iterator fragmentsIter = fragments.iterator();
-            while (fragmentsIter.hasNext())
+            for (BaseFragmentElementImpl fragmentElement : fragments)
             {
-                List<BaseFragmentElement> matchedChildFragments = ((BaseFragmentElementImpl)fragmentsIter.next()).getFragmentsByName(name);
+                List<BaseFragmentElement> matchedChildFragments = fragmentElement.getFragmentsByName(name);
                 if (matchedChildFragments != null)
                 {
                     if (matchedFragments == null)
@@ -185,10 +181,9 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
         // match children
         if (fragments != null)
         {
-            Iterator fragmentsIter = fragments.iterator();
-            while (fragmentsIter.hasNext())
+            for (BaseFragmentElementImpl fragmentElement : fragments)
             {
-                List<BaseFragmentElement> matchedChildFragments = ((BaseFragmentElementImpl)fragmentsIter.next()).getFragmentsByInterface(interfaceFilter);
+                List<BaseFragmentElement> matchedChildFragments = fragmentElement.getFragmentsByInterface(interfaceFilter);
                 if (matchedChildFragments != null)
                 {
                     if (matchedFragments == null)
@@ -214,10 +209,9 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
         super.resetCachedSecurityConstraints();
         if (fragments != null)
         {
-            Iterator fragmentsIter = fragments.iterator();
-            while (fragmentsIter.hasNext())
+            for (BaseFragmentElementImpl fragmentElement : fragments)
             {
-                ((BaseFragmentElementImpl)fragmentsIter.next()).resetCachedSecurityConstraints();
+                fragmentElement.resetCachedSecurityConstraints();
             }
         }
     }
@@ -291,10 +285,9 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
         // validate fragments using validation listener
         if (fragments != null)
         {
-            Iterator fragmentsIter = fragments.iterator();
-            while (fragmentsIter.hasNext())
+            for (BaseFragmentElementImpl fragmentElement : fragments)
             {
-                if (!((BaseFragmentElementImpl)fragmentsIter.next()).validateFragments(validationListener))
+                if (!fragmentElement.validateFragments(validationListener))
                 {
                     return false;
                 }
@@ -319,10 +312,8 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
         {
             // check permissions and constraints, filter fragments as required
             List<BaseFragmentElement> filteredFragments = null;
-            Iterator checkAccessIter = fragments.iterator();
-            while (checkAccessIter.hasNext())
+            for (BaseFragmentElement fragment : fragments)
             {
-                BaseFragmentElement fragment = (BaseFragmentElement)checkAccessIter.next();
                 try
                 {
                     // check access
@@ -343,10 +334,8 @@ public class FragmentImpl extends BaseFragmentElementImpl implements Fragment
                         // not permitted, copy previously permitted fragments
                         // to new filteredFragments node set with same comparator
                         filteredFragments = new ArrayList<BaseFragmentElement>(fragments.size());
-                        Iterator copyIter = fragments.iterator();
-                        while (copyIter.hasNext())
+                        for (BaseFragmentElement copyFragment : fragments)
                         {
-                            BaseFragmentElement copyFragment = (BaseFragmentElement)copyIter.next();
                             if (copyFragment != fragment)
                             {
                                 filteredFragments.add(copyFragment);

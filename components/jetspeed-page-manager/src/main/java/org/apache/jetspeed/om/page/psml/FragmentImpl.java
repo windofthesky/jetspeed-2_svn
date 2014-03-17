@@ -26,7 +26,6 @@ import org.apache.jetspeed.om.page.Fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -135,10 +134,9 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
         // propagate to children
         if (fragments != null)
         {
-            Iterator fragmentsIter = fragments.iterator();
-            while (fragmentsIter.hasNext())
+            for (AbstractBaseFragmentElement fragmentElement : fragments)
             {
-                ((AbstractBaseFragmentElement)fragmentsIter.next()).setBaseFragmentsElement(baseFragmentsElement);
+                fragmentElement.setBaseFragmentsElement(baseFragmentsElement);
             }
         }
     }
@@ -149,10 +147,9 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
     public BaseFragmentElement getFragmentById(String id)
     {
         Stack<BaseFragmentElement> stack = new Stack<BaseFragmentElement>();
-        Iterator i = getFragments().iterator();
-        while (i.hasNext())
+        for (AbstractBaseFragmentElement fragmentElement : fragments)
         {
-            stack.push((BaseFragmentElement)i.next());
+            stack.push((BaseFragmentElement)fragmentElement);
         }
 
         BaseFragmentElement f = stack.pop();
@@ -161,11 +158,9 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
         {
             if (f instanceof Fragment)
             {
-                i = ((Fragment)f).getFragments().iterator();
-
-                while (i.hasNext())
+                for (BaseFragmentElement child : ((Fragment)f).getFragments())
                 {
-                    stack.push((BaseFragmentElement)i.next());
+                    stack.push(child);
                 }
             }
 
@@ -190,10 +185,9 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
         // find fragment by id, tracking fragment parent
         Map<BaseFragmentElement,BaseFragmentElement> parents = new HashMap<BaseFragmentElement,BaseFragmentElement>();
         Stack<BaseFragmentElement> stack = new Stack<BaseFragmentElement>();
-        Iterator i = getFragments().iterator();
-        while (i.hasNext())
+        for (BaseFragmentElement fragmentElement : getFragments())
         {
-            stack.push((BaseFragmentElement)i.next());
+            stack.push(fragmentElement);
         }
 
         BaseFragmentElement f = stack.pop();
@@ -201,11 +195,8 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
         {
             if (f instanceof Fragment)
             {
-                i = ((Fragment)f).getFragments().iterator();
-
-                while (i.hasNext())
+                for (BaseFragmentElement child : ((Fragment)f).getFragments())
                 {
-                    BaseFragmentElement child = (BaseFragmentElement)i.next();
                     stack.push(child);
                     parents.put(child, f);
                 }
@@ -287,10 +278,9 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
         // validate fragments using validation listener
         if (fragments != null)
         {
-            Iterator fragmentsIter = fragments.iterator();
-            while (fragmentsIter.hasNext())
+            for (AbstractBaseFragmentElement fragmentElement : fragments)
             {
-                if (!((AbstractBaseFragmentElement)fragmentsIter.next()).validateFragments(validationListener))
+                if (!fragmentElement.validateFragments(validationListener))
                 {
                     return false;
                 }
@@ -313,11 +303,9 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
         // unwrap fragment elements and propagate
         // unmarshalled notification
         fragments.clear();
-        Iterator fragmentElementIter = fragmentElementImpls.iterator();
-        while (fragmentElementIter.hasNext())
+        for (FragmentElementImpl fragmentElement : fragmentElementImpls)
         {
             // unwrap fragment element
-            FragmentElementImpl fragmentElement = (FragmentElementImpl)fragmentElementIter.next();
             AbstractBaseFragmentElement fragment = (AbstractBaseFragmentElement)fragmentElement.getElement();
             fragments.add(fragment);
             
@@ -337,11 +325,9 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
         // wrap menu elements and propagate
         // marshalling notification
         fragmentElementImpls.clear();
-        Iterator fragmentIter = fragments.iterator();
-        while (fragmentIter.hasNext())
+        for (AbstractBaseFragmentElement fragment : fragments)
         {
             // wrap fragment element
-            AbstractBaseFragmentElement fragment = (AbstractBaseFragmentElement)fragmentIter.next();
             fragmentElementImpls.add(new FragmentElementImpl(fragment));
 
             // propagate marshalling notification
@@ -367,10 +353,8 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
         {
             // check permissions and constraints, filter fragments as required
             List<BaseFragmentElement> filteredFragments = null;
-            Iterator checkAccessIter = fragments.iterator();
-            while (checkAccessIter.hasNext())
+            for (BaseFragmentElement fragment : fragments)
             {
-                BaseFragmentElement fragment = (BaseFragmentElement) checkAccessIter.next();
                 try
                 {
                     // check access
@@ -391,10 +375,8 @@ public class FragmentImpl extends AbstractBaseFragmentElement implements Fragmen
                         // not permitted, copy previously permitted fragments
                         // to new filteredFragments node set with same comparator
                         filteredFragments = new ArrayList<BaseFragmentElement>(fragments.size());
-                        Iterator copyIter = fragments.iterator();
-                        while (copyIter.hasNext())
+                        for (BaseFragmentElement copyFragment : fragments)
                         {
-                            BaseFragmentElement copyFragment = (BaseFragmentElement)copyIter.next();
                             if (copyFragment != fragment)
                             {
                                 filteredFragments.add(copyFragment);

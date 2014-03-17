@@ -82,7 +82,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -223,14 +222,13 @@ public interface PageManagerTestShared
             if ((list != null) && !list.isEmpty())
             {
                 StringBuffer csv = new StringBuffer();
-                Iterator listIter = list.iterator();
-                while (listIter.hasNext())
+                for (String item : list)
                 {
                     if (csv.length() > 0)
                     {
                         csv.append(",");
                     }
-                    csv.append(listIter.next());
+                    csv.append(item);
                 }
                 return csv.toString();
             }

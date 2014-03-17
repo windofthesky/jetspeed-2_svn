@@ -16,7 +16,6 @@
  */
 package org.apache.jetspeed.om.page;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -53,10 +52,8 @@ public class SecurityConstraintsRefExpression
     {
         // evaluate postfix constraints ref tokens
         Stack<Boolean> operandsStack = new Stack<Boolean>();
-        Iterator constraintsRefTokensIter = constraintsRefTokens.iterator();
-        while (constraintsRefTokensIter.hasNext())
+        for (SecurityConstraintsRefToken token : constraintsRefTokens)
         {
-            SecurityConstraintsRefToken token = (SecurityConstraintsRefToken)constraintsRefTokensIter.next();
             String tokenOperation = token.getOperation();
             if (tokenOperation != null)
             {

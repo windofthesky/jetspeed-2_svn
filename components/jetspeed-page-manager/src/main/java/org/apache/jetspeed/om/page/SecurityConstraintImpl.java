@@ -20,7 +20,6 @@ import org.apache.jetspeed.om.common.SecurityConstraint;
 import org.apache.jetspeed.page.impl.DatabasePageManagerUtils;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -385,14 +384,13 @@ public class SecurityConstraintImpl implements SecurityConstraint
         if ((list != null) && !list.isEmpty())
         {
             StringBuffer csv = new StringBuffer();
-            Iterator listIter = list.iterator();
-            while (listIter.hasNext())
+            for (String item : list)
             {
                 if (csv.length() > 0)
                 {
                     csv.append(",");
                 }
-                csv.append((String)listIter.next());
+                csv.append(item);
             }
             return csv.toString();
         }
@@ -415,10 +413,9 @@ public class SecurityConstraintImpl implements SecurityConstraint
     {
         if ((collection0 != null) && (collection1 != null))
         {
-            Iterator containsIter = collection1.iterator();
-            while (containsIter.hasNext())
+            for (String item1 : collection1)
             {
-                if (collection0.contains(containsIter.next()))
+                if (collection0.contains(item1))
                 {
                     return true;
                 }

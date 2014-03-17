@@ -75,8 +75,7 @@ class FilteredFragmentList extends AbstractList<BaseFragmentElement>
         // remove removed object from persistent list
         if (o != null)
         {
-            ListIterator<BaseFragmentElementImpl> iter = fragment.accessFragments().listIterator();
-            while (iter.hasNext())
+            for (ListIterator<BaseFragmentElementImpl> iter = fragment.accessFragments().listIterator(); iter.hasNext();)
             {
                 if (iter.next() == o)
                 {
@@ -98,8 +97,7 @@ class FilteredFragmentList extends AbstractList<BaseFragmentElement>
         // replace replaced object in persistent list
         if (o != null)
         {
-            ListIterator<BaseFragmentElementImpl> iter = fragment.accessFragments().listIterator();
-            while (iter.hasNext())
+            for (ListIterator<BaseFragmentElementImpl> iter = fragment.accessFragments().listIterator(); iter.hasNext();)
             {
                 if (iter.next() == o)
                 {

@@ -16,10 +16,7 @@
  */
 package org.apache.jetspeed.page;
 
-import java.util.Iterator;
-
 import junit.framework.TestCase;
-
 import org.apache.jetspeed.om.page.Fragment;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.exolab.castor.mapping.Mapping;
@@ -49,9 +46,7 @@ public class TestMappings extends TestCase
         
         assertEquals("Google", pref.getName());
         assertEquals(false, pref.isReadOnly());
-        Iterator itr = pref.getValueList().iterator();
-        String value = (String)itr.next();
-        assertEquals("http://www.google.com", value );
+        assertEquals("http://www.google.com", pref.getValueList().get(0));
 
     }
 }

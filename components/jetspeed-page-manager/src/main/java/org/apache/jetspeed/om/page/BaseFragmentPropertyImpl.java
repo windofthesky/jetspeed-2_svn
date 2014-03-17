@@ -58,10 +58,10 @@ public abstract class BaseFragmentPropertyImpl implements FragmentProperty
         Set<Principal> principals = null;
         Principal userPrincipal = null;
         boolean skipPropertyScopes = false;
-        Iterator propertiesIter = properties.iterator();
+        Iterator<FragmentProperty> propertiesIter = properties.iterator();
         while ((userValue[0] == null) && propertiesIter.hasNext())
         {
-            FragmentProperty fragmentProperty = (FragmentProperty)propertiesIter.next();
+            FragmentProperty fragmentProperty = propertiesIter.next();
             if (fragmentProperty.getName().equals(propName))
             {
                 String fragmentPropertyScope = fragmentProperty.getScope();
@@ -104,10 +104,10 @@ public abstract class BaseFragmentPropertyImpl implements FragmentProperty
                         {
                             // match property scope and scope value with most specific
                             // principal without a value
-                            Iterator principalsIter = principals.iterator();
+                            Iterator<Principal> principalsIter = principals.iterator();
                             while ((userValue[0] == null) && principalsIter.hasNext())
                             {
-                                Principal principal = (Principal)principalsIter.next();
+                                Principal principal = principalsIter.next();
                                 if (principal.getName().equals(fragmentPropertyScopeValue))
                                 {
                                     if (fragmentPropertyScope.equals(USER_PROPERTY_SCOPE) && (principal instanceof User))
@@ -162,10 +162,8 @@ public abstract class BaseFragmentPropertyImpl implements FragmentProperty
         Set<Principal> principals = null;
         Principal userPrincipal = null;
         boolean skipPropertyScopes = false;
-        Iterator propertiesIter = properties.iterator();
-        while (propertiesIter.hasNext())
+        for (FragmentProperty fragmentProperty : properties)
         {
-            FragmentProperty fragmentProperty = (FragmentProperty)propertiesIter.next();
             String fragmentPropertyScope = fragmentProperty.getScope();
             if (fragmentPropertyScope != null)
             {
@@ -205,10 +203,8 @@ public abstract class BaseFragmentPropertyImpl implements FragmentProperty
                     {
                         // match property scope and scope value with most specific
                         // principal without a value
-                        Iterator principalsIter = principals.iterator();
-                        while (principalsIter.hasNext())
+                        for (Principal principal : principals)
                         {
-                            Principal principal = (Principal)principalsIter.next();
                             if (principal.getName().equals(fragmentPropertyScopeValue) &&
                                 ((fragmentPropertyScope.equals(USER_PROPERTY_SCOPE) && (principal instanceof User)) ||
                                  (fragmentPropertyScope.equals(GROUP_PROPERTY_SCOPE) && (principal instanceof Group)) ||
@@ -242,10 +238,8 @@ public abstract class BaseFragmentPropertyImpl implements FragmentProperty
     {
         // iterate through properties to find specified scoped property
         FragmentProperty fragmentProperty = null;
-        Iterator propertiesIter = properties.iterator();
-        while (propertiesIter.hasNext())
+        for (FragmentProperty findFragmentProperty : properties)
         {
-            FragmentProperty findFragmentProperty = (FragmentProperty)propertiesIter.next();
             if (findFragmentProperty.getName().equals(propName))
             {
                 String findFragmentPropertyScope = findFragmentProperty.getScope();

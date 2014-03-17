@@ -20,7 +20,6 @@ import org.apache.ojb.broker.accesslayer.conversions.ConversionException;
 import org.apache.ojb.broker.accesslayer.conversions.FieldConversion;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -47,10 +46,8 @@ public class ACLFieldConversion implements FieldConversion
             if (csvList.size() > 1)
             {
                 StringBuffer buffer = null;
-                Iterator values = csvList.iterator();
-                while (values.hasNext())
+                for (String value : csvList)
                 {
-                    String value = (String)values.next();
                     if (value.length() > 0)
                     {
                         if (buffer == null)

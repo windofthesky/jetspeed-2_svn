@@ -20,7 +20,6 @@ import org.apache.jetspeed.om.page.PageSecurity;
 import org.apache.jetspeed.om.page.SecurityConstraintsDef;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -110,10 +109,8 @@ public class PageSecurityImpl extends DocumentImpl implements PageSecurity
         if ((constraintsDefsList != null) && (constraintsDefsMap == null))
         {
             constraintsDefsMap = new HashMap<String,SecurityConstraintsDef>((constraintsDefsList.size() * 2) + 1);
-            Iterator definitionsIter = constraintsDefsList.iterator();
-            while (definitionsIter.hasNext())
+            for (SecurityConstraintsDef definition : constraintsDefsList)
             {
-                SecurityConstraintsDef definition = (SecurityConstraintsDef)definitionsIter.next();
                 constraintsDefsMap.put(definition.getName(), definition);
             }
         }

@@ -21,7 +21,6 @@ import java.security.AccessController;
 import java.security.Permission;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -290,10 +289,8 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
         List<String> userPrincipals = null;
         List<String> rolePrincipals = null;
         List<String> groupPrincipals = null;
-        Iterator principals = subject.getPrincipals().iterator();
-        while (principals.hasNext())
+        for (Principal principal: subject.getPrincipals())
         {
-            Principal principal = (Principal) principals.next();
             if (principal instanceof User)
             {
                 if (userPrincipals == null)
@@ -631,10 +628,8 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
         {
             // check permissions and constraints, filter nodes as required
             NodeSetImpl filteredNodes = null;
-            Iterator checkAccessIter = nodes.iterator();
-            while (checkAccessIter.hasNext())
+            for (Node node : nodes)
             {
-                AbstractBaseElement node = (AbstractBaseElement)checkAccessIter.next();
                 try
                 {
                     // check access
@@ -655,10 +650,8 @@ public abstract class AbstractBaseElement implements java.io.Serializable, Secur
                         // not permitted, copy previously permitted nodes
                         // to new filteredNodes node set with same comparator
                         filteredNodes = new NodeSetImpl(null, ((NodeSetImpl) nodes).getComparator());
-                        Iterator copyIter = nodes.iterator();
-                        while (copyIter.hasNext())
+                        for (Node copyNode : nodes)
                         {
-                            Node copyNode = (Node)copyIter.next();
                             if (copyNode != node)
                             {
                                 filteredNodes.add(copyNode);

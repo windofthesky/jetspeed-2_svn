@@ -45,6 +45,7 @@ import org.apache.jetspeed.om.portlet.GenericMetadata;
 import org.apache.jetspeed.om.portlet.LocalizedField;
 import org.apache.jetspeed.om.preference.FragmentPreference;
 import org.apache.jetspeed.page.document.DocumentNotFoundException;
+import org.apache.jetspeed.page.document.Node;
 import org.apache.jetspeed.page.psml.CastorXmlPageManager;
 import org.apache.jetspeed.security.JSSubject;
 import org.apache.jetspeed.security.PrincipalsSet;
@@ -965,12 +966,10 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         Folder subsites = pageManager.getFolder("/subsites");
         assertNotNull(subsites);
 
-        Iterator ssi = subsites.getFolders().iterator();
-        assertTrue(ssi.hasNext());
         int count = 0;
-        while (ssi.hasNext())
+        for (Node folderNode : subsites.getFolders())
         {
-            Folder folder = (Folder)ssi.next();
+            Folder folder = (Folder)folderNode;
             System.out.println("folder = " + folder.getName());
             count++;
         }
@@ -989,7 +988,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
                 
         assertEquals(2, folder1.getFolders().size());
         assertEquals(2, pageManager.getFolders(folder1).size());
-        Iterator childItr = folder1.getFolders().iterator();
+        Iterator<Node> childItr = folder1.getFolders().iterator();
         // Test that the folders are naturally orderd
         Folder folder2 = (Folder) childItr.next();
         assertEquals("/folder1/folder2", folder2.getPath());
@@ -1009,7 +1008,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         // Check link order
         assertEquals(6, folder3.getAll().size());
         assertEquals(6, pageManager.getAll(folder3).size());
-        Iterator linkItr = folder3.getAll().iterator();
+        Iterator<Node> linkItr = folder3.getAll().iterator();
         assertEquals("Jetspeed2Wiki.link", ((Link)linkItr.next()).getName());
         assertEquals("Jetspeed2.link", ((Link)linkItr.next()).getName());        
         assertEquals("apache_portals.link", ((Link)linkItr.next()).getName());
@@ -1622,18 +1621,16 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
     public Collection<String> collectIds(Folder f) throws Exception {
         Collection<String> result = new ArrayList<String>();
         
-        for (Iterator iter = f.getAll().iterator(); iter.hasNext();)
+        for (Node node : f.getAll())
         {
-           Object obj = iter.next();
-           
-           if (obj instanceof Page){
-               Page thisPage = (Page) obj;
+           if (node instanceof Page){
+               Page thisPage = (Page) node;
                if (thisPage.getRootFragment()!=null){
                    result.addAll(collectIds(thisPage.getRootFragment()));    
                }                          
            } else
-           if (obj instanceof Folder){
-               Folder thisFolder = (Folder)obj;
+           if (node instanceof Folder){
+               Folder thisFolder = (Folder)node;
                result.addAll(collectIds(thisFolder));
            }            
         }   
@@ -1648,8 +1645,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
     	if (bf instanceof Fragment) {
     	    Fragment f = (Fragment)bf;
     	    if (f.getFragments().size() > 0){
-    	        for (Iterator iter = f.getFragments().iterator(); iter.hasNext();) {
-    	            BaseFragmentElement child = (BaseFragmentElement) iter.next();
+                for (BaseFragmentElement child : f.getFragments()) {
     	            result.addAll(collectIds(child));
     	        }
     	    }
@@ -1661,9 +1657,8 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         int result = 1;
         if (bf instanceof Fragment) {
             Fragment f = (Fragment)bf;
-            for (Iterator iter = f.getFragments().iterator(); iter.hasNext();)
-            {
-                result+=countFragments((BaseFragmentElement)iter.next());
+            for (BaseFragmentElement child : f.getFragments()) {
+                result+=countFragments(child);
             }
         }
         
@@ -1671,12 +1666,10 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
     }
     
     private void compareFolders(Folder folder1, Folder folder2) throws Exception {
-        for (Iterator iter = folder1.getAll().iterator(); iter.hasNext();)
+        for (Node node : folder1.getAll())
         {
-           Object obj = iter.next();
-           
-           if (obj instanceof Page){
-               Page thisPage = (Page) obj;
+           if (node instanceof Page){
+               Page thisPage = (Page) node;
                Page otherPage = folder2.getPage(thisPage.getName());
                assertEquals(thisPage.getRootFragment()!=null,otherPage.getRootFragment() != null);
                if (thisPage.getRootFragment() != null){
@@ -1689,8 +1682,8 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
                    assertEquals(countFragments(thisRootFragment),countFragments(otherRootFragment));
                }               
            } else
-           if (obj instanceof Folder){
-               Folder thisFolder = (Folder)obj;
+           if (node instanceof Folder){
+               Folder thisFolder = (Folder)node;
                compareFolders(thisFolder, folder2.getFolder(thisFolder.getName())); 
            }
             
@@ -1702,10 +1695,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         Folder webappNoIds = pageManager.getFolder("/webapp-no-ids");
         
         compareFolders(webappIds,webappNoIds);
-        
+
         Collection<String> allIds = collectIds(webappNoIds);
-        for (Iterator iter = allIds.iterator(); iter.hasNext();) {
-			String id = (String) iter.next();
+        for (String id : allIds) {
 			assertNotNull(id);
 			assertEquals(true,id.length() > 0);
             if (CollectionUtils.cardinality(id, allIds) > 1){

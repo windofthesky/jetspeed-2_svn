@@ -54,7 +54,6 @@ import org.slf4j.LoggerFactory;
 
 import java.security.AccessController;
 import java.security.Permission;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -670,10 +669,8 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
         // on folders and documents while creating filtered nodes
         NodeSet nodes = getAllNodes();
         NodeSet filteredNodes = null;
-        Iterator checkAccessIter = nodes.iterator();
-        while (checkAccessIter.hasNext())
+        for (Node node : nodes)
         {
-            Node node = (Node)checkAccessIter.next();
             try
             {
                 node.checkAccess(JetspeedActions.VIEW);
@@ -687,10 +684,8 @@ public class FolderImpl extends AbstractNode implements Folder, Reset
                 if (filteredNodes == null)
                 {
                     filteredNodes = new NodeSetImpl(getPath(), ((NodeSetImpl) nodes).getComparator());
-                    Iterator copyIter = nodes.iterator();
-                    while (copyIter.hasNext())
+                    for (Node copyNode : nodes)
                     {
-                        Node copyNode = (Node)copyIter.next();
                         if (copyNode != node)
                         {
                             filteredNodes.add(copyNode);

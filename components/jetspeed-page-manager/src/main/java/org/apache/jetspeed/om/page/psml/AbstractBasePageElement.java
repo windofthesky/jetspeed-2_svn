@@ -30,7 +30,6 @@ import org.apache.jetspeed.om.folder.psml.MenuOptionsDefinitionImpl;
 import org.apache.jetspeed.om.folder.psml.MenuSeparatorDefinitionImpl;
 import org.apache.jetspeed.om.page.BasePageElement;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -164,10 +163,9 @@ public abstract class AbstractBasePageElement extends AbstractBaseFragmentsEleme
         // to all menu definitions
         if (menuDefinitions != null)
         {
-            Iterator menuIter = menuDefinitions.iterator();
-            while (menuIter.hasNext())
+            for (MenuDefinition menuDefinition : menuDefinitions)
             {
-                ((MenuDefinitionImpl)menuIter.next()).unmarshalled();
+                ((MenuDefinitionImpl)menuDefinition).unmarshalled();
             }
         }
         
@@ -184,10 +182,9 @@ public abstract class AbstractBasePageElement extends AbstractBaseFragmentsEleme
         // to all menu definitions
         if (menuDefinitions != null)
         {
-            Iterator menuIter = menuDefinitions.iterator();
-            while (menuIter.hasNext())
+            for (MenuDefinition menuDefinition : menuDefinitions)
             {
-                ((MenuDefinitionImpl)menuIter.next()).marshalling();
+                ((MenuDefinitionImpl)menuDefinition).marshalling();
             }
         }
 

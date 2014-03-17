@@ -24,7 +24,6 @@ import org.apache.jetspeed.page.document.UnsupportedDocumentTypeException;
 import org.apache.jetspeed.util.ArgUtil;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -60,17 +59,15 @@ public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
         this.handlers = handlers;        
 
         // register this with handlers
-        Iterator handlersIter = handlers.values().iterator();
-        while (handlersIter.hasNext())
+        for (DocumentHandler handler : handlers.values())
         {
-            ((DocumentHandler)handlersIter.next()).setHandlerFactory(this);
+            handler.setHandlerFactory(this);
         }
     }
     
     public DocumentHandlerFactoryImpl()
     {
         this(new HashMap<String,DocumentHandler>());
-             
     }
 
     /**
@@ -208,10 +205,9 @@ public class DocumentHandlerFactoryImpl implements DocumentHandlerFactory
     public void shutdown()
     {
         // propagate to handlers        
-        Iterator handlersIter = handlers.values().iterator();
-        while (handlersIter.hasNext())
+        for (DocumentHandler handler : handlers.values())
         {
-            ((DocumentHandler)handlersIter.next()).shutdown();
+            handler.shutdown();
         }
     }    
 }

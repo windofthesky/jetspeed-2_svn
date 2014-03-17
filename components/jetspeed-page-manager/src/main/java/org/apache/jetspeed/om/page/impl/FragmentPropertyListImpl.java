@@ -23,7 +23,6 @@ import org.apache.jetspeed.page.FragmentPropertyList;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -180,11 +179,9 @@ public class FragmentPropertyListImpl extends AbstractList<FragmentProperty> imp
 	 */
     public synchronized FragmentProperty getMatchingProperty(FragmentProperty match)
     {
-        Iterator matchIter = properties.iterator();
-        while (matchIter.hasNext())
+        for (FragmentProperty test : properties)
         {
-            FragmentPropertyImpl test = (FragmentPropertyImpl)matchIter.next();
-            if (test.match(match))
+            if (((FragmentPropertyImpl)test).match(match))
             {
                 return test;
             }

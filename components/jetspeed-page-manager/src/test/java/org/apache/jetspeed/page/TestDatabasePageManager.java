@@ -645,7 +645,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(9, folder.getAll().size());
         assertNotNull(pageManager.getAll(folder));
         assertEquals(9, pageManager.getAll(folder).size());
-        Iterator all = folder.getAll().iterator();
+        Iterator<Node> all = folder.getAll().iterator();
         assertEquals("some-other-page.psml", ((Node)all.next()).getName());
         assertEquals("default-page.psml", ((Node)all.next()).getName());
         assertEquals("__subsite-rootx", ((Node)all.next()).getName());
@@ -1032,7 +1032,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals(1, check.getFolders().size());
             assertNotNull(check.getAll());
             assertEquals(9, check.getAll().size());
-            Iterator all = check.getAll().iterator();
+            Iterator<Node> all = check.getAll().iterator();
             assertEquals("some-other-page.psml", ((Node)all.next()).getName());
             assertEquals("default-page.psml", ((Node)all.next()).getName());
             assertEquals("__subsite-rootx", ((Node)all.next()).getName());
@@ -1152,10 +1152,8 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals("/default-page.psml", page.getPath());
         page.setTitle("UPDATED");
         FragmentProperty removeProperty = null;
-        Iterator propertyIter = page.getRootFragment().getProperties().iterator();
-        while (propertyIter.hasNext())
+        for (FragmentProperty property : page.getRootFragment().getProperties())
         {
-            FragmentProperty property = (FragmentProperty)propertyIter.next();
             if (property.getName().equals("custom-prop1"))
             {
                 removeProperty = property;
@@ -1222,7 +1220,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         pageManager.updateFolder(folder);
         assertNotNull(folder.getAll());
         assertEquals(9, folder.getAll().size());
-        Iterator all = folder.getAll().iterator();
+        Iterator<Node> all = folder.getAll().iterator();
         assertEquals("default-page.psml", ((Node)all.next()).getName());
         assertEquals("some-other-page.psml", ((Node)all.next()).getName());
 

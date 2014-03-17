@@ -21,6 +21,7 @@ import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.cache.JetspeedCacheEventListener;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.impl.FolderImpl;
+import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.om.page.impl.BaseFragmentElementImpl;
 import org.apache.jetspeed.om.page.impl.FragmentPropertyImpl;
 import org.apache.jetspeed.page.PageManager;
@@ -34,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -231,10 +231,8 @@ public class DatabasePageManagerCache implements ObjectCache
                             {
                                 // remove all indexed fragment keys, (copy first since "quiet" removes
                                 // from fragment property caches will side effect this set while iterating)
-                                Iterator fragmentKeyIter = (new ArrayList<String>(index)).iterator();
-                                while (fragmentKeyIter.hasNext())
+                                for (String fragmentKey : (new ArrayList<String>(index)))
                                 {
-                                    String fragmentKey = (String)fragmentKeyIter.next();
                                     // parse key to extract fragment id
                                     int fragmentId = getFragmentIdFromFragmentKey(fragmentKey);
                                     // remove principal fragment property list caches that have fragment properties
@@ -338,10 +336,8 @@ public class DatabasePageManagerCache implements ObjectCache
                         if (index != null)
                         {
                             // remove all indexed cache keys
-                            Iterator fragmentKeyIter = index.iterator();
-                            while (fragmentKeyIter.hasNext())
+                            for (String fragmentKey : index)
                             {
-                                String fragmentKey = (String)fragmentKeyIter.next();
                                 DatabasePageManagerCache.propertiesCache.removeQuiet(fragmentKey);
                             }
                             propertiesCacheIndexMap.remove(fragmentKeyOrPath);
@@ -502,20 +498,16 @@ public class DatabasePageManagerCache implements ObjectCache
         // scan principal fragment property cache
         @SuppressWarnings("unchecked")
         List<String> principalKeys = principalPropertiesCache.getKeys();
-        Iterator principalKeysIter = principalKeys.iterator();
-        while (principalKeysIter.hasNext())
+        for (String principalKey : principalKeys)
         {
-            String principalKey = (String)principalKeysIter.next();
             CacheElement propertiesElement = principalPropertiesCache.get(principalKey);
             if (propertiesElement != null)
             {
                 // scan cached principal fragment property list
                 DatabasePageManagerCachedFragmentPropertyList cachedPrincipalFragmentPropertyList = (DatabasePageManagerCachedFragmentPropertyList)propertiesElement.getContent();
-                Iterator fragmentPropertyIter = cachedPrincipalFragmentPropertyList.iterator();
-                while (fragmentPropertyIter.hasNext())
+                for (FragmentProperty fragmentProperty : cachedPrincipalFragmentPropertyList)
                 {
-                    FragmentPropertyImpl fragmentProperty = (FragmentPropertyImpl)fragmentPropertyIter.next();
-                    if (((BaseFragmentElementImpl)fragmentProperty.getFragment()).getIdentity() == fragmentId)
+                    if (((BaseFragmentElementImpl)((FragmentPropertyImpl)fragmentProperty).getFragment()).getIdentity() == fragmentId)
                     {
                         // remove cached principal fragment property list
                         DatabasePageManagerCache.principalPropertiesCache.removeQuiet(principalKey);
@@ -647,39 +639,33 @@ public class DatabasePageManagerCache implements ObjectCache
         // remove all items from oid and properties caches
         // individually to ensure notifications are run to
         // detach elements; do not invoke JetspeedCache.clear()
-        Iterator removeOidIter = oidCache.getKeys().iterator();
-        while (removeOidIter.hasNext())
+        for (Object remove : oidCache.getKeys())
         {
-            oidCache.remove((Identity)removeOidIter.next());
+            oidCache.remove((Identity)remove);
         }
-        Iterator removePropertiesIter = propertiesCache.getKeys().iterator();
-        while (removePropertiesIter.hasNext())
+        for (Object remove : propertiesCache.getKeys())
         {
-            propertiesCache.remove(removePropertiesIter.next());
+            propertiesCache.remove(remove);
         }
-        Iterator removePrincipalPropertiesIter = principalPropertiesCache.getKeys().iterator();
-        while (removePrincipalPropertiesIter.hasNext())
+        for (Object remove : principalPropertiesCache.getKeys())
         {
-            principalPropertiesCache.remove(removePrincipalPropertiesIter.next());
+            principalPropertiesCache.remove(remove);
         }
         // remove all items from path caches individually
         // to avoid potential distributed clear invocation
         // that would be performed against all peers; do
         // not invoke JetspeedCache.clear()
-        Iterator removePathIter = pathCache.getKeys().iterator();
-        while (removePathIter.hasNext())
+        for (Object remove : pathCache.getKeys())
         {
-            pathCache.removeQuiet(removePathIter.next());
+            pathCache.removeQuiet(remove);
         }
-        Iterator removePropertiesPathIter = propertiesPathCache.getKeys().iterator();
-        while (removePropertiesPathIter.hasNext())
+        for (Object remove : propertiesPathCache.getKeys())
         {
-            propertiesPathCache.removeQuiet(removePropertiesPathIter.next());
+            propertiesPathCache.removeQuiet(remove);
         }
-        Iterator removePrincipalPropertiesPathIter = principalPropertiesPathCache.getKeys().iterator();
-        while (removePrincipalPropertiesPathIter.hasNext())
+        for (Object remove : principalPropertiesPathCache.getKeys())
         {
-            principalPropertiesPathCache.removeQuiet(removePrincipalPropertiesPathIter.next());
+            principalPropertiesPathCache.removeQuiet(remove);
         }
     }
 
@@ -818,10 +804,9 @@ public class DatabasePageManagerCache implements ObjectCache
     public synchronized static void resetCachedSecurityConstraints()
     {
         // reset cached objects
-        Iterator resetIter = oidCache.getKeys().iterator();
-        while (resetIter.hasNext())
+        for (Object reset : oidCache.getKeys())
         {
-            NodeImpl node = cacheLookup((Identity)resetIter.next(), false);
+            NodeImpl node = cacheLookup((Identity)reset, false);
             if (node != null)
             {
             	node.resetCachedSecurityConstraints();
@@ -1033,10 +1018,8 @@ public class DatabasePageManagerCache implements ObjectCache
      */
     public synchronized static void rollbackTransactions()
     {
-        Iterator transactions = getTransactions().iterator();
-        while (transactions.hasNext())
+        for (TransactionedOperation operation : getTransactions())
         {
-            TransactionedOperation operation = (TransactionedOperation)transactions.next();
             if ((operation.getTransactionType() == TransactionedOperation.ADD_OPERATION) ||
                 (operation.getTransactionType() == TransactionedOperation.UPDATE_OPERATION))
             {
@@ -1131,10 +1114,9 @@ public class DatabasePageManagerCache implements ObjectCache
     {
         StringBuilder dump = new StringBuilder();
         dump.append("--------------------------"+EOL);
-        Iterator dumpIter = oidCache.getKeys().iterator();
-        while (dumpIter.hasNext())
+        for (Object dumpOid : oidCache.getKeys())
         {
-            Identity oid = (Identity)dumpIter.next();
+            Identity oid = (Identity)dumpOid;
             NodeImpl node = cacheLookup(oid, false);
             dump.append("node="+node.getPath()+", oid="+oid+EOL);
         }

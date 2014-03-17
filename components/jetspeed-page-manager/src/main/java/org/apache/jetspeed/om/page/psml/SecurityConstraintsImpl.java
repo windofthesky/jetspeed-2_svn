@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -181,24 +180,20 @@ public class SecurityConstraintsImpl implements SecurityConstraints
             {
                 // test each action, constraints check passes only
                 // if all actions are permitted for principals
-                Iterator actionsIter = actions.iterator();
-                while (actionsIter.hasNext())
+                for (String action : actions)
                 {
                     // check each action:
                     // - if any actions explicitly permitted, (including owner),
                     //   assume no permissions are permitted by default
                     // - if all constraints do not specify a permission or an
                     //   expression, assume access is permitted by default
-                    String action = (String)actionsIter.next();
                     boolean actionPermitted = false;
                     boolean actionNotPermitted = false;
                     boolean anyActionsPermitted = (getOwner() != null);
 
                     // check against constraints and constraint ref expressions
-                    Iterator checkConstraintsIter = checkConstraints.iterator();
-                    while (checkConstraintsIter.hasNext())
+                    for (Object constraintOrExpression : checkConstraints)
                     {
-                        Object constraintOrExpression = checkConstraintsIter.next();
                         if (constraintOrExpression instanceof SecurityConstraintImpl)
                         {
                             // check constraint
@@ -342,10 +337,8 @@ public class SecurityConstraintsImpl implements SecurityConstraints
         if (pageSecurity != null)
         {   
             // dereference each security constraints definition
-            Iterator constraintsRefsIter = constraintsRefs.iterator();
-            while (constraintsRefsIter.hasNext())
+            for (String constraintsRef : constraintsRefs)
             {
-                String constraintsRef = (String)constraintsRefsIter.next();
                 // parse constraints ref and return constraints/constraints ref expressions
                 Object parsedConstraintsOrExpression = SecurityConstraintsRefParser.parse(constraintsRef, pageSecurity);
                 if (parsedConstraintsOrExpression instanceof List)
