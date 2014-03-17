@@ -29,7 +29,7 @@ import java.util.Iterator;
  * @version $Id$
  *
  */
-public interface NodeSet
+public interface NodeSet extends Iterable<Node>
 {
 
     void add(Node node);
@@ -48,7 +48,7 @@ public interface NodeSet
      */
     Node get(String name);
 
-    Iterator iterator();
+    Iterator<Node> iterator();
     
     NodeSet subset(String type);
 
