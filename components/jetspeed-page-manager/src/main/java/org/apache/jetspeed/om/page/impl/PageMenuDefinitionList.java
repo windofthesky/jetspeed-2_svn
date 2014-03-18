@@ -158,11 +158,11 @@ class PageMenuDefinitionList extends AbstractList<MenuDefinition>
     /* (non-Javadoc)
      * @see java.util.List#set(int,java.lang.Object)
      */
-    public MenuDefinition set(int index, Object element)
+    public MenuDefinition set(int index, MenuDefinition element)
     {
         // implement for modifiable AbstractList:
         // verify menu definition
-        PageMenuDefinitionImpl newDefinition = validateDefinitionForAdd((PageMenuDefinitionImpl)element);
+        PageMenuDefinitionImpl newDefinition = validateDefinitionForAdd(element);
         // set in underlying ordered list
         PageMenuDefinitionImpl definition = page.accessMenus().set(index, newDefinition);
         // save replaced element
