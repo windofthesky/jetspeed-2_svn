@@ -49,7 +49,6 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -805,11 +804,9 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         try
         {
             // check access on concrete child in all search folders
-            Iterator foldersIter = getSearchFolders().iterator();
-            while (foldersIter.hasNext())
+            for (SearchFolder searchFolder : getSearchFolders())
             {
                 // test access against child in search folder
-                SearchFolder searchFolder = (SearchFolder)foldersIter.next();
                 Folder folder = searchFolder.folderReference.getFolder();
                 // ignore all folder access exceptions, (throws SecurityException on failed check access)
                 try
@@ -843,11 +840,9 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         try
         {
             // check access on concrete child in all search folders
-            Iterator foldersIter = getSearchFolders().iterator();
-            while (foldersIter.hasNext())
+            for (SearchFolder searchFolder : getSearchFolders())
             {
                 // test access against child in search folder
-                SearchFolder searchFolder = (SearchFolder)foldersIter.next();
                 Folder folder = searchFolder.folderReference.getFolder();
                 // ignore all folder access exceptions, (throws SecurityException on failed check access)
                 try
@@ -899,12 +894,10 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         // specific along inheritance folder graph by name
         try
         {
-            Iterator inheritanceFoldersIter = getInheritanceFolders().iterator();
-            while (inheritanceFoldersIter.hasNext())
+            for (InheritanceFolder inheritanceFolder : getInheritanceFolders())
             {
                 // get menu definitions from inheritance folders and
                 // merge into aggregate menu definition locators
-                InheritanceFolder inheritanceFolder = (InheritanceFolder)inheritanceFoldersIter.next();
                 Folder folder = inheritanceFolder.folderReference.getFolder();
                 String path = inheritanceFolder.path;
                 mergeMenuDefinitionLocators(folder.getMenuDefinitions(), folder, path, false);
@@ -955,10 +948,9 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         // with a specified title, short title, or metadata
         try
         {
-            Iterator foldersIter = getSearchFolders().iterator();
-            while (foldersIter.hasNext())
+            for (SearchFolder searchFolder : getSearchFolders())
             {
-                FolderWeakReference folderReference = ((SearchFolder)foldersIter.next()).folderReference;
+                FolderWeakReference folderReference = searchFolder.folderReference;
                 Folder folder = folderReference.getFolder();
                 String name = folder.getName();
                 String title = folder.getTitle();
@@ -994,11 +986,10 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
         {
             // only test for fallback default page once
             boolean fallbackDefaultPageNotFound = false;
-            Iterator foldersIter = getSearchFolders().iterator();
-            while (foldersIter.hasNext())
+            for (SearchFolder searchFolder : getSearchFolders())
             {
                 // get folder default page name or look for fallback default name
-                Folder folder = ((SearchFolder)foldersIter.next()).folderReference.getFolder();
+                Folder folder = searchFolder.folderReference.getFolder();
                 String defaultPageName = folder.getDefaultPage();
                 if (defaultPageName != null)
                 {
@@ -1094,20 +1085,16 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             // get children proxies
             List<Node> allChildren = new ArrayList<Node>();
             List<String> folderDocumentOrder = null;
-            Iterator foldersIter = getSearchFolders().iterator();
-            while (foldersIter.hasNext())
+            for (SearchFolder searchFolder : getSearchFolders())
             {
                 // aggregate folders
-                SearchFolder searchFolder = (SearchFolder)foldersIter.next();
                 Folder folder = searchFolder.folderReference.getFolder();
                 String locatorName = searchFolder.locatorName;
 
                 // create and save proxies for concrete children
                 NodeSet children = folder.getAll();
-                Iterator childrenIter = children.iterator();
-                while (childrenIter.hasNext())
+                for (Node child : children)
                 {
-                    Node child = (Node)childrenIter.next();
                     String childName = child.getName();
 
                     // filter profiling property folders unless forced; they are
@@ -1120,10 +1107,13 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
                     {
                         // test child name uniqueness
                         boolean childUnique = true ;
-                        Iterator allChildrenIter = allChildren.iterator();
-                        while (childUnique && allChildrenIter.hasNext())
+                        for (Node testChild : allChildren)
                         {
-                            childUnique = !childName.equals(((Node)allChildrenIter.next()).getName());                            
+                            if (childName.equals(testChild.getName()))
+                            {
+                                childUnique = false;
+                                break;
+                            }
                         }
 
                         // add uniquely named children proxies
@@ -1235,11 +1225,9 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             // search for existing folders along search paths
             List<SiteViewSearchPath> searchPaths = getView().getSearchPaths();
             searchFolders = new ArrayList<SearchFolder>(searchPaths.size());
-            Iterator pathsIter = searchPaths.iterator();
-            while (pathsIter.hasNext())
+            for (SiteViewSearchPath searchPath : searchPaths)
             {
                 // construct folder paths
-                SiteViewSearchPath searchPath = (SiteViewSearchPath)pathsIter.next();
                 String path = searchPath.toString();
                 if (!path.equals(Folder.PATH_SEPARATOR))
                 {
@@ -1313,10 +1301,9 @@ public class FolderProxy extends NodeProxy implements InvocationHandler
             {
                 // copy ordered search path folders into inheritance
                 // graph folders list
-                Iterator foldersIter = searchFolders.iterator();
-                while (foldersIter.hasNext())
+                for (SearchFolder searchFolder : searchFolders)
                 {
-                    inheritanceFolders.add(new InheritanceFolder(((SearchFolder)foldersIter.next()).folderReference, folder.getPath()));
+                    inheritanceFolders.add(new InheritanceFolder(searchFolder.folderReference, folder.getPath()));
                 }
 
                 // get super/parent search paths

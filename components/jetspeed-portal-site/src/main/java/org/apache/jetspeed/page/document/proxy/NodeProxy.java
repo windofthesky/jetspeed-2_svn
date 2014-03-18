@@ -30,7 +30,6 @@ import java.lang.reflect.Proxy;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -210,10 +209,9 @@ public abstract class NodeProxy extends SearchPathsSiteViewProxy
             if (locators != null)
             {
                 menuDefinitions = Collections.synchronizedList(new ArrayList<MenuDefinition>(locators.size()));
-                Iterator locatorsIter = locators.iterator();
-                while (locatorsIter.hasNext())
+                for (SiteViewMenuDefinitionLocator locator : locators)
                 {
-                    menuDefinitions.add(((SiteViewMenuDefinitionLocator)locatorsIter.next()).getMenuDefinition());
+                    menuDefinitions.add(locator.getMenuDefinition());
                 }
             }
             menuDefinitionsAggregated = true;

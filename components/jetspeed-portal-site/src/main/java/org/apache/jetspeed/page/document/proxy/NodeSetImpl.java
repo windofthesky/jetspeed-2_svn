@@ -58,10 +58,8 @@ public class NodeSetImpl implements NodeSet
     public Node get(String name)
     {
         // search nodes for matching name or path
-        Iterator nodesIter = nodes.iterator();
-        while (nodesIter.hasNext())
+        for (Node node : this)
         {
-            Node node = (Node) nodesIter.next();
             if (node.getName().equals(name) || node.getPath().equals(name))
             {
                 return node;
@@ -75,9 +73,9 @@ public class NodeSetImpl implements NodeSet
      *
      * @return proxy NodeSet list iterator
      */
-    public Iterator iterator()
+    public Iterator<Node> iterator()
     {
-        return nodes.listIterator();
+        return nodes.iterator();
     }
     
     /**
@@ -91,10 +89,8 @@ public class NodeSetImpl implements NodeSet
     {
         // search for matching nodes
         List<Node> subsetNodes = null;
-        Iterator nodesIter = nodes.iterator();
-        while (nodesIter.hasNext())
+        for (Node node : this)
         {
-            Node node = (Node) nodesIter.next();
             if (node.getType().equals(type))
             {
                 if (subsetNodes == null)
@@ -124,10 +120,8 @@ public class NodeSetImpl implements NodeSet
         // search for matching nodes
         List<Node> subsetNodes = null;
         Pattern pattern = Pattern.compile(regex);
-        Iterator nodesIter = nodes.iterator();
-        while (nodesIter.hasNext())
+        for (Node node : this)
         {
-            Node node = (Node) nodesIter.next();
             if (pattern.matcher(node.getName()).matches() || pattern.matcher(node.getPath()).matches())
             {
                 if (subsetNodes == null)
@@ -157,10 +151,8 @@ public class NodeSetImpl implements NodeSet
         // search for matching nodes
         List<Node> subsetNodes = null;
         Pattern pattern = Pattern.compile(regex);
-        Iterator nodesIter = nodes.iterator();
-        while (nodesIter.hasNext())
+        for (Node node : this)
         {
-            Node node = (Node) nodesIter.next();
             if (!pattern.matcher(node.getName()).matches() && !pattern.matcher(node.getPath()).matches())
             {
                 if (subsetNodes == null)

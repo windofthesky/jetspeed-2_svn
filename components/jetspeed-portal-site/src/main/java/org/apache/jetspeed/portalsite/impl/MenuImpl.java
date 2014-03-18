@@ -18,6 +18,7 @@ package org.apache.jetspeed.portalsite.impl;
 
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.folder.MenuDefinition;
+import org.apache.jetspeed.om.folder.MenuDefinitionElement;
 import org.apache.jetspeed.om.folder.MenuExcludeDefinition;
 import org.apache.jetspeed.om.folder.MenuIncludeDefinition;
 import org.apache.jetspeed.om.folder.MenuOptionsDefinition;
@@ -38,7 +39,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -221,10 +221,8 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                 List<MenuElement> separatedElements = null;
 
                 // process each defined menu element
-                Iterator menuElementsIter = definition.getMenuElements().iterator();
-                while (menuElementsIter.hasNext())
+                for (MenuDefinitionElement menuElement : definition.getMenuElements())
                 {
-                    Object menuElement = menuElementsIter.next();
                     if (menuElement instanceof MenuOptionsDefinition)
                     {
                         // construct menu option elements from definition using
@@ -354,10 +352,9 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                                     // include menu elements
                                     if (!includeMenu.isEmpty())
                                     {
-                                        Iterator elementsIter = includeMenu.getElements().iterator();
-                                        while (elementsIter.hasNext())
+                                        for (MenuElement includeMenuElement : includeMenu.getElements())
                                         {
-                                            MenuElementImpl includeElement = (MenuElementImpl)elementsIter.next();
+                                            MenuElementImpl includeElement = (MenuElementImpl)includeMenuElement;
                                             try
                                             {
                                                 // clone menu element and reparent
@@ -522,10 +519,9 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
         // add to menu element list
         if (appendMenuElements != null)
         {
-            Iterator elementsIter = appendMenuElements.iterator();
-            while (elementsIter.hasNext())
+            for (MenuElement appendMenuElement : appendMenuElements)
             {
-                appendMenuElement((MenuElementImpl)elementsIter.next(), menuElements);
+                appendMenuElement((MenuElementImpl)appendMenuElement, menuElements);
             }
         }
     }
@@ -603,10 +599,8 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                             }
                             if (pathViews != null)
                             {
-                                Iterator pathViewsIter = pathViews.iterator();
-                                while (pathViewsIter.hasNext())
+                                for (Node pathView : pathViews)
                                 {
-                                    Node pathView = (Node)pathViewsIter.next();
                                     if ((locatorName == null) || locatorName.equals(MenuOptionsDefinition.ANY_PROFILE_LOCATOR) ||
                                         locatorName.equals(view.getProfileLocatorName(pathView)))
                                     {
@@ -685,8 +679,8 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
                         Iterator elementViewsIter = elementViews.iterator();
                         while (elementViewsIter.hasNext())
                         {
-                            Node elementView = (Node)elementViewsIter.next(); 
-                            
+                            Node elementView = (Node)elementViewsIter.next();
+
                             // get url or name to test ordering match against
                             String test = null;
                             if (ordering.charAt(0) == Folder.PATH_SEPARATOR_CHAR)
@@ -741,10 +735,8 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
             // convert elements views into menu elements
             List<MenuElement> menuElements = new ArrayList<MenuElement>(elementViews.size());
             DefaultMenuOptionsDefinition defaultMenuOptionsDefinition = null;
-            ListIterator elementViewsIter = elementViews.listIterator();
-            while (elementViewsIter.hasNext())
+            for (Node elementView : elementViews)
             {
-                Node elementView = (Node)elementViewsIter.next();
                 MenuElement menuElement = null;
 
                 // convert folders into nested menus if depth specified
@@ -808,11 +800,10 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
         // clone and reparent copy elements
         if (copy.elements != null)
         {
-            Iterator elementsIter = copy.elements.iterator();
             copy.elements = new ArrayList<MenuElement>(copy.elements.size());
-            while (elementsIter.hasNext())
+            for (MenuElement element : copy.elements)
             {
-                MenuElementImpl elementCopy = (MenuElementImpl)((MenuElementImpl)elementsIter.next()).clone();
+                MenuElementImpl elementCopy = (MenuElementImpl)((MenuElementImpl)element).clone();
                 elementCopy.setParentMenu(copy);
                 copy.elements.add(elementCopy);
             }
@@ -1048,11 +1039,8 @@ public class MenuImpl extends MenuElementImpl implements Menu, Cloneable
         // elements for selected status
         if (elements != null)
         {
-            Iterator elementsIter = elements.iterator();
-            while (elementsIter.hasNext())
+            for (MenuElement element : elements)
             {
-                MenuElement element = (MenuElement)elementsIter.next();
-                
                 // test element selected
                 boolean selected = false;
                 if (element instanceof MenuOption)

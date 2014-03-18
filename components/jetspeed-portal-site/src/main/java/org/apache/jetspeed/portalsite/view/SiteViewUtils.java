@@ -21,7 +21,6 @@ import org.apache.jetspeed.page.document.Node;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -50,11 +49,9 @@ public class SiteViewUtils
         // locators if defined
         if (definitions != null)
         {
-            Iterator definitionsIter = definitions.iterator();
-            while (definitionsIter.hasNext())
+            for (MenuDefinition definition : definitions)
             {
                 // aggregate menu definition by valid name
-                MenuDefinition definition = (MenuDefinition)definitionsIter.next();
                 String definitionName = definition.getName();
                 if (definitionName != null)
                 {
@@ -93,11 +90,9 @@ public class SiteViewUtils
         // locators if defined
         if (locators != null)
         {
-            Iterator locatorsIter = locators.iterator();
-            while (locatorsIter.hasNext())
+            for (SiteViewMenuDefinitionLocator locator : locators)
             {
                 // aggregate menu definition by valid name
-                SiteViewMenuDefinitionLocator locator = (SiteViewMenuDefinitionLocator)locatorsIter.next();
                 String definitionName = locator.getName();
 
                 // add unique menu definition to end of
@@ -142,10 +137,8 @@ public class SiteViewUtils
         {
             synchronized (menuDefinitionLocators)
             {
-                Iterator locatorsIter = menuDefinitionLocators.iterator();
-                while (locatorsIter.hasNext())
+                for (SiteViewMenuDefinitionLocator locator : menuDefinitionLocators)
                 {
-                    SiteViewMenuDefinitionLocator locator = (SiteViewMenuDefinitionLocator)locatorsIter.next();
                     if (name.equals(locator.getName()))
                     {
                         return locator;

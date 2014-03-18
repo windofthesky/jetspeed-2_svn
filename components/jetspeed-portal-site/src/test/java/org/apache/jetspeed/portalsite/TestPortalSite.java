@@ -164,7 +164,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("root", rootFolderView.getTitle());
         assertEquals("/", extractFileSystemPathFromId(rootFolderView.getId()));
         assertEquals(6, rootFolderView.getFolders().size());
-        Iterator foldersIter = rootFolderView.getFolders().iterator();
+        Iterator<Node> foldersIter = rootFolderView.getFolders().iterator();
         assertEquals("contentfolder", ((Folder)foldersIter.next()).getName());
         assertEquals("folder0", ((Folder)foldersIter.next()).getName());
         assertEquals("folder1", ((Folder)foldersIter.next()).getName());
@@ -172,17 +172,17 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("folder3", ((Folder)foldersIter.next()).getName());
         assertEquals("folder4", ((Folder)foldersIter.next()).getName());
         assertEquals(4, rootFolderView.getPages().size());
-        Iterator pagesIter = rootFolderView.getPages().iterator();
+        Iterator<Node> pagesIter = rootFolderView.getPages().iterator();
         assertEquals("page2.psml", ((Page)pagesIter.next()).getName());
         assertEquals("page1.psml", ((Page)pagesIter.next()).getName());
         assertEquals("page0.psml", ((Page)pagesIter.next()).getName());
         assertEquals("hidden.psml", ((Page)pagesIter.next()).getName());
         assertEquals(2, rootFolderView.getLinks().size());
-        Iterator linksIter = rootFolderView.getLinks().iterator();
+        Iterator<Node> linksIter = rootFolderView.getLinks().iterator();
         assertEquals("link1.link", ((Link)linksIter.next()).getName());
         assertEquals("link0.link", ((Link)linksIter.next()).getName());
         assertEquals(2, rootFolderView.getDynamicPages().size());
-        Iterator dynamicPagesIter = rootFolderView.getDynamicPages().iterator();
+        Iterator<Node> dynamicPagesIter = rootFolderView.getDynamicPages().iterator();
         assertEquals("contentpage.dpsml", ((DynamicPage)dynamicPagesIter.next()).getName());
         assertEquals("docpage.dpsml", ((DynamicPage)dynamicPagesIter.next()).getName());
         Page rootPage0View = rootFolderView.getPage("page0.psml");
@@ -279,33 +279,33 @@ public class TestPortalSite extends AbstractSpringTestCase
         List<MenuDefinition> rootPage0ViewMenus = rootPage0View.getMenuDefinitions();
         assertNotNull(rootPage0ViewMenus);
         assertEquals(7 + aggregateView.getStandardMenuNames().size(), rootPage0ViewMenus.size());
-        Iterator menusIter = rootPage0ViewMenus.iterator();
-        MenuDefinition rootPage0ViewTemplateTestMenu = (MenuDefinition)menusIter.next();
+        Iterator<MenuDefinition> menusIter = rootPage0ViewMenus.iterator();
+        MenuDefinition rootPage0ViewTemplateTestMenu = menusIter.next();
         assertEquals("template-test", rootPage0ViewTemplateTestMenu.getName());
         assertEquals("/page2.psml", rootPage0ViewTemplateTestMenu.getOptions());
-        MenuDefinition rootPage0ViewTopMenu = (MenuDefinition)menusIter.next();
+        MenuDefinition rootPage0ViewTopMenu = menusIter.next();
         assertEquals("top", rootPage0ViewTopMenu.getName());
         assertEquals("/", rootPage0ViewTopMenu.getOptions());
         assertEquals(2, rootPage0ViewTopMenu.getDepth());
         assertEquals("dhtml-pull-down", rootPage0ViewTopMenu.getSkin());
-        MenuDefinition rootPage0ViewBreadCrumbMenu = (MenuDefinition)menusIter.next();
+        MenuDefinition rootPage0ViewBreadCrumbMenu = menusIter.next();
         assertEquals("bread-crumbs", rootPage0ViewBreadCrumbMenu.getName());
         assertEquals("./", rootPage0ViewBreadCrumbMenu.getOptions());
         assertEquals(true, rootPage0ViewBreadCrumbMenu.isPaths());
-        MenuDefinition rootPage0ViewCurrentPageTestMenu = (MenuDefinition)menusIter.next();
+        MenuDefinition rootPage0ViewCurrentPageTestMenu = menusIter.next();
         assertEquals("current-page-test", rootPage0ViewCurrentPageTestMenu.getName());
-        MenuDefinition rootPage0ViewCurrentPathTestMenu = (MenuDefinition)menusIter.next();
+        MenuDefinition rootPage0ViewCurrentPathTestMenu = menusIter.next();
         assertEquals("current-path-test", rootPage0ViewCurrentPathTestMenu.getName());        
-        MenuDefinition rootPage0SiteNavigationsMenu = (MenuDefinition)menusIter.next();
+        MenuDefinition rootPage0SiteNavigationsMenu = menusIter.next();
         assertEquals("site-navigations", rootPage0SiteNavigationsMenu.getName());        
         assertTrue(rootPage0SiteNavigationsMenu.isRegexp());        
         assertEquals("/*/,/*.psml", rootPage0SiteNavigationsMenu.getOptions());        
         assertEquals(-1, rootPage0SiteNavigationsMenu.getDepth());        
-        MenuDefinition rootPage0RootedNavigationsMenu = (MenuDefinition)menusIter.next();
+        MenuDefinition rootPage0RootedNavigationsMenu = menusIter.next();
         assertEquals("rooted-navigations", rootPage0RootedNavigationsMenu.getName());        
         for (int i = 0; (i < aggregateView.getStandardMenuNames().size()); i++)
         {
-            assertTrue(aggregateView.getStandardMenuNames().contains(((MenuDefinition)menusIter.next()).getName()));
+            assertTrue(aggregateView.getStandardMenuNames().contains((menusIter.next()).getName()));
         }
         Page rootPage2View = rootFolderView.getPage("page2.psml");
         assertNotNull(rootPage2View);
@@ -316,22 +316,22 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(rootPage2ViewMenus);
         assertEquals(7 + aggregateView.getStandardMenuNames().size(), rootPage2ViewMenus.size());
         menusIter = rootPage2ViewMenus.iterator();
-        MenuDefinition rootPage2ViewTopMenu = (MenuDefinition)menusIter.next();
+        MenuDefinition rootPage2ViewTopMenu = menusIter.next();
         assertEquals("top", rootPage2ViewTopMenu.getName());
         assertEquals("/", rootPage2ViewTopMenu.getOptions());
         assertEquals(1, rootPage2ViewTopMenu.getDepth());
-        MenuDefinition rootPage2ViewBreadCrumbMenu = (MenuDefinition)menusIter.next();
+        MenuDefinition rootPage2ViewBreadCrumbMenu = menusIter.next();
         assertEquals("bread-crumbs", rootPage2ViewBreadCrumbMenu.getName());
-        MenuDefinition rootPage2ViewTemplateTestMenu = (MenuDefinition)menusIter.next();
+        MenuDefinition rootPage2ViewTemplateTestMenu = menusIter.next();
         assertEquals("template-test", rootPage2ViewTemplateTestMenu.getName());
         assertEquals("/page0.psml", rootPage2ViewTemplateTestMenu.getOptions());
-        MenuDefinition rootPage2ViewCurrentPageTestMenu = (MenuDefinition)menusIter.next();
-        assertEquals("current-page-test", rootPage0ViewCurrentPageTestMenu.getName());
-        MenuDefinition rootPage2ViewCurrentPathTestMenu = (MenuDefinition)menusIter.next();
-        assertEquals("current-path-test", rootPage0ViewCurrentPathTestMenu.getName());        
-        MenuDefinition rootPage2SiteNavigationsMenu = (MenuDefinition)menusIter.next();
+        MenuDefinition rootPage2ViewCurrentPageTestMenu = menusIter.next();
+        assertEquals("current-page-test", rootPage2ViewCurrentPageTestMenu.getName());
+        MenuDefinition rootPage2ViewCurrentPathTestMenu = menusIter.next();
+        assertEquals("current-path-test", rootPage2ViewCurrentPathTestMenu.getName());
+        MenuDefinition rootPage2SiteNavigationsMenu = menusIter.next();
         assertEquals("site-navigations", rootPage2SiteNavigationsMenu.getName());        
-        MenuDefinition rootPage2RootedNavigationsMenu = (MenuDefinition)menusIter.next();
+        MenuDefinition rootPage2RootedNavigationsMenu = menusIter.next();
         assertEquals("rooted-navigations", rootPage2RootedNavigationsMenu.getName());        
         for (int i = 0; (i < aggregateView.getStandardMenuNames().size()); i++)
         {
@@ -970,10 +970,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         List<MenuElement> topMenuElements = topMenu.getElements();
         assertNotNull(topMenuElements);
         assertEquals(8, topMenuElements.size());
-        Iterator menuElementsIter = topMenuElements.iterator();
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : topMenuElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("folder0"))
             {
                 assertTrue(element instanceof Menu);
@@ -1133,10 +1131,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         List<MenuElement> siteNavigationsElements = siteNavigationsMenu.getElements();
         assertNotNull(siteNavigationsElements);
         assertEquals(6, siteNavigationsElements.size());
-        menuElementsIter = siteNavigationsElements.iterator();
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : siteNavigationsElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("folder0"))
             {
                 assertTrue(element instanceof Menu);
@@ -1241,10 +1237,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         List<MenuElement> rootedElements = rootedMenu.getElements();
         assertNotNull(rootedElements);
         assertEquals(8, rootedElements.size());
-        menuElementsIter = rootedElements.iterator();
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : rootedElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if ((element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("folder0")) ||
                 (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("group folder1")) ||
                 (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("Folder4")) ||
@@ -1369,10 +1363,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         List<MenuElement> navigationsElements = navigationsMenu.getElements();
         assertNotNull(navigationsElements);
         assertEquals(7, navigationsElements.size());
-        menuElementsIter = navigationsElements.iterator();
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : navigationsElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.SEPARATOR_ELEMENT_TYPE) &&
                 (element instanceof MenuSeparator) &&
                 ((MenuSeparator)element).getText().equals("Folders"))
@@ -1442,10 +1434,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         List<MenuElement> pagesElements = pagesMenu.getElements();
         assertNotNull(pagesElements);
         assertEquals(3, pagesElements.size());
-        menuElementsIter = pagesElements.iterator();
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : pagesElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/page2.psml"))
             {
                 assertTrue(element instanceof MenuOption);
@@ -1526,10 +1516,10 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertEquals("custom", customMenu.getName());
         assertEquals("Top Menu", customMenu.getTitle());
         assertEquals("Haut", customMenu.getTitle(Locale.FRENCH));
-        menuElementsIter = customElements.iterator();        
+        Iterator<MenuElement> menuElementsIter = customElements.iterator();
         for (int i = 0; ((i < 2) && menuElementsIter.hasNext()); i++)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
+            MenuElement element = menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/link0.link"))
             {
                 assertTrue(element instanceof MenuOption);
@@ -1549,16 +1539,16 @@ public class TestPortalSite extends AbstractSpringTestCase
         }
         if (menuElementsIter.hasNext())
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
+            MenuElement element = menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("user root"))
             {
                 assertFalse(((Menu)element).isEmpty());
                 List<MenuElement> nestedElements = ((Menu)element).getElements();
                 assertEquals(6, nestedElements.size());
-                Iterator nestedElementsIter = nestedElements.iterator();
+                Iterator<MenuElement> nestedElementsIter = nestedElements.iterator();
                 if (nestedElementsIter.hasNext())
                 {
-                    MenuElement nestedElement = (MenuElement)nestedElementsIter.next();
+                    MenuElement nestedElement = nestedElementsIter.next();
                     if (nestedElement.getElementType().equals(MenuElement.SEPARATOR_ELEMENT_TYPE) &&
                         (nestedElement instanceof MenuSeparator) &&
                         ((MenuSeparator)nestedElement).getText().equals("=== Current Page ==="))
@@ -1571,7 +1561,7 @@ public class TestPortalSite extends AbstractSpringTestCase
                 }
                 if (nestedElementsIter.hasNext())
                 {
-                    MenuElement nestedElement = (MenuElement)nestedElementsIter.next();
+                    MenuElement nestedElement = nestedElementsIter.next();
                     if (nestedElement.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) &&
                         nestedElement.getTitle().equals("/folder1/page1.psml"))
                     {
@@ -1586,7 +1576,7 @@ public class TestPortalSite extends AbstractSpringTestCase
                 }
                 if (nestedElementsIter.hasNext())
                 {
-                    MenuElement nestedElement = (MenuElement)nestedElementsIter.next();
+                    MenuElement nestedElement = nestedElementsIter.next();
                     if (nestedElement.getElementType().equals(MenuElement.SEPARATOR_ELEMENT_TYPE) &&
                         (nestedElement instanceof MenuSeparator) &&
                         ((MenuSeparator)nestedElement).getText().equals("=== Top Pages ==="))
@@ -1600,7 +1590,7 @@ public class TestPortalSite extends AbstractSpringTestCase
                 }
                 for (int i = 0; ((i < 3) && nestedElementsIter.hasNext()); i++)
                 {
-                    MenuElement nestedElement = (MenuElement)nestedElementsIter.next();
+                    MenuElement nestedElement = nestedElementsIter.next();
                     if (nestedElement.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) &&
                         nestedElement.getTitle().equals("/page2.psml"))
                     {
@@ -1635,7 +1625,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         }
         if (menuElementsIter.hasNext())
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
+            MenuElement element = menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.SEPARATOR_ELEMENT_TYPE) &&
                 (element instanceof MenuSeparator) &&
                 ((MenuSeparator)element).getText().equals("=== More Options ==="))
@@ -1648,7 +1638,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         }
         for (int i = 0; ((i < 4) && menuElementsIter.hasNext()); i++)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
+            MenuElement element = menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/link1.link"))
             {
                 assertTrue(element instanceof MenuOption);
@@ -1680,7 +1670,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         }
         if (menuElementsIter.hasNext())
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
+            MenuElement element = menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.SEPARATOR_ELEMENT_TYPE) &&
                 (element instanceof MenuSeparator) &&
                 ((MenuSeparator)element).getText().equals("=== Standard Menus ==="))
@@ -1693,7 +1683,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         }
         if (menuElementsIter.hasNext())
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
+            MenuElement element = menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("user root"))
             {
                 assertTrue(element instanceof MenuOption);
@@ -1707,7 +1697,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         }
         if (menuElementsIter.hasNext())
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
+            MenuElement element = menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("navigations"))
             {
                 assertTrue(element instanceof Menu);
@@ -1720,7 +1710,7 @@ public class TestPortalSite extends AbstractSpringTestCase
         }
         if (menuElementsIter.hasNext())
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
+            MenuElement element = menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("pages"))
             {
                 assertTrue(element instanceof Menu);
@@ -1737,10 +1727,8 @@ public class TestPortalSite extends AbstractSpringTestCase
         rootedElements = rootedMenu.getElements();
         assertNotNull(rootedElements);
         assertEquals(3, rootedElements.size());
-        menuElementsIter = rootedElements.iterator();        
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : rootedElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.MENU_ELEMENT_TYPE) && element.getTitle().equals("folder1/folder"))
             {
                 assertTrue(element instanceof Menu);
@@ -2056,11 +2044,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(topMenu.isEmpty());
         List<MenuElement> topMenuElements = topMenu.getElements();
         assertNotNull(topMenuElements);
-        Iterator menuElementsIter = topMenuElements.iterator();
         boolean hiddenElement = false;
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : topMenuElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
             {
                 hiddenElement = true;
@@ -2072,11 +2058,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(pagesMenu.isEmpty());
         List<MenuElement> pagesElements = pagesMenu.getElements();
         assertNotNull(pagesElements);
-        menuElementsIter = pagesElements.iterator();
         hiddenElement = false;
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : pagesElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
             {
                 hiddenElement = true;
@@ -2097,11 +2081,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(topMenu.isEmpty());
         topMenuElements = topMenu.getElements();
         assertNotNull(topMenuElements);
-        menuElementsIter = topMenuElements.iterator();
         hiddenElement = false;
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : topMenuElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
             {
                 hiddenElement = true;
@@ -2113,11 +2095,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(pagesMenu.isEmpty());
         pagesElements = pagesMenu.getElements();
         assertNotNull(pagesElements);
-        menuElementsIter = pagesElements.iterator();
         hiddenElement = false;
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : pagesElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
             {
                 hiddenElement = true;
@@ -2138,11 +2118,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(topMenu.isEmpty());
         topMenuElements = topMenu.getElements();
         assertNotNull(topMenuElements);
-        menuElementsIter = topMenuElements.iterator();
         hiddenElement = false;
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : topMenuElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
             {
                 hiddenElement = true;
@@ -2154,11 +2132,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(pagesMenu.isEmpty());
         pagesElements = pagesMenu.getElements();
         assertNotNull(pagesElements);
-        menuElementsIter = pagesElements.iterator();
         hiddenElement = false;
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : pagesElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
             {
                 hiddenElement = true;
@@ -2178,11 +2154,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(pagesMenu.isEmpty());
         pagesElements = pagesMenu.getElements();
         assertNotNull(pagesElements);
-        menuElementsIter = pagesElements.iterator();
         hiddenElement = false;
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : pagesElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
             {
                 hiddenElement = true;
@@ -2198,11 +2172,9 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertFalse(pagesMenu.isEmpty());
         pagesElements = pagesMenu.getElements();
         assertNotNull(pagesElements);
-        menuElementsIter = pagesElements.iterator();
         hiddenElement = false;
-        while (menuElementsIter.hasNext())
+        for (MenuElement element : pagesElements)
         {
-            MenuElement element = (MenuElement)menuElementsIter.next();
             if (element.getElementType().equals(MenuElement.OPTION_ELEMENT_TYPE) && element.getTitle().equals("/hidden.psml"))
             {
                 hiddenElement = true;

@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -535,10 +534,8 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                 // scan through site looking for each first matching fragment
                 // definition by reference/definition id up the folder hierarchy
                 // from the requested page
-                Iterator refIdsIter = refIds.iterator();
-                while (refIdsIter.hasNext())
+                for (String refId : refIds)
                 {
-                    String refId = (String)refIdsIter.next();
                     FragmentDefinition requestFragmentDefinition = null;
                     try
                     {
@@ -550,13 +547,13 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                             if ((fragmentDefinitions != null) && !fragmentDefinitions.isEmpty())
                             {
                                 // find fragment definition by matching reference/definition id
-                                Iterator fragmentDefinitionsIter = fragmentDefinitions.iterator();
-                                while (fragmentDefinitionsIter.hasNext() && (requestFragmentDefinition == null))
+                                for (Node fragmentDefinitionNode : fragmentDefinitions)
                                 {
-                                    FragmentDefinition fragmentDefinition = (FragmentDefinition)fragmentDefinitionsIter.next();
+                                    FragmentDefinition fragmentDefinition = (FragmentDefinition)fragmentDefinitionNode;
                                     if (fragmentDefinition.getDefId().equals(refId))
                                     {
                                         requestFragmentDefinition = fragmentDefinition;
+                                        break;
                                     }
                                 }
                             }
@@ -605,13 +602,12 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         // merge list of fragment reference reference ids 
         if ((fragmentReferences != null) && !fragmentReferences.isEmpty())
         {
-            Iterator fragmentReferencesIter = fragmentReferences.iterator();
-            while (fragmentReferencesIter.hasNext())
+            for (BaseFragmentElement fragmentReference : fragmentReferences)
             {
-                FragmentReference fragmentReference = (FragmentReference)fragmentReferencesIter.next();
-                if (fragmentReference.getRefId() != null)
+                String refId = ((FragmentReference)fragmentReference).getRefId();
+                if (refId != null)
                 {
-                    refIds.add(fragmentReference.getRefId());
+                    refIds.add(refId);
                 }
             }
         }        
@@ -853,10 +849,9 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         // merge menu definition locator names
         if (locators != null)
         {
-            Iterator locatorsIter = locators.iterator();
-            while (locatorsIter.hasNext())
+            for (SiteViewMenuDefinitionLocator locator : locators)
             {
-                String definitionName = ((SiteViewMenuDefinitionLocator)locatorsIter.next()).getName();
+                String definitionName = locator.getName();
                 if (!excludeNames.contains(definitionName))
                 {
                     names.add(definitionName);
@@ -1006,11 +1001,9 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
         {
             // filter node views in node set
             List<Node> filteredNodes = null;
-            Iterator nodesIter = nodes.iterator();
-            while (nodesIter.hasNext())
+            for (Node node : nodes)
             {
                 // test hidden status of individual node views
-                Node node = (Node)nodesIter.next();
                 if (node.isHidden())
                 {
                     // if not copying, create new node set
@@ -1018,10 +1011,8 @@ public class PortalSiteRequestContextImpl implements PortalSiteRequestContext
                     if (filteredNodes == null)
                     {
                         filteredNodes = new ArrayList<Node>(nodes.size());
-                        Iterator copyIter = nodes.iterator();
-                        while (copyIter.hasNext())
+                        for (Node copyNode : nodes)
                         {
-                            Node copyNode = (Node)copyIter.next();
                             if (copyNode != node)
                             {
                                 filteredNodes.add(copyNode);

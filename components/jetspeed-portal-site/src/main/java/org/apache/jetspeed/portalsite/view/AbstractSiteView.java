@@ -35,7 +35,6 @@ import org.apache.jetspeed.portalsite.menu.StandardPagesMenuDefinition;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -464,10 +463,9 @@ public abstract class AbstractSiteView
                                     {
                                         // recursively process matching sub-folders
                                         List<Node> views = null;
-                                        Iterator subfoldersIter = subfolders.iterator();
-                                        while (subfoldersIter.hasNext())
+                                        for (Node folderNode : subfolders)
                                         {
-                                            currentFolder = (Folder)subfoldersIter.next();
+                                            currentFolder = (Folder)folderNode;
                                             List<Node> subfolderViews = getNodeViews(currentRegexpPath, currentFolder, menuPath, onlyConcrete, onlyViewable, onlyVisible);
                                             if ((subfolderViews != null) && !subfolderViews.isEmpty())
                                             {
@@ -546,10 +544,8 @@ public abstract class AbstractSiteView
                             if ((children != null) && !children.isEmpty())
                             {
                                 List<Node> views = null;
-                                Iterator childrenIter = children.iterator();
-                                while (childrenIter.hasNext())
+                                for (Node child : children)
                                 {
-                                    Node child = (Node)childrenIter.next(); 
                                     if ((!onlyConcrete || isConcreteNode(child)) &&
                                         (!onlyVisible || isVisible(child, currentPage)) &&
                                         (!onlyViewable || isViewable(child, onlyVisible)))
@@ -848,10 +844,8 @@ public abstract class AbstractSiteView
                 NodeSet children = ((Folder) node).getAll();
                 if (children != null)
                 {
-                    Iterator childrenIter = children.iterator();
-                    while (childrenIter.hasNext())
+                    for (Node child : children)
                     {
-                        Node child = (Node)childrenIter.next();
                         if ((!onlyVisible || isVisible(child, null)) && isViewable(child, onlyVisible))
                         {
                             return true;

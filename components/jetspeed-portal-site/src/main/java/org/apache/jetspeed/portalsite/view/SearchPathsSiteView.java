@@ -95,11 +95,9 @@ public class SearchPathsSiteView extends AbstractSiteView
             this.searchPaths = new ArrayList<SiteViewSearchPath>(searchPaths.size());
             List<SiteViewSearchPath> allSearchPaths = new ArrayList<SiteViewSearchPath>(searchPaths.size());
             StringBuilder searchPathsStringBuilder = new StringBuilder();
-            Iterator pathsIter = searchPaths.iterator();
-            while (pathsIter.hasNext())
+            for (Object pathObject : searchPaths)
             {
                 // construct search paths if necessary
-                Object pathObject = pathsIter.next();
                 if (!(pathObject instanceof SiteViewSearchPath))
                 {
                     String path = pathObject.toString().trim();
@@ -158,10 +156,8 @@ public class SearchPathsSiteView extends AbstractSiteView
             }
             
             // find primary user search path, (may not exist: search against all paths) 
-            Iterator searchPathsIter = allSearchPaths.iterator();
-            while (searchPathsIter.hasNext())
+            for (SiteViewSearchPath searchPath : allSearchPaths)
             {
-                SiteViewSearchPath searchPath = (SiteViewSearchPath)searchPathsIter.next();
                 if (searchPath.isUserPath())
                 {
                     this.userSearchPath = searchPath;
@@ -185,10 +181,9 @@ public class SearchPathsSiteView extends AbstractSiteView
                 // scan for the search path that are common to all
                 // more specific search paths starting at the least
                 // specific search path
-                ListIterator baseSearchPathsIter = allSearchPaths.listIterator(allSearchPaths.size());
-                while (baseSearchPathsIter.hasPrevious())
+                for (ListIterator<SiteViewSearchPath> baseSearchPathsIter = allSearchPaths.listIterator(allSearchPaths.size()); baseSearchPathsIter.hasPrevious();)
                 {
-                    SiteViewSearchPath searchPath = (SiteViewSearchPath)baseSearchPathsIter.previous();
+                    SiteViewSearchPath searchPath = baseSearchPathsIter.previous();
                     int scanSearchPathsIndex = baseSearchPathsIter.previousIndex();
                     if (scanSearchPathsIndex == -1)
                     {
@@ -206,10 +201,9 @@ public class SearchPathsSiteView extends AbstractSiteView
                         // scan more specific search paths to test whether the
                         // current search path is common to all
                         boolean isCommonSearchPath = true;
-                        ListIterator scanBaseSearchPathsIter = allSearchPaths.listIterator(scanSearchPathsIndex+1);
-                        while (scanBaseSearchPathsIter.hasPrevious())
+                        for (ListIterator<SiteViewSearchPath> scanBaseSearchPathsIter = allSearchPaths.listIterator(scanSearchPathsIndex+1); scanBaseSearchPathsIter.hasPrevious();)
                         {
-                            SiteViewSearchPath scanSearchPath = (SiteViewSearchPath)scanBaseSearchPathsIter.previous();
+                            SiteViewSearchPath scanSearchPath = scanBaseSearchPathsIter.previous();
                             if (!scanSearchPath.toString().startsWith(searchPath.toString()))
                             {
                                 isCommonSearchPath = false;
@@ -368,10 +362,8 @@ public class SearchPathsSiteView extends AbstractSiteView
             }
             if ((pageLocator == null) || (locators.size() > 1))
             {
-                Iterator locatorNameIter = locators.keySet().iterator();
-                while (locatorNameIter.hasNext())
+                for (String locatorName : locators.keySet())
                 {
-                    String locatorName = (String)locatorNameIter.next();
                     if (!locatorName.equals(ProfileLocator.PAGE_LOCATOR))
                     {
                         // add alternate locator search paths
@@ -589,10 +581,8 @@ public class SearchPathsSiteView extends AbstractSiteView
                             // control value from each, appending new value, and adding new
                             // valued set to collection of paths
                             ArrayList<PathStringBuilder> multipleValuePaths = new ArrayList<PathStringBuilder>(lastPathsCount);
-                            Iterator pathsIter = paths.iterator();
-                            for (int count = 0; (pathsIter.hasNext() && (count < lastPathsCount)); count++)
+                            for (PathStringBuilder path : paths)
                             {
-                                PathStringBuilder path = (PathStringBuilder) pathsIter.next();
                                 PathStringBuilder multipleValuePath = new PathStringBuilder(path.toString());
                                 multipleValuePath.setLength(multipleValuePath.length() - lastPropertyValueLength - 1);
                                 multipleValuePath.append(propertyValue);
@@ -601,6 +591,10 @@ public class SearchPathsSiteView extends AbstractSiteView
                                 multipleValuePath.setPrincipalPath(path.isPrincipalPath() || principalPath);
                                 multipleValuePath.setPathDepth(path.getPathDepth()+1);
                                 multipleValuePaths.add(multipleValuePath);
+                                if (multipleValuePaths.size() == lastPathsCount)
+                                {
+                                    break;
+                                }
                             }
                             paths.addAll(multipleValuePaths);
 
@@ -612,10 +606,8 @@ public class SearchPathsSiteView extends AbstractSiteView
                         else
                         {
                             // construct locator path folders with control properties
-                            Iterator pathsIter = paths.iterator();
-                            while (pathsIter.hasNext())
+                            for (PathStringBuilder path : paths)
                             {
-                                PathStringBuilder path = (PathStringBuilder) pathsIter.next();
                                 path.append(Folder.RESERVED_FOLDER_PREFIX);
                                 path.append(propertyName);
                                 path.append(Folder.PATH_SEPARATOR_CHAR);
@@ -691,10 +683,8 @@ public class SearchPathsSiteView extends AbstractSiteView
                 // search order; move non-unique paths to end of search
                 // path list to favor more specific paths over common
                 // root paths, (i.e. '/' should be last)
-                Iterator locatorSearchPathsIter = locatorSearchPaths.iterator();
-                while (locatorSearchPathsIter.hasNext())
+                for (PathStringBuilder searchPathBuilder : locatorSearchPaths)
                 {
-                    PathStringBuilder searchPathBuilder = (PathStringBuilder)locatorSearchPathsIter.next();
                     SiteViewSearchPath searchPath = new SiteViewSearchPath(locatorName, searchPathBuilder.toString(), searchPathBuilder.isUserPath(), searchPathBuilder.isPrincipalPath(), searchPathBuilder.getPathDepth());
                     // test search path uniqueness
                     int existsAt = searchPaths.indexOf(searchPath);

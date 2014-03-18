@@ -835,13 +835,13 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         if (requestPageId != null)
                         {
                             // find page by id in request folder pages
-                            Iterator requestFolderPagesIter = requestFolderPages.iterator();
-                            while ((requestPage == null) && (requestFolderPagesIter.hasNext()))
+                            for (Node requestFolderPageNode : requestFolderPages)
                             {
-                                Page requestFolderPage = (Page)requestFolderPagesIter.next();
+                                Page requestFolderPage = (Page)requestFolderPageNode;
                                 if (requestPageId.equals(requestFolderPage.getId()))
                                 {
                                     requestPage = requestFolderPage;
+                                    break;
                                 }
                             }
                             
@@ -1062,10 +1062,9 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                         DynamicPage matchingPage = null;
                         DynamicPage inheritableMatchingPage = null;
                         DynamicPage wildcardMatchingPage = null;
-                        Iterator dynamicPagesIter = dynamicPages.iterator();
-                        while (dynamicPagesIter.hasNext())
+                        for (Node dynamicPageNode : dynamicPages)
                         {
-                            DynamicPage dynamicPage = (DynamicPage)dynamicPagesIter.next();
+                            DynamicPage dynamicPage = (DynamicPage)dynamicPageNode;
                             if ((dynamicPage.getContentType() == null) || dynamicPage.getContentType().equals(DynamicPage.WILDCARD_CONTENT_TYPE))
                             {
                                 wildcardMatchingPage = dynamicPage;
@@ -1268,12 +1267,10 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
                 if (requestProfileLocators != null)
                 {
                     boolean firstEntry = true;
-                    Iterator entriesIter = requestProfileLocators.entrySet().iterator();
-                    while (entriesIter.hasNext())
+                    for (Map.Entry<String,ProfileLocator> entry : requestProfileLocators.entrySet())
                     {
-                        Map.Entry entry = (Map.Entry)entriesIter.next();
-                        String locatorName = (String)entry.getKey();
-                        ProfileLocator locator = (ProfileLocator)entry.getValue();
+                        String locatorName = entry.getKey();
+                        ProfileLocator locator = entry.getValue();
                         if (!firstEntry)
                         {
                             debug.append(",");
@@ -1619,7 +1616,7 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
      * @param locators1 request profile locator map
      * @return boolean flag indicating equivalence
      */
-    private static boolean locatorsEquals(Map locators0, Map locators1)
+    private static boolean locatorsEquals(Map<String,ProfileLocator> locators0, Map<String,ProfileLocator> locators1)
     {
         // trivial comparisons
         if (locators0 == locators1)
@@ -1638,12 +1635,10 @@ public class PortalSiteSessionContextImpl implements PortalSiteSessionContext, P
         }
 
         // compare locator map entries
-        Iterator entriesIter = locators0.entrySet().iterator();
-        if (entriesIter.hasNext())
+        for (Map.Entry<String,ProfileLocator> entry : locators0.entrySet())
         {
-            Map.Entry entry = (Map.Entry)entriesIter.next();
-            ProfileLocator locator0 = (ProfileLocator)entry.getValue();
-            ProfileLocator locator1 = (ProfileLocator)locators1.get(entry.getKey());
+            ProfileLocator locator0 = entry.getValue();
+            ProfileLocator locator1 = locators1.get(entry.getKey());
             if (locator1 == null)
             {
                 return false;
