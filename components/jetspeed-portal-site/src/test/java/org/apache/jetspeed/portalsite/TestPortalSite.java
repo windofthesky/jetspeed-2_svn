@@ -644,14 +644,14 @@ public class TestPortalSite extends AbstractSpringTestCase
         assertNotNull(requestPageTemplateView);
         assertEquals("template.tpsml", requestPageTemplateView.getName());
         assertEquals("/template.tpsml", extractFileSystemPathFromId(requestPageTemplateView.getId()));
-        Map requestFragmentDefinitionViews = requestContext.getFragmentDefinitions();
+        Map<String,FragmentDefinition> requestFragmentDefinitionViews = requestContext.getFragmentDefinitions();
         assertNotNull(requestFragmentDefinitionViews);
         assertEquals(2, requestFragmentDefinitionViews.size());
-        FragmentDefinition requestFragmentDefinitionView0 = (FragmentDefinition)requestFragmentDefinitionViews.get("fake-fragment-definition-0");
+        FragmentDefinition requestFragmentDefinitionView0 = requestFragmentDefinitionViews.get("fake-fragment-definition-0");
         assertNotNull(requestFragmentDefinitionView0);
         assertEquals("definition0.fpsml", requestFragmentDefinitionView0.getName());
         assertEquals("/definition0.fpsml", extractFileSystemPathFromId(requestFragmentDefinitionView0.getId()));
-        FragmentDefinition requestFragmentDefinitionView1 = (FragmentDefinition)requestFragmentDefinitionViews.get("fake-fragment-definition-1");
+        FragmentDefinition requestFragmentDefinitionView1 = requestFragmentDefinitionViews.get("fake-fragment-definition-1");
         assertNotNull(requestFragmentDefinitionView1);
         assertEquals("definition1.fpsml", requestFragmentDefinitionView1.getName());
         assertEquals("/_user/user/definition1.fpsml", extractFileSystemPathFromId(requestFragmentDefinitionView1.getId()));        

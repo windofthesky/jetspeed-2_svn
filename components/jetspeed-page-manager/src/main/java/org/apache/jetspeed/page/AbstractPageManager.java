@@ -188,39 +188,39 @@ public abstract class AbstractPageManager
         }
     }
     
-    public AbstractPageManager(IdGenerator generator, boolean permissionsEnabled, boolean constraintsEnabled, Map modelClasses)
+    public AbstractPageManager(IdGenerator generator, boolean permissionsEnabled, boolean constraintsEnabled, Map<String,Class<?>> modelClasses)
     {
         this(generator, permissionsEnabled, constraintsEnabled);     
 
-        this.fragmentClass = (Class)modelClasses.get("FragmentImpl");
-        this.pageClass = (Class)modelClasses.get("PageImpl");
-        this.folderClass = (Class)modelClasses.get("FolderImpl");
-        this.linkClass = (Class)modelClasses.get("LinkImpl");
-        this.pageSecurityClass = (Class)modelClasses.get("PageSecurityImpl");
-        this.folderMenuDefinitionClass = (Class)modelClasses.get("FolderMenuDefinitionImpl");
-        this.folderMenuExcludeDefinitionClass = (Class)modelClasses.get("FolderMenuExcludeDefinitionImpl");
-        this.folderMenuIncludeDefinitionClass = (Class)modelClasses.get("FolderMenuIncludeDefinitionImpl");
-        this.folderMenuOptionsDefinitionClass = (Class)modelClasses.get("FolderMenuOptionsDefinitionImpl");
-        this.folderMenuSeparatorDefinitionClass = (Class)modelClasses.get("FolderMenuSeparatorDefinitionImpl");
-        this.pageMenuDefinitionClass = (Class)modelClasses.get("PageMenuDefinitionImpl");
-        this.pageMenuExcludeDefinitionClass = (Class)modelClasses.get("PageMenuExcludeDefinitionImpl");
-        this.pageMenuIncludeDefinitionClass = (Class)modelClasses.get("PageMenuIncludeDefinitionImpl");
-        this.pageMenuOptionsDefinitionClass = (Class)modelClasses.get("PageMenuOptionsDefinitionImpl");
-        this.pageMenuSeparatorDefinitionClass = (Class)modelClasses.get("PageMenuSeparatorDefinitionImpl");
-        this.securityConstraintsClass = (Class)modelClasses.get("SecurityConstraintsImpl");
-        this.folderSecurityConstraintClass = (Class)modelClasses.get("FolderSecurityConstraintImpl");
-        this.pageSecurityConstraintClass = (Class)modelClasses.get("PageSecurityConstraintImpl");
-        this.fragmentSecurityConstraintClass = (Class)modelClasses.get("FragmentSecurityConstraintImpl");
-        this.linkSecurityConstraintClass = (Class)modelClasses.get("LinkSecurityConstraintImpl");
-        this.pageSecuritySecurityConstraintClass = (Class)modelClasses.get("PageSecuritySecurityConstraintImpl");
-        this.securityConstraintsDefClass = (Class)modelClasses.get("SecurityConstraintsDefImpl");
-        this.fragmentPreferenceClass = (Class)modelClasses.get("FragmentPreferenceImpl");
-        this.fragmentReferenceClass = (Class)modelClasses.get("FragmentReferenceImpl");
-        this.pageFragmentClass = (Class)modelClasses.get("PageFragmentImpl");
-        this.pageTemplateClass = (Class)modelClasses.get("PageTemplateImpl");
-        this.dynamicPageClass = (Class)modelClasses.get("DynamicPageImpl");
-        this.fragmentDefinitionClass = (Class)modelClasses.get("FragmentDefinitionImpl");
-        this.fragmentPropertyClass = (Class)modelClasses.get("FragmentPropertyImpl");
+        this.fragmentClass = modelClasses.get("FragmentImpl");
+        this.pageClass = modelClasses.get("PageImpl");
+        this.folderClass = modelClasses.get("FolderImpl");
+        this.linkClass = modelClasses.get("LinkImpl");
+        this.pageSecurityClass = modelClasses.get("PageSecurityImpl");
+        this.folderMenuDefinitionClass = modelClasses.get("FolderMenuDefinitionImpl");
+        this.folderMenuExcludeDefinitionClass = modelClasses.get("FolderMenuExcludeDefinitionImpl");
+        this.folderMenuIncludeDefinitionClass = modelClasses.get("FolderMenuIncludeDefinitionImpl");
+        this.folderMenuOptionsDefinitionClass = modelClasses.get("FolderMenuOptionsDefinitionImpl");
+        this.folderMenuSeparatorDefinitionClass = modelClasses.get("FolderMenuSeparatorDefinitionImpl");
+        this.pageMenuDefinitionClass = modelClasses.get("PageMenuDefinitionImpl");
+        this.pageMenuExcludeDefinitionClass = modelClasses.get("PageMenuExcludeDefinitionImpl");
+        this.pageMenuIncludeDefinitionClass = modelClasses.get("PageMenuIncludeDefinitionImpl");
+        this.pageMenuOptionsDefinitionClass = modelClasses.get("PageMenuOptionsDefinitionImpl");
+        this.pageMenuSeparatorDefinitionClass = modelClasses.get("PageMenuSeparatorDefinitionImpl");
+        this.securityConstraintsClass = modelClasses.get("SecurityConstraintsImpl");
+        this.folderSecurityConstraintClass = modelClasses.get("FolderSecurityConstraintImpl");
+        this.pageSecurityConstraintClass = modelClasses.get("PageSecurityConstraintImpl");
+        this.fragmentSecurityConstraintClass = modelClasses.get("FragmentSecurityConstraintImpl");
+        this.linkSecurityConstraintClass = modelClasses.get("LinkSecurityConstraintImpl");
+        this.pageSecuritySecurityConstraintClass = modelClasses.get("PageSecuritySecurityConstraintImpl");
+        this.securityConstraintsDefClass = modelClasses.get("SecurityConstraintsDefImpl");
+        this.fragmentPreferenceClass = modelClasses.get("FragmentPreferenceImpl");
+        this.fragmentReferenceClass = modelClasses.get("FragmentReferenceImpl");
+        this.pageFragmentClass = modelClasses.get("PageFragmentImpl");
+        this.pageTemplateClass = modelClasses.get("PageTemplateImpl");
+        this.dynamicPageClass = modelClasses.get("DynamicPageImpl");
+        this.fragmentDefinitionClass = modelClasses.get("FragmentDefinitionImpl");
+        this.fragmentPropertyClass = modelClasses.get("FragmentPropertyImpl");
     }
     
     /* (non-Javadoc)

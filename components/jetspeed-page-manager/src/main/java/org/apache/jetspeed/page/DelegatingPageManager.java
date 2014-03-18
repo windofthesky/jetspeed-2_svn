@@ -55,7 +55,7 @@ public class DelegatingPageManager extends AbstractPageManager
             IdGenerator generator,
             boolean isPermissionsSecurity, 
             boolean isConstraintsSecurity,
-            Map modelClasses)
+            Map<String,Class<?>> modelClasses)
     {
         super(generator, isPermissionsSecurity, isConstraintsSecurity, modelClasses);
         this.delegate = delegate;

@@ -60,7 +60,7 @@ public class JetspeedSSOSerializer extends AbstractJetspeedComponentSerializer
     /* (non-Javadoc)
      * @see org.apache.jetspeed.serializer.AbstractJetspeedComponentSerializer#deleteData(java.util.Map, org.slf4j.Logger)
      */
-    protected void deleteData(Map settings, Logger log) throws SerializerException
+    protected void deleteData(Map<String,Object> settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_SSO))
         {
@@ -71,7 +71,7 @@ public class JetspeedSSOSerializer extends AbstractJetspeedComponentSerializer
     /* (non-Javadoc)
      * @see org.apache.jetspeed.serializer.AbstractJetspeedComponentSerializer#processExport(org.apache.jetspeed.serializer.objects.JSSnapshot, java.util.Map, org.slf4j.Logger)
      */
-    protected void processExport(JSSnapshot data, Map settings, Logger log) throws SerializerException
+    protected void processExport(JSSnapshot data, Map<String,Object> settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_SSO))
         {
@@ -83,7 +83,7 @@ public class JetspeedSSOSerializer extends AbstractJetspeedComponentSerializer
     /* (non-Javadoc)
      * @see org.apache.jetspeed.serializer.AbstractJetspeedComponentSerializer#processImport(org.apache.jetspeed.serializer.objects.JSSnapshot, java.util.Map, org.slf4j.Logger)
      */
-    protected void processImport(JSSnapshot data, Map settings, Logger log) throws SerializerException
+    protected void processImport(JSSnapshot data, Map<String,Object> settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_SSO))
         {
@@ -99,7 +99,7 @@ public class JetspeedSSOSerializer extends AbstractJetspeedComponentSerializer
      * @param log export logger
      * @throws SerializerException
      */
-    private void deleteSSOSites(Map settings, Logger log) throws SerializerException
+    private void deleteSSOSites(Map<String,Object> settings, Logger log) throws SerializerException
     {
         Iterator<SSOSite> list = null;
         try
@@ -191,7 +191,7 @@ public class JetspeedSSOSerializer extends AbstractJetspeedComponentSerializer
      * @param log export logger
      * @throws SerializerException
      */
-    private void exportSSOSites(JSSnapshot data, Map settings, Logger log) throws SerializerException
+    private void exportSSOSites(JSSnapshot data, Map<String,Object> settings, Logger log) throws SerializerException
     {
         Map<String,JSSSOSite> ssoSitesMap = new HashMap<String,JSSSOSite>();
         Iterator<SSOSite> list = null;
@@ -293,7 +293,7 @@ public class JetspeedSSOSerializer extends AbstractJetspeedComponentSerializer
      * @param log import logger
      * @throws SerializerException
      */
-    private void recreateSSOSites(JSSnapshot data, Map settings, Logger log) throws SerializerException
+    private void recreateSSOSites(JSSnapshot data, Map<String,Object> settings, Logger log) throws SerializerException
     {
         log.debug("recreateSSOSites - processing");
 

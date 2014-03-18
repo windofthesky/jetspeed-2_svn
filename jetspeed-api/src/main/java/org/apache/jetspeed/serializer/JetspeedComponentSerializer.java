@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public interface JetspeedComponentSerializer
 {
-    void processImport(JetspeedSerializedData data, Map settings) throws SerializerException;
-    void processExport(JetspeedSerializedData data, Map settings) throws SerializerException;
-    void deleteData(Map settings) throws SerializerException;
+    void processImport(JetspeedSerializedData data, Map<String,Object> settings) throws SerializerException;
+    void processExport(JetspeedSerializedData data, Map<String,Object> settings) throws SerializerException;
+    void deleteData(Map<String,Object> settings) throws SerializerException;
 }

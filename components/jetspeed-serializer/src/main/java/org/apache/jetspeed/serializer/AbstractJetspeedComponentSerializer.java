@@ -32,26 +32,26 @@ import org.apache.jetspeed.serializer.objects.JSSnapshot;
  */
 public abstract class AbstractJetspeedComponentSerializer implements JetspeedComponentSerializer
 {
-    public void deleteData(Map settings) throws SerializerException
+    public void deleteData(Map<String,Object> settings) throws SerializerException
     {
         deleteData(settings, (Logger)settings.get(JetspeedSerializer.KEY_LOGGER));
     }
 
-    public void processExport(JetspeedSerializedData data, Map settings) throws SerializerException
+    public void processExport(JetspeedSerializedData data, Map<String,Object> settings) throws SerializerException
     {
         processExport((JSSnapshot)data, settings, (Logger)settings.get(JetspeedSerializer.KEY_LOGGER));
     }
 
-    public void processImport(JetspeedSerializedData data, Map settings) throws SerializerException
+    public void processImport(JetspeedSerializedData data, Map<String,Object> settings) throws SerializerException
     {
         processImport((JSSnapshot)data, settings, (Logger)settings.get(JetspeedSerializer.KEY_LOGGER));
     }
 
-    protected abstract void deleteData(Map settings, Logger log) throws SerializerException;
+    protected abstract void deleteData(Map<String,Object> settings, Logger log) throws SerializerException;
 
-    protected abstract void processExport(JSSnapshot data, Map settings, Logger log) throws SerializerException;
+    protected abstract void processExport(JSSnapshot data, Map<String,Object> settings, Logger log) throws SerializerException;
 
-    protected abstract void processImport(JSSnapshot data, Map settings, Logger log) throws SerializerException;
+    protected abstract void processImport(JSSnapshot data, Map<String,Object> settings, Logger log) throws SerializerException;
     
     /**
      * returns if the key for a particular setting is true. False if the key
@@ -60,7 +60,7 @@ public abstract class AbstractJetspeedComponentSerializer implements JetspeedCom
      * @param key
      * @return
      */
-    protected static boolean isSettingSet(Map settings, String key)
+    protected static boolean isSettingSet(Map<String,Object> settings, String key)
     {
         if ( settings != null )
         {

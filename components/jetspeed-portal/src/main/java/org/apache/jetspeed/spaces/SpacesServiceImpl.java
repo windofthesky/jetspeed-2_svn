@@ -16,13 +16,6 @@
  */
 package org.apache.jetspeed.spaces;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-
 import org.apache.jetspeed.administration.AdminUtil;
 import org.apache.jetspeed.locator.TemplateLocator;
 import org.apache.jetspeed.om.folder.Folder;
@@ -35,6 +28,13 @@ import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Spaces Services
@@ -62,11 +62,9 @@ public class SpacesServiceImpl implements Spaces
         try
         {
             envFolder = pageManager.getFolder(ENVIRONMENTS_LOCATION);
-            Iterator<Folder> it = envFolder.getFolders().iterator(); 
-            while (it.hasNext())
+            for (Node backingFolderNode : envFolder.getFolders())
             {
-                Folder backingFolder = it.next();
-                Environment env = loadEnvironment(backingFolder);
+                Environment env = loadEnvironment((Folder)backingFolderNode);
                 envs.add(env);
             }            
         }
@@ -147,11 +145,10 @@ public class SpacesServiceImpl implements Spaces
         {
             Folder root = pageManager.getFolder(Folder.PATH_SEPARATOR);
             Space defaultSpace = loadSpace(root);
-            result.add(defaultSpace);            
-            Iterator<Folder> spaces = root.getFolders().iterator();
-            for (int ix = 0; spaces.hasNext(); ix++)
+            result.add(defaultSpace);
+            for (Node folderNode : root.getFolders())
             {
-                Folder folder = spaces.next();
+                Folder folder = (Folder)folderNode;
                 if (folder.isReserved())
                     continue;
                 
@@ -188,10 +185,9 @@ public class SpacesServiceImpl implements Spaces
         }
         try
         {
-	        Iterator<Link> links = envFolder.getLinks().iterator();
-	        while (links.hasNext())
+            for (Node linkNode : envFolder.getLinks())
 	        {
-	        	Link link = links.next();
+	        	Link link = (Link)linkNode;
 	        	String spacePath = link.getPath();
 	        	Folder folder = pageManager.getFolder(spacePath);
                 if (folder.isHidden() || folder.isReserved())

@@ -74,7 +74,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
      * @see org.apache.jetspeed.serializer.JetspeedComponentSerializer#processExport(org.apache.jetspeed.serializer.objects.JSSnapshot, java.util.Map,
      * org.apache.commons.logging.Log)
      */
-    protected void processExport(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
+    protected void processExport(JSSnapshot snapshot, Map<String,Object> settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES))
         {
@@ -88,7 +88,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
      * @see org.apache.jetspeed.serializer.JetspeedComponentSerializer#processImport(org.apache.jetspeed.serializer.objects.JSSnapshot, java.util.Map,
      * org.apache.commons.logging.Log)
      */
-    protected void processImport(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
+    protected void processImport(JSSnapshot snapshot, Map<String,Object> settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES))
         {
@@ -97,7 +97,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    protected void deleteData(Map settings, Logger log) throws SerializerException
+    protected void deleteData(Map<String,Object> settings, Logger log) throws SerializerException
     {
         if (isSettingSet(settings, JetspeedSerializer.KEY_PROCESS_USER_PREFERENCES))
         {
@@ -126,7 +126,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    private void importEntities(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
+    private void importEntities(JSSnapshot snapshot, Map<String,Object> settings, Logger log) throws SerializerException
     {
         JSApplications applications = snapshot.getApplications();
         if (applications == null)
@@ -152,7 +152,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    void importPA(JSApplication app, PortletApplication pa, Map settings, Logger log) throws SerializerException
+    void importPA(JSApplication app, PortletApplication pa, Map<String,Object> settings, Logger log) throws SerializerException
     {
         /**
          * while more PAs for each portletDef list:entityMan:getPortletEntity(pd)
@@ -176,7 +176,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    private void importPD(JSApplication app, JSPortlet portlet, PortletDefinition pd, Map settings, Logger log) throws SerializerException
+    private void importPD(JSApplication app, JSPortlet portlet, PortletDefinition pd, Map<String,Object> settings, Logger log) throws SerializerException
     {
         Iterator it = portlet.getEntities().iterator();
         while (it.hasNext())
@@ -186,7 +186,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    private void importEntityPref(JSApplication app, JSPortlet portlet, JSEntity entity, PortletDefinition pd, Map settings, Logger log)
+    private void importEntityPref(JSApplication app, JSPortlet portlet, JSEntity entity, PortletDefinition pd, Map<String,Object> settings, Logger log)
     {
         JSEntityPreferences preferences = entity.getEntityPreferences();
         if ((preferences == null) || (preferences.size() == 0))
@@ -244,7 +244,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    private void exportEntities(JSSnapshot snapshot, Map settings, Logger log) throws SerializerException
+    private void exportEntities(JSSnapshot snapshot, Map<String,Object> settings, Logger log) throws SerializerException
     {
         Collection col = registry.getPortletApplications();
         if ((col == null) || (col.size() == 0))
@@ -279,7 +279,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         }
     }
 
-    private JSApplication exportPA(PortletApplication pa, Map settings, Logger log) throws SerializerException
+    private JSApplication exportPA(PortletApplication pa, Map<String,Object> settings, Logger log) throws SerializerException
     {
         JSApplication jsApplication = null;
         /**
@@ -319,7 +319,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         return jsApplication;
     }
 
-    private JSPortlet exportPD(PortletDefinition pd, Map settings, Logger log) throws SerializerException
+    private JSPortlet exportPD(PortletDefinition pd, Map<String,Object> settings, Logger log) throws SerializerException
     {
         JSPortlet jsPortlet = null;
         try
@@ -350,7 +350,7 @@ public class JetspeedRegistrySerializer extends AbstractJetspeedComponentSeriali
         return jsPortlet;
     }
 
-    JSEntity exportEntityPref(PortletDefinition definition, String windowId, Map settings, Logger log)
+    JSEntity exportEntityPref(PortletDefinition definition, String windowId, Map<String,Object> settings, Logger log)
     {
         JSEntity jsEntity = null;
         jsEntity = new JSEntity();
