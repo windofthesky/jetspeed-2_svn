@@ -16,10 +16,10 @@
  */
 package org.apache.jetspeed.tools.deploy;
 
-import javax.xml.xpath.XPathConstants;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import javax.xml.xpath.XPathConstants;
 
 /**
  * Utilities for manipulating the web.xml deployment descriptor version 2.4
@@ -35,18 +35,6 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
     public static final String PORTLET_TAGLIB_XPATH = "/js:web-app/js:jsp-config/js:taglib/js:taglib-uri[contains(child::text(), \"http://java.sun.com/portlet\")]";
     public static final String PORTLET20_TAGLIB_XPATH = "/js:web-app/js:jsp-config/js:taglib/js:taglib-uri[contains(child::text(), \"http://java.sun.com/portlet_2_0\")]";
     
-    protected static final String[] ELEMENTS_BEFORE_SERVLET = new String[]{"description", "display-name", "icon", 
-            "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet"};
-    protected static final String[] ELEMENTS_BEFORE_SERVLET_MAPPING = new String[]{"description", "display-name", "icon", 
-            "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet",
-            "servlet-mapping"};
-    
-    protected static final String[] ELEMENTS_BEFORE_JSP_CONFIG = new String[]{"description", "display-name", "icon", 
-        "distributable", "context-param", "filter", "filter-mapping", "listener", "servlet",
-        "servlet-mapping", "session-config", "mime-mapping", "welcome-file-list", "error-page", "jsp-config"};
-    
-    protected static final String[] ELEMENTS_BEFORE_TAGLIB_MAPPING = new String[]{"taglib"};
-      
     public JetspeedWebApplicationRewriter2_4(Document doc, String portletApplication)
     {
         super(doc, portletApplication);
@@ -121,7 +109,7 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
         jetspeedServletElement.appendChild(servletClass);
         insertContextNameParam(jetspeedServletElement);
         insertLoadOnStartup(jetspeedServletElement);
-        insertElementCorrectly(root, jetspeedServletElement, ELEMENTS_BEFORE_SERVLET);
+        insertElementCorrectly(root, jetspeedServletElement, getElementsBeforeServlet());
     }
 
     /**
@@ -143,7 +131,7 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
         jetspeedServletMappingElement.appendChild(servletMapName);
         jetspeedServletMappingElement.appendChild(servletUrlPattern);
 
-        insertElementCorrectly(root, jetspeedServletMappingElement, ELEMENTS_BEFORE_SERVLET_MAPPING);
+        insertElementCorrectly(root, jetspeedServletMappingElement, getElementsBeforeServletMapping());
     }
 
     /**
@@ -159,7 +147,7 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
         if (jspConfig == null)
         {
             jspConfig = root.getOwnerDocument().createElementNS(namespace,"jsp-config");
-            insertElementCorrectly(root, jspConfig, ELEMENTS_BEFORE_JSP_CONFIG);
+            insertElementCorrectly(root, jspConfig, getElementsBeforeJspConfig());
         }
         Element taglib = root.getOwnerDocument().createElementNS(namespace, "taglib");
         Element taguri = root.getOwnerDocument().createElementNS(namespace, "taglib-uri");
@@ -170,7 +158,7 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
         taglib.appendChild(taguri);
         taglib.appendChild(taglocation);
         
-        insertElementCorrectly(jspConfig, taglib, ELEMENTS_BEFORE_TAGLIB_MAPPING);
+        insertElementCorrectly(jspConfig, taglib, getElementsBeforeJspConfigTaglib());
     }
 
     /**
@@ -186,7 +174,7 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
         if (jspConfig == null)
         {
             jspConfig = root.getOwnerDocument().createElementNS(namespace,"jsp-config");
-            insertElementCorrectly(root, jspConfig, ELEMENTS_BEFORE_JSP_CONFIG);
+            insertElementCorrectly(root, jspConfig, getElementsBeforeJspConfig());
         }
         Element taglib = root.getOwnerDocument().createElementNS(namespace, "taglib");
         Element taguri = root.getOwnerDocument().createElementNS(namespace, "taglib-uri");
@@ -197,6 +185,46 @@ class JetspeedWebApplicationRewriter2_4 extends JetspeedWebApplicationRewriter
         taglib.appendChild(taguri);
         taglib.appendChild(taglocation);
         
-        insertElementCorrectly(jspConfig, taglib, ELEMENTS_BEFORE_TAGLIB_MAPPING);
+        insertElementCorrectly(jspConfig, taglib, getElementsBeforeJspConfigTaglib());
+    }
+
+    /**
+     * Return 'web-app' element names before 'servlet' in the ordered web.xml 2.4 schema.
+     *
+     * @return element names
+     */
+    protected String [] getElementsBeforeServlet() {
+        return new String[]{"description", "display-name", "icon", "distributable", "context-param", "filter",
+                "filter-mapping", "listener", "servlet"};
+    }
+
+    /**
+     * Return 'web-app' element names before 'servlet-mapping' in the ordered web.xml 2.4 schema.
+     *
+     * @return element names
+     */
+    protected String [] getElementsBeforeServletMapping() {
+        return new String[]{"description", "display-name", "icon", "distributable", "context-param", "filter",
+                "filter-mapping", "listener", "servlet", "servlet-mapping"};
+    }
+
+    /**
+     * Return 'web-app' element names before 'jsp-config' in the ordered web.xml 2.4 schema.
+     *
+     * @return element names
+     */
+    protected String [] getElementsBeforeJspConfig() {
+        return new String[]{"description", "display-name", "icon", "distributable", "context-param", "filter",
+                "filter-mapping", "listener", "servlet", "servlet-mapping", "session-config", "mime-mapping",
+                "welcome-file-list", "error-page", "jsp-config"};
+    }
+
+    /**
+     * Return 'jsp-config' element names before 'taglib' in the ordered web.xml 2.4 schema.
+     *
+     * @return element names
+     */
+    protected String [] getElementsBeforeJspConfigTaglib() {
+        return new String[]{"taglib"};
     }
 }

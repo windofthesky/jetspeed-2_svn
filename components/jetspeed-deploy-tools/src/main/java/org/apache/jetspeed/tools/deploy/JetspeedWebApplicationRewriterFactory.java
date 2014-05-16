@@ -70,7 +70,7 @@ public class JetspeedWebApplicationRewriterFactory {
                 version = "2.3";
             }
         }
-        
+
         try
         {
             // Check version is a valid number
@@ -85,9 +85,21 @@ public class JetspeedWebApplicationRewriterFactory {
         {
             return new JetspeedWebApplicationRewriter2_3(doc, portletApplication);
         }
-        else if(version.compareTo("2.4") >= 0)
+        else if(version.equals("2.4"))
         {
             return new JetspeedWebApplicationRewriter2_4(doc, portletApplication);
+        }
+        else if(version.equals("2.5"))
+        {
+            return new JetspeedWebApplicationRewriter2_5(doc, portletApplication);
+        }
+        else if(version.equals("3.0"))
+        {
+            return new JetspeedWebApplicationRewriter3_0(doc, portletApplication);
+        }
+        else if(version.compareTo("3.1") >= 0)
+        {
+            return new JetspeedWebApplicationRewriter3_1(doc, portletApplication);
         }
         else
         {
