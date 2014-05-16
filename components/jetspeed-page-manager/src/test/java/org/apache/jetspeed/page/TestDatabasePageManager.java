@@ -139,10 +139,28 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         {
         }
     }
-    
-    public void testCreates() throws Exception
+
+    /**
+     * JDK7 junit legacy adapter: runs all tests in order.
+     *
+     * By default junit runs the tests in the order defined in the
+     * class definition. With JDK7, the class reflection APIs no
+     * longer return methods in order of definition. Instead, they
+     * are effectively randomized. Test suite/classes that relied
+     * on the test execution order now need to be explicitly run
+     * in order.
+     */
+    public void testAllInOrder() throws Exception {
+        doTestCreates();
+        doTestGets();
+        doTestUpdates();
+        doTestRemoves();
+    }
+
+    public void doTestCreates() throws Exception
     {
         final PageManager pageManager = scm.lookupComponent("pageManager");
+        pageManager.reset();
         PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
         pageManager.addListener(pmel);
 
@@ -670,11 +688,13 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(25, pmel.newNodeCount);
         assertEquals(0, pmel.updatedNodeCount);
         assertEquals(0, pmel.removedNodeCount);
+        pageManager.removeListener(pmel);
     }
 
-    public void testGets() throws Exception
+    public void doTestGets() throws Exception
     {
         PageManager pageManager = scm.lookupComponent("pageManager");
+        pageManager.reset();
         PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
         pageManager.addListener(pmel);
         
@@ -696,6 +716,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
             assertEquals(1, check.getSecurityConstraintsDefs().get(1).getSecurityConstraints().size());
             assertEquals("*", Shared.makeCSVFromList(check.getSecurityConstraintsDefs().get(1).getSecurityConstraints().get(0).getUsers()));
             assertEquals("view", Shared.makeCSVFromList(check.getSecurityConstraintsDefs().get(1).getSecurityConstraints().get(0).getPermissions()));
+
             assertNotNull(check.getGlobalSecurityConstraintsRefs());
             assertEquals(2, check.getGlobalSecurityConstraintsRefs().size());
             assertEquals("admin-all", check.getGlobalSecurityConstraintsRefs().get(0));
@@ -1135,11 +1156,13 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(0, pmel.newNodeCount);
         assertEquals(0, pmel.updatedNodeCount);
         assertEquals(0, pmel.removedNodeCount);
+        pageManager.removeListener(pmel);
     }
 
-    public void testUpdates() throws Exception
+    public void doTestUpdates() throws Exception
     {
         PageManager pageManager = scm.lookupComponent("pageManager");
+        pageManager.reset();
         PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
         pageManager.addListener(pmel);
         
@@ -1237,11 +1260,13 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(0, pmel.newNodeCount);
         assertEquals(32, pmel.updatedNodeCount);
         assertEquals(0, pmel.removedNodeCount);
+        pageManager.removeListener(pmel);
     }
 
-    public void testRemoves() throws Exception
+    public void doTestRemoves() throws Exception
     {
         PageManager pageManager = scm.lookupComponent("pageManager");
+        pageManager.reset();
         PageManagerEventListenerImpl pmel = new PageManagerEventListenerImpl();
         pageManager.addListener(pmel);
         
@@ -1345,6 +1370,7 @@ public class TestDatabasePageManager extends DatasourceEnabledSpringTestCase imp
         assertEquals(0, pmel.newNodeCount);
         assertEquals(0, pmel.updatedNodeCount);
         assertEquals(25, pmel.removedNodeCount);
+        pageManager.removeListener(pmel);
     }
     
     private Subject constructUserSubject()

@@ -129,8 +129,45 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         return new TestSuite(TestCastorXmlPageManager.class);
     }
 
-    public void testNewPage()
+    /**
+     * JDK7 junit legacy adapter: runs all tests in order.
+     *
+     * By default junit runs the tests in the order defined in the
+     * class definition. With JDK7, the class reflection APIs no
+     * longer return methods in order of definition. Instead, they
+     * are effectively randomized. Test suite/classes that relied
+     * on the test execution order now need to be explicitly run
+     * in order. 
+     */
+    public void testAllInOrder() throws Exception {
+        doTestNewPage();
+        doTestNewFragment();
+        doTestNewFolder();
+        doTestNewLink();
+        doTestGetPage();
+        doTestCreatePage();
+        doTestCreateFolder();
+        doTestCreateLink();
+        doTestUpdatePage();
+        doTestUpdateFolder();
+        doTestUpdateLink();
+        doTestGetFolders();
+        doTestFolders();
+        doTestFolderMetaData();
+        doTestDefaultTitles();
+        doTestPageMetaData();
+        doTestLinks();
+        doTestMenuDefinitions();
+        doTestRemovePage();
+        doTestRemoveFolder();
+        doTestRemoveLink();
+        doTestClonePage();
+        doTestIdGeneration();
+    }
+
+    public void doTestNewPage()
     {
+        pageManager.reset();
         Page testpage = pageManager.newPage("/test003.psml");
         assertNotNull(testpage);
         assertNotNull(testpage.getId());
@@ -172,16 +209,18 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals(((Fragment)testfragmentdefinition.getRootFragment()).getType(), Fragment.PORTLET);
     }
 
-    public void testNewFragment()
+    public void doTestNewFragment()
     {
+        pageManager.reset();
         Fragment f = pageManager.newFragment();
         assertNotNull(f);
         assertNotNull(f.getId());
         assertTrue(f.getType().equals(Fragment.LAYOUT));
     }
 
-    public void testNewFolder()
+    public void doTestNewFolder()
     {
+        pageManager.reset();
         Folder testfolder = pageManager.newFolder("/folder3");
         assertNotNull(testfolder);
         assertNotNull(testfolder.getId());
@@ -189,8 +228,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals(testfolder.getId(), testfolder.getPath());
     }
 
-    public void testNewLink()
+    public void doTestNewLink()
     {
+        pageManager.reset();
         Link testlink = pageManager.newLink("/test003.link");
         assertNotNull(testlink);
         assertNotNull(testlink.getId());
@@ -198,8 +238,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals(testlink.getId(), testlink.getPath());
     }
 
-    public void testGetPage() throws Exception
+    public void doTestGetPage() throws Exception
     {
+        pageManager.reset();
         Page testpage = pageManager.getPage("/test001.psml");
         assertNotNull(testpage);
         assertTrue(testpage.getId().equals("/test001.psml"));
@@ -442,8 +483,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(root.getFragments().isEmpty());
     }
 
-    public void testCreatePage() throws Exception
+    public void doTestCreatePage() throws Exception
     {
+        pageManager.reset();
         Page page = pageManager.newPage("/test002.psml");
         System.out.println("Retrieved test_id in create " + "/test002.psml");
         page.setSkin("myskin");
@@ -735,8 +777,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(root.getFragments().isEmpty());
     }
 
-    public void testCreateFolder() throws Exception
+    public void doTestCreateFolder() throws Exception
     {
+        pageManager.reset();
         Folder folder = pageManager.newFolder("/folder2");
         System.out.println("Retrieved test_id in create " + "/folder2");
         folder.setTitle("Created Folder");
@@ -766,8 +809,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(folder.getDefaultDecorator(Fragment.PORTLET).equals("test-portlet"));
     }
 
-    public void testCreateLink() throws Exception
+    public void doTestCreateLink() throws Exception
     {
+        pageManager.reset();
         Link link = pageManager.newLink("/test002.link");
         System.out.println("Retrieved test_id in create " + "/test002.link");
         link.setTitle("Created Link");
@@ -793,8 +837,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(link.getSkin().equals("test-skin"));
     }
 
-    public void testUpdatePage() throws Exception
+    public void doTestUpdatePage() throws Exception
     {
+        pageManager.reset();
         Page page = pageManager.getPage("/test002.psml");
         page.setTitle("Updated Title");
         BaseFragmentElement rootFragmentElement = page.getRootFragment();
@@ -879,8 +924,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals("Updated Title", fragmentdefinition.getTitle());
     }
 
-    public void testUpdateFolder() throws Exception
+    public void doTestUpdateFolder() throws Exception
     {
+        pageManager.reset();
         Folder folder = pageManager.getFolder("/folder2");
         folder.setTitle("Updated Title");
 
@@ -939,8 +985,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(page.getTitle().equals("Updated Deep Title"));
     }
 
-    public void testUpdateLink() throws Exception
+    public void doTestUpdateLink() throws Exception
     {
+        pageManager.reset();
         Link link = pageManager.getLink("/test002.link");
         link.setTitle("Updated Title");
 
@@ -960,9 +1007,10 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(link.getTitle().equals("Updated Title"));
     }
 
-    public void testGetFolders() throws Exception
+    public void doTestGetFolders() throws Exception
     {
 
+        pageManager.reset();
         Folder subsites = pageManager.getFolder("/subsites");
         assertNotNull(subsites);
 
@@ -976,9 +1024,10 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals(4, count);
     }
     
-    public void testFolders() throws Exception
+    public void doTestFolders() throws Exception
     {
 
+        pageManager.reset();
         Folder folder1 = pageManager.getFolder("/folder1");
         assertNotNull(folder1);
         assertTrue(folder1.getSkin().equals("test-skin"));
@@ -1037,9 +1086,10 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertNotNull(folder3.getAll().inclusiveSubset("apache\\.link").get("apache.link"));
     }
 
-    public void testFolderMetaData() throws Exception
+    public void doTestFolderMetaData() throws Exception
     {
-        Folder folder1French = pageManager.getFolder("/folder1");        
+        pageManager.reset();
+        Folder folder1French = pageManager.getFolder("/folder1");
 
         assertEquals("Titre francais pour la chemise 1", folder1French.getTitle(Locale.FRENCH));
         assertEquals("Titre francais pour la chemise 1", folder1French.getTitle(Locale.FRANCE));
@@ -1058,8 +1108,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals(rootFolder.getTitle(), rootFolder.getTitle(Locale.FRENCH));
     }
 
-    public void testDefaultTitles() throws Exception
+    public void doTestDefaultTitles() throws Exception
     {
+        pageManager.reset();
         Page defaultPage = pageManager.getPage("/folder1/folder2/default-page.psml");
         assertNotNull(defaultPage);
         assertEquals("Default Page", defaultPage.getTitle());
@@ -1068,8 +1119,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals("Top", rootFolder.getTitle());
     }
 
-    public void testPageMetaData() throws Exception
+    public void doTestPageMetaData() throws Exception
     {
+        pageManager.reset();
         Page page = pageManager.getPage("/default-page.psml");
         assertNotNull(page);
         String frenchTitle = page.getTitle(Locale.FRENCH);
@@ -1083,8 +1135,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals("My First PSML Page", defaultTitle);
     }
 
-    public void testLinks() throws Exception
+    public void doTestLinks() throws Exception
     {
+        pageManager.reset();
         Link link = pageManager.getLink("/apache_portals.link");
         assertNotNull(link);
         assertEquals("http://portals.apache.org", link.getUrl());
@@ -1100,9 +1153,10 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals("http://portals.apache.org", ((Document) folder.getLinks().get("/apache_portals.link")).getUrl());
     }
 
-    public void testMenuDefinitions() throws Exception
+    public void doTestMenuDefinitions() throws Exception
     {
         // test folder resident menu definitions
+        pageManager.reset();
         Folder folder = pageManager.getFolder("/");
         assertNotNull(folder);
         List<MenuDefinition> menus = folder.getMenuDefinitions();
@@ -1273,7 +1327,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertEquals("./", folder.getMenuDefinitions().get(0).getOptions());
     }
 
-    public void testRemovePage() throws Exception
+    public void doTestRemovePage() throws Exception
     {
 /*
         Page page = pageManager.getPage("/test002.psml");
@@ -1301,6 +1355,7 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(exceptionFound);
 */boolean exceptionFound = false;
 
+        pageManager.reset();
         PageTemplate pagetemplate = pageManager.getPageTemplate("/test002.tpsml");
         try
         {
@@ -1374,8 +1429,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(exceptionFound);
     }
 
-    public void testRemoveFolder() throws Exception
+    public void doTestRemoveFolder() throws Exception
     {
+        pageManager.reset();
         Folder folder = pageManager.getFolder("/folder2");
 
         try
@@ -1402,8 +1458,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(exceptionFound);
     }
 
-    public void testRemoveLink() throws Exception
+    public void doTestRemoveLink() throws Exception
     {
+        pageManager.reset();
         Link link = pageManager.getLink("/test002.link");
 
         try
@@ -1430,8 +1487,9 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         assertTrue(exceptionFound);
     }
     
-    public void testClonePage() throws Exception
+    public void doTestClonePage() throws Exception
     {
+        pageManager.reset();
         Page testpage = pageManager.getPage("/clonetest.psml");
         assertNotNull(testpage);
         Page clone = pageManager.copyPage(testpage, "/cloned.psml");
@@ -1690,7 +1748,8 @@ public class TestCastorXmlPageManager extends JetspeedTestCase implements PageMa
         }        
     }
     
-    public void testIdGeneration() throws Exception{
+    public void doTestIdGeneration() throws Exception{
+        pageManager.reset();
         Folder webappIds = pageManager.getFolder("/webapp-ids");
         Folder webappNoIds = pageManager.getFolder("/webapp-no-ids");
         
