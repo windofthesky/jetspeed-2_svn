@@ -193,10 +193,8 @@ public class GetUserListAction
         		{
 
         			// Logged in users is a list of UserStats actions
-        			Iterator usersIter = pstats.getListOfLoggedInUsers().iterator();
-        			while(usersIter.hasNext())
+                    for (Map<String,UserStats> userMap : pstats.getListOfLoggedInUsers())
         			{
-        				Map userMap = (Map)usersIter.next();
         				if(userMap != null && userMap.size() > 0)
         				{
         					Iterator userKeyIter = userMap.keySet().iterator();

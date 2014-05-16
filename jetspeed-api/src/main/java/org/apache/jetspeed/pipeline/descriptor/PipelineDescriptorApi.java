@@ -19,16 +19,15 @@ package org.apache.jetspeed.pipeline.descriptor;
 
 import java.util.List;
 
-import org.apache.jetspeed.pipeline.descriptor.ValveDescriptorApi;
 
-
+@Deprecated
 public interface PipelineDescriptorApi
 {
     /**
      * Add a ValveDescriptor to the Pipeline
      * descriptor
      *
-     * @param ValveDescriptor
+     * @param valveDescriptor
      */    
     public void addValveDescriptor(ValveDescriptorApi valveDescriptor);
 

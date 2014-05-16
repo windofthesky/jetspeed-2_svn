@@ -30,7 +30,7 @@ import java.util.Map;
 public interface AggregateStatistics extends Serializable
 {
 
-    public void addRow(Map row);
+    public void addRow(Map<String,String> row);
 
     public int getHitCount();
 
@@ -48,7 +48,7 @@ public interface AggregateStatistics extends Serializable
 
     public void setMaxProcessingTime(float time);
 
-    public List getStatlist();
+    public List<Map<String,String>> getStatlist();
 
-    public void setStatlist(List statlist);
+    public void setStatlist(List<Map<String,String>> statlist);
 }

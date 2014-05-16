@@ -16,22 +16,6 @@
  */
 package org.apache.jetspeed.request;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.security.auth.Subject;
-import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.collections.list.TreeList;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.PortalReservedParameters;
@@ -63,6 +47,21 @@ import org.apache.jetspeed.util.JetspeedLocale;
 import org.apache.jetspeed.util.KeyValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.security.auth.Subject;
+import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Jetspeed Request Context is associated with each portal request. The request
@@ -107,7 +106,7 @@ public class JetspeedRequestContext implements RequestContext
     /**
      * Create a new Request Context
      * 
-     * @param pc
+     * @param rcc
      * @param request
      * @param response
      * @param config
@@ -173,12 +172,12 @@ public class JetspeedRequestContext implements RequestContext
         return config;
     }
 
-    public Map getProfileLocators()
+    public Map<String,ProfileLocator> getProfileLocators()
     {
         return locators;
     }
 
-    public void setProfileLocators( Map locators )
+    public void setProfileLocators( Map<String,ProfileLocator> locators )
     {
         this.locators = locators;
     }
@@ -267,7 +266,7 @@ public class JetspeedRequestContext implements RequestContext
     /**
      * Sets the target Portlet Action Window
      * 
-     * @param window
+     * @param portletWindow
      */
     public void setActionWindow( PortletWindow portletWindow )
     {
@@ -278,7 +277,7 @@ public class JetspeedRequestContext implements RequestContext
     /**
      * Set the capabilityMap. Used by the CapabilityValve
      * 
-     * @param capabilityMap
+     * @param map
      */
     public void setCapabilityMap( CapabilityMap map )
     {
@@ -376,9 +375,6 @@ public class JetspeedRequestContext implements RequestContext
         return request.getParameterMap();
     }
 
-    /**
-     * @see org.apache.jetspeed.request.RequestContext#getRequestAttribute(java.lang.String)
-     */
     public Object getRequestAttribute( String key )
     {
         return request.getAttribute(key);
@@ -455,7 +451,7 @@ public class JetspeedRequestContext implements RequestContext
      * getPreferedLanguage
      * </p>
      * 
-     * @see org.apache.jetspeed.request.RequestContext#getPreferedLanguage(org.apache.pluto.container.om.portlet.PortletDefinition)
+     * @see org.apache.jetspeed.request.RequestContext#getPreferedLanguage(org.apache.jetspeed.om.portlet.PortletDefinition)
      * @param portlet
      * @return
      */

@@ -16,16 +16,6 @@
  */
 package org.apache.jetspeed.request;
 
-import java.security.Principal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.security.auth.Subject;
-import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.PortletWindow;
@@ -37,8 +27,18 @@ import org.apache.jetspeed.om.portlet.Language;
 import org.apache.jetspeed.om.portlet.PortletDefinition;
 import org.apache.jetspeed.pipeline.Pipeline;
 import org.apache.jetspeed.portlet.HeadElement;
+import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.util.KeyValue;
+
+import javax.security.auth.Subject;
+import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Portal Request Context is associated with each request
@@ -100,14 +100,14 @@ public interface RequestContext
      *
      * @return Profile locators by locator name
      */
-    public Map getProfileLocators();
+    public Map<String,ProfileLocator> getProfileLocators();
 
     /**
      * Sets the target page profile locators for this request
      *
      * @param locators The target profile locators by locator name
      */
-    public void setProfileLocators(Map locators);
+    public void setProfileLocators(Map<String,ProfileLocator> locators);
 
     /**
      * Gets the target page for this request
@@ -126,7 +126,7 @@ public interface RequestContext
     /**
      * Set the capabilityMap. Used by the CapabilityValve
      *
-     * @param capabilityMap
+     * @param map
      */
     public void setCapabilityMap(CapabilityMap map);
 
@@ -242,7 +242,7 @@ public interface RequestContext
     /**
      * Sets the locale associated with this request.
      *
-     * @param The locale associated with this request.
+     * @param locale associated with this request.
      */
     void setLocale(Locale locale);
 
@@ -253,7 +253,7 @@ public interface RequestContext
      * in that case it simply passes through to the servlet request.
      *
      * @param key The parameter unique key
-     * @return The object associated with the uniqu
+     * @return The object associated with the unique key
      */
     String getRequestParameter(String key);
 
@@ -366,7 +366,8 @@ public interface RequestContext
 
 
     /**
-     * @param actionFailed The actionFailed to set.
+     * @param window the window to set failed action on
+     * @param actionFailure The actionFailed to set
      */
     void setActionFailure(PortletWindow window, Throwable actionFailure);
         

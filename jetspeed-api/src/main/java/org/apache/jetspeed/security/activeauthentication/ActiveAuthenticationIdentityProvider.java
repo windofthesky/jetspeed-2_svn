@@ -62,6 +62,6 @@ public interface ActiveAuthenticationIdentityProvider
      * Get a list of session attribute names that should be saved and restored upon authentication events
      * @return list of session attribute names
      */
-    List getSessionAttributeNames();
+    List<String> getSessionAttributeNames();
 
 }

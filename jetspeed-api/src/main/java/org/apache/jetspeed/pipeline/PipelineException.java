@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package org.apache.jetspeed.pipeline;
+
 import org.apache.jetspeed.exception.JetspeedException;
 
 /**

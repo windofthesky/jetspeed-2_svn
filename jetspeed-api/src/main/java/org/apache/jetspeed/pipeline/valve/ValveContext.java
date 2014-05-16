@@ -40,13 +40,8 @@ public interface ValveContext
      * <p>If there are no more Valves to be executed, execution of
      * this method will result in a no op.</p>
      *
-     * @param data The run-time information, including the servlet
+     * @param request The run-time information, including the servlet
      * request and response we are processing.
-     *
-     * @exception IOException Thrown by a subsequent Valve.
-     * @exception SummitException Thrown by a subsequent Valve.
-     * @exception SummitException No further Valves configured in the
-     * Pipeline currently being processed.
      */
     public void invokeNext(RequestContext request)
         throws PipelineException;

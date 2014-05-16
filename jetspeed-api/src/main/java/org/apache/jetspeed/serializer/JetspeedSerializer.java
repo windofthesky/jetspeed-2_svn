@@ -81,8 +81,8 @@ public interface JetspeedSerializer
     String DEFAULT_TAG_SNAPSHOT_NAME = "Snapshot"; 
     String [] TAG_SNAPSHOT_NAMES = new String[] {DEFAULT_TAG_SNAPSHOT_NAME, "SecondaryData"}; 
     
-    List getSerializers();
-    Map getDefaultSettings();
+    List<JetspeedComponentSerializer> getSerializers();
+    Map<String, Object> getDefaultSettings();
     
     /**
      * Main routine to export the set of data elements and write them to the
@@ -115,15 +115,13 @@ public interface JetspeedSerializer
      * @param settings
      *            optional Map overwriting default export behavior
      */
-    void exportData(String name, String exportFileName, Map settings) throws SerializerException;
+    void exportData(String name, String exportFileName, Map<String,Object> settings) throws SerializerException;
 
     /**
      * Main routine to import the set of data elements and write them to the
      * current environment.
      * 
      * @param importFileName
-     * @param settings
-     *            optional Map overwriting default import behavior
      * @return
      */
     void importData(String importFileName) throws SerializerException;
@@ -151,8 +149,8 @@ public interface JetspeedSerializer
      *            optional Map overwriting default import behavior
      * @return
      */
-    void importData(String importFileName, Map settings) throws SerializerException;
+    void importData(String importFileName, Map<String,Object> settings) throws SerializerException;
     
     void deleteData() throws SerializerException;
-    void deleteData(Map settings) throws SerializerException;
+    void deleteData(Map<String,Object> settings) throws SerializerException;
 }

@@ -16,6 +16,13 @@
  */
 package org.apache.jetspeed.serializer;
 
+import javolution.xml.XMLBinding;
+import javolution.xml.XMLObjectReader;
+import javolution.xml.XMLObjectWriter;
+import org.apache.jetspeed.serializer.objects.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,64 +31,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javolution.xml.XMLBinding;
-import javolution.xml.XMLObjectReader;
-import javolution.xml.XMLObjectWriter;
-
-import org.apache.jetspeed.serializer.objects.JSApplication;
-import org.apache.jetspeed.serializer.objects.JSApplications;
-import org.apache.jetspeed.serializer.objects.JSCapabilities;
-import org.apache.jetspeed.serializer.objects.JSCapability;
-import org.apache.jetspeed.serializer.objects.JSClient;
-import org.apache.jetspeed.serializer.objects.JSClientCapabilities;
-import org.apache.jetspeed.serializer.objects.JSClientMimeTypes;
-import org.apache.jetspeed.serializer.objects.JSClients;
-import org.apache.jetspeed.serializer.objects.JSEntities;
-import org.apache.jetspeed.serializer.objects.JSEntity;
-import org.apache.jetspeed.serializer.objects.JSEntityPreferenceCompat;
-import org.apache.jetspeed.serializer.objects.JSEntityPreference;
-import org.apache.jetspeed.serializer.objects.JSEntityPreferences;
-import org.apache.jetspeed.serializer.objects.JSGroup;
-import org.apache.jetspeed.serializer.objects.JSGroups;
-import org.apache.jetspeed.serializer.objects.JSMediaType;
-import org.apache.jetspeed.serializer.objects.JSMediaTypes;
-import org.apache.jetspeed.serializer.objects.JSMimeType;
-import org.apache.jetspeed.serializer.objects.JSMimeTypes;
-import org.apache.jetspeed.serializer.objects.JSNVPElement;
-import org.apache.jetspeed.serializer.objects.JSNVPElements;
-import org.apache.jetspeed.serializer.objects.JSPWAttributes;
-import org.apache.jetspeed.serializer.objects.JSPermission;
-import org.apache.jetspeed.serializer.objects.JSPermissions;
-import org.apache.jetspeed.serializer.objects.JSPortlet;
-import org.apache.jetspeed.serializer.objects.JSPortlets;
-import org.apache.jetspeed.serializer.objects.JSPrincipalAssociation;
-import org.apache.jetspeed.serializer.objects.JSPrincipalAssociations;
-import org.apache.jetspeed.serializer.objects.JSPrincipalRule;
-import org.apache.jetspeed.serializer.objects.JSPrincipalRules;
-import org.apache.jetspeed.serializer.objects.JSPrincipals;
-import org.apache.jetspeed.serializer.objects.JSProfilingRule;
-import org.apache.jetspeed.serializer.objects.JSProfilingRules;
-import org.apache.jetspeed.serializer.objects.JSRole;
-import org.apache.jetspeed.serializer.objects.JSRoles;
-import org.apache.jetspeed.serializer.objects.JSRuleCriterion;
-import org.apache.jetspeed.serializer.objects.JSRuleCriterions;
-import org.apache.jetspeed.serializer.objects.JSSecurityAttributes;
-import org.apache.jetspeed.serializer.objects.JSSecurityDomain;
-import org.apache.jetspeed.serializer.objects.JSSecurityDomains;
-import org.apache.jetspeed.serializer.objects.JSSnapshot;
-import org.apache.jetspeed.serializer.objects.JSSSOSite;
-import org.apache.jetspeed.serializer.objects.JSSSOSiteRemoteUser;
-import org.apache.jetspeed.serializer.objects.JSSSOSiteRemoteUsers;
-import org.apache.jetspeed.serializer.objects.JSSSOSites;
-import org.apache.jetspeed.serializer.objects.JSUser;
-import org.apache.jetspeed.serializer.objects.JSUserAttributes;
-import org.apache.jetspeed.serializer.objects.JSUserGroups;
-import org.apache.jetspeed.serializer.objects.JSUserRoles;
-import org.apache.jetspeed.serializer.objects.JSUserUsers;
-import org.apache.jetspeed.serializer.objects.JSUsers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Main JetspeedSerializer implementation delegating the real serializing to JetspeedComponentSerializer instances
@@ -92,11 +41,11 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 {
     private static final Logger log = LoggerFactory.getLogger(JetspeedSerializerImpl.class);
 
-    private List serializers;
+    private List<JetspeedComponentSerializer> serializers;
     private XMLBinding binding;
-    private Map defaultSettings;
+    private Map<String,Object> defaultSettings;
 
-    public JetspeedSerializerImpl(List serializers, Map defaultSettings)
+    public JetspeedSerializerImpl(List<JetspeedComponentSerializer> serializers, Map<String,Object> defaultSettings)
     {
         this.serializers = Collections.unmodifiableList(serializers);
         this.defaultSettings = defaultSettings != null ? Collections.unmodifiableMap(defaultSettings) : Collections.EMPTY_MAP;
@@ -104,12 +53,12 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         setupAliases(binding);
     }
     
-    public List getSerializers()
+    public List<JetspeedComponentSerializer> getSerializers()
     {
         return serializers;
     }
     
-    public Map getDefaultSettings()
+    public Map<String,Object> getDefaultSettings()
     {
         return defaultSettings;
     }
@@ -119,9 +68,9 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         importData(filename, null);
     }
     
-    public void importData(String filename, Map settings) throws SerializerException
+    public void importData(String filename, Map<String,Object> settings) throws SerializerException
     {
-        Map processSettings = getProcessSettings(settings);
+        Map<String,Object> processSettings = getProcessSettings(settings);
         JSSnapshot snapshot = null;
         SerializerException snapshotException = null;
         for (int i = 0; ((i < TAG_SNAPSHOT_NAMES.length) && (snapshot == null)); i++)
@@ -162,9 +111,9 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         exportData(name, filename, null);
     }
     
-    public void exportData(String name, String filename, Map settings) throws SerializerException
+    public void exportData(String name, String filename, Map<String,Object> settings) throws SerializerException
     {
-        Map processSettings = getProcessSettings(settings);
+        Map<String,Object> processSettings = getProcessSettings(settings);
         JSSnapshot snapshot = new JSSnapshot(name);
         snapshot.setDateCreated(new Date(new java.util.Date().getTime()).toString());
         snapshot.setSavedVersion(snapshot.getSoftwareVersion());
@@ -172,7 +121,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
 
         for (int i = 0, size = serializers.size(); i < size; i++)
         {
-            ((JetspeedComponentSerializer) serializers.get(i)).processExport(snapshot, processSettings);
+            serializers.get(i).processExport(snapshot, processSettings);
         }
         
         writeSnapshot(snapshot, filename, binding, processSettings);
@@ -183,18 +132,18 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         deleteData(null);
     }
     
-    public void deleteData(Map settings) throws SerializerException
+    public void deleteData(Map<String,Object> settings) throws SerializerException
     {
-        Map processSettings = getProcessSettings(settings);
+        Map<String,Object> processSettings = getProcessSettings(settings);
         for (int i = 0, size = serializers.size(); i < size; i++)
         {
-            ((JetspeedComponentSerializer) serializers.get(i)).deleteData(processSettings);
+            serializers.get(i).deleteData(processSettings);
         }
     }
 
-    protected Map getProcessSettings(Map settings)
+    protected Map<String,Object> getProcessSettings(Map<String,Object> settings)
     {
-        Map processSettings = new HashMap(defaultSettings);
+        Map<String,Object> processSettings = new HashMap(defaultSettings);
         processSettings.put(KEY_LOGGER, log);
         if ( settings != null )
         {
@@ -319,7 +268,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
         return snap;
     }
 
-    protected void writeSnapshot(JSSnapshot snapshot, String filename, XMLBinding binding, Map settings) throws SerializerException
+    protected void writeSnapshot(JSSnapshot snapshot, String filename, XMLBinding binding, Map<String,Object> settings) throws SerializerException
     {
         XMLObjectWriter writer = openWriter(filename, settings);
         writer.setBinding(binding);
@@ -365,7 +314,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
     /**
      * create or open a given file for writing
      */
-    protected XMLObjectWriter openWriter(String filename, Map settings) throws SerializerException
+    protected XMLObjectWriter openWriter(String filename, Map<String,Object> settings) throws SerializerException
     {
         File f;
 
@@ -412,7 +361,7 @@ public class JetspeedSerializerImpl implements JetspeedSerializer
      * @param key
      * @return
      */
-    protected static boolean isSettingSet(Map settings, String key)
+    protected static boolean isSettingSet(Map<String,Object> settings, String key)
     {
         if (settings != null)
         {

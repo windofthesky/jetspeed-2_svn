@@ -27,14 +27,14 @@ public interface PipelineMapper
     
     /**
      * Returns pipeline mapped by the specified path.
-     * @param path
+     * @param mappedPath
      * @return
      */
     Pipeline getPipelineByMappedPath(String mappedPath);
     
     /**
      * Returns pipeline by the pipeline component ID. 
-     * @param name
+     * @param id
      * @return
      */
     Pipeline getPipelineById(String id);
@@ -42,7 +42,7 @@ public interface PipelineMapper
     /**
      * Returns mapped base path found first for the pipeline ID.
      * If nothing found, returns null.
-     * @param id
+     * @param pipelineId
      * @return
      */
     String getMappedPathByPipelineId(String pipelineId);
@@ -50,7 +50,7 @@ public interface PipelineMapper
     /**
      * Returns all mapped base paths for the pipeline ID.
      * If nothing found, returns an empty array.
-     * @param id
+     * @param pipelineId
      * @return
      */
     String [] getMappedPathsByPipelineId(String pipelineId);

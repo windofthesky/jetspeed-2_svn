@@ -17,10 +17,10 @@
 
 package org.apache.jetspeed.sso;
 
-import java.util.Collection;
-import java.sql.Timestamp;
-
 import org.apache.jetspeed.security.JetspeedPrincipal;
+
+import java.sql.Timestamp;
+import java.util.Collection;
 
 /**
  */

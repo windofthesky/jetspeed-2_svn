@@ -36,7 +36,7 @@ public interface RoleManager extends PrincipalTypeManager
      * </p>
      * @param roleName The role name
      * @return the new {@link Role}
-     * @throws Throws a security exception if the role already exists.
+     * @throws throws a security exception if the role already exists.
      */
     Role addRole(String roleName) throws SecurityException;
 
@@ -48,14 +48,14 @@ public interface RoleManager extends PrincipalTypeManager
      * @param roleName The role name.
      * @param mapped if the new Role should be mapped/replicated to an external security storage manager (if used) or not.
      * @return the new {@link Role}
-     * @throws Throws a security exception if the role already exists.
+     * @throws throws a security exception if the role already exists.
      */
     Role addRole(String roleName, boolean mapped) throws SecurityException;
 
     /**
      * <p>Remove a given role</p>
      * @param roleName
-     * @throws Throws a security exception.
+     * @throws throws a security exception.
      */
     void removeRole(String roleName) throws SecurityException;
 
@@ -70,7 +70,7 @@ public interface RoleManager extends PrincipalTypeManager
      * <p>Get a role {@link Role} for a given role name.
      * @param roleName The role name
      * @return The {@link Role}.
-     * @throws Throws a security exception if the role does not exist.
+     * @throws throws a security exception if the role does not exist.
      */
     Role getRole(String roleName) throws SecurityException;
 
@@ -79,7 +79,7 @@ public interface RoleManager extends PrincipalTypeManager
      * associated to a specific user.</p>
      * @param username The user name.
      * @return A List of {@link Role}.
-     * @throws Throws a security exception if the user does not exist.
+     * @throws throws a security exception if the user does not exist.
      */
     List<Role> getRolesForUser(String username) throws SecurityException;
 
@@ -88,7 +88,7 @@ public interface RoleManager extends PrincipalTypeManager
      * associated to a specific group.</p>
      * @param groupName The group name
      * @return A Collection of {@link Role}.
-     * @throws Throws a security exception if the group does not exist.
+     * @throws throws a security exception if the group does not exist.
      */
     List<Role> getRolesInGroup(String groupName) throws SecurityException;
     
@@ -96,7 +96,7 @@ public interface RoleManager extends PrincipalTypeManager
      * <p>Add a role to a user.</p>
      * @param username The user name
      * @param roleName The role name
-     * @throws Throws a security exception if the role or the user do not exist.
+     * @throws throws a security exception if the role or the user do not exist.
      */
     void addRoleToUser(String username, String roleName) throws SecurityException;
 
@@ -104,7 +104,7 @@ public interface RoleManager extends PrincipalTypeManager
      * <p>Remove a user from a role.</p>
      * @param username The user name.
      * @param roleName The role name
-     * @throws Throws a security exception.
+     * @throws throws a security exception.
      */
     void removeRoleFromUser(String username, String roleName) throws SecurityException;
 
@@ -113,7 +113,7 @@ public interface RoleManager extends PrincipalTypeManager
      * @param username The user name.
      * @param roleName The role name 
      * @return Whether or not a user is in a role.
-     * @throws Throws a security exception if the role or the user does not exist.
+     * @throws throws a security exception if the role or the user does not exist.
      */
     boolean isUserInRole(String username, String roleName) throws SecurityException;
 
@@ -121,7 +121,7 @@ public interface RoleManager extends PrincipalTypeManager
      * <p>Add a role to a group.</p>
      * @param roleName The role name
      * @param groupName The group name 
-     * @throws Throws a security exception.
+     * @throws throws a security exception.
      */
     void addRoleToGroup(String roleName, String groupName) throws SecurityException;
 
@@ -129,7 +129,7 @@ public interface RoleManager extends PrincipalTypeManager
      * <p>Remove a role from a group.</p>
      * @param roleName The role name
      * @param groupName The group name
-     * @throws Throws a security exception.
+     * @throws throws a security exception.
      */
     void removeRoleFromGroup(String roleName, String groupName) throws SecurityException;
 
@@ -138,7 +138,7 @@ public interface RoleManager extends PrincipalTypeManager
      * @param groupName The group name
      * @param roleName The role name
      * @return Whether or not a role is in a group.
-     * @throws Throws a security exception if the role or the group does not exist.
+     * @throws throws a security exception if the role or the group does not exist.
      */
     boolean isGroupInRole(String groupName, String roleName) throws SecurityException;
 
@@ -179,7 +179,7 @@ public interface RoleManager extends PrincipalTypeManager
      * </p>
      * @param from The role for the from side of the association 
      * @param to The role for the to side of the association
-     * @param associationName The name of the {@link JetspeedAssociationType} to create
+     * @param associationName The name of the {@link JetspeedPrincipalAssociationType} to create
      * @throws SecurityException
      */
     void addRoleToRole(Role from, Role to, String associationName) throws SecurityException;
@@ -193,7 +193,7 @@ public interface RoleManager extends PrincipalTypeManager
      * </p>
      * @param from The role for the from side of the association 
      * @param to The role for the to side of the association
-     * @param associationName The name of the {@link JetspeedAssociationType} to create
+     * @param associationName The name of the {@link JetspeedPrincipalAssociationType} to create
      * @throws SecurityException
      */
     void removeRoleFromRole(Role from, Role to, String associationName) throws SecurityException;
@@ -221,7 +221,7 @@ public interface RoleManager extends PrincipalTypeManager
      * Note: this method will only return the directly associated roles, not further derived associations.
      * </p>
      * @param to The role for the to side of the association
-     * @param associationName The name of the {@link JetspeedAssociationType} to create
+     * @param associationName The name of the {@link JetspeedPrincipalAssociationType} to create
      */
     List<Role> getRolesAssociatedTo(Role to, String associationName);
 
@@ -248,7 +248,7 @@ public interface RoleManager extends PrincipalTypeManager
      * Note: this method will only return the directly associated role(s), not further derived associations.
      * </p>
      * @param from The role for the from side of the association 
-     * @param associationName The name of the {@link JetspeedAssociationType} to create
+     * @param associationName The name of the {@link JetspeedPrincipalAssociationType} to create
      */
     List<Role> getRolesAssociatedFrom(Role from, String associationName);
 }

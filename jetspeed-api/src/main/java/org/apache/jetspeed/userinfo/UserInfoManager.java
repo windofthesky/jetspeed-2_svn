@@ -16,10 +16,10 @@
  */
 package org.apache.jetspeed.userinfo;
 
-import java.util.Map;
-
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.pluto.container.UserInfoService;
+
+import java.util.Map;
 
 /**
  * <p>The {@link UserInfoManager} retrieve the Map that will be set as a 
@@ -53,9 +53,9 @@ public interface UserInfoManager extends UserInfoService
     
     /**
      * <p>Provide the user info map of user attributes for a given portlet application.</p>
-     * @param oid The portlet application object id.
+     * @param appName The portlet application name
      * @param context The request context.
-     * @return The {@link PortletRequest.USER_INFO} map.
+     * @return The user info map.
      */
     Map<String, String> getUserInfoMap(String appName, RequestContext context);
 }

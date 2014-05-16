@@ -45,7 +45,6 @@ public interface ApplicationServerManager
      *
      * @param appPath path to restart
      * @return container-specific status message
-     * @throws HttpException
      * @throws IOException
      */
     ApplicationServerManagerResult start( String appPath ) throws IOException;
@@ -59,7 +58,6 @@ public interface ApplicationServerManager
      * 
      * @param appPath
      * @return container-specific status message
-     * @throws HttpException
      * @throws IOException
      */
     ApplicationServerManagerResult stop( String appPath ) throws IOException;
@@ -74,7 +72,6 @@ public interface ApplicationServerManager
      *
      * @param appPath
      * @return container-specific status message
-     * @throws HttpException
      * @throws IOException
      */
     ApplicationServerManagerResult reload( String appPath ) throws IOException;
@@ -87,7 +84,6 @@ public interface ApplicationServerManager
      * Undeploys the application represented by the context path, <code>appPath</cod
      * @param appPath
      * @return container-specific status message
-     * @throws HttpException
      * @throws IOException
      */
     ApplicationServerManagerResult undeploy( String appPath ) throws IOException;
@@ -105,7 +101,6 @@ public interface ApplicationServerManager
      * @param is
      * @param size size (in bytes) of InputStream <code>is</code>
      * @return
-     * @throws HttpException
      * @throws IOException
      */
     ApplicationServerManagerResult deploy( String appPath, InputStream is, int size ) throws IOException;

@@ -17,6 +17,19 @@
 
 package org.apache.jetspeed.statistics.impl;
 
+import org.apache.jetspeed.om.page.ContentPage;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.statistics.AggregateStatistics;
+import org.apache.jetspeed.statistics.InvalidCriteriaException;
+import org.apache.jetspeed.statistics.PortalStatistics;
+import org.apache.jetspeed.statistics.StatisticsQueryCriteria;
+import org.apache.jetspeed.statistics.UserStats;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
 import java.security.Principal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,20 +47,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import javax.naming.NamingException;
-import javax.servlet.http.HttpServletRequest;
-import javax.sql.DataSource;
-
-import org.apache.jetspeed.om.page.ContentPage;
-import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.statistics.AggregateStatistics;
-import org.apache.jetspeed.statistics.InvalidCriteriaException;
-import org.apache.jetspeed.statistics.PortalStatistics;
-import org.apache.jetspeed.statistics.StatisticsQueryCriteria;
-import org.apache.jetspeed.statistics.UserStats;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -110,7 +109,7 @@ public class PortalStatisticsImpl implements PortalStatistics
 
     protected int currentUserCount = 0;
 
-    protected Map currentUsers;
+    protected Map<String,Map<String,UserStats>> currentUsers;
 
     /* date formatter */
     protected SimpleDateFormat formatter = null;
@@ -142,7 +141,7 @@ public class PortalStatisticsImpl implements PortalStatistics
         this.maxTimeMsToFlush_Page = maxTimeMsToFlush_Page;
         //this.jetspeedDSEntry = jetspeedDSEntry;
         this.ds = dataSource;        
-        currentUsers = Collections.synchronizedMap(new TreeMap());
+        currentUsers = Collections.synchronizedMap(new TreeMap<String,Map<String,UserStats>>());
     }
 
     public void springInit() throws NamingException
@@ -372,23 +371,21 @@ public class PortalStatisticsImpl implements PortalStatistics
                 {
                 	UserStats userStats = null;
                 	
-                	Map users = (Map)currentUsers.get(userName);                	
-                	if(users != null && users.size() > 0)
+                	Map<String,UserStats> statsPerUser = currentUsers.get(userName);
+                	if(statsPerUser != null && statsPerUser.size() > 0)
                 	{
-                		userStats = (UserStats) users.get(ipAddress);                		
+                		userStats = statsPerUser.get(ipAddress);
                 	}                	
             	
                 	if(userStats != null)
                     {
                     	// only decrement if user has been logged in
                     	currentUserCount = currentUserCount - 1;
-                        
-                    	userStats.setNumberOfSession(userStats
-                                .getNumberOfSessions() - 1);                    
+                    	userStats.setNumberOfSession(userStats.getNumberOfSessions() - 1);
                         if (userStats.getNumberOfSessions() <= 0)
                         {
-                        	users.remove(ipAddress);
-                            currentUsers.put(userName, users);
+                        	statsPerUser.remove(ipAddress);
+                            currentUsers.put(userName, statsPerUser);
                         }
                     }
                 }
@@ -449,17 +446,15 @@ public class PortalStatisticsImpl implements PortalStatistics
                 }
                 synchronized (currentUsers)
                 {
-                	
                 	UserStats userStats = null;
-                	
-                	Map users = (Map)currentUsers.get(userName);                	
-                	if(users != null && users.size() > 0)
+                    Map<String,UserStats> statsPerUser = currentUsers.get(userName);
+                	if(statsPerUser != null && statsPerUser.size() > 0)
                 	{
-                		userStats = (UserStats) users.get(ipAddress);                		
+                		userStats = statsPerUser.get(ipAddress);
                 	}
                 	else
                 	{
-                		users = new TreeMap();
+                		statsPerUser = new TreeMap();
                 	}
                 	
                 	if(userStats == null)
@@ -470,10 +465,9 @@ public class PortalStatisticsImpl implements PortalStatistics
                         userStats.setInetAddressFromIp(ipAddress);                        
                     }
                     
-                    userStats.setNumberOfSession(userStats
-                            .getNumberOfSessions() + 1);
-                    users.put(ipAddress, userStats);
-            		currentUsers.put(userName, users);
+                    userStats.setNumberOfSession(userStats.getNumberOfSessions() + 1);
+                    statsPerUser.put(ipAddress, userStats);
+            		currentUsers.put(userName, statsPerUser);
                 }
             }
 
@@ -750,7 +744,7 @@ public class PortalStatisticsImpl implements PortalStatistics
             
             while ((rs.next()) && (rowCount < totalRows))
             {
-                Map row = new HashMap();
+                Map<String,String> row = new HashMap<String,String>();
                 row.put("count", "" + rs.getInt("itemcount"));
                 String col = rs.getString(groupColumn);
                 int maxColLen = 35;
@@ -829,9 +823,9 @@ public class PortalStatisticsImpl implements PortalStatistics
      * 
      * @see org.apache.jetspeed.statistics.PortalStatistics#getListOfLoggedInUsers()
      */
-    public List getListOfLoggedInUsers()
+    public List<Map<String,UserStats>> getListOfLoggedInUsers()
     {
-        List list = new ArrayList();
+        List<Map<String,UserStats>> list = new ArrayList<Map<String,UserStats>>();
 
         synchronized (currentUsers)
         {

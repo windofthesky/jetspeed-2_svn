@@ -16,10 +16,8 @@
  */
 package org.apache.jetspeed.security;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.security.auth.Subject;
+import java.util.List;
 
 
 /**
@@ -52,7 +50,7 @@ public interface UserManager extends PrincipalTypeManager
      * </p>
      * @param userName The user name.
      * @return the new {@link User}
-     * @throws Throws a security exception.
+     * @throws throws a security exception.
      */
     User addUser(String userName) throws SecurityException;
 
@@ -64,7 +62,7 @@ public interface UserManager extends PrincipalTypeManager
      * @param userName The user name.
      * @param mapped if the new User should be mapped/replicated to an external security storage manager (if used) or not.
      * @return the new {@link User}
-     * @throws Throws a security exception.
+     * @throws throws a security exception.
      */
     User addUser(String userName, boolean mapped) throws SecurityException;
 
@@ -78,7 +76,7 @@ public interface UserManager extends PrincipalTypeManager
      * </p>
      * 
      * @param userName The user name.
-     * @throws Throws a security exception.
+     * @throws throws a security exception.
      */
     void removeUser(String userName) throws SecurityException;
 
@@ -99,7 +97,7 @@ public interface UserManager extends PrincipalTypeManager
      * 
      * @param userName The user name.
      * @return The {@link User}.
-     * @throws Throws a security exception if the user cannot be found.
+     * @throws throws a security exception if the user cannot be found.
      */
     User getUser(String userName) throws SecurityException;
 
@@ -118,7 +116,7 @@ public interface UserManager extends PrincipalTypeManager
      * 
      * @param user The user.
      * @return The Subject.
-     * @throws Throws a security exception if the user cannot be found
+     * @throws throws a security exception if the user cannot be found
      */
     Subject getSubject(User user) throws SecurityException;
 
@@ -129,7 +127,7 @@ public interface UserManager extends PrincipalTypeManager
      * 
      * @param user The authenticated user.
      * @return The Subject.
-     * @throws Throws a security exception if the user cannot be found
+     * @throws throws a security exception if the user cannot be found
      */
     Subject getSubject(AuthenticatedUser user) throws SecurityException;
 
@@ -177,7 +175,7 @@ public interface UserManager extends PrincipalTypeManager
      * 
      * @param roleName The role name
      * @return A List of {@link User}.
-     * @throws Throws a security exception if the role does not exist.
+     * @throws throws a security exception if the role does not exist.
      */
     List<User> getUsersInRole(String roleName) throws SecurityException;
     
@@ -185,7 +183,7 @@ public interface UserManager extends PrincipalTypeManager
      * <p>Retrieves a a detached and modifiable {@link User} list of all the users in a specific group.</p>
      * @param groupName The group name
      * @return A list of {@link User}.
-     * @throws Throws security exception if the group does not exist.
+     * @throws throws security exception if the group does not exist.
      */
     List<User> getUsersInGroup(String groupName) throws SecurityException;
     

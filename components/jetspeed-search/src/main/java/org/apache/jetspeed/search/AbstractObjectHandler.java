@@ -33,7 +33,7 @@ public abstract class AbstractObjectHandler implements ObjectHandler
     
 
     /** 
-     * @see org.apache.jetspeed.services.search.ObjectHandler#getFields()
+     * @see org.apache.jetspeed.search.ObjectHandler#getFields()
      */
     public Set getFields()
     {
@@ -41,7 +41,7 @@ public abstract class AbstractObjectHandler implements ObjectHandler
     }
     
     /**
-     * @see org.apache.jetspeed.services.search.ObjectHandler#getKeywords()
+     * @see org.apache.jetspeed.search.ObjectHandler#getKeywords()
      */
     public Set getKeywords()
     {

@@ -16,11 +16,11 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import org.apache.jetspeed.security.AuthorizationProvider;
+
 import java.security.Policy;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.jetspeed.security.AuthorizationProvider;
 
 /**
  * @see org.apache.jetspeed.security.AuthorizationProvider
@@ -48,7 +48,7 @@ public class AuthorizationProviderImpl implements AuthorizationProvider
     /**
      * @see org.apache.jetspeed.security.AuthorizationProvider#getPolicies()
      */
-    public List getPolicies()
+    public List<Policy> getPolicies()
     {
         return Collections.EMPTY_LIST;
     }

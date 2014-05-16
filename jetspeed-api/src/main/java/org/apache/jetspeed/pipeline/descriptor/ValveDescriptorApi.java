@@ -16,13 +16,14 @@
  */
 package org.apache.jetspeed.pipeline.descriptor;
 
+@Deprecated
 public interface ValveDescriptorApi
 {
     /**
      * This is the full package/class name of the
      * class used for the valve.
      *
-     * @param s the full package/class name used for the valve
+     * @param className the full package/class name used for the valve
      */
     public void setClassName(String className);
  

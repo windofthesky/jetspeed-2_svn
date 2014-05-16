@@ -68,7 +68,7 @@ public interface ParsedObject
     /**
      * Sets parsed object key (cannot be null)
      * 
-     * @param type
+     * @param key
      */
     public void setKey(String key);
 
@@ -180,7 +180,7 @@ public interface ParsedObject
     public Map getKeywordsMap();
     
     /**
-     * @param multiKeywords
+     * @param keywordsMap
      */
     public void setKeywordsMap(Map keywordsMap);
 

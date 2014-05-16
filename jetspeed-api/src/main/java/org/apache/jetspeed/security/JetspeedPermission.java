@@ -23,7 +23,26 @@ import java.io.Serializable;
  */
 public interface JetspeedPermission extends Serializable
 {
+    /**
+     * The type of permission. Supported values see:
+     *      "folder"   - {@link org.apache.jetspeed.security.PermissionFactory#FOLDER_PERMISSION}
+     *      "fragment" - {@link org.apache.jetspeed.security.PermissionFactory#FRAGMENT_PERMISSION}
+     *      "portlet"  - {@link org.apache.jetspeed.security.PermissionFactory#PORTLET_PERMISSION}
+     *      "page"     - {@link org.apache.jetspeed.security.PermissionFactory#PAGE_PERMISSION}
+     *
+     * @return a valid permission type string
+     */
     String getType();
+
+    /**
+     * @return the name of the permission such as a portletName for a PORTLET_PERMISSION, or a page name for a PAGE_PERMISSION
+     */
     String getName();
+
+    /**
+     * Typical actions supported: view, minimized, maximized, secure, edit
+     *
+     * @return a comma-separated list of valid actions provided by this permission
+     */
     String getActions();
 }

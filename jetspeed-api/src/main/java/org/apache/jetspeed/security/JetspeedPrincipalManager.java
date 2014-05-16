@@ -81,7 +81,7 @@ public interface JetspeedPrincipalManager extends Serializable
      * associated <em>from</em> the specified principal by the specified association.
      * </p>
      * <p>
-     * If the association is {@link JetspeedAssociationType#isSingular()} at most one principal will be returned.
+     * If the association is {@link JetspeedPrincipalAssociationType#isSingular()} at most one principal will be returned.
      * </p>
      * 
      * @param principalFromName The principal name to find the other principals associated <em>to</em>.
@@ -97,7 +97,7 @@ public interface JetspeedPrincipalManager extends Serializable
      * associated <em>to</em> the specified principal by the specified association.
      * </p>
      * <p>
-     * If the association is {@link JetspeedAssociationType#isDominant()} at most one principal will be returned.
+     * If the association is {@link JetspeedPrincipalAssociationType#isDominant()} at most one principal will be returned.
      * </p>
      * 
      * @param principalToName The principal name to find the other principals associated <em>from</em>.
@@ -113,7 +113,7 @@ public interface JetspeedPrincipalManager extends Serializable
      * associated <em>from</em> the specified principal by the specified association.
      * </p>
      * <p>
-     * If the association is {@link JetspeedAssociationType#isSingular()} at most one principal name will be returned.
+     * If the association is {@link JetspeedPrincipalAssociationType#isSingular()} at most one principal name will be returned.
      * </p>
      * 
      * @param principalFromName The principal name to find the other principals associated <em>to</em>.
@@ -129,7 +129,7 @@ public interface JetspeedPrincipalManager extends Serializable
      * associated <em>to</em> the specified principal by the specified association.
      * </p>
      * <p>
-     * If the association is {@link JetspeedAssociationType#isDominant()} at most one principal name will be returned.
+     * If the association is {@link JetspeedPrincipalAssociationType#isDominant()} at most one principal name will be returned.
      * </p>
      * 
      * @param principalToName The principal name to find the other principals associated <em>from</em>.

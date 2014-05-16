@@ -51,17 +51,17 @@ public interface PrincipalManagerEventListener {
      * associationAdded - invoked when an association is added 
      * 					  on principal                  
      *
-     * @param principal new managed JetspeedPrincipal 
+     * @param fromPrincipal new managed JetspeedPrincipal
      * @param associationName Name of association which is added to principal
      */
-    void associationAdded(JetspeedPrincipal fromPrincipal,JetspeedPrincipal toPrincipal,String associationName);
+    void associationAdded(JetspeedPrincipal fromPrincipal, JetspeedPrincipal toPrincipal,String associationName);
     
     /**
      * associationRemoved - invoked when an association is added 
      * 					  on principal                  
      *
-     * @param principal new managed JetspeedPrincipal 
+     * @param fromPrincipal new managed JetspeedPrincipal
      * @param associationName Name of association which is removed to principal
      */
-    void associationRemoved(JetspeedPrincipal fromPrincipal,JetspeedPrincipal toPrincipal,String associationName);
+    void associationRemoved(JetspeedPrincipal fromPrincipal, JetspeedPrincipal toPrincipal,String associationName);
 }

@@ -16,6 +16,7 @@
 */
 package org.apache.jetspeed.security;
 
+import java.security.Policy;
 import java.util.List;
 
 /**
@@ -36,7 +37,7 @@ public interface AuthorizationProvider
      * 
      * @return The list of policies.
      */
-    List getPolicies();
+    List<Policy> getPolicies();
     
     
     /**

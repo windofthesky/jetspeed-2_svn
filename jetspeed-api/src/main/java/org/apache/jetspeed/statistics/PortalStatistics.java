@@ -16,11 +16,11 @@
  */
 package org.apache.jetspeed.statistics;
 
-import java.util.List;
+import org.apache.jetspeed.request.RequestContext;
 
 import javax.sql.DataSource;
-
-import org.apache.jetspeed.request.RequestContext;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The PortletStatistics interface provides an API for logging portlet
@@ -119,10 +119,9 @@ public interface PortalStatistics
      * Logs a user logout event. The %s (HTTP status code) field of the log
      * entry will be set to 200 (OK).
      * 
-     * @param request
-     *            current request info object
-     * @param msElapsedTime
-     *            elapsed time that the user was logged in
+     * @param ipAddress the ip address of the request
+     * @param userName the name of the user being tracked
+     * @param  msSessionLength time that the user was logged in
      */
     public void logUserLogout(String ipAddress, String userName,
             long msSessionLength);
@@ -156,7 +155,7 @@ public interface PortalStatistics
      */
     public int getNumberOfLoggedInUsers();
 
-    public List getListOfLoggedInUsers();
+    public List<Map<String,UserStats>> getListOfLoggedInUsers();
     
     /**
      * Factory to create new statistics query criteria

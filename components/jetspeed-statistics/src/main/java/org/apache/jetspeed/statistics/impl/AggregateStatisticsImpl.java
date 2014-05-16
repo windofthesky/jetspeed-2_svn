@@ -16,12 +16,12 @@
  */
 package org.apache.jetspeed.statistics.impl;
 
+import org.apache.jetspeed.statistics.AggregateStatistics;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.jetspeed.statistics.AggregateStatistics;
 
 /**
  * AggregateStatisticsImpl
@@ -43,14 +43,14 @@ public class AggregateStatisticsImpl implements AggregateStatistics
 
     private int hitcount;
 
-    private List statlist;
+    private List<Map<String,String>> statlist;
 
     public AggregateStatisticsImpl()
     {
-        statlist = new ArrayList();
+        statlist = new ArrayList<Map<String,String>>();
     }
 
-    public void addRow(Map row)
+    public void addRow(Map<String,String> row)
     {
         statlist.add(row);
     }
@@ -164,7 +164,7 @@ public class AggregateStatisticsImpl implements AggregateStatistics
     /**
      * @return Returns the statlist.
      */
-    public List getStatlist()
+    public List<Map<String,String>> getStatlist()
     {
         return statlist;
     }
@@ -173,7 +173,7 @@ public class AggregateStatisticsImpl implements AggregateStatistics
      * @param statlist
      *            The statlist to set.
      */
-    public void setStatlist(List statlist)
+    public void setStatlist(List<Map<String,String>> statlist)
     {
         this.statlist = statlist;
     }

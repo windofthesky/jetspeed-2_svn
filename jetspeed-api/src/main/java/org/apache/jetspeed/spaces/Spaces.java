@@ -16,11 +16,11 @@
  */
 package org.apache.jetspeed.spaces;
 
-import java.util.List;
-
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.om.page.Link;
 import org.apache.jetspeed.om.page.Page;
+
+import java.util.List;
 
 /**
  * Spaces Services
@@ -46,7 +46,7 @@ public interface Spaces
      * 
      * @param envName the unique name of the environment to create
      * @return a new environment object, not yet persisted
-     * @throws a SpacesException in case the object could not be persisted
+     * @throws SpacesException in case the object could not be persisted
      */
     Environment createEnvironment(String envName, String owner) throws SpacesException;
     
@@ -54,7 +54,7 @@ public interface Spaces
      * Store an environment to the portal
      * 
      * @param env the environment object to be persisted
-     * @throws a SpacesException in case the object could not be persisted
+     * @throws SpacesException in case the object could not be persisted
      */
     void storeEnvironment(Environment env) throws SpacesException;
     
@@ -62,7 +62,7 @@ public interface Spaces
      * Deletes an environment object given the unique key envName from the persistence store
      * 
      * @param env the environment object to delete
-     * @throws a SpacesException in case the object could not be deleted
+     * @throws SpacesException in case the object could not be deleted
      */
     void deleteEnvironment(Environment env) throws SpacesException;
 
@@ -108,7 +108,7 @@ public interface Spaces
      * 
      * @param space the space object to be persisted
      * @return the space object with any updated persistence state
-     * @throws a SpacesException in case the object could not be persisted
+     * @throws SpacesException in case the object could not be persisted
      */
     void storeSpace(Space space) throws SpacesException;
         
@@ -116,7 +116,7 @@ public interface Spaces
      * Deletes a space object given the unique key spaceName from the persistence store
      * 
      * @param space the space object to delete
-     * @throws a SpacesException in case the object could not be deleted
+     * @throws SpacesException in case the object could not be deleted
      */
     void deleteSpace(Space space) throws SpacesException;
 
@@ -148,7 +148,7 @@ public interface Spaces
      * 
      * @param space
      * @param env
-     * @throws a SpacesException in case the object could not be added
+     * @throws SpacesException in case the object could not be added
      */
     void addSpaceToEnvironment(Space space, Environment env) throws SpacesException;
 
@@ -157,7 +157,7 @@ public interface Spaces
      * 
      * @param space
      * @param env
-     * @throws a SpacesException in case the object could not be added
+     * @throws SpacesException in case the object could not be added
      */
     void removeSpaceFromEnvironment(Space space, Environment env) throws SpacesException;
 
@@ -173,7 +173,7 @@ public interface Spaces
      * Deletes a page 
      * 
      * @param page the page to be deleted
-     * @throws a SpacesException in case the object could not be deleted
+     * @throws SpacesException in case the object could not be deleted
      */
     void deletePage(Page page) throws SpacesException;
     

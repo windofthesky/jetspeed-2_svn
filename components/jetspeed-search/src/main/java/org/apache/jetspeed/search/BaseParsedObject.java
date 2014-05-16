@@ -54,7 +54,7 @@ public class BaseParsedObject implements ParsedObject
     /**
      * Sets parsed object key
      * 
-     * @param content
+     * @param key
      */
     public void setKey(String key)
     {
@@ -214,7 +214,7 @@ public class BaseParsedObject implements ParsedObject
     /**
      * Sets parsed object URL
      * 
-     * @param fields
+     * @param url
      */
     public void setURL(URL url)
     {
@@ -254,7 +254,7 @@ public class BaseParsedObject implements ParsedObject
     /**
      * Setter for property className.
      * 
-     * @param score  New value of property className.
+     * @param className  New value of property className.
      */
     public void setClassName(String className)
     {

@@ -16,15 +16,14 @@
  */
 package org.apache.jetspeed.headerresource;
 
+import org.apache.jetspeed.container.url.BasePortalURL;
+import org.apache.jetspeed.request.RequestContext;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.jetspeed.container.url.BasePortalURL;
-import org.apache.jetspeed.request.RequestContext;
 
 /**
  * HeaderResourceLib static utility methods
@@ -387,11 +386,11 @@ public class HeaderResourceLib
         }
         return statementOut.toString();
     }
-    public static String makeJSONStringArray( Collection stringList )
+    public static String makeJSONStringArray( Collection<String> stringList )
     {
         return makeJSONStringArray( stringList, null );
     }
-    public static String makeJSONStringArray( Collection stringList, List compiledUniqueValues )
+    public static String makeJSONStringArray( Collection<String> stringList, List<String> compiledUniqueValues )
     {
         if ( stringList != null && stringList.size() > 0 )
         {

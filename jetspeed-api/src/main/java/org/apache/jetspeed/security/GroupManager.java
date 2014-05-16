@@ -39,7 +39,7 @@ public interface GroupManager extends PrincipalTypeManager
      * </p>
      * @param groupName The group name
      * @return the new {@link Group}
-     * @throws Throws a security exception.
+     * @throws throws a security exception.
      */
     Group addGroup(String groupName) throws SecurityException;
 
@@ -50,7 +50,7 @@ public interface GroupManager extends PrincipalTypeManager
      * @param groupName The group name
      * @param mapped if the new Group should be mapped/replicated to an external security storage manager (if used) or not.
      * @return the new {@link Group}
-     * @throws Throws a security exception.
+     * @throws throws a security exception.
      */
     Group addGroup(String groupName, boolean mapped) throws SecurityException;
 
@@ -59,7 +59,7 @@ public interface GroupManager extends PrincipalTypeManager
      * Remove a group.
      * </p>
      * @param groupName The group name
-     * @throws Throws a security exception.
+     * @throws throws a security exception.
      */
     void removeGroup(String groupName) throws SecurityException;
 
@@ -79,7 +79,7 @@ public interface GroupManager extends PrincipalTypeManager
      * 
      * @param groupName
      * @return The {@link Group}
-     * @throws Throws security exception if the group does not exist.
+     * @throws throws security exception if the group does not exist.
      */
     Group getGroup(String groupName) throws SecurityException;
 
@@ -90,7 +90,7 @@ public interface GroupManager extends PrincipalTypeManager
      * 
      * @param username The user name.
      * @return A list of {@link Group}.
-     * @throws Throws security exception if the user does not exist.
+     * @throws throws security exception if the user does not exist.
      */
     List<Group> getGroupsForUser(String username) throws SecurityException;
 
@@ -101,7 +101,7 @@ public interface GroupManager extends PrincipalTypeManager
      * 
      * @param roleName The role name
      * @return A list of {@link Group}.
-     * @throws Throws a security exception if the role does not exist.
+     * @throws throws a security exception if the role does not exist.
      */
     List<Group> getGroupsInRole(String roleName) throws SecurityException;
 
@@ -112,7 +112,7 @@ public interface GroupManager extends PrincipalTypeManager
      * 
      * @param username The user name.
      * @param groupName The group name
-     * @throws Throws a security exception.
+     * @throws throws a security exception.
      */
     void addUserToGroup(String username, String groupName) throws SecurityException;
 
@@ -123,7 +123,7 @@ public interface GroupManager extends PrincipalTypeManager
      * 
      * @param username The user name.
      * @param groupName The group name
-     * @throws Throws a security exception.
+     * @throws throws a security exception.
      */
     void removeUserFromGroup(String username, String groupName) throws SecurityException;
 
@@ -135,7 +135,7 @@ public interface GroupManager extends PrincipalTypeManager
      * @param username The user name.
      * @param groupName The group name
      * @return Whether or not a user is in a group.
-     * @throws Throws security exception if the user or group does not exist.
+     * @throws throws security exception if the user or group does not exist.
      */
     boolean isUserInGroup(String username, String groupName) throws SecurityException;
 
@@ -176,7 +176,7 @@ public interface GroupManager extends PrincipalTypeManager
     * </p>
     * @param from The group for the from side of the association 
     * @param to The group for the to side of the association
-    * @param associationName The name of the {@link JetspeedAssociationType} to create
+    * @param associationName The name of the {@link JetspeedPrincipalAssociationType} to create
     * @throws SecurityException
     */
    void addGroupToGroup(Group from, Group to, String associationName) throws SecurityException;
@@ -190,7 +190,7 @@ public interface GroupManager extends PrincipalTypeManager
     * </p>
     * @param from The group for the from side of the association 
     * @param to The group for the to side of the association
-    * @param associationName The name of the {@link JetspeedAssociationType} to create
+    * @param associationName The name of the {@link JetspeedPrincipalAssociationType} to create
     * @throws SecurityException
     */
    void removeGroupFromGroup(Group from, Group to, String associationName) throws SecurityException;
@@ -218,7 +218,7 @@ public interface GroupManager extends PrincipalTypeManager
     * Note: this method will only return the directly associated groups, not further derived associations.
     * </p>
     * @param to The group for the to side of the association
-    * @param associationName The name of the {@link JetspeedAssociationType} to create
+    * @param associationName The name of the {@link JetspeedPrincipalAssociationType} to create
     */
    List<Group> getGroupsAssociatedTo(Group to, String associationName);
 
@@ -245,7 +245,7 @@ public interface GroupManager extends PrincipalTypeManager
     * Note: this method will only return the directly associated group(s), not further derived associations.
     * </p>
     * @param from The group for the from side of the association 
-    * @param associationName The name of the {@link JetspeedAssociationType} to create
+    * @param associationName The name of the {@link org.apache.jetspeed.security.JetspeedPrincipalAssociationType} to create
     */
    List<Group> getGroupsAssociatedFrom(Group from, String associationName);
 }

@@ -16,10 +16,10 @@
 */
 package org.apache.jetspeed.security.activeauthentication;
 
-import java.util.List;
-
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
+
+import java.util.List;
 
 /**
  * <p>
@@ -37,9 +37,9 @@ import org.apache.jetspeed.cache.JetspeedCache;
 public class ActiveAuthenticationIdentityProviderImpl implements ActiveAuthenticationIdentityProvider
 {
     JetspeedCache cache;
-    List sessionAttributes;
+    List<String> sessionAttributes;
     
-    public ActiveAuthenticationIdentityProviderImpl(JetspeedCache cache, List sessionAttributes)
+    public ActiveAuthenticationIdentityProviderImpl(JetspeedCache cache, List<String> sessionAttributes)
     {
         this.cache = cache;
         this.sessionAttributes = sessionAttributes;
@@ -70,7 +70,7 @@ public class ActiveAuthenticationIdentityProviderImpl implements ActiveAuthentic
         cache.remove(token);
     }
     
-    public List getSessionAttributeNames()
+    public List<String> getSessionAttributeNames()
     {
         return this.sessionAttributes;
     }

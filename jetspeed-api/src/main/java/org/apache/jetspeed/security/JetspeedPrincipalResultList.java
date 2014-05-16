@@ -41,7 +41,6 @@ public class JetspeedPrincipalResultList {
 	 * Creates a result list, <em>totalSize</em> will be set to the lists size.
 	 * 
 	 * @param results
-	 * @param firstResult
 	 */
 	public JetspeedPrincipalResultList(List<? extends JetspeedPrincipal> results) {
 		this.results = results;

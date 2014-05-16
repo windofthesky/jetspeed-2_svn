@@ -16,10 +16,10 @@
  */
 package org.apache.jetspeed.pipeline;
 
-import java.io.IOException;
-
 import org.apache.jetspeed.pipeline.valve.Valve;
 import org.apache.jetspeed.request.RequestContext;
+
+import java.io.IOException;
 
 /**
  * Jetspeed Pipeline
@@ -67,7 +67,7 @@ public interface Pipeline
      * same Pipeline without interfering with each other's control
      * flow.</p>
      *
-     * @param data The run-time information, including the servlet
+     * @param context The run-time information, including the servlet
      * request and response we are processing.
      *
      * @exception IOException an input/output error occurred.

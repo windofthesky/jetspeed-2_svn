@@ -16,13 +16,10 @@
 */
 package org.apache.jetspeed.sso;
 
+import javax.security.auth.Subject;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.security.auth.Subject;
-
-import org.apache.jetspeed.security.JetspeedPrincipal;
 
 
 /**
@@ -39,7 +36,7 @@ public interface SSOProvider
     * If the SSOSite and the url match only one call will be executed since the
     * authentication will be done while getting the result page.
     * 
-    * @param userID
+    * @param user
     * @param url
     * @param SSOSite
     * @param bRefresh if true it refreshes the proxy connection if false a cached proxy will be used
@@ -52,7 +49,7 @@ public interface SSOProvider
     * Same as the method above except that the user will be authenticated against all
     * SSOSites defined for the user before going to the destination site.
     * 
-    * @param userID
+    * @param subject
     * @param url
     * @param bRefresh if true it refreshes the proxy connection if false a cached proxy will be used
     * @return
@@ -142,7 +139,7 @@ public interface SSOProvider
      */
     void removeCredentialsForSite(String fullPath, String site) throws SSOException;
 
-    /* Retrive site information */
+    /* Retrieve site information */
     String getSiteURL(String site);
     String getSiteName(String site); 
     

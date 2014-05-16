@@ -35,7 +35,7 @@ public interface FileSystemHelper
      * </p>
      *
      * @param directory Directory to copy content from
-     * @throws {@link java.io.IlleaglArgumentException} if the <code>directory.isDirectory</code>
+     * @throws {@link java.io.IOException} if the <code>directory.isDirectory</code>
      * returns <code>false</code>
      */
     void copyFrom(File directory) throws IOException;
@@ -93,7 +93,7 @@ public interface FileSystemHelper
      * 
      * Returns the true location of this FileSystemHelper backing object on
      * the file system.  This IS NOT always as the path of the object returned
-     * from the {@link getRootDirectory} method. 
+     * from the {@link FileSystemHelper#getRootDirectory} method.
      *
      * @return the true location of this FileSystemHelper backing object. 
      */
