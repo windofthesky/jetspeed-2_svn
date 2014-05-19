@@ -100,7 +100,7 @@
     ifProperty="(${operation}=install) AND (${installationType}=demo)">
     <hidden property="setupDBAntTarget" value="runSetupNoDB" />
     <comment displayText="Jetspeed Enterprise Portal version 2.2.3-SNAPSHOT, (Demo)" bold="true" />
-    <target displayText="Tomcat 6.0.33 Webserver" target="install" defaultValue="true" force="true" />
+    <target displayText="Tomcat 7.0.53 Webserver" target="install" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Portal" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Layout Portlets" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Administration Portlets" property="dummy" defaultValue="true" force="true" />
@@ -115,7 +115,7 @@
     ifProperty="(${operation}=install) AND (${installationType}=minimal)">
     <hidden property="setupDBAntTarget" value="runSetupNoDB" />
     <comment displayText="Jetspeed Enterprise Portal version 2.2.3-SNAPSHOT" bold="true" />
-    <target displayText="Tomcat 6.0.33 Webserver" target="install" defaultValue="true" force="true" />
+    <target displayText="Tomcat 7.0.53 Webserver" target="install" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Portal" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Layout Portlets" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Administration Portlets" property="dummy" defaultValue="true" force="true" />
