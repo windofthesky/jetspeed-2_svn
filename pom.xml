@@ -240,6 +240,7 @@
     <commons-io.version>1.4</commons-io.version>
     <commons-jexl.version>1.1</commons-jexl.version>
     <commons-lang.version>2.4</commons-lang.version>
+    <commons-logging.version>1.1</commons-logging.version>
     <slf4j.version>1.5.6</slf4j.version>
     <commons-pool.version>1.5.6</commons-pool.version>
     <ddlutils.version>1.0</ddlutils.version>
@@ -935,6 +936,17 @@
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>${commons-codec.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>${commons-logging.version}</version>
+        <exclusions>
+            <exclusion>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+            </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
