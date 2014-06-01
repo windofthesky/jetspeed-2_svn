@@ -715,6 +715,11 @@
         <ref bean="pageProfilerValve" />
         <ref bean="refreshUserHomepageValve" />
         <ref bean="containerValve" />
+
+        <!-- JS2-1295 -->
+        <ref bean="actionValve" />
+        <ref bean="resourceValve" />
+
         <ref bean="portletValveTitleInHeader" />
         <ref bean="cleanUpValve" />
       </list>
