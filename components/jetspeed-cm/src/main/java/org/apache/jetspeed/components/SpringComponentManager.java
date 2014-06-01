@@ -168,7 +168,7 @@ public class SpringComponentManager implements ComponentManager
      * @see org.apache.jetspeed.components.ComponentManagement#getComponent(java.lang.Object)
      * @param componentName can be either a String or a #{@link @java.lang.Class} If its a Class,
      *                      the component name must match the toString representation of that class
-     * @deprecated in 2.2.3
+     * @deprecated in 2.3.0
      * @see {@link SpringComponentManager#lookupComponent(String)} or
      *      {@link SpringComponentManager#lookupComponent(Class)}
      * @return the component instance of null if not found
@@ -325,7 +325,7 @@ public class SpringComponentManager implements ComponentManager
      * @param componentName the name of the component (bean) to lookup
      * @param <T> the return type of the interface of the component
      * @return the implementing component service for the given name
-     * @since 2.2.3
+     * @since 2.3.0
      */
     public <T> T lookupComponent(String componentName) {
         return appContext == null ? null : (T) appContext.getBean(componentName);
@@ -338,7 +338,7 @@ public class SpringComponentManager implements ComponentManager
      * @param componentClass the class of the component (bean) singleton to lookup
      * @param <T> the return type of the interface of the component
      * @return the implementing component service for the given name
-     * @since 2.2.3
+     * @since 2.3.0
      */
     public <T> T lookupComponent(Class componentClass) {
         return appContext == null ? null : (T) appContext.getBean(componentClass.getName());

@@ -31,7 +31,7 @@ public interface ComponentManagement
      * @param componentName the name of the component (bean) to lookup
      * @param <T> the return type of the interface of the component
      * @return the currently configured component service for the given name or null if not found
-     * @since 2.2.3
+     * @since 2.3.0
      */
     <T> T lookupComponent(String componentName);
 
@@ -42,7 +42,7 @@ public interface ComponentManagement
      * @param componentClass the class of the component (bean) singleton to lookup
      * @param <T> the return type of the interface of the component
      * @return the currently configured component service for the given name or null if not found
-     * @since 2.2.3
+     * @since 2.3.0
      */
     <T> T lookupComponent(Class componentClass);
 
@@ -61,7 +61,7 @@ public interface ComponentManagement
      * @see org.apache.jetspeed.components.ComponentManagement#getComponent(java.lang.Object)
      * @param componentName can be either a String or a #{@link @java.lang.Class} If its a Class,
      *                      the component name must match the toString representation of that class
-     * @deprecated in 2.2.3
+     * @deprecated in 2.3.0
      * @see {@link ComponentManager#lookupComponent(String)} or
      *      {@link ComponentManager#lookupComponent(Class)}
      * @return the component instance of null if not found
@@ -78,7 +78,7 @@ public interface ComponentManagement
      * @param containerName the name of the IoC container to lookup the component in
      * @param componentName can be either a String or a #{@link @java.lang.Class} If its a Class,
      *                      the component name must match the toString representation of that class
-     * @deprecated in 2.2.3
+     * @deprecated in 2.3.0
      * @see {@link ComponentManager#lookupComponent(String)} or
      *      {@link ComponentManager#lookupComponent(Class)}
      * @return the component instance of null if not found
