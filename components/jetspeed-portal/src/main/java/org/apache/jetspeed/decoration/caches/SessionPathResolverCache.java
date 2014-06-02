@@ -16,13 +16,12 @@
  */
 package org.apache.jetspeed.decoration.caches;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpSession;
-
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.decoration.PathResolverCache;
+
+import javax.servlet.http.HttpSession;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Extends the 
@@ -30,21 +29,41 @@ import org.apache.jetspeed.decoration.PathResolverCache;
  * @author <href a="mailto:weaver@apache.org">Scott T. Weaver</a>
  *
  */
-public class SessionPathResolverCache extends HashMapPathResolverCache implements PathResolverCache
+public class SessionPathResolverCache implements PathResolverCache
 {
-    public SessionPathResolverCache(HttpSession session)
+    
+	private Map<String,String> cache = null;
+	
+	public SessionPathResolverCache(HttpSession session)
     {
-        cache = (Map) session.getAttribute(PortalReservedParameters.RESOVLER_CACHE_ATTR);
-        
+        cache = (Map) session.getAttribute(PortalReservedParameters.RESOLVER_CACHE_ATTR);
         if(cache == null)
         {
-            cache = new HashMap();
-            session.setAttribute(PortalReservedParameters.RESOVLER_CACHE_ATTR, cache);
+            cache = new ConcurrentHashMap<String, String>();
+            session.setAttribute(PortalReservedParameters.RESOLVER_CACHE_ATTR, cache);
         }
     }
     
-    public void clear()
-    {
+	@Override
+	public void clear() {
         cache.clear();
     }
+
+	@Override
+	public void addPath(String key, String path) {
+        cache.put(key, path);
+		
+	}
+
+	@Override
+	public String getPath(String key) {
+        return cache.get(key);
+	}
+
+	@Override
+	public String removePath(String key) {
+        return cache.remove(key);
+	}
+	
+
 }

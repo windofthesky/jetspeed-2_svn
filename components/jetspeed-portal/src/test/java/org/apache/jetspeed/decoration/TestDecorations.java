@@ -16,16 +16,6 @@
  */
 package org.apache.jetspeed.decoration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Properties;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
@@ -35,6 +25,15 @@ import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.jmock.core.Constraint;
 import org.jmock.core.InvocationMatcher;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Properties;
 
 public class TestDecorations extends MockObjectTestCase
 {
@@ -256,8 +255,7 @@ public class TestDecorations extends MockObjectTestCase
         expectAndReturn(atLeastOnce(), servletRequestMock, "getSession", sessionMock.proxy());
         expectAndReturn(atLeastOnce(), requestContextMock, "getRequest", servletRequestMock.proxy());
         
-        expectAndReturn(atLeastOnce(), sessionMock, "getAttribute", new Constraint[]{eq(PortalReservedParameters.RESOVLER_CACHE_ATTR)}, new HashMap());
-        //expectAndReturn(sessionMock, "getAttribute", PortalReservedParameters.RESOVLER_CACHE_ATTR);
+        expectAndReturn(atLeastOnce(), sessionMock, "getAttribute", new Constraint[]{eq(PortalReservedParameters.RESOLVER_CACHE_ATTR)}, new HashMap());
 
         expectAndReturn(childFragmentMock, "getDecorator", "myPortletDecoration");
 
