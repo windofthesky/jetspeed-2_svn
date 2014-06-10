@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TomcatManager implements ApplicationServerManager
 {
-    private static final String DEFAULT_MANAGER_SCRIPT_PATH = "/manager";
+    private static final String DEFAULT_MANAGER_SCRIPT_PATH = "/manager/text";
     protected static final Logger log = LoggerFactory.getLogger("deployment");
 
     private String hostUrl;

@@ -17,9 +17,6 @@
 
 package org.apache.jetspeed.components;
 
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -29,6 +26,9 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.util.MethodInvoker;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Utility callback method invoker bean 
@@ -129,11 +129,16 @@ public class ApplicationEventMethodsInvoker implements ApplicationListener, Appl
         {
             for (Map.Entry<Class<? extends ApplicationEvent>, List<MethodInvoker>> entry : eventTypeMethodInvokersMap.entrySet())
             {
-                Class<? extends ApplicationEvent> eventType = entry.getKey();
-                
-                if (eventType.isAssignableFrom(event.getClass()))
-                {
-                    return entry.getValue();
+                String className = entry.getKey().getName();
+                try {
+                    //Class<? extends ApplicationEvent> eventType = entry.getKey();
+                    Class eventClass = Class.forName(className);
+                    if (eventClass.isAssignableFrom(event.getClass())) {
+                        return entry.getValue();
+                    }
+                }
+                catch (Exception e) {
+                    log.error("Failed to load application event for given class: " + className);
                 }
             }
         }
