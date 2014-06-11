@@ -174,7 +174,8 @@ public abstract class AbstractSecurityTestCase extends DatasourceEnabledSpringTe
     {
         for (String name : ums.getUserNames(null))
         {
-            ums.removeUser(name);
+            if (!name.equals(ums.getAnonymousUser()))
+                ums.removeUser(name);
         }
         for (String name : rms.getRoleNames(null))
         {

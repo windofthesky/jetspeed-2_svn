@@ -163,7 +163,8 @@ public class AbstractSecurityTestcase extends DatasourceEnabledSpringTestCase
     {
         for (String name : ums.getUserNames(null))
         {
-            ums.removeUser(name);
+            if (!name.equals(ums.getAnonymousUser()))
+                ums.removeUser(name);
         }
         for (String name : rms.getRoleNames(null))
         {
