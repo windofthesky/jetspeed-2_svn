@@ -17,6 +17,8 @@ limitations under the License.
 
 <!--  BEGIN: clear/decorator.vm -->
 
-$f.renderedContent
+#if (!$jetspeed.isHidden($f))
+    $f.renderedContent
+#end
 
 <!--  END: clear/decorator.vm -->

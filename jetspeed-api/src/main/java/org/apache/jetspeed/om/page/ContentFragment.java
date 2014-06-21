@@ -465,9 +465,9 @@ public interface ContentFragment
      * rendering process.
      * </p>
      *
-     * @param contnent
+     * @param content
      */
-    void overrideRenderedContent(String contnent);
+    void overrideRenderedContent(String content);
 
     /**
      * @return the overridden content set by overrideRenderedContent
