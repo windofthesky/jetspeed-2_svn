@@ -16,16 +16,6 @@
  */
 package org.apache.jetspeed.om.window.impl;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.portlet.PortletMode;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
-import javax.portlet.WindowState;
-
 import org.apache.commons.collections.list.TreeList;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.RenderTrackable;
@@ -41,6 +31,15 @@ import org.apache.jetspeed.util.HeadElementsUtils;
 import org.apache.jetspeed.util.KeyValue;
 import org.apache.pluto.container.PortletRequestContext;
 import org.apache.pluto.container.PortletResponseContext;
+
+import javax.portlet.PortletMode;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
+import javax.portlet.WindowState;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <P>
@@ -92,6 +91,9 @@ public class PortletWindowImpl implements PortletWindow, PortletWindowID, Render
         this.requestContext = requestContext;
         this.id = fragment.getId();
         this.portletEntityId = fragment.getFragmentId();
+        if (this.portletEntityId == null) {
+            this.portletEntityId = this.id;
+        }
         this.fragment = fragment;
         this.pd = pd;
         this.valid = pd != null;
