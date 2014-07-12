@@ -16,7 +16,7 @@
   limitations under the License.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
   <!-- Portlet Factory -->
   <bean id="portletFactory" class="org.apache.jetspeed.factory.JetspeedPortletFactory">
@@ -118,7 +118,7 @@
 
   <bean id="org.apache.pluto.services.PreferencesService" name="PortletPreferencesProviderImpl"
         class="org.apache.jetspeed.components.portletpreferences.PortletPreferencesServiceImpl"
-        init-method="init" destroy-method="destroy">
+        init-method="init">
     <meta key="j2:cat" value="default or registry" />          
     <constructor-arg index="0">
       <ref bean="portletFactory" />
@@ -130,7 +130,7 @@
   </bean>
 
   <bean id="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" parent="baseTransactionProxy"
-    name="portletPreferencesProvider" destroy-method="destroy">
+    name="portletPreferencesProvider">
     <meta key="j2:cat" value="default or registry" />
     <property name="proxyInterfaces">
       <value>org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider</value>

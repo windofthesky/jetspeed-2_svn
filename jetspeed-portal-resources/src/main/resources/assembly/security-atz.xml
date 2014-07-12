@@ -16,7 +16,7 @@
   limitations under the License.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
   <!-- Security: RDBMS Policy implementation for JAAS -->
   <bean id="org.apache.jetspeed.security.impl.RdbmsPolicy" class="org.apache.jetspeed.security.impl.RdbmsPolicy">
