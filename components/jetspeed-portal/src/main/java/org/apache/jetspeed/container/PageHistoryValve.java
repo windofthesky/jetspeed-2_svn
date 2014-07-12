@@ -21,13 +21,12 @@ import org.apache.jetspeed.pipeline.PipelineException;
 import org.apache.jetspeed.pipeline.valve.AbstractValve;
 import org.apache.jetspeed.pipeline.valve.ValveContext;
 import org.apache.jetspeed.request.RequestContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * Valve basically mantains the page navigation history by maintaining a previous page id in the session.
+ * Valve basically maintains the page navigation history by maintaining a previous page id in the session.
  * Required by JS2-806
  * </p>
  * 
@@ -78,12 +77,16 @@ public class PageHistoryValve extends AbstractValve
                 }
                 else
                 {
-                    
                     if (prevPageId.equalsIgnoreCase(curPageId))
                     {
-                        if (log.isDebugEnabled())
-                        {
-                            log.debug("Previous page id is same as current page id, not clearing page state");
+                        if (request.getRequestParameter(REQUEST_CLEAR_PORTLETS_MODE_AND_WINDOWSTATE_KEY) != null) {
+                            request.setSessionAttribute(SESSION_PREVIOUS_PAGEID_KEY, curPageId);
+                            request.setAttribute(REQUEST_CLEAR_PORTLETS_MODE_AND_WINDOWSTATE_KEY, Boolean.TRUE);
+                        }
+                        else {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Previous page id is same as current page id, not clearing page state");
+                            }
                         }
                     }
                     else
