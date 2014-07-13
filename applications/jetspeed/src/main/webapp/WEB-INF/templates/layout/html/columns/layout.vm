@@ -307,17 +307,20 @@ limitations under the License.
 	<div id="column_${myFragment.getId()}_${columnIndex}" 
 	     class="portal-layout-column portal-layout-column-${layoutType}-${columnIndex}" 
 	     style="float:${columnFloat}; width:${columnWidth};">
-	     
-	  #foreach($f in $column)
-      ## Set up coordinates for this fragment
-      #if($f.isLocked() == false)
-      #set($coords = $columnLayout.getCoordinate($f))	  
-      #set($col = $coords.x)
-      #set($lastRow = $columnLayout.getLastRowNumber($col))
-      #set($row = $coords.y)
+		  #foreach($f in $column)
+		  ## Set up coordinates for this fragment
+			#set($coords = $columnLayout.getCoordinate($f))	  
+			#set($col = $coords.x)
+			#set($lastRow = $columnLayout.getLastRowNumber($col))
+			#set($row = $coords.y)
 			
-      ## get the decorated Portlet content
-		  <div id='$f.id' name='$f.name' column='${col}' row='${row}' class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}" >
+			<div id='$f.id' name='$f.name' column='${col}' row='${row}' class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}" >
+				
+		  #if($f.isLocked() == false)
+		  
+				
+		  ## get the decorated Portlet content
+		  
 		    ## editing block
 		    #if($editing)
 		      <div class="portlet-edit-bar">
@@ -374,7 +377,10 @@ limitations under the License.
             </form>			 
 		      </div>
 		    #end		   
-		    ## Now get the real content
+		   
+		  
+		  #end
+		   ## Now get the real content
 	 	 	  $jetspeed.setCurrentFragment($f)	   
 		    #if($f.type == "portlet")
 			    #parse($f.decoration.template)
@@ -382,8 +388,9 @@ limitations under the License.
 			    $f.renderedContent			
 		    #end
 		  </div>
-		  #end
 		#end
+		
+		
 	</div>
 	#set ($columnIndex = $columnIndex + 1)  
 #end  
