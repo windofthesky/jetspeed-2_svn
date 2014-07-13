@@ -59,11 +59,19 @@
   
   <bean id="org.apache.jetspeed.administration.PasswordGenerator" class="org.apache.jetspeed.administration.SimplePasswordGeneratorImpl">
     <meta key="j2:cat" value="default" />
+      <!--  sample character array that matches the regex pattern in the DefaultCredentialValidator defined in
+      security-spi-atn.xml -->
+      <constructor-arg index="0">
+          <value>abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%^+=</value>
+      </constructor-arg>
     <property name="validator">
       <!-- The default CredentialPasswordValidator configuration only checks against empty/null passwords.
            If a more complex validation is enforced, make sure the PasswordGenerator matches the rules.
            If a generated password fails validation, the SimplePasswordGeneratorImpl will simply regenerate a new one to test. --> 
       <ref bean="org.apache.jetspeed.security.spi.CredentialPasswordValidator"/>
+    </property>
+    <property name="maximumValidationAttempts">
+    	<value>1500</value>
     </property>
   </bean>
 

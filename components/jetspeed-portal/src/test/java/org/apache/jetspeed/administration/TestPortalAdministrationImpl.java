@@ -19,12 +19,16 @@ package org.apache.jetspeed.administration;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
 import org.apache.jetspeed.aggregator.TestWorkerMonitor;
+import org.apache.jetspeed.security.CredentialPasswordValidator;
+import org.apache.jetspeed.security.spi.impl.DefaultCredentialPasswordValidator;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -77,17 +81,75 @@ public class TestPortalAdministrationImpl extends  TestCase
         return new TestSuite(TestPortalAdministrationImpl.class);
     }
 
-    public void testPasswordGen() throws Exception
+    public void testBasicPasswordGen() throws Exception
     {
+    	System.out.println("*** testing basic (unvalidated) password generation");
         PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,null,null);
         String newPassword = pai.generatePassword();
+        System.out.println("new password is "+newPassword);
         assertNotNull("new password was NULL!!!",newPassword);
         assertTrue("password is not long enough",(newPassword.length() > 4) );
         
     }
     
+    public void testPasswordGenWithValidationFailure() throws Exception
+    {
+    	System.out.println("*** testing password generation with validator but unmatched character array and pattern");
+        PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,null,null);
+        SimplePasswordGeneratorImpl pg = new SimplePasswordGeneratorImpl();
+        CredentialPasswordValidator cpv = new DefaultCredentialPasswordValidator("^.*(?=.{6,})(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$");
+        pg.setValidator(cpv);
+        pg.setMaximumValidationAttempts(1500);
+        pai.setPasswordGenerator(pg);
+        String newPassword = pai.generatePassword();
+        System.out.println("new password is "+newPassword);
+        assertNotNull("new password was NULL!!!",newPassword);
+        assertTrue("password is not long enough",(newPassword.length() > 4) );
+
+    }
+
+    public void testFullPasswordGenWithValidation() throws Exception
+    {
+    	System.out.println("*** testing password generation with matched character array and pattern");
+        PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,null,null);
+        SimplePasswordGeneratorImpl pg = new SimplePasswordGeneratorImpl();
+        CredentialPasswordValidator cpv = new DefaultCredentialPasswordValidator("^.*(?=.{6,})(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$");
+        pg.setValidator(cpv);
+        pg.setMaximumValidationAttempts(1500);
+        pai.setPasswordGenerator(pg);
+        //char array that matches the pattern above
+        char[]   validChars = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+                't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+                'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0','@','#','$','%','^','&','+','=' };
+        pg.setPasswordChars(validChars);
+        String newPassword = pai.generatePassword();
+        
+        System.out.println("new password is "+newPassword);
+        assertNotNull("new password was NULL!!!",newPassword);
+        assertTrue("password is not long enough",(newPassword.length() > 4) );
+
+    }
+
+    public void testFullPasswordGenWithValidation2() throws Exception
+    {
+        System.out.println("*** testing password generation with matched character array and pattern");
+        PortalAdministrationImpl pai = new PortalAdministrationImpl(null,null,null,null,null,null,null,null);
+        SimplePasswordGeneratorImpl pg = new SimplePasswordGeneratorImpl("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%^+=");
+        CredentialPasswordValidator cpv = new DefaultCredentialPasswordValidator("^.*(?=.{6,})(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$");
+        pg.setValidator(cpv);
+        pg.setMaximumValidationAttempts(1500);
+        pai.setPasswordGenerator(pg);
+        String newPassword = pai.generatePassword();
+
+        System.out.println("new password is "+newPassword);
+        assertNotNull("new password was NULL!!!",newPassword);
+        assertTrue("password is not long enough",(newPassword.length() > 4) );
+
+    }
+
     public void testSendEmail() throws Exception 
     {
+    	System.out.println("*** testing sendEmail");
         JavaMailSenderImpl javaMailSender = null;
         
         if (smtpHost != null)
@@ -135,6 +197,7 @@ public class TestPortalAdministrationImpl extends  TestCase
     }
     
     public void testSendMailFromAnotherThread() throws Exception {
+    	System.out.println("*** testing sendEmailFromAnotherThread");
     	final List<Exception> exceptions = new ArrayList<Exception>();
     	
     	Thread t = new Thread(new Runnable() {

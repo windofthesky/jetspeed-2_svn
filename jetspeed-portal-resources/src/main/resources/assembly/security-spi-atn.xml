@@ -29,8 +29,8 @@
       * Must be at least 6 characters
       * Must contain at least one one lower case letter, one upper case letter, one digit and one special character
       * Valid special characters are @#$%^&+=
-      <constructor-arg index="1"><value><![CDATA[^.*(?=.{6,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$]]></value></constructor-arg>       
-    -->
+      <constructor-arg index="0"><value><![CDATA[^.*(?=.{6,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$]]></value></constructor-arg>       
+     -->
   </bean>
 
   <!-- MessageDigest encode passwords using SHA-1 -->
