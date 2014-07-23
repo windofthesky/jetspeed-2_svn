@@ -646,7 +646,7 @@ public class JetspeedRequestContext implements RequestContext
         if (window == null)
         {
             // ensure RootContentFragment is initialized
-            getPage().getRootFragment(); 
+            getPage().getRootFragment();
             ContentFragment fragment = getPage().getFragmentById(windowId);
             if (fragment == null)
             {
@@ -722,9 +722,19 @@ public class JetspeedRequestContext implements RequestContext
                 }
             }
         }
-        
         PortletWindow window = null;
-        
+        if (portletUniqueName == null)
+        {
+            //  JS2-1298: allow fragments to be looked up by exact name, not with ContentFragment paths __
+            ContentFragment fragment = getPage().getFragmentByFragmentId(windowId);
+            if (fragment != null) {
+                portletUniqueName = fragment.getName();
+                window = createPortletWindow(fragment);
+                registerInstantWindow(window.getWindowId(), portletUniqueName);
+                registerInstantWindow(windowId, portletUniqueName);
+                return window;
+            }
+        }
         if (portletUniqueName != null)
         {
             // dynamically create instantly rendered content fragment and window
@@ -735,40 +745,45 @@ public class JetspeedRequestContext implements RequestContext
             
             if (register && !registered && window.isValid())
             {
-                if (session == null)
-                {
-                    session = getRequest().getSession(true);
-                }
-                
-                Map<String,Map<String,String>> pages = null;
-                
-                synchronized (session)
-                {
-                    pages = (Map<String,Map<String,String>>) session.getAttribute(INSTANT_WINDOWS_SESSION_KEY);
-                    
-                    if (pages == null)
-                    {
-                        pages = Collections.synchronizedMap(new HashMap<String,Map<String,String>>());
-                        session.setAttribute(INSTANT_WINDOWS_SESSION_KEY, pages);
-                    }
-                }
-                
-                String pageId = getPage().getId();
-                Map<String,String> instantWindows = pages.get(pageId);
-                
-                if (instantWindows == null)
-                {
-                    instantWindows = Collections.synchronizedMap(new HashMap<String,String>());
-                    pages.put(pageId, instantWindows);
-                }
-                
-                instantWindows.put(windowId, portletUniqueName);
+                registerInstantWindow(windowId, portletUniqueName);
             }
         }
         
         return window;
     }
-    
+
+    private void registerInstantWindow(String windowId, String portletUniqueName)
+    {
+        if (session == null)
+        {
+            session = getRequest().getSession(true);
+        }
+
+        Map<String,Map<String,String>> pages = null;
+
+        synchronized (session)
+        {
+            pages = (Map<String,Map<String,String>>) session.getAttribute(INSTANT_WINDOWS_SESSION_KEY);
+
+            if (pages == null)
+            {
+                pages = Collections.synchronizedMap(new HashMap<String,Map<String,String>>());
+                session.setAttribute(INSTANT_WINDOWS_SESSION_KEY, pages);
+            }
+        }
+
+        String pageId = getPage().getId();
+        Map<String,String> instantWindows = pages.get(pageId);
+
+        if (instantWindows == null)
+        {
+            instantWindows = Collections.synchronizedMap(new HashMap<String,String>());
+            pages.put(pageId, instantWindows);
+        }
+
+        instantWindows.put(windowId, portletUniqueName);
+    }
+
     @SuppressWarnings("unchecked")
     public void registerInstantlyCreatedPortletWindow(PortletWindow portletWindow)
     {

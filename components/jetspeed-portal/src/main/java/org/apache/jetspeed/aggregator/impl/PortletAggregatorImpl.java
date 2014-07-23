@@ -16,15 +16,6 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.JetspeedActions;
@@ -41,6 +32,14 @@ import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.HeadElementUtils;
 import org.apache.jetspeed.util.KeyValue;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * PortletAggregator builds the content required to render a single portlet.
