@@ -16,16 +16,6 @@
  */
 package org.apache.jetspeed.components.datasource;
 
-import java.io.CharArrayWriter;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
 import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
@@ -34,6 +24,15 @@ import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
+import java.io.CharArrayWriter;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * <p>
@@ -151,7 +150,17 @@ public class DBCPDatasourceComponent implements DatasourceComponent
             // Validate the connection before we go any further
             try
             {
-                Connection conn = DriverManager.getConnection(connectURI, user, password);
+                Connection conn = null;
+                if (user == null || user.trim().isEmpty()) {
+                    System.out.println("***** connecting without user...");
+                    conn = DriverManager.getConnection(connectURI);
+                }
+                else {
+                    if (password == null)
+                        password = "";
+                    conn = DriverManager.getConnection(connectURI, user, password);
+                }
+
                 conn.close();
             }
             catch(Exception e)
@@ -161,9 +170,16 @@ public class DBCPDatasourceComponent implements DatasourceComponent
             }
             
             ObjectPool connectionPool = new GenericObjectPool(null, maxActive, whenExhausted, maxWait);
-            
-            ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, user, password);
-            
+
+            ConnectionFactory connectionFactory = null;
+            if (user == null || user.trim().isEmpty()) {
+                connectionFactory = new DriverManagerConnectionFactory(connectURI, new Properties());
+            }
+            else {
+                if (password == null)
+                    password = "";
+                connectionFactory = new DriverManagerConnectionFactory(connectURI, user, password);
+            }
             dsConnectionFactory = new PoolableConnectionFactory(connectionFactory, connectionPool, null, null, false, autoCommit);
             
             dataSource = new PoolingDataSource(connectionPool);            

@@ -137,6 +137,7 @@
       <option text="Oracle 9" value="oracle9" />
       <option text="Oracle 10 or higher" value="oracle10" />
       <option text="SapDB" value="sapdb" />
+      <option text="Derby" value="derby2" />
     </select>
   </page>
 
@@ -272,6 +273,26 @@
     <file property="source.jdbcDriverJar" defaultValue="${java.user.home}${java.file.separator}db2jcc.jar"
           displayText="JDBC driver" checkExists="true" />
   </page>
+
+    <page type="input" name="sourceDerby" displayText="Derby Database connection parameters"
+          ifProperty="(${operation}=migratedb) AND (${source.dbName}=derby2)">
+        <hidden property="source.checkdb" value="true" />
+        <hidden property="source.dbvalid" value="true" />
+        <hidden property="source.dbDisplayName" value="Derby"/>
+
+        <comment displayText="Please fill in the fields below for connecting to the Derby network database." />
+
+        <text property="source.dbUser" displayText="Database User Name" defaultValue="" />
+        <text property="source.dbPassword" displayText="Database Password" defaultValue="" />
+
+        <text property="source.jdbcUrl" displayText="JDBC Connection String"
+              defaultValue="jdbc:derby://localhost/productiondb" />
+        <text property="source.jdbcDriverClass" displayText="JDBC Driver Classname" defaultValue="org.apache.derby.jdbc.ClientDriver" />
+
+        <file property="source.jdbcDriverJar"
+              defaultValue="${java.user.home}${java.file.separator}derbyclient.jar" displayText="JDBC driver"
+              checkExists="true" />
+    </page>
 
   <page type="input" name="sourceNoDBCheck" displayText="Skipping source database connection check"
     ifProperty="(${operation}=migratedb) AND (${source.checkdb}=false)">
