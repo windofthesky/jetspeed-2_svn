@@ -91,7 +91,7 @@
         <attribute name="Class-Path" value="${war.manifest.classpath}"/>
       </manifest>
     </jar>
-    <jar destfile="${project.build.directory}/package-skinny-wars/apa-webcontent-war-${org.apache.portals.applications.apa-webcontent.version}.war" update="true">
+    <jar destfile="${project.build.directory}/package-skinny-wars/apa-webcontent2-war-${org.apache.portals.applications.apa-webcontent2.version}.war" update="true">
       <manifest>
         <attribute name="Class-Path" value="${war.manifest.classpath}"/>
       </manifest>
@@ -114,14 +114,14 @@
       <arg value="rss"/>
     </java>
     <java classname="org.apache.jetspeed.tools.deploy.JetspeedDeploy">
-      <arg value="${project.build.directory}/package-skinny-wars/apa-webcontent-war-${org.apache.portals.applications.apa-webcontent.version}.war"/>
-      <arg value="${project.build.directory}/package-skinny-wars/apa-webcontent-war-${org.apache.portals.applications.apa-webcontent.version}.war"/>
-      <arg value="webcontent"/>
+      <arg value="${project.build.directory}/package-skinny-wars/apa-webcontent2-war-${org.apache.portals.applications.apa-webcontent2.version}.war"/>
+      <arg value="${project.build.directory}/package-skinny-wars/apa-webcontent2-war-${org.apache.portals.applications.apa-webcontent2.version}.war"/>
+      <arg value="webcontent2"/>
     </java>
     <java classname="org.apache.jetspeed.tools.deploy.JetspeedDeploy">
       <arg value="${project.build.directory}/package-skinny-wars/apa-dbbrowser-war-${org.apache.portals.applications.apa-dbbrowser.version}.war"/>
       <arg value="${project.build.directory}/package-skinny-wars/apa-dbbrowser-war-${org.apache.portals.applications.apa-dbbrowser.version}.war"/>
-      <arg value="webcontent"/>
+      <arg value="dbbrowser"/>
     </java>
 
     <!-- repackage EAR with skinny wars -->

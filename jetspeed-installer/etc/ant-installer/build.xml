@@ -179,7 +179,7 @@
       <fileset dir="${installDir}/webapps">
         <include name="demo.war" />      
         <include name="rss.war" />
-        <include name="webcontent.war" />
+        <include name="webcontent2.war" />
         <include name="dbbrowser.war" />
       </fileset>
     </delete>

@@ -282,7 +282,7 @@
     <org.apache.portals.applications.apa-gems.version>1.1</org.apache.portals.applications.apa-gems.version>
     <org.apache.portals.applications.apa-logging.version>1.0</org.apache.portals.applications.apa-logging.version>
     <org.apache.portals.applications.apa-rss.version>1.2</org.apache.portals.applications.apa-rss.version>
-    <org.apache.portals.applications.apa-webcontent.version>1.4-SNAPSHOT</org.apache.portals.applications.apa-webcontent.version>
+    <org.apache.portals.applications.apa-webcontent2.version>2.0-SNAPSHOT</org.apache.portals.applications.apa-webcontent2.version>
     <org.apache.portals.applications.apa-dbbrowser.version>1.2</org.apache.portals.applications.apa-dbbrowser.version>
     <org.openid4java.version>0.9.5</org.openid4java.version>
     <oro.version>2.0.8</oro.version>
@@ -544,9 +544,9 @@
       </dependency>
       <dependency>
         <groupId>org.apache.portals.applications</groupId>
-        <artifactId>apa-webcontent-war</artifactId>
+        <artifactId>apa-webcontent2-war</artifactId>
         <type>war</type>
-        <version>${org.apache.portals.applications.apa-webcontent.version}</version>
+        <version>${org.apache.portals.applications.apa-webcontent2.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.portals.applications</groupId>

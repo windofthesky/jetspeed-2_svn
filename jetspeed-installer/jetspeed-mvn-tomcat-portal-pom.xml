@@ -208,10 +208,10 @@
                       <delete>./rss</delete>
                     </deployment>
                     <deployment>
-                      <artifact>org.apache.portals.applications:apa-webcontent-war:war</artifact>
-                      <targetName>webcontent.war</targetName>
+                      <artifact>org.apache.portals.applications:apa-webcontent2-war:war</artifact>
+                      <targetName>webcontent2.war</targetName>
                       <infuse>true</infuse>
-                      <delete>./webcontent</delete>
+                      <delete>./webcontent2</delete>
                     </deployment>
              		<deployment>
                       <artifact>org.apache.portals.applications:apa-dbbrowser-war:war</artifact>
@@ -304,8 +304,8 @@
               </dependency>
               <dependency>
                 <groupId>org.apache.portals.applications</groupId>
-                <artifactId>apa-webcontent-war</artifactId>
-                <version>${org.apache.portals.applications.apa-webcontent.version}</version>
+                <artifactId>apa-webcontent2-war</artifactId>
+                <version>${org.apache.portals.applications.apa-webcontent2.version}</version>
                 <type>war</type>
               </dependency>
               <dependency>

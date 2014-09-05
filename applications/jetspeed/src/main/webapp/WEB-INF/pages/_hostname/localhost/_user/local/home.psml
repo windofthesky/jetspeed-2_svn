@@ -21,7 +21,7 @@ limitations under the License.
             <property name="row" value="0"/>
             <property name="column" value="0"/>
         </fragment>
-        <fragment id="P-111c98bf046-10003" type="portlet" name="webcontent::IFramePortlet">
+        <fragment id="P-111c98bf046-10003" type="portlet" name="webcontent2::IFramePortlet2">
             <property name="row" value="0"/>
             <property name="column" value="1"/>
         </fragment>

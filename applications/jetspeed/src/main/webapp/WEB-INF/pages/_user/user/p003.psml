@@ -33,7 +33,7 @@ limitations under the License.
         <property layout="TwoColumns" name="row" value="0" />
         <property layout="TwoColumns" name="column" value="0" />
       </fragment>
-	  <fragment id="u3-xx6" type="portlet" name="webcontent::IFramePortlet">
+	  <fragment id="u3-xx6" type="portlet" name="webcontent2::IFramePortlet2">
         <property layout="TwoColumns" name="row" value="0" />
         <property layout="TwoColumns" name="column" value="1" />
       </fragment>

@@ -53,7 +53,7 @@
     </dependency>        
     <dependency>
       <groupId>org.apache.portals.applications</groupId>
-      <artifactId>apa-webcontent-war</artifactId>
+      <artifactId>apa-webcontent2-war</artifactId>
       <type>war</type>
     </dependency>
     <dependency>
@@ -96,8 +96,8 @@
             </webModule>                       
             <webModule>
               <groupId>org.apache.portals.applications</groupId>
-              <artifactId>apa-webcontent-war</artifactId>
-              <contextRoot>/webcontent</contextRoot>
+              <artifactId>apa-webcontent2-war</artifactId>
+              <contextRoot>/webcontent2</contextRoot>
             </webModule>                       
             <webModule>
               <groupId>org.apache.portals.applications</groupId>
@@ -159,7 +159,7 @@
                   <property name="org.apache.portals.applications.apa-dbbrowser.version" value="${org.apache.portals.applications.apa-dbbrowser.version}"/>
                   <property name="org.apache.portals.applications.apa-demo.version" value="${org.apache.portals.applications.apa-demo.version}"/>
                   <property name="org.apache.portals.applications.apa-rss.version" value="${org.apache.portals.applications.apa-rss.version}"/>
-                  <property name="org.apache.portals.applications.apa-webcontent.version" value="${org.apache.portals.applications.apa-webcontent.version}"/>
+                  <property name="org.apache.portals.applications.apa-webcontent2.version" value="${org.apache.portals.applications.apa-webcontent2.version}"/>
                   <property name="pom.version" value="${project.version}"/>
                   <property name="project.version" value="${project.version}"/>
                   <property name="project.build.directory" value="${project.build.directory}"/>

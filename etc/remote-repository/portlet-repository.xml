@@ -173,13 +173,13 @@
 		</portlet>
 	</portlets>
 	<portlets>
-		<portlet id="webcontent" group="org.apache.portals.jetspeed"
+		<portlet id="webcontent2" group="org.apache.portals.jetspeed"
 			version="2.2">
 			<portletSpecVersion>2.0</portletSpecVersion>
 			<packaging>war</packaging>
-			<name>webcontent</name>
+			<name>webcontent2</name>
 			<description>Web Content and IFrame Portlets from Apache Jetspeed</description>
-			<binaryURL>http://www.bluesunrise.com/rpa/jetspeed/2.2/webcontent.war</binaryURL>
+			<binaryURL>http://www.bluesunrise.com/rpa/jetspeed/2.2/webcontent2.war</binaryURL>
 			<sourceURL />
 			<imageURL />
 			<license>

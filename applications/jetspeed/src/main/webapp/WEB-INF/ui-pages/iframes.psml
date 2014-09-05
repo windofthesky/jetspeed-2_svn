@@ -22,11 +22,11 @@ limitations under the License.
   <title>Websites</title>
 
   <fragment id="js-websites1" type="layout" name="jetspeed-layouts::VelocityTwoColumns">
-    <fragment id="js-websites9" type="portlet" name="webcontent::ReverseProxyIFramePortlet">
+    <fragment id="js-websites9" type="portlet" name="webcontent2::ReverseProxyIFramePortlet2">
       <property name="row" value="0" />
       <property name="column" value="0" />
     </fragment>
-    <fragment id="js-websites10" type="portlet" name="webcontent::IFramePortlet" decorator="gray-gradient-noborder">
+    <fragment id="js-websites10" type="portlet" name="webcontent2::IFramePortlet2" decorator="gray-gradient-noborder">
       <property name="row" value="0" />
       <property name="column" value="1" />
       <preference name="SRC">

@@ -57,11 +57,11 @@ limitations under the License.
       <property layout="TwoColumns" name="row" value="1" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="dp-9" type="portlet" name="webcontent::ReverseProxyIFramePortlet" decorator="gray-gradient-noborder">
+    <fragment id="dp-9" type="portlet" name="webcontent2::ReverseProxyIFramePortlet2" decorator="gray-gradient-noborder">
       <property layout="TwoColumns" name="row" value="2" />
       <property layout="TwoColumns" name="column" value="0" />
     </fragment>
-    <fragment id="dp-10" type="portlet" name="webcontent::IFramePortlet" decorator="gray-gradient-noborder">
+    <fragment id="dp-10" type="portlet" name="webcontent2::IFramePortlet2" decorator="gray-gradient-noborder">
       <property layout="TwoColumns" name="row" value="3" />
       <property layout="TwoColumns" name="column" value="0" />
       <preference name="SRC">
