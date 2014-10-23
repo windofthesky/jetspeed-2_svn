@@ -16,20 +16,23 @@
  */
 package org.apache.jetspeed.container.url.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Map;
+import org.apache.jetspeed.Jetspeed;
+import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.container.ContainerConstants;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.state.NavigationalState;
+import org.apache.jetspeed.container.url.BasePortalURL;
+import org.apache.jetspeed.container.url.PortalURL;
+import org.apache.jetspeed.engine.JetspeedEngineConstants;
+import org.apache.jetspeed.pipeline.PipelineMapper;
+import org.apache.jetspeed.util.ArgUtil;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.container.ContainerConstants;
-import org.apache.jetspeed.container.state.NavigationalState;
-import org.apache.jetspeed.container.url.BasePortalURL;
-import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.util.ArgUtil;
-import org.apache.jetspeed.container.PortletWindow;
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 /**
  * AbstractPortalURL delivers the base implemention for parsing Jetspeed Portal URLs and creating new Portlet URLs.
@@ -42,13 +45,16 @@ import org.apache.jetspeed.container.PortletWindow;
 public abstract class AbstractPortalURL implements PortalURL
 {
     public static final String DEFAULT_NAV_STATE_PARAMETER = "_ns";
-    
+
     protected static String navStateParameter;
     
     protected NavigationalState navState;
     protected BasePortalURL base = null;
     
     protected static Boolean relativeOnly;
+    protected static String pagePipeline;
+    protected static String portletPipeline;
+    protected static Object lock = new Object();
     protected String contextPath;
     protected String basePath;
     protected String path;
@@ -56,7 +62,6 @@ public abstract class AbstractPortalURL implements PortalURL
     protected String secureBaseURL;
     protected String nonSecureBaseURL;
     protected String characterEncoding = "UTF-8";
-    
 
     public AbstractPortalURL(NavigationalState navState, PortalContext portalContext, BasePortalURL base)
     {
@@ -77,8 +82,15 @@ public abstract class AbstractPortalURL implements PortalURL
         {
             relativeOnly = new Boolean(portalContext.getConfiguration().getBoolean("portalurl.relative.only", false));
         }
+        if (pagePipeline == null) {
+            synchronized (lock) {
+                String pagePipelineName = portalContext.getConfiguration().getString(JetspeedEngineConstants.PIPELINE_DEFAULT, "/portal");
+                PipelineMapper pipelineMapper = Jetspeed.getEngine().getComponentManager().lookupComponent("pipeline-mapper");
+                pagePipeline = pipelineMapper.getMappedPathByPipelineId(pagePipelineName);
+                portletPipeline = pipelineMapper.getMappedPathByPipelineId(PortalReservedParameters.PORTLET_PIPELINE);
+            }
+        }
     }
-    
     
     public AbstractPortalURL(String characterEncoding, NavigationalState navState, PortalContext portalContext)
     {
@@ -196,6 +208,11 @@ public abstract class AbstractPortalURL implements PortalURL
         if (servletPath == null)
         {
             servletPath = "";
+        }
+        else {
+            if (servletPath.startsWith(portletPipeline)) {
+                servletPath = pagePipeline;
+            }
         }
         this.basePath = contextPath + servletPath;
     }

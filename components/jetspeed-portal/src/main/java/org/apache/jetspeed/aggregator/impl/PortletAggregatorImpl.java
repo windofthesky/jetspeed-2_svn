@@ -103,8 +103,8 @@ public class PortletAggregatorImpl implements PortletAggregator
             window = context.getInstantlyCreatedPortletWindow(entity, name);
         }
         
-        PortletMode requetedPortletMode = getRequestedPortletMode(context);
-        WindowState requetedWindowState = getRequestedWindowState(context);
+        PortletMode requestedPortletMode = getRequestedPortletMode(context);
+        WindowState requestedWindowState = getRequestedWindowState(context);
         
         NavigationalState navState = context.getPortalURL().getNavigationalState();
         
@@ -112,14 +112,14 @@ public class PortletAggregatorImpl implements PortletAggregator
         {
             MutableNavigationalState mutableNavState = (MutableNavigationalState) navState;
             
-            if (!requetedPortletMode.equals(navState.getMode(window)))
+            if (!requestedPortletMode.equals(navState.getMode(window)))
             {
-                mutableNavState.setMode(window, requetedPortletMode);
+                mutableNavState.setMode(window, requestedPortletMode);
             }
             
-            if (!requetedWindowState.equals(navState.getState(window)))
+            if (!requestedWindowState.equals(navState.getState(window)))
             {
-                mutableNavState.setState(window, requetedWindowState);
+                mutableNavState.setState(window, requestedWindowState);
             }
         }
         
