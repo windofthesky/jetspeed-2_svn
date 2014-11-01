@@ -949,4 +949,32 @@
 		
 	</ProfilingRules>
 
+  <SSOSites>
+    <Site
+      name="Localhost Example Basic Auth"
+      siteURL="http://localhost:8080/j2-admin/examples/basicauth.jsp"
+      allowUserSet="true"
+      challengeResponseAuthentication="true"
+      formAuthentication="false"
+      realm="ExampleBasicAuthJSP">
+      <RemoteUsers>
+        <RemoteUser principalName="admin" principalType="user" name="admin" password="KwEeHR0="/>
+        <RemoteUser principalName="manager" principalType="user" name="manager" password="JwQdFRQVFw=="/>
+      </RemoteUsers>
+    </Site>
+    <Site
+      name="Localhost Example Form Auth"
+      siteURL="http://localhost:8080/j2-admin/examples/formauth.jsp"
+      allowUserSet="true"
+      challengeResponseAuthentication="false"
+      formAuthentication="true"
+      formUserField="user"
+      formPwdField="pass">
+      <RemoteUsers>
+        <RemoteUser principalName="admin" principalType="user" name="admin" password="KwEeHR0="/>
+        <RemoteUser principalName="manager" principalType="user" name="manager" password="JwQdFRQVFw=="/>
+      </RemoteUsers>
+    </Site>
+  </SSOSites>
+
 </Snapshot>
