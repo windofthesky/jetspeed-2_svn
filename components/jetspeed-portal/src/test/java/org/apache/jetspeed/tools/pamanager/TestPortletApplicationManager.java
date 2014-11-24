@@ -21,30 +21,20 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.AbstractRequestContextTestCase;
+import org.apache.jetspeed.components.jndi.JetspeedTestJNDIComponent;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
+import org.apache.jetspeed.components.test.AbstractJexlSpringTestCase;
 import org.apache.jetspeed.security.RoleManager;
 import org.apache.jetspeed.security.SecurityDomain;
 import org.apache.jetspeed.security.impl.SecurityDomainImpl;
 import org.apache.jetspeed.security.spi.SecurityDomainAccessManager;
 import org.apache.jetspeed.security.spi.SecurityDomainStorageManager;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
-public class TestPortletApplicationManager extends AbstractRequestContextTestCase
+public class TestPortletApplicationManager extends AbstractJexlSpringTestCase
 {
     private static final Log log = LogFactory.getLog(TestPortletApplicationManager.class);
 
@@ -55,35 +45,77 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
     public static final String CONTEXT_NAME = "test-pa";
     public static final String CONTEXT_PATH = "/"+CONTEXT_NAME;
 
-    private String osExecutableExtension;
-    private String fileSeparator;
-    private File javaExecutablePath;
-    private String classPathSeparator;
-    private File projectDirectoryPath;
-    private Map<String,String> systemProperties;
-    private String classPath;
+    private static final long TEST_PROCESS_SHUTDOWN_WAIT = 5000;
 
-    private String baseDir;
-    private PortletApplicationManagement portletApplicationManager;    
+    protected JetspeedTestJNDIComponent jndiDS;
+    private PortletApplicationManagement portletApplicationManager;
     
     /**
      * Configure test methods.
      * 
      * @return test suite.
      */
-    public static Test suite()
-    {
+    public static Test suite() {
         // All methods starting with "test" will be executed in the test suite.
         return new TestSuite(TestPortletApplicationManager.class);
     }
     
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.AbstractRequestContextTestCase#getConfigurations()
-     */
-    protected String[] getConfigurations()
-    {
-        String[] confs = super.getConfigurations();
-        List<String> confList = new ArrayList<String>(Arrays.asList(confs));
+    @Override
+    protected void setUp() throws Exception {
+        // setup jetspeed test datasource
+        jndiDS = new JetspeedTestJNDIComponent();
+        jndiDS.setup();
+
+        // setup scripting and Spring test case
+        super.setUp();
+
+        // setup test
+        portletApplicationManager = scm.lookupComponent("PAM");
+        assertTrue(portletApplicationManager.isStarted());
+        Class<?> portletApplicationManagerClass = scm.lookupComponent("org.apache.jetspeed.tools.pamanager.PortletApplicationManager").getClass();
+        log.info("PortletApplicationManager class: " + portletApplicationManagerClass.getSimpleName());
+
+        // unregister portlet application
+        try {
+            portletApplicationManager.unregisterPortletApplication(CONTEXT_NAME);
+        } catch (RegistryException re) {
+        }
+
+        // create standard default security domain and user role as necessary
+        // for portlet application permissions
+        SecurityDomainAccessManager domainAccessManager = scm.lookupComponent("org.apache.jetspeed.security.spi.SecurityDomainAccessManager");
+        if (domainAccessManager.getDomainByName(SecurityDomain.DEFAULT_NAME) == null) {
+            SecurityDomainStorageManager domainStorageManager = scm.lookupComponent("org.apache.jetspeed.security.spi.SecurityDomainStorageManager");
+            SecurityDomainImpl defaultSecurityDomain = new SecurityDomainImpl();
+            defaultSecurityDomain.setName(SecurityDomain.DEFAULT_NAME);
+            domainStorageManager.addDomain(defaultSecurityDomain);
+        }
+        RoleManager roleManager = scm.lookupComponent("org.apache.jetspeed.security.RoleManager");
+        if (!roleManager.roleExists("user")) {
+            roleManager.addRole("user");
+        }
+    }
+
+    @Override
+    protected String[] getConfigurations() {
+        List<String> confList = new ArrayList<String>();
+        confList.add("transaction.xml");
+        confList.add("cache.xml");
+        confList.add("jetspeed-base.xml");
+        confList.add("jetspeed-properties.xml");
+        confList.add("page-manager.xml");
+        confList.add("registry.xml");
+        confList.add("search.xml");
+        confList.add("JETSPEED-INF/spring/RequestDispatcherService.xml");
+        confList.add("rc2.xml");
+        confList.add("static-bean-references.xml");
+        confList.add("security-managers.xml");
+        confList.add("security-providers.xml");
+        confList.add("security-spi.xml");
+        confList.add("security-atn.xml");
+        confList.add("security-spi-atn.xml");
+        confList.add("security-atz.xml");
+        confList.add("JETSPEED-INF/spring/JetspeedPrincipalManagerProviderOverride.xml");
         confList.add("deployment.xml");
         if (TEST_USE_VERSIONED_PAM)
         {
@@ -91,116 +123,66 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
         }
         confList.add("search.xml");
         confList.add("cluster-node.xml");
-        return (String[]) confList.toArray(new String[1]);
+        return confList.toArray(new String[1]);
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.components.test.AbstractSpringTestCase#getInitProperties()
-     */
-    protected Properties getInitProperties()
-    {
-        // setup dummy autodeployment properties
-        baseDir = System.getProperty("basedir", ".");
-        if ((baseDir == null) || (baseDir.length() == 0))
-        {
-            baseDir = System.getProperty("user.dir");
-        }
-        // set test properties
-        return setTestProperties(baseDir, super.getInitProperties());
+    @Override
+    protected String[] getBootConfigurations() {
+        return new String[]{"boot/datasource.xml"};
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.components.util.RegistrySupportedTestCase#setUp()
-     */
-    protected void setUp() throws Exception
-    {
-        // environment setup
-        osExecutableExtension = (System.getProperty("os.name").startsWith("Windows") ? ".exe" : "");
-        fileSeparator = System.getProperty("file.separator");
-        javaExecutablePath = new File(System.getProperty("java.home")+fileSeparator+"bin"+fileSeparator+"java"+osExecutableExtension);
-        classPathSeparator = System.getProperty("path.separator");
-        projectDirectoryPath = new File(System.getProperty("basedir"));
-        systemProperties = new HashMap<String,String>();
-        for (final Map.Entry<Object,Object> systemProperty : System.getProperties().entrySet())
-        {
-            final String propertyName = systemProperty.getKey().toString();
-            final String propertyValue = systemProperty.getValue().toString();
-            if (propertyName.startsWith("org.apache.jetspeed.") || propertyName.startsWith("java.net.") || propertyName.equals("basedir"))
-            {
-                systemProperties.put(propertyName, propertyValue);
-            }
-        }
-        // construct launcher classpath from current class loader
-        final StringBuilder classPathBuilder = new StringBuilder();
-        final ClassLoader loader = this.getClass().getClassLoader();
-        assertTrue(loader instanceof URLClassLoader);
-        final URLClassLoader urlLoader = (URLClassLoader)loader;
-        assertNotNull(urlLoader.getURLs());
-        for (final URL pathURL : urlLoader.getURLs())
-        {
-            // convert path URL to file path
-            final String path = new File(pathURL.toURI()).getCanonicalPath();
+    @Override
+    protected String getBeanDefinitionFilterCategories() {
+        return "default,jdbcDS,xmlPageManager,security,dbSecurity";
+    }
 
-            // build class path
-            if (classPathBuilder.length() > 0)
-            {
-                classPathBuilder.append(classPathSeparator);
-            }
-            classPathBuilder.append(path);
-        }
-        classPath = classPathBuilder.toString();
-        assertTrue(classPath.length() > 0);
+    @Override
+    protected Properties getInitProperties() {
+        Properties properties = super.getInitProperties();
+        properties.setProperty("autodeployment.catalina.base", getBaseDir()+"/target");
+        properties.setProperty("autodeployment.catalina.engine", "Catalina");
+        properties.setProperty("autodeployment.delay", "10000");
+        properties.setProperty("autodeployment.password", "test");
+        properties.setProperty("autodeployment.port", "8080");
+        properties.setProperty("autodeployment.server", "localhost");
+        properties.setProperty("autodeployment.staging.dir", getBaseDir()+"/target");
+        properties.setProperty("autodeployment.target.dir", getBaseDir()+"/target");
+        properties.setProperty("autodeployment.user", "test");
+        return properties;
+    }
 
-        // setup test
-        super.setUp();
-        portletApplicationManager = scm.lookupComponent("PAM");
-        assertTrue(portletApplicationManager.isStarted());
-        Class<?> portletApplicationManagerClass = scm.lookupComponent("org.apache.jetspeed.tools.pamanager.PortletApplicationManager").getClass();
-        log.info("PortletApplicationManager class: " + portletApplicationManagerClass.getSimpleName());
+    @Override
+    protected void tearDown() throws Exception {
         // unregister portlet application
-        try
-        {
+        try {
             portletApplicationManager.unregisterPortletApplication(CONTEXT_NAME);
+        } catch (RegistryException re) {
         }
-        catch (RegistryException re)
-        {
-        }
-        // create standard default security domain and user role as necessary
-        // for portlet application permissions
-        SecurityDomainAccessManager domainAccessManager = scm.lookupComponent("org.apache.jetspeed.security.spi.SecurityDomainAccessManager");
-        if (domainAccessManager.getDomainByName(SecurityDomain.DEFAULT_NAME) == null)
-        {
-            SecurityDomainStorageManager domainStorageManager = scm.lookupComponent("org.apache.jetspeed.security.spi.SecurityDomainStorageManager");
-            SecurityDomainImpl defaultSecurityDomain = new SecurityDomainImpl();
-            defaultSecurityDomain.setName(SecurityDomain.DEFAULT_NAME);
-            domainStorageManager.addDomain(defaultSecurityDomain);
-        }
-        RoleManager roleManager = scm.lookupComponent("org.apache.jetspeed.security.RoleManager");
-        if (!roleManager.roleExists("user"))
-        {
-            roleManager.addRole("user");
-        }
-    }   
+        portletApplicationManager = null;
+
+        // tear down test
+        super.tearDown();
+
+        // tear down jetspeed test datasource
+        jndiDS.tearDown();
+    }
 
     /**
      * Test basic PortletApplicationManager operation.
      */
-    public void testPortletApplicationManager()
-    {
+    public void testPortletApplicationManager() {
         // check for distributed database support
         String databaseName = System.getProperty("org.apache.jetspeed.database.default.name");
-        if ((databaseName != null) && databaseName.equals("derby"))
-        {
+        if ((databaseName != null) && databaseName.equals("derby")) {
             System.out.println("Database support not distributed: system limitation... test skipped");
             log.warn("Database support not distributed: system limitation... test skipped");
             return;
         }
         
         // start portlet application manager test servers
-        final TestProgram server0 = new TestProgram("server-0", PortletApplicationManagerServer.class);
-        final TestProgram server1 = new TestProgram("server-1", PortletApplicationManagerServer.class);
-        try
-        {
+        final TestProgram server0 = new TestProgram("server-0", PortletApplicationManagerServer.class, 0);
+        final TestProgram server1 = new TestProgram("server-1", PortletApplicationManagerServer.class, 1);
+        try {
             // start servers
             server0.start();
             server1.start();
@@ -211,11 +193,9 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
             
             // test starting and stopping portlet application
             String result;
-            for (int i = 0; (i < TEST_PORTLET_APPLICATION_RESTARTS); i++)
-            {
+            for (int i = 0; (i < TEST_PORTLET_APPLICATION_RESTARTS); i++) {
                 // start portlet application
-                if (TEST_CONCURRENT_PAM_ACCESS)
-                {
+                if (TEST_CONCURRENT_PAM_ACCESS) {
                     // start portlet application asynchronously in background threads per server
                     log.info("test concurrent register/start/stop portlet application, iteration "+i+"...");
                     TestExecuteThread startPortletApplication0 = new TestExecuteThread(server0, "portletApplicationManagerServer.startPortletApplication();");
@@ -226,9 +206,7 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
                     assertTrue(!result.contains("Exception"));
                     result = startPortletApplication1.getResult();
                     assertTrue(!result.contains("Exception"));
-                }
-                else
-                {
+                } else {
                     // stop portlet application synchronously
                     log.info("test serial register/start/stop portlet application, iteration "+i+"...");
                     result = server0.execute("portletApplicationManagerServer.startPortletApplication();");
@@ -236,290 +214,44 @@ public class TestPortletApplicationManager extends AbstractRequestContextTestCas
                     result = server1.execute("portletApplicationManagerServer.startPortletApplication();");
                     assertTrue(!result.contains("Exception"));
                 }
+
                 // stop portlet application synchronously
                 result = server1.execute("portletApplicationManagerServer.stopPortletApplication();");
                 assertTrue(!result.contains("Exception"));
                 result = server0.execute("portletApplicationManagerServer.stopPortletApplication();");
                 assertTrue(!result.contains("Exception"));
+
                 // unregister portlet application
                 log.info("test unregister portlet application, iteration "+i+"...");
-                try
-                {
+                try {
                     portletApplicationManager.unregisterPortletApplication(CONTEXT_NAME);
-                }
-                catch (RegistryException re)
-                {
+                } catch (RegistryException re) {
                 }
             }
-        }
-        catch (final Exception e)
-        {
+        } catch (final Exception e) {
             log.error("Server test exception: "+e, e);
             fail("Server test exception: "+e);            
-        }        
-        finally
-        {
+        } finally {
             // silently shutdown servers
-            try
-            {
-                server0.shutdown();
-            }
-            catch (final Exception e)
-            {
+            try {
+                server0.shutdown(TEST_PROCESS_SHUTDOWN_WAIT);
+            } catch (final Exception e) {
                 log.error( "Server shutdown exception: "+e, e);
             }
-            try
-            {
-                server1.shutdown();
-            }
-            catch (final Exception e)
-            {
+            try {
+                server1.shutdown(TEST_PROCESS_SHUTDOWN_WAIT);
+            } catch (final Exception e) {
                 log.error( "Server shutdown exception: "+e, e);
             }
         }
     }
     
-    /* (non-Javadoc)
-     * @see org.apache.jetspeed.components.util.DatasourceEnabledSpringTestCase#tearDown()
-     */
-    protected void tearDown() throws Exception
-    {       
-        // unregister portlet application
-        try
-        {
-            portletApplicationManager.unregisterPortletApplication(CONTEXT_NAME);
-        }
-        catch (RegistryException re)
-        {
-        }
-        portletApplicationManager = null;
-        // teardown test
-        super.tearDown();
-    }   
-
-    /**
-     * TestProgram
-     * 
-     * Implementation of test program executables.
-     */
-    private class TestProgram
-    {
-        private String name;
-        private Class<?> mainClass;
-
-        private Process process;
-        private BufferedWriter processInput;
-        private BufferedReader processOutput;
-        
-        public TestProgram(final String name, final Class<?> mainClass)
-        {
-            this.name = name;
-            this.mainClass = mainClass;
-        }
-        
-        public synchronized void start() throws IOException
-        {
-            assertNull(process);
-
-            // configure launcher with paths and properties
-            final ProcessBuilder launcher = new ProcessBuilder();
-            final List<String> commandAndArgs = new ArrayList<String>();
-            commandAndArgs.add(javaExecutablePath.getCanonicalPath());
-            for (Map.Entry<String,String> systemProperty : systemProperties.entrySet())
-            {
-                final String propertyName = systemProperty.getKey();
-                final String propertyValue = systemProperty.getValue();
-                commandAndArgs.add( "-D"+propertyName+"="+propertyValue);
-            }
-            commandAndArgs.add("-Dlog4j.configuration=log4j-stdout.properties");
-            commandAndArgs.add("-classpath");
-            commandAndArgs.add(classPath);
-            commandAndArgs.add(mainClass.getName());
-            log.info("Launcher command for "+name+": "+commandAndArgs);
-            launcher.command(commandAndArgs);
-            launcher.directory(projectDirectoryPath);
-            launcher.redirectErrorStream(true);
-
-            // launch test programs
-            process = launcher.start();
-
-            // setup I/O for process
-            processInput = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-            processOutput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-            // read messages from process
-            for (String line; (processOutput.ready() && ((line = processOutput.readLine()) != null));)
-            {
-                logProcessLine(line);
-            }
-        }
-
-        public synchronized String execute(final String scriptLine) throws IOException
-        {
-            assertNotNull(process);
-
-            // read messages from process
-            for (String line; (processOutput.ready() && ((line = processOutput.readLine()) != null));)
-            {
-                logProcessLine(line);
-            }
-
-            // write script line to process
-            processInput.write(scriptLine);
-            processInput.newLine();
-            processInput.flush();
-
-            // read result or messages from process
-            String resultLine = null;
-            for (String line; ((line = processOutput.readLine()) != null);)
-            {
-                if (! line.startsWith(PortletApplicationManagerServer.SCRIPT_RESULT_LINE_PREFIX))
-                {
-                    logProcessLine(line);
-                }
-                else
-                {
-                    resultLine = line;
-                    break;
-                }
-            }
-            if ( resultLine == null)
-            {
-                throw new IOException("Unexpected EOF from process output");
-            }
-            return resultLine;
-        }
-        
-        public synchronized void shutdown() throws IOException, InterruptedException
-        {
-            assertNotNull( process);
-
-            // start thread to destroy process on timeout
-            final Thread destroyThread = new Thread(new Runnable()
-            {
-                public void run()
-                {
-                    try
-                    {
-                        Thread.sleep(10000);
-                        if ( process != null)
-                        {
-                            log.warn( "Forcibly stopping "+name);
-                            process.destroy();
-                        }
-                    }
-                    catch ( final Exception e)
-                    {
-                    }
-                }
-            }, "DestroyThread");
-            destroyThread.setDaemon( true);
-            destroyThread.start();
-
-            // close process input to shutdown server and read messages
-            processInput.close();
-            for (String line; ((line = processOutput.readLine()) != null);)
-            {
-                logProcessLine(line);
-            }
-
-            // join on process completion
-            process.waitFor();
-            processOutput.close();
-            process = null;
-
-            // join on destroy thread
-            destroyThread.interrupt();
-            destroyThread.join();
-        }
-        
-        private void logProcessLine(final String line)
-        {
-            if (!line.contains("INFO") && (line.contains("ERROR") || line.contains("Exception") || line.matches("\\s+at\\s.*")))
-            {
-                log.error("{"+name+"} "+line);
-            }
-            else
-            {
-                log.info("{"+name+"} "+line);                        
-            }
-        }
-    }
-    
-    /**
-     * TestExecuteThread
-     *
-     * Execute script against specified server asynchronously.
-     */
-    private class TestExecuteThread extends Thread
-    {
-        private TestProgram server;
-        private String scriptLine;
-        private String result;
-        private Exception exception;
-        
-        private TestExecuteThread(TestProgram server, String scriptLine)
-        {
-            this.server = server;
-            this.scriptLine = scriptLine;
-        }
-        
-        public void run()
-        {
-            try
-            {
-                result = server.execute(scriptLine);
-            }
-            catch (Exception e)
-            {
-                exception = e;
-            }
-        }
-        
-        public String getResult() throws Exception
-        {
-            try
-            {
-                join();
-            }
-            catch (InterruptedException ie)
-            {
-            }
-            if (exception != null)
-            {
-                throw exception;
-            }
-            return result;
-        }
-    }
-
-    /**
-     * Set test configuration properties.
-     * 
-     * @param baseDir project base directory path
-     * @param properties properties set to configure
-     */
-    public static Properties setTestProperties(String baseDir, Properties properties)
-    {
-        properties.setProperty("autodeployment.catalina.base", baseDir+"/target");
-        properties.setProperty("autodeployment.catalina.engine", "Catalina");
-        properties.setProperty("autodeployment.delay", "10000");
-        properties.setProperty("autodeployment.password", "test");
-        properties.setProperty("autodeployment.port", "8080");
-        properties.setProperty("autodeployment.server", "localhost");
-        properties.setProperty("autodeployment.staging.dir", baseDir+"/target");
-        properties.setProperty("autodeployment.target.dir", baseDir+"/target");
-        properties.setProperty("autodeployment.user", "test");
-        return properties;
-    }
-
     /**
      * Start the tests.
      *
      * @param args the arguments. Not used
      */
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
         TestRunner.main(new String[] {TestPortletApplicationManager.class.getName()});
     }
 }

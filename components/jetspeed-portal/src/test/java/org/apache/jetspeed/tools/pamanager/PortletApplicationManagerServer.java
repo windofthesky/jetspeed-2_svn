@@ -16,24 +16,18 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
-import org.apache.commons.jexl.JexlContext;
-import org.apache.commons.jexl.JexlHelper;
-import org.apache.commons.jexl.Script;
-import org.apache.commons.jexl.ScriptFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
-import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.jndi.JetspeedTestJNDIComponent;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
+import org.apache.jetspeed.components.test.AbstractJexlSpringTestServer;
 import org.apache.jetspeed.util.DirectoryHelper;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * PortletApplicationManagerServer
@@ -41,38 +35,41 @@ import java.util.List;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id: $
  */
-public class PortletApplicationManagerServer
-{
+public class PortletApplicationManagerServer extends AbstractJexlSpringTestServer {
+
     protected static Log log = LogFactory.getLog(PortletApplicationManagerServer.class);
     
-    // Constants
-    
-    public static final String SCRIPT_RESULT_LINE_PREFIX = "> ";
-    
-    // Members
-    
     private JetspeedTestJNDIComponent jndiDS;
-    private String baseDir;
-    private SpringComponentManager scm;
-    private JexlContext jexlContext;
-    private boolean exit;
     private PortletApplicationManagement portletApplicationManager;    
     
-    // Life cycle
-    
-    /**
-     * Initialize page manager server instance and script context.
-     * 
-     * @throws Exception
-     */
-    public void initialize() throws Exception
-    {
-        // setup jetspeed test datasource and component manager
+    @Override
+    public void initialize() throws Exception {
+        // setup jetspeed test datasource
         jndiDS = new JetspeedTestJNDIComponent();
         jndiDS.setup();
-        final JetspeedBeanDefinitionFilter beanDefinitionFilter = new JetspeedBeanDefinitionFilter("default,jdbcDS,xmlPageManager,security,dbSecurity");
-        final String [] bootConfigurations = new String[]{"boot/datasource.xml"};
-        final List<String> configurationsList = new ArrayList<String>();
+
+        // initialize component manager and server
+        super.initialize();
+
+        // access portal application manager
+        portletApplicationManager = scm.lookupComponent("PAM");
+        
+        log.info("PortalApplicationManager server initialized");
+    }
+    
+    @Override
+    protected String getBeanDefinitionFilterCategories() {
+        return "default,jdbcDS,xmlPageManager,security,dbSecurity";
+    }
+
+    @Override
+    protected String[] getBootConfigurations() {
+        return new String[]{"boot/datasource.xml"};
+    }
+
+    @Override
+    protected String[] getConfigurations() {
+        List<String> configurationsList = new ArrayList<String>();
         configurationsList.add("transaction.xml");
         configurationsList.add("cache.xml");
         configurationsList.add("jetspeed-base.xml");
@@ -96,77 +93,34 @@ public class PortletApplicationManagerServer
         configurationsList.add("JETSPEED-INF/spring/JetspeedPrincipalManagerProviderOverride.xml");
         configurationsList.add("search.xml");
         configurationsList.add("cluster-node.xml");
-        final String[] configurations = configurationsList.toArray(new String[configurationsList.size()]);
-        baseDir = System.getProperty("basedir");
-        if ((baseDir == null) || (baseDir.length() == 0))
-        {
-            baseDir = System.getProperty("user.dir");
-        }
-        final String appRoot = baseDir+"/target/test-classes/webapp";
-        scm = new SpringComponentManager(beanDefinitionFilter, bootConfigurations, configurations, appRoot, false);
-        scm.start();
-
-        // access portal application manager
-        portletApplicationManager = scm.lookupComponent("PAM");
-        
-        // create jexl context
-        jexlContext = JexlHelper.createContext();
-        jexlContext.getVars().put("portletApplicationManagerServer", this);
-        
-        log.info( "PortalApplicationManager server initialized");
+        return configurationsList.toArray(new String[configurationsList.size()]);
     }
-    
-    /**
-     * Terminate page manager server instance.
-     * 
-     * @throws Exception
-     */
-    public void terminate() throws Exception
-    {
-        // tear down jetspeed component manager and test datasource
-        scm.stop();
+
+    @Override
+    protected Map<String,Object> getContextVars() {
+        Map<String,Object> contextVars = new HashMap<String,Object>();
+        contextVars.put("portletApplicationManagerServer", this);
+        return contextVars;
+    }
+
+    @Override
+    public void terminate() throws Exception {
+        // tear down component manager and server
+        super.terminate();
+
+        // tear down jetspeed test datasource
         jndiDS.tearDown();
 
-        log.info( "PortalApplicationManager server terminated");
+        log.info("PortalApplicationManager server terminated");
     }
     
-    // Implementation
-    
-    /**
-     * Execute a single line script against page manager server context.
-     * 
-     * @param scriptLine jexl script
-     * @return script result line
-     */
-    public String execute(final String scriptLine)
-    {
-        // execute script line and return result line
-        String resultLine = scriptLine;
-        try
-        {
-            final Script jexlScript = ScriptFactory.createScript(scriptLine);
-            final Object result = jexlScript.execute(jexlContext);
-            if (result != null)
-            {
-                resultLine += " -> "+result;
-            }
-        }
-        catch (final Exception e)
-        {
-            resultLine += " -> "+e;            
-        }
-        return resultLine;
-    }
-
     /**
      * Start test portlet application.
      * 
      * @throws RegistryException
      */
-    public void startPortletApplication() throws RegistryException
-    {
-        if (portletApplicationManager.isStarted())
-        {
+    public void startPortletApplication() throws RegistryException {
+        if (portletApplicationManager.isStarted()) {
             DirectoryHelper portletApplicationDir = new DirectoryHelper(new File(baseDir+"/src/test/testdata/"+TestPortletApplicationManager.CONTEXT_NAME));
             ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             portletApplicationManager.startPortletApplication(TestPortletApplicationManager.CONTEXT_NAME, TestPortletApplicationManager.CONTEXT_PATH, portletApplicationDir, contextClassLoader);
@@ -178,10 +132,8 @@ public class PortletApplicationManagerServer
      * 
      * @throws RegistryException
      */
-    public void stopPortletApplication() throws RegistryException
-    {
-        if (portletApplicationManager.isStarted())
-        {
+    public void stopPortletApplication() throws RegistryException {
+        if (portletApplicationManager.isStarted()) {
             portletApplicationManager.stopPortletApplication(TestPortletApplicationManager.CONTEXT_NAME);
         }
     }
@@ -191,82 +143,21 @@ public class PortletApplicationManagerServer
      * 
      * @throws RegistryException
      */
-    public void unregisterPortletApplication() throws RegistryException
-    {
-        if (portletApplicationManager.isStarted())
-        {
+    public void unregisterPortletApplication() throws RegistryException {
+        if (portletApplicationManager.isStarted()) {
             portletApplicationManager.unregisterPortletApplication(TestPortletApplicationManager.CONTEXT_NAME);
         }
     }
-    
-    /**
-     * Sets server exit flag.
-     */
-    public void exit()
-    {
-        exit = true;
-    }
-    
-    // Data access
-    
-    /**
-     * @return server exit flag
-     */
-    public boolean isExit()
-    {
-        return exit;
-    }
-    
-    // Application entry point
     
     /**
      * Server main entry point.
      * 
      * @param args not used
      */
-    public static void main(final String [] args)
-    {
-        try
-        {
-            // create and initialize server
-            final PortletApplicationManagerServer server = new PortletApplicationManagerServer();
-            server.initialize();
-            
-            // simple server reads script lines from standard
-            // input and writes results on standard output
-            final BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-            final PrintWriter out = new PrintWriter(System.out, true);
-            do
-            {
-                // read single line scripts to execute
-                String scriptLine = in.readLine();
-                if (scriptLine != null)
-                {
-                    scriptLine = scriptLine.trim();
-                    String resultLine = "";
-                    if (scriptLine.length() > 0)
-                    {
-                        // execute script
-                        resultLine = server.execute(scriptLine);
-                    }
-
-                    // write prefixed single line results
-                    out.println(SCRIPT_RESULT_LINE_PREFIX+resultLine);
-                }
-                else
-                {
-                    // exit server on input EOF
-                    server.exit();
-                }
-            }
-            while (!server.isExit());
-            
-            // terminate server
-            server.terminate();
-        }
-        catch (final Throwable t)
-        {
-            log.error( "Unexpected exception: "+t, t);
+    public static void main(String [] args) {
+        Throwable error = (new PortletApplicationManagerServer()).run();
+        if (error != null) {
+            log.error( "Unexpected exception: "+error, error);
         }
     }
 }

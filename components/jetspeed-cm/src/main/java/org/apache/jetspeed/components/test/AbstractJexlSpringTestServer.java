@@ -48,7 +48,7 @@ public abstract class AbstractJexlSpringTestServer {
     protected boolean exit;
 
     /**
-     * Initialize page manager server instance and script context.
+     * Initialize server component manager and script context.
      *
      * @throws Exception
      */
@@ -101,7 +101,7 @@ public abstract class AbstractJexlSpringTestServer {
     protected abstract Map<String,Object> getContextVars();
 
     /**
-     * Terminate page manager server instance.
+     * Terminate server component manager.
      *
      * @throws Exception
      */
@@ -111,7 +111,7 @@ public abstract class AbstractJexlSpringTestServer {
     }
 
     /**
-     * Execute a single line script against page manager server context.
+     * Execute a single line script against server context.
      *
      * @param scriptLine jexl script
      * @return script result line

@@ -17,7 +17,6 @@
 
 package org.apache.jetspeed.components.test;
 
-import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +39,7 @@ import java.util.Map;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id:$
  */
-public abstract class AbstractJexlSpringTestCase extends TestCase {
+public abstract class AbstractJexlSpringTestCase extends AbstractSpringTestCase {
 
     private static final long LOGGING_PUMP_WAIT = 50;
 
@@ -54,6 +53,11 @@ public abstract class AbstractJexlSpringTestCase extends TestCase {
     private Map<String,String> systemProperties;
     private String classPath;
 
+    /**
+     * Setup test program process context.
+     *
+     * @throws Exception
+     */
     @Override
     protected void setUp() throws Exception {
         // environment setup
@@ -94,21 +98,99 @@ public abstract class AbstractJexlSpringTestCase extends TestCase {
         super.setUp();
     }
 
+    @Override
+    protected String[] getConfigurations() {
+        // disabled Spring component manager by default
+        return null;
+    }
+
+    @Override
+    protected String getBeanDefinitionFilterCategories() {
+        // disabled Spring component manager by default
+        return null;
+    }
+
+    /**
+     * Filter system property values per test program context. Typically used to modify
+     * system property values that need to be different based on test program index.
+     *
+     * @param propertyName system property name
+     * @param index test program index
+     * @param propertyValue original system property value
+     * @return original or modified system property value
+     */
     protected String testProgramSystemPropertyValueFilter(String propertyName, int index, String propertyValue) {
         // return original property value by default
         return propertyValue;
     }
 
+    /**
+     * Set additional system properties to be set for test program process.
+     *
+     * @return map of system properties
+     */
     protected Map<String,String> testProgramSystemProperties() {
         return new HashMap<String,String>();
     }
 
+    /**
+     * Sleep for specified interval continuing to pump logging messages for test
+     * program server.
+     *
+     * @param server test program server
+     * @param millis sleep interval
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    protected void sleep(TestProgram server, long millis) throws IOException, InterruptedException {
+        sleep(new TestProgram[]{server}, millis);
+    }
+
+    /**
+     * Sleep for specified interval continuing to pump logging messages for test
+     * program servers.
+     *
+     * @param server0 test program server
+     * @param server1 test program server
+     * @param millis sleep interval
+     * @throws IOException
+     * @throws InterruptedException
+     */
     protected void sleep(TestProgram server0, TestProgram server1, long millis) throws IOException, InterruptedException {
+        sleep(new TestProgram[]{server0, server1}, millis);
+    }
+
+    /**
+     * Sleep for specified interval continuing to pump logging messages for test
+     * program servers.
+     *
+     * @param server0 test program server
+     * @param server1 test program server
+     * @param server2 test program server
+     * @param millis sleep interval
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    protected void sleep(TestProgram server0, TestProgram server1, TestProgram server2, long millis) throws IOException, InterruptedException {
+        sleep(new TestProgram[]{server0, server1, server2}, millis);
+    }
+
+    /**
+     * Sleep for specified interval continuing to pump logging messages for test
+     * program servers.
+     *
+     * @param servers test program servers
+     * @param millis sleep interval
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    protected void sleep(TestProgram [] servers, long millis) throws IOException, InterruptedException {
         long slept = 0;
         while (slept < millis) {
             // poll servers for logging
-            server0.poll();
-            server1.poll();
+            for (TestProgram server : servers) {
+                server.poll();
+            }
             // sleep for interval
             long sleep = Math.min(millis-slept, LOGGING_PUMP_WAIT);
             Thread.sleep(sleep);
@@ -116,6 +198,9 @@ public abstract class AbstractJexlSpringTestCase extends TestCase {
         }
     }
 
+    /**
+     * Test program process implementation.
+     */
     protected class TestProgram {
 
         private String name;
@@ -126,12 +211,24 @@ public abstract class AbstractJexlSpringTestCase extends TestCase {
         private BufferedWriter processInput;
         private BufferedReader processOutput;
 
+        /**
+         * Test program constructor.
+         *
+         * @param name test program name
+         * @param mainClass server main program class
+         * @param index test program index
+         */
         public TestProgram(String name, Class<?> mainClass, int index) {
             this.name = name;
             this.mainClass = mainClass;
             this.index = index;
         }
 
+        /**
+         * Start remote test program process with log message pump.
+         *
+         * @throws IOException
+         */
         public synchronized void start() throws IOException {
             assertNull(process);
 
@@ -170,8 +267,12 @@ public abstract class AbstractJexlSpringTestCase extends TestCase {
             }
         }
 
-        public synchronized void poll() throws IOException
-        {
+        /**
+         * Poll remote test program process for output log messages.
+         *
+         * @throws IOException
+         */
+        public synchronized void poll() throws IOException {
             assertNotNull(process);
 
             // read messages from process
@@ -180,8 +281,20 @@ public abstract class AbstractJexlSpringTestCase extends TestCase {
             }
         }
 
-        public synchronized String execute(String scriptLine) throws IOException
-        {
+        /**
+         * Execute script line in remote test program process. Returns line with
+         * prompt, the script line executed, and the non-null result string following a
+         * '->' delimiter. Examples:
+         * > x.getStatus(); -> STARTED
+         * > y.doSomething();
+         * Also includes a poll() invocation to pull log messages from the test program
+         * output.
+         *
+         * @param scriptLine script line to execute
+         * @return script line and result
+         * @throws IOException
+         */
+        public synchronized String execute(String scriptLine) throws IOException {
             // poll to read messages from process
             poll();
 
@@ -206,6 +319,14 @@ public abstract class AbstractJexlSpringTestCase extends TestCase {
             return resultLine;
         }
 
+        /**
+         * Shutdown remote test program process, forcibly if necessary after
+         * waiting for the specified timeout if it does not stop in its own.
+         *
+         * @param millis shutdown timeout
+         * @throws IOException
+         * @throws InterruptedException
+         */
         public synchronized void shutdown(final long millis) throws IOException, InterruptedException {
             assertNotNull(process);
 
@@ -241,13 +362,67 @@ public abstract class AbstractJexlSpringTestCase extends TestCase {
             destroyThread.join();
         }
 
-        private void logProcessLine(String line)
-        {
+        /**
+         * Log pumped error and info lines from the remote test program process.
+         *
+         * @param line remote process output line.
+         */
+        private void logProcessLine(String line) {
             if (line.contains("ERROR") || line.contains("Exception") || line.matches("\\s+at\\s.*")) {
                 log.error("{"+name+"} "+line);
             } else {
                 log.info("{"+name+"} "+line);
             }
+        }
+    }
+
+    /**
+     * Execute script against specified server asynchronously.
+     */
+    protected static class TestExecuteThread extends Thread {
+
+        private TestProgram server;
+        private String scriptLine;
+        private String result;
+        private Exception exception;
+
+        /**
+         * Construct thread.
+         *
+         * @param server test program server
+         * @param scriptLine script line to execute
+         */
+        public TestExecuteThread(TestProgram server, String scriptLine) {
+            this.server = server;
+            this.scriptLine = scriptLine;
+        }
+
+        /**
+         * Execute script line in thread.
+         */
+        public void run() {
+            try {
+                result = server.execute(scriptLine);
+            } catch (Exception e) {
+                exception = e;
+            }
+        }
+
+        /**
+         * Join and return script line result.
+         *
+         * @return script line result
+         * @throws Exception throws execution exception
+         */
+        public String getResult() throws Exception {
+            try {
+                join();
+            } catch (InterruptedException ie) {
+            }
+            if (exception != null) {
+                throw exception;
+            }
+            return result;
         }
     }
 }

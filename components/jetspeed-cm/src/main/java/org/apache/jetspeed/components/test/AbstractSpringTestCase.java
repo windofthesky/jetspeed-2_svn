@@ -16,13 +16,13 @@
  */
 package org.apache.jetspeed.components.test;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.test.JetspeedTestCase;
+
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * <p>
@@ -60,17 +60,23 @@ public abstract class AbstractSpringTestCase extends JetspeedTestCase
     protected void setUp() throws Exception
     {        
         super.setUp();
-        scm = new SpringComponentManager(getBeanDefinitionFilter(), getBootConfigurations(), getConfigurations(), getBaseDir()+"target/test-classes/webapp", getInitProperties(), false);
-        scm.start();
-	    new JetspeedActions(getSupportedPortletModes(), getSupportedWindowStates());
+        String [] configurations = getConfigurations();
+        if ((configurations != null) && (configurations.length > 0))
+        {
+            scm = new SpringComponentManager(getBeanDefinitionFilter(), getBootConfigurations(), getConfigurations(), getBaseDir() + "target/test-classes/webapp", getInitProperties(), false);
+            scm.start();
+            new JetspeedActions(getSupportedPortletModes(), getSupportedWindowStates());
+        }
     }
 
     /**
      * close Spring context as part of test teardown
      */
     protected void tearDown() throws Exception
-    {        
-        scm.stop();
+    {
+        if (scm != null) {
+            scm.stop();
+        }
         super.tearDown();
     }
 
@@ -94,7 +100,8 @@ public abstract class AbstractSpringTestCase extends JetspeedTestCase
     
     protected JetspeedBeanDefinitionFilter getBeanDefinitionFilter() throws IOException
     {
-        return new JetspeedBeanDefinitionFilter(getBeanDefinitionFilterCategories());
+        String categories = getBeanDefinitionFilterCategories();
+        return ((categories != null) ? new JetspeedBeanDefinitionFilter(categories) : new JetspeedBeanDefinitionFilter());
     }
     
     /**
