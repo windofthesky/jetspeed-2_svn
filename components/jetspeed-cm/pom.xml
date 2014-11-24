@@ -46,6 +46,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jetspeed-commons</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-core</artifactId>
           <version>${spring.version}</version>
@@ -123,6 +128,18 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!--
+            again, abstract test cases require jexl... mark as
+            provided to keep jexl out of runtime. requires jexl
+            be included as test dependencies where used. should
+            be fixed if the project structure is reworked; see
+            junit dependency above.
+        -->
+        <dependency>
+            <groupId>commons-jexl</groupId>
+            <artifactId>commons-jexl</artifactId>
             <scope>provided</scope>
         </dependency>
 

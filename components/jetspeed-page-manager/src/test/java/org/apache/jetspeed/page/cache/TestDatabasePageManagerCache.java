@@ -16,29 +16,16 @@
  */
 package org.apache.jetspeed.page.cache;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.apache.jetspeed.cache.impl.EhCacheConfigResource;
+import org.apache.jetspeed.components.test.AbstractJexlSpringTestCase;
 import org.apache.jetspeed.om.page.FragmentProperty;
 import org.apache.jetspeed.page.PageManager;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * TestDatabasePageManagerCache
@@ -46,38 +33,56 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:rwatler@apache.org">Randy Watler</a>
  * @version $Id: $
  */
-public class TestDatabasePageManagerCache extends TestCase
-{
+public class TestDatabasePageManagerCache extends AbstractJexlSpringTestCase {
+
     protected static Logger log = LoggerFactory.getLogger(TestDatabasePageManagerCache.class);
     
     private static final long CACHE_NOTIFICATION_STARTUP_WAIT = 10000;
     private static final long CACHE_NOTIFICATION_WAIT = 2000;
     private static final long CACHE_NOTIFICATION_POLL = 250;
-    private static final long CACHE_LOGGING_PUMP_WAIT = 50;
-    
-    // Members
-    
-    private String osExecutableExtension;
-    private String fileSeparator;
-    private File javaExecutablePath;
-    private String classPathSeparator;
-    private File projectDirectoryPath;
-    private Map<String,String> systemProperties;
-    private String classPath;
- 
-    // Test methods
-    
+
+    /**
+     * Creates the test suite.
+     *
+     * @return a test suite that includes all methods starting with "test"
+     */
+    public static Test suite() {
+        return new TestSuite(TestDatabasePageManagerCache.class);
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        // setup cache properties
+        EhCacheConfigResource.getInstance(EhCacheConfigResource.EHCACHE_CONFIG_RESOURCE_DISTRIBUTED_CACHE, true);
+
+        // continue setup
+        super.setUp();
+    }
+
+    @Override
+    protected String testProgramSystemPropertyValueFilter(String propertyName, int index, String propertyValue) {
+        if (propertyName.equals(EhCacheConfigResource.EHCACHE_PORT_PROP_NAME)) {
+            return Integer.toString(Integer.parseInt(propertyValue)+index);
+        }
+        return propertyValue;
+    }
+
+    @Override
+    protected Map<String,String> testProgramSystemProperties() {
+        Map<String,String> systemProperties = super.testProgramSystemProperties();
+        systemProperties.put("log4j.configuration", "log4j-stdout.properties");
+        return systemProperties;
+    }
+
     /**
      * Tests distributed cache operation for DatabasePageManager
      */
-    public void testDatabasePageManagerCache()
-    {
+    public void testDatabasePageManagerCache() {
         String result;
 
         // check for distributed database support
         String databaseName = System.getProperty("org.apache.jetspeed.database.default.name");
-        if ((databaseName != null) && databaseName.equals("derby"))
-        {
+        if ((databaseName != null) && databaseName.equals("derby")) {
             System.out.println("Database support not distributed: system limitation... test skipped");
             log.warn("Database support not distributed: system limitation... test skipped");
             return;
@@ -86,8 +91,7 @@ public class TestDatabasePageManagerCache extends TestCase
         // create and start servers
         final TestProgram server0 = new TestProgram("server-0", DatabasePageManagerServer.class, 0);
         final TestProgram server1 = new TestProgram("server-1", DatabasePageManagerServer.class, 1);
-        try
-        {
+        try {
             // start servers
             server0.start();
             server1.start();
@@ -100,31 +104,25 @@ public class TestDatabasePageManagerCache extends TestCase
             boolean server0Distributed = false;
             boolean server1Distributed = false;
             final long distributedCheckStarted = System.currentTimeMillis();
-            do
-            {
+            do {
                 // check servers
-                if (!server0Distributed)
-                {
+                if (!server0Distributed) {
                     result = server0.execute("pageManager.isDistributed();");
                     assertTrue(!result.contains("Exception"));
                     server0Distributed = result.endsWith("true");
                 }
-                if (!server1Distributed)
-                {
+                if (!server1Distributed) {
                     result = server1.execute("pageManager.isDistributed();");
                     assertTrue(!result.contains("Exception"));
                     server1Distributed = result.endsWith("true");
                 }
                 
                 // wait if servers not distributed
-                if (!server0Distributed || !server1Distributed)
-                {
+                if (!server0Distributed || !server1Distributed) {
                     sleep(server0, server1, CACHE_NOTIFICATION_POLL);
                 }
-            }
-            while ((!server0Distributed || !server1Distributed) && (System.currentTimeMillis()-distributedCheckStarted < CACHE_NOTIFICATION_STARTUP_WAIT));
-            if (!server0Distributed && !server1Distributed)
-            {                
+            } while ((!server0Distributed || !server1Distributed) && (System.currentTimeMillis()-distributedCheckStarted < CACHE_NOTIFICATION_STARTUP_WAIT));
+            if (!server0Distributed && !server1Distributed) {
                 System.out.println("Server page managers not distributed: possible system limitation... test skipped");
                 log.warn("Server page managers not distributed: possible system limitation... test skipped");
                 return;
@@ -134,8 +132,7 @@ public class TestDatabasePageManagerCache extends TestCase
 
             // clean and setup database page managers
             result = server0.execute("removeRootFolder = pageManager.getFolder(\"/\");");
-            if (!result.contains("FolderNotFoundException"))
-            {
+            if (!result.contains("FolderNotFoundException")) {
                 result = server0.execute("pageManager.removeFolder(removeRootFolder);");
                 assertTrue(!result.contains("Exception"));
             }
@@ -371,71 +368,58 @@ public class TestDatabasePageManagerCache extends TestCase
             boolean deep1FolderRemoved = false;
             boolean rootFolderFoldersCountOne = false;
             long coherencyCheckStarted = System.currentTimeMillis();
-            do
-            {
+            do {
                 // reset request cache
                 result = server0.execute("pageManager.cleanupRequestCache();");
                 assertTrue(!result.contains("Exception"));
 
                 // check cache coherence
-                if (!defaultPageUpdated)
-                {
+                if (!defaultPageUpdated) {
                     result = server0.execute("pageManager.getPage(\"/default-page.psml\").getTitle();");
                     defaultPageUpdated = result.endsWith("Edited Default Page");
                 }
-                if (!anotherPageStateUpdated)
-                {
+                if (!anotherPageStateUpdated) {
                     result = server0.execute("pageManager.getPage(\"/another-page.psml\").getRootFragment().getState();");
                     anotherPageStateUpdated = result.endsWith("DEFAULT2");
                 }
-                if (!anotherPagePropertyUpdated)
-                {
+                if (!anotherPagePropertyUpdated) {
                     result = server0.execute("pageManager.getPage(\"/another-page.psml\").getRootFragment().getProperty(\"CUSTOM\");");
                     anotherPagePropertyUpdated = result.endsWith("CUSTOM2");
                 }
-                if (!someOtherPageRemoved)
-                {
+                if (!someOtherPageRemoved) {
                     result = server0.execute("pageManager.getPage(\"/some-other-page.psml\");");
                     someOtherPageRemoved = result.contains("PageNotFoundException");
                 }
-                if (!rootFolderPagesCountTwo)
-                {
+                if (!rootFolderPagesCountTwo) {
                     result = server0.execute("pageManager.getFolder(\"/\").getPages().size();");
                     rootFolderPagesCountTwo = result.endsWith("2");
                 }
-                if (!defaultLinkUpdated)
-                {
+                if (!defaultLinkUpdated) {
                     result = server0.execute("pageManager.getLink(\"/default.link\").getTitle();");
                     defaultLinkUpdated = result.endsWith("Edited Default Link");
                 }
-                if (!deep0FolderUpdated)
-                {
+                if (!deep0FolderUpdated) {
                     result = server0.execute("pageManager.getFolder(\"/deep-0\").getTitle();");
                     deep0FolderUpdated = result.endsWith("Edited Deep 0 Folder");
                 }
-                if (!deepPage1Removed)
-                {
+                if (!deepPage1Removed) {
                     result = server0.execute("pageManager.getPage(\"/deep-1/deep-page-1.psml\");");
                     deepPage1Removed = result.contains("PageNotFoundException");
                 }
-                if (!deep1FolderRemoved)
-                {
+                if (!deep1FolderRemoved) {
                     result = server0.execute("pageManager.getFolder(\"/deep-1\");");
                     deep1FolderRemoved = result.contains("FolderNotFoundException");
                 }
-                if (!rootFolderFoldersCountOne)
-                {
+                if (!rootFolderFoldersCountOne) {
                     result = server0.execute("pageManager.getFolder(\"/\").getFolders().size();");
                     rootFolderFoldersCountOne = result.endsWith("1");
                 }
                 
                 // wait for cache coherence
-                if (!defaultPageUpdated || !anotherPageStateUpdated || !anotherPagePropertyUpdated || !someOtherPageRemoved || !rootFolderPagesCountTwo || !defaultLinkUpdated || !deep0FolderUpdated || !deepPage1Removed || !deep1FolderRemoved || !rootFolderFoldersCountOne)
-                {
+                if (!defaultPageUpdated || !anotherPageStateUpdated || !anotherPagePropertyUpdated || !someOtherPageRemoved || !rootFolderPagesCountTwo || !defaultLinkUpdated || !deep0FolderUpdated || !deepPage1Removed || !deep1FolderRemoved || !rootFolderFoldersCountOne) {
                     sleep(server0, server1, CACHE_NOTIFICATION_POLL);
                 }
-            }
-            while ((!defaultPageUpdated || !anotherPageStateUpdated || !anotherPagePropertyUpdated || !someOtherPageRemoved || !rootFolderPagesCountTwo || !defaultLinkUpdated || !deep0FolderUpdated || !deepPage1Removed || !deep1FolderRemoved || !rootFolderFoldersCountOne) && (System.currentTimeMillis()-coherencyCheckStarted < CACHE_NOTIFICATION_WAIT));
+            } while ((!defaultPageUpdated || !anotherPageStateUpdated || !anotherPagePropertyUpdated || !someOtherPageRemoved || !rootFolderPagesCountTwo || !defaultLinkUpdated || !deep0FolderUpdated || !deepPage1Removed || !deep1FolderRemoved || !rootFolderFoldersCountOne) && (System.currentTimeMillis()-coherencyCheckStarted < CACHE_NOTIFICATION_WAIT));
             assertTrue(defaultPageUpdated);
             assertTrue(anotherPageStateUpdated);
             assertTrue(anotherPagePropertyUpdated);
@@ -499,46 +483,38 @@ public class TestDatabasePageManagerCache extends TestCase
             boolean newPageCreated = false;
             boolean deep2FolderCreated = false;
             coherencyCheckStarted = System.currentTimeMillis();
-            do
-            {
+            do {
                 // reset request cache
                 result = server1.execute("pageManager.cleanupRequestCache();");
                 assertTrue(!result.contains("Exception"));
                 
                 // check cache coherence
-                if (!defaultPageUserStateUpdated)
-                {
+                if (!defaultPageUserStateUpdated) {
                     result = server1.execute("pageManager.getPage(\"/default-page.psml\").getRootFragment().getState();");
                     defaultPageUserStateUpdated = result.endsWith("USER2");                    
                 }
-                if (!rootFolderPagesCountThree)
-                {
+                if (!rootFolderPagesCountThree) {
                     result = server1.execute("pageManager.getFolder(\"/\").getPages().size();");
                     rootFolderPagesCountThree = result.endsWith("3");
                 }
-                if (!rootFolderFoldersCountTwo)
-                {
+                if (!rootFolderFoldersCountTwo) {
                     result = server1.execute("pageManager.getFolder(\"/\").getFolders().size();");
                     rootFolderFoldersCountTwo = result.endsWith("2");
                 }
-                if (!newPageCreated)
-                {
+                if (!newPageCreated) {
                     result = server1.execute("pageManager.getPage(\"/new-page.psml\").getTitle();");
                     newPageCreated = result.endsWith("New Page");
                 }
-                if (!deep2FolderCreated)
-                {
+                if (!deep2FolderCreated) {
                     result = server1.execute("pageManager.getFolder(\"/deep-2\").getTitle();");
                     deep2FolderCreated = result.endsWith("Deep 2 Folder");
                 }
 
                 // wait for cache coherence
-                if (!defaultPageUserStateUpdated || !rootFolderPagesCountThree || !rootFolderFoldersCountTwo || !newPageCreated || !deep2FolderCreated)
-                {
+                if (!defaultPageUserStateUpdated || !rootFolderPagesCountThree || !rootFolderFoldersCountTwo || !newPageCreated || !deep2FolderCreated) {
                     sleep(server0, server1, CACHE_NOTIFICATION_POLL);
                 }
-            }
-            while ((!defaultPageUserStateUpdated || !rootFolderPagesCountThree || !rootFolderFoldersCountTwo || !newPageCreated || !deep2FolderCreated) && (System.currentTimeMillis()-coherencyCheckStarted < CACHE_NOTIFICATION_WAIT));
+            } while ((!defaultPageUserStateUpdated || !rootFolderPagesCountThree || !rootFolderFoldersCountTwo || !newPageCreated || !deep2FolderCreated) && (System.currentTimeMillis()-coherencyCheckStarted < CACHE_NOTIFICATION_WAIT));
             assertTrue(defaultPageUserStateUpdated);
             assertTrue(rootFolderPagesCountThree);
             assertTrue(rootFolderFoldersCountTwo);
@@ -568,8 +544,7 @@ public class TestDatabasePageManagerCache extends TestCase
             assertTrue(!result.contains("Exception"));
             result = server1.execute("pageManager.updateFragmentProperties(fragment, null);");
             assertTrue(!result.contains("Exception"));
-            if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
-            {
+            if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED) {
                 result = server1.execute("page = pageManager.getPage(\"/new-page.psml\");");
                 assertTrue(!result.contains("Exception"));
                 result = server1.execute("fragment = page.getRootFragment();");
@@ -592,8 +567,7 @@ public class TestDatabasePageManagerCache extends TestCase
             assertTrue(result.endsWith("USER3"));
             result = server1.execute("pageManager.getPage(\"/another-page.psml\").getRootFragment().getProperty(\"CUSTOM\");");
             assertTrue(result.endsWith("CUSTOM3"));
-            if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
-            {
+            if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED) {
                 result = server1.execute("pageManager.getPage(\"/new-page.psml\").getRootFragment().getProperty(\"GROUP-CUSTOM\");");
                 assertTrue(result.endsWith("GROUP-CUSTOM"));                
             }
@@ -601,39 +575,32 @@ public class TestDatabasePageManagerCache extends TestCase
             anotherPagePropertyUpdated = false;
             boolean newPagePropertyUpdated = false;
             coherencyCheckStarted = System.currentTimeMillis();
-            do
-            {
+            do {
                 // reset request cache
                 result = server0.execute("pageManager.cleanupRequestCache();");
                 assertTrue(!result.contains("Exception"));
                 
                 // check cache coherence
-                if (!defaultPageUserStateUpdated)
-                {
+                if (!defaultPageUserStateUpdated) {
                     result = server0.execute("pageManager.getPage(\"/default-page.psml\").getRootFragment().getState();");
                     defaultPageUserStateUpdated = result.endsWith("USER3");                    
                 }
-                if (!anotherPagePropertyUpdated)
-                {
+                if (!anotherPagePropertyUpdated) {
                     result = server0.execute("pageManager.getPage(\"/another-page.psml\").getRootFragment().getProperty(\"CUSTOM\");");
                     anotherPagePropertyUpdated = result.endsWith("CUSTOM3");
                 }
-                if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)
-                {
-                    if (!newPagePropertyUpdated)
-                    {
+                if (FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED) {
+                    if (!newPagePropertyUpdated) {
                         result = server0.execute("pageManager.getPage(\"/new-page.psml\").getRootFragment().getProperty(\"GROUP-CUSTOM\");");
                         newPagePropertyUpdated = result.endsWith("GROUP-CUSTOM");
                     }                    
                 }
 
                 // wait for cache coherence
-                if (!defaultPageUserStateUpdated || !anotherPagePropertyUpdated || (!newPagePropertyUpdated && FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED))
-                {
+                if (!defaultPageUserStateUpdated || !anotherPagePropertyUpdated || (!newPagePropertyUpdated && FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)) {
                     sleep(server0, server1, CACHE_NOTIFICATION_POLL);
                 }
-            }
-            while ((!defaultPageUserStateUpdated || !anotherPagePropertyUpdated || (!newPagePropertyUpdated && FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)) && (System.currentTimeMillis()-coherencyCheckStarted < CACHE_NOTIFICATION_WAIT));
+            } while ((!defaultPageUserStateUpdated || !anotherPagePropertyUpdated || (!newPagePropertyUpdated && FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED)) && (System.currentTimeMillis()-coherencyCheckStarted < CACHE_NOTIFICATION_WAIT));
             assertTrue(defaultPageUserStateUpdated);
             assertTrue(anotherPagePropertyUpdated);
             assertTrue(newPagePropertyUpdated || !FragmentProperty.GROUP_AND_ROLE_PROPERTY_SCOPES_ENABLED);
@@ -655,286 +622,30 @@ public class TestDatabasePageManagerCache extends TestCase
             assertTrue(!result.contains("Exception"));
             result = server1.execute("pageManager.reset();");
             assertTrue(!result.contains("Exception"));
-        }
-        catch (final Exception e)
-        {
+        } catch (final Exception e) {
             log.error("Server test exception: "+e, e);
             fail( "Server test exception: "+e);            
-        }        
-        finally
-        {
+        } finally {
             // silently shutdown servers
-            try
-            {
-                server0.shutdown();
-            }
-            catch (final Exception e)
-            {
+            try {
+                server0.shutdown(CACHE_NOTIFICATION_STARTUP_WAIT);
+            } catch (final Exception e) {
                 log.error( "Server shutdown exception: "+e, e);
             }
-            try
-            {
-                server1.shutdown();
-            }
-            catch (final Exception e)
-            {
+            try {
+                server1.shutdown(CACHE_NOTIFICATION_STARTUP_WAIT);
+            } catch (final Exception e) {
                 log.error( "Server shutdown exception: "+e, e);
             }
         }
     }
     
-    private void sleep(TestProgram server0, TestProgram server1, long millis) throws IOException, InterruptedException
-    {
-        long slept = 0;
-        while (slept < millis)
-        {
-            // poll servers for logging
-            server0.poll();
-            server1.poll();
-            // sleep for interval
-            long sleep = Math.min(millis-slept, CACHE_LOGGING_PUMP_WAIT);
-            Thread.sleep(sleep);
-            slept += sleep;
-        }
-    }
-    
-    // Implementation classes
-    
-    protected class TestProgram
-    {
-        private String name;
-        private Class<?> mainClass;
-        private int index;
-
-        private Process process;
-        private BufferedWriter processInput;
-        private BufferedReader processOutput;
-        
-        public TestProgram(final String name, final Class<?> mainClass, final int index)
-        {
-            this.name = name;
-            this.mainClass = mainClass;
-            this.index = index;
-        }
-        
-        public synchronized void start() throws IOException
-        {
-            assertNull(process);
-
-            // configure launcher with paths, properties, and indexed properties
-            final ProcessBuilder launcher = new ProcessBuilder();
-            final List<String> commandAndArgs = new ArrayList<String>();
-            commandAndArgs.add(javaExecutablePath.getCanonicalPath());
-            for (Map.Entry<String,String> systemProperty : systemProperties.entrySet())
-            {
-                final String propertyName = systemProperty.getKey();
-                String propertyValue = systemProperty.getValue();
-                if (propertyName.equals(EhCacheConfigResource.EHCACHE_PORT_PROP_NAME))
-                {
-                    propertyValue = Integer.toString(Integer.parseInt(propertyValue)+index);
-                }
-                commandAndArgs.add( "-D"+propertyName+"="+propertyValue);
-            }
-            commandAndArgs.add("-Dlog4j.configuration=log4j-stdout.properties");
-            commandAndArgs.add("-classpath");
-            commandAndArgs.add(classPath);
-            commandAndArgs.add(mainClass.getName());
-            log.info("Launcher command for "+name+": "+commandAndArgs);
-            launcher.command(commandAndArgs);
-            launcher.directory(projectDirectoryPath);
-            launcher.redirectErrorStream(true);
-
-            // launch test programs
-            process = launcher.start();
-
-            // setup I/O for process
-            processInput = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-            processOutput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-            // read messages from process
-            for (String line; (processOutput.ready() && ((line = processOutput.readLine()) != null));)
-            {
-                logProcessLine(line);
-            }
-        }
-
-        public synchronized void poll() throws IOException
-        {
-            assertNotNull(process);
-
-            // read messages from process
-            for (String line; (processOutput.ready() && ((line = processOutput.readLine()) != null));)
-            {
-                logProcessLine(line);
-            }
-        }
-
-        public synchronized String execute(final String scriptLine) throws IOException
-        {
-            // poll to read messages from process
-            poll();
-
-            // write script line to process
-            processInput.write(scriptLine);
-            processInput.newLine();
-            processInput.flush();
-
-            // read result or messages from process
-            String resultLine = null;
-            for (String line; ((line = processOutput.readLine()) != null);)
-            {
-                if (! line.startsWith(DatabasePageManagerServer.SCRIPT_RESULT_LINE_PREFIX))
-                {
-                    logProcessLine(line);
-                }
-                else
-                {
-                    resultLine = line;
-                    break;
-                }
-            }
-            if ( resultLine == null)
-            {
-                throw new IOException("Unexpected EOF from process output");
-            }
-            return resultLine;
-        }
-        
-        public synchronized void shutdown() throws IOException, InterruptedException
-        {
-            assertNotNull( process);
-
-            // start thread to destroy process on timeout
-            final Thread destroyThread = new Thread(new Runnable()
-            {
-                public void run()
-                {
-                    try
-                    {
-                        Thread.sleep(CACHE_NOTIFICATION_STARTUP_WAIT);
-                        if ( process != null)
-                        {
-                            log.warn( "Forcibly stopping "+name);
-                            process.destroy();
-                        }
-                    }
-                    catch ( final Exception e)
-                    {
-                    }
-                }
-            }, "DestroyThread");
-            destroyThread.setDaemon( true);
-            destroyThread.start();
-
-            // close process input to shutdown server and read messages
-            processInput.close();
-            for (String line; ((line = processOutput.readLine()) != null);)
-            {
-                logProcessLine(line);
-            }
-
-            // join on process completion
-            process.waitFor();
-            processOutput.close();
-            process = null;
-
-            // join on destroy thread
-            destroyThread.interrupt();
-            destroyThread.join();
-        }
-        
-        private void logProcessLine(final String line)
-        {
-            if (line.contains("ERROR") || line.contains("Exception") || line.matches("\\s+at\\s.*"))
-            {
-                log.error("{"+name+"} "+line);
-            }
-            else
-            {
-                log.info("{"+name+"} "+line);                        
-            }
-        }
-    }
-    
-    // TestCase implementation
-    
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp() throws Exception
-    {
-        // setup cache properties
-        EhCacheConfigResource.getInstance(EhCacheConfigResource.EHCACHE_CONFIG_RESOURCE_DISTRIBUTED_CACHE, true);
-        
-        // environment setup
-        osExecutableExtension = (System.getProperty("os.name").startsWith("Windows") ? ".exe" : "");
-        fileSeparator = System.getProperty("file.separator");
-        javaExecutablePath = new File(System.getProperty("java.home")+fileSeparator+"bin"+fileSeparator+"java"+osExecutableExtension);
-        classPathSeparator = System.getProperty("path.separator");
-        projectDirectoryPath = new File(System.getProperty("basedir"));
-        systemProperties = new HashMap<String,String>();
-        for (final Map.Entry<Object,Object> systemProperty : System.getProperties().entrySet())
-        {
-            final String propertyName = systemProperty.getKey().toString();
-            final String propertyValue = systemProperty.getValue().toString();
-            if (propertyName.startsWith("org.apache.jetspeed.") || propertyName.startsWith("java.net.") || propertyName.equals("basedir"))
-            {
-                systemProperties.put(propertyName, propertyValue);
-            }
-        }
-
-        // construct launcher classpath from current class loader
-        final StringBuilder classPathBuilder = new StringBuilder();
-        final ClassLoader loader = this.getClass().getClassLoader();
-        assertTrue(loader instanceof URLClassLoader);
-        final URLClassLoader urlLoader = (URLClassLoader)loader;
-        assertNotNull(urlLoader.getURLs());
-        for (final URL pathURL : urlLoader.getURLs())
-        {
-            // convert path URL to file path
-            final String path = new File(pathURL.toURI()).getCanonicalPath();
-
-            // build class path
-            if (classPathBuilder.length() > 0)
-            {
-                classPathBuilder.append(classPathSeparator);
-            }
-            classPathBuilder.append(path);
-        }
-        classPath = classPathBuilder.toString();
-        assertTrue(classPath.length() > 0);
-
-        // continue setup
-        super.setUp();
-    }
-
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception
-    {
-        super.tearDown();
-    }
-    
-    // Application entry point
-
     /**
      * Start the tests.
      * 
      * @param args not used
      */
-    public static void main(final String [] args)
-    {
+    public static void main(final String [] args) {
         junit.awtui.TestRunner.main(new String[]{TestDatabasePageManagerCache.class.getName()});
-    }
-
-    /**
-     * Creates the test suite.
-     * 
-     * @return a test suite that includes all methods starting with "test"
-     */
-    public static Test suite()
-    {
-        return new TestSuite(TestDatabasePageManagerCache.class);
     }
 }
