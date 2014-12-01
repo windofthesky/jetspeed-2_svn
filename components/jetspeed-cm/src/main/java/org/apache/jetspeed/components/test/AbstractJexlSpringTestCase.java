@@ -41,6 +41,9 @@ import java.util.Map;
  */
 public abstract class AbstractJexlSpringTestCase extends AbstractSpringTestCase {
 
+    protected static final String SCRIPT_RESULT_LINE_PREFIX = AbstractJexlSpringTestServer.SCRIPT_RESULT_LINE_PREFIX;
+    protected static final String SCRIPT_RESULT_RETURN_VALUE_SEPARATOR = AbstractJexlSpringTestServer.SCRIPT_RESULT_RETURN_VALUE_SEPARATOR;
+
     private static final long LOGGING_PUMP_WAIT = 50;
 
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -210,6 +213,7 @@ public abstract class AbstractJexlSpringTestCase extends AbstractSpringTestCase 
         private Process process;
         private BufferedWriter processInput;
         private BufferedReader processOutput;
+        private boolean closed;
 
         /**
          * Test program constructor.
@@ -306,7 +310,7 @@ public abstract class AbstractJexlSpringTestCase extends AbstractSpringTestCase 
             // read result or messages from process
             String resultLine = null;
             for (String line; ((line = processOutput.readLine()) != null);) {
-                if (! line.startsWith(AbstractJexlSpringTestServer.SCRIPT_RESULT_LINE_PREFIX)) {
+                if (!line.startsWith(SCRIPT_RESULT_LINE_PREFIX)) {
                     logProcessLine(line);
                 } else {
                     resultLine = line;
@@ -317,6 +321,18 @@ public abstract class AbstractJexlSpringTestCase extends AbstractSpringTestCase 
                 throw new IOException("Unexpected EOF from process output");
             }
             return resultLine;
+        }
+
+        /**
+         * Asynchronously close test program process input. Shutdown must still
+         * be invoked which blocks on process termination.
+         *
+         * @throws IOException
+         */
+        public synchronized void close() throws IOException {
+            // close process input to trigger server close
+            processInput.close();
+            closed = true;
         }
 
         /**
@@ -347,7 +363,9 @@ public abstract class AbstractJexlSpringTestCase extends AbstractSpringTestCase 
             destroyThread.start();
 
             // close process input to shutdown server and read messages
-            processInput.close();
+            if (!closed) {
+                processInput.close();
+            }
             for (String line; ((line = processOutput.readLine()) != null);) {
                 logProcessLine(line);
             }
@@ -373,6 +391,14 @@ public abstract class AbstractJexlSpringTestCase extends AbstractSpringTestCase 
             } else {
                 log.info("{"+name+"} "+line);
             }
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getIndex() {
+            return index;
         }
     }
 

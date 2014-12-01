@@ -41,6 +41,7 @@ import java.util.Map;
 public abstract class AbstractJexlSpringTestServer {
 
     public static final String SCRIPT_RESULT_LINE_PREFIX = "> ";
+    public static final String SCRIPT_RESULT_RETURN_VALUE_SEPARATOR = " -> ";
 
     protected String baseDir;
     protected SpringComponentManager scm;
@@ -123,10 +124,10 @@ public abstract class AbstractJexlSpringTestServer {
             Script jexlScript = ScriptFactory.createScript(scriptLine);
             Object result = jexlScript.execute(jexlContext);
             if (result != null) {
-                resultLine += " -> "+result;
+                resultLine += SCRIPT_RESULT_RETURN_VALUE_SEPARATOR+result;
             }
         } catch (Exception e) {
-            resultLine += " -> "+e;
+            resultLine += SCRIPT_RESULT_RETURN_VALUE_SEPARATOR+e;
         }
         return resultLine;
     }
