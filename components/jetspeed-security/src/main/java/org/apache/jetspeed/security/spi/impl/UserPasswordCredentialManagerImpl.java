@@ -88,14 +88,14 @@ public class UserPasswordCredentialManagerImpl implements UserPasswordCredential
                 {
                     upcsm.storePasswordCredential(credential);
                 }
-                if (!credential.isEnabled() || credential.isExpired())
-                {
-                    throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
-                }
-                else if (credential.getAuthenticationFailures() != 0)
-                {
-                    throw new SecurityException(SecurityException.INVALID_PASSWORD);
-                }
+            }
+            if (!credential.isEnabled() || credential.isExpired())
+            {
+                throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(JetspeedPrincipalType.USER, userName));
+            }
+            else if (credential.getAuthenticationFailures() != 0)
+            {
+                throw new SecurityException(SecurityException.INVALID_PASSWORD);
             }
         }
         else
