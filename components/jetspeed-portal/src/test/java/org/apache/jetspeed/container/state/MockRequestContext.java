@@ -17,18 +17,6 @@
 
 package org.apache.jetspeed.container.state;
 
-import java.security.Principal;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.security.auth.Subject;
-import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.jetspeed.capabilities.CapabilityMap;
 import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.container.url.PortalURL;
@@ -44,6 +32,17 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.util.KeyValue;
 import org.apache.jetspeed.window.MockPortletWindow;
 
+import javax.security.auth.Subject;
+import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 /**
  * @version $Id$
  *
@@ -52,6 +51,7 @@ public class MockRequestContext implements RequestContext
 {
     
     private HttpServletRequest request;
+    private HttpServletResponse response;
     private final Map<String, PortletWindow> portletWindows = new HashMap<String, PortletWindow>();
     
     public void addPortletWindow(PortletWindow window)
@@ -269,8 +269,7 @@ public class MockRequestContext implements RequestContext
      */
     public HttpServletResponse getResponse()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return response;
     }
 
     /* (non-Javadoc)
@@ -453,7 +452,7 @@ public class MockRequestContext implements RequestContext
      */
     public void setResponse(HttpServletResponse response)
     {
-        // TODO Auto-generated method stub
+        this.response = response;
     }
 
     /* (non-Javadoc)
