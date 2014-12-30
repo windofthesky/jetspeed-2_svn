@@ -16,11 +16,11 @@
  */
 package org.apache.jetspeed.container.url.impl;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * QueryStringEncodingPortalURL encodes the NavigationalState as query parameter
@@ -68,7 +68,7 @@ public class QueryStringEncodingPortalURL extends AbstractPortalURL
     
     protected String createPortletURL(String encodedNavigationalState, boolean secure)
     {
-        StringBuffer buffer = new StringBuffer(getBaseURL(secure));
+        StringBuffer buffer = new StringBuffer(getBaseURL(base.isSecure()));
         buffer.append(getBasePath());
         if ( getPath() != null )
         {

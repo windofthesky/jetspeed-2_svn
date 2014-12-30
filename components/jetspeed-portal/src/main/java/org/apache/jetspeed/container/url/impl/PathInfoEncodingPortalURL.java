@@ -16,13 +16,12 @@
  */
 package org.apache.jetspeed.container.url.impl;
 
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.jetspeed.PortalContext;
 import org.apache.jetspeed.container.state.NavigationalState;
 import org.apache.jetspeed.container.url.BasePortalURL;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.StringTokenizer;
 
 /**
  * PathInfoEncodingPortalURL encodes the NavigationalState as PathInfo element
@@ -101,7 +100,7 @@ public class PathInfoEncodingPortalURL extends AbstractPortalURL
 
     protected String createPortletURL(String encodedNavState, boolean secure)
     {
-        StringBuffer buffer = new StringBuffer(getBaseURL(secure));
+        StringBuffer buffer = new StringBuffer(getBaseURL(base.isSecure()));
         buffer.append(getBasePath());
         if ( encodedNavState != null )
         {
