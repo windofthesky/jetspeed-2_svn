@@ -16,12 +16,11 @@
  */
 package org.apache.jetspeed.mocks;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.mockrunner.mock.web.MockServletContext;
 
 import javax.servlet.ServletContext;
-
-import com.mockrunner.mock.web.MockServletContext;
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("deprecation")
 public abstract class BaseMockServletContext extends MockServletContext implements ServletContext
@@ -179,4 +178,8 @@ public abstract class BaseMockServletContext extends MockServletContext implemen
         throw new UnsupportedOperationException("The method called has not been implemented.");
     }
 
+    @Override
+    public synchronized boolean setInitParameter(String s, String s1) {
+        return super.setInitParameter(s, s1);
+    }
 }
