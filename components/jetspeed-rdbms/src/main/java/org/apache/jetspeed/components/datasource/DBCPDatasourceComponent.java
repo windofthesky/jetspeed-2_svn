@@ -152,7 +152,6 @@ public class DBCPDatasourceComponent implements DatasourceComponent
             {
                 Connection conn = null;
                 if (user == null || user.trim().isEmpty()) {
-                    System.out.println("***** connecting without user...");
                     conn = DriverManager.getConnection(connectURI);
                 }
                 else {
