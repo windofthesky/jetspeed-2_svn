@@ -207,14 +207,27 @@ public class SecurityConstraintsImpl implements SecurityConstraints
                 // since no other constraints were found
                 if ((getOwner() != null) && !actions.isEmpty())
                 {
-                    String action = (String)actions.get(0);
+                    String action = actions.get(0);
                     throw new SecurityException("SecurityConstraintsImpl.checkConstraints(): Access for " + action + " not permitted, (not owner).");
                 }
             }
         }
+        catch (SecurityException se)
+        {
+            // rethrow expected SecurityExceptions
+            throw se;
+        }
         catch (Exception e)
         {
-            log.error("Security constraints check exception: "+e);
+            // log and wrap other unexpected exceptions
+            if (log.isDebugEnabled())
+            {
+                log.error("Security constraints check exception: "+e, e);
+            }
+            else
+            {
+                log.error("Security constraints check exception: "+e);
+            }
             throw new SecurityException("SecurityConstraintsImpl.checkConstraints(): Exception detected: "+e);
         }
     }

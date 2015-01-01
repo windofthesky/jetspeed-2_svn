@@ -258,9 +258,22 @@ public class SecurityConstraintsImpl implements SecurityConstraints
                 }
             }
         }
+        catch (SecurityException se)
+        {
+            // rethrow expected SecurityExceptions
+            throw se;
+        }
         catch (Exception e)
         {
-            log.error("Security constraints check exception: "+e);
+            // log and wrap other unexpected exceptions
+            if (log.isDebugEnabled())
+            {
+                log.error("Security constraints check exception: "+e, e);
+            }
+            else
+            {
+                log.error("Security constraints check exception: "+e);
+            }
             throw new SecurityException("SecurityConstraintsImpl.checkConstraints(): Exception detected: "+e);
         }
     }
