@@ -32,7 +32,7 @@ public class FileServerValve extends AbstractValve
 {
     private String portletName;
     private String portletEntity;
-    
+
     public FileServerValve(String portletName, String portletEntity)
     {
         this.portletName = portletName;
@@ -62,7 +62,8 @@ public class FileServerValve extends AbstractValve
             if (name == null)
             {
                 request.setAttribute(PortalReservedParameters.PORTLET, portletName);
-            }        
+            }
+            request.setAttribute(PortalReservedParameters.PATH_ATTRIBUTE, request.getPortalURL().getPath());
         }
         catch (Exception e)
         {
