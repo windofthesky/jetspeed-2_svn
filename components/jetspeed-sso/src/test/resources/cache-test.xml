@@ -329,5 +329,9 @@
         <meta key="j2:cat" value="default or cache"/>
         <constructor-arg><ref bean="ehPageManagerPrincipalPropertiesPathCache"/></constructor-arg>
     </bean>
-    
+
+    <bean id="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider" name="portletPreferencesProvider"
+          class="org.apache.jetspeed.sso.StubPortletPreferences">
+    </bean>
+
 </beans>

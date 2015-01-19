@@ -16,17 +16,7 @@
  */
 package org.apache.jetspeed.security.impl;
 
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.security.auth.Subject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.AuthenticatedUserImpl;
 import org.apache.jetspeed.security.GroupManager;
@@ -48,6 +38,16 @@ import org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialManager;
 import org.apache.jetspeed.security.spi.UserSubjectPrincipalsProvider;
 import org.apache.jetspeed.security.spi.UserSubjectPrincipalsResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.security.auth.Subject;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -72,6 +72,7 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 	private RoleManager roleManager;
 	private GroupManager groupManager;
 	private Map<String, UserSubjectPrincipalsResolver> usprMap = new HashMap<String, UserSubjectPrincipalsResolver>();
+	private PortletPreferencesProvider preferencesProvider = null;
 
 	public UserManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalType roleType, JetspeedPrincipalType groupType,
 			JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm, UserPasswordCredentialManager credentialManager)
@@ -80,6 +81,17 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		this.credentialManager = credentialManager;
 		this.roleType = roleType;
 		this.groupType = groupType;
+	}
+
+	public UserManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalType roleType, JetspeedPrincipalType groupType,
+						   JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm, UserPasswordCredentialManager credentialManager,
+						   PortletPreferencesProvider preferencesProvider)
+	{
+		super(principalType, jpam, jpsm);
+		this.credentialManager = credentialManager;
+		this.roleType = roleType;
+		this.groupType = groupType;
+		this.preferencesProvider = preferencesProvider;
 	}
 
 	public void checkInitialized()
@@ -246,6 +258,11 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		
 		user = getUser(username);
 		super.removePrincipal(user);
+
+		// Since 2.3.0
+		if (preferencesProvider != null) {
+			preferencesProvider.removeUserPreferences(username);
+		}
 	}
 	
 	public void removePrincipal(String principalName) throws SecurityException

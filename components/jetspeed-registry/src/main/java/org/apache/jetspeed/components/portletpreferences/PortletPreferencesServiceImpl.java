@@ -638,6 +638,15 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         }
     }
 
+    @Override
+    public void removeUserPreferences(String user) {
+        Criteria c = new Criteria();
+        c.addEqualTo(DTYPE, DISCRIMINATOR_USER);
+        c.addEqualTo(USER_NAME, user);
+        QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
+        getPersistenceBrokerTemplate().deleteByQuery(query);
+    }
+
     /**
      * Jetspeed: PortletPreferencesProvider
      */        
