@@ -177,4 +177,13 @@ public interface PortletPreferencesProvider extends PortletPreferencesService
      * @param map
      */
     public void storePortletPreference(String appName, String portletName, String windowId, String userName, Map<String,PortletPreference> map);
+
+    /**
+     * Remove all user preferences for a given username
+     *
+     * @since 2.3.0
+     * @param user the name of the user to delete all preferences for
+     */
+    public void removeUserPreferences(String user);
+
 }
