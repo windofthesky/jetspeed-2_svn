@@ -216,6 +216,7 @@ public class DecorationValve extends AbstractValve implements Valve
         {
             theme.init(page, decorationFactory, requestContext);
             requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
+            requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_RESPONSIVE, new Boolean(theme.getPageLayoutDecoration().getProperty("responsive")));
             boolean solo = isSoloMode(requestContext);            
             SessionPathResolverCache sessionPathResolver = new SessionPathResolverCache( requestContext.getRequest().getSession() );
             initDepthFragmentDecorations(requestContext, theme, page.getRootFragment(),
@@ -240,6 +241,7 @@ public class DecorationValve extends AbstractValve implements Valve
         }
         theme = decorationFactory.getTheme(page, requestContext);        
         requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_ATTRIBUTE, theme);
+        requestContext.setAttribute(PortalReservedParameters.PAGE_THEME_RESPONSIVE, new Boolean(theme.getPageLayoutDecoration().getProperty("responsive")));
         if ( fragments == null || fragments.size() == 0 )
         {
             ContentFragment rootFragment = page.getRootFragment();
