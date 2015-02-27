@@ -621,6 +621,44 @@ limitations under the License.
       <short-title>FourColumns</short-title>
     </portlet-info>
 </portlet>
-    
+
+    <portlet id="ResponsiveLayout">
+        <portlet-name>ResponsiveLayout</portlet-name>
+        <display-name>Responsive Layout</display-name>
+        <portlet-class>org.apache.jetspeed.portlets.layout.responsive.ResponsiveLayoutPortlet</portlet-class>
+        <init-param>
+            <name>ViewPage</name>
+            <value>responsive</value>
+        </init-param>
+        <init-param>
+            <name>MaxPage</name>
+            <value>max-responsive</value>
+        </init-param>
+        <init-param>
+            <name>columns</name>
+            <value>2</value>
+        </init-param>
+        <init-param>
+            <name>sizes</name>
+            <value>50%,50%</value>
+        </init-param>
+        <init-param>
+            <name>layoutType</name>
+            <value>TwoColumns</value>
+        </init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+            <portlet-mode>help</portlet-mode>
+        </supports>
+        <resource-bundle>org.apache.jetspeed.portlets.layout.resources.LayoutResource</resource-bundle>
+        <portlet-info>
+            <title>Responsive Layout</title>
+            <short-title>Responsive</short-title>
+        </portlet-info>
+    </portlet>
+
 </portlet-app>
 
