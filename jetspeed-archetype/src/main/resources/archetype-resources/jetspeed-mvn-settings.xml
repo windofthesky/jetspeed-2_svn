@@ -55,8 +55,8 @@
       </activation>
       <properties>
         
-        <org.apache.jetspeed.server.home>/change/this/apache-tomcat-6.0.33/</org.apache.jetspeed.server.home>
-        <org.apache.jetspeed.catalina.version.major>6</org.apache.jetspeed.catalina.version.major>
+        <org.apache.jetspeed.server.home>/change/this/apache-tomcat-7.0.59/</org.apache.jetspeed.server.home>
+        <org.apache.jetspeed.catalina.version.major>7</org.apache.jetspeed.catalina.version.major>
         
         <!--
           <org.apache.jetspeed.production.database.default.name>mysql</org.apache.jetspeed.production.database.default.name>

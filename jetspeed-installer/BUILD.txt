@@ -16,6 +16,7 @@
 To build either of the installer, the Jetspeed Maven plugin for Maven-2 
 should be used as follows:
 
+> cd jetspeed-installer
 > mvn jetspeed:mvn -Dtarget=installer
 
 The self executing installer can be found in the maven target directory

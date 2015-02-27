@@ -16,9 +16,9 @@
  */
 package org.apache.jetspeed.services.rest.util;
 
-import java.util.List;
-
 import javax.ws.rs.core.PathSegment;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * PathSegmentUtils
@@ -85,5 +85,45 @@ public class PathSegmentUtils
         
         return sbPath.toString();
     }
+
+    public static List<String> parseNames(String commaSeparated) {
+        String names[] = commaSeparated.split(",");
+        List<String> ids = new ArrayList<String>(names.length);
+        for (String name : names) {
+            ids.add(name.trim());
+        }
+        return ids;
+    }
+
+    public static String[] parseNamesArray(String commaSeparated) {
+        String names[] = commaSeparated.split(",");
+        int index = 0;
+        for (String name : names) {
+            names[index] = name.trim();
+            index++;
+        }
+        return names;
+    }
+
+    public static List<Integer> parseIds(String commaSeparated) throws NumberFormatException {
+        String stringIds[] = commaSeparated.split(",");
+        List<Integer> ids = new ArrayList<Integer>(stringIds.length);
+        for (String stringId : stringIds) {
+            ids.add(new Integer(stringId.trim()));
+        }
+        return ids;
+    }
+
+    public static Integer[] parseIdArray(String commaSeparated) throws NumberFormatException {
+        String stringIds[] = commaSeparated.split(",");
+        Integer ids[] = new Integer[stringIds.length];
+        int ix = 0;
+        for (String id : stringIds) {
+            ids[ix] = new Integer(id.trim());
+            ix++;
+        }
+        return ids;
+    }
+
     
 }

@@ -1090,17 +1090,24 @@
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-jaxrs</artifactId>
         <version>${jackson.version}</version>
-        <scope>runtime</scope>
       </dependency>
-      
-      <!-- Jacson Xml Compatibility extensions -->
+      <!-- Jackson Xml Compatibility extensions -->
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-xc</artifactId>
         <version>${jackson.version}</version>
-        <scope>runtime</scope>
       </dependency>
-      
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-core-asl</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-mapper-asl</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
       <!-- Test -->
       <dependency>
         <groupId>junit</groupId>
@@ -2150,8 +2157,10 @@
             <groupId>org.apache.rat</groupId>
             <artifactId>apache-rat-plugin</artifactId>
             <configuration>
+              <useDefaultExcludes>true</useDefaultExcludes>
               <excludes combine.children="append">
-                <exclude>jetspeed-mvn-settings.xml</exclude>                            
+                <exclude>.idea/**/*</exclude>
+                <exclude>jetspeed-mvn-settings.xml</exclude>
                 <exclude>MIT-LICENSE</exclude>                            
                 <exclude>YUI-LICENSE</exclude>                            
                 <exclude>JSCOOKMENU-LICENSE</exclude>              

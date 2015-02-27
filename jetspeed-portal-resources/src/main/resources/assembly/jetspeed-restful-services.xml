@@ -127,6 +127,10 @@
           <meta key="j2:cat" value="default" />
           <constructor-arg ref="jaxrsUserManagerService" />
         </bean>
+        <bean class="org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider">
+            <meta key="j2:cat" value="default" />
+            <constructor-arg ref="jaxrsProfilerManagementService"/>
+        </bean>
       </list>
     </property>
   </bean>
@@ -163,5 +167,12 @@
     <meta key="j2:cat" value="default" />
     <constructor-arg ref="org.apache.jetspeed.page.PageManager" />
   </bean>
-  
+
+  <!-- Profiler JAX-RS Service -->
+  <bean id="jaxrsProfilerManagementService" class="org.apache.jetspeed.services.rest.ProfilerManagementService">
+    <meta key="j2:cat" value="default" />
+    <constructor-arg ref="org.apache.jetspeed.profiler.Profiler" />
+    <constructor-arg ref="RolesSecurityBehavior" />
+  </bean>
+
 </beans>
