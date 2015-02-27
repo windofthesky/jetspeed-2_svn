@@ -18,11 +18,6 @@ limitations under the License.
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://portals.apache.org/jetspeed http://portals.apache.org/jetspeed-2/2.2/schemas/folder-metadata.xsd">
   <title>Responsive</title>  
-  
-  <defaults
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
-  />
 
   <document-order>registration.psml</document-order>
   <document-order>my-account2.psml</document-order>
@@ -35,4 +30,10 @@ limitations under the License.
   <security-constraints>
     <security-constraints-ref>public-view</security-constraints-ref>
   </security-constraints>
+
+    <defaults
+         layout-decorator="bootstrap"
+         portlet-decorator="bootstrap"
+      />
+
 </folder>

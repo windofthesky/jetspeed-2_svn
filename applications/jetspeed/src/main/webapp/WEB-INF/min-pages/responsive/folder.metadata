@@ -20,9 +20,9 @@ limitations under the License.
   <title>Responsive</title>  
   
   <defaults
-     layout-decorator="jetspeed"
-     portlet-decorator="jetspeed"
-  />
+       layout-decorator="bootstrap"
+       portlet-decorator="bootstrap"
+    />
 
   <document-order>registration.psml</document-order>
   <document-order>my-account2.psml</document-order>
