@@ -70,6 +70,7 @@ public interface PortalReservedParameters
     public static final String PORTLET_WINDOW_ATTRIBUTE = "org.apache.jetspeed.portlet.window";
     public static final String PORTLET_FILTER_MANAGER_ATTRIBUTE = "org.apache.jetspeed.portlet.container.filterManager";
     public static final String PAGE_THEME_ATTRIBUTE = "org.apache.jetspeed.theme";
+    public static final String PAGE_THEME_RESPONSIVE = "org.apache.jetspeed.theme.responsive";
     public static final String PAGE_LAYOUT_VIEW = "org.apache.jetspeed.layout.view";
     public static final String PAGE_LAYOUT_MAX = "org.apache.jetspeed.layout.max";
     public static final String PAGE_LAYOUT_HELP = "org.apache.jetspeed.layout.help";
