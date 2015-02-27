@@ -1,0 +1,91 @@
+html {height: 100%;}  
+* html body {height: 100%;}
+
+body {
+    min-height: 100%;
+    position: relative;
+}
+
+.layout-main {
+    padding-bottom: 41px;
+}
+
+footer {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+
+.header .nav.navbar-nav.nav-tabs {
+    border-bottom: 0;
+}
+
+h1.logo {
+    margin-top: 0;
+}
+
+#navcolumn h4 {
+    padding: 0px 15px;
+    text-decoration: none;
+}
+
+.panel {
+    border-color: #c77d8d;
+    margin: 0 0 2em 0;
+}
+
+.panel-body ul, .panel-body ol {
+    margin-left: 1em;
+}
+
+.panel-body h1:first-child, .panel-body h2:first-child, .panel-body h3:first-child {
+    margin-top: 0;
+}
+
+.panel-body .form-horizontal .form-group:last-child, .panel-body .form-horizontal[name='langChng'] .form-group {
+    margin-bottom: 0;
+}
+
+#breadcrumbs {
+    margin: 20px 0;
+}
+
+.no-margin-bottom {
+    margin-bottom: 0;
+}
+
+.container-fluid.portal-nested-layout {
+    padding: 0;
+}
+
+#top-menu-container {
+    border-radius: 0;
+    min-height: 0;
+    margin-bottom: 0px;
+    border: 0;
+}
+
+#top-menu-nav > .navbar-nav > li > a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-right: 0;
+    border: 0;
+}
+
+@media screen and (max-width: 767px) {
+    #navcolumn {
+        margin: 0 0 2em 0;
+    }
+    
+    #top-menu-nav > .navbar-nav {
+        margin: 0;
+        border-bottom: 0;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    #top-menu-nav, #top-menu-container > .container-fluid {
+        padding-right: 0px;
+        padding-left: 0px;
+    }
+}
