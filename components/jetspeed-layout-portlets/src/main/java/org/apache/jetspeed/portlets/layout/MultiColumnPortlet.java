@@ -16,25 +16,10 @@
  */
 package org.apache.jetspeed.portlets.layout;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletException;
-import javax.portlet.PortletMode;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-
 import org.apache.jetspeed.CommonPortletServices;
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.cache.JetspeedContentCache;
+import org.apache.jetspeed.container.PortletWindow;
 import org.apache.jetspeed.decoration.DecorationFactory;
 import org.apache.jetspeed.decoration.PageEditAccess;
 import org.apache.jetspeed.desktop.JetspeedDesktop;
@@ -47,10 +32,23 @@ import org.apache.jetspeed.page.FolderNotUpdatedException;
 import org.apache.jetspeed.page.PageManager;
 import org.apache.jetspeed.page.document.NodeException;
 import org.apache.jetspeed.request.RequestContext;
-import org.apache.jetspeed.container.PortletWindow;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  */
@@ -66,11 +64,11 @@ public class MultiColumnPortlet extends LayoutPortlet
     protected final static String DEFAULT_TWO_COLUMN_SIZES = "50%,50%";
     protected final static String DEFAULT_THREE_COLUMN_SIZES = "34%,33%,33%";
 
-    private int numColumns = 0;
-    private String columnSizes = null;
-    private String portletName = null;
-    private String layoutType;
-    private String editorType = null;
+    protected int numColumns = 0;
+    protected String columnSizes = null;
+    protected String portletName = null;
+    protected String layoutType;
+    protected String editorType = null;
     protected DecorationFactory decorators;
     protected JetspeedDesktop desktop;
     protected JetspeedContentCache decoratorCache;
@@ -169,16 +167,7 @@ public class MultiColumnPortlet extends LayoutPortlet
         }
 
         // construct layout object
-        ColumnLayout layout;
-        try
-        {
-            layout = new ColumnLayout(numColumns, layoutType, f.getFragments(), fragmentColumnSizesArray);
-            layout.addLayoutEventListener(new PageLayoutEventListener(layoutType));
-        }
-        catch (LayoutEventException e1)
-        {
-            throw new PortletException("Failed to build ColumnLayout "+e1.getMessage(), e1);
-        }
+        ColumnLayout layout = constructColumnLayout(f, layoutType, fragmentColumnSizesArray);
 
         // invoke the JSP associated with this portlet
         request.setAttribute("columnLayout", layout);
@@ -696,5 +685,25 @@ public class MultiColumnPortlet extends LayoutPortlet
            Folder ff = (Folder) userFoldersIter.next();
            applyStyle(ff,theme,theme_type);
        }
-    }    
+    }
+
+    public ColumnLayout constructColumnLayout(ContentFragment f, String layout, String[] fragmentColumnSizesArray)
+            throws PortletException
+    {
+        try
+        {
+            ColumnLayout columnLayout = new ColumnLayout(getNumColumns(f), layoutType, f.getFragments(), fragmentColumnSizesArray);
+            columnLayout.addLayoutEventListener(new PageLayoutEventListener(layoutType));
+            return columnLayout;
+        }
+        catch (LayoutEventException e1)
+        {
+            throw new PortletException("Failed to build ColumnLayout "+e1.getMessage(), e1);
+        }
+    }
+
+    public int getNumColumns(ContentFragment fragment) {
+        return numColumns;
+    }
+
 }

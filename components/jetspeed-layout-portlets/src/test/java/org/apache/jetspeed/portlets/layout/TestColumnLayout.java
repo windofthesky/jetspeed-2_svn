@@ -16,12 +16,12 @@
  */
 package org.apache.jetspeed.portlets.layout;
 
-import java.util.Iterator;
-
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.impl.ContentFragmentImpl;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
+
+import java.util.Iterator;
 
 public class TestColumnLayout extends MockObjectTestCase
 {
