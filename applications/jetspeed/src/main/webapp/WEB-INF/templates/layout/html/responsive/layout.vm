@@ -1,0 +1,172 @@
+#*
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*#
+#set($theme = $request.getAttribute("org.apache.jetspeed.theme"))
+#set($sizes = $jetspeed.columnSizes)
+#set($myPage = $jetspeed.page)
+#set($myFragment = $jetspeed.currentFragment)
+#set($decorator = $myPage.getDefaultDecorator($myFragment.getType()))
+#set($actions = $myFragment.decoration.actions)
+#set($messages = $portletConfig.getResourceBundle($renderRequest.Locale))
+#set($rootDecorator = $myPage.getRootFragment().decoration)
+
+#if($myFragment.getDecorator())
+  #set($decorator = $myFragment.getDecorator())
+#end
+
+#if($myFragment == $myPage.getRootFragment())
+  #set($isRoot=true)
+#end
+
+#if($request.getAttribute("editing") == true)
+  #set($editing = true)
+  #set($lastColumn = $renderRequest.getAttribute("numberOfColumns") - 1)
+#end
+
+## Decorator  $decorator  ${decoTop} - ${decoBottom}
+#if ($isRoot)
+  #parse($myFragment.decoration.header)
+  #set($layoutClass = "portal-nested-layout")
+#else
+  #defineLayoutObjects()
+  #set($layoutClass = "portal-layout")
+#end
+
+#set($layoutType =$portletConfig.getInitParameter("layoutType"))
+#set($columnLayout = $renderRequest.getAttribute("columnLayout"))
+#set($decorationFactory = $renderRequest.getAttribute("decorationFactory"))
+#set($rc = $renderRequest.getAttribute("org.apache.jetspeed.request.RequestContext"))
+#set($psrc = $rc.getAttribute("org.apache.jetspeed.portalsite.PortalSiteRequestContext"))
+#set($profiledPage = $psrc.PageOrTemplate.Path)
+
+<div id="$renderResponse.namespace" class="container-fluid ${layoutClass} ${layoutClass}-${layoutType}">
+
+  #set ($dcnt = 0)
+  #set ($columnIndex = 0)
+  #set ($columnCounter = 0)
+  #set ($originalColumnNumber = $columnLayout.getNumberOfColumns())
+  #set ($perDesktopColumn = 12 / $originalColumnNumber)
+  #set ($perTabletColumn = 12 / $originalColumnNumber * 2)
+  #set ($perMobileColumn = 12)
+
+<div class="row" rel="$originalColumnNumber">
+  #foreach($column in $columnLayout.columns)
+    #if(($columnCounter == 2) && ($originalColumnNumber > 2))
+        <br class="visible-sm-block" style="clear: both" />
+    #end
+    #if($columnCounter == $originalColumnNumber)
+      #set ($columnCounter = 0)
+    </div><div class="row">
+    #end
+
+      <div id="column_${myFragment.getId()}_${columnIndex}"
+           class="col-xs-$perMobileColumn col-sm-$perTabletColumn col-md-$perDesktopColumn col-lg-$perDesktopColumn portal-layout-column portal-layout-column-${layoutType}-${columnIndex}">
+        #foreach($f in $column)
+        ## Set up coordinates for this fragment
+          #set($coords = $columnLayout.getCoordinate($f))
+          #set($col = $coords.x)
+          #set($lastRow = $columnLayout.getLastRowNumber($col))
+          #set($row = $coords.y)
+
+            <div id='$f.id' name='$f.name' column='${col}' row='${row}' class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}" >
+
+              #if($f.isLocked() == false)
+
+              ## get the decorated Portlet content
+
+              ## editing block
+                #if($editing)
+                    <div class="portlet-edit-bar">
+                      #set ($dcnt = $dcnt + 1)
+                        <form name="$form$dcnt" action="$formAction" method='post'>
+                            <input type="hidden" name="fragment" value="$f.id">
+                            <input type="hidden" name="move" value="">
+                            <input type="hidden" name="remove" value="">
+                          #if($f.type == "portlet")
+                            #set($fragmentType="Portlet")
+                            #if($allowChangePortletDecorator)
+                                <select id='decorator' name='decorator' onChange="$form$dcnt$submit">
+                                <option value=''>
+                                  #set ($fd = "")
+                                  #if ($f.Decorator)
+                                    #set ($fd = $f.Decorator)
+                                  #end
+                                  #foreach($pd in $decorationFactory.getPortletDecorations($rc))
+                                  <option value='$pd' #if ($pd == $fd) SELECTED #end>$pd
+                    #end
+                                </select>
+                            #end
+                          #else
+                            #set($fragmentType="Layout")
+                          #end
+                        ## Move portlet left
+                          #if($lastColumn > 0 && $col > 0)
+                              <a href="#" onClick="${form}${dcnt}.move.value='3';$form$dcnt$submit;return false;" class="move-portlet-left">
+                                  <img src="#GetPageResource('images/movePortletLeft.gif')" border="0" title="$messages.getString("portal.page.editing.move${fragmentType}Left")"/>
+                              </a>
+                          #end
+                        ## Move portlet up
+                          #if($row > 0)
+                              <a href="#" onClick="${form}${dcnt}.move.value='1';$form$dcnt$submit;return false;" class="move-portlet-up">
+                                  <img src="#GetPageResource('images/movePortletUp.gif')" border="0" title="$messages.getString("portal.page.editing.move${fragmentType}Up")"/>
+                              </a>
+                          #end
+                        ## Remove portlet from page
+                            <a href="#" onClick="${form}${dcnt}.remove.value='y';$form$dcnt$submit;return false;" class="remove-portlet-from-apge">
+                                <img src="#GetPageResource('images/close.gif')" border="0" title="$messages.getString("portal.page.editing.remove${fragmentType}")"/>
+                            </a>
+                        ## Move portlet down
+                          #if($row < $lastRow)
+                              <a href="#" onClick="${form}${dcnt}.move.value='2';$form$dcnt$submit;return false;" class="move-portlet-down">
+                                  <img src="#GetPageResource('images/movePortletDown.gif')" border="0" title="$messages.getString("portal.page.editing.move${fragmentType}Down")"/>
+                              </a>
+                          #end
+                        ## Move portlet right
+                          #if($lastColumn > 0 && $col < $lastColumn)
+                              <a href="#" onClick="${form}${dcnt}.move.value='4';$form$dcnt$submit;return false;" class="move-portlet-right">
+                                  <img src="#GetPageResource('images/movePortletRight.gif')" border="0" title="$messages.getString("portal.page.editing.move${fragmentType}Right")"/>
+                              </a>
+                          #end
+                        </form>
+                    </div>
+                #end
+              #end
+            ## Now get the real content
+              $jetspeed.setCurrentFragment($f)
+
+              #if($f.type == "portlet")
+                #parse($f.decoration.template)
+              #else
+                $f.renderedContent
+              #end
+            </div>
+        #end
+
+
+      </div>
+    #set ($columnIndex = $columnIndex + 1)
+    #set ($columnCounter = $columnCounter + 1)
+  #end
+</div>
+</div>
+<br style="clear:both;" class="hidden-xs" />
+#if ($isRoot)
+<form name='portletform' action="" method="post" class="hidden">
+    <input type='hidden' name='portlets'/>
+    <input type='hidden' name='page' value='$myPage'/>
+</form>
+  #parse($myFragment.decoration.footer)
+#end

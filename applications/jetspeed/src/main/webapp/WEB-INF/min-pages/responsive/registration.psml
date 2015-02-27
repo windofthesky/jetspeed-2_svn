@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page id="/registration.psml" hidden="false">
+    <security-constraints>
+        <security-constraints-ref>guest-only</security-constraints-ref>
+    </security-constraints>
+    <title>Registration</title>
+    <short-title>Registration</short-title>
+    <fragment id="jsreg-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+        <fragment id="jsreg-2" type="portlet" name="j2-admin::UserRegistrationPortlet">
+            <property name="row" value="1"></property>
+            <property name="column" value="0"></property>
+        </fragment>
+    </fragment>
+    <defaults layout-decorator="bootstrap" portlet-decorator='bootstrap'></defaults>
+</page>

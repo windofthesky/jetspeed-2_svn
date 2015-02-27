@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page id="/test/responsive-blue.psml" hidden="false">
+    <security-constraints>
+        <security-constraints-ref>public-view</security-constraints-ref>
+    </security-constraints>
+    <title>Responsive Blue</title>
+    <short-title>ResponsiveBlue</short-title>
+    <fragment id="blue-layout" type="layout" name="jetspeed-layouts::ResponsiveLayout">
+        <fragment id="blue-0" type="portlet" name="j2-admin::LoginPortlet">
+            <property name="row" value="0"></property>
+            <property name="column" value="0"></property>
+        </fragment>
+        <fragment id="blue-2" type="portlet" name="j2-admin::OpenIDLoginPortlet">
+            <property name="row" value="0"></property>
+            <property name="column" value="1"></property>
+        </fragment>
+        <fragment id="blue-3" type="portlet" name="j2-admin::LocaleSelector">
+            <property name="row" value="0"></property>
+            <property name="column" value="2"></property>
+        </fragment>
+        <fragment id="blue-4" type="portlet" name="j2-admin::ForgottenPasswordPortlet">
+            <property name="row" value="0"></property>
+            <property name="column" value="3"></property>
+        </fragment>
+    </fragment>
+    <defaults layout-decorator="bootstrap-blue" portlet-decorator="bootstrap"></defaults>
+</page>

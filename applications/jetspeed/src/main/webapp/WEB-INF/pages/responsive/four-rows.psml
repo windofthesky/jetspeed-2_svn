@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page id="/default-page.psml" hidden="false">
+    <security-constraints>
+        <security-constraints-ref>public-view</security-constraints-ref>
+    </security-constraints>
+    <title>Four Rows</title>
+    <short-title>FourRows</short-title>
+    <fragment id="fourrow-2" type="layout" name="jetspeed-layouts::ResponsiveLayout">
+        <fragment id="fourrow-3" type="portlet" name="j2-admin::LoginPortlet">
+            <property name="row" value="1"></property>
+            <property name="column" value="0"></property>
+        </fragment>
+        <fragment id="fourrow-4" type="portlet" name="j2-admin::LocaleSelector">
+            <property name="row" value="0"></property>
+            <property name="column" value="1"></property>
+        </fragment>
+        <fragment id="fourrow-5" type="portlet" name="j2-admin::ForgottenPasswordPortlet">
+            <property name="row" value="1"></property>
+            <property name="column" value="1"></property>
+        </fragment>
+        <fragment id="fourrow-6" type="portlet" name="j2-admin::ProfilerAdmin">
+            <property name="row" value="0"></property>
+            <property name="column" value="0"></property>
+        </fragment>
+        <fragment id="fourrow-7" type="portlet" name="j2-admin::UserRegistrationPortlet">
+            <property name="row" value="2"></property>
+            <property name="column" value="0"></property>
+        </fragment>
+        <fragment id="fourrow-8" type="portlet" name="j2-admin::PortalLoginPortlet">
+            <property name="row" value="2"></property>
+            <property name="column" value="1"></property>
+        </fragment>
+        <fragment id="fourrow-9" type="portlet" name="j2-admin::OpenIDLoginPortlet">
+            <property name="row" value="3"></property>
+            <property name="column" value="1"></property>
+        </fragment>        
+    </fragment>
+    <metadata name="title" xml:lang="fr">Bienvenue a Jetspeed</metadata>
+    <metadata name="title" xml:lang="ja">Jetspeed 2 へようこそ</metadata>
+    <metadata name="title" xml:lang="es">¡Bienvenido a Jetspeed 2!</metadata>
+    <metadata name="title" xml:lang="hu">Köszönti a Jetspeed 2!</metadata>
+    <metadata name="title" xml:lang="zh">欢迎来到Jetspeed 2</metadata>
+    <metadata name="title" xml:lang="zh_TW">歡迎來到Jetspeed 2</metadata>
+    <metadata name="title" xml:lang="ko">Jetspeed 2 에 오신 것을 환영합니다</metadata>
+    <defaults layout-decorator="bootstrap-red" portlet-decorator='bootstrap'></defaults>
+</page>

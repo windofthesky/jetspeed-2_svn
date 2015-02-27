@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page id="/nested.psml" hidden="false">
+    <security-constraints>
+        <security-constraints-ref>public-view</security-constraints-ref>
+    </security-constraints>
+    <title>Nested Demo</title>
+    <short-title>Nested</short-title>
+    <fragment id="nested-2" type="layout" name="jetspeed-layouts::ResponsiveLayout">
+        <fragment id="nested-6" type="portlet" name="j2-admin::ProfilerAdmin">
+            <property name="row" value="0"></property>
+            <property name="column" value="0"></property>
+        </fragment>
+        <fragment id="nested-4" type="portlet" name="j2-admin::LocaleSelector">
+            <property name="row" value="0"></property>
+            <property name="column" value="1"></property>
+        </fragment>
+        <fragment id="nested-22" type="layout" name="jetspeed-layouts::ResponsiveLayout">
+            <property name="row" value="1"></property>
+            <property name="column" value="0"></property>
+            <fragment id="nested-220" type="portlet" name="j2-admin::LoginPortlet">
+                <property name="row" value="0"></property>
+                <property name="column" value="0"></property>
+            </fragment>
+            <fragment id="nested-221" type="portlet" name="j2-admin::ForgottenPasswordPortlet">
+                <property name="row" value="0"></property>
+                <property name="column" value="1"></property>
+            </fragment>
+        </fragment>
+        <fragment id="nested-8" type="portlet" name="j2-admin::PortalLoginPortlet">
+            <property name="row" value="1"></property>
+            <property name="column" value="1"></property>
+        </fragment>
+        <fragment id="nested-9" type="portlet" name="j2-admin::OpenIDLoginPortlet">
+            <property name="row" value="2"></property>
+            <property name="column" value="0"></property>
+        </fragment>        
+        <fragment id="nested-7" type="portlet" name="j2-admin::UserRegistrationPortlet">
+            <property name="row" value="2"></property>
+            <property name="column" value="1"></property>
+        </fragment>        
+    </fragment>
+    
+    <defaults layout-decorator="bootstrap-blue" portlet-decorator='bootstrap'></defaults>
+</page>
