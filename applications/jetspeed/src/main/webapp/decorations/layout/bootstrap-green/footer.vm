@@ -32,6 +32,25 @@ limitations under the License.
 
       </div>
 #end
+
+#set($navigationsStandardMenu = $site.getMenu("navigations"))
+#if(!$navigationsStandardMenu.empty)
+<div class="float-icon visible-xs-inline" target="#float-menu">
+    <button type="button" class="navbar-toggle">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+</div>
+
+<div class="col-xs-12 hidden" id="float-menu">
+    <div id="navcolumn">
+        #includeLinksWithIconNavigation($navigationsStandardMenu $TOP_TO_BOTTOM)
+    </div>
+</div>
+#end
+
 #if ($jetspeed.isAjaxCustomizationEnabled())
 <script src="#BaseHref()jetui/engine/portal.js"></script>
 <div id="jsPortletTemplate" class="portal-layout-cell yui-dd-draggable yui-dd-drop" style="display: none">
@@ -53,6 +72,11 @@ limitations under the License.
     <p>
       <img src="#GetPageResource('images/Jetspeed_blue_sm.png')" alt="Jetspeed 2 Powered" border="0" />
     </p>
+    <script type="text/javascript">
+        $(document.body).on("click", ".float-icon", function() {
+            $($(this).attr("target")).toggleClass("hidden");
+        });
+    </script>
 </footer>
 </body>
 </html>

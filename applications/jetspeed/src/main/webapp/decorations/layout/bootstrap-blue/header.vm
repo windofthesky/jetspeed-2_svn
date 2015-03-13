@@ -62,15 +62,14 @@ var JETUI_YUI = {
 </script>
 <link rel="stylesheet" type="text/css" href="#BaseHref()jetui/css/portal.css"/>
 #end
-
-#includeHeaderResource()
-
 <meta http-equiv="Content-type" content="#ContentType()" />
 <title>#PageTitle()</title>
 <link rel="shortcut icon" href="#BaseHref()images/jetspeed.jpg" type="image/x-icon" />
-#includeJavaScriptForHead()
 <script type="text/javascript" src="#BaseHref()javascript/jquery/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="#BaseHref()css/bootstrap/dist/js/bootstrap.min.js"></script>
+#includeHeaderResource()
 #IncludeStylesheets()
+#includeJavaScriptForHead()
 <link rel="stylesheet" type="text/css" href="#BaseHref()css/bootstrap/dist/css/bootstrap-blue.css"/>
 <link rel="stylesheet" type="text/css" href="#BaseHref()decorations/layout/bootstrap-blue/css/styles-new-blue.css"/>
 </head>

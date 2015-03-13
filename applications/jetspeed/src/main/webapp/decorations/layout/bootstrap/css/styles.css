@@ -602,3 +602,38 @@ font-weight: bold;
     margin-left: 0px;
     clear: both;
 }
+
+/**/
+
+.float-icon {
+    position: fixed;
+    right: 0px;
+    bottom: 1em;
+}
+
+.float-icon button {
+    float: none;
+    background: #aaa;
+    color: black;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-color: grey;
+    margin: 0;
+    padding: 7px 5px;
+    cursor: pointer;
+    cursor: hand;
+}
+
+.float-icon button .icon-bar {
+    background: black;
+    width: 18px;
+}
+
+#float-menu {
+    display: block !important;
+    position: fixed;
+    bottom: 4em;
+    right: 0em;
+    background: #eee;
+    z-index: 100;
+}
