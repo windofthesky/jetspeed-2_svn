@@ -16,25 +16,6 @@
  */
 package org.apache.jetspeed.services.rest;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.administration.PortalConfigurationConstants;
@@ -42,7 +23,10 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.page.PageManager;
+import org.apache.jetspeed.page.document.Node;
+import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
+import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.Group;
@@ -59,6 +43,27 @@ import org.apache.jetspeed.services.beans.UserDataTableBean;
 import org.apache.jetspeed.services.beans.UserDetailBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * UserManagerService. This REST service provides access to the jetspeed user manager. The access of all methods are restricted to the users with the 'admin'
@@ -138,7 +143,8 @@ public class UserManagerService
             result.setStartIndex(startIndex);
             result.setPageSize(results);
             result.setRecordsReturned(results);
-            
+            result.setAvailableRules(getProfilingRuleNames());
+            result.setTemplates(getUserTemplates());
             return result;
         }
         catch (SecurityException e)
@@ -178,8 +184,9 @@ public class UserManagerService
             List<String> availableRoles = roleManager.getRoleNames(null);
             List<Group> groups = groupManager.getGroupsForUser(user.getName());
             List<String> availableGroups = groupManager.getGroupNames(null);
-            
-            return new UserDetailBean(user, credential, roles, groups, availableRoles, availableGroups);
+            List<String> ruleNames = getProfilingRuleNames();
+            String userRule = getProfilingRuleForUser(user);
+            return new UserDetailBean(user, credential, roles, groups, availableRoles, availableGroups, userRule, ruleNames);
         }
         catch (Exception e)
         {
@@ -207,7 +214,8 @@ public class UserManagerService
                                     @FormParam("user_email") String userEmail, @FormParam("password") String password,
                                     @FormParam("password_confirm") String passwordConfirm, @FormParam("user_enabled") Boolean userEnabled,
                                     @FormParam("credential_update_required") Boolean credentialUpdateRequired, @FormParam("roles") List<String> roles,
-                                    @FormParam("groups") List<String> groups)
+                                    @FormParam("groups") List<String> groups,
+                                    @FormParam("rule") String rule)
     {
         checkPrivilege(servletRequest, JetspeedActions.VIEW);
         
@@ -302,7 +310,30 @@ public class UserManagerService
                     groupManager.addUserToGroup(userName, groupName);
                 }
             }
-            
+            if (rule == null || rule.trim().length() == 0) {
+                Collection<PrincipalRule> userRules = profiler.getRulesForPrincipal(user);
+                PrincipalRule deleteRule = null;
+                for (PrincipalRule userRule : userRules) {
+                    if (userRule.getLocatorName().equals(ProfileLocator.PAGE_LOCATOR)) {
+                        deleteRule = userRule;
+                        break;
+                    }
+                }
+                if (deleteRule != null) {
+                    profiler.deletePrincipalRule(deleteRule);
+                }
+            }
+            else {
+                ProfilingRule profilingRule  = profiler.getRule(rule);
+                if (profilingRule != null) {
+                    profiler.setRuleForPrincipal(user, profilingRule, ProfileLocator.PAGE_LOCATOR);
+                }
+                else
+                {
+                    log.error("Failed to set profiling rule for principal. Invalid profiling rule: " + rule);
+                }
+
+            }
             return new Boolean(true);
         }
         catch (WebApplicationException e)
@@ -351,7 +382,8 @@ public class UserManagerService
     public Boolean createUser(@Context HttpServletRequest servletRequest, @Context UriInfo uriInfo, @FormParam("name") String userName,
                               @FormParam("user_name_given") String userNameGiven, @FormParam("user_name_family") String userNameFamily,
                               @FormParam("user_email") String userEmail, @FormParam("password") String password,
-                              @FormParam("password_confirm") String passwordConfirm, @FormParam("credential_update_required") Boolean credentialUpdateRequired)
+                              @FormParam("password_confirm") String passwordConfirm, @FormParam("credential_update_required") Boolean credentialUpdateRequired,
+                              @FormParam("newrule") String rule)
     {
         checkPrivilege(servletRequest, JetspeedActions.VIEW);
         
@@ -404,19 +436,15 @@ public class UserManagerService
             }
             
             // add default user profiling rules
-            String[] defaultUserProfilingRules = Jetspeed.getConfiguration().getStringArray(PortalConfigurationConstants.REGISTRATION_ROLES_DEFAULT);
-            
-            for (String defaultUserProfilingRule : defaultUserProfilingRules)
-            {
-                ProfilingRule profilingRule = profiler.getRule(defaultUserProfilingRule);
-                
+            if (rule != null && rule.trim().length() > 0) {
+                ProfilingRule profilingRule = profiler.getRule(rule);
                 if (profilingRule != null)
                 {
-                    profiler.setRuleForPrincipal(user, profilingRule, "default");
+                    profiler.setRuleForPrincipal(user, profilingRule, ProfileLocator.PAGE_LOCATOR);
                 }
                 else
                 {
-                    log.error("Failed to set profiling rule for principal. Invalid profiling rule: " + defaultUserProfilingRule);
+                    log.error("Failed to set profiling rule for principal. Invalid profiling rule: " + rule);
                 }
             }
             
@@ -491,6 +519,45 @@ public class UserManagerService
             }
             throw new WebApplicationException(e);
         }
+    }
+
+    protected List<String> getProfilingRuleNames() {
+        List<String> names = new ArrayList<>();
+        names.add("");
+        Collection<ProfilingRule> rules = profiler.getRules();
+        for (ProfilingRule rule : rules) {
+            names.add(rule.getId());
+        }
+        return names;
+    }
+
+    protected String getProfilingRuleForUser(User user) {
+        Collection<PrincipalRule> userRules = profiler.getRulesForPrincipal(user);
+        for (PrincipalRule userRule : userRules) {
+            if (userRule.getLocatorName().equals(ProfileLocator.PAGE_LOCATOR)) {
+                return userRule.getProfilingRule().getId();
+            }
+        }
+        return "";
+    }
+
+    protected List<String> getUserTemplates() {
+        String defaultTemplateFolder = Jetspeed.getConfiguration().getString(PortalConfigurationConstants.PSML_TEMPLATE_FOLDER);
+        List<String> templates = new ArrayList<>();
+        try {
+            Folder templateFolder = pageManager.getFolder(Folder.USER_TEMPLATE_FOLDER);
+            Iterator<Node> folders = templateFolder.getFolders().iterator();
+            while (folders.hasNext()) {
+                Folder folder = (Folder)folders.next();
+                // LEFT OFF HERE - need display and page name
+                String name = (folder.getShortTitle() == null ? (folder.getTitle() == null ? folder.getName() : folder.getTitle()) : folder.getShortTitle());
+                templates.add(name);
+            }
+        }
+        catch (Exception e) {
+            log.error("Failed to retrieve templates", e);
+        }
+        return templates;
     }
 
     protected void checkPrivilege(HttpServletRequest servletRequest, String action)

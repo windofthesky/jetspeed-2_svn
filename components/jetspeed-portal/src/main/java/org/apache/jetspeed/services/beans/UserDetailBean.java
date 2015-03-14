@@ -16,18 +16,17 @@
  */
 package org.apache.jetspeed.services.beans;
 
+import org.apache.jetspeed.security.Group;
+import org.apache.jetspeed.security.PasswordCredential;
+import org.apache.jetspeed.security.Role;
+import org.apache.jetspeed.security.User;
+
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.jetspeed.security.Group;
-import org.apache.jetspeed.security.PasswordCredential;
-import org.apache.jetspeed.security.Role;
-import org.apache.jetspeed.security.User;
 
 /**
  * DTO for user details data. The object will be transformed to JSON to be
@@ -48,13 +47,15 @@ public class UserDetailBean implements Serializable {
 	private List<String> groups = null;
 	private List<String> availableRoles = null;
 	private List<String> availableGroups = null;
-
+	private List<String> availableRules = null;
+	private String rule = null;
 	private static final long serialVersionUID = 1L;
 
 	public UserDetailBean() {
 	}
 
-	public UserDetailBean(User user, PasswordCredential credential, List<Role> roles, List<Group> groups, List<String> allRoles, List<String> allGroups) {
+	public UserDetailBean(User user, PasswordCredential credential, List<Role> roles, List<Group> groups,
+						  List<String> allRoles, List<String> allGroups, String rule, List<String> profilingRules) {
 		this.name = user.getName();
 		this.infoMap = user.getInfoMap();
 		this.creationDate = user.getCreationDate();
@@ -62,6 +63,8 @@ public class UserDetailBean implements Serializable {
 		this.enabled = user.isEnabled();
 		this.availableRoles = allRoles;
 		this.availableGroups = allGroups;
+		this.availableRules = profilingRules;
+		this.rule = rule;
 		this.credentialUpdateRequired = credential.isUpdateRequired();
 		for (Role role : roles) {
 			this.roles = (this.roles == null ? new ArrayList<String>() : this.roles);
@@ -221,5 +224,21 @@ public class UserDetailBean implements Serializable {
 	 */
 	public boolean isCredentialUpdateRequired() {
 		return credentialUpdateRequired;
+	}
+
+	public List<String> getAvailableRules() {
+		return availableRules;
+	}
+
+	public void setAvailableRules(List<String> availableRules) {
+		this.availableRules = availableRules;
+	}
+
+	public String getRule() {
+		return rule;
+	}
+
+	public void setRule(String rule) {
+		this.rule = rule;
 	}
 }

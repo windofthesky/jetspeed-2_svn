@@ -16,15 +16,14 @@
  */
 package org.apache.jetspeed.services.beans;
 
+import org.apache.jetspeed.security.JetspeedPrincipal;
+import org.apache.jetspeed.security.JetspeedPrincipalResultList;
+
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.jetspeed.security.JetspeedPrincipal;
-import org.apache.jetspeed.security.JetspeedPrincipalResultList;
 
 /**
  * DTO for user search result list to be displayed in the view. The object will
@@ -45,6 +44,8 @@ public class UserDataTableBean implements Serializable {
 	private String dir = "asc";
 	private long pageSize = 5;
 	private List<HashMap<String, String>> records = null;
+	private List<String> availableRules = null;
+	private List<String> templates = null;
 
 	public UserDataTableBean() {
 	}
@@ -169,4 +170,19 @@ public class UserDataTableBean implements Serializable {
 		this.records = records;
 	}
 
+	public List<String> getAvailableRules() {
+		return availableRules;
+	}
+
+	public void setAvailableRules(List<String> availableRules) {
+		this.availableRules = availableRules;
+	}
+
+	public List<String> getTemplates() {
+		return templates;
+	}
+
+	public void setTemplates(List<String> templates) {
+		this.templates = templates;
+	}
 }
