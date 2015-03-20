@@ -35,6 +35,14 @@
     </parent>
     <packaging>pom</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <modules>
         <module>jetspeed-capability</module>
         <module>jetspeed-cm</module>

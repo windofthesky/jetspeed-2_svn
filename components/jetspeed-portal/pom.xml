@@ -201,10 +201,20 @@
     <dependency>
       <groupId>org.openid4java</groupId>
       <artifactId>openid4java-consumer</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.openid4java</groupId>
+          <artifactId>openid4java-nodeps</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>com-google-step2-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.openid4java</groupId>
+      <artifactId>openid4java-nodeps</artifactId>
     </dependency>
 
     <!-- Test Dependencies -->

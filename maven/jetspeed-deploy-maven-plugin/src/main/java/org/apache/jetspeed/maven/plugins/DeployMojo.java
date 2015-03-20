@@ -16,6 +16,14 @@
  */
 package org.apache.jetspeed.maven.plugins;
 
+import org.apache.jetspeed.maven.utils.Artifacts;
+import org.apache.jetspeed.tools.deploy.DeployFactory;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -38,14 +46,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import org.apache.jetspeed.maven.utils.Artifacts;
-import org.apache.jetspeed.tools.deploy.DeployFactory;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 
 /**
  * DeployerMojo is a generic Jetspeed Portal artifacts en resources deployer.
@@ -90,7 +90,7 @@ public class DeployMojo extends AbstractMojo
         private Boolean expand;
         private boolean expandKeepExt;
         private Boolean infuse;
-        private Boolean infusionStripLoggers;
+        private Boolean infusionStripLoggers = false;
         private String infusionForcedVersion;
     }
     
