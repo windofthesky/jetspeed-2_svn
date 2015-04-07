@@ -16,11 +16,10 @@
  */
 package org.apache.jetspeed.security;
 
-import java.util.List;
+import junit.framework.Test;
 
 import javax.security.auth.Subject;
-
-import junit.framework.Test;
+import java.util.List;
 
 
 /**
@@ -36,6 +35,10 @@ public class TestGroupManager extends AbstractLDAPSecurityTestCase
     public static Test suite()
     {
         return createFixturedTestSuite(TestGroupManager.class, "ldapTestSetup", "ldapTestTeardown");
+    }
+
+    public TestGroupManager() {
+        super();
     }
 
     /**
