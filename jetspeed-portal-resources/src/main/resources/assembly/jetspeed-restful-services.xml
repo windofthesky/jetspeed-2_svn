@@ -184,6 +184,8 @@
     <meta key="j2:cat" value="default" />
     <constructor-arg ref="PortalStatistics" />
     <constructor-arg ref="RolesSecurityBehavior" />
+    <constructor-arg ref="org.apache.jetspeed.cache.CacheMonitor" />
+
   </bean>
 
 </beans>
