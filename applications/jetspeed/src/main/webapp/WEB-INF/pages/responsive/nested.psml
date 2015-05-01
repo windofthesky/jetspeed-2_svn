@@ -7,7 +7,7 @@
     <title>Nested Demo</title>
     <short-title>Nested</short-title>
     <fragment id="nested-2" type="layout" name="jetspeed-layouts::ResponsiveLayout">
-        <fragment id="nested-6" type="portlet" name="j2-admin::ProfilerAdmin">
+        <fragment id="nested-6" type="portlet" name="demo::PickANumberPortlet">
             <property name="row" value="0"></property>
             <property name="column" value="0"></property>
         </fragment>
