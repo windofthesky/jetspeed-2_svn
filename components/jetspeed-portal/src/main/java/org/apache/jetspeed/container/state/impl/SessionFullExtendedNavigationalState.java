@@ -78,7 +78,7 @@ public class SessionFullExtendedNavigationalState extends SessionFullNavigationa
             }
         }
 
-        // push the informaion up to SessionNavigationalState, so that we can handle it appropriately there
+        // push the information up to SessionNavigationalState, so that we can handle it appropriately there
         setClearPortletsModeAndWindowStateEnabled(resetPagePortlets);
         //Inform the super
         return super.sync(context);

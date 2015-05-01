@@ -1446,11 +1446,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.portals.bridges</groupId>
-        <artifactId>portals-bridges-frameworks</artifactId>
-        <version>${org.apache.portals.bridges.frameworks.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.portals.bridges</groupId>
         <artifactId>portals-bridges-groovy</artifactId>
         <version>${org.apache.portals.bridges.groovy.version}</version>
       </dependency>

@@ -16,21 +16,20 @@
  */
 package org.apache.jetspeed.container.state.impl;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.PortalContext;
+import org.apache.jetspeed.container.PortletWindow;
+import org.apache.jetspeed.container.url.PortalURL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-
-import org.apache.commons.codec.binary.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.PortalContext;
-import org.apache.jetspeed.container.url.PortalURL;
-import org.apache.jetspeed.container.PortletWindow;
 
 /**
  * JetspeedNavigationalStateCodec
@@ -346,7 +345,7 @@ public class JetspeedNavigationalStateCodec implements NavigationalStateCodec
         {
             String windowId = iter.next();
             PortletWindowRequestNavigationalState requestState = states.getPortletWindowNavigationalState(windowId);
-            if (!navParamsStateFull || !renderParamsStateFull || requestState.isTargetted())
+            if (!navParamsStateFull || requestState.isTargetted()) //(!navParamsStateFull || !renderParamsStateFull || requestState.isTargetted())
             {
                 if (!(targetWindowId != null && windowId.equals(targetWindowId)))
                 {
