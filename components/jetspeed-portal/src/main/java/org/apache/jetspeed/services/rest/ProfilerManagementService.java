@@ -18,12 +18,10 @@ package org.apache.jetspeed.services.rest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.JetspeedActions;
-import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
 import org.apache.jetspeed.profiler.rules.RuleCriterion;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.services.beans.ProfileCriterionBean;
 import org.apache.jetspeed.services.beans.ProfileDataTableBean;
 import org.apache.jetspeed.services.beans.ProfileEditBean;
@@ -58,19 +56,18 @@ import java.util.Map;
  * @version $Id$
  */
 @Path("/profiler/")
-public class ProfilerManagementService
+public class ProfilerManagementService extends AbstractRestService
 {
 
     private static Logger log = LoggerFactory.getLogger(ProfilerManagementService.class);
 
     private Profiler profiler;
-    private PortletActionSecurityBehavior securityBehavior;
 
     public ProfilerManagementService(Profiler profiler,
                                      PortletActionSecurityBehavior securityBehavior)
     {
+        super(securityBehavior);
         this.profiler = profiler;
-        this.securityBehavior = securityBehavior;
     }
 
     /**
@@ -95,6 +92,8 @@ public class ProfilerManagementService
     public ProfileEditBean lookupProfile(@Context HttpServletRequest servletRequest,
                                                   @Context UriInfo uriInfo,
                                                   @PathParam("id") String profileId) {
+        checkPrivilege(servletRequest, JetspeedActions.VIEW);
+
         if (StringUtils.isBlank(profileId)) {
             throw new WebApplicationException(new IllegalArgumentException("Profile id not specified"));
         }
@@ -114,7 +113,10 @@ public class ProfilerManagementService
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("/update")
-    public UpdateResultBean addOrUpdateProfile(String json) {
+    public UpdateResultBean addOrUpdateProfile(String json, @Context HttpServletRequest servletRequest) {
+
+        checkPrivilege(servletRequest, JetspeedActions.VIEW);
+
         ObjectMapper writeMapper = new ObjectMapper();
         ProfileEditBean dtoProfile = null;
         try {
@@ -197,10 +199,12 @@ public class ProfilerManagementService
 
     @DELETE
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public UpdateResultBean deleteProfiles(List<String> profileIds) {
+    public UpdateResultBean deleteProfiles(List<String> profileIds, @Context HttpServletRequest servletRequest) {
         if (log.isDebugEnabled()) {
             log.debug(String.format("processing DELETE on /profiler for %s", profileIds));
         }
+
+        checkPrivilege(servletRequest, JetspeedActions.VIEW);
 
         if (profileIds == null || profileIds.size() == 0) {
             throw new WebApplicationException(new IllegalArgumentException("Profile ids to delete not specified"));
@@ -222,12 +226,4 @@ public class ProfilerManagementService
         }
     }
 
-    protected void checkPrivilege(HttpServletRequest servletRequest, String action)
-    {
-        RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
-        if (securityBehavior != null && !securityBehavior.checkAccess(requestContext, action))
-        {
-            throw new WebApplicationException(new JetspeedException("Insufficient privilege to access this REST service."));
-        }
-    }
 }

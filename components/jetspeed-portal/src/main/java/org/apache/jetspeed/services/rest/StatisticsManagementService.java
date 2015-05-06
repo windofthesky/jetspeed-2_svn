@@ -19,9 +19,7 @@ package org.apache.jetspeed.services.rest;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.CacheMonitorState;
 import org.apache.jetspeed.cache.JetspeedCacheMonitor;
-import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
-import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.statistics.AggregateStatistics;
 import org.apache.jetspeed.statistics.InvalidCriteriaException;
 import org.apache.jetspeed.statistics.PortalStatistics;
@@ -45,19 +43,18 @@ import java.util.Map;
  * @version $Id: $
  */
 @Path("/statistics/")
-public class StatisticsManagementService {
+public class StatisticsManagementService extends AbstractRestService {
 
     private static Logger log = LoggerFactory.getLogger(StatisticsManagementService.class);
 
     private PortalStatistics statistics;
-    private PortletActionSecurityBehavior securityBehavior;
     private JetspeedCacheMonitor cacheMonitor;
 
     public StatisticsManagementService(PortalStatistics statistics,
                                        PortletActionSecurityBehavior securityBehavior,
                                        JetspeedCacheMonitor cache) {
+        super(securityBehavior);
         this.statistics = statistics;
-        this.securityBehavior = securityBehavior;
         this.cacheMonitor = cache;
     }
 
@@ -79,7 +76,6 @@ public class StatisticsManagementService {
         Map<String,Long> memory = new HashMap<>();
         memory.put("total", runtime.totalMemory());
         memory.put("free", runtime.freeMemory());
-        //memory.put("max", runtime.maxMemory());
         Map<String,Map<String,Long>> result = new HashMap<>();
         result.put("memory", memory);
 
@@ -108,22 +104,18 @@ public class StatisticsManagementService {
             List statList = pageStats.getStatlist();
             int size = statList.size();
 
-            for (int i=0; i<size; i++){
+            for (int i = 0; i < Math.max(5, size); i++){
                 HashMap<String,String> stats = (HashMap)statList.get(i);
                 String pageName = stats.get("groupColumn");
                 String pageCount = stats.get("count");
-                pages.put(pageName.replaceAll("/(.+)/", "/"), Long.valueOf(pageCount));
+                if (pageName != null) {
+                    pages.put(pageName, Long.valueOf(pageCount));
+                }
             }
         }
         catch (InvalidCriteriaException e) {
             throw new WebApplicationException(new IllegalArgumentException("Statistics query criteria invalid"));
         }
-
-//        pages.put("/default-page", (long)300);
-//        pages.put("/four-rows", (long)120);
-//        pages.put("/login", (long)90);
-//        pages.put("/register", (long)62);
-//        pages.put("/dashboard", (long)17);
 
         Map<String,Map<String,Long>> result = new HashMap<>();
         result.put("pages", pages);
@@ -262,11 +254,5 @@ public class StatisticsManagementService {
         return result;
     }
 
-    protected void checkPrivilege(HttpServletRequest servletRequest, String action) {
-        RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
-        if (securityBehavior != null && !securityBehavior.checkAccess(requestContext, action)) {
-            throw new WebApplicationException(new JetspeedException("Insufficient privilege to access this REST service."));
-        }
-    }
 }
 
