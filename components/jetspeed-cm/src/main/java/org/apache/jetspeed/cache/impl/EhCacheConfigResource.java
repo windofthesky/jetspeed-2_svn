@@ -16,24 +16,21 @@
  */
 package org.apache.jetspeed.cache.impl;
 
+import net.sf.ehcache.Cache;
+import org.apache.jetspeed.components.util.ConfigurationProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.AbstractResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Map;
 import java.util.HashMap;
-
-import net.sf.ehcache.Cache;
-
-import org.springframework.core.io.AbstractResource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.beans.factory.InitializingBean;
-
-import org.apache.jetspeed.components.util.ConfigurationProperties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 
 /**
  * EhCacheConfigResource
@@ -74,6 +71,11 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
     public static final String EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME = "org.apache.jetspeed.ehcache.pagemanager.maxfiles";
     public static final String EHCACHE_PAGE_MANAGER_MAX_FILES_DEFAULT = "1000";
 
+    public static final String EHCACHE_JSPM_MAX_ELEMENTS_PROP_NAME = "org.apache.jetspeed.ehcache.jspm.maxelements";
+    public static final String EHCACHE_JSPM_MAX_ELEMENTS_DEFAULT = "128";
+    public static final String EHCACHE_JSPM_ELEMENT_TTL_PROP_NAME = "org.apache.jetspeed.ehcache.jspm.element.ttl";
+    public static final String EHCACHE_JSPM_ELEMENT_TTL_DEFAULT = "150";
+
     // Class Members
     
     private static Map overrideSystemProperties;
@@ -108,7 +110,9 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
     private String defaultPageManagerMaxElements;
     private String defaultPageManagerElementTTL;
     private String defaultPageManagerMaxFiles;
-    
+    private String defaultJSPMMaxElements;
+    private String defaultJSPMElementTTL;
+
     private ClassPathResource classPathResource;
     
     // InitializingBean implementation
@@ -169,6 +173,14 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
                 {
                     defaultPageManagerMaxFiles = configuration.getString(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME);
                 }
+                if (configuration.getString(EHCACHE_JSPM_MAX_ELEMENTS_PROP_NAME) != null)
+                {
+                    defaultJSPMMaxElements = configuration.getString(EHCACHE_JSPM_MAX_ELEMENTS_PROP_NAME);
+                }
+                if (configuration.getString(EHCACHE_JSPM_ELEMENT_TTL_PROP_NAME) != null)
+                {
+                    defaultJSPMElementTTL = configuration.getString(EHCACHE_JSPM_ELEMENT_TTL_PROP_NAME);
+                }
             }
 
             // save override system properties
@@ -219,6 +231,16 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
                 if (overridePageManagerMaxFiles != null)
                 {
                     overrideSystemProperties.put(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME, overridePageManagerMaxFiles);
+                }
+                String overrideJSPMMaxElements = System.getProperty(EHCACHE_JSPM_MAX_ELEMENTS_PROP_NAME);
+                if (overrideJSPMMaxElements != null)
+                {
+                    overrideSystemProperties.put(EHCACHE_JSPM_MAX_ELEMENTS_PROP_NAME, overrideJSPMMaxElements);
+                }
+                String overrideJSPMElementTTL = System.getProperty(EHCACHE_JSPM_ELEMENT_TTL_PROP_NAME);
+                if (overrideJSPMElementTTL != null)
+                {
+                    overrideSystemProperties.put(EHCACHE_JSPM_ELEMENT_TTL_PROP_NAME, overrideJSPMElementTTL);
                 }
             }
             
@@ -287,6 +309,28 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
                 setPageManagerMaxFiles = ((defaultPageManagerMaxFiles != null) ? defaultPageManagerMaxFiles : System.getProperty(EHCACHE_PAGE_MANAGER_MAX_FILES_LEGACY_PROP_NAME, EHCACHE_PAGE_MANAGER_MAX_FILES_DEFAULT));
             }
             System.setProperty(EHCACHE_PAGE_MANAGER_MAX_FILES_PROP_NAME, setPageManagerMaxFiles);
+
+            // set system properties used in jetspeed security persistence manager cache configuration
+            String setJSPMMaxElements = (String)overrideSystemProperties.get(EHCACHE_JSPM_MAX_ELEMENTS_PROP_NAME);
+            if (setJSPMMaxElements == null)
+            {
+                setJSPMMaxElements = ((defaultJSPMMaxElements != null) ? defaultJSPMMaxElements : EHCACHE_JSPM_MAX_ELEMENTS_DEFAULT);
+                if ((setJSPMMaxElements != null) && (Integer.parseInt(setJSPMMaxElements) < 0))
+                {
+                    setJSPMMaxElements = EHCACHE_JSPM_MAX_ELEMENTS_DEFAULT;
+                }
+            }
+            System.setProperty(EHCACHE_JSPM_MAX_ELEMENTS_PROP_NAME, setJSPMMaxElements);
+            String setJSPMElementTTL = (String)overrideSystemProperties.get(EHCACHE_JSPM_ELEMENT_TTL_PROP_NAME);
+            if (setJSPMElementTTL == null)
+            {
+                setJSPMElementTTL = ((defaultJSPMElementTTL != null) ? defaultJSPMElementTTL : EHCACHE_JSPM_ELEMENT_TTL_DEFAULT);
+                if ((setJSPMElementTTL != null) && (Integer.parseInt(setJSPMElementTTL) < 0))
+                {
+                    setJSPMElementTTL = EHCACHE_JSPM_ELEMENT_TTL_DEFAULT;
+                }
+            }
+            System.setProperty(EHCACHE_JSPM_ELEMENT_TTL_PROP_NAME, setJSPMElementTTL);
 
             // setup delegate ClassPathResource
             String configResource = System.getProperty(EHCACHE_CONFIG_RESOURCE_PROP_NAME);
@@ -442,5 +486,21 @@ public class EhCacheConfigResource extends AbstractResource implements Initializ
     public void setDefaultPageManagerMaxFiles(String defaultPageManagerMaxFiles)
     {
         this.defaultPageManagerMaxFiles = defaultPageManagerMaxFiles;
+    }
+
+    /**
+     * @param defaultJSPMMaxElements the defaultPageManagerMaxElements to set
+     */
+    public void setDefaultJSPMMaxElements(String defaultJSPMMaxElements)
+    {
+        this.defaultJSPMMaxElements = defaultJSPMMaxElements;
+    }
+
+    /**
+     * @param defaultJSPMElementTTL the defaultJSPMElementTTL to set
+     */
+    public void setDefaultJSPMElementTTL(String defaultJSPMElementTTL)
+    {
+        this.defaultJSPMElementTTL = defaultJSPMElementTTL;
     }
 }

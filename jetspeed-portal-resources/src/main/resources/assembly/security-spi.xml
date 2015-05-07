@@ -43,6 +43,9 @@
     <constructor-arg index="1">
       <ref bean="org.apache.jetspeed.security.spi.impl.JetspeedPrincipalLookupManagerFactory"/>
     </constructor-arg>
+    <constructor-arg index="2">
+      <ref bean="org.apache.jetspeed.security.spi.impl.cache.JSPMCache"/>
+    </constructor-arg>
   </bean>
   
   <bean id="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" parent="baseTransactionProxy">

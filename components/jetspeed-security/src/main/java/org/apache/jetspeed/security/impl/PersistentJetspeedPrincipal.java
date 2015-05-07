@@ -17,12 +17,7 @@
 
 package org.apache.jetspeed.security.impl;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-
+import org.apache.jetspeed.cache.DistributedCacheObject;
 import org.apache.jetspeed.security.SecurityAttributes;
 import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.impl.SynchronizationStateAccess;
@@ -30,11 +25,17 @@ import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerAware;
 import org.apache.ojb.broker.PersistenceBrokerException;
 
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * @version $Id$
  *
  */
-public abstract class PersistentJetspeedPrincipal extends TransientJetspeedPrincipal implements PersistenceBrokerAware, Serializable
+public abstract class PersistentJetspeedPrincipal extends TransientJetspeedPrincipal implements PersistenceBrokerAware, DistributedCacheObject, Serializable
 {
     private Long id;
     private Timestamp creationDate;
@@ -193,4 +194,8 @@ public abstract class PersistentJetspeedPrincipal extends TransientJetspeedPrinc
         return SynchronizationStateAccess.isSynchronizing();
     }
 
+    @Override
+    public void notifyChange(int action)
+    {
+    }
 }

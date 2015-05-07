@@ -16,15 +16,6 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
-import java.io.Serializable;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.jetspeed.components.dao.InitablePersistenceBrokerDaoSupport;
 import org.apache.jetspeed.i18n.KeyedMessage;
 import org.apache.jetspeed.security.JetspeedPermission;
@@ -52,6 +43,7 @@ import org.apache.jetspeed.security.spi.SecurityDomainAccessManager;
 import org.apache.jetspeed.security.spi.SecurityDomainStorageManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialAccessManager;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialStorageManager;
+import org.apache.jetspeed.security.spi.impl.cache.JSPMCache;
 import org.apache.ojb.broker.PersistenceBroker;
 import org.apache.ojb.broker.PersistenceBrokerException;
 import org.apache.ojb.broker.accesslayer.LookupException;
@@ -66,6 +58,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.orm.ojb.PersistenceBrokerCallback;
+
+import java.io.Serializable;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -84,6 +85,8 @@ public class JetspeedSecurityPersistenceManager
     private Long defaultSecurityDomainId;
     
     private JetspeedPrincipalLookupManagerFactory jpplf = null;
+
+    private JSPMCache jspmCache = null;
     
     protected static class ManagedListByQueryCallback implements PersistenceBrokerCallback
     {
@@ -100,28 +103,47 @@ public class JetspeedSecurityPersistenceManager
         }
     }
     
-	public JetspeedSecurityPersistenceManager(String repositoryPath, JetspeedPrincipalLookupManagerFactory lookupManagerFactory)
+	public JetspeedSecurityPersistenceManager(String repositoryPath, JetspeedPrincipalLookupManagerFactory lookupManagerFactory, JSPMCache jspmCache)
     {
         super(repositoryPath);
         this.jpplf = lookupManagerFactory;
-        
+        this.jspmCache = jspmCache;
     }
     
     @SuppressWarnings("unchecked")
-    protected Long getPrincipalId(String name, String type, Long domainId) throws SecurityException
+    public Long getPrincipalId(String name, String type, Long domainId) throws SecurityException
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("name", name);
         criteria.addEqualTo("type", type);
         criteria.addEqualTo("domainId", domainId);
+        // check cache
+        String cacheKey = "getPrincipalId:"+criteria;
+        Object principalId = jspmCache.getPrincipalQuery(cacheKey);
+        if (principalId != null)
+        {
+            if (principalId != JSPMCache.CACHE_NULL)
+            {
+                return (Long)principalId;
+            }
+            throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(type, name));
+        }
+        // perform query
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"id"});
         // need to force OJB to return a Long, otherwise it'll return a Integer causing a CCE
         query.setJdbcTypes(new int[]{Types.BIGINT});
         for (Iterator<Object[]> iter = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query); iter.hasNext(); )
         {
-            return (Long)iter.next()[0];
+            principalId = iter.next()[0];
+            // put result in cache
+            jspmCache.putPrincipalQuery(cacheKey, (Long)principalId, null, domainId, principalId);
+            // return result
+            return (Long)principalId;
         }
+        // put null result in cache
+        jspmCache.putPrincipalQuery(cacheKey, JSPMCache.ANY_ID, null, domainId, JSPMCache.CACHE_NULL);
+        // throw result
         throw new SecurityException(SecurityException.PRINCIPAL_DOES_NOT_EXIST.createScoped(type, name));
     }
     
@@ -129,19 +151,33 @@ public class JetspeedSecurityPersistenceManager
     {
         if (principal.getId() == null)
         {
-            if (principal.getDomainId() != null){
+            if (principal.getDomainId() != null)
+            {
                 return principalExists(principal.getName(), principal.getType(), principal.getDomainId());    
-            } else {
+            }
+            else
+            {
                 return principalExists(principal.getName(), principal.getType());
             }
-            
         }
         Criteria criteria = new Criteria();
         criteria.addEqualTo("id", principal.getId());
         criteria.addEqualTo("type", principal.getType().getName());
         criteria.addEqualTo("domainId", principal.getDomainId());
+        // check cache
+        String cacheKey = "principalExists:"+criteria;
+        Boolean principalExists = (Boolean)jspmCache.getPrincipalQuery(cacheKey);
+        if (principalExists != null)
+        {
+            return principalExists;
+        }
+        // perform query
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
-        return getPersistenceBrokerTemplate().getCount(query) == 1;
+        principalExists = (getPersistenceBrokerTemplate().getCount(query) == 1);
+        // put result in cache
+        jspmCache.putPrincipalQuery(cacheKey, (principalExists ? principal.getId() : JSPMCache.ANY_ID), null, principal.getDomainId(), principalExists);
+        // return result
+        return principalExists;
     }
 
 	public List<JetspeedPrincipal> getAssociatedFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
@@ -161,8 +197,27 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("type", to.getName());
         criteria.addEqualTo("associationsTo.from.domainId", fromSecurityDomain);
         criteria.addEqualTo("domainId", toSecurityDomain);
+        // check cache
+        String cacheKey = "getAssociatedFrom:"+criteria;
+        List<JetspeedPrincipal> associatedFrom = (List<JetspeedPrincipal>)jspmCache.getAssociationQuery(cacheKey);
+        if (associatedFrom != null)
+        {
+            return new ArrayList<JetspeedPrincipal>(associatedFrom);
+        }
+        // perform query
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
-        return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        associatedFrom = (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        // put result in cache
+        try
+        {
+            Long principalFromId = getPrincipalId(principalFromName, from.getName(), fromSecurityDomain);
+            jspmCache.putAssociationQuery(cacheKey, principalFromId, extractPrincipalIds(associatedFrom), fromSecurityDomain, toSecurityDomain, new ArrayList<JetspeedPrincipal>(associatedFrom));
+        }
+        catch (SecurityException se)
+        {
+        }
+        // return result
+        return associatedFrom;
     }
 
     public List<JetspeedPrincipal> getAssociatedTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
@@ -180,8 +235,27 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("associationsFrom.to.type", to.getName());
         criteria.addEqualTo("associationsFrom.to.domainId", toSecurityDomain);
         criteria.addEqualTo("domainId", fromSecurityDomain);
+        // check cache
+        String cacheKey = "getAssociatedTo:"+criteria;
+        List<JetspeedPrincipal> associatedTo = (List<JetspeedPrincipal>)jspmCache.getAssociationQuery(cacheKey);
+        if (associatedTo != null)
+        {
+            return new ArrayList<JetspeedPrincipal>(associatedTo);
+        }
+        // perform query
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
-        return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        associatedTo = (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        // put result in cache
+        try
+        {
+            Long principalToId = getPrincipalId(principalToName, to.getName(), toSecurityDomain);
+            jspmCache.putAssociationQuery(cacheKey, principalToId, extractPrincipalIds(associatedTo), fromSecurityDomain, toSecurityDomain, new ArrayList<JetspeedPrincipal>(associatedTo));
+        }
+        catch (SecurityException se)
+        {
+        }
+        // return result
+        return associatedTo;
     }
 
     public List<JetspeedPrincipal> getAssociatedFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
@@ -199,8 +273,20 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("type", to.getName());
         criteria.addEqualTo("associationsTo.from.domainId", fromSecurityDomain);
         criteria.addEqualTo("domainId", toSecurityDomain);
+        // check cache
+        String cacheKey = "getAssociatedFrom:"+criteria;
+        List<JetspeedPrincipal> associatedFrom = (List<JetspeedPrincipal>)jspmCache.getAssociationQuery(cacheKey);
+        if (associatedFrom != null)
+        {
+            return new ArrayList<JetspeedPrincipal>(associatedFrom);
+        }
+        // perform query
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
-        return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        associatedFrom = (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        // put result in cache
+        jspmCache.putAssociationQuery(cacheKey, principalFromId, extractPrincipalIds(associatedFrom), fromSecurityDomain, toSecurityDomain, new ArrayList<JetspeedPrincipal>(associatedFrom));
+        // return result
+        return associatedFrom;
     }
 
     public List<JetspeedPrincipal> getAssociatedTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
@@ -218,8 +304,40 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("associationsFrom.to.type", to.getName());
         criteria.addEqualTo("associationsFrom.to.domainId", toSecurityDomain);
         criteria.addEqualTo("domainId", fromSecurityDomain);
+        // check cache
+        String cacheKey = "getAssociatedTo:"+criteria;
+        List<JetspeedPrincipal> associatedTo = (List<JetspeedPrincipal>)jspmCache.getAssociationQuery(cacheKey);
+        if (associatedTo != null)
+        {
+            return new ArrayList<JetspeedPrincipal>(associatedTo);
+        }
+        // perform query
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
-        return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        associatedTo = (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        // put result in cache
+        jspmCache.putAssociationQuery(cacheKey, principalToId, extractPrincipalIds(associatedTo), fromSecurityDomain, toSecurityDomain, new ArrayList<JetspeedPrincipal>(associatedTo));
+        // return result
+        return associatedTo;
+    }
+
+    /**
+     * Extract principal ids from principals.
+     *
+     * @param principals list of principals
+     * @return array of principal ids
+     */
+    private Long [] extractPrincipalIds(List<JetspeedPrincipal> principals)
+    {
+        if ((principals == null) || principals.isEmpty())
+        {
+            return null;
+        }
+        List<Long> principalIds = new ArrayList<Long>(principals.size());
+        for (JetspeedPrincipal principal : principals)
+        {
+            principalIds.add(principal.getId());
+        }
+        return principalIds.toArray(new Long[principalIds.size()]);
     }
 
     public List<String> getAssociatedNamesFrom(String principalFromName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
@@ -237,14 +355,35 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("type", to.getName());
         criteria.addEqualTo("associationsTo.from.domainId", fromSecurityDomain);
         criteria.addEqualTo("domainId", toSecurityDomain);
+        // check cache
+        String cacheKey = "getAssociatedNamesFrom:"+criteria;
+        List<String> associatedNamesFrom = (List<String>)jspmCache.getAssociationQuery(cacheKey);
+        if (associatedNamesFrom != null)
+        {
+            return new ArrayList<String>(associatedNamesFrom);
+        }
+        // perform query
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
-        query.setAttributes(new String[]{"name"});
-        ArrayList<String> names = new ArrayList<String>();
+        query.setAttributes(new String[]{"name", "id"});
+        associatedNamesFrom = new ArrayList<String>();
+        List<Long> associatedIdsFrom = new ArrayList<Long>();
         for (Iterator<Object[]> iter = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query); iter.hasNext(); )
         {
-            names.add((String)iter.next()[0]);
+            Object[] associatedFrom = iter.next();
+            associatedNamesFrom.add((String) associatedFrom[0]);
+            associatedIdsFrom.add(((Integer) associatedFrom[1]).longValue());
         }
-        return names;
+        // put result in cache
+        try
+        {
+            Long principalFromId = getPrincipalId(principalFromName, from.getName(), fromSecurityDomain);
+            jspmCache.putAssociationQuery(cacheKey, principalFromId, associatedIdsFrom.toArray(new Long[associatedIdsFrom.size()]), fromSecurityDomain, toSecurityDomain, new ArrayList<String>(associatedNamesFrom));
+        }
+        catch (SecurityException se)
+        {
+        }
+        // return result
+        return associatedNamesFrom;
     }
 
     public List<String> getAssociatedNamesFrom(Long principalFromId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
@@ -262,14 +401,28 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("type", to.getName());
         criteria.addEqualTo("associationsTo.from.domainId", fromSecurityDomain);
         criteria.addEqualTo("domainId", toSecurityDomain);
+        // check cache
+        String cacheKey = "getAssociatedNamesFrom:"+criteria;
+        List<String> associatedNamesFrom = (List<String>)jspmCache.getAssociationQuery(cacheKey);
+        if (associatedNamesFrom != null)
+        {
+            return new ArrayList<String>(associatedNamesFrom);
+        }
+        // perform query
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
-        query.setAttributes(new String[]{"name"});
-        ArrayList<String> names = new ArrayList<String>();
+        query.setAttributes(new String[]{"name", "id"});
+        associatedNamesFrom = new ArrayList<String>();
+        List<Long> associatedIdsFrom = new ArrayList<Long>();
         for (Iterator<Object[]> iter = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query); iter.hasNext(); )
         {
-            names.add((String)iter.next()[0]);
+            Object[] associatedFrom = iter.next();
+            associatedNamesFrom.add((String) associatedFrom[0]);
+            associatedIdsFrom.add(((Integer) associatedFrom[1]).longValue());
         }
-        return names;
+        // put result in cache
+        jspmCache.putAssociationQuery(cacheKey, principalFromId, associatedIdsFrom.toArray(new Long[associatedIdsFrom.size()]), fromSecurityDomain, toSecurityDomain, new ArrayList<String>(associatedNamesFrom));
+        // return result
+        return associatedNamesFrom;
     }
 
     public List<String> getAssociatedNamesTo(String principalToName, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
@@ -287,14 +440,35 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("associationsFrom.to.type", to.getName());
         criteria.addEqualTo("associationsFrom.to.domainId", toSecurityDomain);
         criteria.addEqualTo("domainId", fromSecurityDomain);
+        // check cache
+        String cacheKey = "getAssociatedNamesTo:"+criteria;
+        List<String> associatedNamesTo = (List<String>)jspmCache.getAssociationQuery(cacheKey);
+        if (associatedNamesTo != null)
+        {
+            return new ArrayList<String>(associatedNamesTo);
+        }
+        // perform query
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
-        query.setAttributes(new String[]{"name"});
-        ArrayList<String> names = new ArrayList<String>();
+        query.setAttributes(new String[]{"name", "id"});
+        associatedNamesTo = new ArrayList<String>();
+        List<Long> associatedIdsTo = new ArrayList<Long>();
         for (Iterator<Object[]> iter = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query); iter.hasNext(); )
         {
-            names.add((String)iter.next()[0]);
+            Object[] associatedTo = iter.next();
+            associatedNamesTo.add((String) associatedTo[0]);
+            associatedIdsTo.add(((Integer) associatedTo[1]).longValue());
         }
-        return names;
+        // put result in cache
+        try
+        {
+            Long principalToId = getPrincipalId(principalToName, from.getName(), fromSecurityDomain);
+            jspmCache.putAssociationQuery(cacheKey, principalToId, associatedIdsTo.toArray(new Long[associatedIdsTo.size()]), fromSecurityDomain, toSecurityDomain, new ArrayList<String>(associatedNamesTo));
+        }
+        catch (SecurityException se)
+        {
+        }
+        // return result
+        return associatedNamesTo;
     }
 
     public List<String> getAssociatedNamesTo(Long principalToId, JetspeedPrincipalType from, JetspeedPrincipalType to, String associationName){
@@ -312,19 +486,50 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("associationsFrom.to.type", to.getName());
         criteria.addEqualTo("associationsFrom.to.domainId", toSecurityDomain);
         criteria.addEqualTo("domainId", fromSecurityDomain);
+        // check cache
+        String cacheKey = "getAssociatedNamesTo:"+criteria;
+        List<String> associatedNamesTo = (List<String>)jspmCache.getAssociationQuery(cacheKey);
+        if (associatedNamesTo != null)
+        {
+            return new ArrayList<String>(associatedNamesTo);
+        }
+        // perform query
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
-        query.setAttributes(new String[]{"name"});
-        ArrayList<String> names = new ArrayList<String>();
+        query.setAttributes(new String[]{"name", "id"});
+        associatedNamesTo = new ArrayList<String>();
+        List<Long> associatedIdsTo = new ArrayList<Long>();
         for (Iterator<Object[]> iter = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query); iter.hasNext(); )
         {
-            names.add((String)iter.next()[0]);
+            Object[] associatedTo = iter.next();
+            associatedNamesTo.add((String) associatedTo[0]);
+            associatedIdsTo.add(((Integer) associatedTo[1]).longValue());
         }
-        return names;
+        // put result in cache
+        jspmCache.putAssociationQuery(cacheKey, principalToId, associatedIdsTo.toArray(new Long[associatedIdsTo.size()]), fromSecurityDomain, toSecurityDomain, new ArrayList<String>(associatedNamesTo));
+        // return result
+        return associatedNamesTo;
     }
 
     public JetspeedPrincipal getPrincipal(Long id)
-    {        
-        return (JetspeedPrincipal)getPersistenceBrokerTemplate().getObjectById(PersistentJetspeedPrincipal.class, id);
+    {
+        // check cache
+        Object principal = jspmCache.getPrincipal(id);
+        if (principal != null)
+        {
+            return ((principal != JSPMCache.CACHE_NULL) ? (JetspeedPrincipal) principal : null);
+        }
+        // perform query
+        try
+        {
+            principal = getPersistenceBrokerTemplate().getObjectById(PersistentJetspeedPrincipal.class, id);
+        }
+        catch (ObjectRetrievalFailureException orfe)
+        {
+        }
+        // put result in cache
+        jspmCache.putPrincipal(id, ((principal != null) ? principal : JSPMCache.CACHE_NULL));
+        // return result
+        return (JetspeedPrincipal) principal;
     }
 
     public JetspeedPrincipal getPrincipal(String principalName, JetspeedPrincipalType type)
@@ -338,8 +543,27 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("name", principalName);
         criteria.addEqualTo("type", type.getName());
         criteria.addEqualTo("domainId", securityDomain);
+        // check cache
+        String cacheKey = "getPrincipal:"+criteria;
+        Object principal = jspmCache.getPrincipalQuery(cacheKey);
+        if (principal != null)
+        {
+            return ((principal != JSPMCache.CACHE_NULL) ? (JetspeedPrincipal) principal : null);
+        }
+        // perform query
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
-        return (JetspeedPrincipal)getPersistenceBrokerTemplate().getObjectByQuery(query);
+        principal = getPersistenceBrokerTemplate().getObjectByQuery(query);
+        // put result in cache
+        if (principal != null)
+        {
+            jspmCache.putPrincipalQuery(cacheKey, ((JetspeedPrincipal)principal).getId(), null, securityDomain, principal);
+        }
+        else
+        {
+            jspmCache.putPrincipalQuery(cacheKey, JSPMCache.ANY_ID, null, securityDomain, JSPMCache.CACHE_NULL);
+        }
+        // return result
+        return (JetspeedPrincipal) principal;
     }
 
     public List<String> getPrincipalNames(String nameFilter, JetspeedPrincipalType type)
@@ -357,14 +581,25 @@ public class JetspeedSecurityPersistenceManager
         }
         criteria.addEqualTo("type", type.getName());
         criteria.addEqualTo("domainId", securityDomain);
+        // check cache
+        String cacheKey = "getPrincipalNames:"+criteria;
+        List<String> principalNames = (List<String>)jspmCache.getPrincipalQuery(cacheKey);
+        if (principalNames != null)
+        {
+            return new ArrayList<String>(principalNames);
+        }
+        // perform query
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class,criteria);
         query.setAttributes(new String[]{"name"});
-        ArrayList<String> names = new ArrayList<String>();
+        principalNames = new ArrayList<String>();
         for (Iterator<Object[]> iter = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query); iter.hasNext(); )
         {
-            names.add((String)iter.next()[0]);
+            principalNames.add((String) iter.next()[0]);
         }
-        return names;
+        // put result in cache
+        jspmCache.putPrincipalQuery(cacheKey, JSPMCache.ANY_ID, null, securityDomain, new ArrayList<String>(principalNames));
+        // return result
+        return principalNames;
     }
 
     public List<JetspeedPrincipal> getPrincipals(String nameFilter, JetspeedPrincipalType type)
@@ -382,8 +617,20 @@ public class JetspeedSecurityPersistenceManager
         }
         criteria.addEqualTo("type", type.getName());
         criteria.addEqualTo("domainId", securityDomain);
+        // check cache
+        String cacheKey = "getPrincipals:"+criteria;
+        List<JetspeedPrincipal> principals = (List<JetspeedPrincipal>)jspmCache.getPrincipalQuery(cacheKey);
+        if (principals != null)
+        {
+            return new ArrayList<JetspeedPrincipal>(principals);
+        }
+        // perform query
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
-        return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        principals = (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        // put result in cache
+        jspmCache.putPrincipalQuery(cacheKey, JSPMCache.ANY_ID, null, securityDomain, new ArrayList<JetspeedPrincipal>(principals));
+        // return result
+        return principals;
     }
 
     public List<JetspeedPrincipal> getPrincipalsByAttribute(String attributeName, String attributeValue, JetspeedPrincipalType type)
@@ -399,8 +646,20 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("attributes.value", attributeValue);
         criteria.addEqualTo("type", type.getName());
         criteria.addEqualTo("domainId", securityDomain);
+        // check cache
+        String cacheKey = "getPrincipalsByAttribute:"+criteria;
+        List<JetspeedPrincipal> principals = (List<JetspeedPrincipal>)jspmCache.getPrincipalQuery(cacheKey);
+        if (principals != null)
+        {
+            return new ArrayList<JetspeedPrincipal>(principals);
+        }
+        // perform query
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
-        return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        principals = (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        // put result in cache
+        jspmCache.putPrincipalQuery(cacheKey, JSPMCache.ANY_ID, null, securityDomain, new ArrayList<JetspeedPrincipal>(principals));
+        // return result
+        return principals;
     }
 
     public boolean principalExists(String principalName, JetspeedPrincipalType type)
@@ -414,8 +673,34 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("name", principalName);
         criteria.addEqualTo("type", type.getName());
         criteria.addEqualTo("domainId", securityDomain);
+        // check cache
+        String cacheKey = "principalExists:"+criteria;
+        Boolean principalExists = (Boolean)jspmCache.getPrincipalQuery(cacheKey);
+        if (principalExists != null)
+        {
+            return principalExists;
+        }
+        // perform query
         Query query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class,criteria);
-        return getPersistenceBrokerTemplate().getCount(query) == 1;
+        principalExists = (getPersistenceBrokerTemplate().getCount(query) == 1);
+        // put result in cache
+        if (principalExists)
+        {
+            try
+            {
+                Long principalId = getPrincipalId(principalName, type.getName(), securityDomain);
+                jspmCache.putPrincipalQuery(cacheKey, principalId, null, securityDomain, principalExists);
+            }
+            catch (SecurityException se)
+            {
+            }
+        }
+        else
+        {
+            jspmCache.putPrincipalQuery(cacheKey, JSPMCache.ANY_ID, null, securityDomain, principalExists);
+        }
+        // return result
+        return principalExists;
     }
 
     //
@@ -424,7 +709,8 @@ public class JetspeedSecurityPersistenceManager
     public void addPrincipal(JetspeedPrincipal principal, Set<JetspeedPrincipalAssociationReference> associations)
         throws SecurityException
     {
-        if (principal.getDomainId() == null && principal instanceof TransientJetspeedPrincipal){
+        if (principal.getDomainId() == null && principal instanceof TransientJetspeedPrincipal)
+        {
             ((TransientJetspeedPrincipal)principal).setDomainId(getDefaultSecurityDomainId());
         }
         if (principalExists(principal))
@@ -434,6 +720,9 @@ public class JetspeedSecurityPersistenceManager
         try
         {
             getPersistenceBrokerTemplate().store(principal);
+            // evict from and put in cache to notify
+            jspmCache.evictPrincipal(principal.getId());
+            jspmCache.putPrincipal(principal.getId(), principal);
         }
         catch (Exception pbe)
         {
@@ -452,7 +741,6 @@ public class JetspeedSecurityPersistenceManager
     }
 
     public void removePrincipal(JetspeedPrincipal principal) throws SecurityException
-    
     {
         if (!principalExists(principal))
         {
@@ -461,6 +749,8 @@ public class JetspeedSecurityPersistenceManager
         try
         {
             getPersistenceBrokerTemplate().delete(principal);
+            // evict from cache to notify
+            jspmCache.evictPrincipal(principal.getId());
         }
         catch (Exception pbe)
         {
@@ -479,7 +769,6 @@ public class JetspeedSecurityPersistenceManager
     }
 
     public void updatePrincipal(JetspeedPrincipal principal) throws SecurityException
-                                                            
     {
         if (!principalExists(principal))
         {
@@ -488,6 +777,9 @@ public class JetspeedSecurityPersistenceManager
         try
         {
             getPersistenceBrokerTemplate().store(principal);
+            // evict from and put in cache to notify
+            jspmCache.evictPrincipal(principal.getId());
+            jspmCache.putPrincipal(principal.getId(), principal);
         }
         catch (Exception pbe)
         {
@@ -513,19 +805,41 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("principalId", user.getId());
         criteria.addEqualTo("type", PasswordCredential.TYPE_CURRENT);
-        Query query = QueryFactory.newQuery(PasswordCredentialImpl.class,criteria);
-        PasswordCredentialImpl pwc = (PasswordCredentialImpl)getPersistenceBrokerTemplate().getObjectByQuery(query);
-        if (pwc == null)
+        // check cache
+        String cacheKey = "getPasswordCredential:"+criteria;
+        PasswordCredential passwordCredential = (PasswordCredential) jspmCache.getPasswordCredentialQuery(cacheKey);
+        if (passwordCredential != null)
         {
-            pwc = new PasswordCredentialImpl();
+            return passwordCredential;
         }
-        // store the user by hand as its configured as auto-retrieve="false"
-        pwc.setUser(user);
-        return pwc;
+        // perform query
+        Query query = QueryFactory.newQuery(PasswordCredentialImpl.class,criteria);
+        passwordCredential = (PasswordCredential) getPersistenceBrokerTemplate().getObjectByQuery(query);
+        if (passwordCredential != null)
+        {
+            // store the user by hand as its configured as auto-retrieve="false"
+            ((PasswordCredentialImpl)passwordCredential).setUser(user);
+        }
+        // put result in cache
+        if (passwordCredential != null)
+        {
+            jspmCache.putPasswordCredentialQuery(cacheKey, user.getId(), user.getDomainId(), passwordCredential);
+        }
+        // return result
+        if (passwordCredential == null)
+        {
+            passwordCredential = new PasswordCredentialImpl();
+            // store the user by hand as its configured as auto-retrieve="false"
+            ((PasswordCredentialImpl)passwordCredential).setUser(user);
+        }
+        return passwordCredential;
     }
 
     public void storePasswordCredential(PasswordCredential credential) throws SecurityException
     {
+        if (credential.getUser() == null) {
+            loadPasswordCredentialUser(credential);
+        }
         if (credential.isNewPasswordSet())
         {
             if (credential.getNewPassword() != null)
@@ -534,11 +848,14 @@ public class JetspeedSecurityPersistenceManager
             }
         }
         getPersistenceBrokerTemplate().store(credential);
+        // evict user principal from cache to notify
+        jspmCache.evictPrincipal(credential.getUser().getId());
     }
 
     public PasswordCredential getPasswordCredential(String userName){
         return getPasswordCredential(userName,getDefaultSecurityDomainId());
     }
+
     //
     // UserPasswordCredentialAccessManager interface implementation
     //
@@ -560,14 +877,39 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("user.enabled",true);
         criteria.addEqualTo("type", PasswordCredential.TYPE_CURRENT);
         criteria.addEqualTo("domainId", securityDomain);
+        // check cache
+        String cacheKey = "getPasswordCredential:"+criteria;
+        Object passwordCredential = jspmCache.getPasswordCredentialQuery(cacheKey);
+        if (passwordCredential != null)
+        {
+            return ((passwordCredential != JSPMCache.CACHE_NULL) ? (PasswordCredential) passwordCredential : null);
+        }
+        // perform query
         Query query = QueryFactory.newQuery(PasswordCredentialImpl.class,criteria);
-        PasswordCredentialImpl pwc = (PasswordCredentialImpl)getPersistenceBrokerTemplate().getObjectByQuery(query);
-        if (pwc != null)
+        passwordCredential = (PasswordCredential) getPersistenceBrokerTemplate().getObjectByQuery(query);
+        if (passwordCredential != null)
         {
             // store the userName by hand as the user is configured as auto-retrieve="false"
-            pwc.setUserName(userName);
+            ((PasswordCredentialImpl)passwordCredential).setUserName(userName);
         }
-        return pwc;
+        // put result in cache
+        if (passwordCredential != null)
+        {
+            try
+            {
+                Long principalId = getPrincipalId(userName, JetspeedPrincipalType.USER ,securityDomain);
+                jspmCache.putPasswordCredentialQuery(cacheKey, principalId, securityDomain, passwordCredential);
+            }
+            catch (SecurityException se)
+            {
+            }
+        }
+        else
+        {
+            jspmCache.putPasswordCredentialQuery(cacheKey, JSPMCache.ANY_ID, securityDomain, JSPMCache.CACHE_NULL);
+        }
+        // return result
+        return (PasswordCredential) passwordCredential;
     }
     
     public void loadPasswordCredentialUser(final PasswordCredential credential)
@@ -597,14 +939,25 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         criteria.addEqualTo("principalId", user.getId());
         criteria.addEqualTo("type", PasswordCredential.TYPE_HISTORICAL);
+        // check cache
+        String cacheKey = "getHistoricPasswordCredentials:"+criteria;
+        List<PasswordCredential> passwordCredentials = (List<PasswordCredential>) jspmCache.getPasswordCredentialQuery(cacheKey);
+        if (passwordCredentials != null)
+        {
+            return new ArrayList<PasswordCredential>(passwordCredentials);
+        }
+        // perform query
         Query query = QueryFactory.newQuery(PasswordCredentialImpl.class,criteria);
-        List<PasswordCredential> list = (List<PasswordCredential>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
-        for (PasswordCredential pwc : list)
+        passwordCredentials = (List<PasswordCredential>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        for (PasswordCredential passwordCredential : passwordCredentials)
         {
             // store the user by hand as its configured as auto-retrieve="false"
-            ((PasswordCredentialImpl)pwc).setUser(user);
+            ((PasswordCredentialImpl)passwordCredential).setUser(user);
         }
-        return list;
+        // put result in cache
+        jspmCache.putPasswordCredentialQuery(cacheKey, user.getId(), user.getDomainId(), new ArrayList<PasswordCredential>(passwordCredentials));
+        // return result
+        return passwordCredentials;
     }
 
     //
@@ -623,6 +976,9 @@ public class JetspeedSecurityPersistenceManager
             try
             {
                 getPersistenceBrokerTemplate().store(new JetspeedPrincipalAssociation(from, to, associationName));
+                // evict principals from cache to notify
+                jspmCache.evictPrincipal(from.getId());
+                jspmCache.evictPrincipal(to.getId());
             }
             catch (Exception pbe)
             {
@@ -653,6 +1009,9 @@ public class JetspeedSecurityPersistenceManager
             try
             {
                 getPersistenceBrokerTemplate().delete(new JetspeedPrincipalAssociation(from, to, associationName));
+                // evict principals from cache to notify
+                jspmCache.evictPrincipal(from.getId());
+                jspmCache.evictPrincipal(to.getId());
             }
             catch (Exception pbe)
             {
@@ -671,10 +1030,22 @@ public class JetspeedSecurityPersistenceManager
     @SuppressWarnings("unchecked") 
     public List<PersistentJetspeedPermission> getPermissions()
     {
+        // check cache
+        String cacheKey = "getPermissions:[]";
+        List<PersistentJetspeedPermission> permissions = (List<PersistentJetspeedPermission>) jspmCache.getPermissionQuery(cacheKey);
+        if (permissions != null)
+        {
+            return new ArrayList<PersistentJetspeedPermission>(permissions);
+        }
+        // perform query
         QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, new Criteria());
         query.addOrderByAscending("type");
         query.addOrderByAscending("name");
-        return (List<PersistentJetspeedPermission>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        permissions = (List<PersistentJetspeedPermission>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        // put result in cache
+        jspmCache.putPermissionQuery(cacheKey, null, null, JSPMCache.ANY_ID, null, new ArrayList<PersistentJetspeedPermission>(permissions));
+        // return result
+        return permissions;
     }
 
     public List<PersistentJetspeedPermission> getPermissions(String type)
@@ -691,9 +1062,21 @@ public class JetspeedSecurityPersistenceManager
         {
             criteria.addLike("name", nameFilter+"%");
         }
+        // check cache
+        String cacheKey = "getPermissions:"+criteria;
+        List<PersistentJetspeedPermission> permissions = (List<PersistentJetspeedPermission>) jspmCache.getPermissionQuery(cacheKey);
+        if (permissions != null)
+        {
+            return new ArrayList<PersistentJetspeedPermission>(permissions);
+        }
+        // perform query
         QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, criteria);
         query.addOrderByAscending("name");
-        return (List<PersistentJetspeedPermission>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        permissions = (List<PersistentJetspeedPermission>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        // put result in cache
+        jspmCache.putPermissionQuery(cacheKey, null, null, JSPMCache.ANY_ID, null, new ArrayList<PersistentJetspeedPermission>(permissions));
+        // return result
+        return permissions;
     }
 
     public boolean permissionExists(JetspeedPermission permission)
@@ -702,8 +1085,20 @@ public class JetspeedSecurityPersistenceManager
         criteria.addEqualTo("type", permission.getType());
         criteria.addEqualTo("name", permission.getName());
         criteria.addEqualTo("actions", permission.getActions());
+        // check cache
+        String cacheKey = "permissionExists:"+criteria;
+        Boolean permissionExists = (Boolean)jspmCache.getPermissionQuery(cacheKey);
+        if (permissionExists != null)
+        {
+            return permissionExists;
+        }
+        // perform query
         Query query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, criteria);
-        return getPersistenceBrokerTemplate().getCount(query) == 1;
+        permissionExists = (getPersistenceBrokerTemplate().getCount(query) == 1);
+        // put result in cache
+        jspmCache.putPermissionQuery(cacheKey, null, null, JSPMCache.ANY_ID, null, permissionExists);
+        // return result
+        return permissionExists;
     }
     
     @SuppressWarnings("unchecked") 
@@ -711,14 +1106,31 @@ public class JetspeedSecurityPersistenceManager
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("principals.principalId", principal.getId());
+        // check cache
+        String cacheKey = "getPermissions:"+criteria;
+        List<PersistentJetspeedPermission> permissions = (List<PersistentJetspeedPermission>) jspmCache.getPermissionQuery(cacheKey);
+        if (permissions != null)
+        {
+            return new ArrayList<PersistentJetspeedPermission>(permissions);
+        }
+        // perform query
         QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, criteria);
         query.addOrderByAscending("type");
         query.addOrderByAscending("name");
-        return (List<PersistentJetspeedPermission>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        permissions = (List<PersistentJetspeedPermission>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        // put result in cache
+        jspmCache.putPermissionQuery(cacheKey, principal.getId(), null, JSPMCache.ANY_ID, null, new ArrayList<PersistentJetspeedPermission>(permissions));
+        // return result
+        return permissions;
+    }
+
+    public List<JetspeedPrincipal> getPrincipals(PersistentJetspeedPermission permission, String principalType)
+    {
+        return getPrincipals(permission, principalType, getDefaultSecurityDomainId());
     }
 
     @SuppressWarnings("unchecked") 
-    public List<JetspeedPrincipal> getPrincipals(PersistentJetspeedPermission permission, String principalType)
+    public List<JetspeedPrincipal> getPrincipals(PersistentJetspeedPermission permission, String principalType, Long securityDomain)
     {
         Criteria criteria = new Criteria();
         if (permission.getId() != null)
@@ -734,11 +1146,23 @@ public class JetspeedSecurityPersistenceManager
         {
             criteria.addEqualTo("type", principalType);
         }
-        criteria.addEqualTo("domainId", getDefaultSecurityDomainId());
+        criteria.addEqualTo("domainId", securityDomain);
+        // check cache
+        String cacheKey = "getPrincipals:"+criteria;
+        List<JetspeedPrincipal> principals = (List<JetspeedPrincipal>) jspmCache.getPermissionQuery(cacheKey);
+        if (principals != null)
+        {
+            return new ArrayList<JetspeedPrincipal>(principals);
+        }
+        // perform query
         QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         query.addOrderByAscending("type");
         query.addOrderByAscending("name");
-        return (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        principals = (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        // put result in cache
+        jspmCache.putPermissionQuery(cacheKey, null, extractPrincipalIds(principals), ((permission.getId() != null) ? permission.getId(): JSPMCache.ANY_ID), securityDomain, new ArrayList<JetspeedPrincipal>(principals));
+        // return result
+        return principals;
     }
 
     //
@@ -753,6 +1177,9 @@ public class JetspeedSecurityPersistenceManager
         try
         {
             getPersistenceBrokerTemplate().store(permission);
+            // evict from and put in cache to notify
+            jspmCache.evictPermission(permission.getId());
+            jspmCache.putPermission(permission.getId(), permission);
         }
         catch (Exception pbe)
         {
@@ -788,6 +1215,9 @@ public class JetspeedSecurityPersistenceManager
             try
             {
                 getPersistenceBrokerTemplate().store(current);
+                // evict from and put in cache to notify
+                jspmCache.evictPermission(current.getId());
+                jspmCache.putPermission(current.getId(), current);
             }
             catch (Exception pbe)
             {
@@ -821,6 +1251,8 @@ public class JetspeedSecurityPersistenceManager
         try
         {
             getPersistenceBrokerTemplate().delete(current);
+            // evict from cache to notify
+            jspmCache.evictPermission(current.getId());
         }
         catch (Exception pbe)
         {
@@ -870,6 +1302,9 @@ public class JetspeedSecurityPersistenceManager
             try
             {
                 getPersistenceBrokerTemplate().store(new JetspeedPrincipalPermission(principal, permission));
+                // evict from principal and permission caches to notify
+                jspmCache.evictPrincipal(permission.getId());
+                jspmCache.evictPermission(permission.getId());
             }
             catch (Exception pbe)
             {
@@ -882,8 +1317,13 @@ public class JetspeedSecurityPersistenceManager
         }
     }
 
-    @SuppressWarnings("unchecked") 
     public void grantPermissionOnlyTo(PersistentJetspeedPermission permission, String principalType, List<JetspeedPrincipal> principals) throws SecurityException
+    {
+        grantPermissionOnlyTo(permission, principalType, principals, getDefaultSecurityDomainId());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void grantPermissionOnlyTo(PersistentJetspeedPermission permission, String principalType, List<JetspeedPrincipal> principals, Long securityDomain) throws SecurityException
     {
         if (permission.getId() == null)
         {
@@ -904,7 +1344,7 @@ public class JetspeedSecurityPersistenceManager
         {
             criteria.addEqualTo("type", principalType);
         }
-        criteria.addEqualTo("domainId", getDefaultSecurityDomainId());
+        criteria.addEqualTo("domainId", securityDomain);
         QueryByCriteria query = QueryFactory.newQuery(PersistentJetspeedPrincipal.class, criteria);
         List<JetspeedPrincipal> currentList = (List<JetspeedPrincipal>) getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
         List<JetspeedPrincipal> targetList = new ArrayList<JetspeedPrincipal>(principals);
@@ -946,29 +1386,38 @@ public class JetspeedSecurityPersistenceManager
     public void revokePermission(PersistentJetspeedPermission permission, JetspeedPrincipal principal) throws SecurityException
     {
         Long principalId = null;
-        Criteria criteria = new Criteria();
         if (principal.isTransient() || principal.getId() == null)
         {
-            principalId = getPrincipalId(principal.getName(), principal.getType().getName(), getDefaultSecurityDomainId());
+            Long securityDomain = ((principal.getDomainId() != null) ? principal.getDomainId() : getDefaultSecurityDomainId());
+            principalId = getPrincipalId(principal.getName(), principal.getType().getName(), securityDomain);
         }
         else
         {
             principalId = principal.getId();
         }
-        criteria.addEqualTo("principalId", principalId);
         if (permission.getId() == null)
         {
-            criteria.addEqualTo("permission.type", permission.getType());
-            criteria.addEqualTo("permission.name", permission.getName());
+            Criteria criteria = new Criteria();
+            criteria.addEqualTo("type", permission.getType());
+            criteria.addEqualTo("name", permission.getName());
+            Query query = QueryFactory.newQuery(PersistentJetspeedPermissionImpl.class, criteria);
+            PersistentJetspeedPermission p = (PersistentJetspeedPermission)getPersistenceBrokerTemplate().getObjectByQuery(query);
+            if (p == null)
+            {
+                throw new SecurityException(SecurityException.PERMISSION_DOES_NOT_EXIST.create(permission.getName()));
+            }
+            permission = p;
         }
-        else
-        {
-            criteria.addEqualTo("permissionId", permission.getId());
-        }
+        Criteria criteria = new Criteria();
+        criteria.addEqualTo("principalId", principalId);
+        criteria.addEqualTo("permissionId", permission.getId());
         Query query = QueryFactory.newQuery(JetspeedPrincipalPermission.class,criteria);
         try
         {
             getPersistenceBrokerTemplate().deleteByQuery(query);
+            // evict from principal cache to notify
+            jspmCache.evictPrincipal(principalId);
+            jspmCache.evictPermission(permission.getId());
         }
         catch (Exception pbe)
         {
@@ -986,7 +1435,8 @@ public class JetspeedSecurityPersistenceManager
         Criteria criteria = new Criteria();
         if (principal.isTransient() || principal.getId() == null)
         {
-            principalId = getPrincipalId(principal.getName(), principal.getType().getName(), getDefaultSecurityDomainId());
+            Long securityDomain = ((principal.getDomainId() != null) ? principal.getDomainId() : getDefaultSecurityDomainId());
+            principalId = getPrincipalId(principal.getName(), principal.getType().getName(), securityDomain);
         }
         else
         {
@@ -997,6 +1447,8 @@ public class JetspeedSecurityPersistenceManager
         try
         {
             getPersistenceBrokerTemplate().deleteByQuery(query);
+            // evict from principal cache to notify
+            jspmCache.evictPrincipal(principalId);
         }
         catch (Exception pbe)
         {
@@ -1025,6 +1477,9 @@ public class JetspeedSecurityPersistenceManager
         try
         {
             getPersistenceBrokerTemplate().store(domain);
+            // evict from and put in cache to notify
+            jspmCache.evictDomain(domain.getDomainId());
+            jspmCache.putDomain(domain.getDomainId(), domain);
         }
         catch (Exception pbe)
         {
@@ -1038,12 +1493,24 @@ public class JetspeedSecurityPersistenceManager
 
     public SecurityDomain getDomain(Long domainId)
     {
-        try{
-            return (SecurityDomain) getPersistenceBrokerTemplate().getObjectById(SecurityDomainImpl.class, domainId);    
-        } catch (ObjectRetrievalFailureException ore){
-            return null;
+        // check cache
+        Object domain = jspmCache.getDomain(domainId);
+        if (domain != null)
+        {
+            return ((domain != JSPMCache.CACHE_NULL) ? (SecurityDomain) domain : null);
         }
-        
+        // perform query
+        try
+        {
+            domain = getPersistenceBrokerTemplate().getObjectById(SecurityDomainImpl.class, domainId);
+        }
+        catch (ObjectRetrievalFailureException orfe)
+        {
+        }
+        // put result in cache
+        jspmCache.putDomain(domainId, ((domain != null) ? domain : JSPMCache.CACHE_NULL));
+        // return result
+        return (SecurityDomain) domain;
     }
 
     protected Long getDefaultSecurityDomainId()
@@ -1068,16 +1535,47 @@ public class JetspeedSecurityPersistenceManager
     {
     	Criteria criteria = new Criteria();
         criteria.addEqualTo("name", domainName);
+        // check cache
+        String cacheKey = "getDomainByName:"+criteria;
+        Object domain = jspmCache.getDomainQuery(cacheKey);
+        if (domain != null)
+        {
+            return ((domain != JSPMCache.CACHE_NULL) ? (SecurityDomain) domain : null);
+        }
+        // perform query
         Query query = QueryFactory.newQuery(SecurityDomainImpl.class,criteria);
-        return (SecurityDomain) getPersistenceBrokerTemplate().getObjectByQuery(query);    
+        domain = getPersistenceBrokerTemplate().getObjectByQuery(query);
+        // put result in cache
+        if (domain != null)
+        {
+            jspmCache.putDomainQuery(cacheKey, ((SecurityDomain)domain).getDomainId(), domain);
+        }
+        else
+        {
+            jspmCache.putDomainQuery(cacheKey, JSPMCache.ANY_ID, JSPMCache.CACHE_NULL);
+        }
+        // return result
+        return (SecurityDomain) domain;
     }
 
     @SuppressWarnings("unchecked") 
     public Collection<SecurityDomain> getAllDomains()
     {
+        // check cache
+        String cacheKey = "getDomains:[]";
+        List<SecurityDomain> domains = (List<SecurityDomain>) jspmCache.getDomainQuery(cacheKey);
+        if (domains != null)
+        {
+            return new ArrayList<SecurityDomain>(domains);
+        }
+        // perform query
         QueryByCriteria query = QueryFactory.newQuery(SecurityDomainImpl.class, new Criteria());
         query.addOrderByAscending("name");
-        return (List<SecurityDomain>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        domains = (List<SecurityDomain>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        // put result in cache
+        jspmCache.putDomainQuery(cacheKey, JSPMCache.ANY_ID, new ArrayList<SecurityDomain>(domains));
+        // return result
+        return domains;
     }
     
     public void removeDomain(SecurityDomain domain) throws SecurityException
@@ -1089,6 +1587,8 @@ public class JetspeedSecurityPersistenceManager
         try
         {
             getPersistenceBrokerTemplate().delete(domain);
+            // evict from cache to notify
+            jspmCache.evictDomain(domain.getDomainId());
         }
         catch (Exception pbe)
         {
@@ -1115,6 +1615,9 @@ public class JetspeedSecurityPersistenceManager
          try
          {
              getPersistenceBrokerTemplate().store(domain);
+             // evict from and put in cache to notify
+             jspmCache.evictDomain(domain.getDomainId());
+             jspmCache.putDomain(domain.getDomainId(), domain);
          }
          catch (Exception pbe)
          {
@@ -1137,9 +1640,21 @@ public class JetspeedSecurityPersistenceManager
     {
         Criteria criteria = new Criteria();
         criteria.addEqualTo("ownerDomainId", ownerDomainId);
+        // check cache
+        String cacheKey = "getDomainsOwnedBy:"+criteria;
+        List<SecurityDomain> domains = (List<SecurityDomain>) jspmCache.getDomainQuery(cacheKey);
+        if (domains != null)
+        {
+            return new ArrayList<SecurityDomain>(domains);
+        }
+        // perform query
         QueryByCriteria query = QueryFactory.newQuery(SecurityDomainImpl.class, criteria);
         query.addOrderByAscending("name");
-        return (List<SecurityDomain>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        domains = (List<SecurityDomain>)getPersistenceBrokerTemplate().execute(new ManagedListByQueryCallback(query));
+        // put result in cache
+        jspmCache.putDomainQuery(cacheKey, JSPMCache.ANY_ID, new ArrayList<SecurityDomain>(domains));
+        // return result
+        return domains;
     }
     
 	public JetspeedPrincipalResultList getPrincipals(JetspeedPrincipalQueryContext queryContext, JetspeedPrincipalType type) {
@@ -1150,6 +1665,8 @@ public class JetspeedSecurityPersistenceManager
 	 * @see org.apache.jetspeed.security.spi.JetspeedPrincipalAccessManager#getPrincipals(org.apache.jetspeed.security.JetspeedPrincipalQueryContext, org.apache.jetspeed.security.JetspeedPrincipalType, java.lang.Long)
 	 */
 	public JetspeedPrincipalResultList getPrincipals(JetspeedPrincipalQueryContext queryContext, JetspeedPrincipalType type, Long securityDomain) {
+        // paged principal queries not cached: used only for UI purposes where
+        // results should reflect exact set of principals in database
 		JetspeedPrincipalLookupManager jppm = jpplf.getJetspeedPrincipalLookupManager();
 		queryContext.put(JetspeedPrincipalQueryContext.JETSPEED_PRINCIPAL_TYPE, type.getName());
 		queryContext.put(JetspeedPrincipalQueryContext.SECURITY_DOMAIN, securityDomain);

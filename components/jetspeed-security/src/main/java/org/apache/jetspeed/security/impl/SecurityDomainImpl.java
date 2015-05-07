@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import org.apache.jetspeed.cache.DistributedCacheObject;
 import org.apache.jetspeed.security.SecurityDomain;
 
 
@@ -23,7 +24,7 @@ import org.apache.jetspeed.security.SecurityDomain;
  * @author <a href="mailto:ddam@apache.org">Dennis Dam</a>
  * @version $Id$
  */
-public class SecurityDomainImpl implements SecurityDomain
+public class SecurityDomainImpl implements SecurityDomain, DistributedCacheObject
 {
 
     private Long domainId;
@@ -97,5 +98,9 @@ public class SecurityDomainImpl implements SecurityDomain
     {
         this.enabled = enabled;
     }
-    
+
+    @Override
+    public void notifyChange(int action)
+    {
+    }
 }

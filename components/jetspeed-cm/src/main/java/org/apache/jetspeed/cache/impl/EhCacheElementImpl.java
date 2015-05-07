@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 public class EhCacheElementImpl implements CacheElement
 {
-	Element element;
+	protected Element element;
 	
 	public EhCacheElementImpl(Element element)
     {

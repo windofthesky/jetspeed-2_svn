@@ -607,4 +607,93 @@
                                                replicateRemovals=true"/>
     </cache>
 
+    <!--
+        Jetspeed Security Persistence Manager Caches
+    -->
+
+    <cache name="jspmPrincipalCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.jspm.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           memoryStoreEvictionPolicy="LRU">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                                   properties="replicateAsynchronously=true,
+                                               replicatePuts=false,
+                                               replicateUpdates=false,
+                                               replicateUpdatesViaCopy=false,
+                                               replicateRemovals=true"/>
+    </cache>
+
+    <cache name="jspmPermissionCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.jspm.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           memoryStoreEvictionPolicy="LRU">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                                   properties="replicateAsynchronously=true,
+                                               replicatePuts=false,
+                                               replicateUpdates=false,
+                                               replicateUpdatesViaCopy=false,
+                                               replicateRemovals=true"/>
+    </cache>
+
+    <cache name="jspmDomainCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.jspm.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           memoryStoreEvictionPolicy="LRU">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                                   properties="replicateAsynchronously=true,
+                                               replicatePuts=false,
+                                               replicateUpdates=false,
+                                               replicateUpdatesViaCopy=false,
+                                               replicateRemovals=true"/>
+    </cache>
+
+    <cache name="jspmPrincipalQueryCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.jspm.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           memoryStoreEvictionPolicy="LRU"/>
+
+    <cache name="jspmAssociationQueryCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.jspm.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           memoryStoreEvictionPolicy="LRU"/>
+
+    <cache name="jspmPasswordCredentialQueryCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.jspm.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           memoryStoreEvictionPolicy="LRU"/>
+
+    <cache name="jspmPermissionQueryCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.jspm.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           memoryStoreEvictionPolicy="LRU"/>
+
+    <cache name="jspmDomainQueryCache"
+           maxElementsInMemory="${org.apache.jetspeed.ehcache.jspm.maxelements}"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           timeToLiveSeconds="${org.apache.jetspeed.ehcache.jspm.element.ttl}"
+           memoryStoreEvictionPolicy="LRU"/>
+
 </ehcache>

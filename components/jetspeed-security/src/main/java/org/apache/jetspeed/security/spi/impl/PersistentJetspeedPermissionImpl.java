@@ -17,13 +17,14 @@
 
 package org.apache.jetspeed.security.spi.impl;
 
+import org.apache.jetspeed.cache.DistributedCacheObject;
 import org.apache.jetspeed.security.spi.PersistentJetspeedPermission;
 
 /**
  * @version $Id$
  *
  */
-public class PersistentJetspeedPermissionImpl implements PersistentJetspeedPermission
+public class PersistentJetspeedPermissionImpl implements PersistentJetspeedPermission, DistributedCacheObject
 {
     private static final long serialVersionUID = 9200223005769593282L;
     private Long id;
@@ -64,5 +65,10 @@ public class PersistentJetspeedPermissionImpl implements PersistentJetspeedPermi
     public void setActions(String actions)
     {
         this.actions = actions;
+    }
+
+    @Override
+    public void notifyChange(int action)
+    {
     }
 }

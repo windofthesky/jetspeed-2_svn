@@ -330,4 +330,97 @@
         </constructor-arg>
     </bean>
 
+    <!-- Jetspeed Security Persistence Manager Caches -->
+    <bean id="ehJSPMPrincipalCache" parent="ehCacheParent">
+        <meta key="j2:cat" value="default or cache"/>
+        <property name="cacheName" value="jspmPrincipalCache"/>
+    </bean>
+
+    <bean id="ehJSPMPermissionCache" parent="ehCacheParent">
+        <meta key="j2:cat" value="default or cache"/>
+        <property name="cacheName" value="jspmPermissionCache"/>
+    </bean>
+
+    <bean id="ehJSPMDomainCache" parent="ehCacheParent">
+        <meta key="j2:cat" value="default or cache"/>
+        <property name="cacheName" value="jspmDomainCache"/>
+    </bean>
+
+    <bean id="ehJSPMPrincipalQueryCache" parent="ehCacheParent">
+        <meta key="j2:cat" value="default or cache"/>
+        <property name="cacheName" value="jspmPrincipalQueryCache"/>
+    </bean>
+
+    <bean id="ehJSPMAssociationQueryCache" parent="ehCacheParent">
+        <meta key="j2:cat" value="default or cache"/>
+        <property name="cacheName" value="jspmAssociationQueryCache"/>
+    </bean>
+
+    <bean id="ehJSPMPasswordCredentialQueryCache" parent="ehCacheParent">
+        <meta key="j2:cat" value="default or cache"/>
+        <property name="cacheName" value="jspmPasswordCredentialQueryCache"/>
+    </bean>
+
+    <bean id="ehJSPMPermissionQueryCache" parent="ehCacheParent">
+        <meta key="j2:cat" value="default or cache"/>
+        <property name="cacheName" value="jspmPermissionQueryCache"/>
+    </bean>
+
+    <bean id="ehJSPMDomainQueryCache" parent="ehCacheParent">
+        <meta key="j2:cat" value="default or cache"/>
+        <property name="cacheName" value="jspmDomainQueryCache"/>
+    </bean>
+
+    <bean id="jspmPrincipalCache" class="org.apache.jetspeed.cache.impl.EhCacheDistributedImpl">
+        <meta key="j2:cat" value="default or cache"/>
+        <constructor-arg><ref bean="ehJSPMPrincipalCache"/></constructor-arg>
+    </bean>
+
+    <bean id="jspmPermissionCache" class="org.apache.jetspeed.cache.impl.EhCacheDistributedImpl">
+        <meta key="j2:cat" value="default or cache"/>
+        <constructor-arg><ref bean="ehJSPMPermissionCache"/></constructor-arg>
+    </bean>
+
+    <bean id="jspmDomainCache" class="org.apache.jetspeed.cache.impl.EhCacheDistributedImpl">
+        <meta key="j2:cat" value="default or cache"/>
+        <constructor-arg><ref bean="ehJSPMDomainCache"/></constructor-arg>
+    </bean>
+
+    <bean id="jspmPrincipalQueryCache" class="org.apache.jetspeed.security.spi.impl.cache.JSPMQueryEhCacheImpl">
+        <meta key="j2:cat" value="default or cache"/>
+        <constructor-arg><ref bean="ehJSPMPrincipalQueryCache"/></constructor-arg>
+    </bean>
+    
+    <bean id="jspmAssociationQueryCache" class="org.apache.jetspeed.security.spi.impl.cache.JSPMQueryEhCacheImpl">
+        <meta key="j2:cat" value="default or cache"/>
+        <constructor-arg><ref bean="ehJSPMAssociationQueryCache"/></constructor-arg>
+    </bean>
+
+    <bean id="jspmPasswordCredentialQueryCache" class="org.apache.jetspeed.security.spi.impl.cache.JSPMQueryEhCacheImpl">
+        <meta key="j2:cat" value="default or cache"/>
+        <constructor-arg><ref bean="ehJSPMPasswordCredentialQueryCache"/></constructor-arg>
+    </bean>
+
+    <bean id="jspmPermissionQueryCache" class="org.apache.jetspeed.security.spi.impl.cache.JSPMQueryEhCacheImpl">
+        <meta key="j2:cat" value="default or cache"/>
+        <constructor-arg><ref bean="ehJSPMPermissionQueryCache"/></constructor-arg>
+    </bean>
+
+    <bean id="jspmDomainQueryCache" class="org.apache.jetspeed.security.spi.impl.cache.JSPMQueryEhCacheImpl">
+        <meta key="j2:cat" value="default or cache"/>
+        <constructor-arg><ref bean="ehJSPMDomainQueryCache"/></constructor-arg>
+    </bean>
+
+    <bean id="org.apache.jetspeed.security.spi.impl.cache.JSPMCache" class="org.apache.jetspeed.security.spi.impl.cache.JSPMCacheImpl"
+          init-method="initialize" destroy-method="terminate">
+        <meta key="j2:cat" value="default or cache"/>
+        <constructor-arg><ref bean="jspmPrincipalCache"/></constructor-arg>
+        <constructor-arg><ref bean="jspmPermissionCache"/></constructor-arg>
+        <constructor-arg><ref bean="jspmDomainCache"/></constructor-arg>
+        <constructor-arg><ref bean="jspmPrincipalQueryCache"/></constructor-arg>
+        <constructor-arg><ref bean="jspmAssociationQueryCache"/></constructor-arg>
+        <constructor-arg><ref bean="jspmPasswordCredentialQueryCache"/></constructor-arg>
+        <constructor-arg><ref bean="jspmPermissionQueryCache"/></constructor-arg>
+        <constructor-arg><ref bean="jspmDomainQueryCache"/></constructor-arg>
+    </bean>
 </beans>
