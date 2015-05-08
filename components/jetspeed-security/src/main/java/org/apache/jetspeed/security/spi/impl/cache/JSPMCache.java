@@ -242,4 +242,11 @@ public interface JSPMCache {
      * Clear all instance and query caches.
      */
     void clear();
+
+    /**
+     * Return distributed cache configuration.
+     *
+     * @return distributed
+     */
+    boolean isDistributed();
 }

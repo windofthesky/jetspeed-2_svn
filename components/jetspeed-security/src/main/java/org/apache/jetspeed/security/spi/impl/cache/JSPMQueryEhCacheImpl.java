@@ -72,7 +72,7 @@ public class JSPMQueryEhCacheImpl extends EhCacheImpl
             return;
         }
         // iterate over cache elements
-        for (Object key : getKeys())
+        for (Object key : ehcache.getKeys())
         {
             JSPMQueryCacheElement element = (JSPMQueryCacheElement)ehcache.get(key);
             if (element != null)
@@ -102,7 +102,7 @@ public class JSPMQueryEhCacheImpl extends EhCacheImpl
             return;
         }
         // iterate over cache elements
-        for (Object key : getKeys())
+        for (Object key : ehcache.getKeys())
         {
             JSPMQueryCacheElement element = (JSPMQueryCacheElement)ehcache.get(key);
             if (element != null)
@@ -132,7 +132,7 @@ public class JSPMQueryEhCacheImpl extends EhCacheImpl
             return;
         }
         // iterate over cache elements
-        for (Object key : getKeys())
+        for (Object key : ehcache.getKeys())
         {
             JSPMQueryCacheElement element = (JSPMQueryCacheElement)ehcache.get(key);
             if (element != null)

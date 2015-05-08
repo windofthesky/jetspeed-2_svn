@@ -290,7 +290,7 @@ public class JSPMCacheImpl implements JSPMCache
     @Override
     public void putDomainQuery(String key, Long domainId, Object query)
     {
-        permissionQueryCache.put(newJSPMQueryEhCacheElementImpl(key, null, null, null, domainId, null, query));
+        domainQueryCache.put(newJSPMQueryEhCacheElementImpl(key, null, null, null, domainId, null, query));
     }
 
     @Override
@@ -321,6 +321,12 @@ public class JSPMCacheImpl implements JSPMCache
         passwordCredentialQueryCache.clear();
         permissionQueryCache.clear();
         domainQueryCache.clear();
+    }
+
+    @Override
+    public boolean isDistributed() {
+        // return distributed status for instance caches
+        return (principalCache.isDistributed() && permissionCache.isDistributed() && domainCache.isDistributed());
     }
 
     /**

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.jetspeed.security.spi;
+package org.apache.jetspeed.security.spi.cache;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -32,6 +32,7 @@ import org.apache.jetspeed.security.impl.PersistentJetspeedPrincipal;
 import org.apache.jetspeed.security.impl.RoleImpl;
 import org.apache.jetspeed.security.impl.SecurityDomainImpl;
 import org.apache.jetspeed.security.impl.UserImpl;
+import org.apache.jetspeed.security.spi.PersistentJetspeedPermission;
 import org.apache.jetspeed.security.spi.impl.JetspeedSecurityPersistenceManager;
 import org.apache.jetspeed.security.spi.impl.PasswordCredentialImpl;
 import org.apache.jetspeed.security.spi.impl.PersistentJetspeedPermissionImpl;

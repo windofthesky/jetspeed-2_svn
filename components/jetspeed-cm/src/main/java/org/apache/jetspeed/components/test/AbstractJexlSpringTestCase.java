@@ -202,6 +202,23 @@ public abstract class AbstractJexlSpringTestCase extends AbstractSpringTestCase 
     }
 
     /**
+     * Parse result for result value after separator.
+     *
+     * @param result result string
+     * @return result value string or null
+     */
+    protected String getResultValue(String result) {
+        if (result == null) {
+            return null;
+        }
+        int resultValueIndex = result.indexOf(SCRIPT_RESULT_RETURN_VALUE_SEPARATOR);
+        if (resultValueIndex < 0) {
+            return null;
+        }
+        return result.substring(resultValueIndex+SCRIPT_RESULT_RETURN_VALUE_SEPARATOR.length());
+    }
+
+    /**
      * Test program process implementation.
      */
     protected class TestProgram {

@@ -17,10 +17,11 @@
 
 package org.apache.jetspeed.components.test;
 
-import org.apache.commons.jexl.JexlContext;
-import org.apache.commons.jexl.JexlHelper;
-import org.apache.commons.jexl.Script;
-import org.apache.commons.jexl.ScriptFactory;
+import org.apache.commons.jexl2.JexlContext;
+import org.apache.commons.jexl2.JexlEngine;
+import org.apache.commons.jexl2.JexlException;
+import org.apache.commons.jexl2.MapContext;
+import org.apache.commons.jexl2.Script;
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.security.JSSubject;
@@ -67,8 +68,7 @@ public abstract class AbstractJexlSpringTestServer {
         scm.start();
 
         // create jexl context
-        jexlContext = JexlHelper.createContext();
-        jexlContext.getVars().putAll(getContextVars());
+        jexlContext = new MapContext(getContextVars());
     }
 
     /**
@@ -121,10 +121,19 @@ public abstract class AbstractJexlSpringTestServer {
         // execute script line and return result line
         String resultLine = scriptLine;
         try {
-            Script jexlScript = ScriptFactory.createScript(scriptLine);
+            JexlEngine jexl = new JexlEngine();
+            jexl.setSilent(false);
+            jexl.setLenient(false);
+            Script jexlScript = jexl.createScript(scriptLine);
             Object result = jexlScript.execute(jexlContext);
             if (result != null) {
                 resultLine += SCRIPT_RESULT_RETURN_VALUE_SEPARATOR+result;
+            }
+        } catch (JexlException je) {
+            if (je.getCause() != null) {
+                resultLine += SCRIPT_RESULT_RETURN_VALUE_SEPARATOR+je.getCause();
+            } else {
+                resultLine += SCRIPT_RESULT_RETURN_VALUE_SEPARATOR+je;
             }
         } catch (Exception e) {
             resultLine += SCRIPT_RESULT_RETURN_VALUE_SEPARATOR+e;
