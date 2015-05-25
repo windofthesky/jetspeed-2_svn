@@ -19,6 +19,7 @@ package org.apache.jetspeed.services.rest;
 import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.administration.PortalConfigurationConstants;
+import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.om.folder.Folder;
 import org.apache.jetspeed.page.PageManager;
@@ -27,6 +28,7 @@ import org.apache.jetspeed.profiler.ProfileLocator;
 import org.apache.jetspeed.profiler.Profiler;
 import org.apache.jetspeed.profiler.rules.PrincipalRule;
 import org.apache.jetspeed.profiler.rules.ProfilingRule;
+import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.Group;
 import org.apache.jetspeed.security.GroupManager;
 import org.apache.jetspeed.security.JetspeedPrincipalQueryContext;
@@ -557,4 +559,13 @@ public class UserManagerService extends AbstractRestService
         return templates;
     }
 
+    protected void checkPrivilege(HttpServletRequest servletRequest, String action)
+    {
+        RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
+
+        if (securityBehavior != null && !securityBehavior.checkAccess(requestContext, action))
+        {
+            throw new WebApplicationException(new JetspeedException("Insufficient privilege to access this REST service."));
+        }
+    }
 }

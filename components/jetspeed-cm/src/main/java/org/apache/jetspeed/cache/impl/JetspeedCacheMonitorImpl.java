@@ -16,19 +16,18 @@
  */
 package org.apache.jetspeed.cache.impl;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Statistics;
+import org.apache.jetspeed.cache.CacheMonitorState;
+import org.apache.jetspeed.cache.JetspeedCacheMonitor;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Statistics;
-
-import org.apache.jetspeed.cache.CacheMonitorState;
-import org.apache.jetspeed.cache.JetspeedCacheMonitor;
 
 public class JetspeedCacheMonitorImpl implements JetspeedCacheMonitor
 {

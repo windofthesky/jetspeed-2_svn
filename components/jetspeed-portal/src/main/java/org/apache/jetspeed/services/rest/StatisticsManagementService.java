@@ -20,6 +20,7 @@ import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.cache.CacheMonitorState;
 import org.apache.jetspeed.cache.JetspeedCacheMonitor;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
+import org.apache.jetspeed.services.beans.UpdateResultBean;
 import org.apache.jetspeed.statistics.AggregateStatistics;
 import org.apache.jetspeed.statistics.InvalidCriteriaException;
 import org.apache.jetspeed.statistics.PortalStatistics;
@@ -28,10 +29,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +48,7 @@ import java.util.Map;
 @Path("/statistics/")
 public class StatisticsManagementService extends AbstractRestService {
 
+    protected static final String COULD_NOT_PROCESS_REQUEST_FOR_STATISTICS = "Could not process request for statistics";
     private static Logger log = LoggerFactory.getLogger(StatisticsManagementService.class);
 
     private PortalStatistics statistics;
@@ -67,8 +71,9 @@ public class StatisticsManagementService extends AbstractRestService {
      */
     @GET
     @Path("/memory")
-    public Map<String,Map<String,Long>> memoryInfo(@Context HttpServletRequest servletRequest, @Context UriInfo uriInfo) {
-
+    public Map<String,Map<String,Long>> memoryInfo(@Context HttpServletRequest servletRequest,
+                                                   @Context final HttpServletResponse response,
+                                                   @Context UriInfo uriInfo) {
         checkPrivilege(servletRequest, JetspeedActions.VIEW);
 
         Runtime runtime = Runtime.getRuntime();
@@ -114,7 +119,10 @@ public class StatisticsManagementService extends AbstractRestService {
             }
         }
         catch (InvalidCriteriaException e) {
-            throw new WebApplicationException(new IllegalArgumentException("Statistics query criteria invalid"));
+
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(
+                    new UpdateResultBean(Response.Status.BAD_REQUEST.getStatusCode(),
+                            COULD_NOT_PROCESS_REQUEST_FOR_STATISTICS)).build());
         }
 
         Map<String,Map<String,Long>> result = new HashMap<>();
@@ -155,20 +163,12 @@ public class StatisticsManagementService extends AbstractRestService {
             }
         }
         catch (InvalidCriteriaException e) {
-            throw new WebApplicationException(new IllegalArgumentException("Statistics query criteria invalid"));
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(
+                    new UpdateResultBean(Response.Status.BAD_REQUEST.getStatusCode(),
+                            COULD_NOT_PROCESS_REQUEST_FOR_STATISTICS)).build());
         }
-
-//        Map<String,Long> users = new HashMap<>();
-//        users.put("Admin", (long)19);
-//        users.put("Mary", (long)9);
-//        users.put("Ron", (long)5);
-//        users.put("David", (long)12);
-//        users.put("John", (long) 10);
-//        users.put("Luke", (long) 1);
-
         Map<String,Map<String,Long>> result = new HashMap<>();
         result.put("users", users);
-
         return result;
     }
 

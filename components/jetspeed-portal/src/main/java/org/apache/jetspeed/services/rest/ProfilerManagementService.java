@@ -95,11 +95,13 @@ public class ProfilerManagementService extends AbstractRestService
         checkPrivilege(servletRequest, JetspeedActions.VIEW);
 
         if (StringUtils.isBlank(profileId)) {
-            throw new WebApplicationException(new IllegalArgumentException("Profile id not specified"));
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(
+                    new UpdateResultBean(Response.Status.BAD_REQUEST.getStatusCode(),  "Profile id not specified")).build());
         }
         ProfilingRule rule = profiler.getRule(profileId);
         if (rule == null) {
-            throw new WebApplicationException(new IllegalArgumentException("Profile id not found with the specified id: " + profileId));
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(
+                    new UpdateResultBean(Response.Status.BAD_REQUEST.getStatusCode(), "Profile id not found with the specified id: " + profileId)).build());
         }
         ProfileEditBean editBean = new ProfileEditBean(rule.getId(), rule.getTitle(), rule.getClassname());
         for (RuleCriterion criterion : rule.getRuleCriteria()) {
@@ -123,14 +125,16 @@ public class ProfilerManagementService extends AbstractRestService
             dtoProfile = writeMapper.readValue(json, ProfileEditBean.class);
         }
         catch (Exception e) {
-            e.printStackTrace();
-            throw new WebApplicationException(new IllegalArgumentException("Bad input on profile data"));
+            throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new UpdateResultBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "Bad input on profile data")).build());
         }
         if (StringUtils.isBlank(dtoProfile.getId())) {
-            throw new WebApplicationException(new IllegalArgumentException("Profile id not specified"));
+            throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new UpdateResultBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "Profile id not specified")).build());
         }
         if (StringUtils.isBlank(dtoProfile.getConcreteClass())) {
-            throw new WebApplicationException(new IllegalArgumentException("Concrete Class not specified"));
+            throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new UpdateResultBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "Concrete Class not specified")).build());
         }
         try {
             boolean isAdd = false;
@@ -188,11 +192,13 @@ public class ProfilerManagementService extends AbstractRestService
             }
 
             profiler.storeProfilingRule(rule);
-            return new UpdateResultBean(200, "OK");
+            return new UpdateResultBean(Response.Status.OK.getStatusCode(), "OK");
         }
         catch (Exception e) {
-            log.error("failed to update profile for " + dtoProfile.getId(), e);
-            return new UpdateResultBean(500, e.getMessage());
+            String message = "failed to update profile for " + dtoProfile.getId();
+            log.error(message, e);
+            throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new UpdateResultBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), message)).build());
         }
 
     }
@@ -207,7 +213,8 @@ public class ProfilerManagementService extends AbstractRestService
         checkPrivilege(servletRequest, JetspeedActions.VIEW);
 
         if (profileIds == null || profileIds.size() == 0) {
-            throw new WebApplicationException(new IllegalArgumentException("Profile ids to delete not specified"));
+            throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new UpdateResultBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "Profile ids to delete not specified")).build());
         }
 
         try {
@@ -218,11 +225,12 @@ public class ProfilerManagementService extends AbstractRestService
                     profiler.deleteProfilingRule(rule);
                 }
             }
-            return new UpdateResultBean(200, "OK");
+            return new UpdateResultBean(Response.Status.OK.getStatusCode(), "OK");
         } catch (Exception e) {
             String message = String.format("Error converting profiler ids [%s]", profileIds);
             log.debug(message);
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(message).build());
+            throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(
+                    new UpdateResultBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), message)).build());
         }
     }
 

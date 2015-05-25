@@ -16,12 +16,13 @@
  */
 package org.apache.jetspeed.services.rest;
 
-import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.layout.PortletActionSecurityBehavior;
 import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.services.beans.UpdateResultBean;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 /**
  * Created by dtaylor on 5/2/15.
@@ -39,7 +40,10 @@ public class AbstractRestService {
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
         if (securityBehavior != null && !securityBehavior.checkAccess(requestContext, action))
         {
-            throw new WebApplicationException(new JetspeedException("Insufficient privilege to access this REST service."));
+            throw new WebApplicationException(
+                    Response.status(Response.Status.UNAUTHORIZED).entity(
+                            new UpdateResultBean(Response.Status.UNAUTHORIZED.getStatusCode(),
+                                    "Insufficient privilege to access this REST service")).build());
         }
     }
 
