@@ -22,6 +22,6 @@ limitations under the License.
   <document-order>charts.psml</document-order>
 
   <security-constraints>
-    <security-constraints-ref>public-view</security-constraints-ref>
+    <security-constraints-ref>manager</security-constraints-ref>
   </security-constraints>
 </folder>
