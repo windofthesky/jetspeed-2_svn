@@ -417,8 +417,11 @@ limitations under the License.
           <unique-column name="ENTITY_ID"/>
           <unique-column name="USER_NAME"/>
           <unique-column name="NAME"/>
-        </unique>        
-
+        </unique>
+        <index name="IX_USER_PREFERENCE">
+            <index-column name="DTYPE"/>
+            <index-column name="USER_NAME"/>
+        </index>
     </table>
 
     <table name="PORTLET_PREFERENCE_VALUE">
