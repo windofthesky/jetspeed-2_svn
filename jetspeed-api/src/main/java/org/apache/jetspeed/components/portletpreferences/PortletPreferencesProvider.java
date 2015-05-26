@@ -136,26 +136,26 @@ public interface PortletPreferencesProvider extends PortletPreferencesService
         throws PreferencesException;
     
     /**
-     * Retrieve entity ids (window) given portlet definitaion
+     * Retrieve entity ids (window) given portlet definition
      * 
      * @param portletdefinition
      */
     public Set<String> getPortletWindowIds(PortletDefinition portletdefinition);
 
     /**
-     * Retrieve user names for given entity(window) id and portlet definitaion
+     * Retrieve user names for given entity(window) id and portlet definition
      * @param portletdefinition
      * @param windowId
      */    
-    public Set<String> getUserNames(PortletDefinition portletdefinition,String windowId);
+    public Set<String> getUserNames(PortletDefinition portletdefinition, String windowId);
     
     
     /**
-     * Retrieve entity preference names for given entity(window) id ,portlet definitaion and user name 
+     * Retrieve entity preference names for given entity(window) id ,portlet definition and user name
      * @param portletdefinition
      * @param windowId
      */
-    public Map<String,PortletPreference>getUserPreferences(PortletDefinition portletdefinition,String windowId,String userName);
+    public Map<String,PortletPreference> getUserPreferences(PortletDefinition portletdefinition, String windowId, String userName);
     
     /**
      * Store portlet definition entity preferences contained in the map parameter

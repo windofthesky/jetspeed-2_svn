@@ -98,4 +98,7 @@ public interface PortalConfigurationConstants
     /** Portlet Modes, Window States: return string arrays **/
     static final String SUPPORTED_WINDOW_STATES = "supported.windowstate";
     static final String SUPPORTED_PORTLET_MODES = "supported.portletmode";
+
+    /** Preferences Performance **/
+    static final String ENABLED_PREFERENCES_SESSION_CACHE = "preferences.session.cache.enabled";
 }
