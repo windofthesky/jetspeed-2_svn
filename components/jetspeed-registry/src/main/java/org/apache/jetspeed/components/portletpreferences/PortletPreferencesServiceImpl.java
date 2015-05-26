@@ -16,7 +16,10 @@
  */
 package org.apache.jetspeed.components.portletpreferences;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.JetspeedActions;
+import org.apache.jetspeed.administration.PortalConfiguration;
+import org.apache.jetspeed.administration.PortalConfigurationConstants;
 import org.apache.jetspeed.cache.CacheElement;
 import org.apache.jetspeed.cache.JetspeedCache;
 import org.apache.jetspeed.container.PortletWindow;
@@ -26,6 +29,8 @@ import org.apache.jetspeed.om.portlet.PortletApplication;
 import org.apache.jetspeed.om.portlet.Preference;
 import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.jetspeed.om.preference.FragmentPreference;
+import org.apache.jetspeed.request.RequestContext;
+import org.apache.jetspeed.request.RequestContextComponent;
 import org.apache.jetspeed.security.SubjectHelper;
 import org.apache.jetspeed.security.User;
 import org.apache.ojb.broker.query.Criteria;
@@ -62,6 +67,7 @@ import java.util.TreeSet;
 public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         implements PortletPreferencesProvider 
 {
+    protected static final String SESSION_CACHE_KEY = "portlet.preferences.user.key";
     protected static final String DISCRIMINATOR_PORTLET = "portlet";
     protected static final String DISCRIMINATOR_ENTITY = "entity";
     protected static final String DISCRIMINATOR_USER = "user";
@@ -74,6 +80,8 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     protected static final String USER_NAME = "userName";
 
     private PortletFactory portletFactory;
+    protected RequestContextComponent requestContextComponent;
+    protected PortalConfiguration configuration;
 
     /**
      * Cache elements are stored as element type JetspeedPreferencesMap
@@ -82,8 +90,13 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     private List<String> preloadedApplications = null;
     private boolean preloadEntities = false;
     private boolean useEntityPreferences = true;
+    // JS2-1325: performance optimization to improve preference retrieval speed
+    // To go back to old behavior, set jetspeed/override.properties.
+    // Default is enabled
+    // preferences.session.cache.enabled = true
+    // since 2.3.0
+    private boolean enableSessionCache = true;
 
-    
     public boolean isUseEntityPreferences()
     {
         return useEntityPreferences;
@@ -101,7 +114,7 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         this.portletFactory = portletFactory;
         this.preferenceCache = preferenceCache;
     }
-    
+
     public PortletPreferencesServiceImpl(PortletFactory portletFactory, JetspeedCache preferenceCache, List<String> apps, boolean preloadEntities)
     throws ClassNotFoundException
     {
@@ -109,9 +122,21 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         this.preloadedApplications = apps;
         this.preloadEntities = preloadEntities;
     }
-    
+
     public void init()
     {
+        try {
+            configuration = Jetspeed.getComponentManager().lookupComponent("PortalConfiguration");
+        }
+        catch (Exception e) {
+            configuration = null; // not set in some unit tests
+        }
+        if (configuration != null) {
+            enableSessionCache = configuration.getBoolean(PortalConfigurationConstants.ENABLED_PREFERENCES_SESSION_CACHE);
+        }
+        else {
+            enableSessionCache = false;
+        }
     }
 
     public void destroy()
@@ -179,7 +204,10 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         {
             userName = SubjectHelper.getPrincipal(window.getRequestContext().getSubject(), User.class).getName();
         }
-        return retrieveUserPreferences(window, userName);
+        // JS2-1325: since 2.3.0
+        return (enableSessionCache) ?
+                retrieveUserSessionWindowPreferences(window, userName) :
+                retrieveUserPreferences(window, userName);
     }
 
     /**
@@ -353,10 +381,18 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
                     }            
                 }
                 getPersistenceBrokerTemplate().store(dbPref);            
-            }        
-            // remove from cache to send distributed notification
-            String cacheKey = getUserPreferenceKey(appName, portletName, entityId, userName);
-            preferenceCache.remove(cacheKey);
+            }
+            if (enableSessionCache) {
+                UserSessionPreferences sessionPreferences = getUserSessionPreferences();
+                if (sessionPreferences != null) {
+                    sessionPreferences.updateWindowPreferences(window.getPortletEntityId(), map);
+                }
+            }
+            else {
+                // remove from cache to send distributed notification
+                String cacheKey = getUserPreferenceKey(appName, portletName, entityId, userName);
+                preferenceCache.remove(cacheKey);
+            }
         }
         catch (Throwable t)
         {
@@ -880,6 +916,76 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         // remove from cache to send distributed notification
         String cacheKey = this.getPortletPreferenceKey(appName, portletName); //getUserPreferenceKey(appName, portletName, windowId, userName);
         preferenceCache.remove(cacheKey);
+    }
+
+    protected UserSessionPreferences retrieveUserSessionPreferences(String userName) {
+        RequestContext rc = null;
+        RequestContextComponent rcc = getRequestContextComponent();
+        if (rcc != null) {
+            rc = rcc.getRequestContext();
+            if (rc != null) {
+                UserSessionPreferences userPreferences = (UserSessionPreferences) rc.getSessionAttribute(SESSION_CACHE_KEY);
+                if (userPreferences != null) {
+                    // return cached values
+                    return userPreferences;
+                }
+            }
+        }
+        UserSessionPreferences sessionPreferences = new UserSessionPreferences();
+        // not found in cache, query database
+        Criteria c = new Criteria();
+        c.addEqualTo(DTYPE, DISCRIMINATOR_USER);
+        c.addEqualTo(USER_NAME, userName);
+        //query.addOrderByAscending(DTYPE);
+        QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
+        Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
+        while (preferences.hasNext())
+        {
+            DatabasePreference preference = preferences.next();
+            Map<String,PortletPreference> windowPreferences = sessionPreferences.getWindowPreferences(preference.getEntityId());
+            if (windowPreferences == null) {
+                windowPreferences = sessionPreferences.createWindowPreferences(preference.getEntityId());
+            }
+            windowPreferences.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues(), preference.isReadOnly()));
+        }
+        if (rc != null) {
+            rc.setSessionAttribute(SESSION_CACHE_KEY, sessionPreferences);
+        }
+        return sessionPreferences;
+    }
+
+    protected Map<String,PortletPreference> retrieveUserSessionWindowPreferences(PortletWindow window, String userName)
+    {
+        UserSessionPreferences  sessionPreferences = retrieveUserSessionPreferences(userName);
+        Map<String,PortletPreference> result = sessionPreferences.getWindowPreferences(window.getPortletEntityId());
+        if (result == null) {
+            result = sessionPreferences.createWindowPreferences(window.getPortletEntityId());
+        }
+        return result;
+    }
+
+    protected UserSessionPreferences getUserSessionPreferences() {
+        UserSessionPreferences sessionPreferences = null;
+        RequestContextComponent rcc = getRequestContextComponent();
+        if (rcc != null) {
+            RequestContext rc = rcc.getRequestContext();
+            if (rc != null) {
+                sessionPreferences = (UserSessionPreferences) rc.getSessionAttribute(SESSION_CACHE_KEY);
+                if (sessionPreferences == null) {
+                    sessionPreferences = new UserSessionPreferences();
+                    rc.setSessionAttribute(SESSION_CACHE_KEY, sessionPreferences);
+                }
+                return sessionPreferences;
+            }
+        }
+        return new UserSessionPreferences();
+    }
+
+    protected RequestContextComponent getRequestContextComponent() {
+        if (requestContextComponent == null) {
+            requestContextComponent = Jetspeed.getComponentManager().lookupComponent("org.apache.jetspeed.request.RequestContextComponent");
+        }
+        return requestContextComponent;
     }
 
 }
