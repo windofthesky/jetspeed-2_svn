@@ -29,9 +29,9 @@
     <dependencySet>
       <unpack>true</unpack>
       <includes>
-        <include>jetspeed-ant-tasks*</include>
+        <include>org.apache.portals.jetspeed-2:jetspeed-ant-tasks</include>
       </includes>
-      <useProjectArtifact>false</useProjectArtifact>
+      <useProjectArtifact>true</useProjectArtifact>
     </dependencySet>
   </dependencySets>
   <fileSets>

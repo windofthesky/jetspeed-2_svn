@@ -55,7 +55,7 @@
       </activation>
       <properties>
         
-        <org.apache.jetspeed.server.home>/change/this/apache-tomcat-7.0.59/</org.apache.jetspeed.server.home>
+        <org.apache.jetspeed.server.home>/change/this/apache-tomcat-7.0.62/</org.apache.jetspeed.server.home>
         <org.apache.jetspeed.catalina.version.major>7</org.apache.jetspeed.catalina.version.major>
         
         <!--

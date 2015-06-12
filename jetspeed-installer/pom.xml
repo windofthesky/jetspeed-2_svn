@@ -74,6 +74,7 @@
             <target>
               <id>installer</id>
               <depends>clean,database,tomcat-portal-unpack,tomcat-portal,tomcat-portal-pack,ant-installer</depends>
+              <!--<depends>database,ant-installer</depends>-->
             </target>
           </targets>
         </configuration>
