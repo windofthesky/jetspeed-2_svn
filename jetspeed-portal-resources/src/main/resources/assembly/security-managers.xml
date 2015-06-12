@@ -142,7 +142,6 @@
     <constructor-arg index="3" ref="org.apache.jetspeed.security.spi.JetspeedSecurityPersistenceManager" />
     <constructor-arg index="4" ref="org.apache.jetspeed.security.spi.JetspeedPrincipalStorageManager" />
     <constructor-arg index="5" ref="org.apache.jetspeed.security.spi.UserPasswordCredentialManager" />
-    <constructor-arg index="6" ref="org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider"/>
   </bean>
 
   <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

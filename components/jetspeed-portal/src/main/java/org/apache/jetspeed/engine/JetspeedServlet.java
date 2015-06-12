@@ -27,6 +27,7 @@ import org.apache.jetspeed.components.ComponentManager;
 import org.apache.jetspeed.components.JetspeedBeanDefinitionFilter;
 import org.apache.jetspeed.components.SpringComponentManager;
 import org.apache.jetspeed.components.factorybeans.ServletConfigFactoryBean;
+import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.container.session.PortalSessionsManager;
 import org.apache.jetspeed.engine.servlet.ServletHelper;
 import org.apache.jetspeed.exception.JetspeedException;
@@ -389,6 +390,10 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
                 psm.portalSessionCreated(se.getSession());
             }
         }
+        PortletPreferencesProvider preferencesProvider = engine.getComponentManager().lookupComponent("portletPreferencesProvider");
+        if (preferencesProvider != null) {
+            preferencesProvider.sessionCreatedEvent(se.getSession());
+        }
     }
     
     public void sessionDestroyed(HttpSessionEvent se)
@@ -410,6 +415,11 @@ public class JetspeedServlet extends HttpServlet implements JetspeedEngineConsta
         statistics.logUserLogout(ipAddress, subjectUserPrincipal.getName(), sessionLength);    
         UserContentCacheManager userContentCacheManager = engine.getComponentManager().lookupComponent("userContentCacheManager");
         userContentCacheManager.evictUserContentCache(subjectUserPrincipal.getName(), se.getSession().getId());
+        // clear preferences cache
+        PortletPreferencesProvider preferencesProvider = engine.getComponentManager().lookupComponent("portletPreferencesProvider");
+        if (preferencesProvider != null) {
+            preferencesProvider.sessionDestroyedEvent(se.getSession());
+        }
     }
            
     /**

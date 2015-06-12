@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.security.impl;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider;
 import org.apache.jetspeed.security.AuthenticatedUser;
 import org.apache.jetspeed.security.AuthenticatedUserImpl;
@@ -72,7 +73,6 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 	private RoleManager roleManager;
 	private GroupManager groupManager;
 	private Map<String, UserSubjectPrincipalsResolver> usprMap = new HashMap<String, UserSubjectPrincipalsResolver>();
-	private PortletPreferencesProvider preferencesProvider = null;
 
 	public UserManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalType roleType, JetspeedPrincipalType groupType,
 			JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm, UserPasswordCredentialManager credentialManager)
@@ -81,17 +81,6 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		this.credentialManager = credentialManager;
 		this.roleType = roleType;
 		this.groupType = groupType;
-	}
-
-	public UserManagerImpl(JetspeedPrincipalType principalType, JetspeedPrincipalType roleType, JetspeedPrincipalType groupType,
-						   JetspeedPrincipalAccessManager jpam, JetspeedPrincipalStorageManager jpsm, UserPasswordCredentialManager credentialManager,
-						   PortletPreferencesProvider preferencesProvider)
-	{
-		super(principalType, jpam, jpsm);
-		this.credentialManager = credentialManager;
-		this.roleType = roleType;
-		this.groupType = groupType;
-		this.preferencesProvider = preferencesProvider;
 	}
 
 	public void checkInitialized()
@@ -260,12 +249,22 @@ public class UserManagerImpl extends BaseJetspeedPrincipalManager implements Use
 		super.removePrincipal(user);
 
 		// Since 2.3.0
-		if (preferencesProvider != null) {
-			preferencesProvider.removeUserPreferences(username);
+		PortletPreferencesProvider provider = getPreferencesProvider();
+        if (provider != null) {
+			provider.removeUserPreferences(username);
 		}
 	}
-	
-	public void removePrincipal(String principalName) throws SecurityException
+
+    protected PortletPreferencesProvider getPreferencesProvider() {
+        try {
+            return Jetspeed.getComponentManager().lookupComponent("org.apache.jetspeed.components.portletpreferences.PortletPreferencesProvider");
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void removePrincipal(String principalName) throws SecurityException
 	{
 	    removeUser(principalName);
 	}

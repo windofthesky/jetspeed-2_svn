@@ -24,6 +24,7 @@ import org.apache.jetspeed.om.portlet.Preferences;
 import org.apache.pluto.container.PortletPreference;
 import org.apache.pluto.container.PortletPreferencesService;
 
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.Set;
 
@@ -185,5 +186,8 @@ public interface PortletPreferencesProvider extends PortletPreferencesService
      * @param user the name of the user to delete all preferences for
      */
     public void removeUserPreferences(String user);
+
+    public void sessionCreatedEvent(HttpSession session);
+    public void sessionDestroyedEvent(HttpSession session);
 
 }

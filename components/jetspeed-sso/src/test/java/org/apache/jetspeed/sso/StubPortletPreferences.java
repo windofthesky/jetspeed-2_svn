@@ -29,6 +29,7 @@ import org.apache.pluto.container.PortletPreference;
 import javax.portlet.PortletRequest;
 import javax.portlet.PreferencesValidator;
 import javax.portlet.ValidatorException;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.Set;
 
@@ -151,5 +152,15 @@ public class StubPortletPreferences implements PortletPreferencesProvider {
     @Override
     public PreferencesValidator getPreferencesValidator(org.apache.pluto.container.om.portlet.PortletDefinition portletDefinition) throws ValidatorException {
         return null;
+    }
+
+    @Override
+    public void sessionCreatedEvent(HttpSession session) {
+
+    }
+
+    @Override
+    public void sessionDestroyedEvent(HttpSession session) {
+
     }
 }

@@ -45,6 +45,7 @@ import org.springframework.orm.ojb.support.PersistenceBrokerDaoSupport;
 import javax.portlet.PortletRequest;
 import javax.portlet.PreferencesValidator;
 import javax.portlet.ValidatorException;
+import javax.servlet.http.HttpSession;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -459,6 +460,10 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
      */    
     public void preloadUserPreferences()
     {
+        if (enableSessionCache) {
+            return;
+        }
+
         JetspeedPreferencesMap map = new JetspeedPreferencesMap();
         Criteria c = new Criteria();
         c.addEqualTo(DTYPE, DISCRIMINATOR_USER);
@@ -751,31 +756,33 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
     public Map<String, PortletPreference> getUserPreferences(org.apache.jetspeed.om.portlet.PortletDefinition portletdefinition, String windowId,
                                                              String userName)
     {
-        JetspeedPreferencesMap userPreferences = new JetspeedPreferencesMap();
         String appName = portletdefinition.getApplication().getName();
         String portletName = portletdefinition.getPortletName();
-        
-        String userCacheKey = getUserPreferenceKey(appName, portletName,windowId, userName);
-        CacheElement cachedDefaults = preferenceCache.get(userCacheKey);
-        if (cachedDefaults != null)
-        {
-            userPreferences = (JetspeedPreferencesMap) cachedDefaults.getContent();
-        }
-        else
-        {
-            Criteria c = new Criteria();
-            c.addEqualTo(DTYPE, DISCRIMINATOR_USER);
-            c.addEqualTo(APPLICATION_NAME, appName);
-            c.addEqualTo(PORTLET_NAME, portletName);
-            c.addEqualTo(USER_NAME, userName);
-            c.addEqualTo(ENTITY_ID, windowId);
-            QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
-            Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
-            while (preferences.hasNext())
-            {
-                DatabasePreference preference = preferences.next();
-                userPreferences.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues(), preference.isReadOnly()));
+        String userCacheKey = getUserPreferenceKey(appName, portletName, windowId, userName);
+
+        if (!enableSessionCache) {
+            JetspeedPreferencesMap userPreferences = null;
+            CacheElement cachedDefaults = preferenceCache.get(userCacheKey);
+            if (cachedDefaults != null) {
+                userPreferences = (JetspeedPreferencesMap) cachedDefaults.getContent();
+                return userPreferences;
             }
+        }
+        JetspeedPreferencesMap userPreferences = new JetspeedPreferencesMap();
+        Criteria c = new Criteria();
+        c.addEqualTo(DTYPE, DISCRIMINATOR_USER);
+        c.addEqualTo(APPLICATION_NAME, appName);
+        c.addEqualTo(PORTLET_NAME, portletName);
+        c.addEqualTo(USER_NAME, userName);
+        c.addEqualTo(ENTITY_ID, windowId);
+        QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
+        Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
+        while (preferences.hasNext())
+        {
+            DatabasePreference preference = preferences.next();
+            userPreferences.put(preference.getName(), new JetspeedPreferenceImpl(preference.getName(), preference.getValues(), preference.isReadOnly()));
+        }
+        if (!enableSessionCache) {
             preferenceCache.put(preferenceCache.createElement(userCacheKey, userPreferences));
         }
         return userPreferences;
@@ -961,7 +968,25 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         if (result == null) {
             result = sessionPreferences.createWindowPreferences(window.getPortletEntityId());
         }
-        return result;
+        return clonePreferences(result);
+    }
+
+    protected Map<String,PortletPreference> clonePreferences(Map<String,PortletPreference> original) {
+        Map<String,PortletPreference> clone = new HashMap<>();
+        for (Map.Entry<String,PortletPreference> entry : original.entrySet()) {
+            clone.put(entry.getKey(), entry.getValue().clone());
+        }
+        return clone;
+    }
+
+    protected void removeUserPreferencesFromSession() {
+        RequestContextComponent rcc = getRequestContextComponent();
+        if (rcc != null) {
+            RequestContext rc = rcc.getRequestContext();
+            if (rc != null) {
+                rc.getRequest().getSession(true).removeAttribute(SESSION_CACHE_KEY);
+            }
+        }
     }
 
     protected UserSessionPreferences getUserSessionPreferences() {
@@ -988,4 +1013,14 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         return requestContextComponent;
     }
 
+    @Override
+    public void sessionCreatedEvent(HttpSession session) {
+    }
+
+    @Override
+    public void sessionDestroyedEvent(HttpSession session) {
+        if (enableSessionCache && session != null) {
+            session.removeAttribute(SESSION_CACHE_KEY);
+        }
+    }
 }
