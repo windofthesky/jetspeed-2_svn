@@ -101,4 +101,10 @@ public interface PortalConfigurationConstants
 
     /** Preferences Performance **/
     static final String ENABLED_PREFERENCES_SESSION_CACHE = "preferences.session.cache.enabled";
+
+    /** XSS */
+    static final String XSS_FILTER_REQUEST = "xss.filter.request";
+    static final String XSS_FILTER_POST = "xss.filter.post";
+    static final String XSS_REGEX = "xss.filter.regexes";
+    static final String XSS_FLAGS = "xss.filter.flags";
 }
