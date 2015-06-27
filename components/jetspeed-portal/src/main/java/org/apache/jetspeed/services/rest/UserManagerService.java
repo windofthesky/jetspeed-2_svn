@@ -239,7 +239,7 @@ public class UserManagerService extends AbstractRestService
             User user = userManager.getUser(userName);
             user.getSecurityAttributes().getAttribute("user.name.given", true).setStringValue(userNameGiven);
             user.getSecurityAttributes().getAttribute("user.name.family", true).setStringValue(userNameFamily);
-            user.getSecurityAttributes().getAttribute("user.email", true).setStringValue(userEmail);
+            user.getSecurityAttributes().getAttribute("user.business-info.online.email", true).setStringValue(userEmail);
             
             if (userEnabled == null)
             {
@@ -408,7 +408,7 @@ public class UserManagerService extends AbstractRestService
             
             user.getSecurityAttributes().getAttribute("user.name.given", true).setStringValue(userNameGiven);
             user.getSecurityAttributes().getAttribute("user.name.family", true).setStringValue(userNameFamily);
-            user.getSecurityAttributes().getAttribute("user.email", true).setStringValue(userEmail);
+            user.getSecurityAttributes().getAttribute("user.business-info.online.email", true).setStringValue(userEmail);
             
             userManager.updateUser(user);
             

@@ -117,7 +117,7 @@ public class PortletRendererImpl implements PortletRenderer
         this.portletContentCache = portletContentCache;
         if (Jetspeed.getConfiguration() != null) {
             this.autoRefreshEnabled = Jetspeed.getConfiguration().getBoolean(PortalConfigurationConstants.AUTO_REFRESH_ENABLED, true);
-
+        }
     }
 
     public PortletRendererImpl(PortletContainer container, 
