@@ -72,6 +72,28 @@ var JETUI_YUI = {
 #includeJavaScriptForHead()
 <link rel="stylesheet" type="text/css" href="#BaseHref()css/bootstrap/dist/css/bootstrap-green.css"/>
 <link rel="stylesheet" type="text/css" href="#BaseHref()decorations/layout/bootstrap-green/css/styles-new-green.css"/>
+#if ($jetspeed.isAutoRefreshEnabled())
+<script type="text/javascript" src="#BaseHref()javascript/jetspeed/jetspeed-refresh.js"></script>
+<script type="text/javascript">
+#set ($max = $request.getAttribute("org.apache.jetspeed.maximized.Fragment"))
+#if ($max)
+  var layoutCell = "portal-layout-maxed";
+#else
+  var layoutCell = "portal-layout-cell";
+#end
+function jetspeedLoad() {
+  jetspeedRefresher.load(layoutCell, "panel-body");
+}
+if (window.addEventListener) // W3C standard
+{
+  window.addEventListener('load', jetspeedLoad, false);
+}
+else if (window.attachEvent) // Microsoft
+{
+  window.attachEvent('onload', jetspeedLoad);
+}
+</script>
+#end
 </head>
 <body class="#PageBaseCSSClass()">
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->

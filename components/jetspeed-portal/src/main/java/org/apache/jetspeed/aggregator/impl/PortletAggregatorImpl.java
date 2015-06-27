@@ -122,7 +122,11 @@ public class PortletAggregatorImpl implements PortletAggregator
                 mutableNavState.setState(window, requestedWindowState);
             }
         }
-        
+        String skipHead = context.getRequestParameter("skipHead");
+        if (skipHead != null) {
+            context.setAttribute("jetapp.headers.flag", Boolean.TRUE);
+        }
+
         ContentFragment contentFragment = window.getFragment();
         renderer.renderNow(contentFragment, context);
         
@@ -130,9 +134,11 @@ public class PortletAggregatorImpl implements PortletAggregator
         {            
             context.getResponse().setHeader( "JS_PORTLET_TITLE", StringEscapeUtils.escapeHtml( contentFragment.getPortletContent().getTitle() ) );
         }
-        
-        writeHeadElements(context, window);
-        
+
+        if (skipHead == null) {
+            writeHeadElements(context, window);
+        }
+
         context.getResponse().getWriter().write(contentFragment.getRenderedContent());
         PortletContent content = contentFragment.getPortletContent();
         

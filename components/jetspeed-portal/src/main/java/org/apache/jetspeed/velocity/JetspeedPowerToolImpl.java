@@ -128,7 +128,9 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     private BasePortalURL baseUrlAccess;
     
     private PortletRenderer renderer;
+
     protected boolean ajaxCustomization = false;
+    protected boolean autoRefreshEnabled = true;
     
     public JetspeedPowerToolImpl(RequestContext requestContext, PortletConfig portletConfig, RenderRequest renderRequest, RenderResponse renderResponse, PortletRenderer renderer) throws Exception
     {
@@ -151,7 +153,8 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         decorationLocator = (TemplateLocator) getComponent("DecorationLocator");
         String jetuiMode = Jetspeed.getConfiguration().getString(PortalConfigurationConstants.JETUI_CUSTOMIZATION_METHOD, PortalConfigurationConstants.JETUI_CUSTOMIZATION_SERVER);
         this.ajaxCustomization = (jetuiMode.equals(PortalConfigurationConstants.JETUI_CUSTOMIZATION_AJAX));
-        
+        this.autoRefreshEnabled = Jetspeed.getConfiguration().getBoolean(PortalConfigurationConstants.AUTO_REFRESH_ENABLED, true);
+
         // By using null, we create a re-useable locator
         capabilityMap = requestContext.getCapabilityMap();
         locale = requestContext.getLocale();
@@ -913,6 +916,10 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
     public boolean isAjaxCustomizationEnabled()
     {
         return this.ajaxCustomization;
+    }
+
+    public boolean isAutoRefreshEnabled() {
+        return this.autoRefreshEnabled;
     }
 
     public Map<String,String> getUserAttributes()

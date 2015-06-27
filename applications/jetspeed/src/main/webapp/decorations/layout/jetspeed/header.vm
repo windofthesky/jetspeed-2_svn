@@ -70,7 +70,28 @@ var JETUI_YUI = {
 <link rel="shortcut icon" href="#BaseHref()images/jetspeed.jpg" type="image/x-icon" />
 #includeJavaScriptForHead()
 #IncludeStylesheets()
-
+#if ($jetspeed.isAutoRefreshEnabled())
+<script type="text/javascript" src="#BaseHref()javascript/jetspeed/jetspeed-refresh.js"></script>
+<script type="text/javascript">
+#set ($max = $request.getAttribute("org.apache.jetspeed.maximized.Fragment"))
+#if ($max)
+  var layoutCell = "portal-layout-maxed";
+#else
+  var layoutCell = "portal-layout-cell";
+#end
+function jetspeedLoad() {
+  jetspeedRefresher.load(layoutCell, "PContent");
+}
+if (window.addEventListener) // W3C standard
+{
+  window.addEventListener('load', jetspeedLoad, false);
+}
+else if (window.attachEvent) // Microsoft
+{
+  window.attachEvent('onload', jetspeedLoad);
+}
+</script>
+#end
 </head>
 <body class="#PageBaseCSSClass()">
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
@@ -87,7 +108,8 @@ var JETUI_YUI = {
 <h1 class="logo">Jetspeed 2</h1>
 <div class="menu">
 #if (!$jetspeed.isAjaxCustomizationEnabled())
-#set($pagesStandardMenu = $site.getMenu("pages"))#if(!$pagesStandardMenu.empty)
+#set($pagesStandardMenu = $site.getMenu("pages"))
+#if(!$pagesStandardMenu.empty)
 #includeTabsNavigation($pagesStandardMenu $LEFT_TO_RIGHT)
 #end
 #end

@@ -18,13 +18,21 @@ limitations under the License.
 #set($f = $request.getAttribute("org.apache.jetspeed.maximized.Fragment"))
 #set($rootFragment = $myPage.rootFragment)
 #set($messages = $portletConfig.getResourceBundle($renderRequest.Locale))
+#set($refreshRate = "")
+#set($refreshFunc = "")
+#if($f.refreshRate != -1)
+    #set($refreshRate = "refreshRate='"+$f.refreshRate+"'")
+    #if ("$!f.refreshFunction" != "")
+        #set($refreshFunction = "refreshFunction='"+$f.refreshFunction+"'")
+    #end
+#end
 
 #if ($rootFragment.decoration.header)
    #parse($rootFragment.decoration.header)
 #end
 
   ## get the decorated Portlet content
-  <div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" class="portal-layout-maxed">
+  <div id="portal-layout-$htmlUtil.getSafeElementId($myPage.id)" name='$f.name' class="portal-layout-maxed" $refreshRate $refreshFunction>
     $jetspeed.setCurrentFragment($f)    
     #parse($f.decoration.template)
   </div>

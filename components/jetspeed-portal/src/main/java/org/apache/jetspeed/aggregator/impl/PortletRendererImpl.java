@@ -16,8 +16,10 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
+import org.apache.jetspeed.Jetspeed;
 import org.apache.jetspeed.JetspeedActions;
 import org.apache.jetspeed.PortalReservedParameters;
+import org.apache.jetspeed.administration.PortalConfigurationConstants;
 import org.apache.jetspeed.aggregator.PortletAccessDeniedException;
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.aggregator.PortletRenderer;
@@ -95,7 +97,9 @@ public class PortletRendererImpl implements PortletRenderer
      * The OutOfService message
      */
     protected String outOfServiceMessage = DEFAULT_OUT_OF_SERVICE_MESSAGE;
-    
+
+    protected boolean autoRefreshEnabled = true;
+
     public PortletRendererImpl(PortletContainer container, 
                                WorkerMonitor workMonitor,
                                PortalStatistics statistics,
@@ -111,6 +115,9 @@ public class PortletRendererImpl implements PortletRenderer
         this.checkSecurityConstraints = checkSecurityConstraints;
         this.accessController = accessController;
         this.portletContentCache = portletContentCache;
+        if (Jetspeed.getConfiguration() != null) {
+            this.autoRefreshEnabled = Jetspeed.getConfiguration().getBoolean(PortalConfigurationConstants.AUTO_REFRESH_ENABLED, true);
+
     }
 
     public PortletRendererImpl(PortletContainer container, 
@@ -243,6 +250,17 @@ public class PortletRendererImpl implements PortletRenderer
                     return null;
                 }
             }
+            // autoRefresh feature
+            if (autoRefreshEnabled) {
+                long refreshRate = this.getRefreshRate(portletDefinition);
+                if (refreshRate != -1) {
+                    portletWindow.getFragment().setRefreshRate(refreshRate);
+                    String refreshFunction = this.getRefreshFunction(portletDefinition);
+                    if (refreshFunction != null) {
+                        portletWindow.getFragment().setRefreshFunction(refreshFunction);
+                    }
+                }
+            }
             job = buildRenderingJob( portletWindow, requestContext, true, portletDefinition, timeoutMetadata );
         }
         catch (PortletAccessDeniedException pade)
@@ -256,7 +274,8 @@ public class PortletRendererImpl implements PortletRenderer
 
         return job;
     }
-           
+
+
     /** 
      * 
      * Render the specified rendering job.
@@ -393,7 +412,48 @@ public class PortletRendererImpl implements PortletRenderer
         }       
         return timeoutMetadata;
     }
-    
+
+    protected long getRefreshRate(PortletDefinition portletDefinition)
+    {
+        long refreshRate = -1;
+        Collection<LocalizedField> refreshFields = null;
+
+        if (portletDefinition != null)
+        {
+            refreshFields = portletDefinition.getMetadata().getFields(PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_REFRESH_RATE);
+        }
+
+        if (refreshFields != null && !refreshFields.isEmpty())
+        {
+            try
+            {
+                refreshRate = Long.parseLong(refreshFields.iterator().next().getValue());
+            }
+            catch (NumberFormatException nfe)
+            {
+                log.warn("Invalid refreshRate metadata: " + nfe.getMessage());
+            }
+        }
+        return refreshRate;
+    }
+
+    protected String getRefreshFunction(PortletDefinition portletDefinition)
+    {
+        String refreshFunction = null;
+        Collection<LocalizedField> refreshFields = null;
+
+        if (portletDefinition != null)
+        {
+            refreshFields = portletDefinition.getMetadata().getFields(PortalReservedParameters.PORTLET_EXTENDED_DESCRIPTOR_REFRESH_FUNCTION);
+        }
+
+        if (refreshFields != null && !refreshFields.isEmpty())
+        {
+            refreshFunction = refreshFields.iterator().next().getValue();
+        }
+        return refreshFunction;
+    }
+
     protected void setTimeoutOnJob(long timeoutMetadata, RenderingJob rJob)
     {
         

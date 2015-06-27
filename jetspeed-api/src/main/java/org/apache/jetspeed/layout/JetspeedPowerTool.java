@@ -366,5 +366,10 @@ public interface JetspeedPowerTool
      * @return the portal configuration
      */
     PortalConfiguration getPortalConfiguration();
-    
+
+    /**
+     * Is AutoRefresh support for automatic portlet rendering enabled
+     * @return true when auto refresh is enabled in Jetspeed properties
+     */
+    boolean isAutoRefreshEnabled();
 }

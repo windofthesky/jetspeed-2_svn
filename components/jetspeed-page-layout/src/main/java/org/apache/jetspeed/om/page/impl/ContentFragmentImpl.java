@@ -76,6 +76,9 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     private SecurityConstraints constraints;
     private String refId;
 
+    private long refreshRate = -1;
+    private String refreshFunction = null;
+
     /**
      * Construct new dynamic content fragment with
      * a transiently computed id.
@@ -1718,4 +1721,21 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
     {
         this.id = id;
     }
+
+    public long getRefreshRate() {
+        return refreshRate;
+    }
+
+    public void setRefreshRate(long rate) {
+        this.refreshRate = rate;
+    }
+
+    public String getRefreshFunction() {
+        return this.refreshFunction;
+    }
+
+    public void setRefreshFunction(String function) {
+        this.refreshFunction = function;
+    }
+
 }

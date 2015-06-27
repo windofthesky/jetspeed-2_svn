@@ -107,4 +107,7 @@ public interface PortalConfigurationConstants
     static final String XSS_FILTER_POST = "xss.filter.post";
     static final String XSS_REGEX = "xss.filter.regexes";
     static final String XSS_FLAGS = "xss.filter.flags";
+
+    /** AutoRefresh */
+    static final String AUTO_REFRESH_ENABLED = "autorefresh.enabled";
 }

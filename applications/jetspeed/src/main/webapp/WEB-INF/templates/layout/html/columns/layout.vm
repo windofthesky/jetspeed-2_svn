@@ -313,8 +313,15 @@ limitations under the License.
 			#set($col = $coords.x)
 			#set($lastRow = $columnLayout.getLastRowNumber($col))
 			#set($row = $coords.y)
-			
-			<div id='$f.id' name='$f.name' column='${col}' row='${row}' class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}" >
+            #set($refreshRate = "")
+            #set($refreshFunc = "")
+            #if($f.refreshRate != -1)
+              #set($refreshRate = "refreshRate='"+$f.refreshRate+"'")
+              #if ("$!f.refreshFunction" != "")
+                #set($refreshFunction = "refreshFunction='"+$f.refreshFunction+"'")
+              #end
+            #end
+			<div id='$f.id' name='$f.name' column='${col}' row='${row}' class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}" $refreshRate $refreshFunction>
 				
 		  #if($f.isLocked() == false)
 		  

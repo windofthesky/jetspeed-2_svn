@@ -80,8 +80,16 @@ limitations under the License.
           #set($col = $coords.x)
           #set($lastRow = $columnLayout.getLastRowNumber($col))
           #set($row = $coords.y)
+          #set($refreshRate = "")
+          #set($refreshFunc = "")
+          #if($f.refreshRate != -1)
+            #set($refreshRate = "refreshRate='"+$f.refreshRate+"'")
+            #if ("$!f.refreshFunction" != "")
+                #set($refreshFunction = "refreshFunction='"+$f.refreshFunction+"'")
+            #end
+          #end
 
-            <div id='$f.id' name='$f.name' column='${col}' row='${row}' class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}" >
+            <div id='$f.id' name='$f.name' column='${col}' row='${row}' class="portal-layout-cell portal-layout-cell-${layoutType}-${row}-${col}"  $refreshRate $refreshFunction>
 
               #if($f.isLocked() == false)
 
@@ -105,8 +113,8 @@ limitations under the License.
                                     #set ($fd = $f.Decorator)
                                   #end
                                   #foreach($pd in $decorationFactory.getPortletDecorations($rc))
-                                  <option value='$pd' #if ($pd == $fd) SELECTED #end>$pd
-                    #end
+                                    <option value='$pd' #if ($pd == $fd) SELECTED #end>$pd
+                                  #end
                                 </select>
                             #end
                           #else

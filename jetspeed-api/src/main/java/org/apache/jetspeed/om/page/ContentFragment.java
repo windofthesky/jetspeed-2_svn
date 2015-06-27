@@ -694,4 +694,9 @@ public interface ContentFragment
      *                   or USER where the default user name is used if null)
      */
     void updateStateMode(String portletState, String portletMode, String scope, String scopeValue);
+
+    long getRefreshRate();
+    void setRefreshRate(long rate);
+    String getRefreshFunction();
+    void setRefreshFunction(String function);
 }

@@ -188,5 +188,18 @@ public interface PortalReservedParameters
       * PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY - request portal site context attribute key
       */
      public static final String PORTAL_SITE_REQUEST_CONTEXT_ATTR_KEY = "org.apache.jetspeed.portalsite.PortalSiteRequestContext";
-     
+
+    /**
+     * A portlet can have a specific setting for the refresh rate for automatically
+     * re-rendering the portlet. If set to -1 or undefined, no refresh will be executed
+     * refresh rate is in seconds
+     */
+    public static final String PORTLET_EXTENDED_DESCRIPTOR_REFRESH_RATE = "refreshRate";
+
+    /**
+     * A portlet can have a specific setting for the automatic refresh function that will be called
+     * when refreshing the portlet. This setting is dependent on refreshRate.
+     */
+    public static final String PORTLET_EXTENDED_DESCRIPTOR_REFRESH_FUNCTION = "refreshFunction";
+
 }
