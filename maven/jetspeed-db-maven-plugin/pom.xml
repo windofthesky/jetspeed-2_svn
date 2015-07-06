@@ -70,6 +70,11 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <version>${slf4j.version}</version>
+      </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
@@ -84,6 +89,33 @@
           <goalPrefix>jetspeed-db</goalPrefix>
         </configuration>
       </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <artifactSet>
+                            <includes>
+                                <include>org.slf4j:slf4j-api</include>
+                                <include>${project.groupId}:jetspeed-api</include>
+                                <include>${project.groupId}:jetspeed-maven-utils</include>
+                                <include>org.apache.maven:maven-plugin-api</include>
+                                <include>org.apache.maven:maven-project</include>
+                                <include>org.apache.ddlutils:ddlutils</include>
+                                <include>cglib:cglib</include>
+                                <include>org.slf4j:jcl-over-slf4j</include>
+                                <include>org.slf4j:slf4j-log4j12</include>
+                            </includes>
+                        </artifactSet>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
     </plugins>
   </build>
 </project>
