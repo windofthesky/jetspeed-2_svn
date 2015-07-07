@@ -106,12 +106,16 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
             }
         }
         boolean update = false;
+        boolean failuresUpdated = false;
 
         for (PasswordCredentialInterceptor pci : interceptors)
         {
             if (pci.afterAuthenticated(credential, authenticated))
             {
                 update = true;
+            }
+            if (pci instanceof MaxPasswordAuthenticationFailuresInterceptor) {
+                failuresUpdated = true;
             }
         }
         if (update && (!credential.isEnabled() || credential.isExpired()))
@@ -133,7 +137,9 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
         }
         else
         {
-            credential.setAuthenticationFailures(credential.getAuthenticationFailures()+1);
+            if (!failuresUpdated) {
+                credential.setAuthenticationFailures(credential.getAuthenticationFailures()+1);
+            }
         }
         
         return update;
