@@ -2258,7 +2258,7 @@
                 <exclude>enterprise/ear-min/src/main/application/META-INF/JSCOOKMENU-LICENSE</exclude>
                 <exclude>enterprise/ear-min/src/main/application/META-INF/MIT-LICENSE</exclude>
                 <exclude>enterprise/ear-min/src/main/application/META-INF/SLF4J-LICENSE</exclude>
-                <!-- Bootstrap Distributable -->
+                <!-- Bootstrap Distributable under MIT License -->
                   <exclude>applications/jetspeed/src/main/webapp/css/bootstrap/dist/css/bootstrap-blue.css</exclude>
                   <exclude>applications/jetspeed/src/main/webapp/css/bootstrap/dist/css/bootstrap-red.css</exclude>
                   <exclude>applications/jetspeed/src/main/webapp/css/bootstrap/dist/css/bootstrap-green.css</exclude>
@@ -2271,7 +2271,7 @@
                   <exclude>applications/jetspeed/src/main/webapp/css/bootstrap/dist/fonts/glyphicons-halflings-regular.svg</exclude>
                   <exclude>applications/jetspeed/src/main/webapp/css/bootstrap/dist/js/bootstrap.js</exclude>
                   <exclude>applications/jetspeed/src/main/webapp/css/bootstrap/dist/js/bootstrap.min.js</exclude>
-                 <!-- JQuery -->
+                 <!-- JQuery under MIT License -->
                  <exclude>applications/jetspeed/src/main/webapp/javascript/jquery/jquery-2.1.3.min.js</exclude>
               </excludes> 
             </configuration>
