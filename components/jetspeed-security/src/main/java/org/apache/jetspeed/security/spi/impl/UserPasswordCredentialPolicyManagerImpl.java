@@ -17,10 +17,6 @@
 
 package org.apache.jetspeed.security.spi.impl;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.CredentialPasswordValidator;
 import org.apache.jetspeed.security.InvalidPasswordException;
@@ -29,6 +25,10 @@ import org.apache.jetspeed.security.SecurityException;
 import org.apache.jetspeed.security.spi.AlgorithmUpgradeCredentialPasswordEncoder;
 import org.apache.jetspeed.security.spi.PasswordCredentialInterceptor;
 import org.apache.jetspeed.security.spi.UserPasswordCredentialPolicyManager;
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -131,11 +131,6 @@ public class UserPasswordCredentialPolicyManagerImpl implements UserPasswordCred
             credential.setLastAuthenticationDate(new Timestamp(new Date().getTime()));
             update = true;
         }
-        else
-        {
-            credential.setAuthenticationFailures(credential.getAuthenticationFailures()+1);
-        }
-        
         return update;
     }
 
