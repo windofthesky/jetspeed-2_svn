@@ -365,13 +365,15 @@ public class JetspeedSecurityPersistenceManager
         // perform query
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"name", "id"});
+        // need to force OJB to return a Long, otherwise it'll return a Integer causing a CCE
+        query.setJdbcTypes(new int[]{Types.VARCHAR, Types.BIGINT});
         associatedNamesFrom = new ArrayList<String>();
         List<Long> associatedIdsFrom = new ArrayList<Long>();
         for (Iterator<Object[]> iter = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query); iter.hasNext(); )
         {
             Object[] associatedFrom = iter.next();
             associatedNamesFrom.add((String) associatedFrom[0]);
-            associatedIdsFrom.add(((Integer) associatedFrom[1]).longValue());
+            associatedIdsFrom.add((Long) associatedFrom[1]);
         }
         // put result in cache
         try
@@ -411,13 +413,15 @@ public class JetspeedSecurityPersistenceManager
         // perform query
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"name", "id"});
+        // need to force OJB to return a Long, otherwise it'll return a Integer causing a CCE
+        query.setJdbcTypes(new int[]{Types.VARCHAR, Types.BIGINT});
         associatedNamesFrom = new ArrayList<String>();
         List<Long> associatedIdsFrom = new ArrayList<Long>();
         for (Iterator<Object[]> iter = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query); iter.hasNext(); )
         {
             Object[] associatedFrom = iter.next();
             associatedNamesFrom.add((String) associatedFrom[0]);
-            associatedIdsFrom.add(((Integer) associatedFrom[1]).longValue());
+            associatedIdsFrom.add((Long) associatedFrom[1]);
         }
         // put result in cache
         jspmCache.putAssociationQuery(cacheKey, principalFromId, associatedIdsFrom.toArray(new Long[associatedIdsFrom.size()]), fromSecurityDomain, toSecurityDomain, new ArrayList<String>(associatedNamesFrom));
@@ -450,13 +454,15 @@ public class JetspeedSecurityPersistenceManager
         // perform query
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"name", "id"});
+        // need to force OJB to return a Long, otherwise it'll return a Integer causing a CCE
+        query.setJdbcTypes(new int[]{Types.VARCHAR, Types.BIGINT});
         associatedNamesTo = new ArrayList<String>();
         List<Long> associatedIdsTo = new ArrayList<Long>();
         for (Iterator<Object[]> iter = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query); iter.hasNext(); )
         {
             Object[] associatedTo = iter.next();
             associatedNamesTo.add((String) associatedTo[0]);
-            associatedIdsTo.add(((Integer) associatedTo[1]).longValue());
+            associatedIdsTo.add((Long) associatedTo[1]);
         }
         // put result in cache
         try
@@ -496,13 +502,15 @@ public class JetspeedSecurityPersistenceManager
         // perform query
         ReportQueryByCriteria query = QueryFactory.newReportQuery(PersistentJetspeedPrincipal.class, criteria);
         query.setAttributes(new String[]{"name", "id"});
+        // need to force OJB to return a Long, otherwise it'll return a Integer causing a CCE
+        query.setJdbcTypes(new int[]{Types.VARCHAR, Types.BIGINT});
         associatedNamesTo = new ArrayList<String>();
         List<Long> associatedIdsTo = new ArrayList<Long>();
         for (Iterator<Object[]> iter = getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(query); iter.hasNext(); )
         {
             Object[] associatedTo = iter.next();
             associatedNamesTo.add((String) associatedTo[0]);
-            associatedIdsTo.add(((Integer) associatedTo[1]).longValue());
+            associatedIdsTo.add((Long) associatedTo[1]);
         }
         // put result in cache
         jspmCache.putAssociationQuery(cacheKey, principalToId, associatedIdsTo.toArray(new Long[associatedIdsTo.size()]), fromSecurityDomain, toSecurityDomain, new ArrayList<String>(associatedNamesTo));
