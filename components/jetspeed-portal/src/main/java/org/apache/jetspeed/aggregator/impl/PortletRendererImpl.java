@@ -115,9 +115,6 @@ public class PortletRendererImpl implements PortletRenderer
         this.checkSecurityConstraints = checkSecurityConstraints;
         this.accessController = accessController;
         this.portletContentCache = portletContentCache;
-        if (Jetspeed.getConfiguration() != null) {
-            this.autoRefreshEnabled = Jetspeed.getConfiguration().getBoolean(PortalConfigurationConstants.AUTO_REFRESH_ENABLED, true);
-        }
     }
 
     public PortletRendererImpl(PortletContainer container, 
@@ -135,7 +132,9 @@ public class PortletRendererImpl implements PortletRenderer
     
     public void start()
     {
-        // workMonitor.start();
+        if (Jetspeed.getConfiguration() != null) {
+            this.autoRefreshEnabled = Jetspeed.getConfiguration().getBoolean(PortalConfigurationConstants.AUTO_REFRESH_ENABLED, true);
+        }
     }
 
     public void stop()
