@@ -938,4 +938,5 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
     {
         this.inheritable = inheritable;
     }
+
 }

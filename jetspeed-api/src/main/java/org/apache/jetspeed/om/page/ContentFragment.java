@@ -699,4 +699,7 @@ public interface ContentFragment
     void setRefreshRate(long rate);
     String getRefreshFunction();
     void setRefreshFunction(String function);
+
+    void reorderColumns(int max);
+
 }

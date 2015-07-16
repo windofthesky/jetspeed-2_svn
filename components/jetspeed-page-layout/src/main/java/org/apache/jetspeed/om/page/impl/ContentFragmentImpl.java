@@ -1738,4 +1738,12 @@ public class ContentFragmentImpl implements ContentFragment, PageLayoutComponent
         this.refreshFunction = function;
     }
 
+    @Override
+    public void reorderColumns(int max) {
+        if (pageLayoutComponent != null)
+        {
+            // delegate to page layout component
+            pageLayoutComponent.reorderColumns(this, max);
+        }
+    }
 }

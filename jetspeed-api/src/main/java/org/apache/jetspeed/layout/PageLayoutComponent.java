@@ -478,4 +478,13 @@ public interface PageLayoutComponent
      * @param shortTitle page short title
      */
     void updateTitles(ContentPage contentPage, String title, String shortTitle);
+
+    /**
+     * Reorder portlet columns locations over maxColumns
+     *
+     * @param targetFragment
+     * @param maxColumns
+     */
+    void reorderColumns(ContentFragment targetFragment, int maxColumns);
+
 }

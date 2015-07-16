@@ -15,13 +15,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<page id="/registration.psml" hidden="false">
+<page id="/responsive/registration.psml" hidden="false">
     <security-constraints>
         <security-constraints-ref>guest-only</security-constraints-ref>
     </security-constraints>
     <title>Registration</title>
     <short-title>Registration</short-title>
-    <fragment id="jsreg-1" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+    <fragment id="jsreg-1" type="layout" name="jetspeed-layouts::ResponsiveLayout">
         <fragment id="jsreg-2" type="portlet" name="j2-admin::UserRegistrationPortlet">
             <property name="row" value="1"></property>
             <property name="column" value="0"></property>

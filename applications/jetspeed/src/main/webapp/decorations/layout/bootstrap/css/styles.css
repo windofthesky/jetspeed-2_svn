@@ -337,6 +337,7 @@ background-position: 0px -30px
     position: relative;
     top: 55px;
     left: -10px;
+    z-index: 1;
 }
 
 .FolderList
@@ -533,7 +534,7 @@ margin-left: 2px;
 .layout-jetspeed .layout-title,
 .layout-jetspeed .layout-edit-bar b{font-weight: bold; background: #c2c2c2; color: #666666; padding: 5px; display: block; width: auto; margin-bottom: 5px;}
 
-.layout-jetspeed .layout-edit-bar label{width: 71px; display: block; float: left; text-align: right; padding: 6px; clear: left}
+.layout-jetspeed .layout-edit-bar label{width: 71px; display: block; float: left; text-align: right; padding: 2px 6px; clear: left; margin-bottom: 0}
 .layout-jetspeed .layout-edit-bar select{width: 200px;}
 .layout-jetspeed .layout-edit-bar input{margin-bottom: 5px; margin-top: 5px;}
 
@@ -567,10 +568,11 @@ padding: 4px;
 
 .layout-jetspeed .portlet-edit-bar{
 background: url("../images/portlet-layout-bar-back.gif") no-repeat top left; 
-height: 18px;
-margin: 10px;
+height: 28px;
+margin: 10px 10px 10px 5px;
 margin-bottom: -5px;
-padding: 1px;
+padding: 1px 1px 1px 8px;
+border-top-left-radius: 15px;
 }
 .layout-jetspeed .portlet-edit-bar a{display: block ; float: left; margin-top: 2px;}
 .layout-jetspeed .portlet-edit-bar select{width: 120px;}

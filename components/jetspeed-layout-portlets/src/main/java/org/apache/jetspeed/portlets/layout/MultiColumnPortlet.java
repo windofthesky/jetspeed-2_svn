@@ -442,6 +442,31 @@ public class MultiColumnPortlet extends LayoutPortlet
                 return;
             }
 
+            // JS2-1331: since 2.3.0
+            if ( request.getParameter("jsChangeColumns" ) != null )
+            {
+                String columns = request.getParameter("jsNumberColumns");
+                if ( columns != null && columns.length() > 0 )
+                {
+                    PortletWindow window = requestContext.getActionWindow();
+                    ContentFragment targetFragment = requestPage.getFragmentById(window.getId().toString());
+                    if ( targetFragment != null )
+                    {
+                        try
+                        {
+                            int max = Integer.parseInt(columns);
+                            targetFragment.reorderColumns(max);
+                            clearLayoutAttributes(request);
+                        }
+                        catch (Exception e)
+                        {
+                            throw new PortletException("failed to change columns " + layout + " to page: " + requestPage+": "+e.getMessage(), e);
+                        }
+                    }
+                }
+                return;
+            }
+
             String theme = request.getParameter("theme");
             if ( theme != null && theme.length() > 0 )
             {
@@ -644,6 +669,7 @@ public class MultiColumnPortlet extends LayoutPortlet
                 }
                 return;
             }
+
         }
     }
         

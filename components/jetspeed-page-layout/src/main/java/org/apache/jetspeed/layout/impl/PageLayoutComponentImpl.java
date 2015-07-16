@@ -2874,4 +2874,59 @@ public class PageLayoutComponentImpl implements PageLayoutComponent, PageLayoutC
         }
         throw new PageNotRemovedException("Unable to classify page by type: "+((pageOrTemplate != null) ? pageOrTemplate.getClass().getName() : "null"));
     }
+
+    public void reorderColumns(ContentFragment contentFragment, int maxColumns) {
+        if (log.isDebugEnabled()) {
+            log.debug("PageLayoutComponentImpl.reorderColumns() invoked");
+        }
+        try {
+            // validate content fragment
+            ContentFragmentImpl contentFragmentImpl = (ContentFragmentImpl) contentFragment;
+            if (contentFragmentImpl.getDefinition() == null) {
+                throw new IllegalArgumentException("Transient content fragments are not mutable");
+            }
+            if (contentFragmentImpl.isLocked()) {
+                throw new IllegalArgumentException("Locked content fragment is not mutable");
+            }
+            if (!contentFragmentImpl.getDefinition().getPath().equals(contentFragmentImpl.getPageOrTemplate().getPath())) {
+                throw new IllegalArgumentException("Only page fragments can be modified");
+            }
+
+            // retrieve current page or template and fragment from page manager
+            BaseFragmentsElement pageOrTemplate = getPageOrTemplate(contentFragmentImpl.getPageOrTemplate().getPath());
+            BaseFragmentElement parentFragment = pageOrTemplate.getFragmentById(contentFragmentImpl.getFragment().getId());
+            if (!(parentFragment instanceof Fragment)) {
+                throw new IllegalArgumentException("New fragment cannot be added to parent fragment");
+            }
+            Fragment fragment = (Fragment) parentFragment;
+            if (!Fragment.LAYOUT.equals(fragment.getType())) {
+                throw new IllegalArgumentException("New fragment cannot be added to non-layout parent fragment");
+            }
+
+            // check for edit permission
+            fragment.checkAccess(JetspeedActions.EDIT);
+
+            // Perform ReOrder
+            int count = maxColumns - 1;
+            int row = 0;
+            for (Object f : contentFragmentImpl.getFragments()) {
+                ContentFragmentImpl impl = (ContentFragmentImpl)f;
+                impl.updateRowColumn(row, count);
+                count = count - 1;
+                if (count < 0) {
+                    count = maxColumns - 1;
+                    row++;
+                }
+            }
+
+            // update page in page manager
+            updatePage(pageOrTemplate);
+
+        } catch (Exception e) {
+            throw new PageLayoutComponentException("Unexpected exception: " + e, e);
+        }
+
+    }
+
+
 }

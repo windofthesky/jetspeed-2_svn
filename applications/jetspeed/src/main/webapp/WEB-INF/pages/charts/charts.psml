@@ -15,7 +15,7 @@
         See the License for the specific language governing permissions and
         limitations under the License.
         -->
-<page id="/charts/jvm-memory.psml" hidden="false">
+<page id="/charts/charts.psml" hidden="false">
     <title>Jetspeed Chart Demo</title>
     <fragment id="P-chart-demo-10008" type="layout" name="jetspeed-layouts::ResponsiveLayout">
         <fragment id="P-chart-memory-20009" type="portlet" name="j2-admin::MemoryUsageChart">
