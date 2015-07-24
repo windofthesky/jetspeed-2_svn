@@ -1518,7 +1518,7 @@
       <dependency>
         <groupId>org.apache.portals.jetspeed-2</groupId>
         <artifactId>com-google-step2-common</artifactId>
-        <version>${step2.version}</version>
+        <version>${project.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
