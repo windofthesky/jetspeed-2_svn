@@ -591,6 +591,10 @@ background-position: 0px -30px
 
 .layout-jetspeed .layout-edit-bar fieldset{border: 1px solid white; padding: 5px; margin: 5px;}
 /* override the default styling */
+.portal-nested-layout .portal-layout {
+    padding-left: 0;
+    padding-right: 0;
+}
 
 /* --------------------------------- */
 /* PLT.C.4 Sections                  */
