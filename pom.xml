@@ -562,7 +562,7 @@
       <!-- Standard APIs -->
       <dependency>
         <groupId>org.apache.portals</groupId>
-        <artifactId>portlet-api_2.0_spec</artifactId>
+        <artifactId>portlet-api_2.1.0_spec</artifactId>
         <version>${portals.portlet2-api-spec.version}</version>
       </dependency>
       <dependency>
@@ -1539,7 +1539,7 @@
     <!-- Provided Dependencies -->
     <dependency>
       <groupId>org.apache.portals</groupId>
-      <artifactId>portlet-api_2.0_spec</artifactId>
+      <artifactId>portlet-api_2.1.0_spec</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

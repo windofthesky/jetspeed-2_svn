@@ -156,7 +156,7 @@
                   <deployments>
                     <!-- commons -->
                     <deployment>
-                      <artifact>org.apache.portals:portlet-api_2.0_spec:jar</artifact>
+                      <artifact>org.apache.portals:portlet-api_2.1.0_spec:jar</artifact>
                     </deployment>
                     <deployment>
                       <artifact>javax.ccpp:ccpp:jar</artifact>
@@ -241,7 +241,7 @@
               <!-- commons -->
               <dependency>
                 <groupId>org.apache.portals</groupId>
-                <artifactId>portlet-api_2.0_spec</artifactId>
+                <artifactId>portlet-api_2.1.0_spec</artifactId>
                 <version>${portals.portlet2-api-spec.version}</version>
               </dependency>
               <dependency>

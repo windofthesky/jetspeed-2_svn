@@ -128,7 +128,7 @@
             </jarModule>
             <jarModule>                      
               <groupId>org.apache.portals</groupId>
-              <artifactId>portlet-api_2.0_spec</artifactId>
+              <artifactId>portlet-api_2.1.0_spec</artifactId>
               <bundleDir>/lib</bundleDir>
             </jarModule>
             <jarModule>                      
