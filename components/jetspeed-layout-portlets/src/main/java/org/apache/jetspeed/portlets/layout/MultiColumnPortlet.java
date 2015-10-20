@@ -392,12 +392,15 @@ public class MultiColumnPortlet extends LayoutPortlet {
 
             String theme = request.getParameter("theme");
             if (theme != null && theme.length() > 0) {
-                try {
-                    requestPage.updateDefaultDecorator(theme, Fragment.LAYOUT);
-                } catch (Exception e) {
-                    throw new PortletException("Unable to update page: " + e.getMessage(), e);
+                String jsChangeThemeAll = request.getParameter("jsChangeThemeAll");
+                if (jsChangeThemeAll == null) {
+                    try {
+                        requestPage.updateDefaultDecorator(theme, Fragment.LAYOUT);
+                    } catch (Exception e) {
+                        throw new PortletException("Unable to update page: " + e.getMessage(), e);
+                    }
+                    return;
                 }
-                return;
             }
 
             String fragmentId = request.getParameter("fragment");
