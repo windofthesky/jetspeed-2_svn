@@ -104,6 +104,11 @@ else if (window.attachEvent) // Microsoft
 #if (!$jetspeed.isAjaxCustomizationEnabled())
 #PageActionBar()
 #end
+#foreach($dt in ${columnLayout.getDetachedPortlets()})
+<div id='$dt.id' name='$dt.name' style='position: absolute; top: ${dt.getProperty("x")}px; right: ${dt.getProperty("y")}px;'>
+    $dt.renderedContent
+</div>
+#end
 <!-- end of header -->
 <div id="layout-${rootFragment.id}" class="layout-main #PageBaseCSSClass()" >
 <div class="header">
