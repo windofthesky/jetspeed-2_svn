@@ -167,6 +167,15 @@ public class ColumnLayout implements Serializable
             if (maximized != null)
             {
                 doAdd(getColumn(maximized), getRow(getColumn(maximized), maximized), maximized);
+                while (fragmentsItr.hasNext())
+                {
+                    ContentFragment fragment = (ContentFragment) fragmentsItr.next();
+                    String windowState = fragment.getState();
+                    if (windowState != null && windowState.equals(JetspeedActions.DETACH))
+                    {
+                        detachedPortlets.add(fragment);
+                    }
+                }
                 return;
             }
             while (fragmentsItr.hasNext())

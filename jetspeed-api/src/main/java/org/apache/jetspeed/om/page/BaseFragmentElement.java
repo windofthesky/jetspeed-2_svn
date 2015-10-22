@@ -70,11 +70,13 @@ public interface BaseFragmentElement extends BaseElement
      * x coordinate standard layout property name
      */
     String X_PROPERTY_NAME = "x";
+    String XPOS_PROPERTY_NAME = "xpos";
 
     /**
      * y coordinate standard layout property name
      */
     String Y_PROPERTY_NAME = "y";
+    String YPOS_PROPERTY_NAME = "ypos";
 
     /**
      * z coordinate standard layout property name

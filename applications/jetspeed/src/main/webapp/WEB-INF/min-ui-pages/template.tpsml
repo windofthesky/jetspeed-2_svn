@@ -22,6 +22,14 @@ limitations under the License.
   <fragment id="template-top2" type="layout" name="jetspeed-layouts::VelocityThreeColumns">
     <property name="sizes" value="15%,70%,15%"></property>
 
+    <fragment id="jsSearch" type="portlet" name="j2-admin::SearchPortlet" decorator='clear'>
+        <property name="y" value="200"></property>
+        <property name="x" value="12"></property>
+        <property name='ypos' value='right'></property>
+        <property name='xpos' value='top'></property>
+        <property name="state" value="detach"></property>
+    </fragment>
+
     <fragment id="jsSpaceNavigator" type="portlet" name="j2-admin::SpaceNavigator" decorator='clear'>
             <property name="y" value="300"></property>
             <property name="x" value="20"></property>            

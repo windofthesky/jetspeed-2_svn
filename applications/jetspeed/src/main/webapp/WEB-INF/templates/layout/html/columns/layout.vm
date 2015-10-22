@@ -410,3 +410,19 @@ limitations under the License.
   </form>
   #parse($myFragment.decoration.footer)
 #end
+
+#foreach($dt in ${columnLayout.getDetachedPortlets()})
+#if($dt.getProperty("xpos"))
+    #set($xpos = $dt.getProperty("xpos"))
+#else
+    #set($xpos = "top")
+#end
+#if($dt.getProperty("ypos"))
+    #set($ypos = $dt.getProperty("ypos"))
+#else
+    #set($ypos = "left")
+#end
+<div id='$dt.id' name='$dt.name' style='position: absolute; ${xpos}: ${dt.getProperty("x")}px; ${ypos}: ${dt.getProperty("y")}px;'>
+    $dt.renderedContent
+</div>
+#end

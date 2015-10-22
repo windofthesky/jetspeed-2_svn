@@ -16,9 +16,6 @@
  */
 package org.apache.jetspeed.aggregator.impl;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.jetspeed.PortalReservedParameters;
 import org.apache.jetspeed.aggregator.PageAggregator;
 import org.apache.jetspeed.aggregator.PortletRenderer;
@@ -28,6 +25,9 @@ import org.apache.jetspeed.exception.JetspeedException;
 import org.apache.jetspeed.om.page.ContentFragment;
 import org.apache.jetspeed.om.page.ContentPage;
 import org.apache.jetspeed.request.RequestContext;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * ContentPageAggregator builds the content required to render a page of portlets.
@@ -70,6 +70,7 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
         
         if (null != window)
         {
+            renderDetachedPortlets(root, context, page);
             renderMaximizedWindow(context, page, root, window);
         }
         else
@@ -106,5 +107,25 @@ public class PageAggregatorImpl extends BaseAggregatorImpl implements PageAggreg
         }        
         renderer.renderNow(f, context);
     }
-    
+
+    @SuppressWarnings("unchecked")
+    protected void renderDetachedPortlets( ContentFragment f, RequestContext context, ContentPage page )
+    {
+        List<ContentFragment> contentFragments = f.getFragments();
+
+        if (contentFragments != null && !contentFragments.isEmpty())
+        {
+            for (ContentFragment child : contentFragments)
+            {
+                if (!"hidden".equals(f.getState())) {
+                    renderDetachedPortlets(child, context, page);
+                }
+            }
+        }
+        String fragmentState = f.getProperty("state");
+        if (fragmentState != null && fragmentState.equalsIgnoreCase("detach")) {
+            renderer.renderNow(f, context);
+        }
+    }
+
 }

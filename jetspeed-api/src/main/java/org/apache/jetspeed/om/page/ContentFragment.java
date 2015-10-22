@@ -134,11 +134,13 @@ public interface ContentFragment
      * x coordinate standard layout property name
      */
     String X_PROPERTY_NAME = BaseFragmentElement.X_PROPERTY_NAME;
+    String XPOS_PROPERTY_NAME = BaseFragmentElement.XPOS_PROPERTY_NAME;
 
     /**
      * y coordinate standard layout property name
      */
     String Y_PROPERTY_NAME = BaseFragmentElement.Y_PROPERTY_NAME;
+    String YPOS_PROPERTY_NAME = BaseFragmentElement.YPOS_PROPERTY_NAME;
 
     /**
      * z coordinate standard layout property name

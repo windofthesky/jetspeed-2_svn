@@ -17,14 +17,6 @@
 
 package org.apache.jetspeed.ui;
 
-import java.security.Principal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.RequestDispatcher;
-
 import org.apache.jetspeed.administration.PortalConfiguration;
 import org.apache.jetspeed.aggregator.PortletRenderer;
 import org.apache.jetspeed.container.PortletWindow;
@@ -46,6 +38,13 @@ import org.apache.jetspeed.request.RequestContext;
 import org.apache.jetspeed.security.UserSubjectPrincipal;
 import org.apache.jetspeed.util.HeadElementUtils;
 import org.apache.jetspeed.util.KeyValue;
+
+import javax.servlet.RequestDispatcher;
+import java.security.Principal;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -123,7 +122,8 @@ public class Jetui
             else
             {
                 ColumnLayout columnLayout = new ColumnLayout(1, "maximized", rootFragment.getFragments(), new String[] { "100%" }, maximized);
-                request.setAttribute("columnLayout", columnLayout);                
+                columnLayout.buildDetachedPortletList(request.getPage().getRootFragment().getFragments());
+                request.setAttribute("columnLayout", columnLayout);
             }
             dispatcher.include(request.getRequest(), request.getResponse());            
         }

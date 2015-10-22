@@ -144,7 +144,12 @@ public class MultiColumnPortlet extends LayoutPortlet {
 
         PortletWindow window = context.getPortalURL().getNavigationalState().getMaximizedWindow();
         if (window != null) {
+            ContentFragment f = getFragment(request, false);
+            String[] fragmentColumnSizesArray = new String[0];
+            ColumnLayout layout = constructColumnLayout(f, layoutType, fragmentColumnSizesArray);
+            request.setAttribute("columnLayout", layout);
             super.doView(request, response);
+            request.removeAttribute("columnLayout");
             return;
         }
 
