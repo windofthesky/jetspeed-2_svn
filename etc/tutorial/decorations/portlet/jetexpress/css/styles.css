@@ -1,0 +1,654 @@
+/*
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+.portal-layout-cell {
+    padding-bottom: 0px;
+}
+
+/* font */
+.jetexpress .PTitleLeft,
+.jetexpress .PTitle,
+.jetexpress .PTitleActive,
+.jetexpress .PTitleContent,
+.jetexpress .PTitleRight,
+.jetexpress .PContentLeft,
+.jetexpress .PContent,
+.jetexpress .PContentRight,
+.jetexpress .PBottomLeft,
+.jetexpress .PBottom,
+.jetexpress .PBottomRight
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: inherit;
+    font-size: 8pt;
+}
+
+.jetexpress .PTitleLeft
+{
+}
+
+.jetexpress .PTitle
+{
+    padding-bottom: 16px;
+    color: #363738;
+    background:#ffffdd;
+    border-right:1px solid #b4b4b4;
+    border-left:1px solid #b4b4b4;
+    border-top:1px solid #b4b4b4;
+/*    border-bottom:1px solid #b4b4b4;*/
+    height:5px;
+}
+
+.jetexpress .PTitleActive
+{
+    padding-bottom: 16px;
+    color: #ffffff;
+    background: #05549C;
+    border-right:1px solid #b4b4b4;
+    border-left:1px solid #b4b4b4;
+    border-top:1px solid #b4b4b4;
+/*    border-bottom:1px solid #b4b4b4;*/
+    height:5px;
+}
+
+
+
+.jetexpress .PTitleContent
+{
+    font-weight: bold;
+    display: inline;
+    float: left;
+    clear:left;
+    white-space: normal;
+    padding: 4px;
+    font-size: 8pt;
+}
+
+.jetexpress .PActionBar
+{
+   float: right;
+   display: inline;
+   padding:4px;
+}
+ 
+.jetexpress .PTitleRight
+{
+}
+
+.jetexpress .PContentLeft
+{
+}
+
+/* .jetexpress .PContentBorder located in portal.css and omitted from desktop.css */
+
+/* .jetexpress .PContent located in portal.css and desktop.css */
+
+
+.jetexpress .PContentRight
+{
+}
+
+.jetexpress .PBottomLeft
+{
+}
+
+.jetexpress .PBottom
+{
+}
+
+.jetexpress .PBottomRight
+{
+}
+
+/* --------------------------------- */
+/* PLT.C.1 Links (Anchor)            */
+/* --------------------------------- */
+
+.portlet a:link, 
+.portlet a:visited,
+.portlet a:active,
+.portlet a:hover {
+    color: #101047;
+    text-decoration: underline;
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+}
+
+/* font */
+.portlet a:hover
+{
+    color:#000;
+    text-decoration: none;
+}
+
+
+/* --------------------------------- */
+/* PLT.C.2 Fonts                     */
+/* --------------------------------- */
+
+.jetexpress .portlet-font {
+    color: black;
+}
+.jetexpress .portlet-font-dim {
+    color: gray;
+}
+
+/* font */
+.jetexpress .portlet-font,
+.jetexpress .portlet-font-dim
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: small;
+}
+
+
+
+/* --------------------------------- */
+/* PLT.C.3 Messages                  */
+/* --------------------------------- */
+.jetexpress .portlet-msg-status,
+.jetexpress .portlet-msg-info {
+    background: url(../images/icon_info_sml.gif);
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+.jetexpress .portlet-msg-error {
+    background: url(../images/icon_error_sml.gif);
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+.jetexpress .portlet-msg-alert {
+    background: url(../images/icon_warning_sml.gif);
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+.jetexpress .portlet-msg-success {
+    background: url(../images/icon_success_sml.gif);
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    min-height: 15px;
+}
+
+/* font */
+.jetexpress .portlet-msg-status,
+.jetexpress .portlet-msg-info,
+.jetexpress .portlet-msg-error,
+.jetexpress .portlet-msg-alert,
+.jetexpress .portlet-msg-success
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: small;
+}
+
+
+/* --------------------------------- */
+/* PLT.C.4 Sections                  */
+/* --------------------------------- */
+.jetexpress .portlet-section-header {
+    background:#4589c8/*05549c*/;
+    color: #e5e9ed;
+    padding: 3px;
+    margin-right: 2px;
+    margin-left: 2px;
+    clear: both;
+    border-bottom:3px solid #EEF0F0;
+    line-height:16px;
+}
+
+.jetexpress .portlet-section-header a {
+   color: #e5e9ed;
+   text-decoration:none;
+}
+
+.jetexpress .portlet-section-body {
+    background: none;
+    border-bottom:1px solid #dedede;
+    padding:2px;
+    text-align: left;
+    vertical-align: top;
+    text-align: left;
+    line-height:16px;
+}
+
+.jetexpress .portlet-section-alternate {
+    background: #eeeeff;
+    border-bottom:1px solid #dedede;
+    padding:2px;
+    text-align: left;
+    vertical-align: top;
+    text-align: left;
+}
+
+.jetexpress .portlet-section-selected {
+    /* TODO : ex. change color */
+    background: #ffe;
+    border: none;
+    padding: 2px 3px;
+    text-align: left;
+    vertical-align: top;
+    text-align: left;
+    font-weight:bold;
+}
+
+.jetexpress .portlet-section-subheader {
+    background: url(../images/portlet-section-subheader.gif) repeat-x;
+    color: #6b7783;
+    text-indent:3px;
+    padding:1px;
+    clear: both;
+    text-align:left;
+    vertical-align:middle;
+    border-bottom: 1px solid #afafaf;
+    line-height:14px;
+}
+
+.jetexpress .portlet-section-subheader a {
+   color:#0c1925;
+   text-decoration:none;
+}
+
+.jetexpress .portlet-section-footer {
+    color: #000;
+    padding: 5px;
+    margin: .67em 2px;
+    margin-top: 0;
+    background:none;
+}
+
+.jetexpress .portlet-section-text {
+    padding: 1em;
+    padding-bottom: .3em;
+    padding-left: 1em;
+}
+
+/* font */
+.jetexpress .portlet-section-header,
+.jetexpress .portlet-section-body,
+.jetexpress .portlet-section-alternate,
+.jetexpress .portlet-section-selected,
+.jetexpress .portlet-section-subheader,
+.jetexpress .portlet-section-footer,
+.jetexpress .portlet-section-text,
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: 8pt;
+}
+
+
+/* --------------------------------- */
+/* PLT.C.5 Forms                     */
+/* --------------------------------- */
+.jetexpress .portlet-form-label {
+}
+
+.jetexpress .portlet-form-input-field {
+}
+
+.jetexpress .portlet-form-button {
+}
+
+.jetexpress .portlet-icon-label {
+}
+
+.jetexpress .portlet-dlg-icon-label {
+}
+
+.jetexpress .portlet-form-field-label {
+}
+
+.jetexpress .portlet-form-field {
+}
+
+
+/* --------------------------------- */
+/* PLT.C.6 Menus                     */
+/* --------------------------------- */
+.jetexpress .portlet-menu {
+    background: #fff;
+    margin-bottom: 6px;
+    padding: 4px 4px 4px 0;
+    padding-bottom: .3em;
+    padding-left: 1em;
+}
+
+.jetexpress .portlet-menu-item {
+    text-decoration: none;
+    color: blue;
+}
+
+.jetexpress .portlet-menu-item-selected {
+    text-decoration: none;
+    color: #555 !important;
+}
+
+.jetexpress .portlet-menu-item-hover {
+    text-decoration: none;
+    color: #f30 !important;
+}
+
+.jetexpress .portlet-menu-item-hover-selected {
+    text-decoration: none;
+    color: #555 !important;
+    font-weight: bold;
+}
+
+.jetexpress .portlet-menu-cascade-item {
+    text-decoration: none;
+    margin-top: .3em;
+    padding-bottom: 0;
+    color: blue;
+}
+
+.jetexpress .portlet-menu-cascade-item-selected {
+    text-decoration: none;
+    color: #555 !important;
+    font-weight: bold;
+}
+
+.jetexpress .portlet-menu-description {
+}
+
+.jetexpress .portlet-menu-caption {
+    border-bottom: 1px solid #666;
+       border-right: none;
+    color: #555;
+    background:#dbe6ef;
+    padding: 3px;
+}
+
+/* font */
+.jetexpress .portlet-menu,
+.jetexpress .portlet-menu-item,
+.jetexpress .portlet-menu-item-selected,
+.jetexpress .portlet-menu-item-hover,
+.jetexpress .portlet-menu-item-hover-selected,
+.jetexpress .portlet-menu-cascade-item,
+.jetexpress .portlet-menu-cascade-item-selected,
+.jetexpress .portlet-menu-description,
+.jetexpress .portlet-menu-caption
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: small;
+}
+
+
+/* --------------------------------- */
+/* PLT.C.6 Menus (arrowfolder style) */
+/* --------------------------------- */
+.jetexpress .arrowfolder .portlet-menu {
+    background: none;
+    margin-bottom: 6px;
+    padding: 4px 4px 4px 0;
+    padding-bottom: .3em;
+    padding-left: 1em;
+    border:none;
+}
+
+.jetexpress .arrowfolder .portlet-menu-item {
+    text-decoration: none;
+    color: blue;
+    padding-left: 34px;
+    background-image: url(../images/icon_arrowdoc_sml.gif);
+    background-repeat: no-repeat;
+
+}
+
+.jetexpress .arrowfolder .portlet-menu-item-selected {
+    text-decoration: none;
+    color: #555 !important;
+    padding-left: 34px;
+    background-image: url(../images/icon_arrowdoc_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.jetexpress .arrowfolder .portlet-menu-item-hover {
+    text-decoration: none;
+    color: #f30 !important;
+    padding-left: 34px;
+    background-image: url(../images/icon_arrowdoc_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.jetexpress .arrowfolder .portlet-menu-item-hover-selected {
+    text-decoration: none;
+    color: #555 !important;
+    font-weight: bold;
+    padding-left: 34px;
+    background-image: url(../images/icon_arrowdoc_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.jetexpress .arrowfolder .portlet-menu-cascade-item {
+    text-decoration: none;
+    margin-top: .3em;
+    padding-bottom: 0;
+    color: blue;
+    padding-left: 34px;
+    background-image: url(../images/icon_arrowfolderclosed1_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.jetexpress .arrowfolder .portlet-menu-cascade-item-selected {
+    text-decoration: none;
+    color: #555 !important;
+    font-weight: bold;
+    padding-left: 34px;
+    background-image: url(../images/icon_arrowfolderopen2_sml.gif);
+    background-repeat: no-repeat;
+}
+
+.jetexpress .arrowfolder .portlet-menu-description {
+}
+
+.jetexpress .arrowfolder .portlet-menu-caption {
+    border-bottom: 1px solid #666;
+    background: #dbe6ef;
+    color: #555;
+    padding: 3px;
+}
+
+/* font */
+.jetexpress .arrowfolder .portlet-menu,
+.jetexpress .arrowfolder .portlet-menu-item,
+.jetexpress .arrowfolder .portlet-menu-item-selected,
+.jetexpress .arrowfolder .portlet-menu-item-hover,
+.jetexpress .arrowfolder .portlet-menu-item-hover-selected,
+.jetexpress .arrowfolder .portlet-menu-cascade-item,
+.jetexpress .arrowfolder .portlet-menu-cascade-item-selected,
+.jetexpress .arrowfolder .portlet-menu-description,
+.jetexpress .arrowfolder .portlet-menu-caption
+{
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    font-size: x-small;
+}
+
+/* --------------------------------- */
+/* Tree component                    */
+/* --------------------------------- */
+
+.jetexpress .tree {
+   lineheight: 18px;
+   font-family: arial, sans-serif;
+}
+
+.jetexpress .tree-node {
+   padding: 2px 15px 2px 5px;
+}
+
+.jetexpress .tree-node a {
+   text-decoration: none;
+}
+
+.jetexpress .tree-node-selected {
+   padding: 2px 15px 2px 5px;
+}
+
+.jetexpress .tree-node-selected a {
+   text-decoration: none;
+   font-weight: bold;
+}
+
+/* --------------------------------- */
+/* Portlet Table                     */
+/* --------------------------------- */
+.jetexpress th, td, input {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    font-size: 8pt;
+}
+
+.jetexpress table, 
+.jetexpress th, 
+.jetexpress td {
+    vertical-align: top;
+    border: none;
+    white-space: normal;
+    /* action buttons shifts right a few millimeters by the following */
+}
+
+.jetexpress th
+{
+ 
+}
+
+.jetexpress .portlet-table-header {
+    background-color: #bbb;
+    border: 0.75px solid #fff;
+    padding: 2px 3px;
+    text-align: left;
+}
+
+.jetexpress .portlet-table-footer {
+    padding: 5px;
+    margin: .67em 2px;
+    margin-top: 0;
+    background-color: #ddd;
+    background-image: url(../images/sw_med_rond.gif);
+    background-repeat: no-repeat;
+    background-position: bottom left;
+}
+
+
+.jetexpress .portlet-table-row1 td {
+    background: #ddd;
+    border-bottom: 1px solid #fff;
+}
+
+.jetexpress .portlet-table-row2 td {
+    background: #efefef;
+    border-bottom: 1px solid #fff;
+}
+
+.jetexpress .portlet-table-col1 {
+    border-right: 1px solid #fff;
+    padding: 2px 15px 2px 5px;
+}
+
+.jetexpress .portlet-table-col2 {
+    border-left: 1px solid #fff;
+    padding: 2px 15px 2px 5px;
+}
+
+/* --------------------------------- */
+/* Portlet Data Scroller Table       */
+/* --------------------------------- */
+
+.jetexpress .portlet-scroller-grid td {
+    horizontal-align: center;
+}
+
+.jetexpress .portlet-scroller {
+    horizontal-align: center;
+}
+
+.jetexpress .portlet-paginator {
+    horizontal-align: center;
+}
+
+/* Custom stuff for UGS added by EDB */
+.jetexpress p.corelink
+{
+    margin-top: 0.5em;
+    margin-bottom: 0em;
+    font-size: 12px;
+}
+
+.jetexpress p.abstract
+{
+    margin-top: 0em;
+    margin-bottom: 0.5em;
+    font-size: 11px;
+}
+
+.jetexpress p.title
+{
+    font-family: Arial, Helvetica, sans-serif; 
+    font-size: 17px; 
+    font-weight: bold; 
+    padding-bottom: 0em; 
+    margin-top: 0em; 
+    margin-bottom: 0em;
+}
+
+.jetexpress p.download
+{
+    font-size:12px;
+    margin-top:0.25em;
+    margin-bottom:0em;
+}
+
+.jetexpress p.side
+{ 
+    font-size: 12px;
+    margin-left: 0.85em;
+    text-indent: -0.85em;
+    margin-top: 0.25em;
+    margin-bottom:
+    0.25em;
+}
+
+.jetexpress img
+{
+    display: inline;
+    margin: 0em;
+}
+
+
+.jetexpress ul
+{
+  margin:1em;
+}
+
+.jetexpress ul li
+{
+  padding:2px;
+  margin-left:1em;
+}
