@@ -23,11 +23,11 @@
   "http://antinstaller.sourceforge.net/dtd/antinstall-config-0.8.dtd">
 -->
 
-<installer ui="swing,text" lookAndFeel="jgoodies" name="Jetspeed Enterprise Portal 2.3.0-SNAPSHOT Installer"
+<installer ui="swing,text" lookAndFeel="jgoodies" name="Jetspeed Enterprise Portal 2.3.1-SNAPSHOT Installer"
   windowIcon="/resources/feather-small.png" defaultImageResource="/resources/Jetspeed_blue_med.png" minJavaVersion="1.5"
   wide="700:250" antialiased="true" finishButtonText="Install or Execute" debug="true" verbose="true">
 
-  <page type="input" name="intro" displayText="Welcome to the Jetspeed Enterprise Portal 2.3.0-SNAPSHOT">
+  <page type="input" name="intro" displayText="Welcome to the Jetspeed Enterprise Portal 2.3.1-SNAPSHOT">
     <comment displayText="" />
     <comment displayText="This installer will guide you through setting up the Jetspeed Portal or" />
     <comment displayText="performing portal database maintenance tasks." />
@@ -61,8 +61,8 @@
   </page>
 
   <page type="input" name="properties" displayText="Installation location" ifProperty="${operation}=install">
-    <directory property="installDir" defaultValue="${java.user.home}/Jetspeed-2.3.0-SNAPSHOT"
-      defaultValueWin="C:\Apache\Jetspeed-2.3.0-SNAPSHOT" displayText="Select an installation directory" create="true"
+    <directory property="installDir" defaultValue="${java.user.home}/Jetspeed-2.3.1-SNAPSHOT"
+      defaultValueWin="C:\Apache\Jetspeed-2.3.1-SNAPSHOT" displayText="Select an installation directory" create="true"
       checkExists="true" />
     <comment displayText=""/>
     <comment displayText="Warning: on Windows, the location must not contain spaces." bold="true"/>
@@ -71,7 +71,7 @@
   <page type="input" name="properties" displayText="Temporary installation location" ifProperty="${operation}!=install">
     <comment displayText="Select temporary directory requried by installer if necessary." />
     <comment displayText="" />
-    <directory property="installDir" defaultValue="${java.java.io.tmpdir}/Jetspeed-2.3.0-SNAPSHOT"
+    <directory property="installDir" defaultValue="${java.java.io.tmpdir}/Jetspeed-2.3.1-SNAPSHOT"
       displayText="Enter temporary directory"/>
   </page>
 
@@ -99,7 +99,7 @@
   <page type="input" name="requiredComponents" displayText="Components selection, (Demo)"
     ifProperty="(${operation}=install) AND (${installationType}=demo)">
     <hidden property="setupDBAntTarget" value="runSetupNoDB" />
-    <comment displayText="Jetspeed Enterprise Portal version 2.3.0-SNAPSHOT, (Demo)" bold="true" />
+    <comment displayText="Jetspeed Enterprise Portal version 2.3.1-SNAPSHOT, (Demo)" bold="true" />
     <target displayText="Tomcat 7.0.62 Webserver" target="install" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Portal" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Layout Portlets" property="dummy" defaultValue="true" force="true" />
@@ -114,7 +114,7 @@
   <page type="input" name="requiredComponents" displayText="Components selection, (Minimal)"
     ifProperty="(${operation}=install) AND (${installationType}=minimal)">
     <hidden property="setupDBAntTarget" value="runSetupNoDB" />
-    <comment displayText="Jetspeed Enterprise Portal version 2.3.0-SNAPSHOT" bold="true" />
+    <comment displayText="Jetspeed Enterprise Portal version 2.3.1-SNAPSHOT" bold="true" />
     <target displayText="Tomcat 7.0.62 Webserver" target="install" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Portal" property="dummy" defaultValue="true" force="true" />
     <checkbox displayText="Jetspeed Layout Portlets" property="dummy" defaultValue="true" force="true" />

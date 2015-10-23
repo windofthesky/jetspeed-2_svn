@@ -77,7 +77,7 @@
                 <resources>
                   <resource>
                     <path>seed/min</path>
-                    <include>j2-ui-seed.xml</include>
+                    <include>j2-seed.xml</include>
                     <destination>archetype-resources/__rootArtifactId__-portal/src/sql/min</destination>
                     <name>j2-seed.xml</name>
                   </resource>
@@ -117,7 +117,7 @@
                 <targetDirectory>${project.build.outputDirectory}</targetDirectory>
                 <resources>
                   <resource>
-                    <path>WEB-INF/min-ui-pages</path>
+                    <path>WEB-INF/min-pages</path>
                     <include>**/*</include>
                     <destination>archetype-resources/__rootArtifactId__-portal/src/main/webapp/WEB-INF/pages</destination>
                     <overwrite>false</overwrite>

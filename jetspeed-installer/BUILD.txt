@@ -22,8 +22,8 @@ should be used as follows:
 The self executing installer can be found in the maven target directory
 after the build:
 
-jetspeed-installer-2.3.0-SNAPSHOT.jar
+jetspeed-installer-2.3.1-SNAPSHOT.jar
 
 It can be run simply enough:
 
-> java -jar jetspeed-installer-2.3.0-SNAPSHOT.jar
+> java -jar jetspeed-installer-2.3.1-SNAPSHOT.jar

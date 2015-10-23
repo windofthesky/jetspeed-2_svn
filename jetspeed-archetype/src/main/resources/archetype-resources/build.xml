@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="jetexpress" default="delta" basedir=".">
+ 	
+<property file="build.properties"/>
+
+
+<!--
+   Development Targets
+   -->	
+		
+<target name='decorators'>
+	<copy todir="${app.server.home}/webapps/${portal.name}/decorations/layout/">
+        <fileset dir="./${portal.name}-portal/src/main/webapp/decorations/layout/"/>
+  	</copy>                
+	<copy todir="${app.server.home}/webapps/${portal.name}/decorations/portlet/">
+        <fileset dir="./${portal.name}-portal/src/main/webapp/decorations/portlet/"/>
+  	</copy>                	
+</target>
+
+<target name='pages'>
+	<copy todir="${app.server.home}/webapps/${portal.name}/WEB-INF/pages/">
+        <fileset dir="./${portal.name}-portal/src/main/webapp/WEB-INF/pages/"/>
+  	</copy>                
+</target>
+
+<target name='config'>
+	<copy todir="${app.server.home}/webapps/${portal.name}/WEB-INF/assembly/">
+        <fileset dir="./${portal.name}-portal/src/main/webapp/WEB-INF/assembly/"/>
+  	</copy>                
+	<copy todir="${app.server.home}/webapps/${portal.name}/WEB-INF/conf/">
+        <fileset dir="./${portal.name}-portal/src/main/webapp/WEB-INF/conf/"/>
+  	</copy>                
+</target>
+	
+	
+<target name='delta'>
+	<antcall target='decorators'/>
+	<antcall target='pages'/>
+	<antcall target='config'/>
+</target>
+
+<target name='deploy.pa'>
+    <echo>Deploying PA to ${app.server.home} ...</echo>
+    <copy tofile="${app.server.home}/webapps/${portal.name}/WEB-INF/deploy/${pa.name}.war">
+        <fileset file="${pa.name}/target/${pa.name}.war"/>
+    </copy>
+</target>
+
+
+</project>

@@ -141,7 +141,7 @@ public class BaseDecoration implements Decoration, Serializable
         }
         else
         {
-            this.portalStylesheet = null;
+            this.portalStylesheet = config.getProperty( "stylesheet.portal", DEFAULT_PORTAL_STYLE_SHEET );
             this.desktopStylesheet = null;
         }
         
