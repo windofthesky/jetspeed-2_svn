@@ -76,7 +76,7 @@
   </page>
 
   <page type="input" name="jvmProperties" displayText="JVM memory size"
-    ifProperty="(${operation}=importdb) OR (${operation}=exportdb)">
+    ifProperty="(${operation}=importdb) OR (${operation}=exportdb) OR (${operation}=migratedb)">
     <comment displayText="Enter maximum memory size of the import/export JVM process;" />
     <comment displayText="large data sets will often require additional memory." />
     <comment displayText="" />
