@@ -16,23 +16,21 @@
  */
 package org.apache.jetspeed.cache;
 
-import java.io.Serializable;
-import java.security.Principal;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockHttpSession;
 import junit.framework.TestCase;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
-
 import org.apache.jetspeed.cache.impl.EhCacheConfigResource;
 import org.apache.jetspeed.cache.impl.EhDecorationContentCacheImpl;
 import org.apache.jetspeed.cache.impl.JetspeedCacheKeyGenerator;
 import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockHttpSession;
+import java.io.Serializable;
+import java.security.Principal;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * <p>
@@ -52,7 +50,7 @@ public class TestDecorationContentCache extends TestCase
     {
         // initialize ehCache
         EhCacheConfigResource.getInstance(EhCacheConfigResource.EHCACHE_CONFIG_RESOURCE_DEFAULT, true);
-        CacheManager cacheManager = new CacheManager();
+        CacheManager cacheManager = CacheManager.create();
         Cache ehContentCache = new Cache("ehDecorationContentCache", 10000, false, false, 28800, 28800);
         cacheManager.addCache(ehContentCache);
         ehContentCache.setCacheManager(cacheManager);       
@@ -139,14 +137,15 @@ public class TestDecorationContentCache extends TestCase
         contentCache.evictContentForUser("sean");
         assertFalse(contentCache.isKeyInCache(cckey3));
         assertFalse(contentCache.isKeyInCache(cckey4));
-        assertTrue(contentCache.isKeyInCache(cckey2));        
+        assertTrue(contentCache.isKeyInCache(cckey2));
+        cacheManager.shutdown();
     }
     
     public void testContentCacheBySession() throws Exception
     {
         // initialize ehCache
         EhCacheConfigResource.getInstance(EhCacheConfigResource.EHCACHE_CONFIG_RESOURCE_DEFAULT, true);
-        CacheManager cacheManager = new CacheManager();
+        CacheManager cacheManager = CacheManager.create();
         Cache ehContentCache = new Cache("ehDecorationContentCache", 10000, false, false, 28800, 28800);
         cacheManager.addCache(ehContentCache);
         ehContentCache.setCacheManager(cacheManager);       
@@ -240,7 +239,8 @@ public class TestDecorationContentCache extends TestCase
         contentCache.evictContentForSession(sessionId);
         assertFalse(contentCache.isKeyInCache(cckey3));
         assertFalse(contentCache.isKeyInCache(cckey4));
-        assertTrue(contentCache.isKeyInCache(cckey2));                      
+        assertTrue(contentCache.isKeyInCache(cckey2));
+        cacheManager.shutdown();
     }
     
     class MockPrincipal implements Principal

@@ -16,18 +16,12 @@
  */
 package org.apache.jetspeed.cache;
 
-import java.io.PrintWriter;
-import java.security.Principal;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockHttpSession;
 import junit.framework.TestCase;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
-
 import org.apache.jetspeed.aggregator.PortletContent;
 import org.apache.jetspeed.cache.impl.EhCacheConfigResource;
 import org.apache.jetspeed.cache.impl.EhPortletContentCacheImpl;
@@ -36,9 +30,12 @@ import org.apache.jetspeed.mockobjects.request.MockRequestContext;
 import org.apache.jetspeed.portlet.HeadElement;
 import org.apache.jetspeed.util.KeyValue;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockHttpSession;
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+import java.io.PrintWriter;
+import java.security.Principal;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * <p>
@@ -58,7 +55,7 @@ public class TestContentCache extends TestCase
     {
         // initialize ehCache
         EhCacheConfigResource.getInstance(EhCacheConfigResource.EHCACHE_CONFIG_RESOURCE_DEFAULT, true);
-        CacheManager cacheManager = new CacheManager();
+        CacheManager cacheManager = CacheManager.create();
         Cache ehContentCache = new Cache("ehPortletContentCache", 10000, false, false, 28800, 28800);
         cacheManager.addCache(ehContentCache);
         ehContentCache.setCacheManager(cacheManager);       
@@ -116,7 +113,7 @@ public class TestContentCache extends TestCase
         assertTrue(contentCache.isKeyInCache(cckey2));
         
         // test user stuff
-        request.setUserPrincipal(new MockPrincipal("sean"));        
+        request.setUserPrincipal(new MockPrincipal("sean"));
         // create a simple key
         String window3 = "555-03";
         ContentCacheKey cckey3 = contentCache.createCacheKey(context, window3);
@@ -140,19 +137,20 @@ public class TestContentCache extends TestCase
         // assert 3 and 4
         assertTrue(contentCache.isKeyInCache(cckey3));
         assertTrue(contentCache.isKeyInCache(cckey4));
-        
+
         // remove for user
         contentCache.evictContentForUser("sean");
         assertFalse(contentCache.isKeyInCache(cckey3));
         assertFalse(contentCache.isKeyInCache(cckey4));
-        assertTrue(contentCache.isKeyInCache(cckey2));        
+        assertTrue(contentCache.isKeyInCache(cckey2));
+        cacheManager.shutdown();
     }
 
     public void testContentCacheBySession() throws Exception
     {
         // initialize ehCache
         EhCacheConfigResource.getInstance(EhCacheConfigResource.EHCACHE_CONFIG_RESOURCE_DEFAULT, true);
-        CacheManager cacheManager = new CacheManager();
+        CacheManager cacheManager = CacheManager.create();
         Cache ehContentCache = new Cache("ehPortletContentCache", 10000, false, false, 28800, 28800);
         cacheManager.addCache(ehContentCache);
         ehContentCache.setCacheManager(cacheManager);       
@@ -217,7 +215,7 @@ public class TestContentCache extends TestCase
         session = new MockHttpSession();
         request.setSession(session);        
         sessionId = session.getId();        
-        request.setUserPrincipal(new MockPrincipal("sean"));        
+        request.setUserPrincipal(new MockPrincipal("sean"));
         // create a simple key
         String window3 = "555-03";
         ContentCacheKey cckey3 = contentCache.createCacheKey(context, window3);
@@ -241,12 +239,13 @@ public class TestContentCache extends TestCase
         // assert 3 and 4
         assertTrue(contentCache.isKeyInCache(cckey3));
         assertTrue(contentCache.isKeyInCache(cckey4));
-        
+
         // remove for user
         contentCache.evictContentForSession(sessionId);
         assertFalse(contentCache.isKeyInCache(cckey3));
         assertFalse(contentCache.isKeyInCache(cckey4));
-        assertTrue(contentCache.isKeyInCache(cckey2));                      
+        assertTrue(contentCache.isKeyInCache(cckey2));
+        cacheManager.shutdown();
     }
     
     class MockPrincipal implements Principal
