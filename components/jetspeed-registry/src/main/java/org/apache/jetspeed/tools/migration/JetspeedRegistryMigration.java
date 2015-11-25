@@ -16,6 +16,9 @@
  */
 package org.apache.jetspeed.tools.migration;
 
+import org.apache.jetspeed.util.JetspeedLocale;
+import org.apache.jetspeed.util.ojb.LocaleFieldConversion;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,9 +27,6 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.jetspeed.util.JetspeedLocale;
-import org.apache.jetspeed.util.ojb.LocaleFieldConversion;
 
 /**
  * Jetspeed Migration for Registry component.
@@ -366,7 +366,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 {
                     parameterInsertStatement.setInt(1, parameterResultSet.getInt(1));
                     parameterInsertStatement.setInt(2, parameterResultSet.getInt(2));
-                    parameterInsertStatement.setString(3, parameterResultSet.getString(3));
+                    parameterInsertStatement.setString(3, "org.apache.jetspeed.om.portlet.impl.PortletDefinitionImpl"); //parameterResultSet.getString(3));
                     parameterInsertStatement.setString(4, parameterResultSet.getString(4));
                     parameterInsertStatement.setString(5, parameterResultSet.getString(5));
                     parameterInsertStatement.executeUpdate();

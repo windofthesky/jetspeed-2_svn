@@ -76,7 +76,9 @@ public class SecurityConstraintsAction
     public boolean run(RequestContext requestContext, Map<String,Object> resultMap)
             throws AJAXException
     {
-    	System.out.println( "SecurityConstraintsAction run" );
+        if (log.isDebugEnabled()) {
+            log.debug("SecurityConstraintsAction run");
+        }
         boolean success = true;
         String status = "success";
         try
@@ -123,13 +125,13 @@ public class SecurityConstraintsAction
         } 
         catch (Exception e)
         {
-        	System.out.println( "SecurityConstraintsAction run failure caused by " + e.getClass().getName() + " " + e.getMessage() );
-        	e.printStackTrace();
             log.error("exception administering portal permissions", e);
             resultMap.put(REASON, e.toString());
             success = false;
         }
-        System.out.println( "SecurityConstraintsAction complete " + resultMap.toString() );
+        if (log.isDebugEnabled()) {
+            log.debug("SecurityConstraintsAction complete " + resultMap.toString());
+        }
         return success;
     }
     
@@ -163,8 +165,9 @@ public class SecurityConstraintsAction
     protected int updateConstraintDefinition(RequestContext requestContext, Map<String,Object> resultMap)
     throws AJAXException
     {
-    	System.out.println( "SecurityConstraintsAction updateConstraintDefinition started" );
-        	
+        if (log.isDebugEnabled()) {
+            log.debug("SecurityConstraintsAction updateConstraintDefinition started");
+        }
         int count = 0;
         boolean added = false;
         String xml = getActionParameter(requestContext, "xml");
@@ -243,8 +246,6 @@ public class SecurityConstraintsAction
         }
         catch (Exception e)
         {
-        	System.out.println( "SecurityConstraintsAction updateConstraintDefinition failure caused by " + e.getClass().getName() + " " + e.getMessage() );
-        	e.printStackTrace();
         	log.error( "SecurityConstraintsAction updateConstraintDefinition failure caused by " + e.getClass().getName() + " " + e.getMessage(), e );
             throw new AJAXException(e);
         }
