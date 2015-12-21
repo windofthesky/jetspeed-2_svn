@@ -59,11 +59,13 @@
     <constructor-arg value="js" />
   </bean>
   
-  <bean id="org.apache.jetspeed.search.SearchEngine" class="org.apache.jetspeed.search.solr.SolrSearchEngineImpl">
+  <bean id="org.apache.jetspeed.search.SearchEngine" class="org.apache.jetspeed.search.solr.SolrSearchEngineImpl" init-method="start">
     <meta key="j2:cat" value="default or search" />
     <constructor-arg ref="org.apache.solr.client.solrj.SolrServer" />
     <constructor-arg type="boolean" value="${search.index.optimizeAfterUpdate}" />
     <constructor-arg ref="org.apache.jetspeed.search.HandlerFactory" />
+    <property name="documentsEnabled" value="${search.documents.enabled}"/>
+    <property name="documentsLocation" value="${search.documents.location}"/>
   </bean>
   
 </beans>

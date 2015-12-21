@@ -462,6 +462,16 @@ font-size:8pt;
 text-decoration: underline;
 }
 
+.layout-greenearth .layout-searcharea {
+    position: absolute;
+    right: 210px; top: 10px;
+    color: #fff;
+    text-decoration:none;
+    font-size:8pt;
+}
+
+
+
 .layout-jetspeed .tooltext { font-size: 8pt; }
 .layout-greenearth .navmenu ul { margin: 0 0 0 3px; padding: 2px; }
 .layout-greenearth .navmenu li { margin: 0 0 0 3px; padding: 2px; }

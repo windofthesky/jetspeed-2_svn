@@ -99,6 +99,7 @@ else if (window.attachEvent) // Microsoft
 <!--  BEGIN: layout/html/jetspeed/decorator.vm -->
 <!-- Page Action Bar -->
 #if ($request.getUserPrincipal())
+<span class="layout-searcharea">$jetspeed.renderPortletWindow("sp-definition", "j2-admin::SearchPortlet")</span>
 <span class="layout-statusarea"><b>$jetspeed.getUserAttribute("user.name.given","") $jetspeed.getUserAttribute("user.name.family", ${request.userPrincipal.name})</b> | <a href="#BaseHref()login/logout">Log out</a></span>
 #end
 #if (!$jetspeed.isAjaxCustomizationEnabled())

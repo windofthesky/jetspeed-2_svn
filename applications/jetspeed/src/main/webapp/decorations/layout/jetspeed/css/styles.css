@@ -458,6 +458,14 @@ color: #fff;
 font-size:8pt;
 }
 
+.layout-jetspeed .layout-searcharea {
+    position: absolute;
+    right: 210px; top: 10px;
+    color: #fff;
+    text-decoration:none;
+    font-size:8pt;
+}
+
 .layout-jetspeed .layout-jetspeed-logout:hover{
 text-decoration: underline;
 }

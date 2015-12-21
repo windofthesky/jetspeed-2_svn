@@ -16,13 +16,8 @@
  */
 package org.apache.jetspeed.search.lucene;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.apache.commons.collections.MultiHashMap;
 import org.apache.jetspeed.search.AbstractObjectHandler;
 import org.apache.jetspeed.search.BaseParsedObject;
@@ -30,13 +25,18 @@ import org.apache.jetspeed.search.ParsedObject;
 import org.apache.jetspeed.search.SearchEngine;
 import org.apache.jetspeed.search.SearchResults;
 import org.apache.jetspeed.search.handlers.HandlerFactoryImpl;
-import org.apache.jetspeed.search.lucene.SearchEngineImpl;
+import org.apache.jetspeed.search.handlers.URLToDocHandler;
 import org.apache.jetspeed.test.JetspeedTestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * TestPortletRegistrySearch
@@ -81,9 +81,10 @@ public class TestPortletRegistrySearch extends JetspeedTestCase
         super.setUp();
         HashMap mapping = new HashMap();
         mapping.put("java.util.HashMap", MapObjectHandler.class.getName());
+        mapping.put("java.net.URL", URLToDocHandler.class.getName());
         HandlerFactoryImpl hfi = new HandlerFactoryImpl(mapping);
         directory = new RAMDirectory();
-        analyzer = new StandardAnalyzer(Version.LUCENE_29);
+        analyzer = new StandardAnalyzer(Version.LUCENE_30);
         searchEngine = new SearchEngineImpl(directory, analyzer, true, hfi);
     }
     
@@ -225,7 +226,36 @@ public class TestPortletRegistrySearch extends JetspeedTestCase
         searchResults = searchEngine.search(query);
         assertEquals(1, searchResults.size());
     }
-    
+
+    public void testIndexFileURL() throws Exception
+    {
+        searchEngine.add(new File(getBaseDir() + "src/test/testdocs/about.html").toURI().toURL());
+        searchEngine.add(new File(getBaseDir() + "src/test/testdocs/developers.html").toURI().toURL());
+        searchEngine.add(new File(getBaseDir() + "src/test/testdocs/welcome.html").toURI().toURL());
+
+        SearchResults searchResults = searchEngine.search("Captcha");
+        assertEquals(1, searchResults.size());
+
+        searchResults = searchEngine.search("Architecture");
+        assertEquals(2, searchResults.size());
+    }
+
+    public void testIndexDirectory() throws Exception
+    {
+        searchEngine.indexDirectory(getBaseDir() + "src/test/testdocs");
+
+        SearchResults searchResults = searchEngine.search("Captcha");
+        assertEquals(1, searchResults.size());
+
+        searchResults = searchEngine.search("Architecture");
+        assertEquals(2, searchResults.size());
+
+        String query = ParsedObject.FIELDNAME_TYPE + ":\"" + ParsedObject.OBJECT_TYPE_URL + "\" ";
+        searchResults = searchEngine.search(query);
+        assertEquals(3, searchResults.size());
+
+    }
+
     public static class MapObjectHandler extends AbstractObjectHandler
     {
         private String keyPrefix;

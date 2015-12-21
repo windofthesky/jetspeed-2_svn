@@ -265,6 +265,20 @@ public class ContentPageImpl implements ContentPage, PageLayoutComponentUtils
         return rootContentFragment;
     }
 
+    public ContentFragment getRootFragmentUnlocked()
+    {
+        ContentFragment root = rootContentFragment;
+        if (root.isLocked()) {
+            for (ContentFragment f : root.getFragments()) {
+                if (!f.isTemplate() && !f.isLocked()) {
+                    return f;
+                }
+            }
+        }
+        return root;
+
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.om.page.ContentPage#getShortTitle()
      */

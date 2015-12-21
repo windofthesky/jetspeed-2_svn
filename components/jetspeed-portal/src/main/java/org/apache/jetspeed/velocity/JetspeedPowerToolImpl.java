@@ -298,6 +298,20 @@ public class JetspeedPowerToolImpl implements JetspeedVelocityPowerTool
         return (ContentFragment) renderRequest.getAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE);
     }
 
+    public ContentFragment getCurrentFragmentUnlocked()
+    {
+        checkState();
+        ContentFragment root = (ContentFragment)renderRequest.getAttribute(PortalReservedParameters.FRAGMENT_ATTRIBUTE);
+        if (root.isLocked()) {
+            for (ContentFragment f : root.getFragments()) {
+                if (!f.isTemplate() && !f.isLocked()) {
+                    return f;
+                }
+            }
+        }
+        return root;
+    }
+
     /**
      * 
      * @param f

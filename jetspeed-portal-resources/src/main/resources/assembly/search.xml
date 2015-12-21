@@ -37,7 +37,7 @@
   </bean>
 
 
-  <bean id="org.apache.jetspeed.search.SearchEngine" class="org.apache.jetspeed.search.lucene.SearchEngineImpl">
+  <bean id="org.apache.jetspeed.search.SearchEngine" class="org.apache.jetspeed.search.lucene.SearchEngineImpl"  init-method="start">
     <meta key="j2:cat" value="default or search" />
     <constructor-arg index="0">
       <value>${search.index.location}</value>
@@ -51,6 +51,7 @@
     <constructor-arg>
       <ref bean="org.apache.jetspeed.search.HandlerFactory" />
     </constructor-arg>
-
+    <property name="documentsEnabled" value="${search.documents.enabled}"/>
+    <property name="documentsLocation" value="${search.documents.location}"/>
   </bean>
 </beans>

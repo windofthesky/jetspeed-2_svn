@@ -16,17 +16,6 @@
  */
 package org.apache.jetspeed.search.lucene;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang.StringUtils;
@@ -57,99 +46,128 @@ import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author <a href="mailto: jford@apache.org">Jeremy Ford</a>
  * @version $Id$
  */
-public class SearchEngineImpl implements SearchEngine
-{
+public class SearchEngineImpl implements SearchEngine {
     protected final static Logger log = LoggerFactory.getLogger(SearchEngineImpl.class);
     private Directory directory;
     private Analyzer analyzer;
     private boolean optimizeAfterUpdate = true;
     private HandlerFactory handlerFactory;
-    
+
     private static final int KEYWORD = 0;
     private static final int TEXT = 1;
-    
+
     private int defaultTopHitsCount = 1000;
-    
+    private Boolean documentsEnabled = false;
+    private String documentsLocation = null;
+
     public SearchEngineImpl(Directory directory, Analyzer analyzer, boolean optimzeAfterUpdate, HandlerFactory handlerFactory)
-    throws Exception
-    {
+            throws Exception {
         this(directory, analyzer, optimzeAfterUpdate, handlerFactory, 0);
     }
-    
+
     public SearchEngineImpl(Directory directory, Analyzer analyzer, boolean optimzeAfterUpdate, HandlerFactory handlerFactory, int defaultTopHitsCount)
-    throws Exception
-    {
+            throws Exception {
         this.directory = directory;
         this.analyzer = analyzer;
         this.optimizeAfterUpdate = optimzeAfterUpdate;
         this.handlerFactory = handlerFactory;
-        
-        if (defaultTopHitsCount > 0)
-        {
+
+        if (defaultTopHitsCount > 0) {
             this.defaultTopHitsCount = defaultTopHitsCount;
         }
-        
+
         validateIndexDirectory();
     }
-    
+
     public SearchEngineImpl(String indexRoot, String analyzerClassName, boolean optimzeAfterUpdate, HandlerFactory handlerFactory)
-    throws Exception
-    {
+            throws Exception {
         this(indexRoot, analyzerClassName, optimzeAfterUpdate, handlerFactory, 0);
     }
-    
+
     public SearchEngineImpl(String indexRoot, String analyzerClassName, boolean optimzeAfterUpdate, HandlerFactory handlerFactory, int defaultTopHitsCount)
-    throws Exception
-    {
-        if(analyzerClassName != null)
-        {
+            throws Exception {
+        if (analyzerClassName != null) {
             try {
                 Class analyzerClass = Class.forName(analyzerClassName);
                 analyzer = (Analyzer) analyzerClass.newInstance();
-            } catch(InstantiationException ce) {
+            } catch (InstantiationException ce) {
                 //logger.error("InstantiationException", e);
-            } catch(ClassNotFoundException ce) {
+            } catch (ClassNotFoundException ce) {
                 //logger.error("ClassNotFoundException", e);
-            } catch(IllegalAccessException ce) {
+            } catch (IllegalAccessException ce) {
                 //logger.error("IllegalAccessException", e);
             }
         }
-        
-        if (analyzer == null) 
-        {
+
+        if (analyzer == null) {
             analyzer = new StandardAnalyzer(Version.LUCENE_30);
         }
-        
+
         this.optimizeAfterUpdate = optimzeAfterUpdate;
         this.handlerFactory = handlerFactory;
-        
-        if (defaultTopHitsCount > 0)
-        {
+
+        if (defaultTopHitsCount > 0) {
             this.defaultTopHitsCount = defaultTopHitsCount;
         }
-        
+
         //assume it's full path for now
         File rootIndexDir = new File(indexRoot);
-        
-        if (!rootIndexDir.isDirectory())
-        {
+
+        if (!rootIndexDir.isDirectory()) {
             rootIndexDir.mkdirs();
         }
-        
+
         directory = FSDirectory.open(rootIndexDir);
-        
+
         validateIndexDirectory();
     }
-    
+
+    public void start() throws IOException {
+        if (documentsEnabled) {
+            String query = ParsedObject.FIELDNAME_TYPE + ":\"" + ParsedObject.OBJECT_TYPE_URL + "\" ";
+            SearchResults searchResults = search(query);
+            if (searchResults.size() == 0) {
+                log.info("Adding Jetspeed documentation to search index ....");
+                indexDirectory(documentsLocation);
+            }
+        }
+    }
+
+    public Boolean getDocumentsEnabled() {
+        return documentsEnabled;
+    }
+
+    public void setDocumentsEnabled(Boolean documentsEnabled) {
+        this.documentsEnabled = documentsEnabled;
+    }
+
+    public String getDocumentsLocation() {
+        return documentsLocation;
+    }
+
+    public void setDocumentsLocation(String documentsLocation) {
+        this.documentsLocation = documentsLocation;
+    }
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#add(java.lang.Object)
      */
-    public boolean add(Object o)
-    {
+    public boolean add(Object o) {
         Collection c = new ArrayList(1);
         c.add(o);
 
@@ -159,16 +177,14 @@ public class SearchEngineImpl implements SearchEngine
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#add(java.util.Collection)
      */
-    public boolean add(Collection objects)
-    {
+    public boolean add(Collection objects) {
         return removeIfExistsAndAdd(objects);
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#remove(java.lang.Object)
      */
-    public boolean remove(Object o)
-    {
+    public boolean remove(Object o) {
         Collection c = new ArrayList(1);
         c.add(o);
 
@@ -178,21 +194,17 @@ public class SearchEngineImpl implements SearchEngine
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#remove(java.util.Collection)
      */
-    public synchronized boolean remove(Collection objects)
-    {
+    public synchronized boolean remove(Collection objects) {
         IndexReader indexReader = null;
         int deleteCount = 0;
-        
-        try 
-        {
+
+        try {
             Iterator it = objects.iterator();
-            while (it.hasNext()) 
-            {
-                if (indexReader == null)
-                {
+            while (it.hasNext()) {
+                if (indexReader == null) {
                     indexReader = IndexReader.open(directory, false);
                 }
-                
+
                 Object o = it.next();
                 // Look up appropriate handler
                 ObjectHandler handler = handlerFactory.getHandler(o);
@@ -203,8 +215,7 @@ public class SearchEngineImpl implements SearchEngine
                 // Create term
                 Term term = null;
 
-                if (parsedObject.getKey() != null)
-                {
+                if (parsedObject.getKey() != null) {
                     term = new Term(ParsedObject.FIELDNAME_KEY, parsedObject.getKey());
                     // Remove the document from search index
                     deleteCount += indexReader.deleteDocuments(term);
@@ -212,32 +223,22 @@ public class SearchEngineImpl implements SearchEngine
                     //System.out.println("Attempted to delete '" + term.toString() + "' from index, documents deleted = " + rc);
                 }
             }
-            
-            if (indexReader != null)
-            {
+
+            if (indexReader != null) {
                 indexReader.close();
                 indexReader = null;
             }
-            
-            if (deleteCount > 0 && optimizeAfterUpdate)
-            {
+
+            if (deleteCount > 0 && optimizeAfterUpdate) {
                 optimizeIndex();
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error("Exception during removing documents in the search index.", e);
-        }
-        finally
-        {
-            if (indexReader != null)
-            {
-                try
-                {
+        } finally {
+            if (indexReader != null) {
+                try {
                     indexReader.close();
-                }
-                catch (IOException ce)
-                {
+                } catch (IOException ce) {
                 }
             }
         }
@@ -248,242 +249,199 @@ public class SearchEngineImpl implements SearchEngine
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#update(java.lang.Object)
      */
-    public boolean update(Object o)
-    {
+    public boolean update(Object o) {
         Collection c = new ArrayList(1);
         c.add(o);
-        
+
         return update(c);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#update(java.util.Collection)
      */
-    public boolean update(Collection objects)
-    {
+    public boolean update(Collection objects) {
         return removeIfExistsAndAdd(objects);
     }
 
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEnging#optimize()
      */
-    public synchronized boolean optimize()
-    {
+    public synchronized boolean optimize() {
         return optimizeIndex();
     }
-    
-    private boolean optimizeIndex()
-    {
+
+    private boolean optimizeIndex() {
         boolean result = false;
 
-        try
-        {
+        try {
             IndexWriter indexWriter = new IndexWriter(directory, analyzer, false, IndexWriter.MaxFieldLength.UNLIMITED);
             indexWriter.optimize();
             indexWriter.close();
             result = true;
-        }
-        catch (IOException e)
-        {
-             //logger.error("Error while trying to optimize index.");
+        } catch (IOException e) {
+            //logger.error("Error while trying to optimize index.");
         }
         return result;
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEngine#search(java.lang.String)
      */
-    public SearchResults search(String queryString)
-    {
+    public SearchResults search(String queryString) {
         return search(queryString, ParsedObject.FIELDNAME_SYNTHETIC);
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEngine#search(java.lang.String, java.lang.String)
      */
-    public SearchResults search(String queryString, String defaultFieldName)
-    {
+    public SearchResults search(String queryString, String defaultFieldName) {
         return search(queryString, defaultFieldName, defaultTopHitsCount);
     }
-    
+
     /* (non-Javadoc)
      * @see org.apache.jetspeed.search.SearchEngine#search(java.lang.String, java.lang.String, int)
      */
-    public SearchResults search(String queryString, String defaultFieldName, int topHitsCount)
-    {
+    public SearchResults search(String queryString, String defaultFieldName, int topHitsCount) {
         SearchResults results = null;
-        
+
         IndexReader indexReader = null;
         Searcher searcher = null;
-        
-        try
-        {
+
+        try {
             indexReader = IndexReader.open(directory);
             searcher = new IndexSearcher(indexReader);
-            
+
             QueryParser queryParser = new QueryParser(Version.LUCENE_30, defaultFieldName, analyzer);
             Query query = queryParser.parse(queryString);
             TopDocs topDocs = searcher.search(query, topHitsCount);
-            
+
             int count = Math.min(topHitsCount, topDocs.totalHits);
             List<ParsedObject> resultList = new ArrayList<ParsedObject>(count);
-            
-            for (int i = 0; i < count; i++)
-            {
+
+            for (int i = 0; i < count; i++) {
                 ParsedObject result = new BaseParsedObject();
-                
-	            Document doc = searcher.doc(topDocs.scoreDocs[i].doc);
-	        
-		        addFieldsToParsedObject(doc, result);
-		        
-		        result.setScore(topDocs.scoreDocs[i].score);
-		        Field type = doc.getField(ParsedObject.FIELDNAME_TYPE);
-		        if(type != null)
-		        {
-		            result.setType(type.stringValue());
-		        }
-		        
-		        Field key = doc.getField(ParsedObject.FIELDNAME_KEY);
-		        if(key != null)
-		        {
-		            result.setKey(key.stringValue());
-		        }
-		        
-		        Field description = doc.getField(ParsedObject.FIELDNAME_DESCRIPTION);
-		        if(description != null)
-		        {
-		            result.setDescription(description.stringValue());
-		        }
-		        
-		        Field title = doc.getField(ParsedObject.FIELDNAME_TITLE);
-		        if(title != null)
-		        {
-		            result.setTitle(title.stringValue());
-		        }
-		        
-		        Field content = doc.getField(ParsedObject.FIELDNAME_CONTENT);
-		        if(content != null)
-		        {
-		            result.setContent(content.stringValue());
-		        }
-		        
-		        Field language = doc.getField(ParsedObject.FIELDNAME_LANGUAGE);
-		        if (language != null)
-		        {
-		        	result.setLanguage(language.stringValue());
-		        }
-		        
-		        Field classname = doc.getField(ParsedObject.FIELDNAME_CLASSNAME);
-		        if (classname != null)
-		        {
-		        	result.setClassName(classname.stringValue());
-		        }
-		        
-		        Field url = doc.getField(ParsedObject.FIELDNAME_URL);
-		        if (url != null)
-		        {
-		            result.setURL(new URL(url.stringValue()));
-		        }
-		        
-		        Field[] keywords = doc.getFields(ParsedObject.FIELDNAME_KEYWORDS);
-		        if(keywords != null)
-		        {
-		        	String[] keywordArray = new String[keywords.length];
-		        	
-		        	for(int j=0; j<keywords.length; j++)
-		        	{
-		        		Field keyword = keywords[j];
-		        		keywordArray[j] = keyword.stringValue();
-		        	}
-		        	
-		        	result.setKeywords(keywordArray);
-		        }
-		        
-		        resultList.add(i, result);
-            }
-            
-            results = new SearchResultsImpl(resultList);
-        }
-        catch (Exception e)
-        {
-            log.error("Failed to search. ", e);
-        }
-        finally
-        {
-            if (searcher != null)
-            {
-                try
-                {
-                    searcher.close();
+
+                Document doc = searcher.doc(topDocs.scoreDocs[i].doc);
+
+                addFieldsToParsedObject(doc, result);
+
+                result.setScore(topDocs.scoreDocs[i].score);
+                Field type = doc.getField(ParsedObject.FIELDNAME_TYPE);
+                if (type != null) {
+                    result.setType(type.stringValue());
                 }
-                catch (IOException ioe)
-                {
+
+                Field key = doc.getField(ParsedObject.FIELDNAME_KEY);
+                if (key != null) {
+                    result.setKey(key.stringValue());
+                }
+
+                Field description = doc.getField(ParsedObject.FIELDNAME_DESCRIPTION);
+                if (description != null) {
+                    result.setDescription(description.stringValue());
+                }
+
+                Field title = doc.getField(ParsedObject.FIELDNAME_TITLE);
+                if (title != null) {
+                    result.setTitle(title.stringValue());
+                }
+
+                Field content = doc.getField(ParsedObject.FIELDNAME_CONTENT);
+                if (content != null) {
+                    result.setContent(content.stringValue());
+                }
+
+                Field language = doc.getField(ParsedObject.FIELDNAME_LANGUAGE);
+                if (language != null) {
+                    result.setLanguage(language.stringValue());
+                }
+
+                Field classname = doc.getField(ParsedObject.FIELDNAME_CLASSNAME);
+                if (classname != null) {
+                    result.setClassName(classname.stringValue());
+                }
+
+                Field url = doc.getField(ParsedObject.FIELDNAME_URL);
+                if (url != null) {
+                    result.setURL(new URL(url.stringValue()));
+                }
+
+                Field[] keywords = doc.getFields(ParsedObject.FIELDNAME_KEYWORDS);
+                if (keywords != null) {
+                    String[] keywordArray = new String[keywords.length];
+
+                    for (int j = 0; j < keywords.length; j++) {
+                        Field keyword = keywords[j];
+                        keywordArray[j] = keyword.stringValue();
+                    }
+
+                    result.setKeywords(keywordArray);
+                }
+
+                resultList.add(i, result);
+            }
+
+            results = new SearchResultsImpl(resultList);
+        } catch (Exception e) {
+            log.error("Failed to search. ", e);
+        } finally {
+            if (searcher != null) {
+                try {
+                    searcher.close();
+                } catch (IOException ioe) {
                     //logger.error("Closing Searcher", ioe);
                 }
             }
-            
-            if (indexReader != null)
-            {
-                try
-                {
+
+            if (indexReader != null) {
+                try {
                     indexReader.close();
-                }
-                catch (IOException ioe)
-                {
+                } catch (IOException ioe) {
                     //logger.error("Closing Index Reader", ioe);
                 }
             }
         }
-        
+
         return (results != null ? results : new SearchResultsImpl(new ArrayList<ParsedObject>()));
     }
-    
-    private synchronized boolean removeIfExistsAndAdd(Collection objects)
-    {
+
+    private synchronized boolean removeIfExistsAndAdd(Collection objects) {
         IndexWriter indexWriter = null;
         IndexReader indexReader = null;
         Searcher searcher = null;
-        
-        try
-        {
+
+        try {
             Iterator it = objects.iterator();
-            while (it.hasNext()) 
-            {
-                if (indexWriter == null)
-                {
+            while (it.hasNext()) {
+                if (indexWriter == null) {
                     indexWriter = new IndexWriter(directory, analyzer, false, IndexWriter.MaxFieldLength.UNLIMITED);
                     indexReader = indexWriter.getReader();
                     searcher = new IndexSearcher(indexReader);
                 }
-                
+
                 Object o = it.next();
                 // Look up appropriate handler
                 ObjectHandler handler = null;
-                try
-                {
+                try {
                     handler = handlerFactory.getHandler(o);
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     log.error("Failed to create hanlder for object " + o.getClass().getName());
                     continue;
                 }
-    
+
                 // Parse the object
                 ParsedObject parsedObject = handler.parseObject(o);
-                
+
                 String key = parsedObject.getKey();
                 // if there's an existing one with the same key, then remove it first.
-                if (parsedObject.getKey() != null)
-                {
+                if (parsedObject.getKey() != null) {
                     Term keyTerm = new Term(ParsedObject.FIELDNAME_KEY, key);
                     TopDocs topDocs = searcher.search(new TermQuery(keyTerm), 1);
-                    if (topDocs.totalHits > 0)
-                    {
+                    if (topDocs.totalHits > 0) {
                         indexWriter.deleteDocuments(keyTerm);
                     }
                 }
-                
+
                 String type = parsedObject.getType();
                 String title = parsedObject.getTitle();
                 String description = parsedObject.getDescription();
@@ -491,67 +449,55 @@ public class SearchEngineImpl implements SearchEngine
                 String language = parsedObject.getLanguage();
                 URL url = parsedObject.getURL();
                 String className = parsedObject.getClassName();
-                
+
                 // Create document
                 Document doc = new Document();
-                
+
                 // Populate document from the parsed object
-                if (key != null)
-                {
+                if (key != null) {
                     doc.add(new Field(ParsedObject.FIELDNAME_KEY, key, Field.Store.YES, Field.Index.NOT_ANALYZED));
                 }
-                if (type != null)
-                {
+                if (type != null) {
                     doc.add(new Field(ParsedObject.FIELDNAME_TYPE, type, Field.Store.YES, Field.Index.ANALYZED));
                 }
-                if (title != null)
-                {
+                if (title != null) {
                     doc.add(new Field(ParsedObject.FIELDNAME_TITLE, title, Field.Store.YES, Field.Index.ANALYZED));
                 }
-                if (description != null)
-                {
+                if (description != null) {
                     doc.add(new Field(ParsedObject.FIELDNAME_DESCRIPTION, description, Field.Store.YES, Field.Index.ANALYZED));
                 }
-                if (content != null)
-                {
+                if (content != null) {
                     doc.add(new Field(ParsedObject.FIELDNAME_CONTENT, content, Field.Store.NO, Field.Index.ANALYZED));
                 }
-                if (language != null)
-                {
+                if (language != null) {
                     doc.add(new Field(ParsedObject.FIELDNAME_LANGUAGE, language, Field.Store.YES, Field.Index.ANALYZED));
                 }
-                if (url != null)
-                {
+                if (url != null) {
                     String urlString = url.toString();
                     doc.add(new Field(ParsedObject.FIELDNAME_URL, urlString, Field.Store.YES, Field.Index.ANALYZED));
                 }
-                if (className != null)
-                {
+                if (className != null) {
                     doc.add(new Field(ParsedObject.FIELDNAME_CLASSNAME, className, Field.Store.YES, Field.Index.ANALYZED));
                 }
-                
+
                 String[] keywordArray = parsedObject.getKeywords();
-                if(keywordArray != null)
-                {
-                    for(int i=0; i<keywordArray.length; ++i)
-                    {
+                if (keywordArray != null) {
+                    for (int i = 0; i < keywordArray.length; ++i) {
                         String keyword = keywordArray[i];
                         doc.add(new Field(ParsedObject.FIELDNAME_KEYWORDS, keyword, Field.Store.YES, Field.Index.NOT_ANALYZED));
                     }
                 }
-    
+
                 Map keywords = parsedObject.getKeywordsMap();
                 addFieldsToDocument(doc, keywords, KEYWORD);
-                
+
                 Map fields = parsedObject.getFields();
                 addFieldsToDocument(doc, fields, TEXT);
-                
+
                 List<String> syntheticField = new ArrayList<String>();
-                for (Fieldable fieldable : doc.getFields())
-                {
+                for (Fieldable fieldable : doc.getFields()) {
                     String value = fieldable.stringValue();
-                    if (value != null)
-                    {
+                    if (value != null) {
                         syntheticField.add(value);
                     }
                 }
@@ -563,156 +509,110 @@ public class SearchEngineImpl implements SearchEngine
                 //logger.info("Added '" + parsedObject.getTitle() + "' to index");
             }
 
-            if (objects.size() > 0 && optimizeAfterUpdate && indexWriter != null)
-            {
-                try
-                {
+            if (objects.size() > 0 && optimizeAfterUpdate && indexWriter != null) {
+                try {
                     indexWriter.optimize();
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     log.error("Error while trying to optimize index.", e);
                 }
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             log.error("Error while writing index.", e);
             return false;
-        }
-        finally
-        {
-            if (searcher != null)
-            {
-                try
-                {
+        } finally {
+            if (searcher != null) {
+                try {
                     searcher.close();
-                }
-                catch (IOException ce)
-                {
+                } catch (IOException ce) {
                 }
             }
-            if (indexReader != null)
-            {
-                try
-                {
+            if (indexReader != null) {
+                try {
                     indexReader.close();
-                }
-                catch (IOException ce)
-                {
+                } catch (IOException ce) {
                 }
             }
-            if (indexWriter != null)
-            {
-                try
-                {
+            if (indexWriter != null) {
+                try {
                     indexWriter.close();
-                }
-                catch (IOException ce)
-                {
+                } catch (IOException ce) {
                 }
             }
         }
-        
+
         return true;
     }
 
-    private void addFieldsToDocument(Document doc, Map fields, int type)
-    {
-        if(fields != null)
-        {
+    private void addFieldsToDocument(Document doc, Map fields, int type) {
+        if (fields != null) {
             Iterator keyIter = fields.keySet().iterator();
-            while(keyIter.hasNext())
-            {
+            while (keyIter.hasNext()) {
                 Object key = keyIter.next();
-                if(key != null)
-                {
+                if (key != null) {
                     Object values = fields.get(key);
-                    if(values != null)
-                    {
-                        if(values instanceof Collection)
-                        {
-                            Iterator valueIter = ((Collection)values).iterator();
-                            while(valueIter.hasNext())
-                            {
+                    if (values != null) {
+                        if (values instanceof Collection) {
+                            Iterator valueIter = ((Collection) values).iterator();
+                            while (valueIter.hasNext()) {
                                 Object value = valueIter.next();
-                                if(value != null)
-                                {
-                                    if(type == TEXT)
-                                    {
+                                if (value != null) {
+                                    if (type == TEXT) {
                                         doc.add(new Field(key.toString(), value.toString(), Field.Store.YES, Field.Index.ANALYZED));
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         doc.add(new Field(key.toString(), value.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
                                     }
                                 }
                             }
-                        }
-                        else
-                        {
-                            if(type == TEXT)
-                            {
+                        } else {
+                            if (type == TEXT) {
                                 doc.add(new Field(key.toString(), values.toString(), Field.Store.YES, Field.Index.ANALYZED));
-                            }
-                            else
-                            {
+                            } else {
                                 doc.add(new Field(key.toString(), values.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
                             }
                         }
                     }
                 }
-            } 
+            }
         }
     }
-    
-    private void addFieldsToParsedObject(Document doc, ParsedObject o)
-    {
-        try
-        {
+
+    private void addFieldsToParsedObject(Document doc, ParsedObject o) {
+        try {
             MultiMap multiKeywords = new MultiValueMap();
             MultiMap multiFields = new MultiValueMap();
             HashMap fieldMap = new HashMap();
-            
+
             Field classNameField = doc.getField(ParsedObject.FIELDNAME_CLASSNAME);
-            if(classNameField != null)
-            {
+            if (classNameField != null) {
                 String className = classNameField.stringValue();
                 o.setClassName(className);
                 ObjectHandler handler = handlerFactory.getHandler(className);
-                
+
                 Set fields = handler.getFields();
                 addFieldsToMap(doc, fields, multiFields);
                 addFieldsToMap(doc, fields, fieldMap);
-                
+
                 Set keywords = handler.getKeywords();
                 addFieldsToMap(doc, keywords, multiKeywords);
             }
-            
+
             o.setKeywordsMap(multiKeywords);
             o.setFields(multiFields);
             o.setFields(fieldMap);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             //logger.error("Error trying to add fields to parsed object.", e);
         }
     }
-    
-    private void addFieldsToMap(Document doc, Set fieldNames, Map fields)
-    {
+
+    private void addFieldsToMap(Document doc, Set fieldNames, Map fields) {
         Iterator fieldIter = fieldNames.iterator();
-        while(fieldIter.hasNext())
-        {
-            String fieldName = (String)fieldIter.next();
+        while (fieldIter.hasNext()) {
+            String fieldName = (String) fieldIter.next();
             Field[] docFields = doc.getFields(fieldName);
-            if(docFields != null)
-            {
-                for(int i=0; i<docFields.length; i++)
-                {
+            if (docFields != null) {
+                for (int i = 0; i < docFields.length; i++) {
                     Field field = docFields[i];
-                    if(field != null)
-                    {
+                    if (field != null) {
                         String value = field.stringValue();
                         fields.put(fieldName, value);
                     }
@@ -720,80 +620,80 @@ public class SearchEngineImpl implements SearchEngine
             }
         }
     }
-    
-    private void validateIndexDirectory() throws Exception
-    {
+
+    @Override
+    public void indexDirectory(String dir) throws IOException {
+        Collection<Object> docs = new ArrayList<>();
+        indexDocs(new File(dir), docs);
+        this.add(docs);
+    }
+
+    private void indexDocs(File file, Collection<Object> docs) throws IOException {
+        if (file.canRead()) {
+            if (file.isDirectory()) {
+                String[] files = file.list();
+                if (files != null) {
+                    for (int i = 0; i < files.length; i++) {
+                        indexDocs(new File(file, files[i]), docs);
+                    }
+                }
+            } else {
+                docs.add(file.toURI().toURL());
+            }
+        }
+    }
+
+    private void validateIndexDirectory() throws Exception {
         boolean recreateIndex = false;
-        
+
         IndexReader indexReader = null;
         Searcher searcher = null;
-        
-        try
-        {
+
+        try {
             indexReader = IndexReader.open(directory);
             searcher = new IndexSearcher(indexReader);
             searcher.close();
             searcher = null;
             indexReader.close();
             indexReader = null;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             recreateIndex = true;
-        }
-        finally
-        {
-            if (searcher != null)
-            {
-                try 
-                {
+        } finally {
+            if (searcher != null) {
+                try {
                     searcher.close();
-                }
-                catch (Exception ce)
-                {
+                } catch (Exception ce) {
                 }
             }
-            if (indexReader != null)
-            {
-                try 
-                {
+            if (indexReader != null) {
+                try {
                     indexReader.close();
-                }
-                catch (Exception ce)
-                {
+                } catch (Exception ce) {
                 }
             }
         }
-        
-        if (recreateIndex)
-        {
+
+        if (recreateIndex) {
             IndexWriter indexWriter = null;
-            
-            try
-            {
+
+            try {
                 indexWriter = new IndexWriter(directory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
                 indexWriter.close();
                 indexWriter = null;
-            }
-            catch (Exception e1)
-            {
-                String message = "Cannot RECREATE Portlet Registry indexes in "  + directory;
+            } catch (Exception e1) {
+                String message = "Cannot RECREATE Portlet Registry indexes in " + directory;
                 log.error(message, e1);
                 throw new Exception(message);
-            }
-            finally
-            {
-                if (indexWriter != null)
-                {
-                    try 
-                    {
+            } finally {
+                if (indexWriter != null) {
+                    try {
                         indexWriter.close();
-                    }
-                    catch (Exception ce)
-                    {
+                    } catch (Exception ce) {
                     }
                 }
             }
         }
+
+
     }
 }

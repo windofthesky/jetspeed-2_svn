@@ -16,18 +16,6 @@
  */
 package org.apache.jetspeed.search.solr;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang.StringUtils;
@@ -49,6 +37,19 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.SolrInputField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @version $Id: SolrSearchEngineImpl.java 1086464 2011-03-29 02:08:39Z woonsan $
@@ -75,7 +76,10 @@ public class SolrSearchEngineImpl implements SearchEngine
                                           "description",
                                           "fieldname.description"
                                           ));
-    
+
+    private Boolean documentsEnabled = false;
+    private String documentsLocation = null;
+
     public SolrSearchEngineImpl(SolrServer server, boolean optimzeAfterUpdate, HandlerFactory handlerFactory)
     {
         this.server = server;
@@ -91,6 +95,22 @@ public class SolrSearchEngineImpl implements SearchEngine
     public void setSearchableMetadataFieldNames(Set<String> searchableMetadataFieldNames)
     {
         this.searchableMetadataFieldNames = searchableMetadataFieldNames;
+    }
+
+    public Boolean getDocumentsEnabled() {
+        return documentsEnabled;
+    }
+
+    public void setDocumentsEnabled(Boolean documentsEnabled) {
+        this.documentsEnabled = documentsEnabled;
+    }
+
+    public String getDocumentsLocation() {
+        return documentsLocation;
+    }
+
+    public void setDocumentsLocation(String documentsLocation) {
+        this.documentsLocation = documentsLocation;
     }
 
     /* (non-Javadoc)
@@ -215,10 +235,32 @@ public class SolrSearchEngineImpl implements SearchEngine
     {
         return search(queryString, defaultFieldName, 0);
     }
-    
+
+    @Override
+    public void indexDirectory(String dir) throws IOException {
+        Collection<Object> docs = new ArrayList<>();
+        indexDocs(new File(dir), docs);
+        this.add(docs);
+    }
+
+    private void indexDocs(File file, Collection<Object> docs) throws IOException {
+        if (file.canRead()) {
+            if (file.isDirectory()) {
+                String[] files = file.list();
+                if (files != null) {
+                    for (int i = 0; i < files.length; i++) {
+                        indexDocs(new File(file, files[i]), docs);
+                    }
+                }
+            } else {
+                docs.add(file.toURI().toURL());
+            }
+        }
+    }
+
     /* (non-Javadoc)
-     * @see org.apache.jetspeed.search.SearchEngine#search(java.lang.String, java.lang.String, int)
-     */
+         * @see org.apache.jetspeed.search.SearchEngine#search(java.lang.String, java.lang.String, int)
+         */
     public SearchResults search(String queryString, String defaultFieldName, int topHitsCount)
     {
         SearchResults results = null;
@@ -571,6 +613,17 @@ public class SolrSearchEngineImpl implements SearchEngine
                 {
                     fields.put(fieldName, value.toString());
                 }
+            }
+        }
+    }
+
+    public void start() throws IOException {
+        if (documentsEnabled) {
+            String query = ParsedObject.FIELDNAME_TYPE + ":\"" + ParsedObject.OBJECT_TYPE_URL + "\" ";
+            SearchResults searchResults = search(query);
+            if (searchResults.size() == 0) {
+                log.info("Adding Jetspeed documentation to search index ....");
+                indexDirectory(documentsLocation);
             }
         }
     }

@@ -16,6 +16,7 @@
  */
 package org.apache.jetspeed.search;
 
+import java.io.IOException;
 import java.util.Collection;
 
 /**
@@ -118,4 +119,12 @@ public interface SearchEngine
      * @return
      */
     SearchResults search(String query, String defaultFieldName, int topHitsCount);
+
+    /**
+     * Index a directory of files
+     *
+     * Recursively index contents of a directory
+     * @since 2.3.1
+     */
+    void indexDirectory(String directory) throws IOException;
 }
