@@ -21,6 +21,7 @@ limitations under the License.
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="org.apache.commons.lang.StringUtils" %>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@ page import="org.apache.jetspeed.JetspeedActions" %>
 <%@ page import="org.apache.jetspeed.ui.Jetui" %>
 <%@ page import="org.apache.jetspeed.ui.Toolbar" %>
@@ -101,7 +102,7 @@ limitations under the License.
 <html>
 <head>
 <meta http-equiv="content-type" content="<%=encoding%>"/>
-<title><%=jetui.getTitle(rc)%></title>
+<title><%=StringEscapeUtils.escapeXml(jetui.getTitle(rc))%></title>
 <link rel="shortcut icon" href="<%=baseUrl%>images/jetspeed.jpg" type="image/x-icon" />
 <script type="text/javascript" src="<%=request.getContextPath()%>/javascript/yui/build/yui/yui-min.js"></script>
 <script language="javascript">
