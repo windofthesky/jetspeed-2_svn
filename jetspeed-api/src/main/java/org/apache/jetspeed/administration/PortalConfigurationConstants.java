@@ -72,7 +72,8 @@ public interface PortalConfigurationConstants
     static final String ROLES_DEFAULT_MANAGER = "default.manager.role";
     static final String ROLES_DEFAULT_USER = "default.user.role";
     static final String ROLES_DEFAULT_GUEST = "default.guest.role";
-    
+    static final String ALLOW_DELEGATE_ASSIGN_ROLES = "allow.delegate.assign.roles";
+
     /** Jetui */
     static final String JETUI_CUSTOMIZATION_METHOD = "jetui.customization.method";
     static final String JETUI_CUSTOMIZATION_SERVER = "server";
