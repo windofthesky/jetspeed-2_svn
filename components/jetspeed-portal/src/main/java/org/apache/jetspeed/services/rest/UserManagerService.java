@@ -82,7 +82,6 @@ public class UserManagerService extends AbstractRestService
     private GroupManager groupManager;
     private Profiler profiler;
     private PageManager pageManager;
-    private PortletActionSecurityBehavior securityBehavior;
 
     public UserManagerService(UserManager userManager, RoleManager roleManager, GroupManager groupManager, Profiler profiler, PageManager pageManager,
                               PortletActionSecurityBehavior securityBehavior)
@@ -118,7 +117,14 @@ public class UserManagerService extends AbstractRestService
                                        @QueryParam("attribute_key") List<String> attributeKeys, @QueryParam("attribute_value") List<String> attributeValues)
     {
         checkPrivilege(servletRequest, JetspeedActions.VIEW);
-        
+
+        userName = stripSQLInjection(userName);
+        sortDirection = stripSQLInjection(sortDirection);
+        roles = stripSQLInjection(roles);
+        groups = stripSQLInjection(groups);
+        attributeKeys = stripSQLInjection(attributeKeys);
+        attributeValues = stripSQLInjection(attributeValues);
+
         Map<String, String> attributeMap = null;
         
         if (attributeKeys != null && attributeKeys.size() > 0 && attributeKeys.size() == attributeValues.size())
@@ -568,4 +574,5 @@ public class UserManagerService extends AbstractRestService
             throw new WebApplicationException(new JetspeedException("Insufficient privilege to access this REST service."));
         }
     }
+
 }
