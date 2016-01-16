@@ -234,7 +234,7 @@ public abstract class AbstractPortalURL implements PortalURL
 
     protected void setPath(String path)
     {
-        this.path = path;
+        this.path = path.replaceAll("['\"]", ""); // remove any escaped scripts from URL (seems to only effect Firefox browser)
     }
 
     public String getBaseURL()
