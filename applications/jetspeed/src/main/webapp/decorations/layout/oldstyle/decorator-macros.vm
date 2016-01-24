@@ -34,10 +34,10 @@
         #set($tabName = $element.getShortTitle($preferedLocale))
         #if($_orientation == $LEFT_TO_RIGHT)
           #if($element.isSelected($site))
-            <li>${tabName}</li>
+            <li>$esc.xml(${tabName})</li>
           #else
             #set($tabUrl = $jetspeed.getAbsoluteUrl($element.url))
-            <li><a href="$tabUrl">${tabName}</a></li>
+            <li><a href="$tabUrl">$esc.xml(${tabName})</a></li>
           #end
         #end
       #end
@@ -62,10 +62,10 @@
   #if($_title == $TITLE_FIRST)
     #if($_orientation == $LEFT_TO_RIGHT)
         
-        <span title="$!menuTitle">${menuName}&nbsp;</span>
+        <span title="$!menuTitle">$esc.xml(${menuName})&nbsp;</span>
     #elseif($_orientation == $TOP_TO_BOTTOM)
         
-        <div class="pagetitle" title="$!menuTitle">${menuName}</div>
+        <div class="pagetitle" title="$!esc.xml($!menuTitle)">$esc.xml(${menuName})</div>
     #end
   #end
   #foreach($element in $_menu.elements.iterator())
@@ -83,16 +83,16 @@
         #end
         #if($element.type == "page")
             
-          <a href="$linkUrl" class="LinkPage" title="$!linkTitle">${linkName}</a>
+          <a href="$linkUrl" class="LinkPage" title="$!esc.xml($!linkTitle)">$esc.xml(${linkName})</a>
         #elseif($element.type == "link")
             
-          <a href="$linkUrl" class="Link" title="$!linkTitle">${linkName}</a>
+          <a href="$linkUrl" class="Link" title="$!esc.xml($!linkTitle)">$esc.xml(${linkName})</a>
         #elseif($element.type == "folder")
             
-          <a href="$linkUrl" class="LinkFolder" title="$!linkTitle">${linkName}</a>
+          <a href="$linkUrl" class="LinkFolder" title="$!esc.xml($!linkTitle)">$esc.xml(${linkName})</a>
         #else
             
-          <a href="$linkUrl" title="$!linkTitle">${linkName}</a>
+          <a href="$linkUrl" title="$!esc.xml($!linkTitle)">$esc.xml(${linkName})</a>
         #end
         #if($_orientation == $LEFT_TO_RIGHT)
         ${__delimiter}</span>
@@ -103,10 +103,10 @@
       #else
         #if($_orientation == $LEFT_TO_RIGHT)
             
-        <span title="$!linkTitle">${linkName}&nbsp;</span>      
+        <span title="$!esc.xml($!linkTitle)">$esc.xml(${linkName})&nbsp;</span>      
         #elseif($_orientation == $TOP_TO_BOTTOM)
             
-        <div title="$!linkTitle">${linkName}</div>
+        <div title="$!esc.xml($!linkTitle)">$esc.xml(${linkName})</div>
         #end
       #end
     #elseif($element.elementType == "separator")
@@ -114,20 +114,20 @@
       #set($separatorText = $element.getText($preferedLocale))
       #if($_orientation == $LEFT_TO_RIGHT)
         
-        <span title="$!separatorTitle">${separatorText}${__delimiter}</span>              
+        <span title="$!esc.xml($!separatorTitle)">$esc.xml(${separatorText})${__delimiter}</span>              
       #elseif($_orientation == $TOP_TO_BOTTOM)
         
-        <div class="pagetitle" title="$!separatorTitle">${separatorText}</div>              
+        <div class="pagetitle" title="$!esc.xml($!separatorTitle)">$esc.xml(${separatorText})</div>              
       #end
     #end
   #end
   #if($_title == $TITLE_LAST)
     #if($_orientation == $LEFT_TO_RIGHT)
         
-        <span title="$!menuTitle">${menuName}&nbsp;</span>
+        <span title="$!esc.xml($!menuTitle)">$esc.xml(${menuName})&nbsp;</span>
     #elseif($_orientation == $TOP_TO_BOTTOM)
         
-        <div class="pagetitle" title="$!menuTitle">${menuName}</div>
+        <div class="pagetitle" title="$!esc.xml($!menuTitle)">$esc.xml(${menuName})</div>
     #end
   #end
   
@@ -139,7 +139,7 @@
   #set($menuTitle = $_menu.getTitle($preferedLocale))
   #set($menuName = $_menu.getShortTitle($preferedLocale))
   #if($menuName)
-              <div class="pagetitle" title="$!menuTitle">${menuName}</div>
+              <div class="pagetitle" title="$!esc.xml($!menuTitle)">$esc.xml(${menuName})</div>
   #end
               <div>
   #foreach($element in $_menu.elements.iterator())
@@ -148,19 +148,19 @@
       #set($linkName = $element.getShortTitle($preferedLocale))
       #set($linkUrl = $jetspeed.getAbsoluteUrl($element.url))
       #if($element.type == "page")
-                <div><a href="$linkUrl" class="LinkPage" title="$!linkTitle">${linkName}</a></div>
+                <div><a href="$linkUrl" class="LinkPage" title="$!esc.xml($!linkTitle)">$esc.xml(${linkName})</a></div>
       #elseif($element.type == "link")
         #set($linkTarget = $element.target)
-                <div><a href="$linkUrl" target="$linkTarget" class="Link" title="$!linkTitle">${linkName}</a></div> 
+                <div><a href="$linkUrl" target="$linkTarget" class="Link" title="$!esc.xml($!linkTitle)">$esc.xml(${linkName})</a></div> 
       #elseif($element.type == "folder")
-                <div><a href="$linkUrl" class="LinkFolder" title="$!linkTitle">$linkName</a></div>
+                <div><a href="$linkUrl" class="LinkFolder" title="$!esc.xml($!linkTitle)">$esc.xml($linkName)</a></div>
       #end
     #elseif($element.elementType == "menu")
       #includeNestedLinksWithIconNavigation($element $_orientation)
     #elseif($element.elementType == "separator")
       #set($separatorTitle = $element.getTitle($preferedLocale))
       #set($separatorText = $element.getText($preferedLocale))
-                  <div class="pagetitle" title="$!separatorTitle">${separatorText}</div>              
+                  <div class="pagetitle" title="$!esc.xml($!separatorTitle)">$esc.xml(${separatorText})</div>              
     #end
   #end
               </div>
@@ -186,12 +186,12 @@
       #set($linkName = $element.getShortTitle($preferedLocale))
       #set($linkUrl = $jetspeed.getAbsoluteUrl($element.url))
       #if($element.type == "page")
-                  <div><a href="$linkUrl" class="LinkPage" title="$!linkTitle">${linkName}</a></div>
+                  <div><a href="$linkUrl" class="LinkPage" title="$!esc.xml($!linkTitle)">$esc.xml(${linkName})</a></div>
       #elseif($element.type == "link")
         #set($linkTarget = $element.target)
-                  <div><a href="$linkUrl" target="$!linkTarget" class="Link" title="$!linkTitle">${linkName}</a></div>  
+                  <div><a href="$linkUrl" target="$!linkTarget" class="Link" title="$!esc.xml($!linkTitle)">$esc.xml(${linkName})</a></div>  
       #elseif($element.type == "folder")
-                  <div><a href="$linkUrl" class="LinkFolder" title="$!linkTitle">$linkName</a></div>
+                  <div><a href="$linkUrl" class="LinkFolder" title="$!esc.xml($!linkTitle)">$esc.xml($linkName)</a></div>
       #end
       #set($rowStarted = true)
       #set($elementsStarted = true)
@@ -221,7 +221,7 @@
       #set($separatorTitle = $element.getTitle($preferedLocale))
       #set($separatorText = $element.getText($preferedLocale))
               <div class="label">
-                ${separatorText}
+                $esc.xml(${separatorText})
               </div>
       #set($rowStarted = true)
       #set($elementsStarted = false)
@@ -248,14 +248,14 @@
         #set($tabName = $element.getShortTitle($preferedLocale))
           #if($element.isSelected($site))
             <td class="LTabLeft" nowrap="nowrap">&nbsp;</td>
-            <td class="LTab" align="center" valign="middle" nowrap="nowrap" title="$!tabTitle">${tabName}</td>
+            <td class="LTab" align="center" valign="middle" nowrap="nowrap" title="$!esc.xml($!tabTitle)">$esc.xml(${tabName})</td>
             <td class="LTabRight"  nowrap="nowrap">&nbsp;</td>
             #set ($sitem = $element)
             #set ($found = "true")
           #else
             #set($tabUrl = $jetspeed.getAbsoluteUrl($element.url))
             <td class="LTabLeftLow"  nowrap="nowrap">&nbsp;</td>
-            <td class="LTabLow" align="center" valign="middle" nowrap="nowrap" title="$!tabTitle"><a href="$tabUrl">${tabName}</a></td>
+            <td class="LTabLow" align="center" valign="middle" nowrap="nowrap" title="$!esc.xml($!tabTitle)"><a href="$tabUrl">$esc.xml(${tabName})</a></td>
             <td class="LTabRightLow"  nowrap="nowrap">&nbsp;</td>
           #end
         #else

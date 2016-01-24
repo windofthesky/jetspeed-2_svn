@@ -20,6 +20,7 @@ limitations under the License.
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="org.apache.commons.logging.Log"%>
 <%@page import="org.apache.commons.logging.LogFactory"%>
 <%@page import="org.apache.jetspeed.portalsite.PortalSiteRequestContext"%>
@@ -119,8 +120,8 @@ limitations under the License.
                  append("<a href=\"").
                  append(lnkUrl).append("\"").
                  append("class=\"LinkPage\" ").append("title=\"").
-                 append(lnkTitle).append("\">").
-                 append(lnkName).append("</a>\n").
+                 append(StringEscapeUtils.escapeXml(lnkTitle)).append("\">").
+                 append(StringEscapeUtils.escapeXml(lnkName)).append("</a>\n").
                  append(TAB_INDENT_1).append("</div>\n");
 
           }
@@ -136,8 +137,8 @@ limitations under the License.
                   sb.append(" target=\"").append(lnkTarget).append("\"");
               }
               sb.append(" class=\"Link\" ").append(" title=\"").
-              append(lnkTitle).append("\">").
-              append(lnkName).append("</a>\n").
+              append(StringEscapeUtils.escapeXml(lnkTitle)).append("\">").
+              append(StringEscapeUtils.escapeXml(lnkName)).append("</a>\n").
               append(TAB_INDENT_1).append("</div>\n");
           }
           else if (menuType == FOLDER_TYPE)
@@ -147,8 +148,8 @@ limitations under the License.
               append("<a href=\"").
               append(lnkUrl).append("\"").
               append("class=\"LinkFolder\" ").append("title=\"").
-              append(lnkTitle).append("\">").
-              append(lnkName).append("</a>\n").
+              append(StringEscapeUtils.escapeXml(lnkTitle)).append("\">").
+              append(StringEscapeUtils.escapeXml(lnkName)).append("</a>\n").
               append(TAB_INDENT_1).append("</div>\n");
           }
           
@@ -196,14 +197,14 @@ limitations under the License.
             if (orientation == LEFT_TO_RIGHT)
             {
                 sb.append(TAB_INDENT_2).
-                   append("<span title=\"").append(menuTitle).append("\">").
-                   append(menuName).append("&nbsp;</span>\n");
+                   append("<span title=\"").append(StringEscapeUtils.escapeXml(menuTitle)).append("\">").
+                   append(StringEscapeUtils.escapeXml(menuName)).append("&nbsp;</span>\n");
             }
             else if (orientation == TOP_TO_BOTTOM)
             {
                 sb.append(TAB_INDENT_2).append("<div class=\"pagetitle\" title=\"").
-                   append(menuTitle).append("\">").
-                   append(menuName).append(TAB_INDENT_2).
+                   append(StringEscapeUtils.escapeXml(menuTitle)).append("\">").
+                   append(StringEscapeUtils.escapeXml(menuName)).append(TAB_INDENT_2).
                    append("</div>\n");
             }
           }
@@ -250,8 +251,8 @@ limitations under the License.
                        sb.append("<a href=\"").
                             append(lnkUrl).append("\"").
                             append(" class=\"LinkPage\" title=\"").
-                              append(lnkTitle).append("\">").
-                          append(lnkName).
+                              append(StringEscapeUtils.escapeXml(lnkTitle)).append("\">").
+                          append(StringEscapeUtils.escapeXml(lnkName)).
                           append("</a>");
                    }
                    else if (menuType == LINK_TYPE)
@@ -259,8 +260,8 @@ limitations under the License.
                        sb.append("<a href=\"").
                             append(lnkUrl).append("\"").
                             append(" class=\"Link\" title=\"").
-                         append(lnkTitle).append("\">").
-                          append(lnkName).
+                         append(StringEscapeUtils.escapeXml(lnkTitle)).append("\">").
+                          append(StringEscapeUtils.escapeXml(lnkName)).
                          append("</a>");
                        
                    }
@@ -269,8 +270,8 @@ limitations under the License.
                        sb.append("<a href=\"").
                             append(lnkUrl).append("\"").
                             append(" class=\"LinkFolder\" title=\"").
-                          append(lnkTitle).append("\">").
-                            append(lnkName).
+                          append(StringEscapeUtils.escapeXml(lnkTitle)).append("\">").
+                            append(StringEscapeUtils.escapeXml(lnkName)).
                           append("</a>");
                    }
                    else
@@ -278,8 +279,8 @@ limitations under the License.
                        sb.append("<a href=\"").
                             append(lnkUrl).append("\"").
                             append(" title=\"").
-                          append(lnkTitle).append("\">").
-                            append(lnkName).
+                          append(StringEscapeUtils.escapeXml(lnkTitle)).append("\">").
+                            append(StringEscapeUtils.escapeXml(lnkName)).
                           append("</a>");
                    }
                    
@@ -297,14 +298,14 @@ limitations under the License.
                      if (orientation == LEFT_TO_RIGHT)
                      {
                        sb.append(TAB_INDENT_2).append("<span title=\"").
-                          append(lnkTitle).append("\">").
-                          append(lnkName).append("&nbsp;").append("</span>\n");
+                          append(StringEscapeUtils.escapeXml(lnkTitle)).append("\">").
+                          append(StringEscapeUtils.escapeXml(lnkName)).append("&nbsp;").append("</span>\n");
                      }
                      else if (orientation == TOP_TO_BOTTOM)
                      {
                          sb.append(TAB_INDENT_2).append("<div title=\"").
-                            append(lnkTitle).append("\">").
-                            append(lnkName).append("</div>\n");
+                            append(StringEscapeUtils.escapeXml(lnkTitle)).append("\">").
+                            append(StringEscapeUtils.escapeXml(lnkName)).append("</div>\n");
                      }
                      
                  } // Not BREADCRUMB_STYLE etc.
@@ -320,14 +321,14 @@ limitations under the License.
                      sepText = "";
                  if (orientation == LEFT_TO_RIGHT)
                  {
-                   sb.append(TAB_INDENT_2).append("<span title=\"").append(sepTitle).append("\">").
-                      append(sepText).append(delimiter).append("</span>\n");
+                   sb.append(TAB_INDENT_2).append("<span title=\"").append(StringEscapeUtils.escapeXml(sepTitle)).append("\">").
+                      append(StringEscapeUtils.escapeXml(sepText)).append(delimiter).append("</span>\n");
                  }
                  else if (orientation == TOP_TO_BOTTOM)
                  {
                      sb.append(TAB_INDENT_2).append("<div class=\"pagetitle\" title=\"").
-                        append(sepTitle).append("\">").
-                        append(sepText).append("</div>\n");
+                        append(StringEscapeUtils.escapeXml(sepTitle)).append("\">").
+                        append(StringEscapeUtils.escapeXml(sepText)).append("</div>\n");
                  }
                
              }
@@ -336,15 +337,15 @@ limitations under the License.
           {
               if (orientation == LEFT_TO_RIGHT)
               {
-                sb.append(TAB_INDENT_2).append("<span title=\"").append(menuTitle).append("\">").
-                   append(menuName).append("&nbsp;").append("</span>\n");
+                sb.append(TAB_INDENT_2).append("<span title=\"").append(StringEscapeUtils.escapeXml(menuTitle)).append("\">").
+                   append(StringEscapeUtils.escapeXml(menuName)).append("&nbsp;").append("</span>\n");
                   
               }
               else
               {
                 sb.append(TAB_INDENT_2).append("<div class=\"pagetitle\" title=\"").
-                   append(menuTitle).append("\">").
-                   append(menuName).append("</div>\n");
+                   append(StringEscapeUtils.escapeXml(menuTitle)).append("\">").
+                   append(StringEscapeUtils.escapeXml(menuName)).append("</div>\n");
               }
           }
   
@@ -419,8 +420,8 @@ limitations under the License.
                     sb.append("\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t<a href=\"").
                        append(lnkUrl).append("\"").
                        append("class=\"LinkPage\" ").append("title=\"").
-                       append(lnkTitle).append("\">").
-                       append(lnkName).append("</a>\n\t\t\t\t\t\t\t\t</div>\n");
+                       append(StringEscapeUtils.escapeXml(lnkTitle)).append("\">").
+                       append(StringEscapeUtils.escapeXml(lnkName)).append("</a>\n\t\t\t\t\t\t\t\t</div>\n");
 
                 }
                 else if (menuType == LINK_TYPE)
@@ -432,16 +433,16 @@ limitations under the License.
                     append(lnkUrl).append("\"").
                     append(" target=\"").append(lnkTarget).append("\" ").
                     append("class=\"Link\" ").append("title=\"").
-                    append(lnkTitle).append("\">").
-                    append(lnkName).append("</a>\n\t\t\t\t\t\t\t\t</div>\n");
+                    append(StringEscapeUtils.escapeXml(lnkTitle)).append("\">").
+                    append(StringEscapeUtils.escapeXml(lnkName)).append("</a>\n\t\t\t\t\t\t\t\t</div>\n");
                 }
                 else if (menuType == FOLDER_TYPE)
                 {
                     sb.append("\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t<a href=\"").
                     append(lnkUrl).append("\"").
                     append("class=\"LinkFolder\" ").append("title=\"").
-                    append(lnkTitle).append("\">").
-                    append(lnkName).append("</a>\n\t\t\t\t\t\t\t\t</div>\n");
+                    append(StringEscapeUtils.escapeXml(lnkTitle)).append("\">").
+                    append(StringEscapeUtils.escapeXml(lnkName)).append("</a>\n\t\t\t\t\t\t\t\t</div>\n");
                     
                 }
                 rowStarted = true;
@@ -490,7 +491,7 @@ limitations under the License.
                        append("\t\t\t\t\t\t\t</div>\n");
                 }
                 sb.append("\t\t\t\t\t\t\t\t<div class=\"label\">").
-                   append(sepText).append("</div>\n");
+                   append(StringEscapeUtils.escapeXml(sepText)).append("</div>\n");
                 rowStarted = true;
                 elmStarted = false; //already outputed
             }
@@ -523,9 +524,9 @@ limitations under the License.
          {
              sb.append("\t\t\t\t\t\t\t\t\t").
                 append("<div class=\"pagetitle\" ").
-                append("title=\"").append(menuTitle).
-                append("\">").append(menuName).
-                append(menuName).append("</div>\n");
+                append("title=\"").append(StringEscapeUtils.escapeXml(menuTitle)).
+                append("\">").append(StringEscapeUtils.escapeXml(menuName)).
+                append(StringEscapeUtils.escapeXml(menuName)).append("</div>\n");
          }
 
          sb.append("\t\t\t\t\t\t\t\t\t").append("<div><!-- S: nested menu -->\n");
@@ -563,8 +564,8 @@ limitations under the License.
                      sepText = "";
                  sb.append("\t\t\t\t\t\t\t\t").
                     append("<div class=\"pagetitle\" ").
-                    append(" title=\"").append(sepTitle).append("\">").
-                    append(sepText).append("</div>\n");
+                    append(" title=\"").append(StringEscapeUtils.escapeXml(sepTitle)).append("\">").
+                    append(StringEscapeUtils.escapeXml(sepText)).append("</div>\n");
                  
              }
          } //while
@@ -622,7 +623,7 @@ limitations under the License.
                          append("<td class=\"LTabLeft\" nowrap=\"nowrap\">&nbsp;</td>\n").
                          append(TAB_INDENT_3).
                          append("<td class=\"LTab\" align=\"center\" valign=\"middle\" nowrap=\"nowrap\" title=\"").
-                         append(tabTitle).append("\">").append(tabName).append("</td>\n").
+                         append(StringEscapeUtils.escapeXml(tabTitle)).append("\">").append(StringEscapeUtils.escapeXml(tabName)).append("</td>\n").
                          append(TAB_INDENT_3).
                          append("<td class=\"LTabRight\"  nowrap=\"nowrap\">&nbsp;</td>\n");
                       
@@ -635,9 +636,9 @@ limitations under the License.
                       append(TAB_INDENT_3).
                       append("<td class=\"LTabLow\" align=\"center\" ").
                                 append("valign=\"middle\" nowrap=\"nowrap\" title=\"").
-                                append(tabTitle).append("\">").
+                                append(StringEscapeUtils.escapeXml(tabTitle)).append("\">").
                       append("<a href=\"").append(tabUrl).append("\">").
-                        append(tabName).
+                        append(StringEscapeUtils.escapeXml(tabName)).
                       append("</a>").append("</td>\n").
                       append(TAB_INDENT_3).
                       append("<td class=\"LTabRightLow\"  nowrap=\"nowrap\">&nbsp;</td>\n");

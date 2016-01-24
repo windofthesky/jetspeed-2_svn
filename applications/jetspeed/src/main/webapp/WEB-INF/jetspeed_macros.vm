@@ -56,13 +56,13 @@
  * Returns the page title string for the current page
  *
 *# 
-#macro (PageTitle)$jetspeed.page.getTitle($preferedLocale)#end
+#macro (PageTitle)$esc.xml($jetspeed.page.getTitle($preferedLocale))#end
 
 #*
  * Returns the site description string for use within the
  * <meta name="description" /> meta tag
  *#
-#macro (PageDescription)$jetspeed.page.getTitle($preferedLocale)#end
+#macro (PageDescription)$esc.xml($jetspeed.page.getTitle($preferedLocale))#end
 
 #**
 * Includes all of the stylesheets for this Page's theme.
@@ -168,7 +168,7 @@ $resourceHeader.getContent()
 #else
     #set($_cssClass = "link page-link")
 #end
-<a href="portal${_page.url}" class="$!{_cssClass}" title="${_page.getTitle($preferedLocale)}">$_page.getTitle($preferedLocale)</a><span class="separator"></span>#end  
+<a href="portal${_page.url}" class="$!{_cssClass}" title="$esc.xml(${_page.getTitle($preferedLocale)})">$esc.xml($_page.getTitle($preferedLocale))</a><span class="separator"></span>#end  
 </div>
 #end
 
@@ -182,7 +182,7 @@ $resourceHeader.getContent()
 </div>
 #end
 #set($_seperatorCount = $_seperatorCount + 1)          
-<div id="seperator-${_seperatorCount}" class="menu-group"><span class="title">$_element.getText($preferedLocale)</span>
+<div id="seperator-${_seperatorCount}" class="menu-group"><span class="title">$esc.xml($_element.getText($preferedLocale))</span>
 #elseif($_type == "option")
 #if($_element.type == "link")
   #set($_url = $_element.url)
@@ -193,7 +193,7 @@ $resourceHeader.getContent()
 #end     
 #if($_element.isSelected($site))
  #set($_cssClass= "$_cssClass selected")
-#end<a href="$!{_url}" class="link" title="${_element.getTitle($preferedLocale)}">${_element.getTitle($preferedLocale)}</a><span class="separator"></span>
+#end<a href="$!{_url}" class="link" title="$esc.xml(${_element.getTitle($preferedLocale)})">$esc.xml(${_element.getTitle($preferedLocale)})</a><span class="separator"></span>
 #end
 #end  
 
@@ -212,7 +212,7 @@ $resourceHeader.getContent()
             #set($_cssClass = "link breadcrumb-link")
         #end
         
-        <a href="portal${_breadcrumb.url}" class="$!{_cssClass}" title="${_breadcrumb.getTitle($preferedLocale)}">$_breadcrumb.getTitle($preferedLocale)</a>
+        <a href="portal${_breadcrumb.url}" class="$!{_cssClass}" title="$esc.xml(${_breadcrumb.getTitle($preferedLocale)})">$esc.xml($_breadcrumb.getTitle($preferedLocale))</a>
         <span class="separator"></span>
     #end    
    </div>
