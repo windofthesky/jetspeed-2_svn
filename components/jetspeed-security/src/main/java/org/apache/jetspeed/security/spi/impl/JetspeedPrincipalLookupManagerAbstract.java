@@ -22,7 +22,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.text.Segment;
 
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
@@ -50,6 +55,11 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 
 	static final Logger log = LoggerFactory.getLogger(JetspeedPrincipalLookupManagerAbstract.class);
 
+    private static final String PARAM_PLACEHOLDER_PREFIX = "@@paramPlaceHolder";
+    private static final String PARAM_PLACEHOLDER_SUFFIX = "@@";
+    private static final Pattern PARAM_PLACEHOLDER_PATTERN = Pattern
+            .compile("(" + PARAM_PLACEHOLDER_PREFIX + "\\d+" + PARAM_PLACEHOLDER_SUFFIX + ")");
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -58,31 +68,29 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 	 * getPrincipals(org.apache.jetspeed.security.JetspeedPrincipalQueryContext)
 	 */
 	public JetspeedPrincipalResultList getPrincipals(JetspeedPrincipalQueryContext queryContext) {
-		String baseSqlStr = this.generateBaseSql(queryContext);
-
-		// create paging sql statement if possible for database based paging
-		String sqlStr = getPagingSql(baseSqlStr, queryContext);
-
 		int numberOfRecords = 0;
 		ArrayList<JetspeedPrincipal> results = new ArrayList<JetspeedPrincipal>();
 		
         Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+
+        PreparedStatement pstmtForPaging = null;
+        ResultSet rsForPaging = null;
+
+        PreparedStatement pstmtForCount = null;
+        ResultSet rsForCount = null;
 		
 		try {
 			conn = PersistenceBrokerFactory.defaultPersistenceBroker().serviceConnectionManager().getConnection();
+            PreparedStatement [] pstmts = createPagingPreparedStatementAndCountPreparedStatement(conn, queryContext);
+            pstmtForPaging = pstmts[0];
+            pstmtForCount = pstmts[1];
 
-			pstmt = conn.prepareStatement(sqlStr, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-			// pstmt = conn.prepareStatement(sqlStr,
-			// ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-			pstmt.setFetchSize((int) (queryContext.getOffset() + queryContext.getLength()));
-			rs = pstmt.executeQuery();
-			boolean hasRecords = rs.next();
+			rsForPaging = pstmtForPaging.executeQuery();
+			boolean hasRecords = rsForPaging.next();
 
 			if (hasRecords) {
 				// scroll the result set to the offset
-				scrollToOffset(conn, rs, queryContext.getOffset());
+				scrollToOffset(conn, rsForPaging, queryContext.getOffset());
 				for (int i = 0; i < queryContext.getLength(); i++) {
 					// now materialize the ResultSet into a JetspeedPrincipal
 					RowReader rr = PersistenceBrokerFactory.defaultPersistenceBroker().getClassDescriptor(
@@ -90,38 +98,31 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 					Map<Object, Object> row = new HashMap<Object, Object>();
 					// TODO: optimize, just retrieve the id from the DB and setup
 					// a JetspeedPrincipal template on that.
-					rr.readObjectArrayFrom(rs, row);
+					rr.readObjectArrayFrom(rsForPaging, row);
 					PersistentJetspeedPrincipal p = (PersistentJetspeedPrincipal) rr.readObjectFrom(row);
 					QueryByCriteria query = new QueryByCriteria(p);
 					p = (PersistentJetspeedPrincipal) PersistenceBrokerFactory.defaultPersistenceBroker()
 							.getObjectByQuery(query);
 					results.add(p);
-					if (!rs.next()) {
+					if (!rsForPaging.next()) {
 						break;
 					}
 				}
 				
-				rs.close();
-                rs = null;
-                pstmt.close();
-                pstmt = null;
+				rsForPaging.close();
+				rsForPaging = null;
+                pstmtForPaging.close();
+                pstmtForPaging = null;
 
-				// get the total number of results effected by the query
-				int fromPos = baseSqlStr.toUpperCase().indexOf(" FROM ");
-				if (fromPos >= 0) {
-					baseSqlStr = "select count(SECURITY_PRINCIPAL.PRINCIPAL_ID)" + baseSqlStr.substring(fromPos);
-				}
-				// strip ORDER BY clause
-				int orderPos = baseSqlStr.toUpperCase().indexOf(" ORDER BY ");
-				if (orderPos >= 0) {
-					baseSqlStr = baseSqlStr.substring(0, orderPos);
+				rsForCount = pstmtForCount.executeQuery();
+				while (rsForCount.next()) {
+					numberOfRecords += rsForCount.getInt(1);
 				}
 
-				pstmt = conn.prepareStatement(baseSqlStr);
-				rs = pstmt.executeQuery();
-				while (rs.next()) {
-					numberOfRecords += rs.getInt(1);
-				}
+				rsForCount.close();
+				rsForCount = null;
+				pstmtForCount.close();
+				pstmtForCount = null;
 			}
 		} catch (SQLException e) {
 			log.error("Error reading principal.", e);
@@ -130,21 +131,41 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 		} catch (LookupException e) {
 			log.error("Error reading principal.", e);
 		} finally {
-            if(rs != null) 
+            if(rsForPaging != null) 
             {
                 try 
                 {
-                    rs.close();
+                    rsForPaging.close();
                 }
                 catch (Exception ignore) 
                 {
                 }
             }
-            if(pstmt != null) 
+            if(pstmtForPaging != null) 
             {
                 try 
                 {
-                    pstmt.close();
+                    pstmtForPaging.close();
+                }
+                catch (Exception ignore) 
+                {
+                }
+            }
+            if(rsForCount != null) 
+            {
+                try 
+                {
+                    rsForCount.close();
+                }
+                catch (Exception ignore) 
+                {
+                }
+            }
+            if(pstmtForCount != null) 
+            {
+                try 
+                {
+                    pstmtForCount.close();
                 }
                 catch (Exception ignore) 
                 {
@@ -165,13 +186,247 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 		return new JetspeedPrincipalResultList(results, numberOfRecords);
 	}
 
-	/**
+    private String putParamPlaceHolder(Map<String, Object> paramPlaceHolders, Object value) {
+        String paramPlaceHolderName = PARAM_PLACEHOLDER_PREFIX + paramPlaceHolders.size() + PARAM_PLACEHOLDER_SUFFIX;
+        paramPlaceHolders.put(paramPlaceHolderName, value);
+        return paramPlaceHolderName;
+    }
+
+    private PreparedStatement[] createPagingPreparedStatementAndCountPreparedStatement(Connection conn,
+            JetspeedPrincipalQueryContext queryContext) throws SQLException {
+        String _paramPlaceHolderName = null;
+        Map<String, Object> _paramPlaceHolders = new HashMap<String, Object>();
+
+        String attributeConstraint = null;
+        String fromPart = "SECURITY_PRINCIPAL";
+
+        if (queryContext.getSecurityAttributes() != null) {
+            int cnt = 1;
+
+            for (Map.Entry<String, String> attribute : queryContext.getSecurityAttributes().entrySet()) {
+                if (attributeConstraint == null) {
+                    _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, attribute.getKey());
+                    attributeConstraint = " a" + cnt + ".PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID AND a" + cnt
+                            + ".ATTR_NAME = " + _paramPlaceHolderName;
+
+                    _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, attribute.getValue());
+                    attributeConstraint += " AND a" + cnt + ".ATTR_VALUE LIKE " + _paramPlaceHolderName;
+                } else {
+                    _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, attribute.getKey());
+                    attributeConstraint += " AND a" + cnt + ".PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID AND a" + cnt
+                            + ".ATTR_NAME = " + _paramPlaceHolderName;
+
+                    _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, attribute.getValue());
+                    attributeConstraint += " AND a" + cnt + ".ATTR_VALUE LIKE " + _paramPlaceHolderName;
+                }
+
+                fromPart += ", SECURITY_ATTRIBUTE a" + cnt;
+                cnt++;
+            }
+        }
+
+        String constraint = null;
+
+        if (queryContext.getNameFilter() != null && queryContext.getNameFilter().length() > 0) {
+            _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders,
+                    queryContext.getNameFilter().replace('*', '%'));
+            constraint = "SECURITY_PRINCIPAL.PRINCIPAL_NAME LIKE " + _paramPlaceHolderName;
+        }
+
+        // find principals that are member of one or many roles
+        // the principal must be member in all supplied roles.
+        String roleConstraints = null;
+
+        if (queryContext.getAssociatedRoles() != null && queryContext.getAssociatedRoles().size() > 0
+                && queryContext.getAssociatedRoles().get(0).length() > 0) {
+            int cnt = 1;
+
+            for (String roleName : queryContext.getAssociatedRoles()) {
+                _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, roleName);
+
+                if (roleConstraints == null) {
+                    roleConstraints = "r" + cnt + ".ASSOC_NAME = '" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
+                            + "' " + "' AND r" + cnt + ".TO_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
+                            + ".PRINCIPAL_NAME LIKE " + _paramPlaceHolderName + " AND rp" + cnt
+                            + ".PRINCIPAL_TYPE='role' AND r" + cnt
+                            + ".FROM_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
+                } else {
+                    roleConstraints = " AND r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
+                            + "' AND r" + cnt + ".TO_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
+                            + ".PRINCIPAL_NAME LIKE " + _paramPlaceHolderName + " AND rp" + cnt
+                            + ".PRINCIPAL_TYPE='role' AND r" + cnt
+                            + ".FROM_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
+                }
+            }
+
+            fromPart += ", SECURITY_PRINCIPAL_ASSOC r" + cnt + ", SECURITY_PRINCIPAL rp" + cnt;
+            cnt++;
+        }
+
+        // find principals that are member of one or many groups
+        // the principal must be member in all supplied groups.
+        String groupConstraints = null;
+
+        if (queryContext.getAssociatedGroups() != null && queryContext.getAssociatedGroups().size() > 0
+                && queryContext.getAssociatedGroups().get(0).length() > 0) {
+            int cnt = 1;
+
+            for (String groupName : queryContext.getAssociatedGroups()) {
+                _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, groupName);
+
+                if (groupConstraints == null) {
+                    groupConstraints = "r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
+                            + "' AND r" + cnt + ".TO_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
+                            + ".PRINCIPAL_NAME LIKE " + _paramPlaceHolderName + " AND rp" + cnt
+                            + ".PRINCIPAL_TYPE='group' AND r" + cnt
+                            + ".FROM_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
+                } else {
+                    groupConstraints = " AND r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
+                            + "' AND r" + cnt + ".TO_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
+                            + ".PRINCIPAL_NAME LIKE " + _paramPlaceHolderName + " AND rp" + cnt
+                            + ".PRINCIPAL_TYPE='group' AND r" + cnt
+                            + ".FROM_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
+                }
+            }
+
+            fromPart += ", SECURITY_PRINCIPAL_ASSOC r" + cnt + ", SECURITY_PRINCIPAL rp" + cnt;
+            cnt++;
+        }
+
+        // find principals that contain one or many users
+        // the principal must contain all supplied users.
+        String userConstraints = null;
+
+        if (queryContext.getAssociatedUsers() != null && queryContext.getAssociatedUsers().size() > 0) {
+            int cnt = 1;
+
+            for (String userName : queryContext.getAssociatedGroups()) {
+                _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, userName);
+
+                if (userConstraints == null) {
+                    userConstraints = "r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
+                            + "' AND r" + cnt + ".FROM_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
+                            + ".PRINCIPAL_NAME LIKE " + _paramPlaceHolderName + " AND rp" + cnt
+                            + ".PRINCIPAL_TYPE='user' AND r" + cnt + ".TO_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
+                } else {
+                    userConstraints = " AND r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
+                            + "' AND r" + cnt + ".FROM_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
+                            + ".PRINCIPAL_NAME LIKE " + _paramPlaceHolderName + " AND rp" + cnt
+                            + ".PRINCIPAL_TYPE='group' AND r" + cnt
+                            + ".TO_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
+                }
+            }
+
+            fromPart += ", SECURITY_PRINCIPAL_ASSOC r" + cnt + ", SECURITY_PRINCIPAL rp" + cnt;
+            cnt++;
+        }
+
+        if (attributeConstraint != null) {
+            if (constraint != null) {
+                constraint += " AND " + attributeConstraint;
+            } else {
+                constraint = attributeConstraint;
+            }
+        }
+
+        if (roleConstraints != null) {
+            if (constraint != null) {
+                constraint += " AND " + roleConstraints;
+            } else {
+                constraint = roleConstraints;
+            }
+        }
+
+        if (groupConstraints != null) {
+            if (constraint != null) {
+                constraint += " AND " + groupConstraints;
+            } else {
+                constraint = groupConstraints;
+            }
+        }
+
+        if (userConstraints != null) {
+            if (constraint != null) {
+                constraint += " AND " + userConstraints;
+            } else {
+                constraint = userConstraints;
+            }
+        }
+
+        String baseSqlStr = "SELECT SECURITY_PRINCIPAL.* from " + fromPart
+                + " WHERE SECURITY_PRINCIPAL.PRINCIPAL_TYPE='" + queryContext.getJetspeedPrincipalType()
+                + "' AND SECURITY_PRINCIPAL.DOMAIN_ID=" + queryContext.getSecurityDomain();
+
+        if (constraint != null) {
+            baseSqlStr += " AND " + constraint;
+        }
+
+        if (queryContext.getOrder() != null && queryContext.getOrder().equalsIgnoreCase("desc")) {
+            baseSqlStr += " ORDER BY SECURITY_PRINCIPAL.PRINCIPAL_NAME DESC";
+        } else {
+            baseSqlStr += " ORDER BY SECURITY_PRINCIPAL.PRINCIPAL_NAME";
+        }
+
+        StringBuilder preparedSqlBuilder = new StringBuilder(baseSqlStr.length());
+        Matcher matcher;
+        char [] sqlChars = baseSqlStr.toCharArray();
+        List<Object> parameters = new ArrayList<Object>(_paramPlaceHolders.size());
+        Segment segment = new Segment(sqlChars, 0, sqlChars.length);
+
+        for (matcher = PARAM_PLACEHOLDER_PATTERN.matcher(segment); matcher.find(); ) {
+            preparedSqlBuilder.append(segment.subSequence(0, matcher.start())).append('?');
+            _paramPlaceHolderName = matcher.group(1);
+            parameters.add(_paramPlaceHolders.get(_paramPlaceHolderName));
+            segment = (Segment) segment.subSequence(matcher.end(), segment.length());
+            matcher.reset(segment);
+        }
+
+        preparedSqlBuilder.append(segment);
+
+        String preparedSqlStr = preparedSqlBuilder.toString();
+        String sql = getPagingSql(preparedSqlStr, queryContext);
+
+        PreparedStatement pstmtForPaging = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        for (int i = 0; i < parameters.size(); i++) {
+            pstmtForPaging.setString(i + 1, (String) parameters.get(i));
+        }
+        pstmtForPaging.setFetchSize((int) (queryContext.getOffset() + queryContext.getLength()));
+
+        String countSql = convertToCountQueryStatement(preparedSqlStr);
+
+        PreparedStatement pstmtForCount = conn.prepareStatement(countSql);
+        for (int i = 0; i < parameters.size(); i++) {
+            pstmtForCount.setString(i + 1, (String) parameters.get(i));
+        }
+
+        return new PreparedStatement[] { pstmtForPaging, pstmtForCount };
+    }
+
+    private String convertToCountQueryStatement(String baseSqlStr) {
+        // get the total number of results effected by the query
+        int fromPos = baseSqlStr.toUpperCase().indexOf(" FROM ");
+        String countSql = "SELECT count(SECURITY_PRINCIPAL.PRINCIPAL_ID)" + baseSqlStr.substring(fromPos);
+
+        // strip ORDER BY clause
+        int orderByPos = countSql.toUpperCase().indexOf(" ORDER BY ");
+
+        if (orderByPos >= 0) {
+            countSql = countSql.substring(0, orderByPos);
+        }
+
+        return countSql;
+    }
+
+    /**
 	 * Generate the base SQL syntax for selecting principals. This must not
 	 * contain any database specifics.
 	 * 
 	 * @param queryContext
 	 * @return
+	 * @deprecated Never use this method due to vulnerable SQL statement manipulation.
 	 */
+    @Deprecated
 	protected String generateBaseSql(JetspeedPrincipalQueryContext queryContext) {
 		String attributeConstraint = null;
 		String fromPart = "SECURITY_PRINCIPAL";
