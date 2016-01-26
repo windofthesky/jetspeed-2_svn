@@ -16,19 +16,6 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.text.Segment;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
@@ -43,6 +30,18 @@ import org.apache.ojb.broker.accesslayer.RowReader;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.text.Segment;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Abstract base class for the principal lookup manager. Defines possible
@@ -201,8 +200,9 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
         String attributeConstraint = null;
         String fromPart = "SECURITY_PRINCIPAL";
 
+        int cnt = 1;
+
         if (queryContext.getSecurityAttributes() != null) {
-            int cnt = 1;
 
             for (Map.Entry<String, String> attribute : queryContext.getSecurityAttributes().entrySet()) {
                 if (attributeConstraint == null) {
@@ -240,14 +240,13 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 
         if (queryContext.getAssociatedRoles() != null && queryContext.getAssociatedRoles().size() > 0
                 && queryContext.getAssociatedRoles().get(0).length() > 0) {
-            int cnt = 1;
 
             for (String roleName : queryContext.getAssociatedRoles()) {
                 _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, convertWildcardsForLike(roleName));
 
                 if (roleConstraints == null) {
                     roleConstraints = "r" + cnt + ".ASSOC_NAME = '" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
-                            + "' " + "' AND r" + cnt + ".TO_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
+                            + "' AND r" + cnt + ".TO_PRINCIPAL_ID=rp" + cnt + ".PRINCIPAL_ID AND rp" + cnt
                             + ".PRINCIPAL_NAME LIKE " + _paramPlaceHolderName + " AND rp" + cnt
                             + ".PRINCIPAL_TYPE='role' AND r" + cnt
                             + ".FROM_PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID";
@@ -270,7 +269,6 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 
         if (queryContext.getAssociatedGroups() != null && queryContext.getAssociatedGroups().size() > 0
                 && queryContext.getAssociatedGroups().get(0).length() > 0) {
-            int cnt = 1;
 
             for (String groupName : queryContext.getAssociatedGroups()) {
                 _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, convertWildcardsForLike(groupName));
@@ -299,7 +297,6 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
         String userConstraints = null;
 
         if (queryContext.getAssociatedUsers() != null && queryContext.getAssociatedUsers().size() > 0) {
-            int cnt = 1;
 
             for (String userName : queryContext.getAssociatedGroups()) {
                 _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, convertWildcardsForLike(userName));
