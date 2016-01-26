@@ -118,13 +118,6 @@ public class UserManagerService extends AbstractRestService
     {
         checkPrivilege(servletRequest, JetspeedActions.VIEW);
 
-        userName = stripSQLInjection(userName);
-        sortDirection = stripSQLInjection(sortDirection);
-        roles = stripSQLInjection(roles);
-        groups = stripSQLInjection(groups);
-        attributeKeys = stripSQLInjection(attributeKeys);
-        attributeValues = stripSQLInjection(attributeValues);
-
         Map<String, String> attributeMap = null;
         
         if (attributeKeys != null && attributeKeys.size() > 0 && attributeKeys.size() == attributeValues.size())

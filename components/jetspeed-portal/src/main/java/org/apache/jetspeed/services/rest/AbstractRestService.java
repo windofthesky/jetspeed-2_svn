@@ -23,8 +23,6 @@ import org.apache.jetspeed.services.beans.UpdateResultBean;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by dtaylor on 5/2/15.
@@ -47,24 +45,6 @@ public class AbstractRestService {
                             new UpdateResultBean(Response.Status.UNAUTHORIZED.getStatusCode(),
                                     "Insufficient privilege to access this REST service")).build());
         }
-    }
-
-    protected String stripSQLInjection(String in) {
-        if (in == null) {
-            return null;
-        }
-        return in.replaceAll("['\"]", "");
-    }
-
-    protected List<String> stripSQLInjection(List<String> in) {
-        if (in == null) {
-            return null;
-        }
-        ArrayList<String> out = new ArrayList<>();
-        for (String s : in) {
-            out.add(stripSQLInjection(s));
-        }
-        return out;
     }
 
 }
