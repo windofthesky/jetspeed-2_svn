@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.text.Segment;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
 import org.apache.jetspeed.security.JetspeedPrincipalQueryContext;
@@ -209,14 +210,14 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
                     attributeConstraint = " a" + cnt + ".PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID AND a" + cnt
                             + ".ATTR_NAME = " + _paramPlaceHolderName;
 
-                    _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, attribute.getValue());
+                    _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, convertWildcardsForLike(attribute.getValue()));
                     attributeConstraint += " AND a" + cnt + ".ATTR_VALUE LIKE " + _paramPlaceHolderName;
                 } else {
                     _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, attribute.getKey());
                     attributeConstraint += " AND a" + cnt + ".PRINCIPAL_ID=SECURITY_PRINCIPAL.PRINCIPAL_ID AND a" + cnt
                             + ".ATTR_NAME = " + _paramPlaceHolderName;
 
-                    _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, attribute.getValue());
+                    _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, convertWildcardsForLike(attribute.getValue()));
                     attributeConstraint += " AND a" + cnt + ".ATTR_VALUE LIKE " + _paramPlaceHolderName;
                 }
 
@@ -229,7 +230,7 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
 
         if (queryContext.getNameFilter() != null && queryContext.getNameFilter().length() > 0) {
             _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders,
-                    queryContext.getNameFilter().replace('*', '%'));
+                    convertWildcardsForLike(queryContext.getNameFilter()));
             constraint = "SECURITY_PRINCIPAL.PRINCIPAL_NAME LIKE " + _paramPlaceHolderName;
         }
 
@@ -242,7 +243,7 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
             int cnt = 1;
 
             for (String roleName : queryContext.getAssociatedRoles()) {
-                _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, roleName);
+                _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, convertWildcardsForLike(roleName));
 
                 if (roleConstraints == null) {
                     roleConstraints = "r" + cnt + ".ASSOC_NAME = '" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
@@ -272,7 +273,7 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
             int cnt = 1;
 
             for (String groupName : queryContext.getAssociatedGroups()) {
-                _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, groupName);
+                _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, convertWildcardsForLike(groupName));
 
                 if (groupConstraints == null) {
                     groupConstraints = "r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
@@ -301,7 +302,7 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
             int cnt = 1;
 
             for (String userName : queryContext.getAssociatedGroups()) {
-                _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, userName);
+                _paramPlaceHolderName = putParamPlaceHolder(_paramPlaceHolders, convertWildcardsForLike(userName));
 
                 if (userConstraints == null) {
                     userConstraints = "r" + cnt + ".ASSOC_NAME='" + JetspeedPrincipalAssociationType.IS_MEMBER_OF
@@ -416,6 +417,44 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
         }
 
         return countSql;
+    }
+
+    private String convertWildcardsForLike(String s) {
+        String converted = s;
+
+        if (s != null) {
+            String textOnly = s;
+            boolean foreWildcard = false;
+            boolean rearWildcard = false;
+
+            if (textOnly.length() > 0 && textOnly.charAt(0) == '*') {
+                textOnly = textOnly.substring(1);
+                foreWildcard = true;
+            }
+
+            if (textOnly.length() > 0 && textOnly.charAt(s.length() - 1) == '*') {
+                textOnly = textOnly.substring(0, textOnly.length() - 1);
+                rearWildcard = true;
+            }
+
+            if (textOnly.length() > 0) {
+                StringBuilder sb = new StringBuilder(textOnly.length() + 2);
+
+                if (foreWildcard) {
+                    sb.append('%');
+                }
+
+                sb.append(StringUtils.remove(textOnly, '%'));
+
+                if (rearWildcard) {
+                    sb.append('%');
+                }
+
+                converted = sb.toString();
+            }
+        }
+
+        return converted;
     }
 
     /**
