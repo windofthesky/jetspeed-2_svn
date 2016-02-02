@@ -33,8 +33,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -300,6 +300,14 @@ public class PageManagementService
                                    @FormParam("url") String url)
     {
         RequestContext requestContext = (RequestContext) servletRequest.getAttribute(RequestContext.REQUEST_PORTALENV);
+
+        // For security reason, strip off any part in URL having 'javascript:'.
+        int offset = StringUtils.indexOfIgnoreCase(url, "javascript:");
+        if (offset != -1) {
+            log.warn("A url having javascript: protocol was stripped off: '{}'.", url);
+            url = url.substring(0, offset);
+        }
+
         String path = PathSegmentUtils.joinWithPrefix(pathSegments, "/", "/");
         
         try
