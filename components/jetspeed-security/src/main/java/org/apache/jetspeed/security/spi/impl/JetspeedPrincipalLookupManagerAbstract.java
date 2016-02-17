@@ -16,6 +16,19 @@
  */
 package org.apache.jetspeed.security.spi.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.text.Segment;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.jetspeed.security.JetspeedPrincipal;
 import org.apache.jetspeed.security.JetspeedPrincipalAssociationType;
@@ -30,18 +43,6 @@ import org.apache.ojb.broker.accesslayer.RowReader;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.text.Segment;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Abstract base class for the principal lookup manager. Defines possible
@@ -424,12 +425,12 @@ public abstract class JetspeedPrincipalLookupManagerAbstract implements Jetspeed
             boolean foreWildcard = false;
             boolean rearWildcard = false;
 
-            if (textOnly.length() > 0 && textOnly.charAt(0) == '*') {
+            if (textOnly.length() > 0 && (textOnly.charAt(0) == '*' || textOnly.charAt(0) == '%')) {
                 textOnly = textOnly.substring(1);
                 foreWildcard = true;
             }
 
-            if (textOnly.length() > 0 && textOnly.charAt(s.length() - 1) == '*') {
+            if (textOnly.length() > 0 && (textOnly.charAt(s.length() - 1) == '*' || textOnly.charAt(s.length() - 1) == '%')) {
                 textOnly = textOnly.substring(0, textOnly.length() - 1);
                 rearWildcard = true;
             }
