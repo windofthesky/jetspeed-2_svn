@@ -296,6 +296,7 @@
 		<Role>subsite2</Role>
 		<Role>dev</Role>
 		<Role>devmgr</Role>		
+		<Role>mgr-engineering</Role>
 	</Roles>
 	<Groups>
 		<Group>accounting</Group>
@@ -402,7 +403,7 @@
 		</User>
 	<User name="tomcat" userTemplate='/_template/new-user/' subsite='_hostname/localhost'>
 			<credentials password="tomcat" enabled="TRUE" requiresUpdate="FALSE"/>
-			<roles></roles>
+			<roles>user</roles>
 			<groups></groups>
 			<preferences/>
 			<userinfo>
@@ -419,7 +420,7 @@
 		</User>
 		<User name="jetspeed">
 			<credentials password="jetspeed" enabled="TRUE" requiresUpdate="FALSE"/>
-			<roles>manager</roles>
+			<roles>user,manager</roles>
 			<groups>engineering</groups>
 			<preferences/>
 			<userinfo>
@@ -493,7 +494,25 @@
 			<Rules>
 			  <Rule locator="page" rule="user-role-fallback"/>
 			</Rules>
-		</User>				
+		</User>
+		<User name="engmgr">
+			<credentials password="engmgr" enabled="TRUE"/>
+			<roles>user,mgr-engineering</roles>
+			<groups>engineering,marketing</groups>
+			<userinfo>
+				<preference>
+					<name value="user.name.given"/>
+					<value value="Eng"/>
+				</preference>
+				<preference>
+					<name value="user.name.family"/>
+					<value value="Manager"/>
+				</preference>
+			</userinfo>
+			<Rules>
+				<Rule locator="page" rule="user-role-fallback"/>
+			</Rules>
+		</User>
 	</Users>
 	<Permissions>
 		<Permission type="folder" resource="/" actions="view">

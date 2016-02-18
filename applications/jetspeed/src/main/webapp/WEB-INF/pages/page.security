@@ -107,6 +107,12 @@ limitations under the License.
       <permissions>view, edit, config, edit_defaults</permissions>
     </security-constraint>
   </security-constraints-def>
- 
+
+  <security-constraints-def name="delegated-manager">
+    <security-constraint>
+      <roles>mgr-engineering</roles>
+      <permissions>view, edit, config, edit_defaults</permissions>
+    </security-constraint>
+  </security-constraints-def>
 
 </page-security>

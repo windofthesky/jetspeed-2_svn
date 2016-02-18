@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page id="delegated.psml" hidden="false">
+    <title>Engineering Users</title>
+    <short-title>Engineering</short-title>
+    <fragment id="SP-152e7614282-10000" type="layout" name="jetspeed-layouts::VelocityOneColumn">
+        <fragment id="SP-152e761b333-10001" type="portlet" name="j2-admin::DelegatedUserManager">
+            <property name="row" value="0"></property>
+            <property name="column" value="0"></property>
+        </fragment>
+    </fragment>
+
+</page>
+
