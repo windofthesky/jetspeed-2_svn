@@ -35,17 +35,24 @@ public class UserSessionPreferences {
     private Map<String,Map<String,PortletPreference>> windowPreferences = new ConcurrentHashMap<>();
 
     public Map<String,PortletPreference> getWindowPreferences(String portletWindowId) {
-        return windowPreferences.get(portletWindowId);
+        if (portletWindowId != null) {
+            return windowPreferences.get(portletWindowId);
+        }
+        return null;
     }
 
     public Map<String,PortletPreference> createWindowPreferences(String portletWindowId) {
         Map<String,PortletPreference> preferences = new HashMap<>();
-        windowPreferences.put(portletWindowId, preferences);
+        if (portletWindowId != null) {
+            windowPreferences.put(portletWindowId, preferences);
+        }
         return preferences;
     }
 
     public Map<String,PortletPreference> updateWindowPreferences(String portletWindowId, Map<String,PortletPreference> preferences) {
-        windowPreferences.put(portletWindowId, preferences);
+        if (portletWindowId != null) {
+            windowPreferences.put(portletWindowId, preferences);
+        }
         return preferences;
     }
 
