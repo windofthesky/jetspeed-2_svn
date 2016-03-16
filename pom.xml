@@ -250,7 +250,7 @@
     <ddlutils.version>1.0</ddlutils.version>
     <directory.version>1.5.5</directory.version>
     <dom4j.version>1.6.1</dom4j.version>
-    <ehcache.version>1.7.2</ehcache.version>
+    <ehcache.version>2.6.11</ehcache.version>
     <hsqldb.version>1.8.0.2</hsqldb.version>
     <javolution.version>5.2.6</javolution.version>
     <geronimo-javamail_1.4_spec.version>1.6</geronimo-javamail_1.4_spec.version>
