@@ -16,11 +16,6 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
 import org.apache.jetspeed.descriptor.JetspeedDescriptorService;
@@ -34,6 +29,11 @@ import org.apache.jetspeed.util.FileSystemHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -57,7 +57,9 @@ import org.slf4j.LoggerFactory;
 public class VersionedPortletApplicationManager extends PortletApplicationManager
 {
     private static final Logger    log = LoggerFactory.getLogger("deployment");
-        
+
+    private Boolean useNumericVersions = true;
+
     public VersionedPortletApplicationManager(PortletFactory portletFactory, PortletRegistry registry,
             PermissionManager permissionManager, SearchEngine searchEngine,  RoleManager roleManager,
             List<String> permissionRoles, /* node manager, */ String appRoot, JetspeedDescriptorService descriptorService)
@@ -66,7 +68,15 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
                 searchEngine, roleManager, permissionRoles, null, appRoot, descriptorService); 
                
     }
-    
+
+    public Boolean getUseNumericVersions() {
+        return useNumericVersions;
+    }
+
+    public void setUseNumericVersions(Boolean useNumericVersions) {
+        this.useNumericVersions = useNumericVersions;
+    }
+
     public boolean isStarted()
     {
         return started;
@@ -140,14 +150,14 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
                 {
                     System.out.println(" - New Version was NOT provided: registration not required ... " + contextName);                                    	
                 }
-                else if (newVersion.compareTo(regVersion) > 0)
+                else if (compareVersions(newVersion, regVersion, useNumericVersions) > 0)
                 {
                     System.out.println(" - **** New Version is greater: registration required... " + contextName);
                     regPA = registerPortletApplication(paWar, regPA, paType, paClassLoader, silent);                    
                 }
                 else
                 {
-                    System.out.println(" - New Version is NOT greater: registration not required ... " + contextName);                    
+                    System.out.println(" - New Version is NOT greater: registration not required ... " + contextName);
                 }
             }
             if (portletFactory.isPortletApplicationRegistered(regPA))
@@ -182,4 +192,35 @@ public class VersionedPortletApplicationManager extends PortletApplicationManage
         }
         return version;
     }
+
+    public static int compareVersions(String newVersion, String regVersion, boolean useNumericVersions) throws NumberFormatException {
+        if (!useNumericVersions) {
+            return newVersion.compareTo(regVersion);
+        }
+        String[] v1 = newVersion.split("\\.");
+        String[] v2 = regVersion.split("\\.");
+
+        int ix = 0;
+        while(ix < v1.length || ix < v2.length){
+            if(ix < v1.length && ix < v2.length){
+                if(Integer.parseInt(v1[ix]) < Integer.parseInt(v2[ix])){
+                    return -1;
+                }else if(Integer.parseInt(v1[ix]) > Integer.parseInt(v2[ix])){
+                    return 1;
+                }
+            } else if(ix < v1.length){
+                if(Integer.parseInt(v1[ix]) != 0){
+                    return 1;
+                }
+            } else if(ix < v2.length){
+                if(Integer.parseInt(v2[ix]) != 0){
+                    return -1;
+                }
+            }
+
+            ix++;
+        }
+        return 0;
+    }
+
 }

@@ -66,6 +66,11 @@
          locking by setting value to "false":
       <property name="lockRegistryAccess"><value>false</value></property>
     -->
+    <!-- optional use numeric version numbers such as 2.9.0.11. Do not allow numbers
+         this feature is enabled by default. To use lexical comparisions, set this property to false
+      <property name="useNumericVersions" value="false" />
+    -->
+
   </bean>
 
 </beans>
