@@ -945,10 +945,8 @@ public class PortletPreferencesServiceImpl extends PersistenceBrokerDaoSupport
         c.addEqualTo(USER_NAME, userName);
         //query.addOrderByAscending(DTYPE);
         QueryByCriteria query = QueryFactory.newQuery(DatabasePreference.class, c);
-        Iterator<DatabasePreference> preferences = getPersistenceBrokerTemplate().getIteratorByQuery(query);
-        while (preferences.hasNext())
-        {
-            DatabasePreference preference = preferences.next();
+        Collection<DatabasePreference> preferences1 = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        for (DatabasePreference preference : preferences1) {
             Map<String,PortletPreference> windowPreferences = sessionPreferences.getWindowPreferences(preference.getEntityId());
             if (windowPreferences == null) {
                 windowPreferences = sessionPreferences.createWindowPreferences(preference.getEntityId());
