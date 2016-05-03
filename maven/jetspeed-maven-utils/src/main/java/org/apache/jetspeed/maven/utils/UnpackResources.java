@@ -16,6 +16,11 @@
  */
 package org.apache.jetspeed.maven.utils;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.SelectorUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,11 +29,6 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.zip.ZipFile;
-
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.SelectorUtils;
 
 /**
  * @version $Id$
@@ -430,7 +430,7 @@ public class UnpackResources
                                 {
                                     throw new MojoExecutionException("Destination "+destFile.getAbsolutePath()+" already exists and is not a file");
                                 }
-                                if ( destFile.lastModified() >= fileEntry.getTime() || !unpackResources[i].isOverwrite() )
+                                if ( destFile.lastModified() >= fileEntry.getTime() && !unpackResources[i].isOverwrite() )
                                 {
                                     if (verbose)
                                     {
