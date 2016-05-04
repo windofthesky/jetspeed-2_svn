@@ -2191,6 +2191,7 @@
             <configuration>
               <useDefaultExcludes>true</useDefaultExcludes>
               <excludes combine.children="append">
+                <exclude>**/target/**</exclude>
                 <exclude>.idea/**/*</exclude>
                 <exclude>**/*.iml</exclude>
                 <exclude>jetspeed-mvn-settings.xml</exclude>
