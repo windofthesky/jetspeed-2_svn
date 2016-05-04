@@ -1,0 +1,70 @@
+==========================================
+Environment setup for releasing artifacts
+==========================================
+Since 2.3.1
+
+1. Environmental Setup
+	* Increase the default Java heap available to Maven
+	* export MAVEN_OPTS="-Xmx256m -XX:MaxPermSize=128m"
+	* Use the JDK 1.7.
+	* Use Maven 3.3.1 or higher
+
+2. Prepare the source for release
+	* Cleanup JIRA so the Fix Version in issues resolved since the last release includes this release version correctly.
+	* Create a JIRA issue for release maintenance for example see
+		https://issues.apache.org/jira/browse/JS2-1355
+	* Checkout a clean copy of the trunk (on the specific branch if needed) to release using command line svn.
+	* Do not use Eclipse to do the checkout. The extra dot (.) files created by Eclipse throws off the rat:check processing.
+	* run pre-release.sh on jetspeed-2, j2-admin
+	* check in changes
+
+3. Verify the source has the required license headers before trying to release.
+	rat ...
+
+4. DRY RUN
+	Do a dry run of the release:prepare step:
+
+		$ mvn -P apache-release release:prepare -DautoVersionSubmodules=true -DdryRun=true
+
+	The dry run will not commit any changes back to SVN and gives you the opportunity to verify that the release process will complete as expected. You will be prompted for the following information :
+
+		Release version - take the default
+		SCM release tag - review the default naming and compare it with the existing svn tag structure; change it if needed.
+		New development version - take the default
+		GPG Passprhase
+
+	If you cancel a release:prepare before it updates the pom.xml versions, then use the release:clean goal to just remove the extra files that were created. The Maven release plugin checks for SNAPSHOT dependencies in pom's. It will not complete the prepare goal until all SNAPSHOT dependencies are resolved.
+
+5. VERIFY RELEASE
+	Verify that the release process completed as expected
+
+	The release plugin will create pom.xml.tag files which contain the changes that would have been committed to SVN. The only differences between pom.xml.tag and it's corresponding pom.xml file should be the version number(s) and svn location(s) (e.g., /trunk vs /tags).
+
+	Check release.properties and make sure that the scm properties have the right version. Sometimes the scm location can be the previous version not the next version.
+
+	Verify signatures (Verifying release signatures)
+	e.g., `gpg --verify target/apa-webcontent-1.3-SNAPSHOT-source-release.zip.asc target/apa-webcontent-1.3-SNAPSHOT-source-release.zip'
+
+6. CLEANUP AND START OVER
+	Cleanup the release prepare files again:
+
+	$ mvn -P apache-release release:clean
+
+7. PREPARE THE RELEASE
+	Run the "release:prepare" step for real this time. You'll be prompted for the same version information.
+
+	$ mvn -P apache-release release:prepare -DautoVersionSubmodules=true
+
+	Backup (zip or tar) your local release candidate directory in case you need to rollback the release after the next step is performed.
+
+8. PERFORM THE RELEASE
+
+	This step will create a maven staging repository and site for use in testing and voting.
+
+	$ mvn -P apache-release release:perform -Duser.name=[your_apache_uid]
+
+	If your local OS userid doesn't match your Apache userid, then you'll have to also override the value provided by the OS to Maven for the site-deploy step to work. This is known to work for Linux, but not for Mac and unknown for Windows.
+
+
+10. Docs
+	* Stage any Roadmap or Release landing pages on the site.

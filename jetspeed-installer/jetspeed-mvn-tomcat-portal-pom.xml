@@ -39,7 +39,7 @@
 
   <properties>
     <tomcat.version.major>7</tomcat.version.major>
-    <tomcat.version.minor>7.0.62</tomcat.version.minor>
+    <tomcat.version.minor>7.0.69</tomcat.version.minor>
     <tomcat.name>apache-tomcat-${tomcat.version.minor}</tomcat.name>
     <org.apache.portals.jetspeed.version>${project.version}</org.apache.portals.jetspeed.version>
     <org.apache.jetspeed.portal.context.name>jetspeed</org.apache.jetspeed.portal.context.name>
