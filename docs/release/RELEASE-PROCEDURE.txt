@@ -30,11 +30,13 @@ Since 2.3.1
 		https://issues.apache.org/jira/browse/JS2-1355
 	* Checkout a clean copy of the trunk (on the specific branch if needed) to release using command line svn.
 	* Do not use Eclipse to do the checkout. The extra dot (.) files created by Eclipse throws off the rat:check processing.
+
 	* run pre-release.sh on jetspeed-2, j2-admin
 	* check in changes
 
 3. Verify the source has the required license headers before trying to release.
-	rat ...
+
+    mvn -P rat apache-rat:check
 
 4. DRY RUN
 	Do a dry run of the release:prepare step:
@@ -73,13 +75,113 @@ Since 2.3.1
 	Backup (zip or tar) your local release candidate directory in case you need to rollback the release after the next step is performed.
 
 8. PERFORM THE RELEASE
-
 	This step will create a maven staging repository and site for use in testing and voting.
 
 	$ mvn -P apache-release release:perform -Duser.name=[your_apache_uid]
 
 	If your local OS userid doesn't match your Apache userid, then you'll have to also override the value provided by the OS to Maven for the site-deploy step to work. This is known to work for Linux, but not for Mac and unknown for Windows.
 
+9. VERIFY THE RELEASE
+    a. Verify the Nexus release artifacts
 
-10. Docs
-	* Stage any Roadmap or Release landing pages on the site.
+    Verify the staged artifacts in the nexus repo
+        https://repository.apache.org/index.html
+    Staging repositories (under Build Promotion) --> Name column --> org.apache.portals-XXX
+    Navigate through the artifact tree and make sure that all javadoc, sources, tests, jars, ... have
+        .asc (GPG signature)
+        .md5 files
+    See http://people.apache.org/~henkp/repo/faq.html and http://www.apache.org/dev/release-signing.html#openpgp-ascii-detach-sig
+
+    b. Close the nexus staging repo
+
+        https://repository.apache.org/index.html
+        Staging repositories (under Build Promotion) --> Name column --> org.apache.portals-XXX
+        Click checkbox for the open staging repo (org.apache.portals-XXX) and press Close in the menu bar.
+
+10. PUT THE RELEASE CANDIDATE UP FOR A VOTE
+
+    a. Create a VOTE email thread on dev@ to record votes as replies. (See Example VOTE e-mail message)
+    b. Perform a review of the release and cast your vote. See the following for more details on Apache releases
+
+        http://www.apache.org/dev/release.html
+
+    c. A -1 vote does not necessarily mean that the vote must be redone, however it is usually a good idea to rollback the release if a -1 vote is received.
+    If you want to recover it from a vetoed release, refer to the OpenJPA documentation, Recovering from a vetoed release.
+
+    d. After the vote has been open for at least 72 hours, has at least three +1 PMC votes and no -1 votes, then post the results to the vote thread by
+       reply to the initial email and prepend to the original subject "[RESULT]" (See Example RESULT e-mail message)
+       Include a list of everyone who voted +1, 0 or -1.
+
+       References:
+            Apache Voting Process http://www.apache.org/foundation/voting.html
+            Who We Are (Apache Portals Project) http://portals.apache.org/whoweare.html
+
+11. FINALIZE THE RELEASE
+
+    a. Promote the staged nexus artifacts
+        https://repository.apache.org/index.html
+        Staging repositories (under Build Promotion) --> Name column --> org.apache.portals
+        Click checkbox of the closed staging repo (org.apache.portals-XXX) and select Release.
+
+    b. Copy the source/binary artifacts over to the distribution area (managed by svnpubsub)
+       Command line examples to distribute Portals Application artifacts (jetspeed-installer-2.3.1 as an example below.):
+
+    $ svn co https://dist.apache.org/repos/dist/release/portals/jetspeed-2 jetspeed-2
+    $ cd jetspeed-2/sources
+    $ echo "Copying source artifacts..."
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/jetspeed-2/2.3.1/jetspeed-2-2.3.1-source-release.zip
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/jetspeed-2/2.3.1/jetspeed-2-2.3.1-source-release.zip.asc
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/jetspeed-2/2.3.1/jetspeed-2-2.3.1-source-release.zip.md5
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/jetspeed-2/2.3.1/jetspeed-2-2.3.1-source-release.zip.sha1
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.1-source-release.zip
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.1-source-release.zip.asc
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.1-source-release.zip.md5
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.1-source-release.zip.sha1
+    $ svn add jetspeed-2-2.3.1-source-release-*
+    $ svn add j2-admin-2.3.1-source-release-*
+    $ svn commit -m "Committing Source Release for jetspeed-2-2.3.1"
+
+    $ cd ../binaries
+    $ echo "Copying binaries artifacts..."
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.0.war
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.0.war.asc
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.0.war.md5
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.0.war.sha1
+    $ svn add j2-admin-*
+    $ svn commit -m "Committing Binary Release for j2-admin-2.3.0"
+
+12. UPDATE JIRA
+    Update the JIRA versions page to close all issues, mark the version as "released", and set the date to the date
+    that the release was approved. You may also need to make a new release entry for the next release.
+
+13. ANNOUNCE THE RELEASE
+    Make a news announcement on the Apache Portals and/or Apache Portals Applications homepage.
+    WAIT 24hrs after committing releases for mirrors to replicate
+    Publish updates to the download page
+    How to publish the website through svnpubsub
+    Commit changes into the SVN location of Apache Portals Maven Site documentation:
+        https://svn.apache.org/repos/asf/portals/site/
+
+    NOTE: You will probably need to edit files under applications folder mostly, but be sure to edit some pages (e.g., news page) in the root, too.
+    Build the site of Apache Portals Maven Site documentation. e.g., $ mvn site
+
+    Copy the generated html and resources into the workspace folder of the following svnpubsub SVN location:
+        https://svn.apache.org/repos/asf/portals/site-live/
+    Commit your changes
+
+    Make an announcement about the release on the
+
+        portalapps-user@portals.apache.org
+        portalapps-dev@portals.apache.org
+        announce@apache.org list
+
+        as per the Apache Announcement Mailing Lists page) (See Example ANNOUNCE e-mail message)
+        NOTE: Because announce@apache.org list allows message posting only to senders having '@apache.org' e-mail address.
+        Therefore, be sure that you send the announce message by your apache e-mail address.
+        See Committer e-mail configuration for detail.
+        NOTE: When sending announce message to multiple lists together from your @apache.org e-mail address,
+        be careful because your message can be rejected if your @apache.org e-mail address didn't susbscribe user mailinglist
+         (portalapps-user@portals.apache.org, in this case.) You can either subscribe it first from your @apache.org
+         e-mail address or send the announce message twice separately.
+
+        NOTE: It is not required but it is better to digitally sign the announce e-mail message by using your PGP key.
