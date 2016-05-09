@@ -24,14 +24,21 @@ Since 2.3.1
 	* Use the JDK 1.7.
 	* Use Maven 3.3.1 or higher
 
+-------------------------- JETSPEED-2 -----------------------------
+
 2. Prepare the source for release
 	* Cleanup JIRA so the Fix Version in issues resolved since the last release includes this release version correctly.
 	* Create a JIRA issue for release maintenance for example see
 		https://issues.apache.org/jira/browse/JS2-1355
 	* Checkout a clean copy of the trunk (on the specific branch if needed) to release using command line svn.
+	    cd ~/apache/releases
+	    svn co https://svn.apache.org/repos/asf/portals/jetspeed-2/portal/trunk jetspeed-2
+
 	* Do not use Eclipse to do the checkout. The extra dot (.) files created by Eclipse throws off the rat:check processing.
 
-	* run pre-release.sh on jetspeed-2, j2-admin
+	* run pre-release.sh
+	    cd jetspeed-2
+	    ./pre-release.sh
 	* check in changes
 
 3. Verify the source has the required license headers before trying to release.
@@ -43,24 +50,27 @@ Since 2.3.1
 
 		$ mvn -P apache-release release:prepare -DautoVersionSubmodules=true -DdryRun=true
 
-	The dry run will not commit any changes back to SVN and gives you the opportunity to verify that the release process will complete as expected. You will be prompted for the following information :
+	The dry run will not commit any changes back to SVN and gives you the opportunity to verify that the release process will complete as expected.
+	You will be prompted for the following information :
 
 		Release version - take the default
 		SCM release tag - review the default naming and compare it with the existing svn tag structure; change it if needed.
 		New development version - take the default
-		GPG Passprhase
+		Have your GPG Passphrase ready
 
-	If you cancel a release:prepare before it updates the pom.xml versions, then use the release:clean goal to just remove the extra files that were created. The Maven release plugin checks for SNAPSHOT dependencies in pom's. It will not complete the prepare goal until all SNAPSHOT dependencies are resolved.
+	If you cancel a release:prepare before it updates the pom.xml versions, then use the release:clean goal to just remove the extra files that were created.
+	The Maven release plugin checks for SNAPSHOT dependencies in pom's. It will not complete the prepare goal until all SNAPSHOT dependencies are resolved.
 
 5. VERIFY RELEASE
 	Verify that the release process completed as expected
 
-	The release plugin will create pom.xml.tag files which contain the changes that would have been committed to SVN. The only differences between pom.xml.tag and it's corresponding pom.xml file should be the version number(s) and svn location(s) (e.g., /trunk vs /tags).
+	The release plugin will create pom.xml.tag files which contain the changes that would have been committed to SVN.
+	The only differences between pom.xml.tag and it's corresponding pom.xml file should be the version number(s) and svn location(s) (e.g., /trunk vs /tags).
 
 	Check release.properties and make sure that the scm properties have the right version. Sometimes the scm location can be the previous version not the next version.
 
 	Verify signatures (Verifying release signatures)
-	e.g., `gpg --verify target/apa-webcontent-1.3-SNAPSHOT-source-release.zip.asc target/apa-webcontent-1.3-SNAPSHOT-source-release.zip'
+	e.g., `gpg --verify ./target/jetspeed-2-2.3.1-SNAPSHOT-source-release.zip.asc ./target/jetspeed-2-2.3.1-SNAPSHOT-source-release.zip'
 
 6. CLEANUP AND START OVER
 	Cleanup the release prepare files again:
@@ -79,10 +89,76 @@ Since 2.3.1
 
 	$ mvn -P apache-release release:perform -Duser.name=[your_apache_uid]
 
-	If your local OS userid doesn't match your Apache userid, then you'll have to also override the value provided by the OS to Maven for the site-deploy step to work. This is known to work for Linux, but not for Mac and unknown for Windows.
+	If your local OS userid doesn't match your Apache userid, then you'll have to also override the value provided
+	by the OS to Maven for the site-deploy step to work. This is known to work for Linux, but not for Mac and unknown for Windows.
 
-9. VERIFY THE RELEASE
-    a. Verify the Nexus release artifacts
+-------------------------- J2-ADMIN -----------------------------
+
+9. Prepare the J2-ADMIN source for release
+	* Checkout a clean copy of the trunk (on the specific branch if needed) to release using command line svn.
+	    cd ~/apache/releases
+	    svn co https://svn.apache.org/repos/asf/portals/jetspeed-2/applications/j2-admin/trunk j2-admin
+
+	* run pre-release.sh
+	    cd j2-admin
+	    ./pre-release.sh
+	* check in changes
+
+10. Verify the source has the required license headers before trying to release.
+
+    mvn -P rat apache-rat:check
+
+11. DRY RUN
+	Do a dry run of the release:prepare step:
+
+		$ mvn -P apache-release release:prepare -DautoVersionSubmodules=true -DdryRun=true
+
+	The dry run will not commit any changes back to SVN and gives you the opportunity to verify that the release process will complete as expected.
+	You will be prompted for the following information :
+
+		Release version - take the default
+		SCM release tag - review the default naming and compare it with the existing svn tag structure; change it if needed.
+		New development version - take the default
+		Have your GPG Passphrase ready
+
+	If you cancel a release:prepare before it updates the pom.xml versions, then use the release:clean goal to just remove the extra files that were created.
+	The Maven release plugin checks for SNAPSHOT dependencies in pom's. It will not complete the prepare goal until all SNAPSHOT dependencies are resolved.
+
+12. VERIFY RELEASE
+	Verify that the release process completed as expected
+
+	The release plugin will create pom.xml.tag files which contain the changes that would have been committed to SVN.
+	The only differences between pom.xml.tag and it's corresponding pom.xml file should be the version number(s) and svn location(s) (e.g., /trunk vs /tags).
+
+	Check release.properties and make sure that the scm properties have the right version. Sometimes the scm location can be the previous version not the next version.
+
+	Verify signatures (Verifying release signatures)
+	e.g., `gpg --verify ./target/jetspeed-2-2.3.1-SNAPSHOT-source-release.zip.asc ./target/jetspeed-2-2.3.1-SNAPSHOT-source-release.zip'
+
+13. CLEANUP AND START OVER
+	Cleanup the release prepare files again:
+
+	$ mvn -P apache-release release:clean
+
+14. PREPARE THE RELEASE
+	Run the "release:prepare" step for real this time. You'll be prompted for the same version information.
+
+	$ mvn -P apache-release release:prepare -DautoVersionSubmodules=true
+
+	Backup (zip or tar) your local release candidate directory in case you need to rollback the release after the next step is performed.
+
+15. PERFORM THE RELEASE
+	This step will create a maven staging repository and site for use in testing and voting.
+
+	$ mvn -P apache-release release:perform -Duser.name=[your_apache_uid]
+
+	If your local OS userid doesn't match your Apache userid, then you'll have to also override the value provided
+	by the OS to Maven for the site-deploy step to work. This is known to work for Linux, but not for Mac and unknown for Windows.
+
+-------------------------------------------------------------------------
+
+16. VERIFY THE RELEASES
+    a. Verify the Nexus release artifacts for both Jetspeed-2 and j2-admin
 
     Verify the staged artifacts in the nexus repo
         https://repository.apache.org/index.html
@@ -98,7 +174,12 @@ Since 2.3.1
         Staging repositories (under Build Promotion) --> Name column --> org.apache.portals-XXX
         Click checkbox for the open staging repo (org.apache.portals-XXX) and press Close in the menu bar.
 
-10. PUT THE RELEASE CANDIDATE UP FOR A VOTE
+17. Create a Jetspeed-2 Installer
+        cd ~/apache/releases/jetspeed-2/jetspeed-installer
+        mvn jetspeed:mvn -Dtarget=installer
+        # copy the target/jetspeed-installer-2.3.1.jar somewhere on web for Download and release verification testing
+
+18. PUT THE RELEASE CANDIDATE UP FOR A VOTE
 
     a. Create a VOTE email thread on dev@ to record votes as replies. (See Example VOTE e-mail message)
     b. Perform a review of the release and cast your vote. See the following for more details on Apache releases
@@ -116,7 +197,7 @@ Since 2.3.1
             Apache Voting Process http://www.apache.org/foundation/voting.html
             Who We Are (Apache Portals Project) http://portals.apache.org/whoweare.html
 
-11. FINALIZE THE RELEASE
+19. FINALIZE THE RELEASE
 
     a. Promote the staged nexus artifacts
         https://repository.apache.org/index.html
@@ -124,8 +205,9 @@ Since 2.3.1
         Click checkbox of the closed staging repo (org.apache.portals-XXX) and select Release.
 
     b. Copy the source/binary artifacts over to the distribution area (managed by svnpubsub)
-       Command line examples to distribute Portals Application artifacts (jetspeed-installer-2.3.1 as an example below.):
+       Command line examples to distribute artifacts (jetspeed-installer-2.3.1 as an example below.):
 
+    $ cd ~/apache/portals/dist/ALL/portals/jetspeed-2/sources
     $ svn co https://dist.apache.org/repos/dist/release/portals/jetspeed-2 jetspeed-2
     $ cd jetspeed-2/sources
     $ echo "Copying source artifacts..."
@@ -137,42 +219,77 @@ Since 2.3.1
     $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.1-source-release.zip.asc
     $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.1-source-release.zip.md5
     $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.1-source-release.zip.sha1
-    $ svn add jetspeed-2-2.3.1-source-release-*
-    $ svn add j2-admin-2.3.1-source-release-*
+    $ svn add jetspeed-2-2.3.1-source-release*
+    $ svn add j2-admin-2.3.1-source-release*
     $ svn commit -m "Committing Source Release for jetspeed-2-2.3.1"
 
     $ cd ../binaries
     $ echo "Copying binaries artifacts..."
-    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.0.war
-    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.0.war.asc
-    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.0.war.md5
-    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.0.war.sha1
-    $ svn add j2-admin-*
-    $ svn commit -m "Committing Binary Release for j2-admin-2.3.0"
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.1.war
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.1.war.asc
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.1.war.md5
+    $ wget --no-check-certificate https://repository.apache.org/content/repositories/releases/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.1.war.sha1
+    $ svn add j2-admin-2.3.1*
+    $ ### Sign the Jetspeed 2.3.1 installer
+    $ cp ~/apache/releases/tag-2.3.1/jetspeed-installer/target/jetspeed-installer-2.3.1.jar .
+    $ gpg --print-md MD5 jetspeed-installer-2.3.1.jar > jetspeed-installer-2.3.1.jar.md5
+    $ # compare...
+    $ md5 jetspeed-installer-2.3.1.jar
+    $ gpg --armor --output jetspeed-installer-2.3.1.jar.asc --detach-sig jetspeed-installer-2.3.1.jar
+    $ gpg --verify jetspeed-installer-2.3.1.jar.asc jetspeed-installer-2.3.1.jar
+    $ shasum jetspeed-installer-2.3.1.jar > jetspeed-installer-2.3.1.jar.sha1
+    $ shasum -c jetspeed-installer-2.3.1.jar.sha1
+    $ svn add jetspeed-installer-2.3.1*
+    $ svn commit -m "Committing Binary Release for  Jetspeed 2.3.1"
 
-12. UPDATE JIRA
+    WAIT 24hrs after committing releases for mirrors to replicate before announcing release
+
+20. RUN POST RELEASE
+    Run the post release script and check in changes to update dangling version numbers
+    a. Jetspeed-2
+        ./post-release.sh
+    b. J2-Admin
+        ./post-release.sh
+    c. commit changes to SVN. Trunk is now open for commits...
+
+21. UPDATE JIRA
     Update the JIRA versions page to close all issues, mark the version as "released", and set the date to the date
     that the release was approved. You may also need to make a new release entry for the next release.
 
-13. ANNOUNCE THE RELEASE
-    Make a news announcement on the Apache Portals and/or Apache Portals Applications homepage.
-    WAIT 24hrs after committing releases for mirrors to replicate
-    Publish updates to the download page
-    How to publish the website through svnpubsub
+    Generate the Release Notes from the Version page
+
+22. UPDATE SITE DOCS
+    a. copy site/jetspeed/jetspeed-2.3/src/site/xdoc/release-notes.xml to site/jetspeed/jetspeed-2.3/src/site/xdoc/release-note-[last version].xml
+    b. edit site/jetspeed/jetspeed-2.3/src/site/xdoc/release-notes.xml
+        include generated release notes from step 21
+    c. edit site/jetspeed/jetspeed-2.3/src/site/xdoc/features.xml
+    d. edit site/jetspeed/jetspeed-2.3/src/site/xdoc/index.xml
+    e. edit site/jetspeed/jetspeed-2.3/src/site/xdoc/download.xml
+    f. edit site/jetspeed/jetspeed-2.3/src/site/xdoc/getting-started-installer.xml
+    f. edit site/jetspeed/jetspeed-2.3/src/site/xdoc/getting-started.xml
+    f. edit site/jetspeed/jetspeed-2.3/src/site/xdoc/guide-migration.xml
+    f. edit Portals main site: site/src/site/xdoc/news.xml
+    g. update site/jetspeed/jetspeed-2.3/src/site/xdoc/roadmap.xml
+    h. mvn site
+
+    i. publish the docs to LIVE SITE
+
     Commit changes into the SVN location of Apache Portals Maven Site documentation:
         https://svn.apache.org/repos/asf/portals/site/
 
-    NOTE: You will probably need to edit files under applications folder mostly, but be sure to edit some pages (e.g., news page) in the root, too.
-    Build the site of Apache Portals Maven Site documentation. e.g., $ mvn site
-
     Copy the generated html and resources into the workspace folder of the following svnpubsub SVN location:
         https://svn.apache.org/repos/asf/portals/site-live/
-    Commit your changes
+    Commit your changes to site-live, they will publish automatically
+
+
+23. ANNOUNCE THE RELEASE
+    Make a news announcement on the Apache Portals and/or Apache Portals Applications homepage.
 
     Make an announcement about the release on the
 
-        portalapps-user@portals.apache.org
-        portalapps-dev@portals.apache.org
+        general@portals.apache.org
+        jetspeed-user@portals.apache.org
+
         announce@apache.org list
 
         as per the Apache Announcement Mailing Lists page) (See Example ANNOUNCE e-mail message)
@@ -185,3 +302,130 @@ Since 2.3.1
          e-mail address or send the announce message twice separately.
 
         NOTE: It is not required but it is better to digitally sign the announce e-mail message by using your PGP key.
+
+                - go to G-mail settings page
+                - Select 'Accounts and Import' tab
+                - In 'Send mail as' field,
+                 - click on 'Add another email address you own'
+                 - type your name and apache e-mail address in the popup
+                 - enter 'mail-relay.apache.org' in SMTP Server field and choose 465 as port number
+                 - enter your apache account username and password
+                 - select 'Secured connection using SSL (recommended)' (default)
+                 - click on 'Add Account'
+                 - ...
+                - You can change the default send email address if want there.
+                - When sending e-mail, check the sender address is @apache.org.
+
+------------------------------------ Release Candidate Email Template ------------------------------------------------------------
+To: jetspeed-dev list
+cc: jetspeed-user list, portals-pmc list
+Subject: [VOTE] Release Apache Portals Jetspeed 2.3.1
+
+Dear Apache Portals Jetspeed Team and community,
+
+I've staged a release candidate for the new Apache Portals Jetspeed Enterprise Portal 2.3.1 release. This candidate also includes the accompanying J2-Admin candidate.
+
+Please review the release candidate for this project which is available from the following maven staging repository:
+
+https://repository.apache.org/content/repositories/orgapacheportals-1010/
+
+The full source distributions are also available from the above staging repository from the following locations:
+
+https://repository.apache.org/content/repositories/orgapacheportals-1010/org/apache/portals/jetspeed-2/jetspeed-2/2.3.1/jetspeed-2-2.3.1-source-release.zip
+
+https://repository.apache.org/content/repositories/orgapacheportals-1010/org/apache/portals/jetspeed-2/j2-admin/2.3.1/j2-admin-2.3.1-source-release.zip
+
+The release notes are available here:
+
+https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=10492&version=12325883
+
+In addition, I'm providing a binary Jetspeed-2.3.1 installer based on this release candidate here:
+
+http://www.bluesunrise.com/downloads/jetspeed-installer-2.3.1.jar
+
+The installer can be executed using: java -jar jetspeed-installer-2.3.1.jar
+
+The KEYS file to verify the release artifacts signature can be found here:
+
+https://dist.apache.org/repos/dist/release/portals/jetspeed-2/KEYS
+
+Please review the release candidates and vote on releasing Apache Portals Jetspeed 2.3.1
+
+This vote is open for the next 72 hours.
+
+Please cast your vote:
+
+[ ] +1 for Release
+[ ]  0  for Don't care
+[ ] -1 Don't release (do provide a reason then)
+
+Regards,
+
+(your name)
+
+------------------------------------ Result/Vote Email Template ------------------------------------------------------------
+
+Respond to last email
+Subject: [RESULT][VOTE] Release Apache Portals Jetspeed 2.3.1
+
+Apache Portals Team and community,
+
+This release is accepted with the following votes:
+
+ +1 Randy Watler
+ +1 Woonsan Ko
+ +1 David S Taylor
+
+Thank you all for voting!
+
+We will promote the release candidates to the Maven Central Repository and upload the source and binary distributions to the official download area.
+
+An announcement about the new release will be send out as soon as the Jetspeed website is updated and the source and binary distributions have been mirrored.
+
+Regards,
+
+(your name)
+
+------------------------------------ Release Email -------------------------------------------------
+To      general@portals.apache.org
+        jetspeed-user@portals.apache.org
+
+        announce@apache.org list
+
+Subject: [ANNOUNCE] Apache Portals Jetspeed 2.3.1 release
+
+The Apache Portals team is pleased to announce the General Availability of Apache Jetspeed version 2.3.1
+
+Version 2.3.1 introduces important Security patches discovered by the Apache Security team.
+New features include a new Search UI, improved Session Preferences, Detached Portlets, updates to the tutorial,
+and improved Responsive Decorators.
+
+For a full overview of all the Jetspeed features, see the online documentation. To get up and running quickly,
+download the installer which comes with a bundled latest Tomcat 7.
+
+Features:
+http://portals.apache.org/jetspeed-2/features.html
+
+Release notes:
+http://portals.apache.org/jetspeed-2/release-notes.html
+
+Website Documentation:
+http://portals.apache.org/jetspeed-2
+
+Tutorial:
+http://portals.apache.org/jetspeed-2/features.html
+
+Download:
+http://portals.apache.org/jetspeed-2/download.html
+
+Installer:
+http://portals.apache.org/jetspeed-2/getting-started-installer.html
+
+Security Patches:
+http://portals.apache.org/jetspeed-2/security-reports.html
+
+--
+David S Taylor
+On behalf of the Apache Portals PMC
+
+
