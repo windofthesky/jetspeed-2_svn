@@ -281,8 +281,15 @@ Since 2.3.1
         https://svn.apache.org/repos/asf/portals/site-live/
     Commit your changes to site-live, they will publish automatically
 
+23. GENERATE API DOCS
+    $ cd jetspeed-api
+    $ mvn javadoc:javadoc
+    $ cd target/site/apidocs
+    $ cp -R * (live-site)/jetspeed-2/apidocs
+    # cd (live-site)
+    $ svn commit -m "updating 2.3.1 apidocs"
 
-23. ANNOUNCE THE RELEASE
+24. ANNOUNCE THE RELEASE
     Make a news announcement on the Apache Portals and/or Apache Portals Applications homepage.
 
     Make an announcement about the release on the
