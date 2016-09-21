@@ -16,20 +16,6 @@
  */
 package org.apache.jetspeed.serializer;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.security.auth.Subject;
-
-import org.slf4j.Logger;
 import org.apache.jetspeed.security.Credential;
 import org.apache.jetspeed.security.CredentialPasswordEncoder;
 import org.apache.jetspeed.security.Group;
@@ -70,6 +56,19 @@ import org.apache.jetspeed.serializer.objects.JSUserAttributes;
 import org.apache.jetspeed.serializer.objects.JSUserGroups;
 import org.apache.jetspeed.serializer.objects.JSUserRoles;
 import org.apache.jetspeed.serializer.objects.JSUserUsers;
+import org.slf4j.Logger;
+
+import javax.security.auth.Subject;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * JetspeedSecuritySerializer - Security component serializer
@@ -987,7 +986,7 @@ public class JetspeedSecuritySerializer extends AbstractJetspeedComponentSeriali
      * 
      * @param isPublic
      *            public or private credential
-     * @param newUser
+     * @param newPrincipal
      *            the JS user object reference
      * @param credential
      *            the credential object

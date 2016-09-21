@@ -16,13 +16,6 @@
  */
 package org.apache.jetspeed.tools.pamanager;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import org.apache.jetspeed.cluster.NodeManager;
 import org.apache.jetspeed.components.portletregistry.PortletRegistry;
 import org.apache.jetspeed.components.portletregistry.RegistryException;
@@ -43,6 +36,13 @@ import org.apache.jetspeed.util.MultiFileChecksumHelper;
 import org.apache.jetspeed.util.descriptor.PortletApplicationWar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * PortletApplicationManager
@@ -690,10 +690,15 @@ public class PortletApplicationManager implements PortletApplicationManagement
         catch (Exception e)
         {
             String msg = "Error starting portlet application " + contextName;
-            
+            if (e.getCause() != null) {
+                msg += ", root cause: " + e.getCause().getMessage();
+            }
             if (!silent || log.isDebugEnabled())
             {
                 log.error(msg, e);
+                if (e.getCause() != null) {
+                    log.error(e.getCause().getMessage(), e.getCause());
+                }
             }
             // monitor PA for changes
             // do not add monitor if a monitor already exists

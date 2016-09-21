@@ -1350,7 +1350,7 @@ public class JetspeedRegistryMigration implements JetspeedMigration
                 case JETSPEED_SCHEMA_VERSION_2_1_3:
                 case JETSPEED_SCHEMA_VERSION_2_1_4:
                 {
-                    if (tableName.equals("SEQ_LOCALIZED_DESCRIPTION") && !localizedDescriptions.isEmpty() && (maxLocalizedDescriptionId > 0))
+                    if (!localizedDescriptionSeqMigrated && tableName.equals("SEQ_LOCALIZED_DESCRIPTION") && !localizedDescriptions.isEmpty() && (maxLocalizedDescriptionId > 0))
                     {
                         version = (maxLocalizedDescriptionId+(grabSize-1))/grabSize;
                         maxKey = version*grabSize;
