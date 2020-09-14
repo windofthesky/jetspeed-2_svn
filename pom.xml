@@ -211,7 +211,7 @@
     </org.apache.jetspeed.test.jdbc.driver.version>
 
     <!-- Build Dependency Version Properties -->
-    <ant.version>1.7.1</ant.version>
+    <ant.version>1.9.15</ant.version>
     <jmock.version>1.2.0</jmock.version>
     <jmock-cglib.version>1.1.0</jmock-cglib.version>
     <junit.version>3.8.1</junit.version>
