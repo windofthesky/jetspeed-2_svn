@@ -206,9 +206,7 @@
     <!-- default test jdbc driver artifact definition which is *required* to have proper default values to keep installed POMs valid -->
     <org.apache.jetspeed.test.jdbc.driver.groupId>org.apache.derby</org.apache.jetspeed.test.jdbc.driver.groupId>
     <org.apache.jetspeed.test.jdbc.driver.artifactId>derby</org.apache.jetspeed.test.jdbc.driver.artifactId>
-    <org.apache.jetspeed.test.jdbc.driver.version>
-      ${org.apache.derby.version}
-    </org.apache.jetspeed.test.jdbc.driver.version>
+    <org.apache.jetspeed.test.jdbc.driver.version>10.14.2.0</org.apache.jetspeed.test.jdbc.driver.version>
 
     <!-- Build Dependency Version Properties -->
     <ant.version>1.7.1</ant.version>
@@ -274,7 +272,7 @@
     <solr.version>3.1.0</solr.version>
     <myfaces.version>1.1.5</myfaces.version>
     <ojb.version>1.0.3</ojb.version>
-    <org.apache.derby.version>10.3.2.1</org.apache.derby.version>
+    <org.apache.derby.version>10.14.2.0</org.apache.derby.version>
     <org.apache.pluto.version>2.0.3</org.apache.pluto.version>
     <org.apache.portals.bridges.common.version>2.1</org.apache.portals.bridges.common.version>
     <org.apache.portals.bridges.frameworks.version>1.0.4</org.apache.portals.bridges.frameworks.version>
