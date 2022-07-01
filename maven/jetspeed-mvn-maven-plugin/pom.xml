@@ -76,7 +76,7 @@
            see: http://jira.codehaus.org/browse/MSHARED-21
            should be fixed with org.apache.maven.share:maven-invoker:2.0.9
       -->
-      <version>1.5</version>
+      <version>3.0.16</version>
     </dependency>
   </dependencies>
   <build>
