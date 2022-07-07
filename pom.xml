@@ -302,7 +302,7 @@
     <taglibs-standard.version>1.1.2</taglibs-standard.version>
     <velocity-tools.version>1.3</velocity-tools.version>
     <velocity.version>1.6.4</velocity.version>
-    <xalan.version>2.4.1</xalan.version>
+    <xalan.version>2.7.2</xalan.version>
     <xerces.version>2.8.1</xerces.version>
     <xml-apis.version>2.0.2</xml-apis.version>
     <ccpp.version>1.0</ccpp.version>
